@@ -10,7 +10,7 @@ OpenRouter.post('/signup', function (req, res) {
 });
 
 OpenRouter.post('/login', function (req, res) {
-    Users.login(req.body.username, req.body.accountName, req.body.password, function (result) {
+    Users.login(req.body.userName, req.body.accountName, req.body.password, function (result) {
         res.send(result);
     });
 });

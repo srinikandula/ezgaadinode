@@ -17,6 +17,13 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open'
         }
+    }).state({
+        name: 'dashboard',
+        url: '/dashboard',
+        templateUrl: 'views/partials/dashboard.html',
+        params: {
+            access: 'auth'
+        }
     });
 
     $urlRouterProvider.otherwise('/login');
