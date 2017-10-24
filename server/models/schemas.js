@@ -15,20 +15,23 @@ connection.on('error', function(err){
 
 var accountSchema = new mongoose.Schema({
     accountId : String,
-    accountName : String
+    accountName : { type: String, index: true, unique:true },
+    updatedBy : String,
+    createdBy : String,
 },{ timestamps: true });
 
 var usersSchema = new mongoose.Schema({
     superUser : Boolean,
-    accountAdmin : Boolean,
+    accountAdmin : { type: Boolean, index: true },
     active : Boolean,
-    accountName : String,
+    accountName : { type: String, index: true },
     firstName : String,
     lastName : String,
-    username : String,
+    username : { type: String, index: true },
     password : String,
     updatedBy : String,
-    createdBy : String
+    createdBy : String,
+    attrs: {}
 },{ timestamps: true });
 
 module.exports = {
