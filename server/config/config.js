@@ -1,6 +1,6 @@
 module.exports = {
     jwt: {
-        secret: "easygaadi@MTWLabsinfo@mtwlabs.com"
+        secret: "info@easygaadi.com"
         // options: {expiresIn: 60 * 60 * 24} // 1 day
     },
     mongo:{
