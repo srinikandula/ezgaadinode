@@ -1,3 +1,17 @@
+app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibModal) {
+    $scope.openAddAccountModal = function () {
+        var modalInstance = $uibModal.open({
+            controller: 'AddAccountCtrl',
+            templateUrl: 'add-account.html',
+            size: 'sm'
+        });
+
+        modalInstance.result.then(function (status) {
+        }, function () {
+        });
+    };
+}]);
+
 app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', function ($scope, Utils, AdminServices) {
     $scope.account = {
         name: '',
@@ -12,14 +26,13 @@ app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', function (
         params.success = '';
         params.error = '';
 
-        if (!_.isString(params.name)) {
+        if (!params.name) {
             params.error = 'Invalid account name';
-        } else if (!_.isString('userName')) {
+        } else if (!params.userName) {
             params.error = 'Invalid user name';
         } else if (!Utils.isValidPassword(params.password)) {
             params.error = 'Invalid password';
         } else {
-            // http call
             AdminServices.addAccount(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
@@ -31,5 +44,4 @@ app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', function (
             });
         }
     }
-
 }]);

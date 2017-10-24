@@ -10,11 +10,11 @@ var Accounts = function () {
 Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
     var retObj = {};
 
-    if (!_.isString(accountInfo.name)) {
+    if (!accountInfo.name || !_.isString(accountInfo.name)) {
         retObj.status = false;
         retObj.message = 'Invalid account name';
         callback(retObj);
-    } else if (!_.isString(accountInfo.userName)) {
+    } else if (!accountInfo.userName || !_.isString(accountInfo.userName)) {
         retObj.status = false;
         retObj.message = 'Invalid user name';
         callback(retObj);
