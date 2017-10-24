@@ -2,17 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c0564a4a-01be-4c18-8372-6c72791d0367" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/server/modules/helpers.js" afterPath="$PROJECT_DIR$/server/modules/utils.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/css/styles.css" afterPath="$PROJECT_DIR$/client/css/styles.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/js/app.js" afterPath="$PROJECT_DIR$/client/js/app.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/js/controllers/login.js" afterPath="$PROJECT_DIR$/client/js/controllers/login.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/js/services.js" afterPath="$PROJECT_DIR$/client/js/services.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/client/views/partials/login.html" afterPath="$PROJECT_DIR$/client/views/partials/login.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/config/config.js" afterPath="$PROJECT_DIR$/server/config/config.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/models/schemas.js" afterPath="$PROJECT_DIR$/server/models/schemas.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/modules/users.js" afterPath="$PROJECT_DIR$/server/modules/users.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/server/routes/users.js" afterPath="$PROJECT_DIR$/server/routes/users.js" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -80,8 +70,8 @@
       <file leaf-file-name="login.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/client/js/controllers/login.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
-              <caret line="34" column="9" lean-forward="true" selection-start-line="34" selection-start-column="9" selection-end-line="34" selection-end-column="9" />
+            <state relative-caret-position="325">
+              <caret line="35" column="5" lean-forward="true" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -605,12 +595,12 @@
       <updated>1508762896786</updated>
       <workItem from="1508762897902" duration="4692000" />
       <workItem from="1508822888592" duration="2029000" />
-      <workItem from="1508824899711" duration="6848000" />
+      <workItem from="1508824899711" duration="7227000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13569000" />
+    <option name="totallyTimeSpent" value="13948000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="797" extended-state="6" />
@@ -989,8 +979,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/client/js/controllers/login.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
-          <caret line="34" column="9" lean-forward="true" selection-start-line="34" selection-start-column="9" selection-end-line="34" selection-end-column="9" />
+        <state relative-caret-position="325">
+          <caret line="35" column="5" lean-forward="true" selection-start-line="35" selection-start-column="5" selection-end-line="35" selection-end-column="5" />
           <folding />
         </state>
       </provider>

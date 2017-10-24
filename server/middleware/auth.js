@@ -4,7 +4,6 @@ var config = require('./../config/config');
 var staticFilesRegex = /\.(html|css|ico|png|jpeg|jpg|js|eot|svg|ttf|woff|json)$/;
 
 function authMiddleware(req, res, next) {
-    // console.log('req.url-->', req.url)
     if(staticFilesRegex.test(req.url)) {
         next();
     } else if (!req.cookies['token']) {
