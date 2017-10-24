@@ -5,12 +5,12 @@ var _ = require('underscore');
 var UsersColl = require('./../models/schemas').users;
 
 var config = require('./../config/config');
-var Helpers = require('./helpers');
+var Helpers = require('./utils');
 
-var Apis = function () {
+var Users = function () {
 };
 
-Apis.prototype.signup = function (regDetails, callback) {
+Users.prototype.signup = function (regDetails, callback) {
     console.log('regDetails', regDetails);
     var retObj = {};
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
@@ -70,62 +70,64 @@ Apis.prototype.signup = function (regDetails, callback) {
     }
 };
 
-Apis.prototype.login = function (username, accountName, pwd, callback) {
+Users.prototype.login = function (userName, accountName, password, callback) {
     var result = {};
-    if (!username) {
+    if (!_.isString(userName)) {
         result.status = false;
         result.message = 'Please type the username';
         callback(result);
-    } else if (!accountName) {
+    } else if (!_.isString(accountName)) {
         result.status = false;
-        result.message = 'Please type the accountname';
+        result.message = 'Please type the account name';
         callback(result);
-    } else if (!_.isString(pwd) || !pwd.length) {
+    } else if (!_.isString(password) || !password.length) {
         result.status = false;
         result.message = 'Please type the password';
         callback(result);
     } else {
-        var query = {accountName:accountName,username: username};
-            UsersColl.findOne(query, function (err, user) {
+        var query = {
+            userName: userName
+        };
+
+        UsersColl
+            .findOne(query)
+            .populate('accountId')
+            .exec(function (err, user) {
                 if (err) {
-                result.status = false;
-                result.message = "Error, try again!";
-                callback(result);
-            } else if (!user) {
-                result.status = false;
-                result.message = "User doesn't exist";
-                callback(result);
-            } else if (user.password === pwd) {
-                jwt.sign({
-                    id: user._id,
-                    name: user.fullName,
-                    email: user.email
-                }, config.jwt.secret, config.jwt.options, function (err, token) {
-                    if (err) {
-                        result.status = false;
-                        result.message = 'Please try again';
-                        callback(result);
-                    } else {
-                        result.status = true;
-                        result.message = "Success";
-                        result.type = user.role;
-                        result.token = token;
-                        result.id = user._id;
-                        result.firstName = user.fullName;
-                        callback(result);
-                    }
-                });
-            } else if (user.password !== pwd) {
-                result.status = false;
-                result.message = "Wrong Credentials";
-                callback(result);
-            } else if (!user.isVerified) {
-                result.status = false;
-                result.message = "Please verify your account";
-                callback(result);
-            }
-        });
+                    result.status = false;
+                    result.message = "Error, try again!";
+                    callback(result);
+                } else if (!user) {
+                    result.status = false;
+                    result.message = "User doesn't exist";
+                    callback(result);
+                } else if ((user.password === password) && user.accountId && (user.accountId.name === accountName)) {
+                    jwt.sign({
+                        id: user._id,
+                        name: user.firstName,
+                        email: user.email,
+                        role: user.role
+                    }, config.jwt.secret, config.jwt.options, function (err, token) {
+                        if (err) {
+                            result.status = false;
+                            result.message = 'Please try again';
+                            callback(result);
+                        } else {
+                            result.status = true;
+                            result.message = "Success";
+                            result.role = user.role;
+                            result.token = token;
+                            result.firstName = user.firstName;
+                            callback(result);
+                        }
+                    });
+                } else {
+                    result.status = false;
+                    result.message = "Invalid Credentials";
+                    callback(result);
+                }
+            });
     }
 };
 
-module.exports = new Apis();
+module.exports = new Users();
