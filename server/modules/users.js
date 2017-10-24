@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 
-var UsersColl = require('./../models/schemas').users;
+var UsersColl = require('./../models/schemas').UsersColl;
 
 var config = require('./../config/config');
 var Helpers = require('./utils');

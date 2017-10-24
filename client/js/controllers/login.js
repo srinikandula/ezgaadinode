@@ -1,5 +1,5 @@
-app.controller('LoginCtrl', ['$scope', 'ValidatorService', 'CommonServices', '$state', '$cookies', function ($scope, ValidatorService, CommonServices, $state, $cookies) {
-    if (CommonServices.isLoggedIn()) {
+app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$cookies', function ($scope, Utils, CommonServices, $state, $cookies) {
+    if (Utils.isLoggedIn()) {
         $state.go('dashboard');
     }
 
@@ -13,11 +13,14 @@ app.controller('LoginCtrl', ['$scope', 'ValidatorService', 'CommonServices', '$s
 
     $scope.login = function () {
         var params = $scope.loginParams;
+        params.success = '';
+        params.error = '';
+
         if (!params.accountName) {
             params.error = 'Invalid account Name';
         } else if (!params.userName) {
             params.error = 'Invalid user name';
-        } else if (!ValidatorService.isValidPassword(params.password)) {
+        } else if (!Utils.isValidPassword(params.password)) {
             params.error = 'Password length should be atleast 8';
         } else {
             // http call

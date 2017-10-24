@@ -46,6 +46,6 @@ var usersSchema = new mongoose.Schema({
 });
 
 module.exports = {
-    users: mongoose.model('users', usersSchema, 'users'),
-    accounts: mongoose.model('accounts', accountSchema, 'accounts')
+    UsersColl: mongoose.model('users', usersSchema, 'users'),
+    AccountsColl: mongoose.model('accounts', accountSchema, 'accounts')
 };
