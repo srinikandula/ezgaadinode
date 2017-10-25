@@ -23,7 +23,16 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibMod
         }
     };
 
+    $scope.totalItems = 64;
+    $scope.currentPage = 4;
 
+    $scope.pageChanged = function () {
+        console.log($scope.currentPage);
+    };
+
+    $scope.maxSize = 5;
+    $scope.bigTotalItems = 175;
+    $scope.bigCurrentPage = 1;
 }]);
 
 app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModalInstance', function ($scope, Utils, AdminServices, $uibModalInstance) {
