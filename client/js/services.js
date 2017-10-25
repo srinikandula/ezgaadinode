@@ -40,6 +40,7 @@ app.factory('AdminServices', function ($http, $cookies) {
                 method: "POST",
                 data: accountInfo
             }).then(success, error)
-        }
+        },
+        getAccounts: function
     }
 });

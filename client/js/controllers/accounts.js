@@ -10,6 +10,30 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibMod
         }, function () {
         });
     };
+
+    // pagination options
+    $scope.totalItems = 100;
+    $scope.maxSize = 10;
+    $scope.pageNumber = 1;
+
+    $scope.getAccountsData = function () {
+        var pageNum = $scope.pageNumber;
+
+        console.log('--->', pageNum);
+        //http call
+    };
+
+    $scope.accountGridOptions = {
+        enableSorting: true,
+        paginationPageSizes: [9, 20, 50],
+        paginationPageSize: 9,
+        columnDefs: [
+        ],
+        data: [],
+        onRegisterApi: function (gridApi) {
+            $scope.gridApi = gridApi;
+        }
+    };
 }]);
 
 app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModalInstance', function ($scope, Utils, AdminServices, $uibModalInstance) {
