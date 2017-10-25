@@ -7,7 +7,7 @@
     <script type="text/ng-template" id="add-account.html">
         <div class="add-account-modal">
 
-            <span class="glyphicon glyphicon-remove pull-right"></span>
+            <span ng-click="closeModal()" class="glyphicon glyphicon-remove pull-right cursor-pointer"></span>
             <form ng-submit="addAccount()">
                 <h2 class="login-heading">Add Account</h2>
                 <div class="form-group">

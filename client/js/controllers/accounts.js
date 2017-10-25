@@ -12,7 +12,11 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibMod
     };
 }]);
 
-app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', function ($scope, Utils, AdminServices) {
+app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModalInstance', function ($scope, Utils, AdminServices, $uibModalInstance) {
+    $scope.closeModal = function () {
+        $uibModalInstance.close();
+    };
+
     $scope.account = {
         name: '',
         userName: '',
