@@ -3,8 +3,8 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Users = require('./../modules/users');
 
-OpenRouter.post('/adduser', function (req, res) {
-    Users.adduser(req.body, function (result) {
+AuthRouter.post('/addUser', function (req, res) {
+    Users.adduser(req.jwt.id, req.body, function (result) {
         res.send(result);
     });
 });
@@ -15,7 +15,7 @@ OpenRouter.post('/login', function (req, res) {
     });
 });
 
-AuthRouter.post('/update', function (req, res) {
+AuthRouter.post('/updateUser', function (req, res) {
     Users.update(req.jwt.id, req.body.details, function (result) {
         res.send(result);
     });
