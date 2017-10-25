@@ -19,4 +19,8 @@ Utils.prototype.isPincode = function (pincode) {
     return /[1-9][0-9]{5}/.test(pincode);
 };
 
+Utils.prototype.isValidObjectId = function (id) {
+    return id && ObjectId.isValid(id);
+};
+
 module.exports = new Utils();

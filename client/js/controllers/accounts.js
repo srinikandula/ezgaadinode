@@ -35,12 +35,26 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', 'AdminServices', 'Notific
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,
-        columnDefs: [],
+        columnDefs: [{
+            name: 'Id',
+            field: '_id'
+        }, {
+            name: 'Account name',
+            field: 'name'
+        }, {
+            name: 'Edit',
+            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.openEditModal(row.entity)" class="btn btn-success">Edit</button></div>'
+        }],
+        rowHeight: 40,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
         }
     };
+
+    $scope.openEditModal = function (accountData) {
+        alert('API is ready' );
+    }
 }]);
 
 app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModalInstance', function ($scope, Utils, AdminServices, $uibModalInstance) {
