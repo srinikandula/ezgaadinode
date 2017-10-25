@@ -3,15 +3,33 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Users = require('./../modules/users');
 
-OpenRouter.post('/signup', function (req, res) {
-    Users.signup(req.body, function (result) {
-        res.json(result);
+OpenRouter.post('/adduser', function (req, res) {
+    Users.adduser(req.body, function (result) {
+        res.send(result);
     });
 });
 
 OpenRouter.post('/login', function (req, res) {
     Users.login(req.body.userName, req.body.accountName, req.body.password, function (result) {
         res.json(result);
+    });
+});
+
+AuthRouter.post('/update', function (req, res) {
+    Users.update(req.jwt.id, req.body.details, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/getAccountUsers', function (req, res) {
+    Users.getAccountUsers(req.jwt.id, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.post('/deleteUSer', function (req, res) {
+    Users.deleteUSer(req.body.username, function (result) {
+        res.send(result);
     });
 });
 
