@@ -130,4 +130,44 @@ Users.prototype.login = function (userName, accountName, password, callback) {
     }
 };
 
+Users.prototype.update =function (user, callback) {
+    var result = {};
+    UsersColl.findOne({username: user.username}).exec(function (err, savedUser) {
+        if (err) {
+            result.status = false;
+            result.message = "Error, finding user";
+            callback(result);
+        } else if (!savedUser) {
+            result.status = false;
+            result.message = "User doesn't exist";
+            callback(result);
+        } else {
+            /*
+            firstName: String,
+            lastName: String,
+            role: String,
+            accountId: {
+                type: ObjectId, ref: 'accounts'
+            },
+            userName: {
+                type: String,
+                index: true,
+                unique: true
+            },
+            password: String,
+            updatedBy: String,
+            createdBy: String,
+            attrs: {}
+             */
+            savedUser.firstName = user.firstName || savedUser.firstName;
+            savedUser.lastName = user.lastName || savedUser.lastName;
+            savedUser.role = user.role || savedUser.role;
+            savedUser.accountId = user.accountId || savedUser.accountId;
+            savedUser.password = user.password || savedUser.password;
+            //savedUser.updatedBy = ??
+        }
+
+    });
+}
+
 module.exports = new Users();
