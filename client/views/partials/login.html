@@ -1,0 +1,31 @@
+<div ng-controller="LoginCtrl">
+    <form class="login-form" ng-submit="logIn()">
+        <h2 class="login-heading">Easy Gaadi</h2>
+        <div class="form-group">
+            <label for="accountId">Account Name</label>
+            <input ng-model="loginParams.accountName" type="text" class="form-control" id="accountId"
+                   placeholder="Account Name">
+        </div>
+
+        <div class="form-group">
+            <label for="userName">User Name</label>
+            <input ng-model="loginParams.userName" type="text" class="form-control" id="userName"
+                   placeholder="User name">
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input ng-model="loginParams.password" type="password" class="form-control" id="password"
+                   placeholder="Password">
+        </div>
+
+
+        <div>
+            <div class="alert alert-danger" role="alert" ng-show="loginParams.error">
+                <strong>{{loginParams.error}}</strong>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" ng-click="login()">Submit</button>
+    </form>
+</div>

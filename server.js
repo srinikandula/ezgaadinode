@@ -6,16 +6,17 @@ var cookieParser = require('cookie-parser');
 var app = express();
 
 var Users = require('./server/routes/users');
+var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
 app.use(morgan('dev'));
-// app.use(express.static('client', {index: "/views/index.html"}));
+app.use(express.static('client', {index: "/views/index.html"}));
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
-// app.use(bodyParser.urlencoded({limit: config.bodyParserLimit, extended: true}));
+app.use(bodyParser.urlencoded({limit: config.bodyParserLimit, extended: true}));
 app.use(cookieParser());
 
 app.use(function (req, res, next) {
@@ -31,6 +32,7 @@ app.use('/v1/user', Users.OpenRouter);
 app.use(authMiddleware);
 
 app.use('/v1/user', Users.AuthRouter);
+app.use('/v1/admin', Admin.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);
