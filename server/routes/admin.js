@@ -8,6 +8,12 @@ AuthRouter.post('/accounts/add', function (req, res) {
     });
 });
 
+AuthRouter.get('/accounts/fetch/:pageNum', function (req, res) {
+    Accounts.getAccounts(req.params.pageNum, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

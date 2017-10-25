@@ -1,6 +1,8 @@
+var async = require('async');
 var _ = require('underscore');
 
 var Utils = require('./utils');
+var pageLimits = require('./../config/pagination');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var UsersColl = require('./../models/schemas').UsersColl;
 
@@ -69,6 +71,50 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
             }
         });
     }
+};
+
+Accounts.prototype.getAccounts = function (pageNum, callback) {
+    var retObj = {};
+    if (!pageNum) {
+        pageNum = 1;
+    } else if (!_.isNumber(Number(pageNum))) {
+        retObj.status = false;
+        retObj.message = 'Invalid page number';
+        return callback(retObj);
+    }
+
+    var skipNumber = (pageNum - 1) * pageLimits.accountPaginationLimit;
+    console.log('skip', skipNumber);
+    async.parallel({
+        accounts: function (accountsCallback) {
+            AccountsColl
+                .find({})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.accountPaginationLimit)
+                .lean()
+                .exec(function (err, accounts) {
+                    accountsCallback(err, accounts);
+                });
+        },
+        count: function (countCallback) {
+            AccountsColl.count(function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            retObj.status = false;
+            retObj.message = 'Error retrieving accounts';
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.message = 'Success';
+            retObj.count = results.count;
+            retObj.accounts = results.accounts;
+            callback(retObj);
+        }
+    });
 };
 
 module.exports = new Accounts();

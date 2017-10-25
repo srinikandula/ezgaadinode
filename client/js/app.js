@@ -1,4 +1,4 @@
-var app = angular.module('EasyGaadi', ['ui.router', 'ngCookies', 'ui.bootstrap']);
+var app = angular.module('EasyGaadi', ['ui.router', 'ngCookies', 'ui.bootstrap', 'ui.grid', 'ui-notification']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -27,4 +27,16 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     });
 
     $urlRouterProvider.otherwise('/login');
+});
+
+app.config(function(NotificationProvider) {
+    NotificationProvider.setOptions({
+        delay: 10000,
+        startTop: 20,
+        startRight: 10,
+        verticalSpacing: 20,
+        horizontalSpacing: 20,
+        positionX: 'left',
+        positionY: 'bottom'
+    });
 });

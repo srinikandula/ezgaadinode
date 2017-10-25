@@ -1,4 +1,4 @@
-app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibModal) {
+app.controller('AccountsCtrl', ['$scope', '$uibModal', 'AdminServices', 'Notification', function ($scope, $uibModal, AdminServices, Notification) {
     $scope.openAddAccountModal = function () {
         var modalInstance = $uibModal.open({
             controller: 'AddAccountCtrl',
@@ -9,6 +9,37 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibMod
         modalInstance.result.then(function (status) {
         }, function () {
         });
+    };
+
+    // pagination options
+    $scope.totalItems = 200;
+    $scope.maxSize = 5;
+    $scope.pageNumber = 1;
+
+    $scope.getAccountsData = function () {
+        AdminServices.getAccounts($scope.pageNumber, function (success) {
+            if (success.data.status) {
+                $scope.accountGridOptions.data = success.data.accounts;
+                $scope.totalItems = success.data.count;
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getAccountsData();
+
+    $scope.accountGridOptions = {
+        enableSorting: true,
+        paginationPageSizes: [9, 20, 50],
+        paginationPageSize: 9,
+        columnDefs: [],
+        data: [],
+        onRegisterApi: function (gridApi) {
+            $scope.gridApi = gridApi;
+        }
     };
 }]);
 
