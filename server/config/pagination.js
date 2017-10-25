@@ -1,4 +1,4 @@
 module.exports = {
-    accountPaginationLimit: 2
+    accountPaginationLimit: 10
 
 };

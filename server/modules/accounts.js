@@ -77,7 +77,7 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
     var retObj = {};
     if (!pageNum) {
         pageNum = 1;
-    } else if (!_.isNumber(pageNum)) {
+    } else if (!_.isNumber(Number(pageNum))) {
         retObj.status = false;
         retObj.message = 'Invalid page number';
         return callback(retObj);
@@ -118,5 +118,3 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
 };
 
 module.exports = new Accounts();
-
-var a = new Accounts();

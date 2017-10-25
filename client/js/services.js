@@ -8,10 +8,10 @@ app.factory('Utils', function ($http, $cookies) {
             password = password.trim();
             return _.isString(password) && (password.length > 7)
         },
-        isLoggedIn: function() {
+        isLoggedIn: function () {
             return !!$cookies.get('token');
         },
-        logout: function() {
+        logout: function () {
             $cookies.remove('token');
             $cookies.remove('role');
             $cookies.remove('firstName');
@@ -41,6 +41,11 @@ app.factory('AdminServices', function ($http, $cookies) {
                 data: accountInfo
             }).then(success, error)
         },
-        getAccounts: function
+        getAccounts: function (pageNumber, success, error) {
+            $http({
+                url: '/v1/admin/accounts/fetch/' + pageNumber,
+                method: "GET"
+            }).then(success, error)
+        }
     }
 });
