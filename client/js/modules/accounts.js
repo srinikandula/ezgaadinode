@@ -1,4 +1,22 @@
-app.controller('AccountsCtrl', ['$scope', '$uibModal', 'AdminServices', 'Notification', function ($scope, $uibModal, AdminServices, Notification) {
+app.factory('AccountServices', function ($http, $cookies) {
+    return {
+        addAccount: function (accountInfo, success, error) {
+            $http({
+                url: '/v1/admin/accounts/add',
+                method: "POST",
+                data: accountInfo
+            }).then(success, error)
+        },
+        getAccounts: function (pageNumber, success, error) {
+            $http({
+                url: '/v1/admin/accounts/fetch/' + pageNumber,
+                method: "GET"
+            }).then(success, error)
+        }
+    }
+});
+
+app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', function ($scope, $uibModal, AccountServices, Notification) {
     $scope.openAddAccountModal = function () {
         var modalInstance = $uibModal.open({
             controller: 'AddAccountCtrl',
@@ -17,7 +35,7 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', 'AdminServices', 'Notific
     $scope.pageNumber = 1;
 
     $scope.getAccountsData = function () {
-        AdminServices.getAccounts($scope.pageNumber, function (success) {
+        AccountServices.getAccounts($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.accountGridOptions.data = success.data.accounts;
                 $scope.totalItems = success.data.count;
@@ -57,7 +75,7 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', 'AdminServices', 'Notific
     }
 }]);
 
-app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModalInstance', function ($scope, Utils, AdminServices, $uibModalInstance) {
+app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$uibModalInstance', function ($scope, Utils, AccountServices, $uibModalInstance) {
     $scope.closeModal = function () {
         $uibModalInstance.close();
     };
@@ -82,7 +100,7 @@ app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModal
         } else if (!Utils.isValidPassword(params.password)) {
             params.error = 'Invalid password';
         } else {
-            AdminServices.addAccount(params, function (success) {
+            AccountServices.addAccount(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
                     $scope.closeModal();
@@ -95,3 +113,4 @@ app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModal
         }
     }
 }]);
+

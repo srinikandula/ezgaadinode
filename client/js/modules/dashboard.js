@@ -15,6 +15,4 @@ app.controller('DashboardCtrl', ['$scope', function ($scope) {
     $scope.navigate = function(name) {
         $scope.template = templates[name];
     }
-
-
 }]);
