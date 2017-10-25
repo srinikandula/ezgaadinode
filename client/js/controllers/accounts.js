@@ -10,6 +10,21 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibMod
         }, function () {
         });
     };
+
+    $scope.accountGridOptions = {
+        enableSorting: true,
+        columnDefs: [{
+            name: 'Name',
+            field: 'name'
+        }],
+        data: [{name: 'sunil'}, {name: 'sai'}],
+        onRegisterApi: function (gridApi) {
+            $scope.gridApi = gridApi;
+        }
+    };
+
+
+
 }]);
 
 app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModalInstance', function ($scope, Utils, AdminServices, $uibModalInstance) {
