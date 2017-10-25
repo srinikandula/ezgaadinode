@@ -1,4 +1,4 @@
-app.factory('Utils', function ($http) {
+app.factory('Utils', function ($http, $cookies) {
     return {
         isValidEmail: function (email) {
             return _.isString(email) && /^[a-zA-Z]\S*@\S+.\S+/.test(email)
@@ -15,7 +15,7 @@ app.factory('Utils', function ($http) {
 });
 
 
-app.factory('CommonServices', function ($http, $cookies) {
+app.factory('CommonServices', function ($http) {
     return {
         login: function (loginData, success, error) {
             $http({
