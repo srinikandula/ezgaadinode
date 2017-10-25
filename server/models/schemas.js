@@ -54,7 +54,7 @@ var truckSchema = new mongoose.Schema({
     insuranceExpiry: Number,
     pollutionExpiry: Number,
     taxDueDate: Number,
-    accountId: {type: ObjectId, ref: 'accounts'}
+    accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String
 },{timestamps: true});
