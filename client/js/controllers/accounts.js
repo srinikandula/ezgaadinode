@@ -40,6 +40,7 @@ app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModal
             AdminServices.addAccount(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
+                    $scope.closeModal();
                 } else {
                     params.error = success.data.message;
                 }
