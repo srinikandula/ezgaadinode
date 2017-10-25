@@ -10,7 +10,7 @@ var Helpers = require('./utils');
 var Users = function () {
 };
 
-Users.prototype.signup = function (regDetails, callback) {
+Users.prototype.adduser = function (regDetails, callback) {
     console.log('regDetails', regDetails);
     var retObj = {};
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
@@ -19,30 +19,34 @@ Users.prototype.signup = function (regDetails, callback) {
         callback(retObj);
     } else if (!regDetails.firstName || !_.isString(regDetails.firstName)) {
         retObj.status = false;
-        retObj.message = "Please provide valid firstName";
+        retObj.message = "Please provide valid first name";
         callback(retObj);
     } else if (!regDetails.lastName || !_.isString(regDetails.lastName)) {
         retObj.status = false;
-        retObj.message = "Please provide valid firstName";
+        retObj.message = "Please provide valid last name";
         callback(retObj);
-    } else if (!Helpers.isEmail(regDetails.email)) {
+    } else if (!retObj.role) {
         retObj.status = false;
-        retObj.message = "Please provide valid Email.";
+        retObj.message = "Please provide role";
         callback(retObj);
-    } else if (!regDetails.password || !_.isString(regDetails.password)) {
+    } else if (!retObj.accountId || !_.isString(regDetails.accountId)) {
         retObj.status = false;
-        retObj.message = "Please provide valid passwords";
+        retObj.message = "Please provide accountId";
         callback(retObj);
-    } else if (!Helpers.ispassword(regDetails.password)) {
+    } else if (!regDetails.password) {
         retObj.status = false;
-        retObj.message = "Password length should be minimum 6";
+        retObj.message = "Please provide valid password";
         callback(retObj);
-    } else if (regDetails.password !== regDetails.confirmPassword) {
+    } else if (!retObj.updatedBy) {
         retObj.status = false;
-        retObj.message = "Passwords are not matching";
+        retObj.message = "Please provide updatedBy field";
+        callback(retObj);
+    } else if (!retObj.createdBy) {
+        retObj.status = false;
+        retObj.message = "Please provide createdBy field";
         callback(retObj);
     } else {
-        UsersColl.findOne({email: regDetails.email}, function (err, user) {
+        UsersColl.findOne({username: regDetails.username}, function (err, user) {
             if (err) {
                 retObj.status = false;
                 retObj.message = "Error, try again!";
@@ -61,7 +65,7 @@ Users.prototype.signup = function (regDetails, callback) {
                     } else {
                         console.log("inserted");
                         retObj.status = true;
-                        retObj.message = "Successfully Registered";
+                        retObj.message = "Successfully Added";
                         callback(retObj);
                     }
                 });
@@ -88,7 +92,6 @@ Users.prototype.login = function (userName, accountName, password, callback) {
         var query = {
             userName: userName
         };
-
         UsersColl
             .findOne(query)
             .populate('accountId')
@@ -130,9 +133,9 @@ Users.prototype.login = function (userName, accountName, password, callback) {
     }
 };
 
-Users.prototype.update =function (user, callback) {
+Users.prototype.update = function (id, user, callback) {
     var result = {};
-    UsersColl.findOne({username: user.username}).exec(function (err, savedUser) {
+    UsersColl.findOne({userName: user.userName}).exec(function (err, savedUser) {
         if (err) {
             result.status = false;
             result.message = "Error, finding user";
@@ -147,10 +150,52 @@ Users.prototype.update =function (user, callback) {
             savedUser.role = user.role || savedUser.role;
             savedUser.accountId = user.accountId || savedUser.accountId;
             savedUser.password = user.password || savedUser.password;
-            //savedUser.updatedBy = ??
+            savedUser.updatedBy = id;
+            UsersColl(savedUser).save(function (err) {
+                if (err) {
+                    result.status = false;
+                    result.message = 'Error saving user';
+                    callback(result);
+                } else {
+                    result.status = true;
+                    result.message = 'Success';
+                    callback(result);
+                }
+            });
         }
 
     });
-}
+};
+
+Users.prototype.getAccountUsers = function (id, callback) {
+    var result = {};
+    UsersColl.find({accountId:id},function (err, accountUsers) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting users';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.details = accountUsers;
+            callback(result);
+        }
+    });
+};
+
+Users.prototype.deleteUSer = function (user, callback) {
+    var result = {};
+    UsersColl.remove({userName:user}, function (err) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error deleting user';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            callback(result);
+        }
+    });
+};
 
 module.exports = new Users();
