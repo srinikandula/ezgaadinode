@@ -84,7 +84,6 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
     }
 
     var skipNumber = (pageNum - 1) * pageLimits.accountPaginationLimit;
-    console.log('skip', skipNumber);
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl

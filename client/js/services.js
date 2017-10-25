@@ -3,7 +3,6 @@ app.factory('Utils', function ($http, $cookies) {
         isValidEmail: function (email) {
             return _.isString(email) && /^[a-zA-Z]\S*@\S+.\S+/.test(email)
         },
-
         isValidPassword: function (password) {
             password = password.trim();
             return _.isString(password) && (password.length > 7)
@@ -19,7 +18,6 @@ app.factory('Utils', function ($http, $cookies) {
     }
 });
 
-
 app.factory('CommonServices', function ($http) {
     return {
         login: function (loginData, success, error) {
@@ -27,24 +25,6 @@ app.factory('CommonServices', function ($http) {
                 url: '/v1/user/login',
                 method: "POST",
                 data: loginData
-            }).then(success, error)
-        }
-    }
-});
-
-app.factory('AdminServices', function ($http, $cookies) {
-    return {
-        addAccount: function (accountInfo, success, error) {
-            $http({
-                url: '/v1/admin/accounts/add',
-                method: "POST",
-                data: accountInfo
-            }).then(success, error)
-        },
-        getAccounts: function (pageNumber, success, error) {
-            $http({
-                url: '/v1/admin/accounts/fetch/' + pageNumber,
-                method: "GET"
             }).then(success, error)
         }
     }

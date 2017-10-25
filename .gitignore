@@ -62,3 +62,6 @@ typings/
 
 # Webstorm
 .idea
+
+# MAC OS
+.DS_Store
