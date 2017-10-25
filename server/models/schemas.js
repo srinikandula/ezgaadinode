@@ -45,7 +45,22 @@ var usersSchema = new mongoose.Schema({
     timestamps: true
 });
 
+var truckSchema = new mongoose.Schema({
+    registrationNo: {type: String, unique: true},
+    truckType: String,
+    modelAndYear: String,
+    fitnessExpiry: Number,
+    permitExpiry: Number,
+    insuranceExpiry: Number,
+    pollutionExpiry: Number,
+    taxDueDate: Number,
+    accountId: {type: ObjectId, ref: 'accounts'}
+    updatedBy: String,
+    createdBy: String
+},{timestamps: true});
+
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
-    AccountsColl: mongoose.model('accounts', accountSchema, 'accounts')
+    AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
+    TrucksColl: mongoose.model('trucks', truckSchema, 'trucks')
 };

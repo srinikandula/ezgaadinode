@@ -10,8 +10,7 @@ var Helpers = require('./utils');
 var Users = function () {
 };
 
-Users.prototype.adduser = function (regDetails, callback) {
-    console.log('regDetails', regDetails);
+Users.prototype.adduser = function (userid, regDetails, callback) {
     var retObj = {};
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
         retObj.status = false;
@@ -56,6 +55,8 @@ Users.prototype.adduser = function (regDetails, callback) {
                 retObj.message = "User already exists";
                 callback(retObj);
             } else {
+                regDetails.createdBy = userid;
+                regDetails.updatedBy = userid;
                 var insertDoc = new UsersColl(regDetails);
                 insertDoc.save(function (err) {
                     if (err) {
@@ -154,7 +155,7 @@ Users.prototype.update = function (id, user, callback) {
             UsersColl(savedUser).save(function (err) {
                 if (err) {
                     result.status = false;
-                    result.message = 'Error saving user';
+                    result.message = 'Error updating user';
                     callback(result);
                 } else {
                     result.status = true;
