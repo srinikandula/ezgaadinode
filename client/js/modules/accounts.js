@@ -18,15 +18,7 @@ app.factory('AccountServices', function ($http, $cookies) {
 
 app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', function ($scope, $uibModal, AccountServices, Notification) {
     $scope.openAddAccountModal = function () {
-        var modalInstance = $uibModal.open({
-            controller: 'AddAccountCtrl',
-            templateUrl: 'add-account.html',
-            size: 'sm'
-        });
-
-        modalInstance.result.then(function (status) {
-        }, function () {
-        });
+        alert('In progress');
     };
 
     // pagination options
@@ -71,7 +63,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
     };
 
     $scope.openEditModal = function (accountData) {
-        alert('API is ready' );
+        alert('API is ready');
     }
 }]);
 

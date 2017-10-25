@@ -1,0 +1,13 @@
+<div ng-controller="ShowAccountsCtrl">
+
+    <div class="main-right">
+        <h3>Accounts</h3>
+        <button class="btn btn-success pull-right" ng-click="openAddAccountModal()">Add Account</button>
+    </div>
+
+    <div class="margin-top-40">
+        <div class="grid" ui-grid="accountGridOptions" ui-grid-selection></div>
+    </div>
+
+    <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm" boundary-link-numbers="true" rotate="false" ng-change="getAccountsData()"></ul>
+</div>

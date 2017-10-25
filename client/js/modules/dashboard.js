@@ -1,6 +1,7 @@
 app.controller('DashboardCtrl', ['$scope', function ($scope) {
     var templates = {
-        addAccount: '/views/templates/accounts.html',
+        accounts: '/views/templates/accounts/display.html',
+        accountEdit: '/views/templates/accounts/edit.html',
         userPage: '/views/templates/users.html',
         driverPage: '/views/templates/drivers.html',
         trucksPage: '/views/templates/trucks.html',
@@ -10,9 +11,9 @@ app.controller('DashboardCtrl', ['$scope', function ($scope) {
         tripLane: '/views/templates/trip-lane.html'
     };
 
-    $scope.template = templates['addAccount'];
+    $scope.template = templates['accounts'];
 
-    $scope.navigate = function(name) {
+    $scope.navigate = function (name) {
         $scope.template = templates[name];
     }
 }]);
