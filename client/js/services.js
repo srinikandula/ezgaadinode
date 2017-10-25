@@ -10,6 +10,11 @@ app.factory('Utils', function ($http, $cookies) {
         },
         isLoggedIn: function() {
             return !!$cookies.get('token');
+        },
+        logout: function() {
+            $cookies.remove('token');
+            $cookies.remove('role');
+            $cookies.remove('firstName');
         }
     }
 });
