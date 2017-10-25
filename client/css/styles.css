@@ -28,7 +28,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .left-nav-anchor {
-    color: white;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 16px;
+    font-family: sans-serif;
+}
+.left-nav-anchor:hover{
+    text-decoration: none;
+    color: #000;
 }
 
 .margin-top-20 {
@@ -44,4 +52,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .cursor-pointer {
     cursor: pointer;
+}
+.main-right{
+    padding:30px;
 }
