@@ -24,7 +24,6 @@ app.controller('AccountsCtrl', ['$scope', '$uibModal', function ($scope, $uibMod
     };
 
 
-
 }]);
 
 app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModalInstance', function ($scope, Utils, AdminServices, $uibModalInstance) {
@@ -50,11 +49,12 @@ app.controller('AddAccountCtrl', ['$scope', 'Utils', 'AdminServices', '$uibModal
         } else if (!params.userName) {
             params.error = 'Invalid user name';
         } else if (!Utils.isValidPassword(params.password)) {
-            params.error = 'Invalid password';
+            params.error = 'Password should me minimum 8 characters';
         } else {
             AdminServices.addAccount(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
+                    $scope.closeModal();
                 } else {
                     params.error = success.data.message;
                 }

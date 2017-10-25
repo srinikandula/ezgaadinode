@@ -11,13 +11,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open'
         }
     }).state({
-        name: 'about',
-        url: '/about',
-        templateUrl: 'views/partials/about.html',
-        params: {
-            access: 'open'
-        }
-    }).state({
         name: 'dashboard',
         url: '/dashboard',
         templateUrl: 'views/partials/dashboard.html',
