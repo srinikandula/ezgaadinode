@@ -1,7 +1,47 @@
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+}
+
 .login-form {
     max-width: 380px;
     padding: 15px 35px 45px;
     margin: 0 auto;
     background-color: #fff;
     border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.navbar {
+    margin-bottom: 0 !important;
+}
+
+.left-nav {
+    background-color: grey;
+    position: fixed;
+    height: 100%
+}
+
+.left-nav-li {
+    padding-top: 20px;
+    height: 50px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.left-nav-anchor {
+    color: white;
+}
+
+.margin-top-20 {
+    margin-top: 20px;
+}
+
+.add-account-modal {
+    padding: 15px;
+    margin: 0 auto;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }

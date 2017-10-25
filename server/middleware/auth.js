@@ -14,7 +14,6 @@ function authMiddleware(req, res, next) {
                 res.status(401).send({status: false, message: 'Invalid token'})
             } else  {
                 req.jwt = decoded;
-                console.log('decoded',decoded);
                 next();
             }
         });

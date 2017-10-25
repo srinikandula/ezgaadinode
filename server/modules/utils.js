@@ -12,7 +12,7 @@ Utils.prototype.isMobile = function (mob) {
 };
 
 Utils.prototype.isValidPassword = function (password) {
-    return _.isString(password) && (password.length > 7);
+    return _.isString(password) && (password.trim().length > 7);
 };
 
 Utils.prototype.isPincode = function (pincode) {

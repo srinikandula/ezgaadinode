@@ -1,4 +1,4 @@
-app.factory('ValidatorService', function ($http) {
+app.factory('Utils', function ($http, $cookies) {
     return {
         isValidEmail: function (email) {
             return _.isString(email) && /^[a-zA-Z]\S*@\S+.\S+/.test(email)
@@ -7,12 +7,15 @@ app.factory('ValidatorService', function ($http) {
         isValidPassword: function (password) {
             password = password.trim();
             return _.isString(password) && (password.length > 7)
+        },
+        isLoggedIn: function() {
+            return !!$cookies.get('token');
         }
     }
 });
 
 
-app.factory('CommonServices', function ($http, $cookies) {
+app.factory('CommonServices', function ($http) {
     return {
         login: function (loginData, success, error) {
             $http({
@@ -20,9 +23,18 @@ app.factory('CommonServices', function ($http, $cookies) {
                 method: "POST",
                 data: loginData
             }).then(success, error)
-        },
-        isLoggedIn: function() {
-            return !!$cookies.get('token');
+        }
+    }
+});
+
+app.factory('AdminServices', function ($http, $cookies) {
+    return {
+        addAccount: function (accountInfo, success, error) {
+            $http({
+                url: '/v1/admin/accounts/add',
+                method: "POST",
+                data: accountInfo
+            }).then(success, error)
         }
     }
 });
