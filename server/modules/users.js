@@ -183,9 +183,10 @@ Users.prototype.getAccountUsers = function (id, callback) {
     });
 };
 
-Users.prototype.deleteUSer = function (user, callback) {
+Users.prototype.deleteUSer = function (id, callback) {
+    console.log('id',id);
     var result = {};
-    UsersColl.remove({userName:user}, function (err) {
+    UsersColl.remove({_id:id}, function (err) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting user';

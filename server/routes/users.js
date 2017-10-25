@@ -27,8 +27,8 @@ AuthRouter.get('/getAccountUsers', function (req, res) {
     });
 });
 
-AuthRouter.post('/deleteUSer', function (req, res) {
-    Users.deleteUSer(req.body.username, function (result) {
+OpenRouter.delete('/deleteUSer/:id', function (req, res) {
+    Users.deleteUSer(req.params.id, function (result) {
         res.send(result);
     });
 });
