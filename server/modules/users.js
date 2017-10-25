@@ -142,23 +142,6 @@ Users.prototype.update =function (user, callback) {
             result.message = "User doesn't exist";
             callback(result);
         } else {
-            /*
-            firstName: String,
-            lastName: String,
-            role: String,
-            accountId: {
-                type: ObjectId, ref: 'accounts'
-            },
-            userName: {
-                type: String,
-                index: true,
-                unique: true
-            },
-            password: String,
-            updatedBy: String,
-            createdBy: String,
-            attrs: {}
-             */
             savedUser.firstName = user.firstName || savedUser.firstName;
             savedUser.lastName = user.lastName || savedUser.lastName;
             savedUser.role = user.role || savedUser.role;
