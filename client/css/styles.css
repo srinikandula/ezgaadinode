@@ -1,7 +1,9 @@
 h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
-
+.pall-zero{
+    padding: 0;
+}
 .login-form {
     max-width: 380px;
     padding: 15px 35px 45px;
@@ -16,8 +18,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .left-nav {
     background-color: grey;
-    position: fixed;
-    height: 100%
+    height: 100%;
+    padding:15px;
 }
 
 .left-nav-li {
@@ -54,7 +56,8 @@ h1, h2, h3, h4, h5, h6 {
     cursor: pointer;
 }
 .main-right {
-    padding: 30px;
+    padding: 10px;
+    margin-left: 4%;
 }
 
 .margin-top-40 {
