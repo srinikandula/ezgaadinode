@@ -117,4 +117,29 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
     });
 };
 
+Accounts.prototype.updateAccount = function (accountInfo, callback) {
+    var retObj = {};
+    if (!Utils.isValidObjectId(accountInfo._id)) {
+        retObj.status = false;
+        retObj.message = 'Invalid account Id';
+        callback(retObj);
+    } else {
+        AccountsColl.findOneAndUpdate({_id: accountInfo._id}, {$set: accountInfo}, function (err, oldAcc) {
+            if (err) {
+                retObj.status = false;
+                retObj.message = 'Error updating the account';
+                callback(retObj);
+            } else if (oldAcc) {
+                retObj.status = true;
+                retObj.message = 'Success';
+                callback(retObj);
+            } else {
+                retObj.status = false;
+                retObj.message = 'Account doesn\'t exist';
+                callback(retObj);
+            }
+        });
+    }
+};
+
 module.exports = new Accounts();
