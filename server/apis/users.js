@@ -109,7 +109,7 @@ Users.prototype.login = function (userName, accountName, password, callback) {
                 } else if ((user.password === password) && user.accountId && (user.accountId.name === accountName)) {
                     jwt.sign({
                         id: user._id,
-                        accountId:user.accountId,
+                        accountId:user.accountId._id,
                         name: user.firstName,
                         email: user.email,
                         role: user.role
