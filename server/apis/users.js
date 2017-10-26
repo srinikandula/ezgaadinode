@@ -5,12 +5,10 @@ var _ = require('underscore');
 var UsersColl = require('./../models/schemas').UsersColl;
 
 var config = require('./../config/config');
-var Helpers = require('./utils');
-
 var Users = function () {
 };
 
-Users.prototype.adduser = function (userid, regDetails, callback) {
+Users.prototype.addUser = function (userid, regDetails, callback) {
     var retObj = {};
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
         retObj.status = false;
@@ -184,7 +182,7 @@ Users.prototype.getAccountUsers = function (id, callback) {
     });
 };
 
-Users.prototype.deleteUSer = function (id, callback) {
+Users.prototype.deleteUser = function (id, callback) {
     console.log('id',id);
     var result = {};
     UsersColl.remove({_id:id}, function (err) {

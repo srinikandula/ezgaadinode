@@ -21,7 +21,7 @@ AuthRouter.get('/accounts/:accountId', function (req, res) {
 });
 
 AuthRouter.post('/accounts/update', function (req, res) {
-    Accounts.updateAccount(req.body, function (result) {
+    Accounts.updateAccount(req.jwt, req.body, function (result) {
         res.json(result);
     });
 });

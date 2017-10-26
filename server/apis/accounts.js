@@ -150,14 +150,14 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
     }
 };
 
-Accounts.prototype.updateAccount = function (accountInfo, callback) {
+Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
     var retObj = {};
     if (!Utils.isValidObjectId(accountInfo._id)) {
         retObj.status = false;
         retObj.message = 'Invalid account Id';
         callback(retObj);
     } else {
-        accountInfo.abc = '';
+        accountInfo.updatedBy = jwtObj.id;
         accountInfo = Utils.removeEmptyFields(accountInfo);
         AccountsColl.findOneAndUpdate({_id: accountInfo._id}, {$set: accountInfo}, function (err, oldAcc) {
             if (err) {
