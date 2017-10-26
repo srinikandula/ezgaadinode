@@ -58,13 +58,16 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,
-        columnDefs: [{
-            name: 'Id',
-            field: '_id'
-        }, {
+        columnDefs: [ {
             name: 'Account name',
             field: 'name'
         }, {
+            name: 'Address',
+            field: 'address'
+        },{
+            name: 'Contact',
+            field: 'contact'
+        },{
             name: 'Edit',
             cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
         }],
@@ -84,6 +87,8 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
         name: '',
         userName: '',
         password: '',
+        address: '',
+        contact: '',
         error: '',
         success: ''
     };
@@ -116,6 +121,10 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
             params.error = 'Invalid user name';
         } else if (!params._id && !Utils.isValidPassword(params.password)) {
             params.error = 'Invalid password';
+        } else if (!params.address.trim()) {
+            params.error = 'Invalid address'
+        } else if (!Utils.isValidPhoneNumber(params.contact)) {
+            params.error = 'Invalid phone number';
         } else if (params._id) {
             // If _id update the account
             AccountServices.updateAccount(params, function (success) {

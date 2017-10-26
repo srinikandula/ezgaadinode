@@ -19,6 +19,8 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
+    address: String,
+    contact: Number,
     updatedBy: String,
     createdBy: String
 }, {
