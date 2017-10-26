@@ -113,6 +113,22 @@ Trucks.prototype.getAccountTrucks = function (id, callback) {
     });
 };
 
+Trucks.prototype.getAllTrucks = function (callback) {
+    var result = {};
+    TrucksColl.findAll(function (err, accountTrucks) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting trucks';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.details = accountTrucks;
+            callback(result);
+        }
+    });
+};
+
 Trucks.prototype.deleteTruck = function (id, callback) {
     var result = {};
     TrucksColl.remove({_id:id}, function (err) {
