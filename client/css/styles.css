@@ -45,13 +45,6 @@ h1, h2, h3, h4, h5, h6 {
     margin-top: 20px;
 }
 
-.add-account-modal {
-    padding: 15px;
-    margin: 0 auto;
-    background-color: #fff;
-    border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
 .cursor-pointer {
     cursor: pointer;
 }

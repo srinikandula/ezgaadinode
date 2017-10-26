@@ -14,6 +14,18 @@ AuthRouter.get('/accounts/fetch/:pageNum', function (req, res) {
     });
 });
 
+AuthRouter.get('/accounts/:accountId', function (req, res) {
+    Accounts.getAccountDetails(req.params.accountId, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.post('/accounts/update', function (req, res) {
+    Accounts.updateAccount(req.body, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
