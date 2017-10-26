@@ -116,6 +116,32 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
     });
 };
 
+Accounts.prototype.getAccountDetails = function (accountId, callback) {
+    var retObj = {};
+    if (!Utils.isValidObjectId(accountId)) {
+        retObj.status = false;
+        retObj.message = 'Invalid accountId';
+        callback(retObj);
+    } else {
+        AccountsColl.findOne({_id: accountId}, function (err, account) {
+            if (err) {
+                retObj.status = false;
+                retObj.message = 'Error retrieving account';
+                callback(retObj);
+            } else if (account) {
+                retObj.status = true;
+                retObj.message = 'Success';
+                retObj.account = account;
+                callback(retObj);
+            } else {
+                retObj.status = false;
+                retObj.message = 'Account with Id doesn\'t exist';
+                callback(retObj);
+            }
+        });
+    }
+};
+
 Accounts.prototype.updateAccount = function (accountInfo, callback) {
     var retObj = {};
     if (!Utils.isValidObjectId(accountInfo._id)) {
@@ -123,6 +149,8 @@ Accounts.prototype.updateAccount = function (accountInfo, callback) {
         retObj.message = 'Invalid account Id';
         callback(retObj);
     } else {
+        accountInfo.abc = '';
+        accountInfo = Utils.removeEmptyFields(accountInfo);
         AccountsColl.findOneAndUpdate({_id: accountInfo._id}, {$set: accountInfo}, function (err, oldAcc) {
             if (err) {
                 retObj.status = false;
