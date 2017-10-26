@@ -1,6 +1,6 @@
 app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$cookies', function ($scope, Utils, CommonServices, $state, $cookies) {
     if (Utils.isLoggedIn()) {
-        $state.go('dashboard');
+        $state.go('accounts');
     }
 
     $scope.loginParams = {
@@ -29,7 +29,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('token', success.data.token);
                     $cookies.put('role', success.data.role);
                     $cookies.put('firstName', success.data.firstName);
-                    $state.go('dashboard');
+                    $state.go('accounts');
                 } else {
                     params.error = success.data.message;
                 }
