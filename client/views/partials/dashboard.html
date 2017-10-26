@@ -1,35 +1,12 @@
-<div ng-controller="DashboardCtrl">
-    <div class="col-md-2 left-nav">
-        <ul class="list-unstyled">
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('accounts')">Accounts</a>
-            </li>
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('userPage')">Users</a>
-            </li>
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('driverPage')">Drivers</a>
-            </li>
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('trucksPage')">Trucks</a>
-            </li>
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('tripsPage')">Trips</a>
-            </li>
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('partyPage')">Party</a>
-            </li>
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('maintenanceCost')">Maintenance Cost</a>
-            </li>
-            <li class="left-nav-li">
-                <a class="left-nav-anchor" ng-click="navigate('tripLane')">Trip Lane</a>
-            </li>
-        </ul>
-    </div>
+<div class="row">
+<div class="col-xs-3">
+    <left-navigation></left-navigation>
 
-    <div class="col-md-10 pull-right">
-        <div ng-include="template"></div>
-    </div>
+</div>
+    <div class="clearfix"></div>
+<div class="main-right col-xs-9">
 
+
+</div>
+    <div class="clearfix"></div>
 </div>

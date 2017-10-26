@@ -24,7 +24,70 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'auth'
         }
-    });
+    }).state({
+        name: 'accounts',
+        url: '/accounts',
+        templateUrl: 'views/partials/accounts/display.html',
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'accountsEdit',
+        url: '/accountsEdit',
+        templateUrl: 'views/partials/accounts/edit.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'users',
+        url: '/users',
+        templateUrl: 'views/partials/users.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'drivers',
+        url: '/drivers',
+        templateUrl: 'views/partials/drivers.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'trucks',
+        url: '/trucks',
+        templateUrl: 'views/partials/trucks.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'trips',
+        url: '/trips',
+        templateUrl: 'views/partials/trips.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'party',
+        url: '/party',
+        templateUrl: 'views/partials/party.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'maintenance',
+        url: '/maintenance',
+        templateUrl: 'views/partials/maintenance.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'tripsLane',
+        url: '/tripsLane',
+        templateUrl: 'views/partials/trip-lane.html',
+        params: {
+            access: 'open'
+        }
+    })
 
     $urlRouterProvider.otherwise('/login');
 });
