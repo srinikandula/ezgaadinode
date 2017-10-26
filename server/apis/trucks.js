@@ -6,7 +6,7 @@ var TrucksColl = require('./../models/schemas').TrucksColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 
-Trucks.prototype.addTruck = function (userid, truckDetails, callback) {
+Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
     var result = {};
     if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
         result.status = false;
@@ -44,12 +44,8 @@ Trucks.prototype.addTruck = function (userid, truckDetails, callback) {
         result.status = false;
         result.message = "Please provide valid tax duedate";
         callback(result);
-    } else if (!truckDetails.accountId) {
-        result.status = false;
-        result.message = "Please provide valid accountId";
-        callback(result);
     } else {
-        TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
+        TrucksColl.find({registrationNo:truckDetails.registrationNo}, function (err, truck) {
             if (err) {
                 result.status = false;
                 result.message = "Error, try again!";
@@ -59,8 +55,9 @@ Trucks.prototype.addTruck = function (userid, truckDetails, callback) {
                 result.message = "Truck already exists";
                 callback(result);
             } else {
-                truckDetails.createdBy = userid;
-                truckDetails.updatedBy = userid;
+                truckDetails.createdBy = jwt.id;
+                truckDetails.updatedBy =  jwt.id;
+                truckDetails.accountId =  jwt.accountId;
                 var truckDoc = new TrucksColl(truckDetails);
                 truckDoc.save(function (err) {
                     if (err) {
@@ -78,14 +75,14 @@ Trucks.prototype.addTruck = function (userid, truckDetails, callback) {
     }
 };
 
-Trucks.prototype.updateTruck = function (id, truckDetails, callback) {
+Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
     var result = {};
-    TrucksColl.findOneAndUpdate({registrationNo: details.registrationNo}, function (err, truck) {
-        if (err) {
+    TrucksColl.findOneAndUpdate({registrationNo:details.registrationNo}, function (err, truck) {
+        if(err) {
             result.status = false;
             result.message = "Error while updating truck, try Again";
             callback(result);
-        } else if (truck) {
+        } else if(truck) {
             result.status = true;
             result.message = "Truck updated successfully";
             callback(result);
@@ -97,9 +94,9 @@ Trucks.prototype.updateTruck = function (id, truckDetails, callback) {
     });
 };
 
-Trucks.prototype.getAccountTrucks = function (id, callback) {
+Trucks.prototype.getAccountTrucks = function (accountId, callback) {
     var result = {};
-    TrucksColl.find({accountId: id}, function (err, accountTrucks) {
+    TrucksColl.find({accountId:accountId},function (err, accountTrucks) {
         if (err) {
             result.status = false;
             result.message = 'Error getting trucks';
@@ -129,9 +126,9 @@ Trucks.prototype.getAllTrucks = function (callback) {
     });
 };
 
-Trucks.prototype.deleteTruck = function (id, callback) {
+Trucks.prototype.deleteTruck = function (truckId, callback) {
     var result = {};
-    TrucksColl.remove({_id: id}, function (err) {
+    TrucksColl.remove({_id:truckId}, function (err) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting truck';

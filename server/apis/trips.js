@@ -7,15 +7,16 @@ var config = require('./../config/config');
 var Helpers = require('./utils');
 var Trips = function () {};
 
-Trips.prototype.addTrip = function (userid, tripDetails, callback) {
+Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     var result = {};
     if (!_.isObject(tripDetails) || _.isEmpty(tripDetails)) {
         result.status = false;
         result.message = "Please fill all the required trip details";
         callback(result);
     } else {
-        tripDetails.createdBy = userid;
-        tripDetails.updatedBy = userid;
+        tripDetails.createdBy = jwt.id;
+        tripDetails.updatedBy = jwt.id;
+        tripDetails.accountId = jwt.accountId;
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err) {
             if (err) {
@@ -31,7 +32,7 @@ Trips.prototype.addTrip = function (userid, tripDetails, callback) {
     }
 };
 
-Trips.prototype.getAll = function (userid, req, callback) {
+Trips.prototype.getAll = function (jwt, req, callback) {
     var result = {};
     TripCollection.find({}, (function (err, trips) {
         if (err) {

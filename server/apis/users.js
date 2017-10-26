@@ -5,10 +5,12 @@ var _ = require('underscore');
 var UsersColl = require('./../models/schemas').UsersColl;
 
 var config = require('./../config/config');
+var Helpers = require('./utils');
+
 var Users = function () {
 };
 
-Users.prototype.addUser = function (userid, regDetails, callback) {
+Users.prototype.adduser = function (jwt, regDetails, callback) {
     var retObj = {};
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
         retObj.status = false;
@@ -53,8 +55,9 @@ Users.prototype.addUser = function (userid, regDetails, callback) {
                 retObj.message = "User already exists";
                 callback(retObj);
             } else {
-                regDetails.createdBy = userid;
-                regDetails.updatedBy = userid;
+                regDetails.createdBy = jwt.id;
+                regDetails.updatedBy = jwt.id;
+                regDetails.accountId =   jwt.accountId;
                 var insertDoc = new UsersColl(regDetails);
                 insertDoc.save(function (err) {
                     if (err) {
@@ -106,6 +109,7 @@ Users.prototype.login = function (userName, accountName, password, callback) {
                 } else if ((user.password === password) && user.accountId && (user.accountId.name === accountName)) {
                     jwt.sign({
                         id: user._id,
+                        accountId:user.accountId,
                         name: user.firstName,
                         email: user.email,
                         role: user.role
@@ -132,7 +136,7 @@ Users.prototype.login = function (userName, accountName, password, callback) {
     }
 };
 
-Users.prototype.update = function (id, user, callback) {
+Users.prototype.update = function (jwt, user, callback) {
     var result = {};
     UsersColl.findOne({userName: user.userName}).exec(function (err, savedUser) {
         if (err) {
@@ -149,7 +153,7 @@ Users.prototype.update = function (id, user, callback) {
             savedUser.role = user.role || savedUser.role;
             savedUser.accountId = user.accountId || savedUser.accountId;
             savedUser.password = user.password || savedUser.password;
-            savedUser.updatedBy = id;
+            savedUser.updatedBy = jwt.id;
             UsersColl(savedUser).save(function (err) {
                 if (err) {
                     result.status = false;
@@ -182,7 +186,7 @@ Users.prototype.getAccountUsers = function (id, callback) {
     });
 };
 
-Users.prototype.deleteUser = function (id, callback) {
+Users.prototype.deleteUSer = function (id, callback) {
     console.log('id',id);
     var result = {};
     UsersColl.remove({_id:id}, function (err) {
