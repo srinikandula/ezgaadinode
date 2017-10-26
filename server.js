@@ -10,7 +10,7 @@ var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 
 var Trips = require('./server/routes/trips');
-
+var Trucks = require('./server/routes/trucks');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
@@ -36,6 +36,7 @@ app.use(authMiddleware);
 app.use('/v1/user', Users.AuthRouter);
 app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
+app.use('/v1/trucks', Trucks.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

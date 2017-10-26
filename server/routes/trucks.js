@@ -3,26 +3,31 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Trucks = require('./../apis/trucks');
 
-AuthRouter.post('/addTruck', function (req, res) {
+AuthRouter.post('/', function (req, res) {
     Trucks.addTruck(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
 
-AuthRouter.post('/updateTruck', function (req, res) {
-    Trucks.updateTruck(req.jwt, req.body.details, function (result) {
+AuthRouter.get('/:truckId', function (req, res) {
+    Trucks.findTruck(req.jwt, req.params.truckId, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.put('/', function (req, res) {
+    Trucks.updateTruck(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
 
-AuthRouter.get('/getAccountTrucks', function (req, res) {
-    Trucks.getAccountTrucks(req.jwt, function (result) {
+AuthRouter.get('/get/accountTrucks', function (req, res) {
+    Trucks.getAccountTrucks(req.jwt.accountId, function (result) {
         res.send(result);
     });
 });
 
-AuthRouter.delete('/deleteTruck/:id', function (req, res) {
-    Trucks.deleteTruck(req.params.id, function (result) {
+AuthRouter.delete('/:truckId', function (req, res) {
+    Trucks.deleteTruck(req.params.truckId, function (result) {
         res.send(result);
     });
 });

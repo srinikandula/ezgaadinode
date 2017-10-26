@@ -49,7 +49,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'trucks',
         url: '/trucks',
-        templateUrl: 'views/partials/trucks.html',
+        templateUrl: 'views/partials/trucks-list.html',
         params: {
             access: 'open'
         }
