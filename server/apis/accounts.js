@@ -24,6 +24,14 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
         retObj.status = false;
         retObj.message = 'Invalid password';
         callback(retObj);
+    } else if (!Utils.isValidPhoneNumber(accountInfo.contact)) {
+        retObj.status = false;
+        retObj.message = 'Invalid contact number';
+        callback(retObj);
+    } else if (!accountInfo.address || !_.isString(accountInfo.address)) {
+        retObj.status = false;
+        retObj.message = 'Invalid Address';
+        callback(retObj);
     } else {
         AccountsColl.findOne({name: accountInfo.name}, function (err, account) {
             if (err) {

@@ -19,6 +19,18 @@
                    placeholder="Password">
         </div>
 
+        <div class="form-group">
+            <label for="address">Address</label>
+            <input ng-model="account.address" type="text" class="form-control" id="address"
+                   placeholder="Address">
+        </div>
+
+        <div class="form-group">
+            <label for="contact">Contact Number</label>
+            <input ng-model="account.contact" type="password" class="form-control" id="contact"
+                   placeholder="Contact Number">
+        </div>
+
         <div>
             <div class="alert alert-danger" role="alert" ng-show="account.error">
                 <strong>{{account.error}}</strong>

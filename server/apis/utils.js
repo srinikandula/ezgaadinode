@@ -38,4 +38,8 @@ Utils.prototype.removeEmptyFields = function (obj) {
     return outputObj;
 };
 
+Utils.prototype.isValidPhoneNumber = function(phNumber) {
+    return phNumber && /^[1-9]\d{9}$/.test(phNumber);
+};
+
 module.exports = new Utils();

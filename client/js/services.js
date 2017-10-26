@@ -14,6 +14,9 @@ app.factory('Utils', function ($http, $cookies) {
             $cookies.remove('token');
             $cookies.remove('role');
             $cookies.remove('firstName');
+        },
+        isValidPhoneNumber: function(phNumber) {
+            return phNumber && /^[1-9]\d{9}$/.test(phNumber);
         }
     }
 });
