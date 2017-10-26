@@ -4,7 +4,7 @@ var AuthRouter = express.Router();
 var Users = require('./../apis/users');
 
 AuthRouter.post('/addUser', function (req, res) {
-    Users.addUser(req.jwt.id, req.body, function (result) {
+    Users.adduser(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
@@ -16,7 +16,7 @@ OpenRouter.post('/login', function (req, res) {
 });
 
 AuthRouter.post('/updateUser', function (req, res) {
-    Users.update(req.jwt.id, req.body.details, function (result) {
+    Users.update(req.jwt, req.body.details, function (result) {
         res.send(result);
     });
 });
@@ -27,8 +27,8 @@ AuthRouter.get('/getAccountUsers', function (req, res) {
     });
 });
 
-AuthRouter.delete('/deleteUser/:id', function (req, res) {
-    Users.deleteUser(req.params.id, function (result) {
+AuthRouter.delete('/deleteUSer/:id', function (req, res) {
+    Users.deleteUSer(req.params.id, function (result) {
         res.send(result);
     });
 });

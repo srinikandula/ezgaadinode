@@ -4,13 +4,13 @@ var AuthRouter = express.Router();
 var Trips = require('./../apis/trips');
 
 AuthRouter.post('/addTrip', function (req, res) {
-    Trips.addTrip(req.jwt.id, req.body, function (result) {
+    Trips.addTrip(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getAll', function (req, res) {
-    Trips.getAll(req.jwt.id, req.body, function (result) {
+    Trips.getAll(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });

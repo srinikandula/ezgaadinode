@@ -4,19 +4,19 @@ var AuthRouter = express.Router();
 var Trucks = require('./../apis/trucks');
 
 AuthRouter.post('/addTruck', function (req, res) {
-    Trucks.addTruck(req.jwt.id, req.body, function (result) {
+    Trucks.addTruck(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.post('/updateTruck', function (req, res) {
-    Trucks.updateTruck(req.jwt.id, req.body.details, function (result) {
+    Trucks.updateTruck(req.jwt, req.body.details, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getAccountTrucks', function (req, res) {
-    Trucks.getAccountTrucks(req.jwt.id, function (result) {
+    Trucks.getAccountTrucks(req.jwt, function (result) {
         res.send(result);
     });
 });
