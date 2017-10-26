@@ -49,7 +49,7 @@ Trucks.prototype.addTruck = function (userid, truckDetails, callback) {
         result.message = "Please provide valid accountId";
         callback(result);
     } else {
-        TrucksColl.find({registrationNo:truckDetails.registrationNo}, function (err, truck) {
+        TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
             if (err) {
                 result.status = false;
                 result.message = "Error, try again!";
@@ -80,12 +80,12 @@ Trucks.prototype.addTruck = function (userid, truckDetails, callback) {
 
 Trucks.prototype.updateTruck = function (id, truckDetails, callback) {
     var result = {};
-    TrucksColl.findOneAndUpdate({registrationNo:details.registrationNo}, function (err, truck) {
-        if(err) {
+    TrucksColl.findOneAndUpdate({registrationNo: details.registrationNo}, function (err, truck) {
+        if (err) {
             result.status = false;
             result.message = "Error while updating truck, try Again";
             callback(result);
-        } else if(truck) {
+        } else if (truck) {
             result.status = true;
             result.message = "Truck updated successfully";
             callback(result);
@@ -99,7 +99,7 @@ Trucks.prototype.updateTruck = function (id, truckDetails, callback) {
 
 Trucks.prototype.getAccountTrucks = function (id, callback) {
     var result = {};
-    TrucksColl.find({accountId:id},function (err, accountTrucks) {
+    TrucksColl.find({accountId: id}, function (err, accountTrucks) {
         if (err) {
             result.status = false;
             result.message = 'Error getting trucks';
@@ -131,7 +131,7 @@ Trucks.prototype.getAllTrucks = function (callback) {
 
 Trucks.prototype.deleteTruck = function (id, callback) {
     var result = {};
-    TrucksColl.remove({_id:id}, function (err) {
+    TrucksColl.remove({_id: id}, function (err) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting truck';
