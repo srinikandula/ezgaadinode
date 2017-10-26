@@ -59,8 +59,40 @@ var truckSchema = new mongoose.Schema({
     createdBy: String
 },{timestamps: true});
 
+
+var tripSchema = new mongoose.Schema({
+    date : Number,
+    registrationNo: String,
+    driver: {type: ObjectId, ref: 'accounts'},
+    bookedFor: {type: ObjectId, ref: 'parties'},
+    frightAmout: Number,
+    advance: Number,
+    balance: Number,
+    tripLane:  {type: ObjectId, ref: 'tripLanes'},
+    tripExpenses: Number,
+    accountId: {type: ObjectId, ref: 'accounts'},
+    updatedBy: String,
+    createdBy: String
+},{timestamps: true});
+
+var partySchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    updatedBy: String,
+    createdBy: String
+},{timestamps: true});
+
+var tripLanesSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    updatedBy: String,
+    createdBy: String
+},{timestamps: true});
+
+
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
-    TrucksColl: mongoose.model('trucks', truckSchema, 'trucks')
+    TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
+    TripCollection: mongoose.model('trips', tripSchema, 'trips'),
+    PartiesCollection: mongoose.model('parties', partySchema, 'parties'),
+    TripCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes')
 };

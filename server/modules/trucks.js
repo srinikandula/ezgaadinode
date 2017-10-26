@@ -56,7 +56,7 @@ Trucks.prototype.addTruck = function (userid, truckDetails, callback) {
                 callback(result);
             } else if (truck) {
                 result.status = false;
-                result.message = "User already exists";
+                result.message = "Truck already exists";
                 callback(result);
             } else {
                 truckDetails.createdBy = userid;
