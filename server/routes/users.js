@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var Users = require('./../modules/users');
+var Users = require('./../apis/users');
 
 AuthRouter.post('/addUser', function (req, res) {
     Users.adduser(req.jwt.id, req.body, function (result) {
