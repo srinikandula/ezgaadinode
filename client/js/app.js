@@ -31,7 +31,8 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open',
             accountId: null
-        }
+        },
+        controller: 'AddEditPartyCtrl'
     }).state({
         name: 'users',
         url: '/users',
@@ -88,6 +89,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/party-list.html',
         params: {
             access: 'open'
+        }
+    }).state({
+        name: 'editParty',
+        url: '/editParty/:partyId',
+        templateUrl: 'views/partials/edit-party.html',
+        params: {
+            access: 'auth',
+            partyId: null
         }
     }).state({
         name: 'maintenance',

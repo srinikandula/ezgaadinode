@@ -1,0 +1,55 @@
+
+<div class="container-fluid" ng-controller="AddEditPartyCtrl">
+    <div class="row pall-zero">
+        <div class="col-xs-2 pall-zero">
+            <left-navigation></left-navigation>
+        </div>
+        <div class="main-right col-xs-9">
+            <div class="col-xs-6 account-edit">
+                <h2 class="login-heading">{{pageTitle}}</h2>
+                <form ng-submit="addOrUpdateAccount()" class="margin-top-20">
+                    <div class="form-group">
+                        <label for="accountId">Name</label>
+                        <input ng-model="party.name" type="text" class="form-control" id="accountId"
+                               placeholder="Party Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactPhone">Contact Phone</label>
+                        <input ng-model="party.contact" type="number" class="form-control" id="contactPhone"
+                               placeholder="Contact Phone">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactEmail">Email</label>
+                        <input ng-model="party.email" type="email" class="form-control" id="contactEmail" placeholder="Email">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input ng-model="party.city" type="text" class="form-control" id="city" placeholder="City">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="operatingLane">Operating Lane</label>
+                        <input ng-model="party.operatingLane" type="text" class="form-control" id="operatingLane" placeholder="Operating Lane">
+                    </div>
+                    <div>
+                        <div class="alert alert-danger" role="alert" ng-show="party.error">
+                            <strong>{{party.error}}</strong>
+                        </div>
+                        <div class="alert alert-success" role="alert" ng-show="party.success">
+                            <strong>{{party.success}}</strong>
+                        </div>
+                        <input type="button" value="Submit" class="btn btn-primary" ng-click="addOrUpdateParty()"/>
+                        <input type="button" value="Cancel" class="btn btn-primary" ng-click="cancel()"/>
+                    </div>
+                </form>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+
+
