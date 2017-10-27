@@ -128,7 +128,7 @@ module.exports = {
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
-    PartiesCollection: mongoose.model('parties', partySchema, 'parties'),
+    PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
     Roles: mongoose.model('roles', rolesSchema, 'roles')
