@@ -127,7 +127,6 @@ module.exports = {
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
     PartiesCollection: mongoose.model('parties', partySchema, 'parties'),
-    TripsLaneCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
     Roles: mongoose.model('roles', rolesSchema, 'roles')

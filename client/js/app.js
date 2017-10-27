@@ -118,7 +118,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open',
             roleId: null
         }
-    })
+    });
     $urlRouterProvider.otherwise('/login');
 });
 
