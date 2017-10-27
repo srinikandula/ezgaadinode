@@ -7,13 +7,7 @@ app.factory('TrucksService', function ($http, $cookies) {
                 data: truckDetails
             }).then(success, error)
         },
-        getTrucks: function (pageNumber, success, error) {
-            $http({
-                url: '/v1/trucks/getAccountTrucks/' + pageNumber,
-                method: "GET"
-            }).then(success, error)
-        },
-        getTruck: function (truckId, success, error) {
+        getAllTrucks: function (truckId, success, error) {
             $http({
                 url: '/v1/truck/' + truckId,
                 method: "GET"
@@ -35,9 +29,9 @@ app.factory('TrucksService', function ($http, $cookies) {
     }
 });
 
-app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', function ($scope, $uibModal, AccountServices, Notification, $state) {
-    $scope.goToEditAccountPage = function (accountId) {
-        $state.go('accountsEdit', {accountId: accountId});
+app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', function ($scope, $uibModal, TrucksService, Notification, $state) {
+    $scope.goToEditTrucksPage = function (truckId) {
+        $state.go('trucksEdit', {truckId: truckId});
     };
 
     // pagination options
@@ -46,7 +40,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
     $scope.pageNumber = 1;
 
     $scope.getAccountsData = function () {
-        AccountServices.getAccounts($scope.pageNumber, function (success) {
+        AccountServices.getAllTrucks($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.accountGridOptions.data = success.data.accounts;
                 $scope.totalItems = success.data.count;
@@ -144,7 +138,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
             });
         } else {
             // _id doesn\'t exist => create account
-            AccountServices.addAccount(params, function (success) {
+            AccountServices.addTrack(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
                 } else {
