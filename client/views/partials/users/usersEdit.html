@@ -1,0 +1,74 @@
+<div class="container-fluid" ng-controller="userEditController">
+    <div class="row pall-zero">
+        <div class="col-xs-2 pall-zero">
+            <left-navigation></left-navigation>
+        </div>
+        <div class="main-right col-xs-9">
+            <div class="col-xs-6 account-edit">
+                <h2 class="login-heading">Add User</h2>
+                <form ng-submit="AddorUpdateUSer()" class="margin-top-20">
+                    <!--<div class="form-group">-->
+                        <!--<label for="accountId">Account Id</label>-->
+                        <!--&lt;!&ndash;<input ng-model="userDetails.accountId" type="text" class="form-control" id="accountId"&ndash;&gt;-->
+                               <!--&lt;!&ndash;placeholder="Account Id">&ndash;&gt;-->
+                        <!--<select class="form-control" id="accountId" ng-model="userDetails.accountId">-->
+                            <!--<option value="">Select an Account</option>-->
+                            <!--<option ng-repeat="acc in accountIds">{{acc.name}}</option>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input ng-model="userDetails.firstName" type="text" class="form-control" id="firstName"
+                               placeholder="First Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input ng-model="userDetails.lastName" type="text" class="form-control" id="lastName"
+                               placeholder="Last Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="firstName">Email</label>
+                        <input ng-model="userDetails.email" type="text" class="form-control" id="email"
+                               placeholder="Email">
+                    </div>
+                    <div class="form-group">
+                        <label for="userName">User Name</label>
+                        <input ng-model="userDetails.userName" type="text" class="form-control" id="userName"
+                               placeholder="User Name">
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role</label>
+                        <select class="form-control" id="role" ng-model="userDetails.role">
+                            <option value="">Select a Role</option>
+                            <option ng-repeat="role in roles">{{role.roleName}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input ng-model="userDetails.password" type="password" class="form-control" id="password"
+                               placeholder="password">
+                    </div>
+
+                    <div>
+                        <div>
+                            <div class="alert alert-danger" role="alert" ng-show="userDetails.error.length">
+                                <ul>
+                                    <li ng-repeat="error in userDetails.error">{{error}}</li>
+                                </ul>
+                            </div>
+
+                            <div class="alert alert-success" role="alert" ng-show="userDetails.success.length">
+                                <ul>
+                                    <li ng-repeat="success in userDetails.success">{{success}}</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
