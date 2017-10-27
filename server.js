@@ -11,12 +11,8 @@ var config = require('./server/config/config');
 
 var Trips = require('./server/routes/trips');
 var Trucks = require('./server/routes/trucks');
-<<<<<<< HEAD
 var Party = require('./server/routes/partyRoutes');
-
-=======
 var Drivers = require('./server/routes/drivers');
->>>>>>> Adds API and front end integration for adding a driver
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
