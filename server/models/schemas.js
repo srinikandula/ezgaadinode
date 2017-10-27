@@ -2,7 +2,12 @@ var mongoose = require('mongoose');
 var config = require('./../config/config');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
-mongoose.connect(config.mongo.url, {user: config.mongo.user, pass: config.mongo.password});
+mongoose.connect(config.mongo.url, {
+    user: config.mongo.user,
+    pass: config.mongo.password,
+    server: {socketOptions: {keepAlive: 1, connectTimeoutMS: 30000}},
+    replset: {socketOptions: {keepAlive: 1, connectTimeoutMS: 30000}}
+});
 var connection = mongoose.connection;
 
 connection.once('open', function () {
@@ -49,6 +54,7 @@ var usersSchema = new mongoose.Schema({
 
 var truckSchema = new mongoose.Schema({
     registrationNo: {type: String, unique: true},
+    accountId: {type: ObjectId, ref: 'accounts'},
     truckType: String,
     modelAndYear: String,
     fitnessExpiry: Number,
@@ -56,26 +62,25 @@ var truckSchema = new mongoose.Schema({
     insuranceExpiry: Number,
     pollutionExpiry: Number,
     taxDueDate: Number,
-    accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String
-},{timestamps: true});
+}, {timestamps: true});
 
 
 var tripSchema = new mongoose.Schema({
-    date : Number,
+    date: Number,
     registrationNo: String,
     driver: {type: ObjectId, ref: 'accounts'},
     bookedFor: {type: ObjectId, ref: 'parties'},
     frightAmout: Number,
     advance: Number,
     balance: Number,
-    tripLane:  {type: ObjectId, ref: 'tripLanes'},
+    tripLane: {type: ObjectId, ref: 'tripLanes'},
     tripExpenses: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String
-},{timestamps: true});
+}, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
     name: String,
@@ -86,13 +91,27 @@ var partySchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String
-},{timestamps: true});
+}, {timestamps: true});
 
 var tripLanesSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String
-},{timestamps: true});
+}, {timestamps: true});
+
+var driverSchema = new mongoose.Schema({
+    fullName: {type: String, trim: true},
+    truckId: {type: ObjectId, ref: 'trucks'},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    mobile: Number,
+    joiningDate: {type: Number, default: new Date() - 0},
+    licenseValidity: Number,
+    salary: {
+        value: Number
+    }
+}, {
+    timestamps: true
+});
 
 
 module.exports = {
@@ -100,6 +119,7 @@ module.exports = {
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
-    PartyCollection: mongoose.model('parties', partySchema, 'parties'),
-    TripCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes')
+    PartiesCollection: mongoose.model('parties', partySchema, 'parties'),
+    TripsLaneCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
+    DriversColl: mongoose.model('drivers', driverSchema, 'drivers')
 };

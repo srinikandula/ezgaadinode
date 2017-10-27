@@ -1,13 +1,16 @@
-<div class="container-fluid">
+<div class="container-fluid" ng-controller="DriversListCtrl">
     <div class="row pall-zero">
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
         </div>
-        <div class="main-right col-xs-9">
 
+        <div class="main-right col-xs-9">
             <h3>Drivers</h3>
             <p>This is drivers page</p>
 
+            <div>
+                <button class="btn btn-success" ng-click="goToAddDriverPage()">Add Driver</button>
+            </div>
 
         </div>
     </div>
