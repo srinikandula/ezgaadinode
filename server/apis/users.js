@@ -1,59 +1,50 @@
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
+var async = require('async');
 
 var UsersColl = require('./../models/schemas').UsersColl;
 
 var config = require('./../config/config');
 var Utils = require('./utils');
+var pageLimits = require('./../config/pagination');
 
 var Users = function () {
 };
 
 Users.prototype.addUser = function (jwt, regDetails, callback) {
     var retObj = {};
+    var errors = [];
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
+        errors.push("Please fill all the required details");
+    }
+    if (!regDetails.firstName || !_.isString(regDetails.firstName)) {
+        errors.push("Please provide valid first name");
+    }
+    if (!regDetails.lastName || !_.isString(regDetails.lastName)) {
+        errors.push("Please provide valid last name");
+    }
+    if (!Utils.isEmail(regDetails.email)) {
+        errors.push("Please provide valid email");
+    }
+    if (!regDetails.role) {
+        errors.push("Please provide role");
+    }
+    if (!regDetails.accountId || !_.isString(regDetails.accountId)) {
+        errors.push("Please provide accountId");
+    }
+    if (!regDetails.userName || !_.isString(regDetails.userName)) {
+        errors.push("Please provide user name");
+    }
+    if (!regDetails.password) {
+        errors.push("Please provide valid password");
+    }
+    if(errors.length){
         retObj.status = false;
-        retObj.message = "Please fill all the required details";
-        callback(retObj);
-    } else if (!regDetails.firstName || !_.isString(regDetails.firstName)) {
-        retObj.status = false;
-        retObj.message = "Please provide valid first name";
-        callback(retObj);
-    } else if (!regDetails.lastName || !_.isString(regDetails.lastName)) {
-        retObj.status = false;
-        retObj.message = "Please provide valid last name";
-        callback(retObj);
-    } else if(!Utils.isEmail(regDetails.email)){
-        retObj.status = false;
-        retObj.message = "Please provide valid email";
-        callback(retObj);
-    } else if (!regDetails.role) {
-        retObj.status = false;
-        retObj.message = "Please provide role";
-        callback(retObj);
-    } else if (!regDetails.accountId || !_.isString(regDetails.accountId)) {
-        retObj.status = false;
-        retObj.message = "Please provide accountId";
-        callback(retObj);
-    } else if(!regDetails.userName || !_.isString(regDetails.userName)){
-        retObj.status = false;
-        retObj.message = "Please provide user name";
-        callback(retObj);
-    }else if (!regDetails.password) {
-        retObj.status = false;
-        retObj.message = "Please provide valid password";
-        callback(retObj);
-    } else if (!regDetails.updatedBy) {
-        retObj.status = false;
-        retObj.message = "Please provide updatedBy field";
-        callback(retObj);
-    } else if (!regDetails.createdBy) {
-        retObj.status = false;
-        retObj.message = "Please provide createdBy field";
+        retObj.message = errors;
         callback(retObj);
     } else {
-        UsersColl.findOne({username: regDetails.username}, function (err, user) {
+        UsersColl.findOne({userName: regDetails.userName}, function (err, user) {
             if (err) {
                 retObj.status = false;
                 retObj.message = "Error, try again!";
@@ -70,18 +61,19 @@ Users.prototype.addUser = function (jwt, regDetails, callback) {
                 insertDoc.save(function (err) {
                     if (err) {
                         retObj.status = false;
-                        retObj.message = "Error, try Again";
+                        retObj.message = ["Error, try Again"];
                         callback(retObj);
                     } else {
                         console.log("inserted");
                         retObj.status = true;
-                        retObj.message = "Successfully Added";
+                        retObj.message = ["Successfully Added"];
                         callback(retObj);
                     }
                 });
             }
         });
     }
+    // }
 };
 
 Users.prototype.login = function (userName, accountName, password, callback) {
@@ -117,7 +109,7 @@ Users.prototype.login = function (userName, accountName, password, callback) {
                 } else if ((user.password === password) && user.accountId && (user.accountId.name === accountName)) {
                     jwt.sign({
                         id: user._id,
-                        accountId:user.accountId._id,
+                        accountId: user.accountId._id,
                         name: user.firstName,
                         email: user.email,
                         role: user.role
@@ -145,34 +137,26 @@ Users.prototype.login = function (userName, accountName, password, callback) {
 };
 
 Users.prototype.update = function (jwt, user, callback) {
+    // console.log('user',user);
     var result = {};
-    UsersColl.findOne({userName: user.userName}).exec(function (err, savedUser) {
+    user = Utils.removeEmptyFields(user);
+    user.updatedBy = jwt.id;
+    user.accountId = jwt.accountId;
+    UsersColl.findOneAndUpdate({userName: user.userName},{$set:user}).exec(function (err, savedUser) {
+        // console.log('err',err);
+        // console.log('savedUser',savedUser);
         if (err) {
             result.status = false;
-            result.message = "Error, finding user";
+            result.message = ["Error, updating user"];
             callback(result);
-        } else if (!savedUser) {
-            result.status = false;
-            result.message = "User doesn't exist";
+        } else if (savedUser) {
+            result.status = true;
+            result.message = ["User updated successfully"];
             callback(result);
         } else {
-            savedUser.firstName = user.firstName || savedUser.firstName;
-            savedUser.lastName = user.lastName || savedUser.lastName;
-            savedUser.role = user.role || savedUser.role;
-            savedUser.accountId = user.accountId || savedUser.accountId;
-            savedUser.password = user.password || savedUser.password;
-            savedUser.updatedBy = jwt.id;
-            UsersColl(savedUser).save(function (err) {
-                if (err) {
-                    result.status = false;
-                    result.message = 'Error updating user';
-                    callback(result);
-                } else {
-                    result.status = true;
-                    result.message = 'Success';
-                    callback(result);
-                }
-            });
+            result.status = false;
+            result.message = ["Error, finding user"];
+            callback(result);
         }
 
     });
@@ -180,7 +164,7 @@ Users.prototype.update = function (jwt, user, callback) {
 
 Users.prototype.getAccountUsers = function (id, callback) {
     var result = {};
-    UsersColl.find({accountId:id},function (err, accountUsers) {
+    UsersColl.find({accountId: id}, function (err, accountUsers) {
         if (err) {
             result.status = false;
             result.message = 'Error getting users';
@@ -194,10 +178,81 @@ Users.prototype.getAccountUsers = function (id, callback) {
     });
 };
 
-Users.prototype.deleteUSer = function (id, callback) {
-    console.log('id',id);
+Users.prototype.getAllUsers = function (pageNumber, callback) {
     var result = {};
-    UsersColl.remove({_id:id}, function (err) {
+    if (!pageNumber) {
+        pageNumber = 1;
+    } else if (!_.isNumber(Number(pageNumber))) {
+        result.status = false;
+        result.message = 'Invalid page number';
+        return callback(result);
+    }
+    var skipNumber = (pageNumber - 1) * pageLimits.accountPaginationLimit;
+    async.parallel({
+        users: function (accountsCallback) {
+            UsersColl
+                .find({})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.accountPaginationLimit)
+                .lean()
+                .exec(function (err, users) {
+                    accountsCallback(err, users);
+                });
+        },
+        count: function (countCallback) {
+            UsersColl.count(function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving users';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = results.count;
+            result.users = results.users;
+            callback(result);
+        }
+    });
+    // UsersColl.find(function (err, users) {
+    //     if (err) {
+    //         result.status = false;
+    //         result.message = 'Error getting users';
+    //         callback(result);
+    //     } else {
+    //         result.status = true;
+    //         result.message = 'Success';
+    //         result.users = users;
+    //         callback(result);
+    //     }
+    // });
+};
+
+Users.prototype.getUser = function (id, callback) {
+    var result = {};
+    UsersColl.findOne({_id:id},function (err, user) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting user';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.user = user;
+            // console.log('user',result);
+            callback(result);
+        }
+    });
+};
+
+Users.prototype.deleteUSer = function (id, callback) {
+    console.log('id', id);
+    var result = {};
+    UsersColl.remove({_id: id}, function (err) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting user';

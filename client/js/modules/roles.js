@@ -13,6 +13,12 @@ app.factory('RoleServices', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+        getAllRoles: function (success, error) {
+            $http({
+                url: '/v1/roles/getAllRoles',
+                method: "GET"
+            }).then(success, error)
+        },
         getRole: function (roleId, success, error) {
             $http({
                 url: '/v1/roles/getRole/' + roleId,
@@ -47,8 +53,8 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
     $scope.getRoles = function () {
         RoleServices.getRoles($scope.pageNumber,function (success) {
             if (success.data.status) {
-                $scope.userGridOptions.data = success.data.roles;
-                console.log($scope.userGridOptions.data);
+                $scope.roleGridOptions.data = success.data.roles;
+                console.log('roles...',$scope.roleGridOptions.data);
                 $scope.totalItems = success.data.count;
             } else {
                 Notification.error({message: success.data.message});
@@ -69,7 +75,7 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
         })
     };
 
-    $scope.userGridOptions = {
+    $scope.roleGridOptions = {
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,

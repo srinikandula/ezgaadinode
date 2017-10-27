@@ -16,7 +16,7 @@ var Roles = require('./server/routes/roles');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(express.static('client', {index: "/views/index.html"}));
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));

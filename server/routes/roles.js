@@ -15,6 +15,12 @@ AuthRouter.get('/getRoles/:pageNumber', function (req, res) {
     });
 });
 
+AuthRouter.get('/getAllRoles', function (req, res) {
+    Roles.getAllRoles(function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/getRole/:roleId', function (req, res) {
     Roles.getRole(req.params.roleId, function (result) {
         res.send(result);

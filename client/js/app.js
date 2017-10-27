@@ -35,16 +35,17 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'users',
         url: '/users',
-        templateUrl: 'views/partials/show-users.html',
+        templateUrl: 'views/partials/users/show-users.html',
         params: {
             access: 'open'
         }
     }).state({
         name: 'usersEdit',
-        url: '/usersEdit',
-        templateUrl: 'views/partials/usersEdit.html',
+        url: '/usersEdit/:userId',
+        templateUrl: 'views/partials/users/usersEdit.html',
         params: {
-            access: 'open'
+            access: 'open',
+            userId: 'userId'
         }
     }).state({
         name: 'drivers',

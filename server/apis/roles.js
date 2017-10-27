@@ -90,20 +90,22 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
             callback(result);
         }
     });
+};
 
-
-    // RolesColl.find({},{roleName:1},function (err, roles) {
-    //     if (err) {
-    //         result.status = false;
-    //         result.message = 'Error getting roles';
-    //         callback(result);
-    //     } else {
-    //         result.status = true;
-    //         result.message = 'Success';
-    //         result.roles = roles;
-    //         callback(result);
-    //     }
-    // });
+Roles.prototype.getAllRoles = function (callback) {
+    var result = {};
+    RolesColl.find({},{roleName:1},function (err, roles) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting roles';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.roles = roles;
+            callback(result);
+        }
+    });
 };
 
 Roles.prototype.getRole = function (id, callback) {
