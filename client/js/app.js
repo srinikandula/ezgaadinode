@@ -46,7 +46,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/users/usersEdit.html',
         params: {
             access: 'open',
-            userId: 'userId'
+            userId: null
         }
     }).state({
         name: 'drivers',

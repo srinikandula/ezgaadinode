@@ -30,9 +30,9 @@ Users.prototype.addUser = function (jwt, regDetails, callback) {
     if (!regDetails.role) {
         errors.push("Please provide role");
     }
-    if (!regDetails.accountId || !_.isString(regDetails.accountId)) {
-        errors.push("Please provide accountId");
-    }
+    // if (!regDetails.accountId || !_.isString(regDetails.accountId)) {
+    //     errors.push("Please provide accountId");
+    // }
     if (!regDetails.userName || !_.isString(regDetails.userName)) {
         errors.push("Please provide user name");
     }
@@ -47,11 +47,11 @@ Users.prototype.addUser = function (jwt, regDetails, callback) {
         UsersColl.findOne({userName: regDetails.userName}, function (err, user) {
             if (err) {
                 retObj.status = false;
-                retObj.message = "Error, try again!";
+                retObj.message = ["Error, try again!"];
                 callback(retObj);
             } else if (user) {
                 retObj.status = false;
-                retObj.message = "User already exists";
+                retObj.message = ["User already exists"];
                 callback(retObj);
             } else {
                 regDetails.createdBy = jwt.id;
@@ -142,9 +142,9 @@ Users.prototype.update = function (jwt, user, callback) {
     user = Utils.removeEmptyFields(user);
     user.updatedBy = jwt.id;
     user.accountId = jwt.accountId;
-    UsersColl.findOneAndUpdate({userName: user.userName},{$set:user}).exec(function (err, savedUser) {
-        // console.log('err',err);
-        // console.log('savedUser',savedUser);
+    UsersColl.findOneAndUpdate({_id: user._id},{$set:user}).exec(function (err, savedUser) {
+        console.log('err',err);
+        console.log('savedUser',savedUser);
         if (err) {
             result.status = false;
             result.message = ["Error, updating user"];
