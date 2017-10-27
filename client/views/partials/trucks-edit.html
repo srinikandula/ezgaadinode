@@ -1,5 +1,4 @@
-
-<div class="container-fluid" ng-controller="trucksCntrl">
+<div class="container-fluid" ng-controller="AddEditTruckCtrl">
     <div class="row pall-zero">
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
@@ -7,42 +6,58 @@
         <div class="main-right col-xs-9">
             <div class="col-xs-6 account-edit">
                 <h2 class="login-heading">Add Truck</h2>
-                <form ng-submit="addOrUpdateAccount()" class="margin-top-20">
+                <form ng-submit="addOrUpdateTruck()" class="margin-top-20">
                     <div class="form-group">
-                        <label for="accountId">Account Name</label>
-                        <input ng-model="account.name" ng-readonly="account._id" type="text" class="form-control" id="accountId"
-                               placeholder="Account Name">
+                        <label>registrationNo</label>
+                        <input type="text" class="form-control" ng-modal="truck.registrationNo"
+                               placeholder="registration No"/>
                     </div>
-
-                    <div class="form-group" ng-hide="account._id">
-                        <label for="userName">User Name</label>
-                        <input ng-model="account.userName" type="text" class="form-control" id="userName"
-                               placeholder="User name">
+                    <div class="form-group">
+                        <label>Truck Type</label>
+                        <input type="text" class="form-control" ng-modal="truck.truckType"
+                               placeholder="Truck Type"/>
                     </div>
-
-                    <div class="form-group" ng-hide="account._id">
-                        <label for="password">Password</label>
-                        <input ng-model="account.password" type="password" class="form-control" id="password"
-                               placeholder="Password">
+                    <div class="form-group">
+                        <label>Driver Id</label>
+                        <input type="text" class="form-control" ng-modal="truck.driverId"
+                               placeholder="Driver Id"/>
+                    </div>
+                    <!--<div class="form-group">
+                        <label>Modal and Year</label>
+                        <input type="text" class="form-control" ng-modal="truck.modelAndYear"
+                               placeholder="Modal and Year"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Fitness Expiry</label>
+                        <input type="text" class="form-control" ng-modal="truck.fitnessExpiry"
+                               placeholder="Fitness Expiry"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Permit Expiry</label>
+                        <input type="text" class="form-control" ng-modal="truck.permitExpiry"
+                               placeholder="Permit Expiry"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Insurance Expiry</label>
+                        <input type="text" class="form-control" ng-modal="truck.insuranceExpiry"
+                               placeholder="Insurance Expiryr"/>
                     </div>
 
                     <div class="form-group">
-                        <label for="address">Address</label>
-                        <input ng-model="account.address" type="text" class="form-control" id="address"
-                               placeholder="Address">
+                        <label>Pollution Expiry</label>
+                        <input ng-model="truck.pollutionExpiry" type="text" class="form-control"                         placeholder="pollution Expiry">
                     </div>
 
                     <div class="form-group">
-                        <label for="contact">Contact Number</label>
-                        <input ng-model="account.contact" type="text" class="form-control" id="contact"
-                               placeholder="Contact Number">
-                    </div>
+                        <label>Tax Due Date</label>
+                        <input ng-model="truck.taxDueDate" type="text" class="form-control"                              placeholder="Tax Due Date">
+                    </div>-->
                     <div>
-                        <div class="alert alert-danger" role="alert" ng-show="account.error">
-                            <strong>{{account.error}}</strong>
+                        <div class="alert alert-danger" role="alert" ng-show="truck.error">
+                            <strong>{{truck.error}}</strong>
                         </div>
-                        <div class="alert alert-success" role="alert" ng-show="account.success">
-                            <strong>{{account.success}}</strong>
+                        <div class="alert alert-success" role="alert" ng-show="truck.success">
+                            <strong>{{truck.success}}</strong>
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
                         <input type="button" value="Cancel" class="btn btn-primary" ng-click="cancel()"/>

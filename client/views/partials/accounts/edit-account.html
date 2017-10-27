@@ -1,4 +1,3 @@
-
 <div class="container-fluid" ng-controller="AddEditAccountCtrl">
     <div class="row pall-zero">
         <div class="col-xs-2 pall-zero">
@@ -10,7 +9,8 @@
                 <form ng-submit="addOrUpdateAccount()" class="margin-top-20">
                     <div class="form-group">
                         <label for="accountId">Account Name</label>
-                        <input ng-model="account.name" ng-readonly="account._id" type="text" class="form-control" id="accountId"
+                        <input ng-model="account.name" ng-readonly="account._id" type="text" class="form-control"
+                               id="accountId"
                                placeholder="Account Name">
                     </div>
 
@@ -48,7 +48,7 @@
                         <input type="button" value="Cancel" class="btn btn-primary" ng-click="cancel()"/>
                     </div>
                 </form>
-        </div>
+            </div>
         </div>
     </div>
 </div>

@@ -34,12 +34,12 @@ app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notifica
         $state.go('trucksEdit', {truckId: truckId});
     };
 
-    // pagination options
+ /*   // pagination options
     $scope.totalItems = 200;
     $scope.maxSize = 5;
-    $scope.pageNumber = 1;
+    $scope.pageNumber = 1;*/
 
-    $scope.getAccountsData = function () {
+/*    $scope.getTrucksData = function () {
         AccountServices.getAllTrucks($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.accountGridOptions.data = success.data.accounts;
@@ -52,21 +52,21 @@ app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notifica
         });
     };
 
-    $scope.getAccountsData();
-
+    $scope.getTrucksData();*/
+/*
     $scope.accountGridOptions = {
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,
         columnDefs: [ {
-            name: 'Account name',
-            field: 'name'
+            name: 'Reg No',
+            field: 'registrationNo'
         }, {
-            name: 'Address',
-            field: 'address'
+            name: 'truckType',
+            field: 'truckType'
         },{
-            name: 'Contact',
-            field: 'contact'
+            name: 'driverId',
+            field: 'driverId'
         },{
             name: 'Edit',
             cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
@@ -76,28 +76,32 @@ app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notifica
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
         }
-    };
+    };*/
 
 }]);
 
-app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, AccountServices, $stateParams, Notification) {
+app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, AccountServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
 
-    $scope.account = {
-        name: '',
-        userName: '',
-        password: '',
-        address: '',
-        contact: '',
+    $scope.truck = {
+        registrationNo: '',
+        truckType: '',
+        driverId: '',
+        modelAndYear: '',
+        fitnessExpiry: '',
+        permitExpiry: '',
+        insuranceExpiry: '',
+        pollutionExpiry: '',
+        taxDueDate: '',
         error: '',
         success: ''
     };
 
-    if ($stateParams.accountId) {
-        AccountServices.getAccount($stateParams.accountId, function (success) {
-            console.log('acc--->', success.data.account);
+   /* if ($stateParams.truckId) {
+        AccountServices.updateTruck($stateParams.truckId, function (success) {
+            console.log('acc--->', success.data.truckId);
             if (success.data.status) {
-                $scope.account = success.data.account;
+                $scope.truck = success.data.truck;
             } else {
                 Notification.error(success.data.message)
             }
@@ -105,18 +109,18 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
         })
     }
 
-    $scope.addOrUpdateAccount = function () {
-        var params = $scope.account;
+    $scope.addOrUpdateTruck = function () {
+        var params = $scope.truck;
         params.success = '';
         params.error = '';
 
-        if (params._id) {
+      /!*  if (params._id) {
             delete params.userName;
             delete params.password;
         }
-
-        if (!params.name) {
-            params.error = 'Invalid account name';
+*!/
+        if (!params.registrationNo) {
+            params.error = 'Invalid Registration ID';
         } else if (!params._id && !params.userName) {
             params.error = 'Invalid user name';
         } else if (!params._id && !Utils.isValidPassword(params.password)) {
@@ -127,7 +131,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
             params.error = 'Invalid phone number';
         } else if (params._id) {
             // If _id update the account
-            AccountServices.updateAccount(params, function (success) {
+            AccountServices.addTrack(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
                 } else {
@@ -138,7 +142,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
             });
         } else {
             // _id doesn\'t exist => create account
-            AccountServices.addTrack(params, function (success) {
+            AccountServices.updateTruck(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
                 } else {
@@ -148,6 +152,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
 
             });
         }
-    }
+    }*/
 }]);
 
