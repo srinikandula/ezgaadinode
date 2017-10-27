@@ -137,6 +137,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         } else {
             PartyService.addParty($scope.party, function (success) {
                 if (success.data.status) {
+                    $state.go('party');
                     params.success = success.data.message;
                 } else {
                     params.error = success.data.message;
