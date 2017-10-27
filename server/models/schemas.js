@@ -60,6 +60,7 @@ var truckSchema = new mongoose.Schema({
     truckType: String,
     driverId: String,
     modelAndYear: String,
+    tonnage: String,
     fitnessExpiry: Number,
     permitExpiry: Number,
     insuranceExpiry: Number,

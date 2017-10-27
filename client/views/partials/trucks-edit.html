@@ -23,36 +23,33 @@
                         <input type="text" class="form-control" ng-modal="truck.driverId"
                                placeholder="Driver Id"/>
                     </div>
-                    <!--<div class="form-group">
+                    <div class="form-group">
                         <label>Modal and Year</label>
                         <input type="text" class="form-control" ng-modal="truck.modelAndYear"
                                placeholder="Modal and Year"/>
                     </div>
                     <div class="form-group">
                         <label>Fitness Expiry</label>
-                        <input type="text" class="form-control" ng-modal="truck.fitnessExpiry"
-                               placeholder="Fitness Expiry"/>
+                        <date-picker id="fitnessExpiry" ng-model="truck.fitnessExpiry"></date-picker>
                     </div>
                     <div class="form-group">
                         <label>Permit Expiry</label>
-                        <input type="text" class="form-control" ng-modal="truck.permitExpiry"
-                               placeholder="Permit Expiry"/>
+                        <date-picker id="permitExpiry" ng-model="truck.permitExpiry"></date-picker>
                     </div>
                     <div class="form-group">
                         <label>Insurance Expiry</label>
-                        <input type="text" class="form-control" ng-modal="truck.insuranceExpiry"
-                               placeholder="Insurance Expiryr"/>
+                        <date-picker id="insuranceExpiry" ng-model="truck.insuranceExpiry"></date-picker>
                     </div>
 
                     <div class="form-group">
                         <label>Pollution Expiry</label>
-                        <input ng-model="truck.pollutionExpiry" type="text" class="form-control"                         placeholder="pollution Expiry">
+                        <date-picker id="pollutionExpiry" ng-model="truck.pollutionExpiry"></date-picker>
                     </div>
 
                     <div class="form-group">
                         <label>Tax Due Date</label>
-                        <input ng-model="truck.taxDueDate" type="text" class="form-control"                              placeholder="Tax Due Date">
-                    </div>-->
+                        <date-picker id="taxDueDate" ng-model="truck.taxDueDate"></date-picker>
+                    </div>
                     <div>
                         <div class="alert alert-danger" role="alert" ng-show="truck.error">
                             <strong>{{truck.error}}</strong>

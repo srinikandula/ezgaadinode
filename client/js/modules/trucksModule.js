@@ -7,9 +7,15 @@ app.factory('TrucksService', function ($http, $cookies) {
                 data: truckDetails
             }).then(success, error)
         },
-        getAllTrucks: function (truckId, success, error) {
+        getTruck: function (truckId, success, error) {
             $http({
                 url: '/v1/truck/' + truckId,
+                method: "GET"
+            }).then(success, error)
+        },
+        getAccountTrucks: function (pageNumber, success, error) {
+            $http({
+                url: '/v1/trucks/get/accountTrucks',
                 method: "GET"
             }).then(success, error)
         },
@@ -29,20 +35,20 @@ app.factory('TrucksService', function ($http, $cookies) {
     }
 });
 
-app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', function ($scope, $uibModal, TrucksService, Notification, $state) {
+app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', function ($scope, $uibModal, TrucksService, Notification, $state) {
     $scope.goToEditTrucksPage = function (truckId) {
         $state.go('trucksEdit', {truckId: truckId});
     };
 
- /*   // pagination options
+    // pagination options
     $scope.totalItems = 200;
     $scope.maxSize = 5;
-    $scope.pageNumber = 1;*/
+    $scope.pageNumber = 1;
 
-/*    $scope.getTrucksData = function () {
-        AccountServices.getAllTrucks($scope.pageNumber, function (success) {
+  $scope.getTrucksData = function () {
+      TrucksService.getAccountTrucks($scope.pageNumber, function (success) {
             if (success.data.status) {
-                $scope.accountGridOptions.data = success.data.accounts;
+                $scope.truckGridOptions.data = success.data.trucks;
                 $scope.totalItems = success.data.count;
             } else {
                 Notification.error({message: success.data.message});
@@ -52,9 +58,9 @@ app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notifica
         });
     };
 
-    $scope.getTrucksData();*/
-/*
-    $scope.accountGridOptions = {
+    $scope.getTrucksData();
+
+    $scope.truckGridOptions = {
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,
@@ -62,44 +68,43 @@ app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notifica
             name: 'Reg No',
             field: 'registrationNo'
         }, {
-            name: 'truckType',
+            name: 'TruckType',
             field: 'truckType'
         },{
-            name: 'driverId',
-            field: 'driverId'
+            name: 'Tonnage',
+            field: 'tonnage'
+        },{
+            name: 'Permit',
+            field: 'permitExpiry'
+        },{
+            name: 'Pollution',
+            field: 'pollution'
+        },{
+            name: 'Insurance',
+            field: 'insurance'
+        },{
+            name: 'Fitness',
+            field: 'fitness'
+        },{
+            name: 'Driver',
+            field: 'driverName'
         },{
             name: 'Edit',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
+            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditTruckPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteTruck(row.entity._id)" class="btn btn-danger">Delete</button></div>'
         }],
         rowHeight: 3    0,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
         }
-    };*/
-
+    };
 }]);
 
-app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, AccountServices, $stateParams, Notification) {
-    console.log('-->', $stateParams);
+app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateParams', 'Notification', function ($scope, Utils, TrucksService, $stateParams, Notification) {
 
-    $scope.truck = {
-        registrationNo: '',
-        truckType: '',
-        driverId: '',
-        modelAndYear: '',
-        fitnessExpiry: '',
-        permitExpiry: '',
-        insuranceExpiry: '',
-        pollutionExpiry: '',
-        taxDueDate: '',
-        error: '',
-        success: ''
-    };
-
-   /* if ($stateParams.truckId) {
-        AccountServices.updateTruck($stateParams.truckId, function (success) {
-            console.log('acc--->', success.data.truckId);
+    $scope.truck = {};
+    if ($stateParams.truckId) {
+        TrucksService.getTruck($stateParams.truckId, function (success) {
             if (success.data.status) {
                 $scope.truck = success.data.truck;
             } else {
@@ -113,25 +118,11 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'AccountServices', '$stat
         var params = $scope.truck;
         params.success = '';
         params.error = '';
-
-      /!*  if (params._id) {
-            delete params.userName;
-            delete params.password;
-        }
-*!/
         if (!params.registrationNo) {
             params.error = 'Invalid Registration ID';
-        } else if (!params._id && !params.userName) {
-            params.error = 'Invalid user name';
-        } else if (!params._id && !Utils.isValidPassword(params.password)) {
-            params.error = 'Invalid password';
-        } else if (!params.address.trim()) {
-            params.error = 'Invalid address'
-        } else if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.error = 'Invalid phone number';
-        } else if (params._id) {
-            // If _id update the account
-            AccountServices.addTrack(params, function (success) {
+        }
+        if (params._id) {
+            TrucksService.addTruck(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
                 } else {
@@ -141,8 +132,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'AccountServices', '$stat
 
             });
         } else {
-            // _id doesn\'t exist => create account
-            AccountServices.updateTruck(params, function (success) {
+            TrucksService.updateTruck(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
                 } else {
@@ -152,6 +142,6 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'AccountServices', '$stat
 
             });
         }
-    }*/
+    }
 }]);
 

@@ -128,31 +128,36 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
 
         if (!params.name) {
             params.error += 'Invalid party name \n';
-        } else if (!Utils.isValidEmail(params.email)) {
+        }
+        if (!Utils.isValidEmail(params.email)) {
             params.error += 'Invalid email \n';
-        } else if (!Utils.isValidPhoneNumber(params.contact)) {
+        }
+        if (!Utils.isValidPhoneNumber(params.contact)) {
             params.error += 'Invalid phone number \n';
-        } else if (params._id) {
-            PartyService.updateParty($scope.party, function (success) {
-                if (success.data.status) {
-                    $state.go('party');
-                    params.success = success.data.message;
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
+        }
+        if(!Utils.isEmpty(params.error)) {
+            if (params._id) {
+                PartyService.updateParty($scope.party, function (success) {
+                    if (success.data.status) {
+                        $state.go('party');
+                        params.success = success.data.message;
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
 
-            });
-        } else {
-            PartyService.addParty($scope.party, function (success) {
-                if (success.data.status) {
-                    $state.go('party');
-                    params.success = success.data.message;
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
-            });
+                });
+            } else {
+                PartyService.addParty($scope.party, function (success) {
+                    if (success.data.status) {
+                        $state.go('party');
+                        params.success = success.data.message;
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
+                });
+            }
         }
     }
     $scope.cancel = function() {
