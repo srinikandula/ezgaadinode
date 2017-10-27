@@ -5,12 +5,12 @@ var _ = require('underscore');
 var UsersColl = require('./../models/schemas').UsersColl;
 
 var config = require('./../config/config');
-var Helpers = require('./utils');
+var Utils = require('./utils');
 
 var Users = function () {
 };
 
-Users.prototype.adduser = function (jwt, regDetails, callback) {
+Users.prototype.addUser = function (jwt, regDetails, callback) {
     var retObj = {};
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
         retObj.status = false;
@@ -24,23 +24,31 @@ Users.prototype.adduser = function (jwt, regDetails, callback) {
         retObj.status = false;
         retObj.message = "Please provide valid last name";
         callback(retObj);
-    } else if (!retObj.role) {
+    } else if(!Utils.isEmail(regDetails.email)){
+        retObj.status = false;
+        retObj.message = "Please provide valid email";
+        callback(retObj);
+    } else if (!regDetails.role) {
         retObj.status = false;
         retObj.message = "Please provide role";
         callback(retObj);
-    } else if (!retObj.accountId || !_.isString(regDetails.accountId)) {
+    } else if (!regDetails.accountId || !_.isString(regDetails.accountId)) {
         retObj.status = false;
         retObj.message = "Please provide accountId";
         callback(retObj);
-    } else if (!regDetails.password) {
+    } else if(!regDetails.userName || !_.isString(regDetails.userName)){
+        retObj.status = false;
+        retObj.message = "Please provide user name";
+        callback(retObj);
+    }else if (!regDetails.password) {
         retObj.status = false;
         retObj.message = "Please provide valid password";
         callback(retObj);
-    } else if (!retObj.updatedBy) {
+    } else if (!regDetails.updatedBy) {
         retObj.status = false;
         retObj.message = "Please provide updatedBy field";
         callback(retObj);
-    } else if (!retObj.createdBy) {
+    } else if (!regDetails.createdBy) {
         retObj.status = false;
         retObj.message = "Please provide createdBy field";
         callback(retObj);
@@ -57,7 +65,7 @@ Users.prototype.adduser = function (jwt, regDetails, callback) {
             } else {
                 regDetails.createdBy = jwt.id;
                 regDetails.updatedBy = jwt.id;
-                regDetails.accountId =   jwt.accountId;
+                regDetails.accountId = jwt.accountId;
                 var insertDoc = new UsersColl(regDetails);
                 insertDoc.save(function (err) {
                     if (err) {

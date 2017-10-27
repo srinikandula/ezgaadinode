@@ -4,7 +4,7 @@ var AuthRouter = express.Router();
 var Users = require('./../apis/users');
 
 AuthRouter.post('/addUser', function (req, res) {
-    Users.adduser(req.jwt, req.body, function (result) {
+    Users.addUser(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });

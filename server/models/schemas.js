@@ -30,6 +30,7 @@ var accountSchema = new mongoose.Schema({
 var usersSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
+    email: String,
     role: String,
     accountId: {
         type: ObjectId, ref: 'accounts'
@@ -93,11 +94,19 @@ var tripLanesSchema = new mongoose.Schema({
     createdBy: String
 },{timestamps: true});
 
+var rolesSchema = new mongoose.Schema({
+    roleName: String,
+    updatedBy: String,
+    createdBy: String,
+    menus: []
+},{timestamps: true});
+
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
-    PartyCollection: mongoose.model('parties', partySchema, 'parties'),
-    TripCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes')
+    PartiesCollection: mongoose.model('parties', partySchema, 'parties'),
+    TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
+    Roles: mongoose.model('roles', rolesSchema, 'roles')
 };
