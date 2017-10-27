@@ -20,14 +20,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'accounts',
         url: '/accounts',
-        templateUrl: 'views/partials/accounts/display.html',
+        templateUrl: 'views/partials/accounts/accountsList.html',
         params: {
             access: 'auth'
         }
     }).state({
         name: 'accountsEdit',
         url: '/accountsEdit/:accountId',
-        templateUrl: 'views/partials/accounts/edit.html',
+        templateUrl: 'views/partials/accounts/edit-account.html',
         params: {
             access: 'open',
             accountId: null

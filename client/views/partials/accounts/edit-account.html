@@ -26,32 +26,27 @@
                                placeholder="Password">
                     </div>
 
-        <div class="form-group">
-            <label for="address">Address</label>
-            <input ng-model="account.address" type="text" class="form-control" id="address"
-                   placeholder="Address">
-        </div>
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input ng-model="account.address" type="text" class="form-control" id="address"
+                               placeholder="Address">
+                    </div>
 
-        <div class="form-group">
-            <label for="contact">Contact Number</label>
-            <input ng-model="account.contact" type="password" class="form-control" id="contact"
-                   placeholder="Contact Number">
-        </div>
-        <div>
-            <div class="alert alert-danger" role="alert" ng-show="account.error">
-                <strong>{{account.error}}</strong>
-            </div>
+                    <div class="form-group">
+                        <label for="contact">Contact Number</label>
+                        <input ng-model="account.contact" type="text" class="form-control" id="contact"
+                               placeholder="Contact Number">
+                    </div>
                     <div>
                         <div class="alert alert-danger" role="alert" ng-show="account.error">
                             <strong>{{account.error}}</strong>
                         </div>
-
                         <div class="alert alert-success" role="alert" ng-show="account.success">
                             <strong>{{account.success}}</strong>
                         </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <input type="button" value="Cancel" class="btn btn-primary" ng-click="cancel()"/>
                     </div>
-
-                    <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
         </div>
         </div>
