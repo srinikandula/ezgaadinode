@@ -175,5 +175,4 @@ Trucks.prototype.deleteTruck = function (truckId, callback) {
     });
 };
 
-
 module.exports = new Trucks();
