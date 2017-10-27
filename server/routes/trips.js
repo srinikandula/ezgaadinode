@@ -14,6 +14,21 @@ AuthRouter.get('/getAll', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.put('/', function (req, res) {
+    Trips.updateTrip(req.jwt, req.body, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.get('/:tripId', function (req, res) {
+    Trips.findTrip(req.jwt,req.params.tripId, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.delete('/:tripId', function (req, res) {
+    Trips.deleteTrip(req.params.tripId, function (result) {
+        res.send(result);
+    });
+});
 
 module.exports = {
     OpenRouter: OpenRouter,

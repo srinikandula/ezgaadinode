@@ -81,7 +81,15 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/trips',
         templateUrl: 'views/partials/trips.html',
         params: {
-            access: 'open'
+            access: 'auth'
+        }
+    }).state({
+        name: 'tripsEdit',
+        url: '/tripsEdit/:tripId',
+        templateUrl: 'views/partials/trips-edit.html',
+        params: {
+            access: 'auth',
+            tripId: null
         }
     }).state({
         name: 'party',
