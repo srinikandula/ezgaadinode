@@ -73,7 +73,7 @@ Party.prototype.findParty= function (jwt, partyId, callback) {
 
 Party.prototype.updateParty = function (jwt, partyDetails, callback) {
     var result = {};
-    PartyCollection.findOneAndUpdate({_id:partyDetails.id, accountId: jwt.accountId._id},
+    PartyCollection.findOneAndUpdate({_id:partyDetails._id, accountId: jwt.accountId},
         {$set:{
             "name":partyDetails.name,
             "contact":partyDetails.contact,
