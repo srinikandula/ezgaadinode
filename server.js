@@ -12,7 +12,9 @@ var config = require('./server/config/config');
 var Trips = require('./server/routes/trips');
 var Trucks = require('./server/routes/trucks');
 var Party = require('./server/routes/partyRoutes');
+var Drivers = require('./server/routes/drivers');
 var Roles = require('./server/routes/roles');
+
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
@@ -40,6 +42,7 @@ app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
 app.use('/v1/trucks', Trucks.AuthRouter);
 app.use('/v1/party', Party.AuthRouter);
+app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {

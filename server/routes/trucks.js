@@ -32,6 +32,12 @@ AuthRouter.delete('/:truckId', function (req, res) {
     });
 });
 
+AuthRouter.get('/', function (req, res) {
+    Trucks.getAllTrucks(function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

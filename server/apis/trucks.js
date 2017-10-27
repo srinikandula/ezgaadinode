@@ -30,31 +30,31 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
         result.message = "Please provide valid Truck type";
         callback(result);
     } /*else if (!truckDetails.modelAndYear || !_.isString(truckDetails.modelAndYear)) {
-        result.status = false;
-        result.message = "Please provide valid model and year";
-        callback(result);
-    } else if (!truckDetails.fitnessExpiry) {
-        result.status = false;
-        result.message = "Please provide valid fitness expiry";
-        callback(result);
-    } else if (!truckDetails.permitExpiry) {
-        result.status = false;
-        result.message = "Please provide valid permit expiry";
-        callback(result);
-    } else if (!truckDetails.insuranceExpiry) {
-        result.status = false;
-        result.message = "Please provide valid insurance expiry";
-        callback(result);
-    } else if (!truckDetails.pollutionExpiry) {
-        result.status = false;
-        result.message = "Please provide valid pollution expiry";
-        callback(result);
-    } else if (!truckDetails.taxDueDate) {
-        result.status = false;
-        result.message = "Please provide valid tax duedate";
-        callback(result);
-    }*/ else {
-        TrucksColl.find({registrationNo:truckDetails.registrationNo}, function (err, truck) {
+     result.status = false;
+     result.message = "Please provide valid model and year";
+     callback(result);
+     } else if (!truckDetails.fitnessExpiry) {
+     result.status = false;
+     result.message = "Please provide valid fitness expiry";
+     callback(result);
+     } else if (!truckDetails.permitExpiry) {
+     result.status = false;
+     result.message = "Please provide valid permit expiry";
+     callback(result);
+     } else if (!truckDetails.insuranceExpiry) {
+     result.status = false;
+     result.message = "Please provide valid insurance expiry";
+     callback(result);
+     } else if (!truckDetails.pollutionExpiry) {
+     result.status = false;
+     result.message = "Please provide valid pollution expiry";
+     callback(result);
+     } else if (!truckDetails.taxDueDate) {
+     result.status = false;
+     result.message = "Please provide valid tax duedate";
+     callback(result);
+     }*/ else {
+        TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
             if (err) {
                 result.status = false;
                 result.message = "Error, try again!";
@@ -65,8 +65,8 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
                 callback(result);
             } else {
                 truckDetails.createdBy = jwt.id;
-                truckDetails.updatedBy =  jwt.id;
-                truckDetails.accountId =  jwt.accountId._id;
+                truckDetails.updatedBy = jwt.id;
+                truckDetails.accountId = jwt.accountId._id;
                 var truckDoc = new TrucksColl(truckDetails);
                 truckDoc.save(function (err, truck) {
                     if (err) {
@@ -87,12 +87,12 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
 
 Trucks.prototype.findTruck = function (jwt, truckId, callback) {
     var result = {};
-    TrucksColl.findOne({_id:truckId, accountId:jwt.accountId}, function (err, truck) {
-        if(err) {
+    TrucksColl.findOne({_id: truckId, accountId: jwt.accountId}, function (err, truck) {
+        if (err) {
             result.status = false;
             result.message = "Error while finding truck, try Again";
             callback(result);
-        } else if(truck) {
+        } else if (truck) {
             result.status = true;
             result.message = "Truck found successfully";
             result.truck = truck;
@@ -108,34 +108,36 @@ Trucks.prototype.findTruck = function (jwt, truckId, callback) {
 
 Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
     var result = {};
-    TrucksColl.findOneAndUpdate({registrationNo:truckDetails.registrationNo},
-        {$set:{
-            "truckType":truckDetails.truckType,
-            "updatedBy":jwt.id,
-            "modelAndYear": truckDetails.modelAndYear
-            //a generic way???
-        }},
+    TrucksColl.findOneAndUpdate({registrationNo: truckDetails.registrationNo},
+        {
+            $set: {
+                "truckType": truckDetails.truckType,
+                "updatedBy": jwt.id,
+                "modelAndYear": truckDetails.modelAndYear
+                //a generic way???
+            }
+        },
         {new: true}, function (err, truck) {
-        if(err) {
-            result.status = false;
-            result.message = "Error while updating truck, try Again";
-            callback(result);
-        } else if(truck) {
-            result.status = true;
-            result.message = "Truck updated successfully";
-            result.truck = truck;
-            callback(result);
-        } else {
-            result.status = false;
-            result.message = "Error, finding truck";
-            callback(result);
-        }
-    });
+            if (err) {
+                result.status = false;
+                result.message = "Error while updating truck, try Again";
+                callback(result);
+            } else if (truck) {
+                result.status = true;
+                result.message = "Truck updated successfully";
+                result.truck = truck;
+                callback(result);
+            } else {
+                result.status = false;
+                result.message = "Error, finding truck";
+                callback(result);
+            }
+        });
 };
 
 Trucks.prototype.getAccountTrucks = function (accountId, callback) {
     var result = {};
-    TrucksColl.find({accountId:accountId},function (err, accountTrucks) {
+    TrucksColl.find({accountId: accountId}, function (err, accountTrucks) {
         if (err) {
             result.status = false;
             result.message = 'Error getting trucks';
@@ -167,7 +169,7 @@ Trucks.prototype.getAllTrucks = function (callback) {
 
 Trucks.prototype.deleteTruck = function (truckId, callback) {
     var result = {};
-    TrucksColl.remove({_id:truckId}, function (err) {
+    TrucksColl.remove({_id: truckId}, function (err) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting truck';
@@ -176,6 +178,23 @@ Trucks.prototype.deleteTruck = function (truckId, callback) {
             result.status = true;
             result.message = 'Success';
             callback(result);
+        }
+    });
+};
+
+// Get all trucks with ids and registration numbers
+Trucks.prototype.getAllTrucks = function (callback) {
+    var retObj = {};
+    TrucksColl.find({}, {registrationNo: 1, _id: 1, accountId:1}, function (err, trucks) {
+        if (err) {
+            retObj.status = false;
+            retObj.message = 'Error fetching trucks';
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.message = 'Success';
+            retObj.trucks = trucks;
+            callback(retObj);
         }
     });
 };

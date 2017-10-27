@@ -50,7 +50,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'drivers',
         url: '/drivers',
-        templateUrl: 'views/partials/drivers.html',
+        templateUrl: 'views/partials/drivers/driversList.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'driversEdit',
+        url: '/driversEdit',
+        templateUrl: 'views/partials/drivers/edit-driver.html',
         params: {
             access: 'open'
         }
@@ -112,7 +119,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             roleId: null
         }
     })
-
     $urlRouterProvider.otherwise('/login');
 });
 
