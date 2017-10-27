@@ -122,6 +122,7 @@ var rolesSchema = new mongoose.Schema({
     menus: []
 },{timestamps: true});
 
+
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
