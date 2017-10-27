@@ -37,8 +37,18 @@ app.factory('PartyService', function ($http, $cookies) {
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', function ($scope, $uibModal, PartyService, Notification, $state) {
     $scope.goToEditPartyPage = function (partyId) {
-        console.log('go to editparty');
         $state.go('editParty', {partyId: partyId});
+    };
+
+    $scope.deleteParty = function (partyId) {
+        PartyService.getParty($stateParams.partyId, function (success) {
+        if (success.data.status) {
+            $scope.party = success.data.party;
+        } else {
+            Notification.error(success.data.message)
+        }
+        }, function (err) {
+        });
     };
 
     // pagination options
@@ -81,8 +91,8 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             name: 'Operating Lane',
             field: 'operatingLane'
         },{
-            name: 'Edit',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
+            name: 'Action',
+            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteParty(row.entity._id)" class="btn btn-danger">Delete</button></div>'
         }],
         rowHeight: 40,
         data: [],
@@ -100,7 +110,6 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         $scope.pageTitle = "Edit Party";
     }
     $scope.party = {};
-
     if ($stateParams.partyId) {
         PartyService.getParty($stateParams.partyId, function (success) {
             if (success.data.status) {
@@ -109,9 +118,8 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
                 Notification.error(success.data.message)
             }
         }, function (err) {
-        })
+        });
     }
-
     $scope.addOrUpdateParty = function () {
         var params = $scope.party;
         params.success = '';
@@ -137,12 +145,12 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         } else {
             PartyService.addParty($scope.party, function (success) {
                 if (success.data.status) {
+                    $state.go('party');
                     params.success = success.data.message;
                 } else {
                     params.error = success.data.message;
                 }
             }, function (err) {
-
             });
         }
     }

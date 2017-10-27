@@ -97,12 +97,16 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
     };
 }]);
 
-app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams', function ($scope, RoleServices, $stateParams) {
+app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams', '$state', function ($scope, RoleServices, $stateParams, $state) {
     console.log('-->', $stateParams, $stateParams.roleId, !!$stateParams.roleId);
     $scope.rolesDetails = {
         roleName: '',
         error: '',
         success: ''
+    };
+
+    $scope.goToRolesPage = function (userId) {
+        $state.go('roles');
     };
 
     if ($stateParams.roleId) {
