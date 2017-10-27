@@ -24,7 +24,8 @@
     "angular-bootstrap": "^2.5.0",
     "underscore": "^1.8.3",
     "angular-ui-notification": "^0.3.6",
-    "angular-ui-grid": "^4.0.7"
+    "angular-ui-grid": "^4.0.7",
+    "font-awesome": "^4.7.0"
   },
   "resolutions": {
     "angular": "1.6.6"
