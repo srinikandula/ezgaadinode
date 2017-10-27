@@ -110,7 +110,7 @@ Party.prototype.getAccountParties = function (accountId, callback) {
         } else {
             result.status = true;
             result.message = 'Success';
-            result.details = accountParties;
+            result.parties = accountParties;
             callback(result);
         }
     });

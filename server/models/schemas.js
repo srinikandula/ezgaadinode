@@ -8,6 +8,7 @@ mongoose.connect(config.mongo.url, {
     server: {socketOptions: {keepAlive: 1, connectTimeoutMS: 30000}},
     replset: {socketOptions: {keepAlive: 1, connectTimeoutMS: 30000}}
 });
+
 var connection = mongoose.connection;
 
 connection.once('open', function () {
