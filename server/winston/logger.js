@@ -6,7 +6,7 @@ function getLogger(module) {
         format: winston.format.json(),
         datePattern: 'dd-MM-yyyy.',
         transports: [
-            new winston.transports.File({filename: __dirname.replace('winston', 'logs/combined.log'), json:false})
+            new winston.transports.File({filename: __dirname.replace('winston', 'logs/combined.log')})
         ]
     });
 
