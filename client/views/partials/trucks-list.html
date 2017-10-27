@@ -14,22 +14,4 @@
 </div>
 
 
-<div class="container-fluid">
-    <div class="row pall-zero">
-        <div class="col-xs-2 pall-zero">
-            <left-navigation></left-navigation>
-        </div>
-        <div class="main-right col-xs-9" ng-controller="ShowAccountsCtrl">
 
-            <h3>Trucks</h3>
-            <button class="btn btn-success pull-right" ng-click="goToEditAccountPage()">Add Trucks</button>
-
-            <div class="margin-top-40">
-                <div class="grid" ui-grid="accountGridOptions" ui-grid-selection></div>
-            </div>
-
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
-                boundary-link-numbers="true" rotate="false" ng-change="getAccountsData()"></ul>
-        </div>
-    </div>
-</div>

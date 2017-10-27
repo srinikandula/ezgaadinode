@@ -63,7 +63,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'party',
         url: '/party',
-        templateUrl: 'views/partials/party.html',
+        templateUrl: 'views/partials/party-list.html',
         params: {
             access: 'open'
         }
