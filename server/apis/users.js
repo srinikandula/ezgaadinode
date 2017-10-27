@@ -5,7 +5,7 @@ var _ = require('underscore');
 var UsersColl = require('./../models/schemas').UsersColl;
 
 var config = require('./../config/config');
-var Helpers = require('./utils');
+var Utils = require('./utils');
 
 var Users = function () {
 };

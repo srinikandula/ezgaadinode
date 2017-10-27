@@ -50,6 +50,7 @@ var usersSchema = new mongoose.Schema({
 var truckSchema = new mongoose.Schema({
     registrationNo: {type: String, unique: true},
     truckType: String,
+    driverId: String,
     modelAndYear: String,
     fitnessExpiry: Number,
     permitExpiry: Number,
