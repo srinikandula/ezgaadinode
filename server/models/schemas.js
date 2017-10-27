@@ -78,6 +78,11 @@ var tripSchema = new mongoose.Schema({
 },{timestamps: true});
 
 var partySchema = new mongoose.Schema({
+    name: String,
+    contact: Number,
+    email: String,
+    city: String,
+    operatingLane: String,
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String
@@ -95,6 +100,6 @@ module.exports = {
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
-    PartiesCollection: mongoose.model('parties', partySchema, 'parties'),
+    PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     TripCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes')
 };
