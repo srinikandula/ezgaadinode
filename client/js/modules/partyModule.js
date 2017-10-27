@@ -41,13 +41,14 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
     };
 
     $scope.deleteParty = function (partyId) {
-        PartyService.getParty($stateParams.partyId, function (success) {
+        PartyService.deleteParty(partyId, function (success) {
         if (success.data.status) {
-            $scope.party = success.data.party;
+            $scope.getParties();
         } else {
             Notification.error(success.data.message)
         }
         }, function (err) {
+            console.log('error deleting party');
         });
     };
 
