@@ -13,6 +13,12 @@ app.factory('AccountServices', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        getAllAccounts: function (success, error) {
+            $http({
+                url: '/v1/admin/accounts/fetchAllAccounts',
+                method: "GET"
+            }).then(success, error)
+        },
         getAccount: function (accountId, success, error) {
             $http({
                 url: '/v1/admin/accounts/' + accountId,
@@ -69,9 +75,11 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             field: 'contact'
         },{
             name: 'Edit',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
-        }],
-        rowHeight: 40,
+            cellTemplate: '<div class="text-center">' +
+          /*  '<button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'*/
+          '<a href="#" ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a>'
+                  }],
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
@@ -80,7 +88,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 
 }]);
 
-app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, AccountServices, $stateParams, Notification) {
+app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, $state, AccountServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
 
     $scope.account = {
@@ -107,47 +115,58 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'AccountServices', '$st
 
     $scope.addOrUpdateAccount = function () {
         var params = $scope.account;
-        params.success = '';
-        params.error = '';
-
+        params.success = null;
+        delete params.error;
         if (params._id) {
             delete params.userName;
             delete params.password;
         }
 
         if (!params.name) {
-            params.error = 'Invalid account name';
-        } else if (!params._id && !params.userName) {
-            params.error = 'Invalid user name';
-        } else if (!params._id && !Utils.isValidPassword(params.password)) {
-            params.error = 'Invalid password';
-        } else if (!params.address.trim()) {
-            params.error = 'Invalid address'
-        } else if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.error = 'Invalid phone number';
-        } else if (params._id) {
-            // If _id update the account
-            AccountServices.updateAccount(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
-
-            });
-        } else {
-            // _id doesn\'t exist => create account
-            AccountServices.addAccount(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
-
-            });
+            params.error = params.error ? params.error +' Invalid account name': 'Invalid account name';
         }
+        if (!params._id && !params.userName) {
+            params.error = params.error ? params.error +' Invalid user name': 'Invalid user name';
+        }
+        if (!params._id && !Utils.isValidPassword(params.password)) {
+            params.error = params.error ? params.error +'Invalid password \n': 'Invalid password \n';
+        }
+        if (!params.address || !params.address.trim()) {
+            params.error = params.error ? params.error +' Invalid address \n': ' Invalid address \n';
+        }
+        if (!Utils.isValidPhoneNumber(params.contact)) {
+            params.error = params.error ? params.error +'Invalid phone number, it should be 10 digits \n': 'Invalid phone number,  it should be 10 digits \n';
+        }
+        if(!params.error) {
+            if (params._id) {
+                // If _id update the account
+                AccountServices.updateAccount(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        $state.go('accounts');
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
+
+                });
+            } else {
+                // _id doesn\'t exist => create account
+                AccountServices.addAccount(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
+
+                });
+            }
+        }
+
+    }
+    $scope.cancel = function() {
+        $state.go('accounts');
     }
 }]);
 

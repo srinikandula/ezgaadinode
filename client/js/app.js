@@ -20,29 +20,45 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'accounts',
         url: '/accounts',
-        templateUrl: 'views/partials/accounts/display.html',
+        templateUrl: 'views/partials/accounts/accountsList.html',
         params: {
             access: 'auth'
         }
     }).state({
         name: 'accountsEdit',
         url: '/accountsEdit/:accountId',
-        templateUrl: 'views/partials/accounts/edit.html',
+        templateUrl: 'views/partials/accounts/edit-account.html',
         params: {
             access: 'open',
             accountId: null
-        }
+        },
+        controller: 'AddEditPartyCtrl'
     }).state({
         name: 'users',
         url: '/users',
-        templateUrl: 'views/partials/users.html',
+        templateUrl: 'views/partials/users/show-users.html',
         params: {
             access: 'open'
         }
     }).state({
+        name: 'usersEdit',
+        url: '/usersEdit/:userId',
+        templateUrl: 'views/partials/users/usersEdit.html',
+        params: {
+            access: 'open',
+            userId: 'userId'
+        }
+    }).state({
         name: 'drivers',
         url: '/drivers',
-        templateUrl: 'views/partials/drivers.html',
+        templateUrl: 'views/partials/drivers/driversList.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'driversEdit',
+        url: '/driversEdit',
+        templateUrl: 'views/partials/drivers/edit-driver.html',
         params: {
             access: 'open'
         }
@@ -50,6 +66,13 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'trucks',
         url: '/trucks',
         templateUrl: 'views/partials/trucks-list.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'trucksEdit',
+        url: '/trucksEdit',
+        templateUrl: 'views/partials/trucks-edit.html',
         params: {
             access: 'open'
         }
@@ -71,9 +94,17 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'party',
         url: '/party',
-        templateUrl: 'views/partials/party.html',
+        templateUrl: 'views/partials/party-list.html',
         params: {
             access: 'open'
+        }
+    }).state({
+        name: 'editParty',
+        url: '/editParty/:partyId',
+        templateUrl: 'views/partials/edit-party.html',
+        params: {
+            access: 'auth',
+            partyId: null
         }
     }).state({
         name: 'maintenance',
@@ -89,8 +120,22 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open'
         }
-    })
-
+    }).state({
+        name: 'roles',
+        url: '/roles',
+        templateUrl: 'views/partials/roles/roles.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'rolesEdit',
+        url: '/rolesEdit/:roleId',
+        templateUrl: 'views/partials/roles/roles-edit.html',
+        params: {
+            access: 'open',
+            roleId: null
+        }
+    });
     $urlRouterProvider.otherwise('/login');
 });
 

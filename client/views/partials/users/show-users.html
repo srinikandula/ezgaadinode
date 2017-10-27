@@ -3,19 +3,16 @@
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
         </div>
-        <div class="main-right col-xs-9" ng-controller="trucksCntrl">
-
-            <h3>Trucks List</h3>
-            <button class="btn btn-success pull-right" ng-click="goToEditTrucksPage()">Add Truck</button>
+        <div class="main-right col-xs-9" ng-controller="UserCtrl">
+            <h3>Users</h3>
+            <button class="btn btn-success pull-right" ng-click="goToEditUserPage()">Add User</button>
 
             <div class="margin-top-40">
-                <div class="grid" ui-grid="accountGridOptions" ></div>
+                <div class="grid" ui-grid="userGridOptions" ui-grid-selection></div>
             </div>
 
-
             <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
-                boundary-link-numbers="true" rotate="false" ng-change="getAccountsData()"></ul>
+                boundary-link-numbers="true" rotate="false" ng-change="getAllUsers()"></ul>
         </div>
     </div>
 </div>
-
