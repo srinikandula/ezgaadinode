@@ -61,7 +61,6 @@ var truckSchema = new mongoose.Schema({
     createdBy: String
 },{timestamps: true});
 
-
 var tripSchema = new mongoose.Schema({
     date : Number,
     registrationNo: String,
@@ -93,7 +92,6 @@ var tripLanesSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String
 },{timestamps: true});
-
 
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
