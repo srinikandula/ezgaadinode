@@ -24,6 +24,12 @@ AuthRouter.get('/accounts/fetch/:pageNum', function (req, res) {
     });
 });
 
+AuthRouter.get('/accounts/fetchAllAccounts', function (req, res) {
+    Accounts.getAllAccounts(function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.get('/accounts/:accountId', function (req, res) {
     Accounts.getAccountDetails(req.params.accountId, function (result) {
         res.json(result);

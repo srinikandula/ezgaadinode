@@ -13,6 +13,12 @@ app.factory('AccountServices', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        getAllAccounts: function (success, error) {
+            $http({
+                url: '/v1/admin/accounts/fetchAllAccounts',
+                method: "GET"
+            }).then(success, error)
+        },
         getAccount: function (accountId, success, error) {
             $http({
                 url: '/v1/admin/accounts/' + accountId,

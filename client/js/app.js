@@ -35,9 +35,17 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'users',
         url: '/users',
-        templateUrl: 'views/partials/users.html',
+        templateUrl: 'views/partials/users/show-users.html',
         params: {
             access: 'open'
+        }
+    }).state({
+        name: 'usersEdit',
+        url: '/usersEdit/:userId',
+        templateUrl: 'views/partials/users/usersEdit.html',
+        params: {
+            access: 'open',
+            userId: 'userId'
         }
     }).state({
         name: 'drivers',
@@ -80,6 +88,21 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/trip-lane.html',
         params: {
             access: 'open'
+        }
+    }).state({
+        name: 'roles',
+        url: '/roles',
+        templateUrl: 'views/partials/roles/roles.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'rolesEdit',
+        url: '/rolesEdit/:roleId',
+        templateUrl: 'views/partials/roles/roles-edit.html',
+        params: {
+            access: 'open',
+            roleId: null
         }
     })
 
