@@ -32,9 +32,64 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     }
 };
 
+Trips.prototype.findTrip = function (jwt, tripId, callback) {
+    var result = {};
+    TripCollection.findOne({_id:tripId, accountId:jwt.accountId}, function (err, trip) {
+        if(err) {
+            result.status = false;
+            result.message = "Error while finding trip, try Again";
+            callback(result);
+        } else if(trip) {
+            result.status = true;
+            result.message = "Trip found successfully";
+            result.trip = trip;
+            callback(result);
+        } else {
+            result.status = false;
+            result.message = "Trip is not found!";
+            callback(result);
+        }
+    });
+};
+
+Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
+    var result = {};
+    TripCollection.findOneAndUpdate({_id:tripDetails._id},
+        {$set:{
+            "date": tripDetails.date,
+            "registrationNo":tripDetails.registrationNo,
+            "driver": tripDetails.driver,
+            "bookedFor": tripDetails.bookedFor,
+            "freightAmount": tripDetails.freightAmount,
+            "advance": tripDetails.advance,
+            "balance": tripDetails.balance,
+            "tripLane": tripDetails.tripLane,
+            "tripExpenses": tripDetails.tripExpenses,
+            "accountId": tripDetails.accountId,
+            "updatedBy":jwt.id
+        }},
+        {new: true}, function (err, trip) {
+            if(err) {
+                result.status = false;
+                result.message = "Error while updating Trip, try Again";
+                result.error = err;
+                callback(result);
+            } else if(trip) {
+                result.status = true;
+                result.message = "Trip updated successfully";
+                result.trip = trip;
+                callback(result);
+            } else {
+                result.status = false;
+                result.message = "Error, finding trip";
+                callback(result);
+            }
+        });
+};
+
 Trips.prototype.getAll = function (jwt, req, callback) {
     var result = {};
-    TripCollection.find({}, (function (err, trips) {
+    TripCollection.find({},(function (err, trips) {
         if (err) {
             result.status = false;
             result.message = "Error while finding trips, try Again";
@@ -46,6 +101,29 @@ Trips.prototype.getAll = function (jwt, req, callback) {
             callback(result);
         }
     }));
+};
+
+Trips.prototype.deleteTrip = function (tripId, callback) {
+    var result = {};
+    TripCollection.find({_id:tripId},function (err) {
+        if (err) {
+            result.status = false;
+            result.message = 'No Trips Found';
+            callback(result);
+        } else {
+            TripCollection.remove({_id: tripId}, function (err) {
+                if (err) {
+                    result.status = false;
+                    result.message = 'Error deleting trip';
+                    callback(result);
+                } else {
+                    result.status = true;
+                    result.message = 'Success';
+                    callback(result);
+                }
+            })
+        }
+    })
 };
 
 module.exports = new Trips();

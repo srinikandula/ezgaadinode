@@ -3,10 +3,17 @@
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
         </div>
-        <div class="main-right col-xs-9">
+        <div class="main-right col-xs-9" ng-controller="ShowTripsCtrl">
 
             <h3>Trips</h3>
-            <p>This is trips page</p>
+            <button class="btn btn-success pull-right" ng-click="goToEditTripPage()">Add Trips</button>
+
+            <div class="margin-top-40">
+                <div class="grid" ui-grid="tripGridOptions" ui-grid-selection></div>
+            </div>
+
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
+                boundary-link-numbers="true" rotate="false" ng-change="getAccountsData()"></ul>
 
 
         </div>
