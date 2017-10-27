@@ -6,7 +6,7 @@
         <div class="main-right col-xs-9">
             <div class="col-xs-6 account-edit">
                 <h2 class="login-heading">Add Role</h2>
-                <form ng-submit="AddorUpdateRole()" class="margin-top-20">
+                <form class="margin-top-20">
                     <div class="form-group">
                         <label for="name">Role Name</label>
                         <input ng-model="rolesDetails.roleName" type="text" class="form-control" id="name"
@@ -22,7 +22,8 @@
                                 <strong>{{rolesDetails.success}}</strong>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" ng-click="AddorUpdateRole()">Submit</button>
+                        <button type="submit" class="btn btn-primary" ng-click="goToRolesPage()">Cancel</button>
                     </div>
                 </form>
             </div>
