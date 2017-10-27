@@ -124,6 +124,22 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
     });
 };
 
+Accounts.prototype.getAllAccounts = function (callback) {
+    var retObj = {};
+    AccountsColl.find({},{name:1}, function (err, accounts) {
+        if (err) {
+            retObj.status = false;
+            retObj.message = 'Error retrieving accounts';
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.message = 'Success';
+            retObj.accounts = accounts;
+            callback(retObj);
+        }
+    });
+};
+
 Accounts.prototype.getAccountDetails = function (accountId, callback) {
     var retObj = {};
     if (!Utils.isValidObjectId(accountId)) {

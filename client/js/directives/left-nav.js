@@ -7,6 +7,7 @@ app.directive('leftNavigation', function () {
         '            <account-directive></account-directive>\n' +
         '            <user-directive></user-directive>\n' +
         '            <driver-directive></driver-directive>\n' +
+        '            <roles-directive></roles-directive>\n' +
         '            <truck-directive></truck-directive>\n' +
         '            <trip-directive></trip-directive>\n' +
         '            <party-directive></party-directive>\n' +
@@ -40,6 +41,15 @@ app.directive('driverDirective',function () {
         restrict: 'E',
         template: '<li class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="drivers">Drivers</a>\n' +
+        '          </li>'
+    } ;
+});
+
+app.directive('rolesDirective',function () {
+    return{
+        restrict: 'E',
+        template: '<li class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="roles">Roles</a>\n' +
         '          </li>'
     } ;
 });
