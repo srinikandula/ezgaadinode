@@ -1,6 +1,7 @@
 var express = require('express');
 var AuthRouter = express.Router();
 var Accounts = require('./../apis/accounts');
+var logger = require('./../winston/logger')(module);
 
 AuthRouter.post('/accounts/add', function (req, res) {
     Accounts.addAccount(req.jwt, req.body, function (result) {
@@ -10,6 +11,11 @@ AuthRouter.post('/accounts/add', function (req, res) {
 
 AuthRouter.get('/accounts/fetch/:pageNum', function (req, res) {
     Accounts.getAccounts(req.params.pageNum, function (result) {
+        logger.log({
+            level: 'error',
+            message: "lhadlhwalhdlw"
+        });
+
         res.json(result);
     });
 });
