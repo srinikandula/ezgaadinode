@@ -11,6 +11,7 @@ var config = require('./server/config/config');
 
 var Trips = require('./server/routes/trips');
 var Trucks = require('./server/routes/trucks');
+var Maintenance = require('./server/routes/maintenanceCost');
 var Party = require('./server/routes/partyRoutes');
 var Drivers = require('./server/routes/drivers');
 var Roles = require('./server/routes/roles');
@@ -44,6 +45,8 @@ app.use('/v1/trucks', Trucks.AuthRouter);
 app.use('/v1/party', Party.AuthRouter);
 app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);
+app.use('/v1/maintenance', Maintenance.AuthRouter);
+
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

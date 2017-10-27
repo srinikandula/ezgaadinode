@@ -117,6 +117,15 @@ var driverSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
+var maintenanceCostSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    vehicleNumber: String,
+    repairType:String,
+    cost: Number,
+    date: Number,
+    updatedBy: String,
+    createdBy: String
+},{timestamps: true});
 
 var rolesSchema = new mongoose.Schema({
     roleName: String,
@@ -131,6 +140,7 @@ module.exports = {
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
+    MaintenanceCostColl: mongoose.model('maintenance', maintenanceCostSchema, 'maintenance'),
     PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
