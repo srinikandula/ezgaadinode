@@ -35,6 +35,7 @@ var accountSchema = new mongoose.Schema({
 var usersSchema = new mongoose.Schema({
     firstName: String,
     lastName: String,
+    email: String,
     role: String,
     accountId: {
         type: ObjectId, ref: 'accounts'
@@ -56,6 +57,7 @@ var truckSchema = new mongoose.Schema({
     registrationNo: {type: String, unique: true},
     accountId: {type: ObjectId, ref: 'accounts'},
     truckType: String,
+    driverId: String,
     modelAndYear: String,
     fitnessExpiry: Number,
     permitExpiry: Number,
@@ -65,7 +67,6 @@ var truckSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String
 }, {timestamps: true});
-
 
 var tripSchema = new mongoose.Schema({
     date: Number,
@@ -113,6 +114,12 @@ var driverSchema = new mongoose.Schema({
     timestamps: true
 });
 
+var rolesSchema = new mongoose.Schema({
+    roleName: String,
+    updatedBy: String,
+    createdBy: String,
+    menus: []
+},{timestamps: true});
 
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
@@ -120,6 +127,7 @@ module.exports = {
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
     PartiesCollection: mongoose.model('parties', partySchema, 'parties'),
-    TripsLaneCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
-    DriversColl: mongoose.model('drivers', driverSchema, 'drivers')
+    DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
+    TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
+    Roles: mongoose.model('roles', rolesSchema, 'roles')
 };

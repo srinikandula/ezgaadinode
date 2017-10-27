@@ -13,6 +13,12 @@ app.factory('AccountServices', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        getAllAccounts: function (success, error) {
+            $http({
+                url: '/v1/admin/accounts/fetchAllAccounts',
+                method: "GET"
+            }).then(success, error)
+        },
         getAccount: function (accountId, success, error) {
             $http({
                 url: '/v1/admin/accounts/' + accountId,
@@ -69,9 +75,11 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             field: 'contact'
         },{
             name: 'Edit',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
-        }],
-        rowHeight: 40,
+            cellTemplate: '<div class="text-center">' +
+          /*  '<button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'*/
+          '<a href="#" ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a>'
+                  }],
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

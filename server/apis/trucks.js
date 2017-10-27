@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 
+
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
@@ -19,6 +20,10 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
     } else if (!truckDetails.registrationNo || !_.isString(truckDetails.registrationNo)) {
         result.status = false;
         result.message = "Please provide valid registration number";
+        callback(result);
+    } else if (!truckDetails.driverId || !_.isString(truckDetails.driverId)) {
+        result.status = false;
+        result.message = "Please provide Driver ID";
         callback(result);
     } else if (!truckDetails.truckType || !_.isString(truckDetails.truckType)) {
         result.status = false;
@@ -193,6 +198,5 @@ Trucks.prototype.getAllTrucks = function (callback) {
         }
     });
 };
-
 
 module.exports = new Trucks();
