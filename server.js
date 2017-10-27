@@ -14,6 +14,7 @@ var Trucks = require('./server/routes/trucks');
 var Party = require('./server/routes/partyRoutes');
 var Drivers = require('./server/routes/drivers');
 var Roles = require('./server/routes/roles');
+
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
