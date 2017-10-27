@@ -62,6 +62,13 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open'
         }
     }).state({
+        name: 'trucksEdit',
+        url: '/trucksEdit',
+        templateUrl: 'views/partials/trucks-edit.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
         name: 'trips',
         url: '/trips',
         templateUrl: 'views/partials/trips.html',

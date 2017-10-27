@@ -21,10 +21,10 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
         result.status = false;
         result.message = "Please provide valid registration number";
         callback(result);
-   /* } else if (!truckDetails.driverId || !_.isString(truckDetails.driverId)) {
+    } else if (!truckDetails.driverId || !_.isString(truckDetails.driverId)) {
         result.status = false;
         result.message = "Please provide Driver ID";
-        callback(result);*/
+        callback(result);
     } else if (!truckDetails.truckType || !_.isString(truckDetails.truckType)) {
         result.status = false;
         result.message = "Please provide valid Truck type";
