@@ -84,12 +84,11 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
             field: 'roleName'
         }, {
             name: 'Edit',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditRolePage(row.entity._id)" class="btn btn-success">Edit</button></div>'
-        }, {
-            name: 'Delete',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.deleteRole(row.entity._id)" class="btn btn-success">Delete</button></div>'
-        }],
-        rowHeight: 40,
+            cellTemplate: '<div class="text-center">' +
+            '<a ng-click="grid.appScope.goToEditRolePage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a>' +
+            '<a ng-click="grid.appScope.deleteRole(row.entity._id)" class="glyphicon glyphicon-trash" style="padding-right: 10px;font-size: 20px;"></a></div>'
+        },],
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

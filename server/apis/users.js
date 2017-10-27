@@ -98,6 +98,7 @@ Users.prototype.login = function (userName, accountName, password, callback) {
             .findOne(query)
             .populate('accountId')
             .exec(function (err, user) {
+                console.log(err, user);
                 if (err) {
                     result.status = false;
                     result.message = "Error, try again!";

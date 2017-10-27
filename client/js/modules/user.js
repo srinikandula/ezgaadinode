@@ -70,9 +70,10 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
             field: 'role'
         }, {
             name: 'Edit',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditUserPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
+            cellTemplate: '<div class="text-center">' +
+            '<a href="#" ng-click="grid.appScope.goToEditUserPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"> </a></div>'
         }],
-        rowHeight: 40,
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

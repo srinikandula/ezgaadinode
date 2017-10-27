@@ -71,7 +71,7 @@ app.controller('trucksCntrl', ['$scope', '$uibModal', 'TrucksService', 'Notifica
             name: 'Edit',
             cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
         }],
-        rowHeight: 40,
+        rowHeight: 3    0,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
