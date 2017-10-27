@@ -7,9 +7,9 @@ app.factory('PartyService', function ($http, $cookies) {
                 data: partyDetails
             }).then(success, error)
         },
-        getAccountParties: function (pageNumber, success, error) {
+        getParties: function (pageNumber, success, error) {
             $http({
-                url: '/v1/party//get/accountParties/' + pageNumber,
+                url: '/v1/party/get/all',
                 method: "GET"
             }).then(success, error)
         },
@@ -35,8 +35,9 @@ app.factory('PartyService', function ($http, $cookies) {
     }
 });
 
-app.controller('PartyListController', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', function ($scope, $uibModal, AccountServices, Notification, $state) {
+app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', function ($scope, $uibModal, PartyService, Notification, $state) {
     $scope.goToEditPartyPage = function (partyId) {
+        console.log('go to editparty');
         $state.go('editParty', {partyId: partyId});
     };
 
@@ -45,10 +46,10 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'AccountServices',
     $scope.maxSize = 5;
     $scope.pageNumber = 1;
 
-    $scope.getAccountsData = function () {
-        AccountServices.getAccounts($scope.pageNumber, function (success) {
+    $scope.getParties = function () {
+        PartyService.getParties($scope.pageNumber, function (success) {
             if (success.data.status) {
-                $scope.accountGridOptions.data = success.data.accounts;
+                $scope.partyGridOptions.data = success.data.parties;
                 $scope.totalItems = success.data.count;
             } else {
                 Notification.error({message: success.data.message});
@@ -58,21 +59,27 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'AccountServices',
         });
     };
 
-    $scope.getAccountsData();
+    $scope.getParties();
 
-    $scope.accountGridOptions = {
+    $scope.partyGridOptions = {
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,
         columnDefs: [ {
-            name: 'Account name',
+            name: 'Party name',
             field: 'name'
         }, {
-            name: 'Address',
-            field: 'address'
-        },{
             name: 'Contact',
             field: 'contact'
+        },{
+            name: 'Email',
+            field: 'email'
+        },{
+            name: 'City',
+            field: 'city'
+        },{
+            name: 'Operating Lane',
+            field: 'operatingLane'
         },{
             name: 'Edit',
             cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="btn btn-success">Edit</button></div>'
@@ -86,16 +93,18 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'AccountServices',
 
 }]);
 
-app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'PartyService', '$stateParams', 'Notification', function ($scope, Utils, PartyService, $stateParams, Notification) {
-    console.log('-->', $stateParams);
-
+app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$stateParams', 'Notification','$state', function ($scope, Utils, PartyService, $stateParams, Notification, $state) {
+    console.log('adding a party....');
+    $scope.pageTitle = "Add Party";
+    if ($stateParams.partyId){
+        $scope.pageTitle = "Edit Party";
+    }
     $scope.party = {};
 
-    if ($stateParams.accountId) {
-        AccountServices.getAccount($stateParams.accountId, function (success) {
-            console.log('acc--->', success.data.account);
+    if ($stateParams.partyId) {
+        PartyService.getParty($stateParams.partyId, function (success) {
             if (success.data.status) {
-                $scope.account = success.data.account;
+                $scope.party = success.data.party;
             } else {
                 Notification.error(success.data.message)
             }
@@ -103,30 +112,21 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'PartyService', '$state
         })
     }
 
-    $scope.addOrUpdateAccount = function () {
-        var params = $scope.account;
+    $scope.addOrUpdateParty = function () {
+        var params = $scope.party;
         params.success = '';
         params.error = '';
 
-        if (params._id) {
-            delete params.userName;
-            delete params.password;
-        }
-
         if (!params.name) {
-            params.error = 'Invalid account name';
-        } else if (!params._id && !params.userName) {
-            params.error = 'Invalid user name';
-        } else if (!params._id && !Utils.isValidPassword(params.password)) {
-            params.error = 'Invalid password';
-        } else if (!params.address.trim()) {
-            params.error = 'Invalid address'
+            params.error += 'Invalid party name \n';
+        } else if (!Utils.isValidEmail(params.email)) {
+            params.error += 'Invalid email \n';
         } else if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.error = 'Invalid phone number';
+            params.error += 'Invalid phone number \n';
         } else if (params._id) {
-            // If _id update the account
-            AccountServices.updateAccount(params, function (success) {
+            PartyService.updateParty($scope.party, function (success) {
                 if (success.data.status) {
+                    $state.go('party');
                     params.success = success.data.message;
                 } else {
                     params.error = success.data.message;
@@ -135,8 +135,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'PartyService', '$state
 
             });
         } else {
-            // _id doesn\'t exist => create account
-            AccountServices.addAccount(params, function (success) {
+            PartyService.addParty($scope.party, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
                 } else {
@@ -146,6 +145,9 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', 'PartyService', '$state
 
             });
         }
+    }
+    $scope.cancel = function() {
+        $state.go('party');
     }
 }]);
 
