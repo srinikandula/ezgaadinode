@@ -6,7 +6,7 @@
         <div class="main-right col-xs-9">
             <div class="col-xs-6 account-edit">
                 <h2 class="login-heading">Add User</h2>
-                <form ng-submit="AddorUpdateUSer()" class="margin-top-20">
+                <form class="margin-top-20">
                     <!--<div class="form-group">-->
                         <!--<label for="accountId">Account Id</label>-->
                         <!--&lt;!&ndash;<input ng-model="userDetails.accountId" type="text" class="form-control" id="accountId"&ndash;&gt;-->
@@ -63,7 +63,8 @@
                                 </ul>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" ng-click="AddorUpdateUSer()">Submit</button>
+                        <button type="submit" class="btn btn-primary" ng-click="goToUsersPage()">Cancel</button>
                     </div>
                 </form>
             </div>

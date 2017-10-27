@@ -80,7 +80,7 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
     };
 }]);
 
-app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 'AccountServices', 'Notification', '$stateParams', 'Utils', function ($scope, UserServices, RoleServices, AccountServices, Notification, $stateParams, Utils) {
+app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 'AccountServices', 'Notification', '$stateParams', 'Utils', '$state', function ($scope, UserServices, RoleServices, AccountServices, Notification, $stateParams, Utils, $state) {
     console.log('-->', $stateParams, !!$stateParams.userId);
     $scope.userDetails = {
         accountId : '',
@@ -131,6 +131,10 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
         });
     }
     // getAccounts();
+
+    $scope.goToUsersPage = function (userId) {
+        $state.go('users');
+    };
 
     $scope.AddorUpdateUSer = function () {
         var params = $scope.userDetails;
