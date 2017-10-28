@@ -94,7 +94,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             name: 'Action',
             cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteParty(row.entity._id)" class="btn btn-danger">Delete</button></div>'
         }],
-        rowHeight: 40,
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

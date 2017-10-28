@@ -7,14 +7,16 @@
 
     <link rel="stylesheet" type="text/css" href="components/bootstrap/dist/css/bootstrap.min.css">
     <link href="components/angular-bootstrap/ui-bootstrap-csp.css" type="text/css">
+    <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link rel="stylesheet" type="text/css" href="components/angular-ui-grid/ui-grid.min.css">
-    <link rel="stylesheet" type="text/css" href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
+    <link rel="stylesheet" type="text/css"
+          href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 
 <body ng-app="EasyGaadi">
-<nav class="navbar navbar-default" ng-controller="NavCtrl">
-    <div class="container-fluid">
+<nav class="navbar navbar-default menu-header" ng-controller="NavCtrl">
+    <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -24,12 +26,25 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#"><img src="images/logo.png"></a>
+            <a class="navbar-brand logo" href="#"><img src="images/logo.png"></a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Home</a></li>
+                <li><a href="#">About Us</a></li>
+                <li><a href="#">How it Works</a></li>
+                <li><a href="#">Contact us</a></li>
+                <li><a href="#">GPS</a></li>
                 <li><a href="#" ng-click="logout()">Logout</a></li>
+               <!-- <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user-circle"></i><span
+                            class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">My Account</a></li>
+
+                    </ul>
+                </li>-->
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
@@ -57,6 +72,8 @@
 <script src="js/services.js"></script>
 <script src="js/directives/left-nav.js"></script>
 <script src="js/directives/date-picker.js"></script>
+<script src="js/directives/body-menu.js"></script>
+
 
 <!--controllers-->
 <script src="js/modules/nav.js"></script>

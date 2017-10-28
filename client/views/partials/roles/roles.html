@@ -1,3 +1,4 @@
+<top-navigation></top-navigation>
 <div class="container-fluid">
     <div class="row pall-zero">
         <div class="col-xs-2 pall-zero">
@@ -8,10 +9,10 @@
             <button class="btn btn-success pull-right" ng-click="goToEditRolePage()">Add Role</button>
 
             <div class="margin-top-40">
-            <div class="grid" ui-grid="roleGridOptions" ui-grid-selection></div>
+            <div class="grid" ui-grid="roleGridOptions"></div>
             </div>
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
             boundary-link-numbers="true" rotate="false" ng-change="getRoles()"></ul>
         </div>
     </div>
