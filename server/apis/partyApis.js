@@ -11,7 +11,7 @@ var Party = function () {
 };
 
 Party.prototype.add = function (jwt, partyDetails, callback) {
-    var result = {message:'',status:true};
+    var result = {message:'', status:true};
 
     if (!_.isObject(partyDetails) || _.isEmpty(partyDetails)) {
         result.status = false;
@@ -26,7 +26,7 @@ Party.prototype.add = function (jwt, partyDetails, callback) {
         result.message += " Please provide valid contact number for party type";
     }
 
-    if(result.status == false) {
+    if(result.status === false) {
         callback(result);
     } else {
         partyDetails.createdBy = jwt.id;

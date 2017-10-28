@@ -68,14 +68,17 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/trucks-list.html',
         params: {
             access: 'open'
-        }
+        },
+        controller: 'TrucksController'
     }).state({
         name: 'trucksEdit',
-        url: '/trucksEdit',
+        url: '/trucksEdit/:truckId',
         templateUrl: 'views/partials/trucks-edit.html',
         params: {
-            access: 'open'
-        }
+            access: 'open',
+            truckId:null
+        },
+        controller: 'AddEditTruckCtrl'
     }).state({
         name: 'trips',
         url: '/trips',

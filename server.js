@@ -10,8 +10,8 @@ var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 
 var Trips = require('./server/routes/trips');
-var Trucks = require('./server/routes/trucks');
 var Maintenance = require('./server/routes/maintenanceCost');
+var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
 var Drivers = require('./server/routes/drivers');
 var Roles = require('./server/routes/roles');
