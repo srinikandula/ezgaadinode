@@ -6,22 +6,15 @@
         </div>
         <div class="main-right col-xs-9">
             <div class="col-xs-6 account-edit">
-                <h2 class="login-heading">Add Truck</h2>
-                <form ng-submit="addOrUpdateTruck()" class="margin-top-20">
+                <h2 class="login-heading">{{pageTitle}}</h2>
                     <div class="form-group">
                         <label>registrationNo</label>
-                        <input type="text" class="form-control" ng-modal="truck.registrationNo"
-                               placeholder="registration No"/>
+                        <input type="text" class="form-control" ng-modal="truck.registrationNo" placeholder="Registration No"/>
                     </div>
                     <div class="form-group">
                         <label>Truck Type</label>
                         <input type="text" class="form-control" ng-modal="truck.truckType"
                                placeholder="Truck Type"/>
-                    </div>
-                    <div class="form-group">
-                        <label>Driver Id</label>
-                        <input type="text" class="form-control" ng-modal="truck.driverId"
-                               placeholder="Driver Id"/>
                     </div>
                     <div class="form-group">
                         <label>Modal and Year</label>
@@ -57,10 +50,10 @@
                         <div class="alert alert-success" role="alert" ng-show="truck.success">
                             <strong>{{truck.success}}</strong>
                         </div>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                         <input type="button" value="Submit" class="btn btn-primary" ng-click="addOrUpdateTruck()"/>
                         <input type="button" value="Cancel" class="btn btn-primary" ng-click="cancel()"/>
                     </div>
-                </form>
+
             </div>
         </div>
     </div>

@@ -101,8 +101,9 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 }]);
 
 app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateParams', 'Notification', function ($scope, Utils, TrucksService, $stateParams, Notification) {
-
     $scope.truck = {};
+    $scope.pageTitle = $stateParams.truckId ?'Update Truck':'Add Truck';
+
     if ($stateParams.truckId) {
         TrucksService.getTruck($stateParams.truckId, function (success) {
             if (success.data.status) {
@@ -121,26 +122,28 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
         if (!params.registrationNo) {
             params.error = 'Invalid Registration ID';
         }
-        if (params._id) {
-            TrucksService.addTruck(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
+        if(!Utils.isEmpty(params.error)){
+            if (!params._id) {
+                TrucksService.addTruck(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
 
-            });
-        } else {
-            TrucksService.updateTruck(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
+                });
+            } else {
+                TrucksService.updateTruck(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
 
-            });
+                });
+            }
         }
     }
 }]);
