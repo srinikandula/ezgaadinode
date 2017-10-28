@@ -15,6 +15,13 @@ AuthRouter.get('/getAll', function (req, res) {
     });
 });
 
+AuthRouter.get('/getMaintenance/:maintenanceId', function (req, res) {
+    MaintenanceCost.findMaintenanceRecord(req.params.maintenanceId, function (result) {
+        res.send(result);
+    });
+});
+
+
 AuthRouter.put('/updateMaintenance', function (req, res) {
     MaintenanceCost.updateMaintenanceCost(req.jwt, req.body, function (result) {
         res.send(result);
