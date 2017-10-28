@@ -65,6 +65,26 @@ MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
     });
 };
 
+MaintenanceCost.prototype.findMaintenanceRecord = function ( maintenanceId, callback) {
+    var result = {};
+    maintenanceColl.findOne({_id:maintenanceId}, function (err, record) {
+        if(err) {
+            result.status = false;
+            result.message = "Error while finding Maintenance Record, try Again";
+            callback(result);
+        } else if(record) {
+            result.status = true;
+            result.message = "Maintenance Record found successfully";
+            result.trip = record;
+            callback(result);
+        } else {
+            result.status = false;
+            result.message = "Maintenance Record is not found!";
+            callback(result);
+        }
+    });
+};
+
 MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callback) {
     var result = {};
     maintenanceColl.findOneAndUpdate({_id:Details._id},
@@ -72,17 +92,14 @@ MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callba
             "updatedBy":jwt.id,
             "vehicleNumber": Details.vehicleNumber,
             "repairType": Details.repairType,
-            "cost": Details.cost
+            "cost": Details.cost,
+            "date": Details.date
         }},
         {new: true},
-        function (err, returnValue, Details) {
+        function (err, Details) {
             if(err) {
                 result.status = false;
                 result.message = "Error while updating Maintenance Cost Record, try Again";
-                callback(result);
-            } else if (returnValue.result.n === 0) {
-                result.status = false;
-                result.message = 'Error deleting Maintenance Record';
                 callback(result);
             }else if(Details) {
                 result.status = true;

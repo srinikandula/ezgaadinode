@@ -110,13 +110,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             partyId: null
         }
     }).state({
-        name: 'maintenance',
-        url: '/maintenance',
-        templateUrl: 'views/partials/maintenance.html',
-        params: {
-            access: 'open'
-        }
-    }).state({
         name: 'tripsLane',
         url: '/tripsLane',
         templateUrl: 'views/partials/trip-lane.html',
@@ -137,6 +130,21 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open',
             roleId: null
+        }
+    }).state({
+        name: 'maintenance',
+        url: '/maintenance',
+        templateUrl: 'views/partials/Maintenance/maintenance.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'maintenanceEdit',
+        url: '/maintenanceEdit/:maintenanceId',
+        templateUrl: 'views/partials/Maintenance/maintenance-edit.html',
+        params: {
+            access: 'open',
+            maintenanceId: null
         }
     });
     $urlRouterProvider.otherwise('/login');

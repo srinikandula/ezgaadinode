@@ -1,0 +1,55 @@
+<div class="container-fluid" ng-controller="maintenanceEditController">
+    <div class="row pall-zero">
+        <div class="col-xs-2 pall-zero">
+            <left-navigation></left-navigation>
+        </div>
+        <div class="main-right col-xs-9">
+            <div class="col-xs-6 account-edit">
+                <h2 class="login-heading">{{pagetitle}}</h2>
+                <form class="margin-top-20">
+
+                    <div class="form-group">
+                        <label for="vehicleNumber">Vehicle Number</label>
+                        <input ng-model="maintenanceDetails.vehicleNumber" type="text" class="form-control" id="vehicleNumber"
+                               placeholder="Vehicle Number">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="description">Repair Description</label>
+                        <input ng-model="maintenanceDetails.repairType" type="text" class="form-control" id="description"
+                               placeholder="Description">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <date-picker id="date" ng-model="expenseDate"></date-picker>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="amount">Amount</label>
+                        <input ng-model="maintenanceDetails.cost" type="number" class="form-control" id="amount"
+                               placeholder="Amount">
+                    </div>
+
+                    <div>
+
+                        <div>
+                            <div class="alert alert-danger" role="alert" ng-show="maintenanceDetails.error">
+                                <strong>{{maintenanceDetails.error}}</strong>
+                            </div>
+
+                            <div class="alert alert-success" role="alert" ng-show="maintenanceDetails.success">
+                                <strong>{{maintenanceDetails.success}}</strong>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" ng-click="AddorUpdateMaintenance()">Submit</button>
+                        <button type="submit" class="btn btn-primary" ng-click="goToMaintenancePage()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+
+        </div>
+    </div>
+</div>
