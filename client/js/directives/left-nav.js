@@ -94,7 +94,7 @@ app.directive('laneDirective',function () {
     return{
         restrict: 'E',
         template: '<li class="left-nav-li"> \n' +
-        '             <a class="left-nav-anchor" ui-sref="tripsLane">Trip Lane</a>\n' +
+        '             <a class="left-nav-anchor" ui-sref="tripLanes">Trip Lanes</a>\n' +
         '          </li>'
     } ;
 });

@@ -66,7 +66,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
             } else {
                 truckDetails.createdBy = jwt.id;
                 truckDetails.updatedBy = jwt.id;
-                truckDetails.accountId = jwt.accountId._id;
+                truckDetails.accountId = jwt.accountId;
                 var truckDoc = new TrucksColl(truckDetails);
                 truckDoc.save(function (err, truck) {
                     if (err) {
@@ -87,7 +87,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
 
 Trucks.prototype.findTruck = function (jwt, truckId, callback) {
     var result = {};
-    TrucksColl.findOne({_id: truckId, accountId: jwt.accountId}, function (err, truck) {
+    TrucksColl.findOne({_id:truckId, accountId: jwt.accountId}, function (err, truck) {
         if (err) {
             result.status = false;
             result.message = "Error while finding truck, try Again";
@@ -113,8 +113,14 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
             $set: {
                 "truckType": truckDetails.truckType,
                 "updatedBy": jwt.id,
-                "modelAndYear": truckDetails.modelAndYear
-                //a generic way???
+                "modelAndYear": truckDetails.modelAndYear,
+                "registrationNo": truckDetails.registrationNo,
+                "driverId": truckDetails.driverId,
+                "fitnessExpiry": truckDetails.fitnessExpiry,
+                "permitExpiry": truckDetails.permitExpiry,
+                "insuranceExpiry": truckDetails.insuranceExpiry,
+                "pollutionExpiry": truckDetails.pollutionExpiry,
+                "taxDueDate": truckDetails.taxDueDate
             }
         },
         {new: true}, function (err, truck) {
@@ -153,7 +159,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, callback) {
 
 Trucks.prototype.getAllTrucks = function (callback) {
     var result = {};
-    TrucksColl.findAll(function (err, accountTrucks) {
+    TrucksColl.find({},function (err, accountTrucks) {
         if (err) {
             result.status = false;
             result.message = 'Error getting trucks';
@@ -161,7 +167,7 @@ Trucks.prototype.getAllTrucks = function (callback) {
         } else {
             result.status = true;
             result.message = 'Success';
-            result.details = accountTrucks;
+            result.trucks = accountTrucks;
             callback(result);
         }
     });
@@ -183,20 +189,20 @@ Trucks.prototype.deleteTruck = function (truckId, callback) {
 };
 
 // Get all trucks with ids and registration numbers
-Trucks.prototype.getAllTrucks = function (callback) {
-    var retObj = {};
-    TrucksColl.find({}, {registrationNo: 1, _id: 1, accountId:1}, function (err, trucks) {
-        if (err) {
-            retObj.status = false;
-            retObj.message = 'Error fetching trucks';
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.message = 'Success';
-            retObj.trucks = trucks;
-            callback(retObj);
-        }
-    });
-};
+// Trucks.prototype.getAllTrucks = function (callback) {
+//     var retObj = {};
+//     TrucksColl.find({}, {registrationNo: 1, _id: 1, accountId:1}, function (err, trucks) {
+//         if (err) {
+//             retObj.status = false;
+//             retObj.message = 'Error fetching trucks';
+//             callback(retObj);
+//         } else {
+//             retObj.status = true;
+//             retObj.message = 'Success';
+//             retObj.trucks = trucks;
+//             callback(retObj);
+//         }
+//     });
+// };
 
 module.exports = new Trucks();

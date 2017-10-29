@@ -57,10 +57,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         }
     }).state({
         name: 'driversEdit',
-        url: '/driversEdit',
+        url: '/driversEdit/:driverId',
         templateUrl: 'views/partials/drivers/edit-driver.html',
         params: {
-            access: 'open'
+            access: 'open',
+            driverId: null
         }
     }).state({
         name: 'trucks',
@@ -112,9 +113,24 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'tripsLane',
         url: '/tripsLane',
+        templateUrl: 'views/partials/maintenance.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'tripLanes',
+        url: '/tripLanes',
         templateUrl: 'views/partials/trip-lane.html',
         params: {
             access: 'open'
+        }
+    }).state({
+        name: 'tripLanesEdit',
+        url: '/tripLanesEdit/:tripLaneId',
+        templateUrl: 'views/partials/trip-lane-edit.html',
+        params: {
+            access: 'open',
+            tripLaneId: null
         }
     }).state({
         name: 'roles',
