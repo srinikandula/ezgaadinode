@@ -19,7 +19,7 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
         result.status = false;
         result.message = "Please provide valid vehicle number";
         callback(result);
-    } else if (!maintenanceDetails.repairType || !_.isString(maintenanceDetails.repairType)) {
+    } else if (!maintenanceDetails.description || !_.isString(maintenanceDetails.description)) {
         result.status = false;
         result.message = "Please provide valid repair type";
         callback(result);

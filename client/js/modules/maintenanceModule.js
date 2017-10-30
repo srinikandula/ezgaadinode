@@ -36,7 +36,6 @@ app.factory('MaintenanceService', function ($http) {
 });
 
 app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'Notification', function ($scope, $state, MaintenanceService, Notification) {
-    console.log("--->  Maintenance Cost Controller");
     $scope.goToEditMaintenancePage = function (maintenanceId) {
         $state.go('maintenanceEdit', {maintenanceId: maintenanceId});
     };
@@ -76,19 +75,19 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
         columnDefs: [{
             name: 'Vehicle Number',
             field: 'vehicleNumber'
-        },{
+        }, {
             name: 'Description',
-            field: 'repairType'
-        },{
+            field: 'description'
+        }, {
             name: 'Date',
             field: 'date'
-        },{
+        }, {
             name: 'Amount',
             field: 'cost'
-        },{
+        }, {
             name: 'Created By',
             field: 'createdBy'
-        },{
+        }, {
             name: 'Edit',
             cellTemplate: '<div class="text-center"><a ng-click="grid.appScope.goToEditMaintenancePage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a></div>'
         }, {
@@ -107,12 +106,12 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
 app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', function ($scope, MaintenanceService, $stateParams, $state) {
     console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
     $scope.pagetitle = "Add Maintenance";
-    $scope.expenseDate = '';
 
     $scope.maintenanceDetails = {
         vehicleNumber: '',
-        repairType: '',
-        cost:'',
+        description: '',
+        date: new Date(),
+        cost: '',
         error: '',
         success: ''
     };
@@ -125,7 +124,8 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         $scope.pagetitle = "Edit Maintenance Record";
         MaintenanceService.getMaintenanceRecord($stateParams.maintenanceId, function (success) {
             if (success.data.status) {
-                 $scope.maintenanceDetails = success.data.trip;
+                $scope.maintenanceDetails = success.data.trip;
+                $scope.maintenanceDetails.date = new Date($scope.maintenanceDetails.date);
             } else {
                 Notification.error(success.data.message)
             }
@@ -133,14 +133,18 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         })
     }
     $scope.AddorUpdateMaintenance = function () {
-        $scope.maintenanceDetails.date = $scope.expenseDate.getTime();
-
         var params = $scope.maintenanceDetails;
         params.error = '';
         params.success = '';
 
         if (!params.vehicleNumber) {
             params.error = 'Invalid vehicle Number';
+        } else if (!params.description) {
+            params.error = 'Invalid description';
+        } else if (!params.date) {
+            params.error = 'Invalid date';
+        } else if (!_.isNumber(params.cost)) {
+            params.error = 'Invalid cost';
         } else if ($stateParams.maintenanceId) {
             MaintenanceService.updateRecord(params, function (success) {
                 if (success.data.status) {
@@ -157,6 +161,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
             MaintenanceService.addMaintenance(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
+                    $state.go('maintenance');
                 } else {
                     params.error = success.data.message;
                 }

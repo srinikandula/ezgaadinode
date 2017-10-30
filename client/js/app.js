@@ -157,7 +157,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'maintenanceEdit',
         url: '/maintenanceEdit/:maintenanceId',
-        templateUrl: 'views/partials/Maintenance/maintenance-edit.html',
+        templateUrl: 'views/partials/Maintenance/maintenanceEdit.html',
         params: {
             access: 'open',
             maintenanceId: null

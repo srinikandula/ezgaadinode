@@ -127,9 +127,9 @@ var driverSchema = new mongoose.Schema({
 var maintenanceCostSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     vehicleNumber: String,
-    repairType:String,
+    description:String,
     cost: Number,
-    date: Number,
+    date: Date,
     updatedBy: String,
     createdBy: String
 },{timestamps: true});
