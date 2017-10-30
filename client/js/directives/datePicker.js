@@ -4,17 +4,13 @@ app.directive('datePicker', function () {
         scope: {
             ngModel: "="
         },
-        template: '<div class="row">\n' +
-        '    <div class="col-md-6">\n' +
-        '        <p class="input-group">\n' +
+        template: '<div class="input-group">\n' +
         '          <input type="text" readonly class="form-control" datepicker-options="options" show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened" ng-required="true"  />\n' +
         '          <span class="input-group-btn">\n' +
         '            <button type="button" class="btn btn-default" ng-click="open($event)">' +
         '<i class="glyphicon glyphicon-calendar"></i></button>\n' +
         '          </span>\n' +
-        '        </p>\n' +
-        '    </div>\n' +
-        '</div> ',
+        '        </div>\n',
         require: 'ngModel',
         link: function (scope) {
             scope.opened=false;
@@ -28,7 +24,7 @@ app.directive('datePicker', function () {
                 }
             };
 
-            scope.dateFormat = 'shortDate';
+            scope.dateFormat = 'dd-MM-yyyy';
             scope.options = {
                 minDate: new Date(),
                 showWeeks: false
