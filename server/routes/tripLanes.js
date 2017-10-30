@@ -8,8 +8,8 @@ AuthRouter.post('/', function (req, res) {
         res.send(result);
     });
 });
-AuthRouter.get('/', function (req, res) {
-    TripLanes.getTripLanes(req.jwt, req.body, function (result) {
+AuthRouter.get('/:pageNumber', function (req, res) {
+    TripLanes.getTripLanes(req.jwt, req.body, req.params.pageNumber, function (result) {
         res.send(result);
     });
 });
