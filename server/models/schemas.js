@@ -50,6 +50,7 @@ var usersSchema = new mongoose.Schema({
     password: String,
     updatedBy: String,
     createdBy: String,
+    isActive: {type: Boolean, default:true},
     attrs: {}
 }, {
     timestamps: true
