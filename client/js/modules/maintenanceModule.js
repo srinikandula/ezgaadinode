@@ -80,7 +80,8 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
             field: 'description'
         }, {
             name: 'Date',
-            field: 'date'
+            field: 'date',
+            cellFilter: 'date:"dd-MM-yyyy"'
         }, {
             name: 'Amount',
             field: 'cost'
@@ -88,14 +89,12 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
             name: 'Created By',
             field: 'createdBy'
         }, {
-            name: 'Edit',
-            cellTemplate: '<div class="text-center"><a ng-click="grid.appScope.goToEditMaintenancePage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a></div>'
-        }, {
-            name: 'Delete',
-            cellTemplate: '<div class="text-center"><a ng-click="grid.appScope.deleteMaintenanceRecord(row.entity._id)" class="glyphicon glyphicon-remove" style="padding-right: 10px;font-size: 20px;"></a></div>'
+            name: 'Action',
+            cellTemplate: '<div class="text-center"> <a ng-click="grid.appScope.goToEditMaintenancePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
+            '<a ng-click="grid.appScope.deleteMaintenanceRecord(row.entity._id)" class="glyphicon glyphicon-trash dele"> </a></div>'
 
         }],
-        rowHeight: 40,
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

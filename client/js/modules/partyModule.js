@@ -74,8 +74,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
 
     $scope.partyGridOptions = {
         enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
         columnDefs: [{
             name: 'Party name',
             field: 'name'
@@ -93,7 +91,10 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             field: 'operatingLane'
         }, {
             name: 'Action',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteParty(row.entity._id)" class="btn btn-danger">Delete</button></div>'
+            cellTemplate: '<div class="text-center">' +
+            '<a ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
+            '<a ng-click="grid.appScope.deleteParty(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
+            '</div>'
         }],
         rowHeight: 30,
         data: [],
@@ -110,6 +111,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
     if ($stateParams.partyId) {
         $scope.pageTitle = "Edit Party";
     }
+
     $scope.party = {};
     if ($stateParams.partyId) {
         PartyService.getParty($stateParams.partyId, function (success) {

@@ -109,14 +109,13 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             name: 'Updated By',
             field: 'updatedBy'
         },{
-            name: 'Edit',
+            name: 'Action',
             cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditTripPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a></div>'
-        },{
-            name: 'Delete',
-            cellTemplate: '<button ng-click="grid.appScope.deleteTrip(row.entity._id)" class="btn btn-danger">Delete</button>'
+            '<a href="#" ng-click="grid.appScope.goToEditTripPage(row.entity._id)" class="glyphicon glyphicon-edit edit" "></a>' +
+             '<a ng-click="grid.appScope.deleteTrip(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>'+
+            '</div>'
         }],
-        rowHeight: 40,
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;

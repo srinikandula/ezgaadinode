@@ -7,7 +7,7 @@ app.directive('topNavigation', function () {
         '            <div class="col-sm-push-2 col-sm-10">\n' +
         '                <div class="body-nav">\n' +
         '                    <ul class="list-inline">\n' +
-        '                        <li><a href="#">FMS</a></li>\n' +
+        '                        <li class="active"><a href="#" style="color: #fff;" ui-sref="accounts">FMS</a></li>\n' +
         '                        <li><a href="#">GPS Listing</a></li>\n' +
         '                        <li><a href="#">Group Map</a></li>\n' +
         '                        <li><a href="#">Track Map</a></li>\n' +

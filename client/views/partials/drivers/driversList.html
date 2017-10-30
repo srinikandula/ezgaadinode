@@ -9,13 +9,13 @@
             <h3>Drivers</h3>
 
             <div>
-                <button class="btn btn-success pull-right" ng-click="goToEditOrAddDriverPage()">Add Driver</button>
+                <button class="btn  btn-blue pull-right" ng-click="goToEditDriverPage()">Add Driver</button>
             </div>
 
             <div class="margin-top-40">
                 <div class="grid" ui-grid="driverGridOptions"></div>
             </div>
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
                 boundary-link-numbers="true" rotate="false" ng-change="getDriversData()"></ul>
         </div>
     </div>

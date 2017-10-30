@@ -248,7 +248,7 @@ Drivers.prototype.updateDriver = function (jwtObj, driver, callback) {
             }
         });
     }
-}
+};
 
 Drivers.prototype.getAllDrivers = function (callback) {
     var result = {};

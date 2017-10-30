@@ -83,10 +83,11 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
             name: 'Role name',
             field: 'roleName'
         }, {
-            name: 'Edit',
+            name: 'Action',
             cellTemplate: '<div class="text-center">' +
-            '<a ng-click="grid.appScope.goToEditRolePage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a>' +
-            '<a ng-click="grid.appScope.deleteRole(row.entity._id)" class="glyphicon glyphicon-trash" style="padding-right: 10px;font-size: 20px;"></a></div>'
+            '<a ng-click="grid.appScope.goToEditRolePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
+            '<a ng-click="grid.appScope.deleteRole(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
+            '</div>'
         },],
         rowHeight: 30,
         data: [],

@@ -85,11 +85,17 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             cellFilter: 'date:"dd-MM-yyyy"'
         }, {
             name: 'Fitness',
-            field: 'fitnessExpiry',
-            cellFilter: 'date:"dd-MM-yyyy"'
+            field: 'fitnessExpiry'
         }, {
-            name: 'Edit',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditTruckPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteTruck(row.entity._id)" class="btn btn-danger">Delete</button></div>'
+            name: 'Driver',
+            field: 'driverName'
+        }, {
+            name: 'Action',
+            cellTemplate: '<div class="text-center">' +
+            '<a ng-click="grid.appScope.goToEditTruckPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
+            '<a ng-click="grid.appScope.deleteTruck(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
+            '</div>'
+
         }],
         rowHeight: 30,
         data: [],
@@ -139,7 +145,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
         var params = $scope.truck;
         params.success = '';
         params.error = '';
-        console.log('params', params);
+        console.log('params==>', params);
         if (!params.registrationNo) {
             params.error = 'Invalid Registration ID';
         }

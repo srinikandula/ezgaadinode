@@ -11,10 +11,14 @@
     <link rel="stylesheet" type="text/css" href="components/angular-ui-grid/ui-grid.min.css">
     <link rel="stylesheet" type="text/css"
           href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 
 <body ng-app="EasyGaadi">
+
+<left-nav-li name="Accounts" link="drivers"></left-nav-li>
+
 <nav class="navbar navbar-default menu-header" ng-controller="NavCtrl">
     <div class="container">
         <!-- Brand and toggle get grouped for better mobile display -->
@@ -26,7 +30,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand logo" href="#"><img src="images/logo.png"></a>
+            <a class="navbar-brand logo" href="#" ui-sref="accounts"><img src="images/logo.png"></a>
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -70,9 +74,9 @@
 
 <!--services-->
 <script src="js/services.js"></script>
-<script src="js/directives/left-nav.js"></script>
-<script src="js/directives/date-picker.js"></script>
-<script src="js/directives/body-menu.js"></script>
+<script src="js/directives/leftNav.js"></script>
+<script src="js/directives/datePicker.js"></script>
+<script src="js/directives/bodyMenu.js"></script>
 
 
 <!--controllers-->
@@ -82,8 +86,8 @@
 <script src="js/modules/tripsModule.js"></script>
 <script src="js/modules/driversModule.js"></script>
 <script src="js/modules/trucksModule.js"></script>
-<script src="js/modules/user.js"></script>
-<script src="js/modules/roles.js"></script>
+<script src="js/modules/userModule.js"></script>
+<script src="js/modules/rolesModule.js"></script>
 <script src="js/modules/partyModule.js"></script>
 <script src="js/modules/maintenanceModule.js"></script>
 <script src="js/modules/tripLanesModule.js"></script>

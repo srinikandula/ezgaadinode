@@ -49,23 +49,21 @@ app.factory('DriverServices', function ($http) {
 
 app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notification', function ($scope, $state, DriverServices, Notification) {
 
-    $scope.goToEditOrAddDriverPage = function (driverId) {
+    $scope.goToEditDriverPage = function (driverId) {
         $state.go('driversEdit', {driverId: driverId});
     };
 
-    $scope.totalItems = 200;
-    $scope.maxSize = 5;
-    $scope.pageNumber = 1;
 
     $scope.driverGridOptions = {
         enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
         columnDefs: [{
             name: 'Full Name',
             field: 'fullName'
         }, {
-            name: 'Truck Id',
+            name: 'Contact Number',
+            field: 'mobile'
+        }, {
+            name: 'Truck Reg No',
             field: 'truckId.registrationNo'
         }, {
             name: 'License Validity',
@@ -82,14 +80,19 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
         }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditOrAddDriverPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a><button ng-click="grid.appScope.deleteDriver(row.entity._id)" class="btn btn-danger">Delete</button></div>'
+            '<a href="#" ng-click="grid.appScope.goToEditDriverPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>'
         }],
-        rowHeight: 40,
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
         }
     };
+
+    // pagination options
+    $scope.totalItems = 200;
+    $scope.maxSize = 5;
+    $scope.pageNumber = 1;
 
     $scope.getDrivers = function () {
         DriverServices.getDrivers($scope.pageNumber, function (success) {

@@ -76,8 +76,9 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             field: 'isActive'
         },{
             name: 'Edit',
+            name: 'Action',
             cellTemplate: '<div class="text-center">' +
-          '<a href="#" ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a> </div>'
+          '<a href="#" ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a> </div>'
                   }],
         rowHeight: 30,
         data: [],

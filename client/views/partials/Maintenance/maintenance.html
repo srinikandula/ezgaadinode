@@ -1,3 +1,4 @@
+<top-navigation></top-navigation>
 <div class="container-fluid">
     <div class="row pall-zero">
         <div class="col-xs-2 pall-zero">
@@ -5,13 +6,13 @@
         </div>
         <div class="main-right col-xs-9" ng-controller="MaintenanceCtrl">
             <h3>Maintenance Cost</h3>
-            <button class="btn btn-success pull-right" ng-click="goToEditMaintenancePage()">Add Maintenance</button>
+            <button class="btn  btn-blue pull-right" ng-click="goToEditMaintenancePage()">Add Maintenance</button>
 
             <div class="margin-top-40">
-                <div class="grid" ui-grid="maintenanceGridOptions" ui-grid-selection></div>
+                <div class="grid" ui-grid="maintenanceGridOptions"></div>
             </div>
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
                 boundary-link-numbers="true" rotate="false" ng-change="getRoles()"></ul>
         </div>
     </div>
