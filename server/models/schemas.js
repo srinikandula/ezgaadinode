@@ -61,11 +61,11 @@ var truckSchema = new mongoose.Schema({
     driverId: String,
     modelAndYear: String,
     tonnage: String,
-    fitnessExpiry: Number,
-    permitExpiry: Number,
-    insuranceExpiry: Number,
-    pollutionExpiry: Number,
-    taxDueDate: Number,
+    fitnessExpiry: Date,
+    permitExpiry: Date,
+    insuranceExpiry: Date,
+    pollutionExpiry: Date,
+    taxDueDate: Date,
     updatedBy: String,
     createdBy: String
 }, {timestamps: true});
@@ -111,8 +111,8 @@ var driverSchema = new mongoose.Schema({
     truckId: {type: ObjectId, ref: 'trucks'},
     accountId: {type: ObjectId, ref: 'accounts'},
     mobile: Number,
-    joiningDate: {type: Number, default: new Date() - 0},
-    licenseValidity: Number,
+    joiningDate: {type: Date, default: new Date()},
+    licenseValidity: Date,
     salary: {
         value: Number
     },

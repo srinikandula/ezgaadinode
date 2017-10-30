@@ -25,7 +25,7 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
         errors.push('Mobile number should be of ten digits');
     }
 
-    if (!Utils.isValidDateStr(driverInfo.licenseValidity) || (new Date() > new Date(driverInfo.licenseValidity))) {
+    if (!driverInfo.licenseValidity) {
         errors.push('Invalid license validity date, format should be in YYYY-MM-DD');
     }
 
@@ -38,7 +38,6 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
         retObj.message = errors;
         callback(retObj);
     } else {
-        driverInfo.licenseValidity = new Date(driverInfo.licenseValidity) - 0;
         driverInfo.createdBy = jwtObj.id;
 
         TrucksColl.findById(driverInfo.truckId, function (err, truck) {
@@ -55,7 +54,6 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                 driverInfo.mobile = Number(driverInfo.mobile);
                 delete driverInfo.joiningDate;
                 DriversColl.find({accountId: driverInfo.accountId}, function (err, drivers) {
-
                         if (err) {
                             retObj.status = false;
                             retObj.message = ['Error fetching accounts'];
@@ -189,7 +187,6 @@ Drivers.prototype.updateDriver = function (jwtObj, driver, callback) {
         retObj.message = 'Invalid driverId';
         callback(retObj);
     } else {
-        driver.licenseValidity = new Date(driver.licenseValidity) - 0;
         driver.updatedBy = jwtObj.id;
 
         DriversColl.find({
