@@ -113,6 +113,7 @@ var driverSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     mobile: Number,
     joiningDate: {type: Date, default: new Date()},
+    licenseNumber: String,
     licenseValidity: Date,
     salary: {
         value: Number
