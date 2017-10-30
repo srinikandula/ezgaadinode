@@ -59,7 +59,10 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                             retObj.message = ['Error fetching accounts'];
                             callback(retObj);
                         } else if (!drivers.length) {
-                            DriversColl.update({truckId: driverInfo.truckId}, driverInfo, {upsert: true}, function (err) {
+                            DriversColl.findOneAndUpdate({truckId: driverInfo.truckId}, driverInfo, {
+                                upsert: true,
+                                new: true
+                            }, function (err, newDoc) {
                                 if (err) {
                                     retObj.status = false;
                                     retObj.message = ['Error saving driver'];
@@ -67,6 +70,7 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                                 } else {
                                     retObj.status = true;
                                     retObj.message = ['Success'];
+                                    retObj.driver = newDoc;
                                     callback(retObj);
                                 }
                             });
@@ -87,7 +91,10 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                                 retObj.message = errors;
                                 callback(retObj);
                             } else {
-                                DriversColl.update({truckId: driverInfo.truckId}, driverInfo, {upsert: true}, function (err) {
+                                DriversColl.findOneAndUpdate({truckId: driverInfo.truckId}, driverInfo, {
+                                    upsert: true,
+                                    new: true
+                                }, function (err, newDoc) {
                                     if (err) {
                                         retObj.status = false;
                                         retObj.message = ['Error saving driver'];
@@ -95,6 +102,7 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                                     } else {
                                         retObj.status = true;
                                         retObj.message = ['Success'];
+                                        retObj.driver = newDoc;
                                         callback(retObj);
                                     }
                                 });
