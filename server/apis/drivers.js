@@ -29,7 +29,7 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
         errors.push('Invalid license validity date, format should be in YYYY-MM-DD');
     }
 
-    if (!_.isObject(driverInfo.salary) || isNaN(Number(driverInfo.salary.value))) {
+    if (isNaN(Number(driverInfo.salary))) {
         errors.push('Invalid salary, should be a number');
     }
 
