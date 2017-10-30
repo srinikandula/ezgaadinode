@@ -7,7 +7,7 @@ app.factory('DriverServices', function ($http) {
                 data: driverInfo
             }).then(success, error)
         },
-        getAllTrucks: function(success, error) {
+        getAllTrucks: function (success, error) {
             $http({
                 url: '/v1/trucks',
                 method: "GET"
@@ -40,14 +40,14 @@ app.factory('DriverServices', function ($http) {
         },
         deleteDriver: function (driverId, success, error) {
             $http({
-                url: '/v1/drivers/'+driverId,
+                url: '/v1/drivers/' + driverId,
                 method: "DELETE"
             }).then(success, error)
         }
     }
 });
 
-app.controller('DriversListCtrl', ['$scope', '$state','DriverServices','Notification', function ($scope, $state,DriverServices,Notification) {
+app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notification', function ($scope, $state, DriverServices, Notification) {
 
     $scope.goToEditOrAddDriverPage = function (driverId) {
         $state.go('driversEdit', {driverId: driverId});
@@ -61,7 +61,7 @@ app.controller('DriversListCtrl', ['$scope', '$state','DriverServices','Notifica
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,
-        columnDefs: [ {
+        columnDefs: [{
             name: 'Full Name',
             field: 'fullName'
         }, {
@@ -70,15 +70,18 @@ app.controller('DriversListCtrl', ['$scope', '$state','DriverServices','Notifica
         }, {
             name: 'License Validity',
             field: 'licenseValidity'
-        },{
+        }, {
             name: 'Mobile',
             field: 'mobile'
-        },{
+        }, {
             name: 'Salary',
             field: 'salary.value'
-        },{
+        }, {
+            name: 'License Number',
+            field: 'licenseNumber'
+        }, {
             name: 'Action',
-            cellTemplate:'<div class="text-center">' +
+            cellTemplate: '<div class="text-center">' +
             '<a href="#" ng-click="grid.appScope.goToEditOrAddDriverPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a><button ng-click="grid.appScope.deleteDriver(row.entity._id)" class="btn btn-danger">Delete</button></div>'
         }],
         rowHeight: 40,
@@ -102,11 +105,11 @@ app.controller('DriversListCtrl', ['$scope', '$state','DriverServices','Notifica
     };
 
     $scope.deleteDriver = function (driverId) {
-        DriverServices.deleteDriver(driverId,function (success) {
-            if (success){
+        DriverServices.deleteDriver(driverId, function (success) {
+            if (success) {
                 $scope.getDrivers();
                 Notification.error({message: success.data.message});
-            }else {
+            } else {
                 console.log("Error in deleting")
             }
         })
@@ -115,7 +118,7 @@ app.controller('DriversListCtrl', ['$scope', '$state','DriverServices','Notifica
     $scope.getDrivers();
 }]);
 
-app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService','DriverServices','Notification', 'Utils','$stateParams', function ($scope, $state, TrucksService, DriverServices,Notification, Utils,$stateParams) {
+app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverServices', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverServices, Notification, Utils, $stateParams) {
     $scope.trucks = [];
     $scope.driver = {
         fullName: '',
@@ -187,7 +190,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService','Driver
         }
 
         if (!params.errors.length) {
-            if(params._id){
+            if (params._id) {
                 DriverServices.updateDriver(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
@@ -199,17 +202,17 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService','Driver
                 }, function (err) {
                     console.log(err);
                 });
-            }else {
-            DriverServices.addDriver(params, function (success) {
-                if(success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('drivers');
-                    Notification.success({message: "Driver Added Successfully"});
-                } else {
-                    params.errors = success.data.message;
-                }
-            }, function (error) {
-            });
+            } else {
+                DriverServices.addDriver(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        $state.go('drivers');
+                        Notification.success({message: "Driver Added Successfully"});
+                    } else {
+                        params.errors = success.data.message;
+                    }
+                }, function (error) {
+                });
             }
         } else {
             console.log(params.errors);

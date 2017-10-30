@@ -92,7 +92,8 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
         role : '',
         password : '',
         error : [],
-        success : []
+        success : [],
+        isActive: true
     };
 
     if ($stateParams.userId) {
@@ -169,6 +170,7 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
                     console.log('update...', success.data);
                     if (success.data.status) {
                         params.success = success.data.message;
+                        $state.go('users')
                     } else {
                         params.error = success.data.message;
                     }
