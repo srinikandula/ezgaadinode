@@ -10,12 +10,12 @@
             <button class="btn btn-success pull-right" ng-click="goToEditTrucksPage()">Add Truck</button>
 
             <div class="margin-top-40">
-                <div class="grid" ui-grid="accountGridOptions" ></div>
+                <div class="grid" ui-grid="truckGridOptions" ></div>
             </div>
 
 
             <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
-                boundary-link-numbers="true" rotate="false" ng-change="getAccountsData()"></ul>
+                boundary-link-numbers="true" rotate="false" ng-change="getTrucksData()"></ul>
         </div>
     </div>
 </div>

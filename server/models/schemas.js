@@ -97,6 +97,7 @@ var partySchema = new mongoose.Schema({
 }, {timestamps: true});
 
 var tripLanesSchema = new mongoose.Schema({
+    name:String,
     from: String,
     to: String,
     estimatedDistance: Number,

@@ -15,6 +15,7 @@ var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
 var Drivers = require('./server/routes/drivers');
 var Roles = require('./server/routes/roles');
+var TripLanes = require('./server/routes/tripLanes');
 
 var authMiddleware = require('./server/middleware/auth');
 
@@ -46,7 +47,7 @@ app.use('/v1/party', Party.AuthRouter);
 app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/maintenance', Maintenance.AuthRouter);
-
+app.use('/v1/tripLanes',TripLanes.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

@@ -12,10 +12,12 @@
                 <form ng-submit="addOrUpdateAccount()" class="margin-top-20">
                     <div class="form-group">
                         <label for="fullName">Full Name</label>
-                        <input ng-model="driver.fullName" type="text" class="form-control" id="fullName"
-                               placeholder="Driver full name">
+                        <input ng-model="driver.fullName" type="text" class="form-control" id="fullName" placeholder="Driver full name">
                     </div>
-
+                    <div class="form-group">
+                        <label for="joiningDate">Joining Date</label>
+                        <date-picker id="joiningDate" ng-model="driver.joiningDate"></date-picker>
+                    </div>
                     <div class="form-group">
                         <label for="mobile">Mobile Number</label>
                         <input ng-model="driver.mobile" type="text" class="form-control" id="mobile"
@@ -35,8 +37,7 @@
 
                     <div class="form-group">
                         <label for="salary">Salary</label>
-                        <input ng-model="driver.salary.value" type="text" class="form-control" id="salary"
-                               placeholder="Salary">
+                        <input ng-model="driver.salary.value" type="text" class="form-control" id="salary" placeholder="Salary">
                     </div>
 
                     <div>
