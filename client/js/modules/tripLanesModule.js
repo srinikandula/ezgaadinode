@@ -138,7 +138,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
 }]);
 
 app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneServices', '$stateParams', 'Notification', function ($scope, $state, Utils, TripLaneServices, $stateParams, Notification) {
-    console.log('-->', $stateParams);
+    console.log('tl-->', $stateParams);
 
     $scope.drivers = [];
     $scope.parties = [];
@@ -150,14 +150,14 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
         estimatedDistance: '',
         success: ''
     };
+
     $scope.cancel = function () {
         $state.go('tripLanes');
     };
 
-
     if ($stateParams.tripLaneId) {
         TripLaneServices.getTripLane($stateParams.tripLaneId, function (success) {
-            console.log('acc--->', success.data.tripLane);
+            console.log('acc--->', success.data);
             if (success.data.status) {
                 $scope.tripLane = success.data.tripLane;
             } else {

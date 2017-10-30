@@ -74,8 +74,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
 
     $scope.partyGridOptions = {
         enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
         columnDefs: [{
             name: 'Party name',
             field: 'name'
@@ -113,6 +111,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
     if ($stateParams.partyId) {
         $scope.pageTitle = "Edit Party";
     }
+
     $scope.party = {};
     if ($stateParams.partyId) {
         PartyService.getParty($stateParams.partyId, function (success) {

@@ -49,7 +49,7 @@ app.factory('DriverServices', function ($http) {
 
 app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notification', function ($scope, $state, DriverServices, Notification) {
 
-    $scope.goToEditOrAddDriverPage = function (driverId) {
+    $scope.goToEditDriverPage = function (driverId) {
         $state.go('driversEdit', {driverId: driverId});
     };
 
@@ -93,10 +93,6 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
     $scope.totalItems = 200;
     $scope.maxSize = 5;
     $scope.pageNumber = 1;
-
-}]);
-
-app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverServices', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverServices, Notification, Utils, $stateParams) {
 
     $scope.getDrivers = function () {
         DriverServices.getDrivers($scope.pageNumber, function (success) {

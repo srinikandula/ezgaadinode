@@ -85,7 +85,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             cellFilter: 'date:"dd-MM-yyyy"'
         }, {
             name: 'Fitness',
-            field: 'fitness'
+            field: 'fitnessExpiry'
         }, {
             name: 'Driver',
             field: 'driverName'
