@@ -116,9 +116,7 @@ var driverSchema = new mongoose.Schema({
     joiningDate: {type: Date, default: new Date()},
     licenseNumber: String,
     licenseValidity: Date,
-    salary: {
-        value: Number
-    },
+    salary:  Number,
     createdBy: String,
     updatedBy: String
 }, {
