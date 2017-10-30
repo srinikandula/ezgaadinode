@@ -28,14 +28,14 @@ app.factory('TripLaneServices', function ($http) {
         },
         deleteTripLane: function (tripLaneId, success, error) {
             $http({
-                url: '/v1/tripLanes/'+tripLaneId,
+                url: '/v1/tripLanes/' + tripLaneId,
                 method: "DELETE"
             }).then(success, error)
         }
     }
 });
 
-app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', '$state','Notification', function ($scope, $uibModal, TripLaneServices, $state, Notification) {
+app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', '$state', 'Notification', function ($scope, $uibModal, TripLaneServices, $state, Notification) {
     $scope.goToEditTripLanePage = function (tripLaneId) {
         $state.go('tripLanesEdit', {tripLaneId: tripLaneId});
     };
@@ -45,32 +45,63 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
     $scope.maxSize = 5;
     $scope.pageNumber = 1;
 
+    $scope.getTripLanesData = function () {
+        TripLaneServices.getTripLanes(function (success) {
+            console.log(success)
+            if (success.data.status) {
+                $scope.tripLaneGridOptions.data = success.data.tripLanes;
+                $scope.totalItems = success.data.count;
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getTripLanesData();
+
+    $scope.deleteTripLane = function (tripLaneId) {
+        TripLaneServices.deleteTripLane(tripLaneId, function (success) {
+            if (success) {
+                $scope.getTripLanesData();
+                Notification.error({message: "Trip Lane Deleted"});
+            } else {
+                console.log("Error in deleting")
+            }
+        });
+    };
+
     $scope.tripLaneGridOptions = {
         enableSorting: true,
-        columnDefs: [ {
+        paginationPageSizes: [9, 20, 50],
+        paginationPageSize: 9,
+        columnDefs: [{
             name: 'Name',
             field: 'name'
         }, {
             name: 'From',
             field: 'from'
-        },{
+        }, {
             name: 'To',
             field: 'to'
-        },{
+        }, {
             name: 'Estimated Distance',
             field: 'estimatedDistance'
-        },{
+        }, {
             name: 'Created By',
             field: 'createdBy'
-        },{
+        }, {
             name: 'Updated By',
             field: 'updatedBy'
-        },{
+        }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditTripLanePage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a><button ng-click="grid.appScope.deleteTripLane(row.entity._id)" class="btn btn-danger">Delete</button></div>'
+            '<a href="#" ng-click="grid.appScope.goToEditTripLanePage(row.entity._id)" class="glyphicon glyphicon-edit edit"> </a>' +
+            '<a ng-click="grid.appScope.deleteTripLane(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
+            '</div>'
         }],
-        rowHeight: 40,
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
@@ -106,7 +137,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
     };
 }]);
 
-app.controller('AddEditTripLaneCtrl', ['$scope','$state', 'Utils', 'TripLaneServices','$stateParams', 'Notification', function ($scope,$state, Utils, TripLaneServices, $stateParams, Notification) {
+app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneServices', '$stateParams', 'Notification', function ($scope, $state, Utils, TripLaneServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
 
     $scope.drivers = [];
@@ -114,10 +145,10 @@ app.controller('AddEditTripLaneCtrl', ['$scope','$state', 'Utils', 'TripLaneServ
 
     $scope.tripLane = {
         name: '',
-        from:'',
-        to:'',
+        from: '',
+        to: '',
         estimatedDistance: '',
-        success:''
+        success: ''
     };
     $scope.cancel = function () {
         $state.go('tripLanes');

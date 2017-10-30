@@ -69,9 +69,9 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
             name: 'Role',
             field: 'role'
         }, {
-            name: 'Edit',
+            name: 'Action',
             cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditUserPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"> </a></div>'
+            '<a href="#" ng-click="grid.appScope.goToEditUserPage(row.entity._id)" class="glyphicon glyphicon-edit edit"> </a></div>'
         }],
         rowHeight: 30,
         data: [],

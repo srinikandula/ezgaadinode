@@ -7,13 +7,13 @@
         <div class="main-right col-xs-9" ng-controller="ShowTripsCtrl">
 
             <h3>Trips</h3>
-            <button class="btn btn-success pull-right" ng-click="goToEditTripPage()">Add Trips</button>
+            <button class="btn  btn-blue pull-right" ng-click="goToEditTripPage()">Add Trips</button>
 
             <div class="margin-top-40">
-                <div class="grid" ui-grid="tripGridOptions" ui-grid-selection></div>
+                <div class="grid" ui-grid="tripGridOptions"></div>
             </div>
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right    "
                 boundary-link-numbers="true" rotate="false" ng-change="getTripsData()"></ul>
 
 

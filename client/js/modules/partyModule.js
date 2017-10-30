@@ -93,7 +93,10 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             field: 'operatingLane'
         }, {
             name: 'Action',
-            cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteParty(row.entity._id)" class="btn btn-danger">Delete</button></div>'
+            cellTemplate: '<div class="text-center">' +
+            '<a ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
+            '<a ng-click="grid.appScope.deleteParty(row.entity._id)" class="glyphicon glyphicon-edit dele"></a>' +
+            '</div>'
         }],
         rowHeight: 30,
         data: [],
