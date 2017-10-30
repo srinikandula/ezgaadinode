@@ -4,10 +4,17 @@
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
         </div>
-        <div class="main-right col-xs-9">
+        <div class="main-right col-xs-9" ng-controller="ShowTripLanesCtrl">
 
-            <h3>Trip Lane</h3>
-            <p>This is trip lane page</p>
+            <h3>Trip Lanes</h3>
+            <button class="btn btn-success pull-right" ng-click="goToEditTripLanePage()">Add Trip Lanes</button>
+
+            <div class="margin-top-40">
+                <div class="grid" ui-grid="tripLaneGridOptions" ui-grid-selection></div>
+            </div>
+
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
+                boundary-link-numbers="true" rotate="false" ng-change="getTripLanesData()"></ul>
 
 
         </div>

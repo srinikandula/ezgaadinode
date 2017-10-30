@@ -13,7 +13,6 @@ var Drivers = function () {
 Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
     var retObj = {};
     var errors = [];
-
     if (!driverInfo.fullName || !_.isString(driverInfo.fullName)) {
         errors.push('Invalid full name');
     }
@@ -50,14 +49,13 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
             } else if (!truck.accountId) {
                 retObj.status = false;
                 retObj.message = ['No valid account Id for truck'];
+                callback(retObj)
             } else {
                 driverInfo.accountId = truck.accountId;
                 driverInfo.mobile = Number(driverInfo.mobile);
                 delete driverInfo.joiningDate;
+                DriversColl.find({accountId: driverInfo.accountId}, function (err, drivers) {
 
-                DriversColl.find({
-                        accountId: driverInfo.accountId
-                    }, function (err, drivers) {
                         if (err) {
                             retObj.status = false;
                             retObj.message = ['Error fetching accounts'];
@@ -105,12 +103,12 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                             }
                         }
                     }
-                )
-                ;
+                );
             }
         });
     }
 };
+
 
 Drivers.prototype.getDriverByPageNumber = function (pageNum, callback) {
     var retObj = {};
@@ -253,7 +251,36 @@ Drivers.prototype.updateDriver = function (jwtObj, driver, callback) {
             }
         });
 
-    }
+Drivers.prototype.getAllDrivers = function (callback) {
+    var result = {};
+    DriversColl.find({},function (err, drivers) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting trucks';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.drivers = drivers;
+            callback(result);
+        }
+    });
+};
+
+
+Drivers.prototype.deleteDriver = function (driverId, callback) {
+    var result = {};
+    DriversColl.remove({_id: driverId}, function (err) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error deleting Driver';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            callback(result);
+        }
+    });
 };
 
 module.exports = new Drivers();

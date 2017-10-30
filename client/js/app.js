@@ -113,9 +113,24 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'tripsLane',
         url: '/tripsLane',
+        templateUrl: 'views/partials/maintenance.html',
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'tripLanes',
+        url: '/tripLanes',
         templateUrl: 'views/partials/trip-lane.html',
         params: {
             access: 'open'
+        }
+    }).state({
+        name: 'tripLanesEdit',
+        url: '/tripLanesEdit/:tripLaneId',
+        templateUrl: 'views/partials/trip-lane-edit.html',
+        params: {
+            access: 'open',
+            tripLaneId: null
         }
     }).state({
         name: 'roles',
