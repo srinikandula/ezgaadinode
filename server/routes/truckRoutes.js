@@ -21,7 +21,7 @@ AuthRouter.put('/', function (req, res) {
 });
 
 AuthRouter.get('/get/accountTrucks', function (req, res) {
-    Trucks.getAccountTrucks(req.jwt.accountId, function (result) {
+    Trucks.getAccountTrucks(req.jwt.accountId, req.body.pageNumber, function (result) {
         res.send(result);
     });
 });

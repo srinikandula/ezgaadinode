@@ -28,7 +28,6 @@ app.directive('datePicker', function () {
                 }
             };
 
-            scope.dateFormat = 'shortDate';
             scope.options = {
                 minDate: new Date(),
                 showWeeks: false
