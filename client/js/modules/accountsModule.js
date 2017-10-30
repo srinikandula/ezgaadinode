@@ -62,8 +62,6 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 
     $scope.accountGridOptions = {
         enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
         columnDefs: [ {
             name: 'Account name',
             field: 'name'
@@ -163,7 +161,8 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
             }
         }
 
-    }
+    };
+
     $scope.cancel = function() {
         $state.go('accounts');
     }

@@ -57,10 +57,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         }
     }).state({
         name: 'driversEdit',
-        url: '/driversEdit',
+        url: '/driversEdit/:driverId',
         templateUrl: 'views/partials/drivers/edit-driver.html',
         params: {
-            access: 'open'
+            access: 'open',
+            driverId: null
         }
     }).state({
         name: 'trucks',

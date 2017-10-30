@@ -1,3 +1,4 @@
 module.exports = {
-    accountPaginationLimit: 10
+    accountPaginationLimit: 10,
+    driverPaginationLimit: 10
 };
