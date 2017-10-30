@@ -59,14 +59,14 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
         result.message = 'Invalid page number';
         return callback(result);
     }
-    var skipNumber = (pageNumber - 1) * pageLimits.accountPaginationLimit;
+    var skipNumber = (pageNumber - 1) * pageLimits.rolesPaginationLimit;
     async.parallel({
         roles: function (accountsCallback) {
             RolesColl
                 .find({})
                 .sort({createdAt: 1})
                 .skip(skipNumber)
-                .limit(pageLimits.accountPaginationLimit)
+                .limit(pageLimits.rolesPaginationLimit)
                 .lean()
                 .exec(function (err, roles) {
                     accountsCallback(err, roles);

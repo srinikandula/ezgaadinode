@@ -79,7 +79,7 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                             }
 
                             if (fullNameIndex > -1) {
-                                errors.push('Full name already exists');
+                                errors.push('Driver name already exists');
                             }
 
                             if (errors.length) {

@@ -159,9 +159,12 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
         });
     }
     function getParties() {
+        console.log('parties--->');
         PartyService.getParties(function (success) {
+            console.log('succ',success.data);
             if (success.data.status) {
                 $scope.parties = success.data.parties;
+                console.log('parties',$scope.parties);
             } else {
                 Notification.error(success.data.message);
             }
@@ -203,22 +206,6 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
 
         if (params._id) {
             params.date= Number(params.date);
-        //     delete params.userName;
-        //     delete params.password;
-        // }
-        //
-        // if (!params.name) {
-        //     params.error = 'Invalid account name';
-        // } else if (!params._id && !params.userName) {
-        //     params.error = 'Invalid user name';
-        // } else if (!params._id && !Utils.isValidPassword(params.password)) {
-        //     params.error = 'Invalid password';
-        // } else if (!params.address.trim()) {
-        //     params.error = 'Invalid address'
-        // } else if (!Utils.isValidPhoneNumber(params.contact)) {
-        //     params.error = 'Invalid phone number';
-        // } else if (params._id) {
-            // If _id update the account
             TripServices.updateTrip(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;

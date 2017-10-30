@@ -15,7 +15,7 @@ app.factory('TrucksService', function ($http, $cookies) {
         },
         getAccountTrucks: function (pageNumber, success, error) {
             $http({
-                url: '/v1/trucks/get/accountTrucks',
+                url: '/v1/trucks/get/accountTrucks/' + pageNumber,
                 method: "GET"
             }).then(success, error)
         },
@@ -46,6 +46,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     $scope.pageNumber = 1;
 
     $scope.getTrucksData = function () {
+        console.log('pn',$scope.pageNumber);
         TrucksService.getAccountTrucks($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.truckGridOptions.data = success.data.trucks;
@@ -111,7 +112,10 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     }
 }]);
 
-app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateParams', 'Notification', function ($scope, Utils, TrucksService, $stateParams, Notification) {
+app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, $stateParams, Notification, $state) {
+    $scope.goToRolesPage = function () {
+        $state.go('trucks');
+    };
     $scope.truck = {};
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
 

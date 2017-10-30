@@ -9,16 +9,50 @@ var Trips = function () {};
 
 Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     var result = {};
+    tripDetails = Helpers.removeEmptyFields(tripDetails);
     if (!_.isObject(tripDetails) || _.isEmpty(tripDetails)) {
         result.status = false;
         result.message = "Please fill all the required trip details";
         callback(result);
-    } else {
+    } else if(!tripDetails.date){
+        result.status = false;
+        result.message = "Please add date";
+        callback(result);
+    } else if(!tripDetails.registrationNo){
+        result.status = false;
+        result.message = "Please add Registration No";
+        callback(result);
+    } else if(!tripDetails.driver){
+        result.status = false;
+        result.message = "Please add driver";
+        callback(result);
+    } else if(!tripDetails.bookedFor){
+        result.status = false;
+        result.message = "Please add bookedFor";
+        callback(result);
+    } else if(!tripDetails.freightAmount){
+        result.status = false;
+        result.message = "Please add Freight Amount";
+        callback(result);
+    } else if(!tripDetails.advance){
+        result.status = false;
+        result.message = "Please add Advance";
+        callback(result);
+    }  else if(!tripDetails.balance){
+        result.status = false;
+        result.message = "Please add Balance";
+        callback(result);
+    }  else if(!tripDetails.tripLane){
+        result.status = false;
+        result.message = "Please add Trip Lane";
+        callback(result);
+    }  else {
         tripDetails.createdBy = jwt.id;
         tripDetails.updatedBy = jwt.id;
         tripDetails.accountId = jwt.accountId;
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err) {
+            console.log(err);
             if (err) {
                 result.status = false;
                 result.message = "Error while adding trip, try Again";

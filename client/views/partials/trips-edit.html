@@ -36,6 +36,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="advance">Advance</label>
+                        <input ng-model="trip.advance" type="number" class="form-control" id="advance"
+                               placeholder="Advance">
+                    </div>
+
+                    <div class="form-group">
                         <label for="balance">Balance</label>
                         <input ng-model="trip.balance" type="number" class="form-control" id="balance"
                                placeholder="Balance">
@@ -45,12 +51,6 @@
                         <label for="tripLane">Trip Lane</label>
                         <select ng-model="trip.tripLane" ng-options="tripLane._id as tripLane.name for tripLane in tripLanes" type="text" class="form-control" id="tripLane">
                         </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="advance">Advance</label>
-                        <input ng-model="trip.advance" type="number" class="form-control" id="advance"
-                               placeholder="Advance">
                     </div>
 
                     <div class="form-group">
