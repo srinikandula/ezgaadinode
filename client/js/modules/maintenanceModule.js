@@ -80,8 +80,9 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
             field: 'description'
         }, {
             name: 'Date',
-            field: 'date'
-        }, {
+            field: 'date',
+            cellFilter : 'date:"dd-MM-yyyy"'
+        },{
             name: 'Amount',
             field: 'cost'
         }, {
