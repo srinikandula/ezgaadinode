@@ -2,11 +2,12 @@
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
-
+var async = require('async');
 
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
+var pageLimits = require('./../config/pagination');
 
 var Trucks = function () {
 };
@@ -114,19 +115,58 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
 };
 
 Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
+    console.log('pageNumber',pageNumber);
     var result = {};
-    TrucksColl.find({accountId: accountId}, function (err, accountTrucks) {
+    if (!pageNumber) {
+        pageNumber = 1;
+    } else if (!_.isNumber(Number(pageNumber))) {
+        result.status = false;
+        result.message = 'Invalid page number';
+        return callback(result);
+    }
+    var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
+    async.parallel({
+        trucks: function (accountsCallback) {
+            TrucksColl
+                .find({accountId: accountId})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.trucksPaginationLimit)
+                .lean()
+                .exec(function (err, trucks) {
+                    accountsCallback(err, trucks);
+                });
+        },
+        count: function (countCallback) {
+            TrucksColl.count(function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
         if (err) {
             result.status = false;
-            result.message = 'Error getting trucks';
+            result.message = 'Error retrieving trucks';
             callback(result);
         } else {
             result.status = true;
             result.message = 'Success';
-            result.trucks = accountTrucks;
+            result.count = results.count;
+            result.trucks = results.trucks;
             callback(result);
         }
     });
+    // TrucksColl.find({accountId: accountId}, function (err, accountTrucks) {
+    //     if (err) {
+    //         result.status = false;
+    //         result.message = 'Error getting trucks';
+    //         callback(result);
+    //     } else {
+    //         result.status = true;
+    //         result.message = 'Success';
+    //         result.trucks = accountTrucks;
+    //         callback(result);
+    //     }
+    // });
 };
 
 Trucks.prototype.getAllTrucks = function (callback) {

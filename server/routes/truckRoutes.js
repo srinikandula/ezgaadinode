@@ -20,8 +20,8 @@ AuthRouter.put('/', function (req, res) {
     });
 });
 
-AuthRouter.get('/get/accountTrucks', function (req, res) {
-    Trucks.getAccountTrucks(req.jwt.accountId, req.body.pageNumber, function (result) {
+AuthRouter.get('/get/accountTrucks/:pageNumber', function (req, res) {
+    Trucks.getAccountTrucks(req.jwt.accountId, req.params.pageNumber, function (result) {
         res.send(result);
     });
 });

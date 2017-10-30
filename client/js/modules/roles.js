@@ -104,7 +104,7 @@ app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams',
         success: ''
     };
 
-    $scope.goToRolesPage = function (userId) {
+    $scope.goToRolesPage = function () {
         $state.go('roles');
     };
 

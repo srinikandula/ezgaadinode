@@ -119,6 +119,8 @@ Party.prototype.getAccountParties = function (accountId, callback) {
 Party.prototype.getAllParties = function (callback) {
     var result = {};
     PartyCollection.find({}, function (err, parties) {
+        // console.log('errparty',err);
+        // console.log('parties',parties);
         if (err) {
             result.status = false;
             result.message = 'Error getting parties';
@@ -127,6 +129,7 @@ Party.prototype.getAllParties = function (callback) {
             result.status = true;
             result.message = 'Success';
             result.parties = parties;
+            // console.log('parties',result);
             callback(result);
         }
     });

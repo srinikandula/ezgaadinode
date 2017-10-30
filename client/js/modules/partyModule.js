@@ -7,7 +7,7 @@ app.factory('PartyService', function ($http, $cookies) {
                 data: partyDetails
             }).then(success, error)
         },
-        getParties: function (pageNumber, success, error) {
+        getParties: function (success, error) {
             $http({
                 url: '/v1/party/get/all',
                 method: "GET"
@@ -135,7 +135,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         if (!Utils.isValidPhoneNumber(params.contact)) {
             params.error += 'Invalid phone number \n';
         }
-        if(!Utils.isEmpty(params.error)) {
+        if(!params.error) {
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {

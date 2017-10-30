@@ -29,7 +29,6 @@ Utils.prototype.isValidObjectId = function (id) {
 
 Utils.prototype.removeEmptyFields = function (obj) {
     var outputObj = {};
-
     for (var prop in obj) {
         if (_.isString(obj[prop]) && obj[prop].length) {
             outputObj[prop] = obj[prop];
