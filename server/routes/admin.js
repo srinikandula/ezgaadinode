@@ -3,8 +3,6 @@ var AuthRouter = express.Router();
 var Accounts = require('./../apis/accounts');
 var logger = require('./../winston/logger')(module);
 
-var logger = require('../winston/logger')(module);
-
 AuthRouter.post('/accounts/add', function (req, res) {
     Accounts.addAccount(req.jwt, req.body, function (result) {
         res.json(result);

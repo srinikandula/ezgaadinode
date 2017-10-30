@@ -114,7 +114,9 @@ var driverSchema = new mongoose.Schema({
     licenseValidity: Number,
     salary: {
         value: Number
-    }
+    },
+    createdBy: String,
+    updatedBy: String
 }, {
     timestamps: true
 });

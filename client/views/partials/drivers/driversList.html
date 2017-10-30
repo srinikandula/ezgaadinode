@@ -7,11 +7,15 @@
 
         <div class="main-right col-xs-9">
             <h3>Drivers</h3>
-            <p>This is drivers page</p>
+            <button class="btn btn-success" ng-click="goToEditDriverPage()">Add Driver</button>
 
-            <div>
-                <button class="btn btn-success" ng-click="goToAddDriverPage()">Add Driver</button>
+            <div class="margin-top-40">
+                <div class="grid" ui-grid="driverGridOptions" ></div>
             </div>
+
+
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm"
+                boundary-link-numbers="true" rotate="false" ng-change="getAccountsData()"></ul>
 
         </div>
     </div>
