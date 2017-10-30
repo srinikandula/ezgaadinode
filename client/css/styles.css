@@ -181,9 +181,9 @@ body{
 .ui-grid {
     border: 1px solid #d4d4d4;
     box-sizing: content-box;
-    -webkit-border-radius: 15px;
+ /*   -webkit-border-radius: 15px;
     -moz-border-radius: 15px;
-    border-radius: 15px;
+    border-radius: 15px;*/
     -webkit-transform: translateZ(0);
     -moz-transform: translateZ(0);
     -o-transform: translateZ(0);
