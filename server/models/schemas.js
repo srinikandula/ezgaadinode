@@ -28,7 +28,8 @@ var accountSchema = new mongoose.Schema({
     address: String,
     contact: Number,
     updatedBy: String,
-    createdBy: String
+    createdBy: String,
+    isActive: {type: Boolean, default:true}
 }, {
     timestamps: true
 });
