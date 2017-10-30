@@ -7,9 +7,9 @@ app.factory('TripLaneServices', function ($http) {
                 data: tripLane
             }).then(success, error)
         },
-        getTripLanes: function (success, error) {
+        getTripLanes: function (pageNumber, success, error) {
             $http({
-                url: '/v1/tripLanes/',
+                url: '/v1/tripLanes/' + pageNumber,
                 method: "GET"
             }).then(success, error)
         },
@@ -45,37 +45,8 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
     $scope.maxSize = 5;
     $scope.pageNumber = 1;
 
-    $scope.getTripLanesData = function () {
-        TripLaneServices.getTripLanes(function (success) {
-            console.log(success)
-            if (success.data.status) {
-                $scope.tripLaneGridOptions.data = success.data.tripLanes;
-                $scope.totalItems = success.data.count;
-            } else {
-                Notification.error({message: success.data.message});
-            }
-        }, function (err) {
-
-        });
-    };
-
-    $scope.getTripLanesData();
-
-    $scope.deleteTripLane = function (tripLaneId) {
-        TripLaneServices.deleteTripLane(tripLaneId,function (success) {
-            if (success){
-                $scope.getTripLanesData();
-                Notification.error({message: "Trip Lane Deleted"});
-            }else {
-                console.log("Error in deleting")
-            }
-        })
-    }
-
     $scope.tripLaneGridOptions = {
         enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
         columnDefs: [ {
             name: 'Name',
             field: 'name'
@@ -106,6 +77,33 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
         }
     };
 
+    $scope.getTripLanesData = function () {
+        TripLaneServices.getTripLanes($scope.pageNumber, function (success) {
+            console.log(success);
+            if (success.data.status) {
+                $scope.tripLaneGridOptions.data = success.data.tripLanes;
+                $scope.totalItems = success.data.count;
+                console.log('---here---', success.data.tripLanes);
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getTripLanesData();
+
+    $scope.deleteTripLane = function (tripLaneId) {
+        TripLaneServices.deleteTripLane(tripLaneId,function (success) {
+            if (success){
+                $scope.getTripLanesData();
+                Notification.error({message: "Trip Lane Deleted"});
+            }else {
+                console.log("Error in deleting")
+            }
+        })
+    };
 }]);
 
 app.controller('AddEditTripLaneCtrl', ['$scope','$state', 'Utils', 'TripLaneServices','$stateParams', 'Notification', function ($scope,$state, Utils, TripLaneServices, $stateParams, Notification) {
@@ -144,26 +142,10 @@ app.controller('AddEditTripLaneCtrl', ['$scope','$state', 'Utils', 'TripLaneServ
         params.error = '';
 
         if (params._id) {
-            //     delete params.userName;
-            //     delete params.password;
-            // }
-            //
-            // if (!params.name) {
-            //     params.error = 'Invalid account name';
-            // } else if (!params._id && !params.userName) {
-            //     params.error = 'Invalid user name';
-            // } else if (!params._id && !Utils.isValidPassword(params.password)) {
-            //     params.error = 'Invalid password';
-            // } else if (!params.address.trim()) {
-            //     params.error = 'Invalid address'
-            // } else if (!Utils.isValidPhoneNumber(params.contact)) {
-            //     params.error = 'Invalid phone number';
-            // } else if (params._id) {
-            // If _id update the account
             TripLaneServices.updateTripLane(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
-                    $state.go('tripLanes')
+                    $state.go('tripLanes');
                     Notification.success({message: success.data.message});
                 } else {
                     params.error = success.data.message;
@@ -175,7 +157,7 @@ app.controller('AddEditTripLaneCtrl', ['$scope','$state', 'Utils', 'TripLaneServ
             TripLaneServices.addTripLane(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
-                    $state.go('tripLanes')
+                    $state.go('tripLanes');
                     Notification.success({message: success.data.message});
                 } else {
                     params.error = success.data.message;

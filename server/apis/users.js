@@ -188,14 +188,14 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
         result.message = 'Invalid page number';
         return callback(result);
     }
-    var skipNumber = (pageNumber - 1) * pageLimits.accountPaginationLimit;
+    var skipNumber = (pageNumber - 1) * pageLimits.usersPaginationLimit;
     async.parallel({
         users: function (accountsCallback) {
             UsersColl
                 .find({})
                 .sort({createdAt: 1})
                 .skip(skipNumber)
-                .limit(pageLimits.accountPaginationLimit)
+                .limit(pageLimits.usersPaginationLimit)
                 .lean()
                 .exec(function (err, users) {
                     accountsCallback(err, users);
@@ -219,18 +219,6 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
             callback(result);
         }
     });
-    // UsersColl.find(function (err, users) {
-    //     if (err) {
-    //         result.status = false;
-    //         result.message = 'Error getting users';
-    //         callback(result);
-    //     } else {
-    //         result.status = true;
-    //         result.message = 'Success';
-    //         result.users = users;
-    //         callback(result);
-    //     }
-    // });
 };
 
 Users.prototype.getUser = function (id, callback) {

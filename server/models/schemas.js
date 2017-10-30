@@ -73,7 +73,7 @@ var truckSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
-    date: Number,
+    date: Date,
     registrationNo: String,
     driver: {type: ObjectId, ref: 'accounts'},
     bookedFor: {type: ObjectId, ref: 'parties'},

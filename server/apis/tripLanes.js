@@ -1,10 +1,13 @@
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
+var async = require('async');
 
 var TripLanesCollection = require('./../models/schemas').TripLanesCollection;
 var config = require('./../config/config');
 var Helpers = require('./utils');
+var pageLimits = require('./../config/pagination');
+
 var TripLanes = function () {};
 
 TripLanes.prototype.addTripLane = function (jwt, tripLaneDetails, callback) {
@@ -13,7 +16,25 @@ TripLanes.prototype.addTripLane = function (jwt, tripLaneDetails, callback) {
         result.status = false;
         result.message = "Please fill all the required trip Lane details";
         callback(result);
-    } else {
+    } else if(!tripLaneDetails.name){
+        result.status = false;
+        result.message = "Please enter trip name";
+        callback(result);
+    }
+    else if(!tripLaneDetails.from){
+        result.status = false;
+        result.message = "Please enter from location";
+        callback(result);
+    } else if(!tripLaneDetails.name){
+        result.status = false;
+        result.message = "Please enter to location";
+        callback(result);
+    } else if(!tripLaneDetails.estimatedDistance){
+        result.status = false;
+        result.message = "Please enter Estimated Distance";
+        callback(result);
+    }
+    else {
         tripLaneDetails.createdBy = jwt.id;
         tripLaneDetails.updatedBy = jwt.id;
         tripLaneDetails.accountId = jwt.accountId;
@@ -61,20 +82,46 @@ TripLanes.prototype.updateTripLane = function (jwt, tripLaneDetails, callback) {
         });
 };
 
-TripLanes.prototype.getTripLanes = function (jwt, req, callback) {
+TripLanes.prototype.getTripLanes = function (jwt, req, pageNumber, callback) {
     var result = {};
-    TripLanesCollection.find({},(function (err, tripLanes) {
+    if (!pageNumber) {
+        pageNumber = 1;
+    } else if (!_.isNumber(Number(pageNumber))) {
+        result.status = false;
+        result.message = 'Invalid page number';
+        return callback(result);
+    }
+    var skipNumber = (pageNumber - 1) * pageLimits.triplanesPaginationLimit;
+    async.parallel({
+        triplanes: function (accountsCallback) {
+            TripLanesCollection
+                .find({})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.triplanesPaginationLimit)
+                .lean()
+                .exec(function (err, triplanes) {
+                    accountsCallback(err, triplanes);
+                });
+        },
+        count: function (countCallback) {
+            TripLanesCollection.count(function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
         if (err) {
             result.status = false;
-            result.message = "Error while finding trip lanes, try Again";
+            result.message = 'Error retrieving users';
             callback(result);
         } else {
             result.status = true;
-            result.message = "Trip Lanes found Successfully";
-            result.tripLanes = tripLanes;
+            result.message = 'Success';
+            result.count = results.count;
+            result.tripLanes = results.triplanes;
             callback(result);
         }
-    }));
+    });
 };
 
 TripLanes.prototype.findTripLane = function (jwt, tripLaneId, callback) {
