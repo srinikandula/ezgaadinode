@@ -72,6 +72,9 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             name: 'Contact',
             field: 'contact'
         },{
+            name: 'Status',
+            field: 'isActive'
+        },{
             name: 'Edit',
             cellTemplate: '<div class="text-center">' +
           '<a href="#" ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a> </div>'
@@ -95,12 +98,12 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
         address: '',
         contact: '',
         error: '',
+        isActive: true,
         success: ''
     };
 
     if ($stateParams.accountId) {
         AccountServices.getAccount($stateParams.accountId, function (success) {
-            console.log('acc--->', success.data.account);
             if (success.data.status) {
                 $scope.account = success.data.account;
             } else {

@@ -28,7 +28,7 @@ app.factory('PartyService', function ($http, $cookies) {
         },
         deleteParty: function (partyId, success, error) {
             $http({
-                url: '/v1/party/'+partyId,
+                url: '/v1/party/' + partyId,
                 method: "DELETE"
             }).then(success, error)
         }
@@ -42,11 +42,11 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
 
     $scope.deleteParty = function (partyId) {
         PartyService.deleteParty(partyId, function (success) {
-        if (success.data.status) {
-            $scope.getParties();
-        } else {
-            Notification.error(success.data.message)
-        }
+            if (success.data.status) {
+                $scope.getParties();
+            } else {
+                Notification.error(success.data.message)
+            }
         }, function (err) {
             console.log('error deleting party');
         });
@@ -76,22 +76,22 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
         paginationPageSize: 9,
-        columnDefs: [ {
+        columnDefs: [{
             name: 'Party name',
             field: 'name'
         }, {
             name: 'Contact',
             field: 'contact'
-        },{
+        }, {
             name: 'Email',
             field: 'email'
-        },{
+        }, {
             name: 'City',
             field: 'city'
-        },{
+        }, {
             name: 'Operating Lane',
             field: 'operatingLane'
-        },{
+        }, {
             name: 'Action',
             cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteParty(row.entity._id)" class="btn btn-danger">Delete</button></div>'
         }],
@@ -104,10 +104,10 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
 
 }]);
 
-app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$stateParams', 'Notification','$state', function ($scope, Utils, PartyService, $stateParams, Notification, $state) {
+app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $stateParams, Notification, $state) {
     console.log('adding a party....');
     $scope.pageTitle = "Add Party";
-    if ($stateParams.partyId){
+    if ($stateParams.partyId) {
         $scope.pageTitle = "Edit Party";
     }
     $scope.party = {};
@@ -135,7 +135,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         if (!Utils.isValidPhoneNumber(params.contact)) {
             params.error += 'Invalid phone number \n';
         }
-        if(!Utils.isEmpty(params.error)) {
+        if (!params.error) {
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
@@ -160,7 +160,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
             }
         }
     }
-    $scope.cancel = function() {
+    $scope.cancel = function () {
         $state.go('party');
     }
 }]);

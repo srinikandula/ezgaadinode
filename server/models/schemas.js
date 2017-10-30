@@ -28,7 +28,8 @@ var accountSchema = new mongoose.Schema({
     address: String,
     contact: Number,
     updatedBy: String,
-    createdBy: String
+    createdBy: String,
+    isActive: {type: Boolean, default:true}
 }, {
     timestamps: true
 });
@@ -49,6 +50,7 @@ var usersSchema = new mongoose.Schema({
     password: String,
     updatedBy: String,
     createdBy: String,
+    isActive: {type: Boolean, default:true},
     attrs: {}
 }, {
     timestamps: true
@@ -112,6 +114,7 @@ var driverSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     mobile: Number,
     joiningDate: {type: Date, default: new Date()},
+    licenseNumber: String,
     licenseValidity: Date,
     salary: {
         value: Number
@@ -124,9 +127,9 @@ var driverSchema = new mongoose.Schema({
 var maintenanceCostSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     vehicleNumber: String,
-    repairType:String,
+    description:String,
     cost: Number,
-    date: Number,
+    date: Date,
     updatedBy: String,
     createdBy: String
 },{timestamps: true});
