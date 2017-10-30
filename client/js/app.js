@@ -158,6 +158,8 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'maintenanceEdit',
         url: '/maintenanceEdit/:maintenanceId',
         templateUrl: 'views/partials/Maintenance/maintenanceEdit.html',
+        level:1,
+        title:'Edit Maintenance Costs',
         params: {
             access: 'open',
             maintenanceId: null
