@@ -41,43 +41,6 @@ app.factory('DriverServices', function ($http) {
     }
 });
 
-app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', function ($scope, $state, DriverServices) {
-    $scope.goToEditDriverPage = function (driverId) {
-        $state.go('driversEdit', {driverId: driverId});
-    };
-
-
-    $scope.driverGridOptions = {
-        enableSorting: true,
-        columnDefs: [{
-            name: 'Full Name',
-            field: 'fullName'
-        }, {
-            name: 'Contact Number',
-            field: 'mobile'
-        },{
-            name: 'Truck Reg No',
-            field: 'truckId.registrationNo'
-        }, {
-            name: 'Salary/Month',
-            field: 'salary.value'
-        },{
-            name: 'Edit',
-            cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditDriverPage(row.entity._id)" class="glyphicon glyphicon-edit" style="padding-right: 10px;font-size: 20px;"></a>'
-        }],
-        rowHeight: 30,
-        data: [],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-        }
-    };
-
-    // pagination options
-    $scope.totalItems = 200;
-    $scope.maxSize = 5;
-    $scope.pageNumber = 1;
-=======
 app.controller('DriversListCtrl', ['$scope', '$state','DriverServices','Notification', function ($scope, $state,DriverServices,Notification) {
 
     $scope.goToEditOrAddDriverPage = function (driverId) {
@@ -148,7 +111,6 @@ app.controller('DriversListCtrl', ['$scope', '$state','DriverServices','Notifica
 }]);
 
 app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService','DriverServices','Notification', 'Utils','$stateParams', function ($scope, $state, TrucksService, DriverServices,Notification, Utils,$stateParams) {
->>>>>>> 45a7a7711cbf97b6c9dfe86d2eadea2d2bef79a7
 
     $scope.getDriversData = function () {
         DriverServices.getDrivers($scope.pageNumber, function (success) {
@@ -164,9 +126,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService','Driver
     };
 
     $scope.getDriversData();
-}]);
 
-app.controller('AddEditDriverCtrl', ['$scope', '$state', 'DriverServices', 'Utils', '$stateParams', function ($scope, $state, DriverServices, Utils, $stateParams) {
     $scope.trucks = [];
     $scope.driver = {
         fullName: '',
@@ -250,34 +210,11 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'DriverServices', 'Util
         }
 
         if (!params.errors.length) {
-<<<<<<< HEAD
-            if (params._id) {
-                DriverServices.updateDriver(params, function (success) {
-                    if(success.data.status) {
-                        params.success = success.data.message;
-                    } else {
-                        params.errors = success.data.message;
-                    }
-                }, function (error) {
-
-                });
-            } else {
-                DriverServices.addDriver(params, function (success) {
-                    if (success.data.status) {
-                        params.success = success.data.message;
-                    } else {
-                        params.errors = success.data.message;
-                    }
-                }, function (error) {
-                });
-            }
-
-=======
             if(params._id){
                 DriverServices.updateDriver(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('drivers')
+                        $state.go('drivers');
                         Notification.success(success.data.message)
                     } else {
                         params.error = success.data.message;
@@ -289,7 +226,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'DriverServices', 'Util
             DriverServices.addDriver(params, function (success) {
                 if(success.data.status) {
                     params.success = success.data.message;
-                    $state.go('drivers')
+                    $state.go('drivers');
                     Notification.success({message: "Driver Added Successfully"});
                 } else {
                     params.errors = success.data.message;
@@ -297,7 +234,6 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'DriverServices', 'Util
             }, function (error) {
             });
             }
->>>>>>> 45a7a7711cbf97b6c9dfe86d2eadea2d2bef79a7
         } else {
             console.log(params.errors);
         }

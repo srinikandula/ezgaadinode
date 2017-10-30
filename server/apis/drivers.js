@@ -250,10 +250,12 @@ Drivers.prototype.updateDriver = function (jwtObj, driver, callback) {
                 }
             }
         });
+    }
+}
 
 Drivers.prototype.getAllDrivers = function (callback) {
     var result = {};
-    DriversColl.find({},function (err, drivers) {
+    DriversColl.find({}, function (err, drivers) {
         if (err) {
             result.status = false;
             result.message = 'Error getting trucks';
