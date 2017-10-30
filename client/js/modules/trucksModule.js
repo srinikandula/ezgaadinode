@@ -145,7 +145,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
         var params = $scope.truck;
         params.success = '';
         params.error = '';
-        console.log('params', params);
+        console.log('params==>', params);
         if (!params.registrationNo) {
             params.error = 'Invalid Registration ID';
         }
