@@ -92,7 +92,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             name: 'Edit',
             cellTemplate: '<div class="text-center"><button ng-click="grid.appScope.goToEditTruckPage(row.entity._id)" class="btn btn-success">Edit</button><button ng-click="grid.appScope.deleteTruck(row.entity._id)" class="btn btn-danger">Delete</button></div>'
         }],
-        rowHeight: 3    0,
+        rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
             $scope.gridApi = gridApi;
