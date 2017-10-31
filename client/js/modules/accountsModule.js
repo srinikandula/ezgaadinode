@@ -94,6 +94,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 
 app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, $state, AccountServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
+    $scope.pagetitle="Add Account";
 
     $scope.account = {
         name: '',
@@ -107,6 +108,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
     };
 
     if ($stateParams.accountId) {
+        $scope.pagetitle="Update Account";
         AccountServices.getAccount($stateParams.accountId, function (success) {
             if (success.data.status) {
                 $scope.account = success.data.account;
@@ -148,6 +150,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('accounts');
+                        Notification.success({message: "Account Updated Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
@@ -159,6 +162,8 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
                 AccountServices.addAccount(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
+                        $state.go('accounts');
+                        Notification.success({message: "Account Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }

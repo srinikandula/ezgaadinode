@@ -123,6 +123,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
 app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','DriverServices','PartyService','TripLaneServices', '$stateParams', 'Notification', function ($scope,$state, Utils, TripServices,DriverServices,PartyService,TripLaneServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
+    $scope.pagetitle = "Add Trip";
 
     $scope.drivers = [];
     $scope.parties = [];
@@ -187,6 +188,7 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
 
     if ($stateParams.tripId) {
         // $scope.trip.date = '';
+        $scope.pagetitle = "Edit Trip";
         TripServices.getTrip($stateParams.tripId, function (success) {
             console.log('acc--->', success.data.trip);
             if (success.data.status) {

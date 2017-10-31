@@ -128,6 +128,8 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
 }]);
 
 app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverServices', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverServices, Notification, Utils, $stateParams) {
+    $scope.pagetitle="Add Driver";
+
     $scope.trucks = [];
     $scope.driver = {
         fullName: '',
@@ -203,7 +205,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('drivers');
-                        Notification.success(success.data.message)
+                       Notification.success({message: "Driver Updated Successfully"});
                     } else {
                         params.errors.push(success.data.message);
                     }

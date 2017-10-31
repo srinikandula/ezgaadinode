@@ -44,6 +44,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         PartyService.deleteParty(partyId, function (success) {
             if (success.data.status) {
                 $scope.getParties();
+                Notification.error({message: "Successfully Deleted"});
             } else {
                 Notification.error(success.data.message)
             }
@@ -147,8 +148,9 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
-                        $state.go('party');
                         params.success = success.data.message;
+                        $state.go('party');
+                        Notification.success({message: "Party Updated Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
@@ -158,8 +160,9 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
             } else {
                 PartyService.addParty($scope.party, function (success) {
                     if (success.data.status) {
-                        $state.go('party');
                         params.success = success.data.message;
+                        $state.go('party');
+                         Notification.success({message: "Party Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
