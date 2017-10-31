@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var Trucks = require('./../apis/trucks');
+var Trucks = require('../apis/truckAPIs');
 
 AuthRouter.post('/', function (req, res) {
     Trucks.addTruck(req.jwt, req.body, function (result) {
