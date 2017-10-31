@@ -119,7 +119,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 }]);
 
 app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, $stateParams, Notification, $state) {
-    $scope.goToRolesPage = function () {
+    $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
     $scope.truck = {};
