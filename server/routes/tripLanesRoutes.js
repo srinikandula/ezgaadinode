@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var TripLanes = require('./../apis/tripLanes');
+var TripLanes = require('../apis/tripLanesApi');
 
 AuthRouter.post('/', function (req, res) {
     TripLanes.addTripLane(req.jwt, req.body, function (result) {

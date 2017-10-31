@@ -106,9 +106,6 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             name: 'Created By',
             field: 'createdBy'
         },{
-            name: 'Updated By',
-            field: 'updatedBy'
-        },{
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
             '<a href="#" ng-click="grid.appScope.goToEditTripPage(row.entity._id)" class="glyphicon glyphicon-edit edit" "></a>' +

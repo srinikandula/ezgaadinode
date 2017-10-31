@@ -68,13 +68,16 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
         }, {
             name: 'Address',
             field: 'address'
-        },{
+        }, {
             name: 'Contact',
             field: 'contact'
-        },{
+        }, {
             name: 'Status',
             field: 'isActive'
-        },{
+        }, {
+            name: 'Created By',
+            field: 'attrs.createdByName'
+        }, {
             name: 'Edit',
             name: 'Action',
             cellTemplate: '<div class="text-center">' +

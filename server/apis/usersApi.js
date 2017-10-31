@@ -198,7 +198,14 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
                 .limit(pageLimits.usersPaginationLimit)
                 .lean()
                 .exec(function (err, users) {
-                    accountsCallback(err, users);
+                    Utils.getUpdatedByName(users, "createdBy", function (response) {
+                        if(response.status) {
+                            accountsCallback(err, response.documents);
+                        } else {
+                            accountsCallback(err, null);
+                        }
+                    });
+                    // accountsCallback(err, users);
                 });
         },
         count: function (countCallback) {

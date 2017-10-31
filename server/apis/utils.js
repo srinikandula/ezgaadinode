@@ -2,7 +2,8 @@ var _ = require('underscore');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
-
+var UsersAPI = require('./usersApi');
+var UsersColl = require('./../models/schemas').UsersColl;
 
 var Utils = function () {
 };
@@ -45,8 +46,39 @@ Utils.prototype.isValidPhoneNumber = function (phNumber) {
 };
 
 Utils.prototype.isValidDateStr = function (dateStr) {
-    dateStr = dateStr.substr(0,10);
+    dateStr = dateStr.substr(0, 10);
     return dateStr && moment(dateStr, 'YYYY-MM-DD', true).isValid();
+};
+
+Utils.prototype.getUpdatedByName = function (documents, fieldToAdd, callback) {
+    var result = {};
+    var createdByIds = _.pluck(documents, fieldToAdd);
+    UsersColl.find({'_id':{$in: createdByIds}},{"userName":1},function (err, names) {
+        if(err){
+            result.status = false;
+            result.message = 'Error retrieving users';
+            result.err = err;
+            callback(result);
+        }
+        for (var i = 0; i < documents.length; i++) {
+            var item = documents[i];
+            // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
+            var user = _.find(names, function (users) {
+                return users._id.toString() === item.createdBy.toString();
+            });
+            if (user) {
+                if (!item.attrs) {
+                    item.attrs = {};
+                }
+                item.attrs.createdByName = user.userName;
+            }
+        }
+        result.status = true;
+        result.message = 'Error retrieving users';
+        result.documents = documents;
+        callback(result);
+        // callback (documents);
+    });
 };
 
 module.exports = new Utils();

@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var Roles = require('./../apis/roles');
+var Roles = require('../apis/rolesApi');
 
 AuthRouter.post('/role/add', function (req, res) {
     Roles.addRole(req.jwt, req.body, function (result) {

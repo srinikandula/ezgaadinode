@@ -69,7 +69,14 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
                 .limit(pageLimits.rolesPaginationLimit)
                 .lean()
                 .exec(function (err, roles) {
-                    accountsCallback(err, roles);
+                    Utils.getUpdatedByName(roles, "createdBy", function (response) {
+                        if(response.status) {
+                            accountsCallback(err, response.documents);
+                        } else {
+                            accountsCallback(err, null);
+                        }
+                    });
+                    // accountsCallback(err, roles);
                 });
         },
         count: function (countCallback) {

@@ -101,7 +101,14 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
                 .limit(pageLimits.accountPaginationLimit)
                 .lean()
                 .exec(function (err, accounts) {
-                    accountsCallback(err, accounts);
+                    Utils.getUpdatedByName(accounts, "createdBy", function (response) {
+                        if(response.status) {
+                            accountsCallback(err, response.documents);
+                        } else {
+                            accountsCallback(err, null);
+                        }
+                    });
+                    // accountsCallback(err, accounts);
                 });
         },
         count: function (countCallback) {

@@ -5,6 +5,7 @@ var _ = require('underscore');
 var maintenanceColl = require('./../models/schemas').MaintenanceCostColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
+var UsersAPI = require('./usersApi');
 
 var MaintenanceCost = function () {
 };
@@ -30,8 +31,8 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
     } else {
 
         maintenanceDetails.createdBy = jwt.id;
-        maintenanceDetails.updatedBy =  jwt.id;
-        maintenanceDetails.accountId =  jwt.accountId;
+        maintenanceDetails.updatedBy = jwt.id;
+        maintenanceDetails.accountId = jwt.accountId;
 
         var maintenanceDoc = new maintenanceColl(maintenanceDetails);
 
@@ -60,19 +61,28 @@ MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
             result.status = true;
             result.message = 'Success';
             result.details = maintenanceRecords;
-            callback(result);
+            Helpers.getUpdatedByName(maintenanceRecords, "createdBy", function (response) {
+                if(response.status) {
+                    result.details = response.documents;
+                    callback(result);
+                } else {
+                    result.status = false;
+                    result.message = 'Error getting Maintenance Records';
+                    callback(result);
+                }
+            });
         }
     });
 };
 
-MaintenanceCost.prototype.findMaintenanceRecord = function ( maintenanceId, callback) {
+MaintenanceCost.prototype.findMaintenanceRecord = function (maintenanceId, callback) {
     var result = {};
-    maintenanceColl.findOne({_id:maintenanceId}, function (err, record) {
-        if(err) {
+    maintenanceColl.findOne({_id: maintenanceId}, function (err, record) {
+        if (err) {
             result.status = false;
             result.message = "Error while finding Maintenance Record, try Again";
             callback(result);
-        } else if(record) {
+        } else if (record) {
             result.status = true;
             result.message = "Maintenance Record found successfully";
             result.trip = record;
@@ -87,21 +97,23 @@ MaintenanceCost.prototype.findMaintenanceRecord = function ( maintenanceId, call
 
 MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callback) {
     var result = {};
-    maintenanceColl.findOneAndUpdate({_id:Details._id},
-        {$set:{
-            "updatedBy":jwt.id,
-            "vehicleNumber": Details.vehicleNumber,
-            "repairType": Details.repairType,
-            "cost": Details.cost,
-            "date": Details.date
-        }},
+    maintenanceColl.findOneAndUpdate({_id: Details._id},
+        {
+            $set: {
+                "updatedBy": jwt.id,
+                "vehicleNumber": Details.vehicleNumber,
+                "repairType": Details.repairType,
+                "cost": Details.cost,
+                "date": Details.date
+            }
+        },
         {new: true},
         function (err, Details) {
-            if(err) {
+            if (err) {
                 result.status = false;
                 result.message = "Error while updating Maintenance Cost Record, try Again";
                 callback(result);
-            }else if(Details) {
+            } else if (Details) {
                 result.status = true;
                 result.message = "Maintenance Cost updated successfully";
                 callback(result);
@@ -115,12 +127,12 @@ MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callba
 
 MaintenanceCost.prototype.deleteMaintenanceRecord = function (maintenanceId, callback) {
     var result = {};
-    maintenanceColl.remove({_id:maintenanceId}, function (err, returnValue) {
+    maintenanceColl.remove({_id: maintenanceId}, function (err, returnValue) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting Maintenance Record';
             callback(result);
-        }else if (returnValue.result.n === 0) {
+        } else if (returnValue.result.n === 0) {
             result.status = false;
             result.message = 'Error deleting Maintenance Record';
             callback(result);

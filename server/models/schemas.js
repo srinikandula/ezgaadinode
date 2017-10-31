@@ -69,7 +69,8 @@ var truckSchema = new mongoose.Schema({
     pollutionExpiry: Date,
     taxDueDate: Date,
     updatedBy: String,
-    createdBy: String
+    createdBy: String,
+    attrs: {}
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
@@ -95,7 +96,8 @@ var partySchema = new mongoose.Schema({
     operatingLane: String,
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
-    createdBy: String
+    createdBy: String,
+    attrs: {}
 }, {timestamps: true});
 
 var tripLanesSchema = new mongoose.Schema({
@@ -105,7 +107,8 @@ var tripLanesSchema = new mongoose.Schema({
     estimatedDistance: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
-    createdBy: String
+    createdBy: String,
+    attrs: {}
 }, {timestamps: true});
 
 var driverSchema = new mongoose.Schema({
@@ -118,7 +121,8 @@ var driverSchema = new mongoose.Schema({
     licenseValidity: Date,
     salary:  Number,
     createdBy: String,
-    updatedBy: String
+    updatedBy: String,
+    attrs: {}
 }, {
     timestamps: true
 });
@@ -129,14 +133,16 @@ var maintenanceCostSchema = new mongoose.Schema({
     cost: Number,
     date: Date,
     updatedBy: String,
-    createdBy: String
+    createdBy: String,
+    attrs: {}
 },{timestamps: true});
 
 var rolesSchema = new mongoose.Schema({
     roleName: String,
     updatedBy: String,
     createdBy: String,
-    menus: []
+    menus: [],
+    attrs: {}
 },{timestamps: true});
 
 

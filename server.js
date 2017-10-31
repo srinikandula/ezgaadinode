@@ -15,7 +15,7 @@ var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
 var Drivers = require('./server/routes/drivers');
 var Roles = require('./server/routes/roles');
-var TripLanes = require('./server/routes/tripLanes');
+var TripLanes = require('./server/routes/tripLanesRoutes');
 
 var authMiddleware = require('./server/middleware/auth');
 
