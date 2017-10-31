@@ -93,6 +93,7 @@ body{
     padding: 7px;
     text-align: center;
     background-color: #F5F5F5;
+    cursor: pointer;
 }
 .body-nav ul li a{
     text-decoration: none;
@@ -145,6 +146,14 @@ body{
 .active{
     background-color: #d9534f !important;
     color: #fff !important;
+}
+.selected{
+    background-color: #d9534f !important;
+    color: #fff !important;
+    border-radius: 5px;
+}
+.selected a{
+    color: #fff;
 }
 .mt-10{
     margin-top: 30px;

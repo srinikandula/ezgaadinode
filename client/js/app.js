@@ -7,6 +7,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'login',
         url: '/login',
         templateUrl: 'views/partials/login.html',
+        data: {activeTab: 'import-students'},
         params: {
             access: 'open'
         }
@@ -21,6 +22,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'accounts',
         url: '/accounts',
         templateUrl: 'views/partials/accounts/accountsList.html',
+        data: {activeTab: 'accounts'},
         params: {
             access: 'auth'
         }
@@ -28,6 +30,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'accountsEdit',
         url: '/accountsEdit/:accountId',
         templateUrl: 'views/partials/accounts/edit-account.html',
+        data: {activeTab: 'accounts'},
         params: {
             access: 'open',
             accountId: null
@@ -37,6 +40,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'users',
         url: '/users',
         templateUrl: 'views/partials/users/show-users.html',
+        data: {activeTab: 'users'},
         params: {
             access: 'open'
         }
@@ -44,6 +48,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'usersEdit',
         url: '/usersEdit/:userId',
         templateUrl: 'views/partials/users/usersEdit.html',
+        data: {activeTab: 'users'},
         params: {
             access: 'open',
             userId: null
@@ -52,6 +57,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'drivers',
         url: '/drivers',
         templateUrl: 'views/partials/drivers/driversList.html',
+        data: {activeTab: 'drivers'},
         params: {
             access: 'open'
         }
@@ -59,6 +65,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'driversEdit',
         url: '/driversEdit/:driverId',
         templateUrl: 'views/partials/drivers/edit-driver.html',
+        data: {activeTab: 'drivers'},
         params: {
             access: 'open',
             driverId: null
@@ -67,6 +74,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'trucks',
         url: '/trucks',
         templateUrl: 'views/partials/trucks-list.html',
+        data: {activeTab: 'trucks'},
         params: {
             access: 'open'
         },
@@ -75,6 +83,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'trucksEdit',
         url: '/trucksEdit/:truckId',
         templateUrl: 'views/partials/trucks-edit.html',
+        data: {activeTab: 'trucks'},
         params: {
             access: 'open',
             truckId:null
@@ -84,6 +93,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'trips',
         url: '/trips',
         templateUrl: 'views/partials/trips.html',
+        data: {activeTab: 'trips'},
         params: {
             access: 'auth'
         }
@@ -91,6 +101,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'tripsEdit',
         url: '/tripsEdit/:tripId',
         templateUrl: 'views/partials/trips-edit.html',
+        data: {activeTab: 'trips'},
         params: {
             access: 'auth',
             tripId: null
@@ -99,6 +110,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'party',
         url: '/party',
         templateUrl: 'views/partials/party-list.html',
+        data: {activeTab: 'party'},
         params: {
             access: 'open'
         }
@@ -106,21 +118,16 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'editParty',
         url: '/editParty/:partyId',
         templateUrl: 'views/partials/edit-party.html',
+        data: {activeTab: 'party'},
         params: {
             access: 'auth',
             partyId: null
         }
     }).state({
-        name: 'tripsLane',
-        url: '/tripsLane',
-        templateUrl: 'views/partials/maintenance.html',
-        params: {
-            access: 'open'
-        }
-    }).state({
         name: 'tripLanes',
         url: '/tripLanes',
         templateUrl: 'views/partials/trip-lane.html',
+        data: {activeTab: 'tripLanes'},
         params: {
             access: 'open'
         }
@@ -128,6 +135,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'tripLanesEdit',
         url: '/tripLanesEdit/:tripLaneId',
         templateUrl: 'views/partials/trip-lane-edit.html',
+        data: {activeTab: 'tripLanes'},
         params: {
             access: 'open',
             tripLaneId: null
@@ -136,6 +144,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'roles',
         url: '/roles',
         templateUrl: 'views/partials/roles/roles.html',
+        data: {activeTab: 'roles'},
         params: {
             access: 'open'
         }
@@ -143,6 +152,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'rolesEdit',
         url: '/rolesEdit/:roleId',
         templateUrl: 'views/partials/roles/roles-edit.html',
+        data: {activeTab: 'roles'},
         params: {
             access: 'open',
             roleId: null
@@ -151,6 +161,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'maintenance',
         url: '/maintenance',
         templateUrl: 'views/partials/Maintenance/maintenance.html',
+        data: {activeTab: 'maintenance'},
         params: {
             access: 'open'
         }
@@ -158,6 +169,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'maintenanceEdit',
         url: '/maintenanceEdit/:maintenanceId',
         templateUrl: 'views/partials/Maintenance/maintenanceEdit.html',
+        data: {activeTab: 'maintenance'},
         params: {
             access: 'open',
             maintenanceId: null
@@ -175,5 +187,13 @@ app.config(function(NotificationProvider) {
         horizontalSpacing: 20,
         positionX: 'left',
         positionY: 'bottom'
+    });
+});
+
+app.run(function ($transitions, $rootScope) {
+    $transitions.onSuccess({to: '*'}, function (to) {
+
+        $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
+        console.log('to', $rootScope.activeTab)
     });
 });
