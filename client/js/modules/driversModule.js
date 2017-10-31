@@ -134,7 +134,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
     $scope.getDrivers();
 }]);
 
-app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverServices', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverServices, Notification, Utils, $stateParams) {
+app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams) {
     $scope.pagetitle="Add Driver";
 
     $scope.trucks = [];
