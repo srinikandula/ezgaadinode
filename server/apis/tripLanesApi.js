@@ -121,7 +121,7 @@ TripLanes.prototype.getTripLanes = function (jwt, req, pageNumber, callback) {
                 .limit(pageLimits.triplanesPaginationLimit)
                 .lean()
                 .exec(function (err, triplanes) {
-                    Helpers.getUpdatedByName(triplanes, "createdBy", function (response) {
+                    Helpers.populateNameInUsersColl(triplanes, "createdBy", function (response) {
                         if(response.status) {
                             accountsCallback(err, response.documents);
                         } else {

@@ -138,7 +138,7 @@ Drivers.prototype.getDriverByPageNumber = function (pageNum, callback) {
                 .populate('truckId')
                 .lean()
                 .exec(function (err, drivers) {
-                    Utils.getUpdatedByName(drivers, "createdBy", function (response) {
+                    Utils.populateNameInUsersColl(drivers, "createdBy", function (response) {
                         if(response.status) {
                             driversCallback(err, response.documents);
                         } else {

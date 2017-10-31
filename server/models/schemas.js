@@ -76,7 +76,7 @@ var truckSchema = new mongoose.Schema({
 var tripSchema = new mongoose.Schema({
     date: Date,
     registrationNo: String,
-    driver: {type: ObjectId, ref: 'accounts'},
+    driver: {type: ObjectId, ref: 'drivers'},
     bookedFor: {type: ObjectId, ref: 'parties'},
     freightAmount: Number,
     advance: Number,
@@ -85,7 +85,8 @@ var tripSchema = new mongoose.Schema({
     tripExpenses: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
-    createdBy: String
+    createdBy: String,
+    attrs: {}
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({

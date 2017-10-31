@@ -69,7 +69,7 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
                 .limit(pageLimits.rolesPaginationLimit)
                 .lean()
                 .exec(function (err, roles) {
-                    Utils.getUpdatedByName(roles, "createdBy", function (response) {
+                    Utils.populateNameInUsersColl(roles, "createdBy", function (response) {
                         if(response.status) {
                             accountsCallback(err, response.documents);
                         } else {

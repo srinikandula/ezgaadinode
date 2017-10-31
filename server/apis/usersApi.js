@@ -198,7 +198,7 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
                 .limit(pageLimits.usersPaginationLimit)
                 .lean()
                 .exec(function (err, users) {
-                    Utils.getUpdatedByName(users, "createdBy", function (response) {
+                    Utils.populateNameInUsersColl(users, "createdBy", function (response) {
                         if(response.status) {
                             accountsCallback(err, response.documents);
                         } else {

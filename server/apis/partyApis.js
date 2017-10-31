@@ -129,7 +129,7 @@ Party.prototype.getAllParties = function (callback) {
             result.status = true;
             result.message = 'Success';
             // result.parties = parties;
-            Utils.getUpdatedByName(parties, "createdBy", function (response) {
+            Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
                 if(response.status) {
                     result.parties = response.documents;
                     callback(result);

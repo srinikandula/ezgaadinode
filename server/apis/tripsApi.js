@@ -119,10 +119,26 @@ Trips.prototype.getAll = function (jwt, req, callback) {
             result.message = "Error while finding trips, try Again";
             callback(result);
         } else {
-            result.status = true;
-            result.message = "Trips found Successfully";
-            result.trips = trips;
-            callback(result);
+            Helpers.populateNameInUsersColl(trips, "createdBy", function (response) {
+                if(!response.status) {
+                    result.status = false;
+                    result.message = 'Error while finding trips, try Again';
+                    callback(result);
+                } else {
+                    Helpers.populateNameInDriversColl(response.documents, 'driver', function (response) {
+                        if(!response.status) {
+                            result.status = false;
+                            result.message = 'Error while finding trips, try Again';
+                            callback(result);
+                        } else {
+                            result.status = true;
+                            result.message = "Trips found Successfully";
+                            result.trips = response.documents;
+                            callback(result);
+                        }
+                    });
+                }
+            });
         }
     }));
 };

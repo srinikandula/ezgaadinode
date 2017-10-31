@@ -58,11 +58,10 @@ MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
             result.message = 'Error getting Maintenance Records';
             callback(result);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.details = maintenanceRecords;
-            Helpers.getUpdatedByName(maintenanceRecords, "createdBy", function (response) {
+            Helpers.populateNameInUsersColl(maintenanceRecords, "createdBy", function (response) {
                 if(response.status) {
+                    result.status = true;
+                    result.message = 'Success';
                     result.details = response.documents;
                     callback(result);
                 } else {
