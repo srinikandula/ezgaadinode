@@ -83,10 +83,10 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             field: 'registrationNo'
         },{
             name: 'Driver',
-            field: 'attr.driverName'
+            field: 'attrs.driverName'
         },{
             name: 'Booked For',
-            field: 'bookedFor'
+            field: 'attrs.partyName'
         },{
             name: 'FreightAmount',
             field: 'freightAmount'
@@ -101,7 +101,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             field: 'tripExpenses'
         },{
             name: 'Trip Lane',
-            field: 'tripLane'
+            field: 'attrs.tripLaneName'
         },{
             name: 'Created By',
             field: 'attrs.createdByName'
