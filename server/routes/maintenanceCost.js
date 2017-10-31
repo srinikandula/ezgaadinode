@@ -9,6 +9,13 @@ AuthRouter.post('/addMaintenance', function (req, res) {
     });
 });
 
+AuthRouter.get('/:pageNumber', function (req, res) {
+    MaintenanceCost.getMaintenanceCosts(req.params.pageNumber,req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+
 AuthRouter.get('/getAll', function (req, res) {
     MaintenanceCost.getAll(req.jwt, req.body, function (result) {
         res.send(result);

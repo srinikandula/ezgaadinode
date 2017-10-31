@@ -12,8 +12,8 @@
                 <div class="grid" ui-grid="maintenanceGridOptions"></div>
             </div>
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getRoles()"></ul>
+            <ul ng-show="totalItems > 10" uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
+                boundary-link-numbers="true" rotate="false" ng-change="getMaintenanceRecords()"></ul>
         </div>
     </div>
 </div>

@@ -7,6 +7,12 @@ app.factory('MaintenanceService', function ($http) {
                 data: object
             }).then(success, error)
         },
+        getMaintenanceRecords: function (pageNumber, success, error) {
+            $http({
+                url: '/v1/maintenance/' + pageNumber,
+                method: "GET"
+            }).then(success, error)
+        },
         getAllRecords: function (success, error) {
             $http({
                 url: '/v1/maintenance/getAll',
@@ -40,14 +46,14 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
         $state.go('maintenanceEdit', {maintenanceId: maintenanceId});
     };
 
-    // $scope.totalItems = 200;
-    // $scope.maxSize = 5;
-    // $scope.pageNumber = 1;
+    $scope.totalItems = 10;
+    $scope.maxSize = 5;
+    $scope.pageNumber = 1;
 
     $scope.getMaintenanceRecords = function () {
-        MaintenanceService.getAllRecords(function (success) {
+        MaintenanceService.getMaintenanceRecords($scope.pageNumber,function (success) {
             if (success.data.status) {
-                $scope.maintenanceGridOptions.data = success.data.details;
+                $scope.maintenanceGridOptions.data = success.data.maintanenceCosts;
                 $scope.totalItems = success.data.count;
             } else {
                 Notification.error({message: success.data.message});
@@ -102,7 +108,7 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
     };
 }]);
 
-app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'Notification', function ($scope, MaintenanceService, $stateParams, $state, Notification) {
+app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', function ($scope, MaintenanceService, $stateParams, $state) {
     console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
     $scope.pagetitle = "Add Maintenance";
 
@@ -152,8 +158,6 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
             MaintenanceService.updateRecord(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
-                    $state.go('maintenance');
-                    Notification.success({message: "Maintenance Updated Successfully"});
                 } else {
                     params.error = success.data.message;
                 }
@@ -167,7 +171,6 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                 if (success.data.status) {
                     params.success = success.data.message;
                     $state.go('maintenance');
-                    Notification.success({message: "Maintenance Added Successfully"});
                 } else {
                     params.error = success.data.message;
                 }
