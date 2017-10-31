@@ -171,6 +171,7 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('users')
+                        $state.go('users');
                     } else {
                         params.error = success.data.message;
                     }
@@ -182,6 +183,7 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
                     console.log(success.data);
                     if (success.data.status) {
                         params.success = success.data.message;
+                        $state.go('users');
                     } else {
                         params.error = success.data.message;
                     }

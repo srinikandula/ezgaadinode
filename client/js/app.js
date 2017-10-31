@@ -177,7 +177,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     });
     $urlRouterProvider.otherwise('/login');
 });
-
 app.config(function(NotificationProvider) {
     NotificationProvider.setOptions({
         delay: 10000,
