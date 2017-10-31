@@ -5,9 +5,11 @@ var _ = require('underscore');
 var async = require('async');
 
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var UsersAPI = require('./users');
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
+
 
 var Trucks = function () {
 };
@@ -134,7 +136,22 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                 .limit(pageLimits.trucksPaginationLimit)
                 .lean()
                 .exec(function (err, trucks) {
-                    accountsCallback(err, trucks);
+                    //get all createdBy ids from trucks
+                    var createdByIds = _.pluck(trucks,"createdBy");
+
+                    UsersAPI.getUserNames(createdByIds, function(response) {
+                        var userNames =response.userNames;
+                        for(var i=0; i< trucks.length; i++) {
+                            var truck = trucks[i];
+                            var user = _.find(userNames, function(user) { return user._id === truck.createdBy; });
+                            if(user) {
+                                truck.attrs.createdByName = user.userName;
+                            }
+
+                        }
+                        accountsCallback(err, trucks);
+                    })
+
                 });
         },
         count: function (countCallback) {

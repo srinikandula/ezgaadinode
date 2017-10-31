@@ -238,6 +238,23 @@ Users.prototype.getUser = function (id, callback) {
     });
 };
 
+Users.prototype.getUserNames = function (ids, callback) {
+    var result = {};
+    UsersColl.find({'_id':{$in: ids}},{"userName":1},function (err, userNames) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting user names';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.userNames = userNames;
+            // console.log('user',result);
+            callback(result);
+        }
+    });
+};
+
 Users.prototype.deleteUSer = function (id, callback) {
     console.log('id', id);
     var result = {};

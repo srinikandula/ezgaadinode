@@ -90,6 +90,9 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             name: 'Driver',
             field: 'driverName'
         }, {
+            name: 'Created By',
+            field: 'attrs.createdByName'
+        }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
             '<a ng-click="grid.appScope.goToEditTruckPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
