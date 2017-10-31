@@ -95,6 +95,14 @@ body{
     background-color: #F5F5F5;
     cursor: pointer;
 }
+.body-nav ul li:hover{
+    border: 1px solid #CCC;
+    width: 11%;
+    padding: 7px;
+    text-align: center;
+    background-color: #ccc;
+    cursor: pointer;
+}
 .body-nav ul li a{
     text-decoration: none;
 }
