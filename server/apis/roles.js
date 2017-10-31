@@ -157,7 +157,7 @@ Roles.prototype.deleteRole = function (id, callback) {
             callback(result);
         } else {
             result.status = true;
-            result.message = 'Success';
+            result.message = 'Successfully Deleted !!';
             callback(result);
         }
     });

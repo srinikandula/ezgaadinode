@@ -83,6 +83,7 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
 
 app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 'AccountServices', 'Notification', '$stateParams', 'Utils', '$state', function ($scope, UserServices, RoleServices, AccountServices, Notification, $stateParams, Utils, $state) {
     console.log('-->', $stateParams, !!$stateParams.userId);
+    $scope.pagetitle="Add User";
     $scope.userDetails = {
         accountId : '',
         firstName : '',
@@ -98,6 +99,7 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
 
     if ($stateParams.userId) {
         console.log($stateParams.userId);
+        $scope.pagetitle="Update User";
         UserServices.getUser($stateParams.userId, function (success) {
             if (success.data.status) {
                 $scope.userDetails = success.data.user;
@@ -170,9 +172,9 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
                     console.log('update...', success.data);
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('users')
                         $state.go('users');
-                    } else {
+                        Notification.success({message: "User Updated Successfully"});
+                      } else {
                         params.error = success.data.message;
                     }
                     // console.log('params red',params);
@@ -184,6 +186,7 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('users');
+                        Notification.success({message: "User Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }

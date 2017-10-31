@@ -8,58 +8,67 @@
 
         <div class="main-right col-xs-9">
             <div class="col-xs-12 account-edit">
-                <h2 class="login-heading">Add Driver</h2>
+                <h2 class="login-heading">{{pagetitle}}</h2>
                 <form ng-submit="addOrUpdateAccount()">
                     <div class="col-xs-6 col-xs-12 mt-10">
                         <div class="form-group col-xs-12">
                             <label for="fullName" class="col-xs-12 col-sm-4 pall-zero">Full Name</label>
                             <div class="col-xs-12 col-sm-8">
-                            <input ng-model="driver.fullName" type="text" class="form-control" id="fullName"
-                                   placeholder="Driver full name">
+                                <input ng-model="driver.fullName" type="text" class="form-control" id="fullName"
+                                       placeholder="Driver full name">
                             </div>
                         </div>
 
                         <div class="form-group col-xs-12">
                             <label for="mobile" class="col-xs-12 col-sm-4 pall-zero">Mobile Number</label>
                             <div class="col-sm-8 col-xs-12">
-                            <input ng-model="driver.mobile" type="text" class="form-control" id="mobile"
-                                   placeholder="Mobile Number">
+                                <input ng-model="driver.mobile" type="text" class="form-control" id="mobile"
+                                       placeholder="Mobile Number">
                             </div>
                         </div>
 
                         <div class="form-group col-xs-12">
                             <label for="truckId" class="col-xs-12 col-sm-4 pall-zero">Truck Registration Number</label>
                             <div class="col-sm-8 col-xs-12">
-                            <select ng-model="driver.truckId"
-                                    ng-options="truck._id as truck.registrationNo for truck in trucks" type="text"
-                                    class="form-control" id="truckId">
-                            </select>
+                                <select ng-model="driver.truckId"
+                                        ng-options="truck._id as truck.registrationNo for truck in trucks" type="text"
+                                        class="form-control" id="truckId">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label for="licenseValidity" class="col-xs-12 col-sm-4 pall-zero">License Validity</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <date-picker id="licenseValidity" ng-model="driver.licenseValidity"></date-picker>
                             </div>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6 mt-10">
+
                         <div class="form-group col-xs-12">
-                        <label for="licenseValidity" class="col-xs-12 col-sm-4 pall-zero">License Validity</label>
+                            <label for="salary" class="col-xs-12 col-sm-4 pall-zero">Salary</label>
                             <div class="col-xs-12 col-sm-8">
-                        <date-picker id="licenseValidity" ng-model="driver.licenseValidity"></date-picker>
+                                <input ng-model="driver.salary" type="text" class="form-control" id="salary"
+                                       placeholder="Salary">
                             </div>
-                    </div>
-
-                    <div class="form-group col-xs-12">
-                        <label for="salary" class="col-xs-12 col-sm-4 pall-zero">Salary</label>
-                        <div class="col-xs-12 col-sm-8">
-                        <input ng-model="driver.salary" type="text" class="form-control" id="salary"
-                               placeholder="Salary">
                         </div>
-                    </div>
 
-                    <div class="form-group col-xs-12">
-                        <label for="licenseNumber" class="col-xs-12 col-sm-4 pall-zero">License Number</label>
-                        <div class="col-xs-12 col-sm-8">
-                        <input ng-model="driver.licenseNumber" type="text" class="form-control" id="licenseNumber"
-                               placeholder="License Number">
+                        <div class="form-group col-xs-12">
+                            <label for="licenseNumber" class="col-xs-12 col-sm-4 pall-zero">License Number</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <input ng-model="driver.licenseNumber" type="text" class="form-control"
+                                       id="licenseNumber"
+                                       placeholder="License Number">
+                            </div>
                         </div>
-                    </div>
+                        <div class="form-group col-xs-12">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="driver.status"> Driver Status
+                                </label>
+                            </div>
+                        </div>
+
                     </div>
                     <div class="clearfix"></div>
                     <div class="col-xs-4 col-xs-push-4">

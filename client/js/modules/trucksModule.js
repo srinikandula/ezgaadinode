@@ -110,7 +110,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     $scope.deleteTruck = function (truckId) {
         TrucksService.deleteTruck(truckId, function (success) {
             if (success.data.status) {
-                Notification.success('Truck deleted successfully');
+                Notification.error('Truck deleted successfully');
                 $scope.getTrucksData();
             } else {
                 Notification.error(success.data.message)
@@ -157,7 +157,9 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
             if (!params._id) {
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {
-                        params.success = success.data.message;
+                       // params.success = success.data.message;
+                        $state.go('trucks');
+                        Notification.success({message: "Truck Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
@@ -167,7 +169,9 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
             } else {
                 TrucksService.updateTruck(params, function (success) {
                     if (success.data.status) {
-                        params.success = success.data.message;
+                        //params.success = success.data.message;
+                        $state.go('trucks');
+                        Notification.success({message: "Truck Updated Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
