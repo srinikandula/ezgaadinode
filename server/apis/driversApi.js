@@ -69,11 +69,11 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                 driverDoc.save(driverInfo, function (err, newDoc) {
                     if (err) {
                         retObj.status = false;
-                        retObj.message = ['Error saving driver'];
+                        retObj.message = 'Error saving driver';
                         callback(retObj);
                     } else {
                         retObj.status = true;
-                        retObj.message = ['Success'];
+                        retObj.message = 'Success';
                         retObj.driver = newDoc;
                         //add changes to truck assginment to the driver
                         callback(retObj);
@@ -184,18 +184,19 @@ Drivers.prototype.updateDriver = function (jwtObj, driverInfo, callback) {
                 retObj.message = ['Error fetching accounts'];
                 callback(retObj);
             } else if (!drivers.length) { // if no driver is found with the same phone number or full name
-                DriversColl.findOneAndUpdate({_id: driverInfo._id}, driverInfo, function (err, oldDriver) {
+                DriversColl.findOneAndUpdate({_id: driverInfo._id}, driverInfo, {new: true}, function (err, oldDriver) {
                     if (err) {
                         retObj.status = false;
-                        retObj.message = ['Error saving driver'];
+                        retObj.message = 'Error saving driver';
                         callback(retObj);
                     } else if (oldDriver) {
                         retObj.status = true;
-                        retObj.message = ['Success'];
+                        retObj.message = 'Success';
+                        retObj.driver = oldDriver;
                         callback(retObj);
                     } else {
                         retObj.status = false;
-                        retObj.message = ['Driver does\'t exist'];
+                        retObj.message = 'Driver does\'t exist';
                         callback(retObj);
                     }
                 });
