@@ -13,6 +13,7 @@ var Drivers = function () {
 Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
     var retObj = {};
     var errors = [];
+    driverInfo = Utils.removeEmptyFields(driverInfo);
     if (!driverInfo.fullName || !_.isString(driverInfo.fullName)) {
         errors.push('Invalid full name');
     }
@@ -137,7 +138,14 @@ Drivers.prototype.getDriverByPageNumber = function (pageNum, callback) {
                 .populate('truckId')
                 .lean()
                 .exec(function (err, drivers) {
-                    driversCallback(err, drivers);
+                    Utils.populateNameInUsersColl(drivers, "createdBy", function (response) {
+                        if(response.status) {
+                            driversCallback(err, response.documents);
+                        } else {
+                            driversCallback(err, null);
+                        }
+                    });
+                    // driversCallback(err, drivers);
                 });
         },
         count: function (countCallback) {

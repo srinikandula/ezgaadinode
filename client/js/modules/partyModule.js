@@ -93,6 +93,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             name: 'Operating Lane',
             field: 'operatingLane'
         }, {
+            name: 'Created By',
+            field: 'attrs.createdByName'
+        }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
             '<a ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +

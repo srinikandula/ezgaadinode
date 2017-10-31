@@ -78,6 +78,9 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
             name: 'License Number',
             field: 'licenseNumber'
         }, {
+            name: 'Created By',
+            field: 'attrs.createdByName'
+        }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
             '<a href="#" ng-click="grid.appScope.goToEditDriverPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>'

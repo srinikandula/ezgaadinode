@@ -83,6 +83,9 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
             name: 'Role name',
             field: 'roleName'
         }, {
+            name: 'Created By',
+            field: 'attrs.createdByName'
+        }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
             '<a ng-click="grid.appScope.goToEditRolePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +

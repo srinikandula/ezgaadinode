@@ -87,7 +87,7 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
             field: 'cost'
         }, {
             name: 'Created By',
-            field: 'createdBy'
+            field: 'attrs.createdByName'
         }, {
             name: 'Action',
             cellTemplate: '<div class="text-center"> <a ng-click="grid.appScope.goToEditMaintenancePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +

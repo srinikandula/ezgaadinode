@@ -69,6 +69,9 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
             name: 'Role',
             field: 'role'
         }, {
+            name: 'Created By',
+            field: 'attrs.createdByName'
+        }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
             '<a href="#" ng-click="grid.appScope.goToEditUserPage(row.entity._id)" class="glyphicon glyphicon-edit edit"> </a></div>'

@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var MaintenanceCost = require('./../apis/maintenanceCost');
+var MaintenanceCost = require('../apis/maintenanceCostApi');
 
 AuthRouter.post('/addMaintenance', function (req, res) {
     MaintenanceCost.addMaintenance(req.jwt, req.body, function (result) {

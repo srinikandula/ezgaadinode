@@ -2,7 +2,7 @@ var express = require('express');
 var AuthRouter = express.Router();
 var OpenRouter = express.Router();
 
-var Drivers = require('./../apis/drivers');
+var Drivers = require('../apis/driversApi');
 
 AuthRouter.post('/', function (req, res) {
     Drivers.addDriver(req.jwt, req.body, function (result) {

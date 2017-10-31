@@ -1,6 +1,6 @@
 var express = require('express');
 var AuthRouter = express.Router();
-var Accounts = require('./../apis/accounts');
+var Accounts = require('../apis/accountsApi');
 var logger = require('./../winston/logger')(module);
 
 AuthRouter.post('/accounts/add', function (req, res) {

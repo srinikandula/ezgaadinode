@@ -119,8 +119,8 @@ Party.prototype.getAccountParties = function (accountId, callback) {
 Party.prototype.getAllParties = function (callback) {
     var result = {};
     PartyCollection.find({}, function (err, parties) {
-        console.log('errparty',err);
-        console.log('parties',parties);
+        // console.log('errparty',err);
+        // console.log('parties',parties);
         if (err) {
             result.status = false;
             result.message = 'Error getting parties';
@@ -128,9 +128,18 @@ Party.prototype.getAllParties = function (callback) {
         } else {
             result.status = true;
             result.message = 'Success';
-            result.parties = parties;
-            console.log('parties',result);
-            callback(result);
+            // result.parties = parties;
+            Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
+                if(response.status) {
+                    result.parties = response.documents;
+                    callback(result);
+                } else {
+                    result.status = false;
+                    result.message = 'Error getting parties';
+                    callback(result);
+                }
+            });
+            // console.log('parties',result);
         }
     });
 };

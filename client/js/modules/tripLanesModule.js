@@ -94,12 +94,9 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
         }, {
             name: 'Estimated Distance',
             field: 'estimatedDistance'
-        }, {
+        },  {
             name: 'Created By',
-            field: 'createdBy'
-        }, {
-            name: 'Updated By',
-            field: 'updatedBy'
+            field: 'attrs.createdByName'
         }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
