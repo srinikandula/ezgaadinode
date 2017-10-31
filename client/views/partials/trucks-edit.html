@@ -31,20 +31,11 @@
                                    placeholder="Modal and Year"/>
                         </div>
                     </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Modal and Year :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <input type="text" class="form-control" ng-model="truck.modelAndYear"
-                                   placeholder="Modal and Year"/>
-                        </div>
-                    </div>
+
                     <div class="form-group col-xs-12">
                         <label class="col-sm-4 pall-zero">Driver </label>
                         <div class="col-sm-8 col-xs-12">
-                            <select class="form-control" ng-model="truck.driverId">
-                                <option value="">Select</option>
-                                <option></option>
-                            </select>
+                            <select id="driver" ng-options="driver._id as driver.fullName for driver in drivers" class="form-control" ng-model="truck.driverId" required></select>
                         </div>
                     </div>
 

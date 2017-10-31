@@ -234,6 +234,21 @@ Drivers.prototype.getAllDrivers = function (callback) {
     });
 };
 
+Drivers.prototype.getAccountDrivers = function (accountId, callback) {
+    var result = {};
+    DriversColl.find({accountId:accountId}, function (err, drivers) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting account trucks';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.drivers = drivers;
+            callback(result);
+        }
+    });
+};
 
 Drivers.prototype.deleteDriver = function (driverId, callback) {
     var result = {};

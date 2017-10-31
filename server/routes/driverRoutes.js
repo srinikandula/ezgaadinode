@@ -32,6 +32,12 @@ AuthRouter.get('/', function (req, res) {
         res.json(result);
     });
 });
+
+AuthRouter.get('/account/drivers', function (req, res) {
+    Drivers.getAccountDrivers(req.jwt.accountId, function (result) {
+        res.json(result);
+    });
+});
 AuthRouter.get('/:driverId', function (req, res) {
     Drivers.findDriver(req.params.driverId, function (result) {
         res.send(result);

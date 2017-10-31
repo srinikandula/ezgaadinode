@@ -125,10 +125,11 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     }
 }]);
 
-app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, $stateParams, Notification, $state) {
+app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService','DriverService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state) {
     $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
+    $scope.drivers = [];
     $scope.truck = {
         registrationNo:'',
         truckType:'',
@@ -143,6 +144,9 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
         success:[]
     };
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
+    DriverService.getAccountDrivers(function(success){
+        $scope.drivers = success.data.drivers;
+    });
 
     if ($stateParams.truckId) {
         TrucksService.getTruck($stateParams.truckId, function (success) {

@@ -33,7 +33,7 @@ AuthRouter.delete('/:truckId', function (req, res) {
 });
 
 AuthRouter.get('/', function (req, res) {
-    Trucks.getAllTrucks(req.jwt.accountId,function (result) {
+    Trucks.getAllTrucks(function (result) {
         res.json(result);
     });
 });
