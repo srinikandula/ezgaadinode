@@ -138,7 +138,8 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
         advance: '',
         tripLane:'',
         tripExpenses: '',
-        success:''
+        error:[],
+        success:[]
     };
     $scope.cancel = function () {
         $state.go('trips');
@@ -203,37 +204,65 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
 
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
-        params.success = '';
-        params.error = '';
+        params.success = [];
+        params.error = [];
+        if (!params.date) {
+            params.error.push('Valid Trip Date');
+        }
+        if (!params.registrationNo) {
+            params.error.push('Valid Registration Number');
+        }
+        if (!params.driver) {
+            params.error.push('Please Select Driver');
+        }
+        if (!params.bookedFor) {
+            params.error.push('Valid Booked For');
+        }
+        if (!params.freightAmount) {
+            params.error.push('Please add freightAmount');
+        }
+        if (!params.balance) {
+            params.error.push('Please add Balance');
+        }
+        if (!params.tripLane) {
+            params.error.push('Please Select Trip Lane');
+        }
+        if (!params.advance) {
+            params.error.push('Please add Advance');
+        }
+        if (!params.tripExpenses) {
+            params.error.push('Please add tripExpenses');
+        }
+        if (!params.error.length) {
+            if (params._id) {
+                params.date = Number(params.date);
+                TripServices.updateTrip(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        $state.go('trips');
+                        Notification.success({message: success.data.message});
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
 
-        if (params._id) {
-            params.date= Number(params.date);
-            TripServices.updateTrip(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('trips');
-                    Notification.success({message: success.data.message});
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
+                });
+            } else {
+                console.log('add');
+                // params.date= Number(params.date);
+                TripServices.addTrip(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        $state.go('trips');
+                        Notification.success({message: success.data.message});
+                    } else {
+                        params.error = success.data.message;
+                    }
+                    console.log(params);
+                }, function (err) {
 
-            });
-        } else {
-            console.log('add');
-            // params.date= Number(params.date);
-            TripServices.addTrip(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('trips');
-                    Notification.success({message: success.data.message});
-                } else {
-                    params.error = success.data.message;
-                }
-                console.log(params);
-            }, function (err) {
-
-            });
+                });
+            }
         }
     }
 }]);
