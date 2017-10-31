@@ -168,7 +168,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                 });
         },
         count: function (countCallback) {
-            TrucksColl.count(function (err, count) {
+            TrucksColl.count({accountId: accountId},function (err, count) {
                 countCallback(err, count);
             });
         }
