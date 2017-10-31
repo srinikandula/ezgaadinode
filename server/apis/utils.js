@@ -65,14 +65,16 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
-            var user = _.find(names, function (users) {
-                return users._id.toString() === item.createdBy.toString();
-            });
-            if (user) {
-                if (!item.attrs) {
-                    item.attrs = {};
+            if(item.createdBy) {
+                var user = _.find(names, function (users) {
+                    return users._id.toString() === item.createdBy.toString();
+                });
+                if (user) {
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs.createdByName = user.userName;
                 }
-                item.attrs.createdByName = user.userName;
             }
         }
         result.status = true;

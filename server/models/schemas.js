@@ -123,6 +123,7 @@ var driverSchema = new mongoose.Schema({
     salary:  Number,
     createdBy: String,
     updatedBy: String,
+    driverId: String,
     attrs: {}
 }, {
     timestamps: true
