@@ -199,9 +199,9 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
     // });
 };
 
-Trucks.prototype.getAllTrucks = function (callback) {
+Trucks.prototype.getAllTrucks = function (accountId,callback) {
     var result = {};
-    TrucksColl.find({},function (err, accountTrucks) {
+    TrucksColl.find({accountId: accountId},function (err, accountTrucks) {
         if (err) {
             result.status = false;
             result.message = 'Error getting trucks';
