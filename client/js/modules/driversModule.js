@@ -57,6 +57,9 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
     $scope.driverGridOptions = {
         enableSorting: true,
         columnDefs: [{
+            name: 'ID',
+            field: 'driverId'
+        },{
             name: 'Full Name',
             field: 'fullName'
         }, {
@@ -137,8 +140,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         errors: [],
         success: []
     };
-
+    $scope.pageTitle = "Add Driver";
     if ($stateParams.driverId) {
+        $scope.pageTitle = "Update Driver";
         DriverServices.getDriver($stateParams.driverId, function (success) {
             if (success.data.status) {
                 $scope.driver = success.data.driver;
@@ -201,7 +205,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                         $state.go('drivers');
                         Notification.success(success.data.message)
                     } else {
-                        params.error = success.data.message;
+                        params.errors.push(success.data.message);
                     }
                 }, function (err) {
                     console.log(err);
@@ -213,9 +217,10 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                         $state.go('drivers');
                         Notification.success({message: "Driver Added Successfully"});
                     } else {
-                        params.errors = success.data.message;
+                        params.errors.push(success.data.message);
                     }
                 }, function (error) {
+
                 });
             }
         } else {

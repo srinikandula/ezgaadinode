@@ -40,77 +40,45 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
         callback(retObj);
     } else {
         driverInfo.createdBy = jwtObj.id;
-
-        TrucksColl.findById(driverInfo.truckId, function (err, truck) {
+        driverInfo.accountId = jwtObj.accountId;
+        driverInfo.mobile = Number(driverInfo.mobile);
+        var today = new Date();
+        driverInfo.driverId = "DR"+parseInt((Math.random()*100000)); // Need to fix this
+        delete driverInfo.joiningDate;
+        //check if there is a driver with matching mobile number or fullName in the account
+        DriversColl.find({accountId :driverInfo.accountId,$or:[{"mobile":driverInfo.mobile},{"fullName":driverInfo.fullName}]}, function (err, drivers) {
             if (err) {
                 retObj.status = false;
-                retObj.message = ['Error fetching truck'];
+                retObj.message = ['Error fetching accounts'];
                 callback(retObj);
-            } else if (!truck.accountId) {
+            } else if (drivers && drivers.length > 0) {
                 retObj.status = false;
-                retObj.message = ['No valid account Id for truck'];
-                callback(retObj)
+                var duplicateFound = _.find(drivers, function (driver) {return driver.mobile === driverInfo.mobile;});
+                if(duplicateFound){
+                    var error = " Mobile number is used by other driver in the account";
+                    retObj.message = retObj.message ?retObj.message+ error: error;
+                }
+                duplicateFound = _.find(drivers, function (driver) {return driver.fullName === driverInfo.fullName;})
+                if(duplicateFound){
+                    var error = " DUPLICATE!! Please choose a different name for the driver";
+                    retObj.message = retObj.message ?retObj.message+ error: error;
+                }
+                callback(retObj);
             } else {
-                driverInfo.accountId = truck.accountId;
-                driverInfo.mobile = Number(driverInfo.mobile);
-                delete driverInfo.joiningDate;
-                DriversColl.find({accountId: driverInfo.accountId}, function (err, drivers) {
-                        if (err) {
-                            retObj.status = false;
-                            retObj.message = ['Error fetching accounts'];
-                            callback(retObj);
-                        } else if (!drivers.length) {
-                            DriversColl.findOneAndUpdate({truckId: driverInfo.truckId}, driverInfo, {
-                                upsert: true,
-                                new: true
-                            }, function (err, newDoc) {
-                                if (err) {
-                                    retObj.status = false;
-                                    retObj.message = ['Error saving driver'];
-                                    callback(retObj);
-                                } else {
-                                    retObj.status = true;
-                                    retObj.message = ['Success'];
-                                    retObj.driver = newDoc;
-                                    callback(retObj);
-                                }
-                            });
-                        } else {
-                            var mobileIndex = _.findIndex(drivers, {mobile: driverInfo.mobile});
-                            var fullNameIndex = _.findIndex(drivers, {fullName: driverInfo.fullName});
-
-                            if (mobileIndex > -1) {
-                                errors.push('Mobile number already exists with that accountId');
-                            }
-
-                            if (fullNameIndex > -1) {
-                                errors.push('Driver name already exists');
-                            }
-
-                            if (errors.length) {
-                                retObj.status = false;
-                                retObj.message = errors;
-                                callback(retObj);
-                            } else {
-                                DriversColl.findOneAndUpdate({truckId: driverInfo.truckId}, driverInfo, {
-                                    upsert: true,
-                                    new: true
-                                }, function (err, newDoc) {
-                                    if (err) {
-                                        retObj.status = false;
-                                        retObj.message = ['Error saving driver'];
-                                        callback(retObj);
-                                    } else {
-                                        retObj.status = true;
-                                        retObj.message = ['Success'];
-                                        retObj.driver = newDoc;
-                                        callback(retObj);
-                                    }
-                                });
-                            }
-                        }
+                var driverDoc = new DriversColl(driverInfo);
+                driverDoc.save(driverInfo, function (err, newDoc) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.message = ['Error saving driver'];
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.message = ['Success'];
+                        retObj.driver = newDoc;
+                        //add changes to truck assginment to the driver
+                        callback(retObj);
                     }
-                );
+                });
             }
         });
     }
@@ -194,29 +162,29 @@ Drivers.prototype.getDriverDetails = function (driverId, callback) {
     }
 };
 
-Drivers.prototype.updateDriver = function (jwtObj, driver, callback) {
+Drivers.prototype.updateDriver = function (jwtObj, driverInfo, callback) {
     var retObj = {};
     var errors = [];
 
-    if (!driver._id) {
+    if (!driverInfo._id) {
         retObj.status = false;
         retObj.message = 'Invalid driverId';
         callback(retObj);
     } else {
-        driver.updatedBy = jwtObj.id;
-
+        driverInfo.updatedBy = jwtObj.id;
+        driverInfo.mobile = Number(driverInfo.mobile);
         DriversColl.find({
-            accountId: driver.accountId,
-            _id: {$ne: driver._id}
+            accountId: driverInfo.accountId,
+            _id: {$ne: driverInfo._id},
+            $or: [{"mobile":driverInfo.mobile},{"fullName":driverInfo.fullName}]
         }, function (err, drivers) {
             console.log('driverLenth=>', drivers.length);
             if (err) {
                 retObj.status = false;
                 retObj.message = ['Error fetching accounts'];
                 callback(retObj);
-            } else if (!drivers.length) {
-                DriversColl.findOneAndUpdate({_id: driver._id}, driver, function (err, oldDriver) {
-                    console.log('--->', err);
+            } else if (!drivers.length) { // if no driver is found with the same phone number or full name
+                DriversColl.findOneAndUpdate({_id: driverInfo._id}, driverInfo, function (err, oldDriver) {
                     if (err) {
                         retObj.status = false;
                         retObj.message = ['Error saving driver'];
@@ -232,35 +200,18 @@ Drivers.prototype.updateDriver = function (jwtObj, driver, callback) {
                     }
                 });
             } else {
-                var mobileIndex = _.findIndex(drivers, {mobile: Number(driver.mobile)});
-                var fullNameIndex = _.findIndex(drivers, {fullName: driver.fullName});
-
-                if (mobileIndex > -1) {
-                    errors.push('Mobile number already exists with that accountId');
+                retObj.status = false;
+                var duplicateFound = _.find(drivers, function (driver) {return driver.mobile === driverInfo.mobile;});
+                if(duplicateFound){
+                    var error = " Mobile number is used by other driver in the account";
+                    retObj.message = retObj.message ?retObj.message+ error: error;
                 }
-
-                if (fullNameIndex > -1) {
-                    errors.push('Full name already exists');
+                duplicateFound = _.find(drivers, function (driver) {return driver.fullName === driverInfo.fullName;})
+                if(duplicateFound){
+                    var error = " DUPLICATE!! Please choose a different name for the driver";
+                    retObj.message = retObj.message ?retObj.message+ error: error;
                 }
-
-                if (errors.length) {
-                    retObj.status = false;
-                    retObj.message = errors;
-                    callback(retObj);
-                } else {
-                    driver = Utils.removeEmptyFields(driver);
-                    DriversColl.findOneAndUpdate({_id: driver._id}, {$set: driver}, function (err) {
-                        if (err) {
-                            retObj.status = false;
-                            retObj.message = ['Error saving driver'];
-                            callback(retObj);
-                        } else {
-                            retObj.status = true;
-                            retObj.message = ['Success'];
-                            callback(retObj);
-                        }
-                    });
-                }
+                callback(retObj);
             }
         });
     }
