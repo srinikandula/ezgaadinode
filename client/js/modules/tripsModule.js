@@ -83,7 +83,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             field: 'registrationNo'
         },{
             name: 'Driver',
-            field: 'attrs.driverName'
+            field: 'attrs.fullName'
         },{
             name: 'Booked For',
             field: 'attrs.partyName'

@@ -15,6 +15,15 @@ var Trucks = function () {
 };
 
 Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
+    console.log(truckDetails);
+    // console.log(typeof truckDetails.fitnessExpiry);
+    // truckDetails.fitnessExpiry = new Date(truckDetails.fitnessExpiry);
+    // console.log(typeof truckDetails.fitnessExpiry,truckDetails.fitnessExpiry);
+    // truckDetails.insuranceExpiry = new Date(truckDetails.insuranceExpiry);
+    // truckDetails.permitExpiry = new Date(truckDetails.permitExpiry);
+    // truckDetails.pollutionExpiry = new Date(truckDetails.pollutionExpiry);
+    // truckDetails.taxDueDate = new Date(truckDetails.taxDueDate);
+    // console.log(truckDetails);
     var result = {};
     if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
         result.status = false;
@@ -44,6 +53,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
                 truckDetails.accountId = jwt.accountId;
                 var truckDoc = new TrucksColl(truckDetails);
                 truckDoc.save(function (err, truck) {
+                    console.log(err);
                     if (err) {
                         result.status = false;
                         result.message = "Error while adding truck, try Again";
@@ -136,24 +146,25 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                 .limit(pageLimits.trucksPaginationLimit)
                 .lean()
                 .exec(function (err, trucks) {
-                    var createdByIds = _.pluck(trucks,"createdBy");
-                    UsersAPI.getUserNames(createdByIds, function(response) {
-                        var userNames =response.userNames;
-                        for(var i=0; i< trucks.length; i++) {
-                            var truck = trucks[i];
-                            var user = _.find(userNames, function(users) {
-                                return users._id.toString() === truck.createdBy.toString();
-                            });
-                            if(user) {
-                                if(!truck.attrs){
-                                    truck.attrs = {};
+                    Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                        if(!createdby.status) {
+                            accountsCallback(err, null);
+                        } else {
+                            Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId', 'fullName', function (drivername) {
+                                if(!drivername.status) {
+                                    accountsCallback(err, null);
+                                } else {
+                                    Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId', 'mobile', function (drivermobile) {
+                                        if(!drivermobile.status) {
+                                            accountsCallback(err, null);
+                                        } else {
+                                            accountsCallback(err, drivermobile.documents);
+                                        }
+                                    });
                                 }
-                                truck.attrs.createdByName = user.userName;
-                            }
+                            });
                         }
-                        accountsCallback(err, trucks);
-                    })
-
+                    });
                 });
         },
         count: function (countCallback) {

@@ -125,7 +125,7 @@ Trips.prototype.getAll = function (jwt, req, callback) {
                     result.message = 'Error while finding trips, try Again';
                     callback(result);
                 } else {
-                    Helpers.populateNameInDriversColl(response.documents, 'driver', function (response) {
+                    Helpers.populateNameInDriversCollmultiple(response.documents, 'driver', 'fullName', function (response) {
                         if(!response.status) {
                             result.status = false;
                             result.message = 'Error while finding trips, try Again';

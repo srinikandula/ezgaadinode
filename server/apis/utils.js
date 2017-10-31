@@ -55,8 +55,8 @@ Utils.prototype.isValidDateStr = function (dateStr) {
 Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    UsersColl.find({'_id':{$in: ids}},{"userName":1},function (err, names) {
-        if(err){
+    UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, names) {
+        if (err) {
             result.status = false;
             result.message = 'Error retrieving users';
             result.err = err;
@@ -84,11 +84,13 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
     });
 };
 
-Utils.prototype.populateNameInDriversColl = function (documents, fieldTopopulate, callback) {
+Utils.prototype.populateNameInDriversCollmultiple = function (documents, fieldTopopulate, fieldToGet, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    DriversColl.find({'_id':{$in: ids}},{"fullName":1},function (err, names) {
-        if(err){
+    var conditions = {};
+    conditions[fieldToGet] = 1;
+    DriversColl.find({'_id': {$in: ids}}, conditions, function (err, names) {
+        if (err) {
             result.status = false;
             result.message = 'Error retrieving names';
             result.err = err;
@@ -97,13 +99,15 @@ Utils.prototype.populateNameInDriversColl = function (documents, fieldTopopulate
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             var driver = _.find(names, function (users) {
-                return users._id.toString() === item.driver.toString();
+                // console.log(users._id, item[fieldTopopulate]);
+                if(users._id && item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                else return '';
             });
             if (driver) {
                 if (!item.attrs) {
                     item.attrs = {};
                 }
-                item.attrs.driverName = driver.fullName;
+                item.attrs[fieldToGet] = driver[fieldToGet];
             }
         }
         result.status = true;
@@ -116,8 +120,8 @@ Utils.prototype.populateNameInDriversColl = function (documents, fieldTopopulate
 Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    PartyColl.find({'_id':{$in: ids}},{"name":1},function (err, names) {
-        if(err){
+    PartyColl.find({'_id': {$in: ids}}, {"name": 1}, function (err, names) {
+        if (err) {
             result.status = false;
             result.message = 'Error retrieving names';
             result.err = err;
@@ -145,8 +149,8 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
 Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    TripLaneColl.find({'_id':{$in: ids}},{"name":1},function (err, names) {
-        if(err){
+    TripLaneColl.find({'_id': {$in: ids}}, {"name": 1}, function (err, names) {
+        if (err) {
             result.status = false;
             result.message = 'Error retrieving names';
             result.err = err;
