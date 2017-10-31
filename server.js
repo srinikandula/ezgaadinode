@@ -13,7 +13,7 @@ var Trips = require('./server/routes/trips');
 var Maintenance = require('./server/routes/maintenanceCost');
 var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
-var Drivers = require('./server/routes/drivers');
+var Drivers = require('./server/routes/driverRoutes');
 var Roles = require('./server/routes/roles');
 var TripLanes = require('./server/routes/tripLanesRoutes');
 

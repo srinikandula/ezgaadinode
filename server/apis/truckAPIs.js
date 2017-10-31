@@ -199,9 +199,9 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
     // });
 };
 
-Trucks.prototype.getAllTrucks = function (accountId,callback) {
+Trucks.prototype.getAllTrucks = function (callback) {
     var result = {};
-    TrucksColl.find({accountId: accountId},function (err, accountTrucks) {
+    TrucksColl.find(function (err, trucks) {
         if (err) {
             result.status = false;
             result.message = 'Error getting trucks';
@@ -209,7 +209,7 @@ Trucks.prototype.getAllTrucks = function (accountId,callback) {
         } else {
             result.status = true;
             result.message = 'Success';
-            result.trucks = accountTrucks;
+            result.trucks = trucks;
             callback(result);
         }
     });

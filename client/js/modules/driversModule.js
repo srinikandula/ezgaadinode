@@ -1,4 +1,4 @@
-app.factory('DriverServices', function ($http) {
+app.factory('DriverService', function ($http) {
     return {
         addDriver: function (driverInfo, success, error) {
             $http({
@@ -16,6 +16,12 @@ app.factory('DriverServices', function ($http) {
         getAllDrivers: function(success, error) {
             $http({
                 url: '/v1/drivers',
+                method: "GET"
+            }).then(success, error)
+        },
+        getAccountDrivers: function(success, error) {
+            $http({
+                url: '/v1/drivers/account/drivers',
                 method: "GET"
             }).then(success, error)
         },
@@ -47,7 +53,7 @@ app.factory('DriverServices', function ($http) {
     }
 });
 
-app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notification', function ($scope, $state, DriverServices, Notification) {
+app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification', function ($scope, $state, DriverService, Notification) {
 
     $scope.goToEditDriverPage = function (driverId) {
         $state.go('driversEdit', {driverId: driverId});
@@ -102,7 +108,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
     $scope.pageNumber = 1;
 
     $scope.getDrivers = function () {
-        DriverServices.getDrivers($scope.pageNumber, function (success) {
+        DriverService.getDrivers($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.driverGridOptions.data = success.data.drivers;
                 $scope.totalItems = success.data.count;
@@ -115,7 +121,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
     };
 
     $scope.deleteDriver = function (driverId) {
-        DriverServices.deleteDriver(driverId, function (success) {
+        DriverService.deleteDriver(driverId, function (success) {
             if (success) {
                 $scope.getDrivers();
                 Notification.error({message: success.data.message});
@@ -147,7 +153,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     $scope.pageTitle = "Add Driver";
     if ($stateParams.driverId) {
         $scope.pageTitle = "Update Driver";
-        DriverServices.getDriver($stateParams.driverId, function (success) {
+        DriverService.getDriver($stateParams.driverId, function (success) {
             if (success.data.status) {
                 $scope.driver = success.data.driver;
                 $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
@@ -159,7 +165,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     }
 
     function getTruckIds() {
-        DriverServices.getAllTrucks(function (success) {
+        DriverService.getAllTrucks(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             } else {
@@ -207,7 +213,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
 
         if (!params.errors.length) {
             if (params._id) {
-                DriverServices.updateDriver(params, function (success) {
+                DriverService.updateDriver(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('drivers');
@@ -219,7 +225,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                     console.log(err);
                 });
             } else {
-                DriverServices.addDriver(params, function (success) {
+                DriverService.addDriver(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('drivers');
