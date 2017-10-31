@@ -72,7 +72,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
 
 Trucks.prototype.findTruck = function (jwt, truckId, callback) {
     var result = {};
-    TrucksColl.findOne({_id:truckId, accountId: jwt.accountId}, function (err, truck) {
+    TrucksColl.findOne({_id: truckId, accountId: jwt.accountId}, function (err, truck) {
         if (err) {
             result.status = false;
             result.message = "Error while finding truck, try Again";
@@ -127,7 +127,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
 };
 
 Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
-    console.log('pageNumber',pageNumber);
+    console.log('pageNumber', pageNumber);
     var result = {};
     if (!pageNumber) {
         pageNumber = 1;
@@ -147,15 +147,17 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                 .lean()
                 .exec(function (err, trucks) {
                     Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
-                        if(!createdby.status) {
+                        if (!createdby.status) {
                             accountsCallback(err, null);
                         } else {
-                            Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId', 'fullName', function (drivername) {
-                                if(!drivername.status) {
+                            Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId',
+                                'fullName', function (drivername) {
+                                if (!drivername.status) {
                                     accountsCallback(err, null);
                                 } else {
-                                    Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId', 'mobile', function (drivermobile) {
-                                        if(!drivermobile.status) {
+                                    Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId',
+                                        'mobile', function (drivermobile) {
+                                        if (!drivermobile.status) {
                                             accountsCallback(err, null);
                                         } else {
                                             accountsCallback(err, drivermobile.documents);
