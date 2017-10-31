@@ -152,7 +152,8 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
         from: '',
         to: '',
         estimatedDistance: '',
-        success: ''
+        error:[],
+        success: []
     };
 
     $scope.cancel = function () {
@@ -174,8 +175,8 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
 
     $scope.addOrUpdateTripLane = function () {
         var params = $scope.tripLane;
-        params.success = '';
-        params.error = '';
+        params.success = [];
+        params.error = [];
 
         if (params._id) {
             TripLaneServices.updateTripLane(params, function (success) {

@@ -129,7 +129,19 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
     $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
-    $scope.truck = {};
+    $scope.truck = {
+        registrationNo:'',
+        truckType:'',
+        modelAndYear:'',
+        driverId:'',
+        fitnessExpiry:'',
+        permitExpiry:'',
+        insuranceExpiry:'',
+        pollutionExpiry:'',
+        taxDueDate:'',
+        error:[],
+        success:[]
+    };
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
 
     if ($stateParams.truckId) {
@@ -150,14 +162,38 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', '$stateP
 
     $scope.addOrUpdateTruck = function () {
         var params = $scope.truck;
-        params.success = '';
-        params.error = '';
+        params.success = [];
+        params.error = [];
         console.log('params==>', params);
         if (!params.registrationNo) {
-            params.error = 'Invalid Registration ID';
+            params.error.push ('Invalid Registration ID');
+        }
+        if (!params.truckType) {
+            params.error.push('Invalid truckType');
+        }
+        if (!params.modelAndYear) {
+            params.error.push('Invalid Modal and Year');
+        }
+        if (!params.driverId) {
+            params.error.push('Invalid Driver');
+        }
+        if (!params.fitnessExpiry) {
+            params.error.push('Invalid Fitness Expiry');
+        }
+        if (!params.permitExpiry) {
+            params.error.push('Invalid Permit Expiry');
+        }
+        if (!params.insuranceExpiry) {
+            params.error.push('Invalid Insurance Expiry');
+        }
+        if (!params.pollutionExpiry) {
+            params.error.push('Invalid Pollution Expiry');
+        }
+        if (!params.taxDueDate) {
+            params.error.push('Invalid Tax due date');
         }
 
-        if (!params.error) {
+        if (!params.error.length) {
             if (!params._id) {
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {

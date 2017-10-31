@@ -46,12 +46,16 @@
                     <div class="col-xs-4 col-xs-push-4">
 
                         <div>
-                            <div class="alert alert-danger" role="alert" ng-show="maintenanceDetails.error">
-                                <strong>{{maintenanceDetails.error}}</strong>
+                            <div class="alert alert-danger" role="alert" ng-show="maintenanceDetails.error.length">
+                                <ul>
+                                    <li  ng-repeat="error in maintenanceDetails.error">{{error}}</li>
+                                </ul>
                             </div>
 
-                            <div class="alert alert-success" role="alert" ng-show="maintenanceDetails.success">
-                                <strong>{{maintenanceDetails.success}}</strong>
+                            <div class="alert alert-success" role="alert" ng-show="maintenanceDetails.success.length">
+                                <ul>
+                                    <li  ng-repeat="success in maintenanceDetails.success">{{success}}</li>
+                                </ul>
                             </div>
                         </div>
                         <div class="margin-top-20">

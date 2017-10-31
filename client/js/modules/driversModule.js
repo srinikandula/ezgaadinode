@@ -70,7 +70,8 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
             field: 'truckId.registrationNo'
         }, {
             name: 'License Validity',
-            field: 'licenseValidity'
+            field: 'licenseValidity',
+            cellFilter: 'date:"dd-MM-yyyy"'
         }, {
             name: 'Mobile',
             field: 'mobile'
@@ -139,6 +140,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         joiningDate: '',
         licenseValidity: new Date(),
         salary:'',
+        licenseNumber:'',
         errors: [],
         success: []
     };
@@ -195,8 +197,12 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             params.errors.push('Please provide license validity date');
         }
 
-        if (isNaN(Number(params.salary))) {
-            params.errors.push('Please provide valid salary');
+        if (!params.salary) {
+            params.errors.push('Please provide  salary');
+        }
+
+        if (!params.licenseNumber) {
+            params.errors.push('Please provide  licenseNumber');
         }
 
         if (!params.errors.length) {

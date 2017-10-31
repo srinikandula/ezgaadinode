@@ -85,11 +85,16 @@
                 <div class="clearfix"></div>
 
                 <div class="col-sm-4 col-xs-push-4 margin-top-20">
-                    <div class="alert alert-danger" role="alert" ng-show="truck.error">
-                        <strong>{{truck.error}}</strong>
+                    <div class="alert alert-danger" role="alert" ng-show="truck.error.length">
+                        <!--<strong>{{truck.error}}</strong>-->
+                        <ul>
+                            <li ng-repeat="error in truck.error">{{error}}</li>
+                        </ul>
                     </div>
-                    <div class="alert alert-success" role="alert" ng-show="truck.success">
-                        <strong>{{truck.success}}</strong>
+                    <div class="alert alert-success" role="alert" ng-show="truck.success.length">
+                        <ul>
+                            <li ng-repeat="success in truck.success">{{success}}</li>
+                        </ul>
                     </div>
                     <input type="button" value="Submit" class="btn btn-primary" ng-click="addOrUpdateTruck()"/>
                     <input type="button" value="Cancel" class="btn btn-primary" ng-click="goToTrucksPage()"/>

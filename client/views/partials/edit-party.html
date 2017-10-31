@@ -53,11 +53,16 @@
                     </div>
                     <div class="clearfix"></div>
                     <div class="col-xs-4 col-xs-push-4">
-                        <div class="alert alert-danger" role="alert" ng-show="party.error">
-                            <strong>{{party.error}}</strong>
+                        <div class="alert alert-danger" role="alert" ng-show="party.error.length">
+                            <ul>
+                                <li  ng-repeat="error in party.error">{{error}}</li>
+                            </ul>
                         </div>
-                        <div class="alert alert-success" role="alert" ng-show="party.success">
-                            <strong>{{party.success}}</strong>
+
+                        <div class="alert alert-success" role="alert" ng-show="party.success.length">
+                            <ul>
+                                <li  ng-repeat="success in party.success">{{success}}</li>
+                            </ul>
                         </div>
                         <input type="button" value="Submit" class="btn btn-primary" ng-click="addOrUpdateParty()"/>
                         <input type="button" value="Cancel" class="btn btn-primary" ng-click="cancel()"/>
