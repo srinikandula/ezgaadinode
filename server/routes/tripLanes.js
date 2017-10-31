@@ -8,6 +8,11 @@ AuthRouter.post('/', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/', function (req, res) {
+    TripLanes.getAllTripLanes(function (result) {
+        res.send(result);
+    });
+});
 AuthRouter.get('/:pageNumber', function (req, res) {
     TripLanes.getTripLanes(req.jwt, req.body, req.params.pageNumber, function (result) {
         res.send(result);
@@ -18,7 +23,7 @@ AuthRouter.put('/', function (req, res) {
         res.send(result);
     });
 });
-AuthRouter.get('/:tripLaneId', function (req, res) {
+AuthRouter.get('/update/:tripLaneId', function (req, res) {
     TripLanes.findTripLane(req.jwt,req.params.tripLaneId, function (result) {
         res.send(result);
     });

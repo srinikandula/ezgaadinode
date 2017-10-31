@@ -7,6 +7,12 @@ app.factory('TripLaneServices', function ($http) {
                 data: tripLane
             }).then(success, error)
         },
+        getAllTripLanes: function (success, error) {
+            $http({
+                url: '/v1/tripLanes',
+                method: "GET"
+            }).then(success, error)
+        },
         getTripLanes: function (pageNumber, success, error) {
             $http({
                 url: '/v1/tripLanes/' + pageNumber,
@@ -15,7 +21,7 @@ app.factory('TripLaneServices', function ($http) {
         },
         getTripLane: function (tripLaneId, success, error) {
             $http({
-                url: '/v1/tripLanes/' + tripLaneId,
+                url: '/v1/tripLanes/update/' + tripLaneId,
                 method: "GET"
             }).then(success, error)
         },
@@ -114,7 +120,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
             if (success.data.status) {
                 $scope.tripLaneGridOptions.data = success.data.tripLanes;
                 $scope.totalItems = success.data.count;
-                console.log('---here---', success.data.tripLanes);
+                // console.log('---here---', success.data.tripLanes);
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -157,7 +163,7 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
 
     if ($stateParams.tripLaneId) {
         TripLaneServices.getTripLane($stateParams.tripLaneId, function (success) {
-            console.log('acc--->', success.data);
+            console.log('acc===>', success.data);
             if (success.data.status) {
                 $scope.tripLane = success.data.tripLane;
             } else {

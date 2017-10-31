@@ -69,7 +69,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 console.log("Error in deleting")
             }
         })
-    }
+    };
 
     $scope.tripGridOptions = {
         enableSorting: true,
@@ -158,12 +158,12 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
         });
     }
     function getParties() {
-        console.log('parties--->');
+        // console.log('parties--->');
         PartyService.getParties(function (success) {
-            console.log('succ',success.data);
+            // console.log('succ',success.data);
             if (success.data.status) {
                 $scope.parties = success.data.parties;
-                console.log('parties',$scope.parties);
+                // console.log('parties',$scope.parties);
             } else {
                 Notification.error(success.data.message);
             }
@@ -172,9 +172,11 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
         });
     }
     function getTripLanes() {
-        TripLaneServices.getTripLanes(function (success) {
+        console.log('triplanes--->');
+        TripLaneServices.getAllTripLanes(function (success) {
             if (success.data.status) {
                 $scope.tripLanes = success.data.tripLanes;
+                console.log('triplanes...',$scope.tripLanes);
             } else {
                 Notification.error(success.data.message);
             }
@@ -187,10 +189,12 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
     getTripLanes();
 
     if ($stateParams.tripId) {
+        // $scope.trip.date = '';
         TripServices.getTrip($stateParams.tripId, function (success) {
             console.log('acc--->', success.data.trip);
             if (success.data.status) {
                 $scope.trip = success.data.trip;
+                $scope.trip.date = new Date($scope.trip.date);
             } else {
                 Notification.error(success.data.message)
             }
@@ -208,7 +212,7 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
             TripServices.updateTrip(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
-                    $state.go('trips')
+                    $state.go('trips');
                     Notification.success({message: success.data.message});
                 } else {
                     params.error = success.data.message;
@@ -217,15 +221,17 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
 
             });
         } else {
-            params.date= Number(params.date);
+            console.log('add');
+            // params.date= Number(params.date);
             TripServices.addTrip(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
-                    $state.go('trips')
+                    $state.go('trips');
                     Notification.success({message: success.data.message});
                 } else {
                     params.error = success.data.message;
                 }
+                console.log(params);
             }, function (err) {
 
             });

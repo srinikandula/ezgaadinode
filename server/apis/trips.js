@@ -88,21 +88,11 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
 
 Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
     var result = {};
+    tripDetails = Helpers.removeEmptyFields(tripDetails);
     TripCollection.findOneAndUpdate({_id:tripDetails._id},
-        {$set:{
-            "date": tripDetails.date,
-            "registrationNo":tripDetails.registrationNo,
-            "driver": tripDetails.driver,
-            "bookedFor": tripDetails.bookedFor,
-            "freightAmount": tripDetails.freightAmount,
-            "advance": tripDetails.advance,
-            "balance": tripDetails.balance,
-            "tripLane": tripDetails.tripLane,
-            "tripExpenses": tripDetails.tripExpenses,
-            "accountId": tripDetails.accountId,
-            "updatedBy":jwt.id
-        }},
+        {$set:tripDetails},
         {new: true}, function (err, trip) {
+        console.log(err);
             if(err) {
                 result.status = false;
                 result.message = "Error while updating Trip, try Again";

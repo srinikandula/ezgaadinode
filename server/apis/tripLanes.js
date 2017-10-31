@@ -82,6 +82,22 @@ TripLanes.prototype.updateTripLane = function (jwt, tripLaneDetails, callback) {
         });
 };
 
+TripLanes.prototype.getAllTripLanes = function (callback) {
+    var result = {};
+    TripLanesCollection.find({},function (err, triplanes) {
+        if(err) {
+            result.status = false;
+            result.message = "Error while retrieving Trip Lanes, try Again";
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = "Success";
+            result.tripLanes = triplanes;
+            callback(result);
+        }
+    })
+};
+
 TripLanes.prototype.getTripLanes = function (jwt, req, pageNumber, callback) {
     var result = {};
     if (!pageNumber) {
