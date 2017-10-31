@@ -70,7 +70,8 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
             field: 'truckId.registrationNo'
         }, {
             name: 'License Validity',
-            field: 'licenseValidity'
+            field: 'licenseValidity',
+            cellFilter: 'date:"dd-MM-yyyy"'
         }, {
             name: 'Mobile',
             field: 'mobile'
@@ -128,6 +129,8 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverServices', 'Notifi
 }]);
 
 app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverServices', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverServices, Notification, Utils, $stateParams) {
+    $scope.pagetitle="Add Driver";
+
     $scope.trucks = [];
     $scope.driver = {
         fullName: '',
@@ -137,6 +140,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         joiningDate: '',
         licenseValidity: new Date(),
         salary:'',
+        licenseNumber:'',
         errors: [],
         success: []
     };
@@ -193,8 +197,12 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             params.errors.push('Please provide license validity date');
         }
 
-        if (isNaN(Number(params.salary))) {
-            params.errors.push('Please provide valid salary');
+        if (!params.salary) {
+            params.errors.push('Please provide  salary');
+        }
+
+        if (!params.licenseNumber) {
+            params.errors.push('Please provide  licenseNumber');
         }
 
         if (!params.errors.length) {
@@ -203,7 +211,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('drivers');
-                        Notification.success(success.data.message)
+                       Notification.success({message: "Driver Updated Successfully"});
                     } else {
                         params.errors.push(success.data.message);
                     }

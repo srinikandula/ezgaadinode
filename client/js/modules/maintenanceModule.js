@@ -61,7 +61,7 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
         MaintenanceService.deleteRecord(id, function (success) {
             if (success.data.status) {
                 $scope.getMaintenanceRecords();
-                Notification.success({message: success.data.message});
+                Notification.error({message: "Successfully Deleted"});
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -102,17 +102,17 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
     };
 }]);
 
-app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', function ($scope, MaintenanceService, $stateParams, $state) {
+app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'Notification', function ($scope, MaintenanceService, $stateParams, $state, Notification) {
     console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
     $scope.pagetitle = "Add Maintenance";
 
     $scope.maintenanceDetails = {
         vehicleNumber: '',
         description: '',
-        date: new Date(),
+        date: '',
         cost: '',
-        error: '',
-        success: ''
+        error: [],
+        success: []
     };
 
     $scope.goToMaintenancePage = function () {
@@ -120,8 +120,8 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
     };
 
     if ($stateParams.maintenanceId) {
-        $scope.pagetitle = "Edit Maintenance Record";
-        MaintenanceService.getMaintenanceRecord($stateParams.maintenanceId, function (success) {
+        $scope.pagetitle = "Edit Maintenance";
+         MaintenanceService.getMaintenanceRecord($stateParams.maintenanceId, function (success) {
             if (success.data.status) {
                 $scope.maintenanceDetails = success.data.trip;
                 $scope.maintenanceDetails.date = new Date($scope.maintenanceDetails.date);
@@ -133,21 +133,27 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
     }
     $scope.AddorUpdateMaintenance = function () {
         var params = $scope.maintenanceDetails;
-        params.error = '';
-        params.success = '';
+        params.error = [];
+        params.success = [];
 
         if (!params.vehicleNumber) {
-            params.error = 'Invalid vehicle Number';
-        } else if (!params.description) {
-            params.error = 'Invalid description';
-        } else if (!params.date) {
-            params.error = 'Invalid date';
-        } else if (!_.isNumber(params.cost)) {
-            params.error = 'Invalid cost';
-        } else if ($stateParams.maintenanceId) {
+            params.error.push('Invalid vehicle Number');
+        }
+        if (!params.description) {
+            params.error.push('Invalid description');
+        }
+        if (!params.date) {
+            params.error.push('Invalid date');
+        }
+        if (!_.isNumber(params.cost)) {
+            params.error.push('Invalid cost');
+        }
+        if ($stateParams.maintenanceId) {
             MaintenanceService.updateRecord(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
+                    $state.go('maintenance');
+                    Notification.success({message: "Maintenance Updated Successfully"});
                 } else {
                     params.error = success.data.message;
                 }
@@ -161,6 +167,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                 if (success.data.status) {
                     params.success = success.data.message;
                     $state.go('maintenance');
+                    Notification.success({message: "Maintenance Added Successfully"});
                 } else {
                     params.error = success.data.message;
                 }

@@ -142,6 +142,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
 
 app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneServices', '$stateParams', 'Notification', function ($scope, $state, Utils, TripLaneServices, $stateParams, Notification) {
     console.log('tl-->', $stateParams);
+    $scope.pagetitle = "Add Trip Lane";
 
     $scope.drivers = [];
     $scope.parties = [];
@@ -151,7 +152,8 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
         from: '',
         to: '',
         estimatedDistance: '',
-        success: ''
+        error:[],
+        success: []
     };
 
     $scope.cancel = function () {
@@ -159,6 +161,7 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
     };
 
     if ($stateParams.tripLaneId) {
+        $scope.pagetitle = "Edit Trip Lane";
         TripLaneServices.getTripLane($stateParams.tripLaneId, function (success) {
             console.log('acc===>', success.data);
             if (success.data.status) {
@@ -172,33 +175,48 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
 
     $scope.addOrUpdateTripLane = function () {
         var params = $scope.tripLane;
-        params.success = '';
-        params.error = '';
+        params.success = [];
+        params.error = [];
+        console.log(params.error);
+        if(!params.name){
+            params.error.push('Invalid Trip Lane Name');
+        }
+        if(!params.from){
+            params.error.push('Invalid From Location');
+        }
+        if(!params.to){
+            params.error.push('Invalid to Location');
+        }
+        if(!params.estimatedDistance){
+            params.error.push('Invalid Estimated Dist');
+        }
+        if(!params.error.length) {
+            if (params._id) {
+                TripLaneServices.updateTripLane(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        $state.go('tripLanes');
+                        Notification.success({message: success.data.message});
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
 
-        if (params._id) {
-            TripLaneServices.updateTripLane(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('tripLanes');
-                    Notification.success({message: success.data.message});
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
+                });
+            }
+            else {
+                TripLaneServices.addTripLane(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        $state.go('tripLanes');
+                        Notification.success({message: success.data.message});
+                    } else {
+                        params.error = success.data.message;
+                    }
+                }, function (err) {
 
-            });
-        } else {
-            TripLaneServices.addTripLane(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('tripLanes');
-                    Notification.success({message: success.data.message});
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
-
-            });
+                });
+            }
         }
     }
 }]);

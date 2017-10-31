@@ -44,6 +44,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         PartyService.deleteParty(partyId, function (success) {
             if (success.data.status) {
                 $scope.getParties();
+                Notification.error({message: "Successfully Deleted"});
             } else {
                 Notification.error(success.data.message)
             }
@@ -118,7 +119,16 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         $scope.pageTitle = "Edit Party";
     }
 
-    $scope.party = {};
+    $scope.party = {
+        name:'',
+        contact:'',
+        email:'',
+        city:'',
+        operatingLane:'',
+        error:[],
+        success:[]
+
+    };
     if ($stateParams.partyId) {
         PartyService.getParty($stateParams.partyId, function (success) {
             if (success.data.status) {
@@ -131,24 +141,31 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
     }
     $scope.addOrUpdateParty = function () {
         var params = $scope.party;
-        params.success = '';
-        params.error = '';
+        params.success = [];
+        params.error = [];
 
         if (!params.name) {
-            params.error += 'Invalid party name \n';
-        }
-        if (!Utils.isValidEmail(params.email)) {
-            params.error += 'Invalid email \n';
+            params.error.push('Invalid party name');
         }
         if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.error += 'Invalid phone number \n';
+            params.error.push('Invalid mobile number');
         }
-        if(!params.error) {
+        if (!Utils.isValidEmail(params.email)) {
+            params.error.push('Invalid email ID');
+        }
+        if (!params.city) {
+            params.error.push('Invalid city');
+        }
+        if (!params.operatingLane) {
+            params.error.push('Invalid Opeating Lane');
+        }
+        if(!params.error.length) {
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
-                        $state.go('party');
                         params.success = success.data.message;
+                        $state.go('party');
+                        Notification.success({message: "Party Updated Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
@@ -158,8 +175,9 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
             } else {
                 PartyService.addParty($scope.party, function (success) {
                     if (success.data.status) {
-                        $state.go('party');
                         params.success = success.data.message;
+                        $state.go('party');
+                         Notification.success({message: "Party Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }

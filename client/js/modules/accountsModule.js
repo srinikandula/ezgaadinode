@@ -94,6 +94,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 
 app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, $state, AccountServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
+    $scope.pagetitle="Add Account";
 
     $scope.account = {
         name: '',
@@ -101,12 +102,13 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
         password: '',
         address: '',
         contact: '',
-        error: '',
+        error: [],
         isActive: true,
-        success: ''
+        success:[]
     };
 
     if ($stateParams.accountId) {
+        $scope.pagetitle="Update Account";
         AccountServices.getAccount($stateParams.accountId, function (success) {
             if (success.data.status) {
                 $scope.account = success.data.account;
@@ -120,34 +122,42 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
     $scope.addOrUpdateAccount = function () {
         var params = $scope.account;
         params.success = null;
-        delete params.error;
+        // delete params.error;
+        params.error=[];
+        params.success = [];
         if (params._id) {
             delete params.userName;
             delete params.password;
         }
 
         if (!params.name) {
-            params.error = params.error ? params.error +' Invalid account name': 'Invalid account name';
+            // params.error = params.error ? params.error +' Invalid account name': 'Invalid account name';
+            params.error.push('Invalid Account Name');
         }
         if (!params._id && !params.userName) {
-            params.error = params.error ? params.error +' Invalid user name': 'Invalid user name';
+           // params.error = params.error ? params.error +' Invalid user name': 'Invalid user name';
+            params.error.push('Invalid User Name');
         }
         if (!params._id && !Utils.isValidPassword(params.password)) {
-            params.error = params.error ? params.error +'Invalid password \n': 'Invalid password \n';
+            //params.error = params.error ? params.error +'Invalid password \n': 'Invalid password \n';
+            params.error.push('Invalid Password');
         }
         if (!params.address || !params.address.trim()) {
-            params.error = params.error ? params.error +' Invalid address \n': ' Invalid address \n';
+            //params.error = params.error ? params.error +' Invalid address \n': ' Invalid address \n';
+            params.error.push('Invalid Address');
         }
         if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.error = params.error ? params.error +'Invalid phone number, it should be 10 digits \n': 'Invalid phone number,  it should be 10 digits \n';
+           // params.error = params.error ? params.error +'Invalid phone number, it should be 10 digits \n': 'Invalid phone number,  it should be 10 digits \n';
+            params.error.push('Invalid phone number, it should be 10 digits');
         }
-        if(!params.error) {
+        if(!params.error.length ) {
             if (params._id) {
                 // If _id update the account
                 AccountServices.updateAccount(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('accounts');
+                        Notification.success({message: "Account Updated Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
@@ -157,8 +167,11 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils','$state', 'AccountServic
             } else {
                 // _id doesn\'t exist => create account
                 AccountServices.addAccount(params, function (success) {
+                    console.log('--->', success);
                     if (success.data.status) {
                         params.success = success.data.message;
+                        $state.go('accounts');
+                        Notification.success({message: "Account Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }

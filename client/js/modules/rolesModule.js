@@ -68,7 +68,7 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
         RoleServices.deleteRole(id, function (success) {
             if (success.data.status) {
                 $scope.getRoles();
-                Notification.success({message: success.data.message});
+                Notification.error({message: "Successfully deleted"});
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -100,8 +100,9 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
     };
 }]);
 
-app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams', '$state', function ($scope, RoleServices, $stateParams, $state) {
+app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams', '$state' ,'Notification', function ($scope, RoleServices, $stateParams, $state, Notification) {
     console.log('-->', $stateParams, $stateParams.roleId, !!$stateParams.roleId);
+    $scope.pagetitle="Add Role";
     $scope.rolesDetails = {
         roleName: '',
         error: '',
@@ -114,6 +115,7 @@ app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams',
 
     if ($stateParams.roleId) {
         console.log($stateParams.roleId);
+        $scope.pagetitle="Update Role";
         RoleServices.getRole($stateParams.roleId, function (success) {
             if (success.data.status) {
                 $scope.rolesDetails = success.data.role;
@@ -135,6 +137,8 @@ app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams',
                 console.log('update...', success.data);
                 if (success.data.status) {
                     params.success = success.data.message;
+                    $state.go('roles');
+                    Notification.success({message: "Role Updated Successfully"});
                 } else {
                     params.error = success.data.message;
                 }
@@ -144,6 +148,9 @@ app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams',
             RoleServices.addRole({roleName: params.roleName}, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
+                    $state.go('roles');
+                    Notification.success({message: "Role Added Successfully"});
+
                 } else {
                     params.error = success.data.message;
                 }
