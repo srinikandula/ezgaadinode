@@ -4,6 +4,8 @@ var mongoose = require('mongoose');
 var ObjectId = mongoose.Types.ObjectId;
 var UsersColl = require('./../models/schemas').UsersColl;
 var DriversColl = require('./../models/schemas').DriversColl;
+var PartyColl = require('./../models/schemas').PartyCollection;
+var TripLaneColl = require('./../models/schemas').TripLanesCollection;
 
 var Utils = function () {
 };
@@ -92,15 +94,72 @@ Utils.prototype.populateNameInDriversColl = function (documents, fieldTopopulate
         }
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
-            // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
             var driver = _.find(names, function (users) {
-                return users._id.toString() === item.createdBy.toString();
+                return users._id.toString() === item.driver.toString();
             });
             if (driver) {
                 if (!item.attrs) {
                     item.attrs = {};
                 }
                 item.attrs.driverName = driver.fullName;
+            }
+        }
+        result.status = true;
+        result.message = 'Error retrieving names';
+        result.documents = documents;
+        callback(result);
+    });
+};
+
+Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    PartyColl.find({'_id':{$in: ids}},{"name":1},function (err, names) {
+        if(err){
+            result.status = false;
+            result.message = 'Error retrieving names';
+            result.err = err;
+            callback(result);
+        }
+        for (var i = 0; i < documents.length; i++) {
+            var item = documents[i];
+            var party = _.find(names, function (users) {
+                return users._id.toString() === item.bookedFor.toString();
+            });
+            if (party) {
+                if (!item.attrs) {
+                    item.attrs = {};
+                }
+                item.attrs.partyName = party.name;
+            }
+        }
+        result.status = true;
+        result.message = 'Error retrieving names';
+        result.documents = documents;
+        callback(result);
+    });
+};
+
+Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    TripLaneColl.find({'_id':{$in: ids}},{"name":1},function (err, names) {
+        if(err){
+            result.status = false;
+            result.message = 'Error retrieving names';
+            result.err = err;
+            callback(result);
+        }
+        for (var i = 0; i < documents.length; i++) {
+            var item = documents[i];
+            var tripLane = _.find(names, function (users) {
+                return users._id.toString() === item[fieldTopopulate].toString();
+            });
+            if (tripLane) {
+                if (!item.attrs) {
+                    item.attrs = {};
+                }
+                item.attrs.tripLaneName = tripLane.name;
             }
         }
         result.status = true;
