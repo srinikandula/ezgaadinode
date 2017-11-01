@@ -108,7 +108,7 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
     };
 }]);
 
-app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', function ($scope, MaintenanceService, $stateParams, $state) {
+app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'Notification', function ($scope, MaintenanceService, $stateParams, $state, Notification) {
     console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
     $scope.pagetitle = "Add Maintenance";
 
@@ -121,7 +121,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         success: []
     };
 
-    $scope.goToMaintenancePage = function () {
+    $scope.cancel = function () {
         $state.go('maintenance');
     };
 
@@ -158,6 +158,8 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
             MaintenanceService.updateRecord(params, function (success) {
                 if (success.data.status) {
                     params.success = success.data.message;
+                    $state.go('maintenance');
+                    Notification.success({message: "Maintenance Updated Successfully"});
                 } else {
                     params.error = success.data.message;
                 }
@@ -171,6 +173,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                 if (success.data.status) {
                     params.success = success.data.message;
                     $state.go('maintenance');
+                    Notification.success({message: "Maintenance Added Successfully"});
                 } else {
                     params.error = success.data.message;
                 }

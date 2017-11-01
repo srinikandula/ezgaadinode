@@ -179,9 +179,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
 });
 app.config(function(NotificationProvider) {
     NotificationProvider.setOptions({
-        delay: 10000,
-        startTop: 20,
-        startRight: 10,
+        delay:3000,
+        startTop: 150,
+        startRight:500,
         verticalSpacing: 20,
         horizontalSpacing: 20,
         positionX: 'center',

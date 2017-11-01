@@ -121,7 +121,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
 }]);
 
-app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','DriverServices','PartyService','TripLaneServices', '$stateParams', 'Notification', function ($scope,$state, Utils, TripServices,DriverServices,PartyService,TripLaneServices, $stateParams, Notification) {
+app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','DriverService','PartyService','TripLaneServices', '$stateParams', 'Notification', function ($scope,$state, Utils, TripServices, DriverService,PartyService,TripLaneServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
     $scope.pagetitle = "Add Trip";
 
@@ -146,7 +146,7 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
     };
 
     function getDrivers() {
-        DriverServices.getAllDrivers(function (success) {
+        DriverService.getAllDrivers(function (success) {
             if (success.data.status) {
                 $scope.drivers = success.data.drivers;
             } else {
