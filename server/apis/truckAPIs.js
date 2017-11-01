@@ -146,63 +146,55 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
         pageNumber = 1;
     }
 
-    if (!_.isNumber(Number(pageNumber))) {
-        retObj.messages.push('Invalid page number');
-    }
-
-    if (retObj.messages.length) {
-        callback(retObj);
-    } else {
-        var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
-
-        async.parallel({
-            trucks: function (trucksCallback) {
-                TrucksColl
-                    .find({accountId: accountId})
-                    .sort({createdAt: 1})
-                    .skip(skipNumber)
-                    .limit(pageLimits.trucksPaginationLimit)
-                    .lean()
-                    .exec(function (err, trucks) {
-                        async.parallel({
-                            createdbyname: function (createdbyCallback) {
-                                Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
-                                    createdbyCallback(createdby.err, createdby.documents);
-                                });
-                            },
-                            driversname: function (driversnameCallback) {
-                                Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'fullName', function (driver) {
-                                    driversnameCallback(driver.err, driver.documents);
-                                });
-                            },
-                            driversmobile: function (driversmobileCallback) {
-                                Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'mobile', function (mobile) {
-                                    driversmobileCallback(mobile.err, mobile.documents);
-                                });
-                            }
-                        }, function (populateErr, populateResults) {
-                            trucksCallback(populateErr, populateResults);
-                        });
+    var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
+    async.parallel({
+        trucks: function (trucksCallback) {
+            TrucksColl
+                .find({accountId: accountId})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.trucksPaginationLimit)
+                .lean()
+                .exec(function (err, trucks) {
+                    async.parallel({
+                        createdbyname: function (createdbyCallback) {
+                            Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                                createdbyCallback(createdby.err,createdby.documents);
+                            });
+                        },
+                        driversname: function (driversnameCallback) {
+                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'fullName', function (driver) {
+                                driversnameCallback(driver.err, driver.documents);
+                            });
+                        },
+                        driversmobile: function (driversmobileCallback) {
+                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'mobile', function (mobile) {
+                                driversmobileCallback(mobile.err, mobile.documents);
+                            });
+                        }
+                    },function (populateErr, populateResults) {
+                        trucksCallback(populateErr, populateResults);
                     });
-            },
-            count: function (countCallback) {
-                TrucksColl.count({accountId: accountId}, function (err, count) {
-                    countCallback(err, count);
-                });
-            }
-        }, function (err, results) {
-            if (err) {
-                retObj.messages.push('Error retrieving trucks');
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.count = results.count;
-                retObj.trucks = results.trucks.createdbyname;
-                callback(retObj);
-            }
-        });
-    }
+            })
+        },
+        count: function (countCallback) {
+            TrucksColl.count({accountId: accountId}, function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving trucks';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = results.count;
+            result.trucks = results.trucks.createdbyname; //trucks is callby reference
+            callback(result);
+        }
+    });
 };
 
 Trucks.prototype.getAllTrucks = function (callback) {
