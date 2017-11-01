@@ -40,7 +40,7 @@ Roles.prototype.addRole = function (jwt, roleDetails, callback) {
                         retObj.messages.push("Error, try Again");
                         callback(retObj);
                     } else {
-                        retObj.status = false;
+                        retObj.status = true;
                         retObj.messages.push("Successfully Added");
                         callback(retObj);
                     }
