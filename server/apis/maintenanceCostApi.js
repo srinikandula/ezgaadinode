@@ -1,11 +1,13 @@
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
+var async = require('async');
 
 var maintenanceColl = require('./../models/schemas').MaintenanceCostColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var UsersAPI = require('./usersApi');
+var pageLimits = require('./../config/pagination');
 
 var MaintenanceCost = function () {
 };
@@ -48,6 +50,56 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
             }
         });
     }
+};
+
+MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum,jwt, callback) {
+    var retObj = {};
+    if (!pageNum) {
+        pageNum = 1;
+    } else if (isNaN(Number(pageNum))) {
+        retObj.status = false;
+        retObj.message = 'Invalid page number';
+        return callback(retObj);
+    }
+
+    var skipNumber = (pageNum - 1) * pageLimits.maintenanceCostsPaginationLimit;
+    async.parallel({
+        mCosts: function (mCostsCallback) {
+            maintenanceColl
+                .find({accountId: jwt.accountId})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.maintenanceCostsPaginationLimit)
+                .populate('maintenanceCostId')
+                .lean()
+                .exec(function (err, mCosts) {
+                    Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
+                        if(response.status) {
+                            mCostsCallback(err, response.documents);
+                        } else {
+                            mCostsCallback(err, null);
+                        }
+                    });
+                });
+        },
+        count: function (countCallback) {
+            maintenanceColl.count(function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            retObj.status = false;
+            retObj.message = 'Error retrieving Maintenance Costs';
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.message = 'Success';
+            retObj.count = results.count;
+            retObj.maintanenceCosts = results.mCosts;
+            callback(retObj);
+        }
+    });
 };
 
 MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
