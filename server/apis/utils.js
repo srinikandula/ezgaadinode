@@ -6,6 +6,7 @@ var UsersColl = require('./../models/schemas').UsersColl;
 var DriversColl = require('./../models/schemas').DriversColl;
 var PartyColl = require('./../models/schemas').PartyCollection;
 var TripLaneColl = require('./../models/schemas').TripLanesCollection;
+var TrucksColl = require('./../models/schemas').TrucksColl;
 
 var Utils = function () {
 };
@@ -79,6 +80,7 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
         }
         result.status = true;
         result.message = 'Error retrieving users';
+        result.err = err;
         result.documents = documents;
         callback(result);
     });
@@ -99,7 +101,6 @@ Utils.prototype.populateNameInDriversCollmultiple = function (documents, fieldTo
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             var driver = _.find(names, function (users) {
-                // console.log(users._id, item[fieldTopopulate]);
                 if(users._id && item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 else return '';
             });
@@ -113,6 +114,7 @@ Utils.prototype.populateNameInDriversCollmultiple = function (documents, fieldTo
         result.status = true;
         result.message = 'Error retrieving names';
         result.documents = documents;
+        result.err = err;
         callback(result);
     });
 };
@@ -142,6 +144,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
         result.status = true;
         result.message = 'Error retrieving names';
         result.documents = documents;
+        result.err = err;
         callback(result);
     });
 };
@@ -171,6 +174,38 @@ Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulat
         result.status = true;
         result.message = 'Error retrieving names';
         result.documents = documents;
+        result.err = err;
+        callback(result);
+    });
+};
+
+Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    TrucksColl.find({'_id': {$in: ids}}, {"registrationNo": 1}, function (err, names) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving Trucks';
+            result.err = err;
+            callback(result);
+        }
+        console.log('names==>',names);
+        for (var i = 0; i < documents.length; i++) {
+            var item = documents[i];
+            var Trucks = _.find(names, function (users) {
+                return users._id.toString() === item[fieldTopopulate].toString();
+            });
+            if (Trucks) {
+                if (!item.attrs) {
+                    item.attrs = {};
+                }
+                item.attrs.truckName = Trucks.registrationNo;
+            }
+        }
+        result.status = true;
+        result.message = 'Error retrieving names';
+        result.documents = documents;
+        result.err = err;
         callback(result);
     });
 };

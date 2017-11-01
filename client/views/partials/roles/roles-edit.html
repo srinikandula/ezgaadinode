@@ -20,12 +20,10 @@
                         <div class="clearfix"></div>
                         <div class="col-xs-4 col-xs-push-4">
                             <div>
-                                <div class="alert alert-danger" role="alert" ng-show="rolesDetails.error">
-                                    <strong>{{rolesDetails.error}}</strong>
-                                </div>
-
-                                <div class="alert alert-success" role="alert" ng-show="rolesDetails.success">
-                                    <strong>{{rolesDetails.success}}</strong>
+                                <div class="alert alert-danger" role="alert" ng-show="rolesDetails.errors.length">
+                                    <ul>
+                                        <li ng-repeat="error in rolesDetails.errors">{{error}}</li>
+                                    </ul>
                                 </div>
                             </div>
                             <div class="margin-top-20">
