@@ -52,7 +52,7 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
     }
 };
 
-MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum,jwt, callback) {
+MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum, jwt, callback) {
     var retObj = {};
     if (!pageNum) {
         pageNum = 1;
@@ -73,12 +73,19 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum,jwt, callback)
                 .populate('maintenanceCostId')
                 .lean()
                 .exec(function (err, mCosts) {
-                    Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
-                        if(response.status) {
-                            mCostsCallback(err, response.documents);
-                        } else {
-                            mCostsCallback(err, null);
+                    async.parallel({
+                        createdbyname: function (createdbyCallback) {
+                            Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
+                                createdbyCallback(response.err, response.documents);
+                            });
+                        },
+                        truckNo: function (truckscallback) {
+                            Helpers.populateNameInTrucksColl(mCosts, 'vehicleNumber', function (response) {
+                                truckscallback(response.err, response.documents);
+                            })
                         }
+                    }, function (populateErr, populateResults) {
+                        mCostsCallback(populateErr, populateResults);
                     });
                 });
         },
@@ -96,7 +103,7 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum,jwt, callback)
             retObj.status = true;
             retObj.message = 'Success';
             retObj.count = results.count;
-            retObj.maintanenceCosts = results.mCosts;
+            retObj.maintanenceCosts = results.mCosts.createdbyname;
             callback(retObj);
         }
     });
@@ -111,7 +118,7 @@ MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
             callback(result);
         } else {
             Helpers.populateNameInUsersColl(maintenanceRecords, "createdBy", function (response) {
-                if(response.status) {
+                if (response.status) {
                     result.status = true;
                     result.message = 'Success';
                     result.details = response.documents;

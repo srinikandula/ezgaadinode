@@ -7,6 +7,7 @@ var DriversColl = require('./../models/schemas').DriversColl;
 var PartyColl = require('./../models/schemas').PartyCollection;
 var TripLaneColl = require('./../models/schemas').TripLanesCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var RolesColl = require('./../models/schemas').Roles;
 
 var Utils = function () {
 };
@@ -189,7 +190,6 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
             result.err = err;
             callback(result);
         }
-        console.log('names==>',names);
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             var Trucks = _.find(names, function (users) {
@@ -207,6 +207,37 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
         result.documents = documents;
         result.err = err;
         callback(result);
+    });
+};
+
+Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    RolesColl.find({'_id': {$in: ids}}, {"roleName": 1}, function (err, names) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving Roles';
+            result.err = err;
+            callback(result);
+        } else {
+            for (var i = 0; i < documents.length; i++) {
+                var item = documents[i];
+                var Roles = _.find(names, function (users) {
+                    return users._id.toString() === item[fieldTopopulate].toString();
+                });
+                if (Roles) {
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs.roleName = Roles.roleName;
+                }
+            }
+            result.status = true;
+            result.message = 'Success';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
+        }
     });
 };
 

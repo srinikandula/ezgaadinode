@@ -81,7 +81,8 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         paginationPageSize: 9,
         columnDefs: [{
             name: 'Date',
-            field: 'date'
+            field: 'date',
+            cellFilter: 'date:"dd-MM-yyyy"'
         }, {
             name: 'Registration No',
             field: 'attrs.truckName'

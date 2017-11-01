@@ -1,4 +1,4 @@
-app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$cookies', function ($scope, Utils, CommonServices, $state, $cookies) {
+app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$cookies','$rootScope', function ($scope, Utils, CommonServices, $state, $cookies, $rootScope) {
     if (Utils.isLoggedIn()) {
         $state.go('accounts');
     }

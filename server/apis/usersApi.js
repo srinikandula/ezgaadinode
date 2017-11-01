@@ -197,7 +197,7 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
 
     var skipNumber = (pageNumber - 1) * pageLimits.usersPaginationLimit;
     async.parallel({
-        users: function (accountsCallback) {
+        users: function (usersCallback) {
             UsersColl
                 .find({})
                 .sort({createdAt: 1})
@@ -205,13 +205,28 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
                 .limit(pageLimits.usersPaginationLimit)
                 .lean()
                 .exec(function (err, users) {
-                    Utils.populateNameInUsersColl(users, "createdBy", function (response) {
-                        if (response.status) {
-                            accountsCallback(err, response.documents);
-                        } else {
-                            accountsCallback(err, null);
+                    async.parallel({
+                        createdbyname: function (createdbyCallback) {
+                            Utils.populateNameInUsersColl(users, "createdBy", function (response) {
+                                createdbyCallback(response.err,response.documents);
+                            });
+                        },
+                        rolesNames: function (rolesCallback) {
+                            Utils.populateNameInRolesColl(users, "role", function (response) {
+                                rolesCallback(response.err,response.documents);
+                            });
                         }
+                        // rolesname:
+                    }, function (populateErr, populateResults) {
+                        usersCallback(populateErr, populateResults);
                     });
+                    // Utils.populateNameInUsersColl(users, "createdBy", function (response) {
+                    //     if (response.status) {
+                    //         accountsCallback(err, response.documents);
+                    //     } else {
+                    //         accountsCallback(err, null);
+                    //     }
+                    // });
                 });
         },
         count: function (countCallback) {
@@ -227,7 +242,7 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
-            retObj.users = results.users;
+            retObj.users = results.users.createdbyname;
             callback(retObj);
         }
     });
