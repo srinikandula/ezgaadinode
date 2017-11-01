@@ -13,60 +13,62 @@ var Users = function () {
 };
 
 Users.prototype.addUser = function (jwt, regDetails, callback) {
-    var retObj = {};
-    var errors = [];
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
-        errors.push("Please fill all the required details");
+        retObj.messages.push("Please fill all the required details");
     }
+
     if (!regDetails.firstName || !_.isString(regDetails.firstName)) {
-        errors.push("Please provide valid first name");
+        retObj.messages.push("Please provide valid first name");
     }
+
     if (!regDetails.lastName || !_.isString(regDetails.lastName)) {
-        errors.push("Please provide valid last name");
+        retObj.messages.push("Please provide valid last name");
     }
+
     if (!Utils.isEmail(regDetails.email)) {
-        errors.push("Please provide valid email");
+        retObj.messages.push("Please provide valid email");
     }
+
     if (!regDetails.role) {
-        errors.push("Please provide role");
+        retObj.messages.push("Please provide role");
     }
-    // if (!regDetails.accountId || !_.isString(regDetails.accountId)) {
-    //     errors.push("Please provide accountId");
-    // }
+
     if (!regDetails.userName || !_.isString(regDetails.userName)) {
-        errors.push("Please provide user name");
+        retObj.messages.push("Please provide user name");
     }
+
     if (!regDetails.password) {
-        errors.push("Please provide valid password");
+        retObj.messages.push("Please provide valid password");
     }
-    if (errors.length) {
-        retObj.status = false;
-        retObj.message = errors;
+
+    if (retObj.messages.length) {
         callback(retObj);
     } else {
         UsersColl.findOne({userName: regDetails.userName}, function (err, user) {
             if (err) {
-                retObj.status = false;
-                retObj.message = ["Error, try again!"];
+                retObj.messages.push("Error, try again!");
                 callback(retObj);
             } else if (user) {
-                retObj.status = false;
-                retObj.message = ["User already exists"];
+                retObj.messages.push("User already exists");
                 callback(retObj);
             } else {
                 regDetails.createdBy = jwt.id;
                 regDetails.updatedBy = jwt.id;
                 regDetails.accountId = jwt.accountId;
+
                 var insertDoc = new UsersColl(regDetails);
                 insertDoc.save(function (err) {
                     if (err) {
-                        retObj.status = false;
-                        retObj.message = ["Error, try Again"];
+                        retObj.messages.push("Error, try Again");
                         callback(retObj);
                     } else {
-                        console.log("inserted");
                         retObj.status = true;
-                        retObj.message = ["Successfully Added"];
+                        retObj.messages.push("Successfully Added");
                         callback(retObj);
                     }
                 });
@@ -124,7 +126,7 @@ Users.prototype.login = function (userName, accountName, password, callback) {
                             callback(retObj);
                         } else {
                             retObj.status = true;
-                            retObj.messages = ["Success"];
+                            retObj.messages.push("Success");
                             retObj.role = user.role;
                             retObj.token = token;
                             retObj.firstName = user.firstName;
@@ -140,28 +142,27 @@ Users.prototype.login = function (userName, accountName, password, callback) {
 };
 
 Users.prototype.update = function (jwt, user, callback) {
-    // console.log('user',user);
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     user = Utils.removeEmptyFields(user);
     user.updatedBy = jwt.id;
     user.accountId = jwt.accountId;
-    UsersColl.findOneAndUpdate({_id: user._id}, {$set: user}).exec(function (err, savedUser) {
-        console.log('err', err);
-        console.log('savedUser', savedUser);
-        if (err) {
-            result.status = false;
-            result.message = ["Error, updating user"];
-            callback(result);
-        } else if (savedUser) {
-            result.status = true;
-            result.message = ["User updated successfully"];
-            callback(result);
-        } else {
-            result.status = false;
-            result.message = ["Error, finding user"];
-            callback(result);
-        }
 
+    UsersColl.findOneAndUpdate({_id: user._id}, {$set: user}).exec(function (err, savedUser) {
+        if (err) {
+            retObj.messages.push("Error, updating user");
+            callback(retObj);
+        } else if (savedUser) {
+            retObj.status = true;
+            retObj.messages.push("User updated successfully");
+            callback(retObj);
+        } else {
+            retObj.messages.push("Error, finding user");
+            callback(retObj);
+        }
     });
 };
 
@@ -182,14 +183,18 @@ Users.prototype.getAccountUsers = function (id, callback) {
 };
 
 Users.prototype.getAllUsers = function (pageNumber, callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!pageNumber) {
         pageNumber = 1;
     } else if (!_.isNumber(Number(pageNumber))) {
-        result.status = false;
-        result.message = 'Invalid page number';
+        retObj.messages.push('Invalid page number');
         return callback(result);
     }
+
     var skipNumber = (pageNumber - 1) * pageLimits.usersPaginationLimit;
     async.parallel({
         users: function (accountsCallback) {
@@ -207,7 +212,6 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
                             accountsCallback(err, null);
                         }
                     });
-                    // accountsCallback(err, users);
                 });
         },
         count: function (countCallback) {
@@ -217,65 +221,52 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
         }
     }, function (err, results) {
         if (err) {
-            result.status = false;
-            result.message = 'Error retrieving users';
-            callback(result);
+            retObj.messages.push('Error retrieving users');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.count = results.count;
-            result.users = results.users;
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = results.count;
+            retObj.users = results.users;
+            callback(retObj);
         }
     });
 };
 
 Users.prototype.getUser = function (id, callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     UsersColl.findOne({_id: id}, function (err, user) {
         if (err) {
-            result.status = false;
-            result.message = 'Error getting user';
-            callback(result);
+            retObj.messages.push('Error getting user');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.user = user;
-            // console.log('user',result);
-            callback(result);
-        }
-    });
-};
-
-Users.prototype.getUserNames = function (ids, callback) {
-    var result = {};
-    UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
-        if (err) {
-            result.status = false;
-            result.message = 'Error getting user names';
-            callback(result);
-        } else {
-            result.status = true;
-            result.message = 'Success';
-            result.userNames = userNames;
-            // console.log('user',result);
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.user = user;
+            callback(retObj);
         }
     });
 };
 
 Users.prototype.deleteUSer = function (id, callback) {
-    console.log('id', id);
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     UsersColl.remove({_id: id}, function (err) {
         if (err) {
-            result.status = false;
-            result.message = 'Error deleting user';
-            callback(result);
+            retObj.status = false;
+            retObj.messages.push('Error deleting user');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            callback(retObj);
         }
     });
 };

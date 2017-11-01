@@ -31,7 +31,7 @@ app.factory('UserServices', function ($http) {
 
 app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', function ($scope, $state, UserServices, Notification) {
     $scope.goToEditUserPage = function (userId) {
-        $state.go('usersEdit', {userId:userId});
+        $state.go('usersEdit', {userId: userId});
     };
 
     $scope.totalItems = 200;
@@ -40,13 +40,13 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
 
     $scope.getAllUsers = function () {
         UserServices.getAllUsers($scope.pageNumber, function (success) {
-            console.log(success.data);
             if (success.data.status) {
                 $scope.userGridOptions.data = success.data.users;
-                console.log('users...',$scope.userGridOptions.data);
                 $scope.totalItems = success.data.count;
             } else {
-                Notification.error({message: success.data.message});
+                success.data.messages.forEach(function(message) {
+                    Notification.error({message: message});
+                });
             }
         })
     };
@@ -59,13 +59,13 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
         columnDefs: [{
             name: 'User name',
             field: 'userName'
-        },{
+        }, {
             name: 'First name',
             field: 'firstName'
-        },{
+        }, {
             name: 'Last name',
             field: 'lastName'
-        },{
+        }, {
             name: 'Role',
             field: 'role'
         }, {
@@ -85,30 +85,29 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
 }]);
 
 app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 'AccountServices', 'Notification', '$stateParams', 'Utils', '$state', function ($scope, UserServices, RoleServices, AccountServices, Notification, $stateParams, Utils, $state) {
-    console.log('-->', $stateParams, !!$stateParams.userId);
-    $scope.pagetitle="Add User";
+    $scope.pagetitle = "Add User";
     $scope.userDetails = {
-        accountId : '',
-        firstName : '',
-        lastName : '',
-        email : '',
-        userName : '',
-        role : '',
-        password : '',
-        error : [],
-        success : [],
-        isActive: true
+        accountId: '',
+        firstName: '',
+        lastName: '',
+        email: '',
+        userName: '',
+        role: '',
+        password: '',
+        status: true,
+        isActive: true,
+        errors: []
     };
 
     if ($stateParams.userId) {
-        console.log($stateParams.userId);
-        $scope.pagetitle="Update User";
+        $scope.pagetitle = "Update User";
         UserServices.getUser($stateParams.userId, function (success) {
             if (success.data.status) {
                 $scope.userDetails = success.data.user;
-                console.log('$scope.userDetails', $scope.userDetails)
             } else {
-                Notification.error(success.data.message)
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
             }
         }, function (err) {
         })
@@ -116,28 +115,18 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
 
     function getRoles() {
         RoleServices.getAllRoles(function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.roles = success.data.roles;
-                console.log('roles',$scope.roles);
             } else {
-                Notification.error({message: success.data.message});
+                success.data.messages.forEach(function(message) {
+                    Notification.error({message: message});
+                });
             }
         }, function (err) {
         });
     }
+
     getRoles();
-    function getAccounts() {
-        AccountServices.getAllAccounts(function (success) {
-            if(success.data.status) {
-                $scope.accountIds = success.data.accounts;
-                console.log('accountIds',$scope.accountIds);
-            } else {
-                Notification.error({message: success.data.message});
-            }
-        },function (err) {
-        });
-    }
-    // getAccounts();
 
     $scope.goToUsersPage = function (userId) {
         $state.go('users');
@@ -146,52 +135,45 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
     $scope.AddorUpdateUSer = function () {
         var params = $scope.userDetails;
         console.log(params);
-        params.error = [];
-        params.success = [];
-        // if(!params.accountId){
-        //     params.error.push('Invalid accountId');
-        // }
-        if(!params.firstName){
-            params.error.push('Invalid first name');
+        params.errors = [];
+
+        if (!params.firstName) {
+            params.errors.push('Invalid first name');
         }
-        if(!params.lastName){
-            params.error.push('Invalid last name');
+        if (!params.lastName) {
+            params.errors.push('Invalid last name');
         }
-        if(!params.email){
-            params.error.push('Invalid email');
+        if (!params.email) {
+            params.errors.push('Invalid email');
         }
-        if(!params.userName){
-            params.error.push('Invalid user name');
+        if (!params.userName) {
+            params.errors.push('Invalid user name');
         }
-        if(!params.role){
-            params.error.push('Invalid role');
+        if (!params.role) {
+            params.errors.push('Invalid role');
         }
-        if(!Utils.isValidPassword(params.password)){
-            params.error.push('Password must have  minimum 7 characters');
+        if (!Utils.isValidPassword(params.password)) {
+            params.errors.push('Password must have  minimum 7 characters');
         }
-        if(!params.error.length) {
-            if($stateParams.userId) {
+
+        if (!params.errors.length) {
+            if ($stateParams.userId) {
                 UserServices.updateUser(params, function (success) {
-                    console.log('update...', success.data);
                     if (success.data.status) {
-                        params.success = success.data.message;
                         $state.go('users');
                         Notification.success({message: "User Updated Successfully"});
-                      } else {
-                        params.error = success.data.message;
+                    } else {
+                        params.errors = success.data.messages;
                     }
-                    // console.log('params red',params);
                 }, function (err) {
                 });
             } else {
                 UserServices.addUser(params, function (success) {
-                    console.log(success.data);
                     if (success.data.status) {
-                        params.success = success.data.message;
                         $state.go('users');
                         Notification.success({message: "User Added Successfully"});
                     } else {
-                        params.error = success.data.message;
+                        params.errors = success.data.messages;
                     }
                 }, function (err) {
                 });

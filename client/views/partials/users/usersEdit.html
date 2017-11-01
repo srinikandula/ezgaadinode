@@ -71,18 +71,13 @@
                         <div class="clearfix"></div>
                     <div class="col-xs-4 col-xs-push-4">
                         <div>
-                            <div class="alert alert-danger" role="alert" ng-show="userDetails.error.length">
+                            <div class="alert alert-danger" role="alert" ng-show="userDetails.errors.length">
                                 <ul>
-                                    <li ng-repeat="error in userDetails.error">{{error}}</li>
-                                </ul>
-                            </div>
-
-                            <div class="alert alert-success" role="alert" ng-show="userDetails.success.length">
-                                <ul>
-                                    <li ng-repeat="success in userDetails.success">{{success}}</li>
+                                    <li ng-repeat="error in userDetails.errors">{{error}}</li>
                                 </ul>
                             </div>
                         </div>
+
                         <div class="margin-top-20">
                             <button type="submit" class="btn btn-primary" ng-click="AddorUpdateUSer()">Submit</button>
                             <button type="submit" class="btn btn-primary" ng-click="goToUsersPage()">Cancel</button>
