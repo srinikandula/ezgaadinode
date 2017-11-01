@@ -59,6 +59,19 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         $state.go('driversEdit', {driverId: driverId});
     };
 
+    $scope.deleteDriver = function (driverId) {
+        DriverService.deleteDriver(driverId, function (success) {
+            if (success) {
+                $scope.getDrivers();
+                Notification.success({message: "Driver deleted successfully"});
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        })
+    }
+
 
     $scope.driverGridOptions = {
         enableSorting: true,
@@ -90,7 +103,9 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         }, {
             name: 'Action',
             cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditDriverPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>'
+            '<a href="#" ng-click="grid.appScope.goToEditDriverPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>'+
+            '<a ng-click="grid.appScope.deleteDriver(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
+            '</div>'
         }],
         rowHeight: 30,
         data: [],
