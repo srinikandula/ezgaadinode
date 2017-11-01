@@ -1,10 +1,12 @@
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
+var async = require('async');
 
 var TripCollection = require('./../models/schemas').TripCollection;
 var config = require('./../config/config');
 var Helpers = require('./utils');
+var pageLimits = require('./../config/pagination');
 var Trips = function () {};
 
 Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
@@ -30,15 +32,15 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
         result.status = false;
         result.message = "Please add bookedFor";
         callback(result);
-    } else if(!tripDetails.freightAmount){
+    } else if(!_.isNumber(tripDetails.freightAmount)){
         result.status = false;
         result.message = "Please add Freight Amount";
         callback(result);
-    } else if(!tripDetails.advance){
+    } else if(!_.isNumber(tripDetails.advance)){
         result.status = false;
         result.message = "Please add Advance";
         callback(result);
-    }  else if(!tripDetails.balance){
+    }  else if(!_.isNumber(tripDetails.balance)){
         result.status = false;
         result.message = "Please add Balance";
         callback(result);
@@ -111,52 +113,70 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
         });
 };
 
-Trips.prototype.getAll = function (jwt, req, callback) {
+Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
     var result = {};
-    TripCollection.find({},(function (err, trips) {
-        if (err) {
-            result.status = false;
-            result.message = "Error while finding trips, try Again";
-            callback(result);
-        } else {
-            Helpers.populateNameInUsersColl(trips, "createdBy", function (response) {
-                if(!response.status) {
-                    result.status = false;
-                    result.message = 'Error while finding trips, try Again';
-                    callback(result);
-                } else {
-                    Helpers.populateNameInDriversCollmultiple(response.documents, 'driver', 'fullName', function (response) {
-                        if(!response.status) {
-                            result.status = false;
-                            result.message = 'Error while finding trips, try Again';
-                            callback(result);
-                        } else {
-                            Helpers.populateNameInPartyColl(response.documents, 'bookedFor', function (response) {
-                                if(!response.status) {
-                                    result.status = false;
-                                    result.message = 'Error while finding trips, try Again';
-                                    callback(result);
-                                } else {
-                                    Helpers.populateNameInTripLaneColl(response.documents, 'tripLane', function (response) {
-                                        if(!response.status) {
-                                            result.status = false;
-                                            result.message = 'Error while finding trips, try Again';
-                                            callback(result);
-                                        } else {
-                                            result.status = true;
-                                            result.message = "Trips found Successfully";
-                                            result.trips = response.documents;
-                                            callback(result);
-                                        }
-                                    });
-                                }
+    if (!pageNumber) {
+        pageNumber = 1;
+    } else if (!_.isNumber(Number(pageNumber))) {
+        result.status = false;
+        result.message = 'Invalid page number';
+        return callback(result);
+    }
+    var skipNumber = (pageNumber - 1) * pageLimits.tripsPaginationLimit;
+    async.parallel({
+        trips: function (tripsCallback) {
+            TripCollection
+                .find({})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.tripsPaginationLimit)
+                .lean()
+                .exec(function (err, trips) {
+                    async.parallel({
+                        createdbyname: function (createdbyCallback) {
+                            Helpers.populateNameInUsersColl(trips, "createdBy", function (response) {
+                                createdbyCallback(response.err,response.documents);
+                            });
+                        },
+                        driversname: function (driversnameCallback) {
+                            Helpers.populateNameInDriversCollmultiple(trips, 'driver', 'fullName', function (response) {
+                                driversnameCallback(response.err, response.documents);
+                            });
+                        },
+                        bookedfor: function (bookedforCallback) {
+                            Helpers.populateNameInPartyColl(trips, 'bookedFor', function (response) {
+                                bookedforCallback(response.err, response.documents);
+                            });
+                        },
+                        triplane: function (triplaneCallback) {
+                            Helpers.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
+                                triplaneCallback(response.err, response.documents);
                             });
                         }
+                    }, function (populateErr, populateResults) {
+                        tripsCallback(populateErr, populateResults);
                     });
-                }
+                });
+        },
+        count: function (countCallback) {
+            TripCollection.count(function (err, count) {
+                countCallback(err, count);
             });
         }
-    }));
+    }, function (err, results) {
+        console.log(err);
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving users';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = results.count;
+            result.trips = results.trips.createdbyname; //as trips is callby reference
+            callback(result);
+        }
+    });
 };
 
 Trips.prototype.deleteTrip = function (tripId, callback) {

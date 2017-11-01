@@ -7,9 +7,9 @@ app.factory('TripServices', function ($http) {
                 data: trip
             }).then(success, error)
         },
-        getTrips: function (success, error) {
+        getTrips: function (pageNumber, success, error) {
             $http({
-                url: '/v1/trips/getAll',
+                url: '/v1/trips/getAll/' + pageNumber,
                 method: "GET"
             }).then(success, error)
         },
@@ -46,7 +46,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     $scope.pageNumber = 1;
 
     $scope.getTripsData = function () {
-        TripServices.getTrips(function (success) {
+        TripServices.getTrips($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.tripGridOptions.data = success.data.trips;
                 $scope.totalItems = success.data.count;
@@ -121,7 +121,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
 }]);
 
-app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','DriverServices','PartyService','TripLaneServices', '$stateParams', 'Notification', function ($scope,$state, Utils, TripServices,DriverServices,PartyService,TripLaneServices, $stateParams, Notification) {
+app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','DriverService','PartyService','TripLaneServices', '$stateParams', 'Notification', function ($scope,$state, Utils, TripServices,DriverService,PartyService,TripLaneServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
     $scope.pagetitle = "Add Trip";
 
@@ -146,7 +146,7 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
     };
 
     function getDrivers() {
-        DriverServices.getAllDrivers(function (success) {
+        DriverService.getAllDrivers(function (success) {
             if (success.data.status) {
                 $scope.drivers = success.data.drivers;
             } else {
@@ -218,21 +218,22 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
         if (!params.bookedFor) {
             params.error.push('Valid Booked For');
         }
-        if (!params.freightAmount) {
+        if (!_.isNumber(params.freightAmount)) {
             params.error.push('Please add freightAmount');
         }
-        if (!params.balance) {
+        if (!_.isNumber(params.balance)) {
             params.error.push('Please add Balance');
         }
         if (!params.tripLane) {
             params.error.push('Please Select Trip Lane');
         }
-        if (!params.advance) {
+        if (!_.isNumber(params.advance)) {
             params.error.push('Please add Advance');
         }
-        if (!params.tripExpenses) {
+        if (!_.isNumber(params.tripExpenses)) {
             params.error.push('Please add tripExpenses');
         }
+        console.log(params.error);
         if (!params.error.length) {
             if (params._id) {
                 params.date = Number(params.date);
@@ -249,7 +250,6 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
                 });
             } else {
                 console.log('add');
-                // params.date= Number(params.date);
                 TripServices.addTrip(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;

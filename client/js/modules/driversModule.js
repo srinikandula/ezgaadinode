@@ -157,6 +157,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             if (success.data.status) {
                 $scope.driver = success.data.driver;
                 $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
+                console.log('driver',$scope.driver);
             } else {
                 Notification.error(success.data.message)
             }
