@@ -63,21 +63,16 @@
                         </div>
                         <div class="form-group col-xs-12">
                             <label class="col-sm-4 pall-zero">Driver Status</label>
-                            <div class="col-sm-8"><input type="checkbox" ng-model="driver.status"></div>
-
+                            <div class="col-sm-8"><input type="checkbox" ng-model="driver.isActive"></div>
                         </div>
 
                     </div>
+
                     <div class="clearfix"></div>
                     <div class="col-xs-4 col-xs-push-4">
                         <div class="alert alert-danger" role="alert" ng-show="driver.errors.length">
                             <ul>
                                 <li ng-repeat="error in driver.errors">{{error}}</li>
-                            </ul>
-                        </div>
-                        <div class="alert alert-success" role="alert" ng-show="driver.success.length">
-                            <ul>
-                                <li ng-repeat="success in driver.success">{{success}}</li>
                             </ul>
                         </div>
                         <button type="submit" class="btn btn-primary" ng-click="addOrSaveDriver()">Submit</button>
