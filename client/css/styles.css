@@ -95,6 +95,14 @@ body{
     background-color: #F5F5F5;
     cursor: pointer;
 }
+.body-nav ul li:hover{
+    border: 1px solid #CCC;
+    width: 11%;
+    padding: 7px;
+    text-align: center;
+    background-color: #ccc;
+    cursor: pointer;
+}
 .body-nav ul li a{
     text-decoration: none;
 }
@@ -170,7 +178,15 @@ body{
 .main-right .form-control{
     border-radius: 0px;
 }
-
+.btn-red{
+    background-color:#d9534f;
+    color: #fff;
+}
+.btn-primary{
+    color: #fff;
+    background-color: rgba(25, 149, 199, .6);
+    border-color: rgba(25, 149, 199, .6);
+}
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:after,
 #ui-grid-twbs #ui-grid-twbs .btn-toolbar:before,
@@ -1202,9 +1218,11 @@ input[type="text"].ui-grid-filter-input:hover {
     }
 }
 
-/*---------------------------------------------------
-    LESS Elements 0.9
-  ---------------------------------------------------
-    A set of useful LESS mixins
-    More info at: http://lesselements.com
-  ---------------------------------------------------*/
+.ui-notification{
+    position: fixed;
+    right:0;
+
+}
+/*.ui-notification > .message {
+    margin: 0;
+}*/

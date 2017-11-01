@@ -68,8 +68,8 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         }, {
             name: 'Full Name',
             field: 'fullName'
-        }, {
-            name: 'Contact Number',
+        },{
+            name: 'Mobile',
             field: 'mobile'
         }, {
             name: 'Truck Reg No',
@@ -78,9 +78,6 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             name: 'License Validity',
             field: 'licenseValidity',
             cellFilter: 'date:"dd-MM-yyyy"'
-        }, {
-            name: 'Mobile',
-            field: 'mobile'
         }, {
             name: 'Salary',
             field: 'salary'
