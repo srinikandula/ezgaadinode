@@ -173,7 +173,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
         async.parallel({
             trips: function (tripsCallback) {
                 TripCollection
-                    .find({})
+                    .find({'accountId':jwt.accountId})
                     .sort({createdAt: 1})
                     .skip(skipNumber)
                     .limit(pageLimits.tripsPaginationLimit)
