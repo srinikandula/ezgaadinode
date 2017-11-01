@@ -90,7 +90,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'trips',
         url: '/trips',
-        templateUrl: 'views/partials/trips.html',
+        templateUrl: 'views/partials/trips/tripsList.html',
         data: {activeTab: 'trips'},
         params: {
             access: 'auth'
@@ -98,7 +98,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'tripsEdit',
         url: '/tripsEdit/:tripId',
-        templateUrl: 'views/partials/trips-edit.html',
+        templateUrl: 'views/partials/trips/tripsEdit.html',
         data: {activeTab: 'trips'},
         params: {
             access: 'auth',
