@@ -4,7 +4,7 @@ module.exports = {
         options: {expiresIn: 60 * 60 * 24}
     },
     mongo:{
-        url: 'mongodb://localhost/easygaadi'
+        url: 'mongodb://35.154.47.181/easygaadi'
     },
     port: 3000
 };

@@ -217,7 +217,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
             }
         }, function (err, results) {
             if (err) {
-                retObj.messages.push('Error retrieving users');
+                retObj.messages.push('Error retrieving trips');
                 callback(retObj);
             } else {
                 retObj.status = true;
