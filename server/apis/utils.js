@@ -79,6 +79,7 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
         }
         result.status = true;
         result.message = 'Error retrieving users';
+        result.err = err;
         result.documents = documents;
         callback(result);
     });
@@ -99,7 +100,6 @@ Utils.prototype.populateNameInDriversCollmultiple = function (documents, fieldTo
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             var driver = _.find(names, function (users) {
-                // console.log(users._id, item[fieldTopopulate]);
                 if(users._id && item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 else return '';
             });
@@ -113,6 +113,7 @@ Utils.prototype.populateNameInDriversCollmultiple = function (documents, fieldTo
         result.status = true;
         result.message = 'Error retrieving names';
         result.documents = documents;
+        result.err = err;
         callback(result);
     });
 };
@@ -142,6 +143,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
         result.status = true;
         result.message = 'Error retrieving names';
         result.documents = documents;
+        result.err = err;
         callback(result);
     });
 };
@@ -171,6 +173,7 @@ Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulat
         result.status = true;
         result.message = 'Error retrieving names';
         result.documents = documents;
+        result.err = err;
         callback(result);
     });
 };

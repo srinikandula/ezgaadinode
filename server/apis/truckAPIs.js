@@ -138,7 +138,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
     }
     var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
     async.parallel({
-        trucks: function (accountsCallback) {
+        trucks: function (trucksCallback) {
             TrucksColl
                 .find({accountId: accountId})
                 .sort({createdAt: 1})
@@ -146,24 +146,24 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                 .limit(pageLimits.trucksPaginationLimit)
                 .lean()
                 .exec(function (err, trucks) {
-                    Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
-                        if(!createdby.status) {
-                            accountsCallback(err, null);
-                        } else {
-                            Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId', 'fullName', function (drivername) {
-                                if(!drivername.status) {
-                                    accountsCallback(err, null);
-                                } else {
-                                    Helpers.populateNameInDriversCollmultiple(createdby.documents, 'driverId', 'mobile', function (drivermobile) {
-                                        if(!drivermobile.status) {
-                                            accountsCallback(err, null);
-                                        } else {
-                                            accountsCallback(err, drivermobile.documents);
-                                        }
-                                    });
-                                }
+                    async.parallel({
+                        createdbyname: function (createdbyCallback) {
+                            Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                                createdbyCallback(createdby.err,createdby.documents);
+                            });
+                        },
+                        driversname: function (driversnameCallback) {
+                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'fullName', function (driver) {
+                                driversnameCallback(driver.err, driver.documents);
+                            });
+                        },
+                        driversmobile: function (driversmobileCallback) {
+                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'mobile', function (mobile) {
+                                driversmobileCallback(mobile.err, mobile.documents);
                             });
                         }
+                    },function (populateErr, populateResults) {
+                        trucksCallback(populateErr, populateResults);
                     });
                 });
         },
@@ -181,22 +181,10 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
             result.status = true;
             result.message = 'Success';
             result.count = results.count;
-            result.trucks = results.trucks;
+            result.trucks = results.trucks.createdbyname; //trucks is callby reference
             callback(result);
         }
     });
-    // TrucksColl.find({accountId: accountId}, function (err, accountTrucks) {
-    //     if (err) {
-    //         result.status = false;
-    //         result.message = 'Error getting trucks';
-    //         callback(result);
-    //     } else {
-    //         result.status = true;
-    //         result.message = 'Success';
-    //         result.trucks = accountTrucks;
-    //         callback(result);
-    //     }
-    // });
 };
 
 Trucks.prototype.getAllTrucks = function (callback) {

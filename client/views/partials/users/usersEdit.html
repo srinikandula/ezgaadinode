@@ -42,11 +42,11 @@
                     <div class="col-xs-12 col-sm-6">
 
                     <div class="form-group col-xs-12">
-                        <label for="role" class="col-sm-4 col-xs-12 pall-zero">Role</label>
+                        <label for="roleId" class="col-sm-4 col-xs-12 pall-zero">Role</label>
                         <div class="col-sm-8 col-xs-12">
-                            <select class="form-control" id="role" ng-model="userDetails.role">
-                                <option value="">Select a Role</option>
-                                <option ng-repeat="role in roles">{{role.roleName}}</option>
+                            <select ng-model="userDetails.role"
+                                    ng-options="role._id as roles.roleName for role in trucks" type="text"
+                                    class="form-control" id="roleId">
                             </select>
                         </div>
                     </div>
