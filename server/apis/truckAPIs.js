@@ -136,6 +136,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
         result.message = 'Invalid page number';
         return callback(result);
     }
+
     var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
     async.parallel({
         trucks: function (trucksCallback) {
@@ -168,7 +169,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                 });
         },
         count: function (countCallback) {
-            TrucksColl.count({accountId: accountId},function (err, count) {
+            TrucksColl.count({accountId: accountId}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -188,17 +189,20 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
 };
 
 Trucks.prototype.getAllTrucks = function (callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     TrucksColl.find(function (err, trucks) {
         if (err) {
-            result.status = false;
-            result.message = 'Error getting trucks';
-            callback(result);
+            retObj.messages.push('Error getting trucks');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.trucks = trucks;
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.trucks = trucks;
+            callback(retObj);
         }
     });
 };

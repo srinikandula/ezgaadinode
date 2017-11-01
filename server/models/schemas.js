@@ -124,6 +124,7 @@ var driverSchema = new mongoose.Schema({
     createdBy: String,
     updatedBy: String,
     driverId: String,
+    isActive: {type: Boolean, default: true},
     attrs: {}
 }, {
     timestamps: true
