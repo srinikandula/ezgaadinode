@@ -51,13 +51,14 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
     $scope.pageNumber = 1;
 
     $scope.getRoles = function () {
-        RoleServices.getRoles($scope.pageNumber,function (success) {
+        RoleServices.getRoles($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.roleGridOptions.data = success.data.roles;
-                console.log('roles...',$scope.roleGridOptions.data);
                 $scope.totalItems = success.data.count;
             } else {
-                Notification.error({message: success.data.message});
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
             }
         }, function (err) {
         });
@@ -68,11 +69,13 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
         RoleServices.deleteRole(id, function (success) {
             if (success.data.status) {
                 $scope.getRoles();
-                Notification.error({message: "Successfully deleted"});
+                Notification.success({message: "Successfully deleted"});
             } else {
-                Notification.error({message: success.data.message});
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
             }
-        })
+        });
     };
 
     $scope.roleGridOptions = {
@@ -91,7 +94,7 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
             '<a ng-click="grid.appScope.goToEditRolePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
             '<a ng-click="grid.appScope.deleteRole(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
             '</div>'
-        },],
+        }],
         rowHeight: 30,
         data: [],
         onRegisterApi: function (gridApi) {
@@ -100,13 +103,11 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
     };
 }]);
 
-app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams', '$state' ,'Notification', function ($scope, RoleServices, $stateParams, $state, Notification) {
-    console.log('-->', $stateParams, $stateParams.roleId, !!$stateParams.roleId);
-    $scope.pagetitle="Add Role";
+app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams', '$state', 'Notification', function ($scope, RoleServices, $stateParams, $state, Notification) {
+    $scope.pagetitle = "Add Role";
     $scope.rolesDetails = {
         roleName: '',
-        error: '',
-        success: ''
+        errors: []
     };
 
     $scope.goToRolesPage = function () {
@@ -114,13 +115,14 @@ app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams',
     };
 
     if ($stateParams.roleId) {
-        console.log($stateParams.roleId);
-        $scope.pagetitle="Update Role";
+        $scope.pagetitle = "Update Role";
         RoleServices.getRole($stateParams.roleId, function (success) {
             if (success.data.status) {
                 $scope.rolesDetails = success.data.role;
             } else {
-                Notification.error(success.data.message)
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
             }
         }, function (err) {
         })
@@ -128,35 +130,35 @@ app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams',
 
     $scope.AddorUpdateRole = function () {
         var params = $scope.rolesDetails;
-        params.error = '';
-        params.success = '';
-        if (!params.roleName) {
-            params.error = 'Invalid role name';
-        } else if ($stateParams.roleId) {
-            RoleServices.updateRole(params, function (success) {
-                console.log('update...', success.data);
-                if (success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('roles');
-                    Notification.success({message: "Role Updated Successfully"});
-                } else {
-                    params.error = success.data.message;
-                }
-            }, function (err) {
-            });
-        } else {
-            RoleServices.addRole({roleName: params.roleName}, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('roles');
-                    Notification.success({message: "Role Added Successfully"});
+        params.errors = [];
 
-                } else {
-                    params.error = success.data.message;
-                }
-                console.log(params);
-            }, function (err) {
-            });
+        if (!params.roleName) {
+            params.errors.push('Invalid role name');
+        }
+
+        if(!params.errors.length){
+            if ($stateParams.roleId) {
+                RoleServices.updateRole(params, function (success) {
+                    if (success.data.status) {
+                        $state.go('roles');
+                        Notification.success({message: "Role Updated Successfully"});
+                    } else {
+                        params.errors = success.data.messages;
+                    }
+                }, function (err) {
+                });
+            } else {
+                RoleServices.addRole({roleName: params.roleName}, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        $state.go('roles');
+                        Notification.success({message: "Role Added Successfully"});
+                    } else {
+                        params.errors = success.data.messages;
+                    }
+                }, function (err) {
+                });
+            }
         }
     }
 }]);
