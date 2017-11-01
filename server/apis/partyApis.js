@@ -11,7 +11,7 @@ var Party = function () {
 };
 
 Party.prototype.add = function (jwt, partyDetails, callback) {
-    var result = {message:'', status:true};
+    var result = {message: '', status: true};
 
     if (!_.isObject(partyDetails) || _.isEmpty(partyDetails)) {
         result.status = false;
@@ -26,12 +26,12 @@ Party.prototype.add = function (jwt, partyDetails, callback) {
         result.message += " Please provide valid contact number for party type";
     }
 
-    if(result.status === false) {
+    if (result.status === false) {
         callback(result);
     } else {
         partyDetails.createdBy = jwt.id;
-        partyDetails.updatedBy =  jwt.id;
-        partyDetails.accountId =  jwt.accountId;
+        partyDetails.updatedBy = jwt.id;
+        partyDetails.accountId = jwt.accountId;
         var partyDoc = new PartyCollection(partyDetails);
         partyDoc.save(function (err, party) {
             if (err) {
@@ -49,15 +49,15 @@ Party.prototype.add = function (jwt, partyDetails, callback) {
     }
 };
 
-Party.prototype.findParty= function (jwt, partyId, callback) {
+Party.prototype.findParty = function (jwt, partyId, callback) {
     var result = {};
-    PartyCollection.findOne({_id:partyId, accountId:jwt.accountId}, function (err, party) {
-        if(err) {
+    PartyCollection.findOne({_id: partyId, accountId: jwt.accountId}, function (err, party) {
+        if (err) {
             result.status = false;
             result.message = "Error while finding party, try Again";
             result.error = err;
             callback(result);
-        } else if(party) {
+        } else if (party) {
             result.status = true;
             result.message = "Party found successfully";
             result.party = party;
@@ -73,36 +73,38 @@ Party.prototype.findParty= function (jwt, partyId, callback) {
 
 Party.prototype.updateParty = function (jwt, partyDetails, callback) {
     var result = {};
-    PartyCollection.findOneAndUpdate({_id:partyDetails._id, accountId: jwt.accountId},
-        {$set:{
-            "name":partyDetails.name,
-            "contact":partyDetails.contact,
-            "email": partyDetails.email,
-            "city" : partyDetails.city,
-            "operatingLane": partyDetails.operatingLane,
-            "updatedBy": jwt.id
-        }},
+    PartyCollection.findOneAndUpdate({_id: partyDetails._id, accountId: jwt.accountId},
+        {
+            $set: {
+                "name": partyDetails.name,
+                "contact": partyDetails.contact,
+                "email": partyDetails.email,
+                "city": partyDetails.city,
+                "operatingLane": partyDetails.operatingLane,
+                "updatedBy": jwt.id
+            }
+        },
         {new: true}, function (err, party) {
-        if(err) {
-            result.status = false;
-            result.message = "Error while updating party, try Again";
-            callback(result);
-        } else if(party) {
-            result.status = true;
-            result.message = "Party updated successfully";
-            result.party = party;
-            callback(result);
-        } else {
-            result.status = false;
-            result.message = "Error, finding party";
-            callback(result);
-        }
-    });
+            if (err) {
+                result.status = false;
+                result.message = "Error while updating party, try Again";
+                callback(result);
+            } else if (party) {
+                result.status = true;
+                result.message = "Party updated successfully";
+                result.party = party;
+                callback(result);
+            } else {
+                result.status = false;
+                result.message = "Error, finding party";
+                callback(result);
+            }
+        });
 };
 
 Party.prototype.getAccountParties = function (accountId, callback) {
     var result = {};
-    PartyCollection.find({accountId:accountId},function (err, accountParties) {
+    PartyCollection.find({accountId: accountId}, function (err, accountParties) {
         if (err) {
             result.status = false;
             result.message = 'Error getting parties';
@@ -117,44 +119,42 @@ Party.prototype.getAccountParties = function (accountId, callback) {
 };
 
 Party.prototype.getAllParties = function (callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     PartyCollection.find({}, function (err, parties) {
-        // console.log('errparty',err);
-        // console.log('parties',parties);
         if (err) {
-            result.status = false;
-            result.message = 'Error getting parties';
-            callback(result);
+            retObj.message.push('Error getting parties');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            // result.parties = parties;
             Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
-                if(response.status) {
-                    result.parties = response.documents;
-                    callback(result);
+                if (response.status) {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.parties = response.documents;
+                    callback(retObj);
                 } else {
-                    result.status = false;
-                    result.message = 'Error getting parties';
+                    retObj.messages.push('Error getting parties');
                     callback(result);
                 }
             });
-            // console.log('parties',result);
         }
     });
 };
 
 Party.prototype.deleteParty = function (jwt, partyId, callback) {
     var result = {};
-    var query ={_id:partyId};
+    var query = {_id: partyId};
     //if the use is not admin
     //query['accountId'] = jwt.accountId;
     PartyCollection.remove(query, function (err, retValue) {
-        if (err){
+        if (err) {
             result.status = false;
             result.message = 'Error deleting party';
             callback(result);
-        } else if(retValue.result &&  retValue.result.n === 1){
+        } else if (retValue.result && retValue.result.n === 1) {
             result.status = true;
             result.message = 'Success';
             callback(result);

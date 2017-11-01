@@ -98,12 +98,8 @@
                     <div class="clearfix"></div>
                     <div class="col-xs-4 col-xs-push-4 margin-top-20">
                         <div>
-                            <div class="alert alert-danger" role="alert" ng-show="trip.error.length">
-                                <ul><li  ng-repeat="error in trip.error">{{error}}</li></ul>
-                            </div>
-
-                            <div class="alert alert-success" role="alert" ng-show="trip.success.length">
-                                <ul><li  ng-repeat="success in trip.error">{{success}}</li></ul>
+                            <div class="alert alert-danger" role="alert" ng-show="trip.errors.length">
+                                <ul><li  ng-repeat="error in trip.errors">{{error}}</li></ul>
                             </div>
                         </div>
                         <button type="submit" class="btn btn-primary" ng-click="addOrUpdateTrip()">Submit</button>

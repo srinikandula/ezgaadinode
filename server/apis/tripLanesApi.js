@@ -87,17 +87,20 @@ TripLanes.prototype.updateTripLane = function (jwt, tripLaneDetails, callback) {
 };
 
 TripLanes.prototype.getAllTripLanes = function (callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     TripLanesCollection.find({}, function (err, triplanes) {
         if (err) {
-            result.status = false;
-            result.message = "Error while retrieving Trip Lanes, try Again";
-            callback(result);
+            retObj.messages.push("Error while retrieving Trip Lanes, try Again");
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = "Success";
-            result.tripLanes = triplanes;
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.tripLanes = triplanes;
+            callback(retObj);
         }
     })
 };
