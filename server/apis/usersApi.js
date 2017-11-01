@@ -220,13 +220,6 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
                     }, function (populateErr, populateResults) {
                         usersCallback(populateErr, populateResults);
                     });
-                    // Utils.populateNameInUsersColl(users, "createdBy", function (response) {
-                    //     if (response.status) {
-                    //         accountsCallback(err, response.documents);
-                    //     } else {
-                    //         accountsCallback(err, null);
-                    //     }
-                    // });
                 });
         },
         count: function (countCallback) {

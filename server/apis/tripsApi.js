@@ -53,6 +53,36 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
         retObj.messages.push("Please add Trip Lane");
     }
 
+    if (!_.isNumber(tripDetails.tripExpenses)) {
+        retObj.messages.push('Please add tripExpenses');
+    }
+    if (!_.isNumber(tripDetails.bookLoad)) {
+        retObj.messages.push('Please add bookLoad');
+    }
+    if (!_.isNumber(tripDetails.dieselAmount)) {
+        retObj.messages.push('Please add dieselAmount');
+    }
+    if (!_.isNumber(tripDetails.tollgateAmount)) {
+        retObj.messages.push('Please add tollgateAmount');
+    }
+    if (!tripDetails.from) {
+        retObj.messages.push('Please add from');
+    }
+    if (!tripDetails.to) {
+        retObj.messages.push('Please add to');
+    }
+    if (!_.isNumber(tripDetails.tonnage)) {
+        retObj.messages.push('Please add tonnage');
+    }
+    if (!_.isNumber(tripDetails.rate)) {
+        retObj.messages.push('Please add rate');
+    }
+    if (!tripDetails.paymentType) {
+        retObj.messages.push('Please add paymentType');
+    }
+    if (!tripDetails.remarks) {
+        retObj.messages.push('Please add remarks');
+    }
     if (retObj.messages.length) {
         callback(retObj);
     } else {
