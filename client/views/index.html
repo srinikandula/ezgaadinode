@@ -40,15 +40,16 @@
                 <li><a href="#">How it Works</a></li>
                 <li><a href="#">Contact us</a></li>
                 <li><a href="#">GPS</a></li>
-                <li><a href="#" ng-click="logout()">Logout</a></li>
-               <!-- <li>
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user-circle"></i><span
+
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{displayName}}<span
                             class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">My Account</a></li>
+                    <ul class="dropdown-menu" ng-show="isLoggedin">
+                        <li><a href="#"></a></li>
+                        <li><a href="#" ng-click="logout()" >Logout</a></li>
 
                     </ul>
-                </li>-->
+                </li>
             </ul>
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
