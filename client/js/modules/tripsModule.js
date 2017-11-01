@@ -252,7 +252,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!params.driver) {
             params.errors.push('Please Select Driver');
         }
-        if (!params.bookedFor) {
+        /*if (!params.bookedFor) {
             params.errors.push('Valid Booked For');
         }
         if (!_.isNumber(params.freightAmount)) {
@@ -296,7 +296,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         }
         if (!params.remarks) {
             params.errors.push('Please add remarks');
-        }
+        }*/
         if (!params.errors.length) {
             if (params._id) {
                 params.date = Number(params.date);
