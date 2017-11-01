@@ -89,6 +89,7 @@ var tripSchema = new mongoose.Schema({
     tonnage: Number,    //new
     rate: Number,   //new
     paymentType: String,    //new
+    tripId: String,
     remarks: String,    //new
     tripLane: {type: ObjectId, ref: 'tripLanes'},
     tripExpenses: Number,

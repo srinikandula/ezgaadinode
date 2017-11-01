@@ -105,7 +105,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
         messages: []
     };
 
-    TrucksColl.findOneAndUpdate({registrationNo: truckDetails.registrationNo},
+    TrucksColl.findOneAndUpdate({_id: truckDetails._id},
         {
             $set: {
                 "truckType": truckDetails.truckType,
