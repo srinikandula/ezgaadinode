@@ -77,8 +77,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'trucks'},
         params: {
             access: 'open'
-        },
-        controller: 'TrucksController'
+        }
     }).state({
         name: 'trucksEdit',
         url: '/trucksEdit/:truckId',
@@ -87,8 +86,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open',
             truckId: null
-        },
-        controller: 'AddEditTruckCtrl'
+        }
     }).state({
         name: 'trips',
         url: '/trips',

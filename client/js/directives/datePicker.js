@@ -34,10 +34,7 @@ app.directive('datePicker', function () {
                     minDate: new Date(),
                     showWeeks: false
                 }
-
-
             }
-
         }
     };
 });

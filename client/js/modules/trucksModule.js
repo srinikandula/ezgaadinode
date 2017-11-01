@@ -45,22 +45,6 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     $scope.maxSize = 5;
     $scope.pageNumber = 1;
 
-    $scope.getTrucksData = function () {
-        console.log('pn',$scope.pageNumber);
-        TrucksService.getAccountTrucks($scope.pageNumber, function (success) {
-            if (success.data.status) {
-                $scope.truckGridOptions.data = success.data.trucks;
-                $scope.totalItems = success.data.count;
-            } else {
-                Notification.error({message: success.data.message});
-            }
-        }, function (err) {
-
-        });
-    };
-
-    $scope.getTrucksData();
-
     $scope.truckGridOptions = {
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
@@ -111,13 +95,32 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         }
     };
 
+    $scope.getTrucksData = function () {
+        TrucksService.getAccountTrucks($scope.pageNumber, function (success) {
+            if (success.data.status) {
+                $scope.truckGridOptions.data = success.data.trucks;
+                $scope.totalItems = success.data.count;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getTrucksData();
+
     $scope.deleteTruck = function (truckId) {
         TrucksService.deleteTruck(truckId, function (success) {
             if (success.data.status) {
                 Notification.error('Truck deleted successfully');
                 $scope.getTrucksData();
             } else {
-                Notification.error(success.data.message)
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message)
+                });
             }
         }, function (err) {
 
@@ -125,28 +128,43 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     }
 }]);
 
-app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService','DriverService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state) {
+app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state) {
     $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
+
     $scope.drivers = [];
     $scope.truck = {
-        registrationNo:'',
-        truckType:'',
-        modelAndYear:'',
-        driverId:'',
-        fitnessExpiry:'',
-        permitExpiry:'',
-        insuranceExpiry:'',
-        pollutionExpiry:'',
-        taxDueDate:'',
-        error:[],
-        success:[]
+        registrationNo: '',
+        truckType: '',
+        modelAndYear: '',
+        driverId: '',
+        fitnessExpiry: '',
+        permitExpiry: '',
+        insuranceExpiry: '',
+        pollutionExpiry: '',
+        taxDueDate: '',
+        errors: []
     };
+
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
-    DriverService.getAccountDrivers(function(success){
-        $scope.drivers = success.data.drivers;
-    });
+
+    function getAccountDrivers() {
+        DriverService.getAccountDrivers(function (success) {
+            if (success.data.status) {
+                $scope.drivers = success.data.drivers;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    }
+
+    getAccountDrivers();
+
 
     if ($stateParams.truckId) {
         TrucksService.getTruck($stateParams.truckId, function (success) {
@@ -158,7 +176,9 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService','DriverSe
                 $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
                 $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
             } else {
-                Notification.error(success.data.message)
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
             }
         }, function (err) {
         })
@@ -166,58 +186,54 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService','DriverSe
 
     $scope.addOrUpdateTruck = function () {
         var params = $scope.truck;
-        params.success = [];
-        params.error = [];
-        console.log('params==>', params);
+        params.errors = [];
+
         if (!params.registrationNo) {
-            params.error.push ('Invalid Registration ID');
+            params.errors.push('Invalid Registration ID');
         }
         if (!params.truckType) {
-            params.error.push('Invalid truckType');
+            params.errors.push('Invalid truckType');
         }
         if (!params.modelAndYear) {
-            params.error.push('Invalid Modal and Year');
+            params.errors.push('Invalid Modal and Year');
         }
         if (!params.driverId) {
-            params.error.push('Invalid Driver');
+            params.errors.push('Invalid Driver');
         }
         if (!params.fitnessExpiry) {
-            params.error.push('Invalid Fitness Expiry');
+            params.errors.push('Invalid Fitness Expiry');
         }
         if (!params.permitExpiry) {
-            params.error.push('Invalid Permit Expiry');
+            params.errors.push('Invalid Permit Expiry');
         }
         if (!params.insuranceExpiry) {
-            params.error.push('Invalid Insurance Expiry');
+            params.errors.push('Invalid Insurance Expiry');
         }
         if (!params.pollutionExpiry) {
-            params.error.push('Invalid Pollution Expiry');
+            params.errors.push('Invalid Pollution Expiry');
         }
         if (!params.taxDueDate) {
-            params.error.push('Invalid Tax due date');
+            params.errors.push('Invalid Tax due date');
         }
 
-        if (!params.error.length) {
+        if (!params.errors.length) {
             if (!params._id) {
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {
-                       // params.success = success.data.message;
                         $state.go('trucks');
                         Notification.success({message: "Truck Added Successfully"});
                     } else {
-                        params.error = success.data.message;
+                        params.errors = success.data.messages;
                     }
                 }, function (err) {
-
                 });
             } else {
                 TrucksService.updateTruck(params, function (success) {
                     if (success.data.status) {
-                        //params.success = success.data.message;
                         $state.go('trucks');
                         Notification.success({message: "Truck Updated Successfully"});
                     } else {
-                        params.error = success.data.message;
+                        params.errors = success.data.messages;
                     }
                 }, function (err) {
 

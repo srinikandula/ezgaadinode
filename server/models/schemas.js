@@ -124,6 +124,7 @@ var driverSchema = new mongoose.Schema({
     createdBy: String,
     updatedBy: String,
     driverId: String,
+    isActive: {type: Boolean, default: true},
     attrs: {}
 }, {
     timestamps: true
@@ -132,8 +133,11 @@ var maintenanceCostSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     vehicleNumber: String,
     description:String,
-    cost: Number,
     date: Date,
+    shedName: String,
+    shedArea: String,
+    paymentType: String,
+    cost: Number,
     updatedBy: String,
     createdBy: String,
     attrs: {}
@@ -157,6 +161,5 @@ module.exports = {
     PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
-    DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     Roles: mongoose.model('roles', rolesSchema, 'roles')
 };
