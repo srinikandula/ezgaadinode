@@ -45,7 +45,7 @@
                         <label for="roleId" class="col-sm-4 col-xs-12 pall-zero">Role</label>
                         <div class="col-sm-8 col-xs-12">
                             <select ng-model="userDetails.role"
-                                    ng-options="role._id as roles.roleName for role in trucks" type="text"
+                                    ng-options="role._id as role.roleName for role in roles" type="text"
                                     class="form-control" id="roleId">
                             </select>
                         </div>
