@@ -10,65 +10,64 @@ var Accounts = function () {
 };
 
 Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
-    var retObj = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
 
     if (!accountInfo.name || !_.isString(accountInfo.name)) {
-        retObj.status = false;
-        retObj.message = 'Invalid account name';
-        callback(retObj);
-    } else if (!accountInfo.userName || !_.isString(accountInfo.userName)) {
-        retObj.status = false;
-        retObj.message = 'Invalid user name';
-        callback(retObj);
-    } else if (!Utils.isValidPassword(accountInfo.password)) {
-        retObj.status = false;
-        retObj.message = 'Invalid password';
-        callback(retObj);
-    } else if (!Utils.isValidPhoneNumber(accountInfo.contact)) {
-        retObj.status = false;
-        retObj.message = 'Invalid contact number';
-        callback(retObj);
-    } else if (!accountInfo.address || !_.isString(accountInfo.address)) {
-        retObj.status = false;
-        retObj.message = 'Invalid Address';
+        retObj.messages.push('Invalid account name');
+    }
+
+    if (!accountInfo.userName || !_.isString(accountInfo.userName)) {
+        retObj.messages.push('Invalid user name');
+    }
+
+    if (!Utils.isValidPassword(accountInfo.password)) {
+        retObj.messages.push('Invalid password');
+    }
+
+    if (!Utils.isValidPhoneNumber(accountInfo.contact)) {
+        retObj.messages.push('Invalid contact number');
+    }
+
+    if (!accountInfo.address || !_.isString(accountInfo.address)) {
+        retObj.messages.push('Invalid Address');
+    }
+
+    if (retObj.messages.length) {
         callback(retObj);
     } else {
         AccountsColl.findOne({name: accountInfo.name}, function (err, account) {
             if (err) {
-                retObj.status = false;
-                retObj.message = 'Error fetching account';
+                retObj.messages.push('Error fetching account');
                 callback(retObj);
             } else if (account) {
-                retObj.status = false;
-                retObj.message = 'Account with the name already exists';
+                retObj.messages.push('Account with the name already exists');
                 callback(retObj);
             } else {
                 UsersColl.findOne({userName: accountInfo.userName}, function (err, user) {
                     if (err) {
-                        retObj.status = false;
-                        retObj.message = 'Error fetching account';
+                        retObj.messages.push('Error fetching account');
                         callback(retObj);
                     } else if (user) {
-                        retObj.status = false;
-                        retObj.message = 'Username already exists';
+                        retObj.messages.push('Username already exists');
                         callback(retObj);
                     } else {
                         accountInfo.createdBy = jwtObj.id;
                         (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
                             if (err) {
-                                retObj.status = false;
-                                retObj.message = 'Error saving account';
+                                retObj.messages.push('Error saving account');
                                 callback(retObj);
                             } else {
                                 accountInfo.accountId = savedAcc._id;
                                 (new UsersColl(accountInfo)).save(function (err) {
                                     if (err) {
-                                        retObj.status = false;
-                                        retObj.message = 'Error saving user';
+                                        retObj.messages.push('Error saving user');
                                         callback(retObj);
                                     } else {
                                         retObj.status = true;
-                                        retObj.message = 'Success';
+                                        retObj.messages.push('Success');
                                         callback(retObj);
                                     }
                                 });
@@ -82,12 +81,17 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
 };
 
 Accounts.prototype.getAccounts = function (pageNum, callback) {
-    var retObj = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!pageNum) {
         pageNum = 1;
-    } else if (!_.isNumber(Number(pageNum))) {
-        retObj.status = false;
-        retObj.message = 'Invalid page number';
+    }
+
+    if (!_.isNumber(Number(pageNum))) {
+        retObj.messages.push('Invalid page number');
         return callback(retObj);
     }
 
@@ -102,13 +106,12 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
                 .lean()
                 .exec(function (err, accounts) {
                     Utils.populateNameInUsersColl(accounts, "createdBy", function (response) {
-                        if(response.status) {
+                        if (response.status) {
                             accountsCallback(err, response.documents);
                         } else {
                             accountsCallback(err, null);
                         }
                     });
-                    // accountsCallback(err, accounts);
                 });
         },
         count: function (countCallback) {
@@ -118,12 +121,11 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
         }
     }, function (err, results) {
         if (err) {
-            retObj.status = false;
-            retObj.message = 'Error retrieving accounts';
+            retObj.messages.push('Error retrieving accounts');
             callback(retObj);
         } else {
             retObj.status = true;
-            retObj.message = 'Success';
+            retObj.messages.push('Success');
             retObj.count = results.count;
             retObj.accounts = results.accounts;
             callback(retObj);
@@ -132,15 +134,18 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
 };
 
 Accounts.prototype.getAllAccounts = function (callback) {
-    var retObj = {};
-    AccountsColl.find({},{name:1}, function (err, accounts) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    AccountsColl.find({}, {name: 1}, function (err, accounts) {
         if (err) {
-            retObj.status = false;
-            retObj.message = 'Error retrieving accounts';
+            retObj.messages.push('Error retrieving accounts');
             callback(retObj);
         } else {
             retObj.status = true;
-            retObj.message = 'Success';
+            retObj.messages.push('Success');
             retObj.accounts = accounts;
             callback(retObj);
         }
@@ -148,25 +153,29 @@ Accounts.prototype.getAllAccounts = function (callback) {
 };
 
 Accounts.prototype.getAccountDetails = function (accountId, callback) {
-    var retObj = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!Utils.isValidObjectId(accountId)) {
-        retObj.status = false;
-        retObj.message = 'Invalid accountId';
+        retObj.messages.push('Invalid accountId');
+    }
+
+    if (retObj.messages.length) {
         callback(retObj);
     } else {
         AccountsColl.findOne({_id: accountId}, function (err, account) {
             if (err) {
-                retObj.status = false;
-                retObj.message = 'Error retrieving account';
+                retObj.messages.push('Error retrieving account');
                 callback(retObj);
             } else if (account) {
                 retObj.status = true;
-                retObj.message = 'Success';
+                retObj.messages.push('Success');
                 retObj.account = account;
                 callback(retObj);
             } else {
-                retObj.status = false;
-                retObj.message = 'Account with Id doesn\'t exist';
+                retObj.messages.push('Account with Id doesn\'t exist');
                 callback(retObj);
             }
         });
@@ -174,26 +183,30 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
 };
 
 Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
-    var retObj = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!Utils.isValidObjectId(accountInfo._id)) {
-        retObj.status = false;
-        retObj.message = 'Invalid account Id';
+        retObj.messages.push('Invalid account Id');
+    }
+
+    if (retObj.messages.length) {
         callback(retObj);
     } else {
         accountInfo.updatedBy = jwtObj.id;
         accountInfo = Utils.removeEmptyFields(accountInfo);
         AccountsColl.findOneAndUpdate({_id: accountInfo._id}, {$set: accountInfo}, function (err, oldAcc) {
             if (err) {
-                retObj.status = false;
-                retObj.message = 'Error updating the account';
+                retObj.messages.push('Error updating the account');
                 callback(retObj);
             } else if (oldAcc) {
                 retObj.status = true;
-                retObj.message = 'Success';
+                retObj.messages.push('Success');
                 callback(retObj);
             } else {
-                retObj.status = false;
-                retObj.message = 'Account doesn\'t exist';
+                retObj.messages.push('Account doesn\'t exist');
                 callback(retObj);
             }
         });
