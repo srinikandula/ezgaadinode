@@ -67,7 +67,7 @@ app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', 
             field: 'lastName'
         }, {
             name: 'Role',
-            field: 'role'
+            field: 'attrs.roleName'
         }, {
             name: 'Created By',
             field: 'attrs.createdByName'

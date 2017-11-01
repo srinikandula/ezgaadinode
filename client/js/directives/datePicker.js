@@ -23,12 +23,10 @@ app.directive('datePicker', function () {
                     scope.opened = !scope.opened;
                 }
             };
-
             scope.options = {
-                minDate: new Date(),
-                showWeeks: false
-            }
-
+                showWeeks: false,
+                minDate: new Date()
+            };
         }
     };
 });
