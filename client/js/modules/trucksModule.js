@@ -197,9 +197,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         if (!params.modelAndYear) {
             params.errors.push('Invalid Modal and Year');
         }
-        if (!params.driverId) {
-            params.errors.push('Invalid Driver');
-        }
+
         if (!params.fitnessExpiry) {
             params.errors.push('Invalid Fitness Expiry');
         }

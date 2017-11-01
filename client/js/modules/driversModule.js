@@ -200,10 +200,6 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             params.errors.push('Please provide valid mobile number');
         }
 
-        if (!params.truckId) {
-            params.errors.push('Please provide valid truck registration number')
-        }
-
         if (!params.licenseValidity) {
             params.errors.push('Please provide license validity date');
         }
