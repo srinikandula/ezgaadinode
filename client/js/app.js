@@ -77,8 +77,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'trucks'},
         params: {
             access: 'open'
-        },
-        controller: 'TrucksController'
+        }
     }).state({
         name: 'trucksEdit',
         url: '/trucksEdit/:truckId',
@@ -87,8 +86,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open',
             truckId:null
-        },
-        controller: 'AddEditTruckCtrl'
+        }
     }).state({
         name: 'trips',
         url: '/trips',
@@ -179,9 +177,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
 });
 app.config(function(NotificationProvider) {
     NotificationProvider.setOptions({
-        delay: 10000,
-        startTop: 20,
-        startRight: 10,
+        delay:3000,
+        startTop: 150,
+        startRight:500,
         verticalSpacing: 20,
         horizontalSpacing: 20,
         positionX: 'center',

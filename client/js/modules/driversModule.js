@@ -13,13 +13,13 @@ app.factory('DriverService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getAllDrivers: function(success, error) {
+        getAllDrivers: function (success, error) {
             $http({
                 url: '/v1/drivers',
                 method: "GET"
             }).then(success, error)
         },
-        getAccountDrivers: function(success, error) {
+        getAccountDrivers: function (success, error) {
             $http({
                 url: '/v1/drivers/account/drivers',
                 method: "GET"
@@ -65,11 +65,11 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         columnDefs: [{
             name: 'ID',
             field: 'driverId'
-        },{
+        }, {
             name: 'Full Name',
             field: 'fullName'
-        }, {
-            name: 'Contact Number',
+        },{
+            name: 'Mobile',
             field: 'mobile'
         }, {
             name: 'Truck Reg No',
@@ -78,9 +78,6 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             name: 'License Validity',
             field: 'licenseValidity',
             cellFilter: 'date:"dd-MM-yyyy"'
-        }, {
-            name: 'Mobile',
-            field: 'mobile'
         }, {
             name: 'Salary',
             field: 'salary'
@@ -113,10 +110,11 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
                 $scope.driverGridOptions.data = success.data.drivers;
                 $scope.totalItems = success.data.count;
             } else {
-                Notification.error({message: success.data.message});
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
             }
         }, function (err) {
-
         });
     };
 
@@ -124,9 +122,11 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         DriverService.deleteDriver(driverId, function (success) {
             if (success) {
                 $scope.getDrivers();
-                Notification.error({message: success.data.message});
+                Notification.error({message: 'Successfully deleted driver'});
             } else {
-                console.log("Error in deleting")
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
             }
         })
     };
@@ -135,7 +135,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
 }]);
 
 app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams) {
-    $scope.pagetitle="Add Driver";
+    $scope.pagetitle = "Add Driver";
 
     $scope.trucks = [];
     $scope.driver = {
@@ -145,11 +145,12 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         mobile: '',
         joiningDate: '',
         licenseValidity: new Date(),
-        salary:'',
-        licenseNumber:'',
+        salary: '',
+        licenseNumber: '',
         errors: [],
-        success: []
+        isActive: true
     };
+
     $scope.pageTitle = "Add Driver";
     if ($stateParams.driverId) {
         $scope.pageTitle = "Update Driver";
@@ -159,7 +160,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                 $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
                 console.log('driver',$scope.driver);
             } else {
-                Notification.error(success.data.message)
+                success.data.messages.forEach(function (message) {
+                    Notification.error(success.data.message)
+                });
             }
         }, function (err) {
         })
@@ -170,7 +173,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             } else {
-                Notification.error(success.data.message);
+                success.data.messages.forEach(function (message) {
+                    Notification.error(success.data.message);
+                });
             }
         }, function (error) {
 
@@ -186,7 +191,6 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     $scope.addOrSaveDriver = function () {
         var params = $scope.driver;
         params.errors = [];
-        params.success = '';
 
         if (!params.fullName) {
             params.errors.push('Please provide driver\'s full name')
@@ -216,11 +220,10 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             if (params._id) {
                 DriverService.updateDriver(params, function (success) {
                     if (success.data.status) {
-                        params.success = success.data.message;
+                        Notification.success({message: "Driver Updated Successfully"});
                         $state.go('drivers');
-                       Notification.success({message: "Driver Updated Successfully"});
                     } else {
-                        params.errors.push(success.data.message);
+                        params.errors = success.data.messages;
                     }
                 }, function (err) {
                     console.log(err);
@@ -228,19 +231,15 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             } else {
                 DriverService.addDriver(params, function (success) {
                     if (success.data.status) {
-                        params.success = success.data.message;
-                        $state.go('drivers');
                         Notification.success({message: "Driver Added Successfully"});
+                        $state.go('drivers');
                     } else {
-                        params.errors.push(success.data.message);
+                        params.errors = success.data.messages;
                     }
                 }, function (error) {
 
                 });
             }
-        } else {
-            console.log(params.errors);
         }
     }
-
 }]);

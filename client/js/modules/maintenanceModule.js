@@ -125,7 +125,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         success: []
     };
 
-    $scope.goToMaintenancePage = function () {
+    $scope.cancel = function () {
         $state.go('maintenance');
     };
 
@@ -140,11 +140,12 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
 
         });
     }
+
     getTruckIds();
 
     if ($stateParams.maintenanceId) {
         $scope.pagetitle = "Edit Maintenance";
-         MaintenanceService.getMaintenanceRecord($stateParams.maintenanceId, function (success) {
+        MaintenanceService.getMaintenanceRecord($stateParams.maintenanceId, function (success) {
             if (success.data.status) {
                 $scope.maintenanceDetails = success.data.trip;
                 $scope.maintenanceDetails.date = new Date($scope.maintenanceDetails.date);
@@ -203,8 +204,33 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                     } else {
                         params.error = success.data.message;
                     }
+                    if ($stateParams.maintenanceId) {
+                        MaintenanceService.updateRecord(params, function (success) {
+                            if (success.data.status) {
+                                params.success = success.data.message;
+                                $state.go('maintenance');
+                                Notification.success({message: "Maintenance Updated Successfully"});
+                            } else {
+                                params.error = success.data.message;
+                            }
+                            $scope.goToMaintenancePage();
 
-                }, function (err) {
+                        }, function (err) {
+                            console.log(err);
+                        });
+                    } else {
+                        MaintenanceService.addMaintenance(params, function (success) {
+                            if (success.data.status) {
+                                params.success = success.data.message;
+                                $state.go('maintenance');
+                                Notification.success({message: "Maintenance Added Successfully"});
+                            } else {
+                                params.error = success.data.message;
+                            }
+                        }, function (err) {
+                        });
+                    }
+
                 });
             }
         }

@@ -35,7 +35,8 @@
                     <div class="form-group col-xs-12">
                         <label class="col-sm-4 pall-zero">Driver </label>
                         <div class="col-sm-8 col-xs-12">
-                            <select id="driver" ng-options="driver._id as driver.fullName for driver in drivers" class="form-control" ng-model="truck.driverId" required></select>
+                            <select id="driver" ng-options="driver._id as driver.fullName for driver in drivers"
+                                    class="form-control" ng-model="truck.driverId" required></select>
                         </div>
                     </div>
 
@@ -70,25 +71,21 @@
                     <div class="form-group col-xs-12">
                         <label class="col-sm-4 pall-zero">Tax Due Date : </label>
                         <div class="col-sm-8 col-xs-12">
-                            <date-picker id="taxDueDate" ng-model="truck.taxDueDate"></date-picker>                        </div>
+                            <date-picker id="taxDueDate" ng-model="truck.taxDueDate"></date-picker>
+                        </div>
                     </div>
                 </div>
                 <div class="clearfix"></div>
 
                 <div class="col-sm-4 col-xs-push-4 margin-top-20">
-                    <div class="alert alert-danger" role="alert" ng-show="truck.error.length">
+                    <div class="alert alert-danger" role="alert" ng-show="truck.errors.length">
                         <!--<strong>{{truck.error}}</strong>-->
                         <ul>
-                            <li ng-repeat="error in truck.error">{{error}}</li>
-                        </ul>
-                    </div>
-                    <div class="alert alert-success" role="alert" ng-show="truck.success.length">
-                        <ul>
-                            <li ng-repeat="success in truck.success">{{success}}</li>
+                            <li ng-repeat="error in truck.errors">{{error}}</li>
                         </ul>
                     </div>
                     <input type="button" value="Submit" class="btn btn-primary" ng-click="addOrUpdateTruck()"/>
-                    <input type="button" value="Cancel" class="btn btn-primary" ng-click="goToTrucksPage()"/>
+                    <input type="button" value="Cancel" class="btn btn-red" ng-click="goToTrucksPage()"/>
                 </div>
 
             </div>
