@@ -33,7 +33,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
         retObj.messages.push("Please add driver");
     }
 
-    if (!tripDetails.bookedFor) {
+    /*if (!tripDetails.bookedFor) {
         retObj.messages.push("Please add bookedFor");
     }
 
@@ -82,7 +82,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     }
     if (!tripDetails.remarks) {
         retObj.messages.push('Please add remarks');
-    }
+    }*/
     if (retObj.messages.length) {
         callback(retObj);
     } else {
