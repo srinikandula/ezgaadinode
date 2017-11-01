@@ -184,7 +184,7 @@ app.config(function(NotificationProvider) {
         startRight: 10,
         verticalSpacing: 20,
         horizontalSpacing: 20,
-        positionX: 'left',
+        positionX: 'center',
         positionY: 'bottom'
     });
 });

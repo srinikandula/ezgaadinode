@@ -62,11 +62,12 @@
                     <div class="col-xs-4 col-xs-push-4">
 
                     <div>
-                        <div class="alert alert-danger" role="alert" ng-show="account.error.length">
+                        <div class="alert alert-danger" role="alert" ng-show="account.errors.length">
                             <ul>
-                                <li ng-repeat="error in account.error">{{error}}</li>
+                                <li ng-repeat="error in account.errors">{{error}}</li>
                             </ul>
                         </div>
+
                         <div class="alert alert-success" role="alert" ng-show="account.success.length">
                             <ul>
                                 <li ng-repeat="success in account.success">{{success}}</li>
@@ -77,13 +78,10 @@
                         <button type="submit" class="btn btn-primary">Submit</button>
                         <input type="button" value="Cancel" class="btn btn-primary" ng-click="cancel()"/>
                     </div>
-                    </div>
-                </form>
                 </form>
             </div>
         </div>
     </div>
-</div>
 </div>
 
 
