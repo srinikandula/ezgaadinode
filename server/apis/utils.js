@@ -92,31 +92,33 @@ Utils.prototype.populateNameInDriversCollmultiple = function (documents, fieldTo
     var ids = _.pluck(documents, fieldTopopulate);
     var conditions = {};
     conditions[fieldToGet] = 1;
+    console.log(documents,ids);
     DriversColl.find({'_id': {$in: ids}}, conditions, function (err, names) {
         if (err) {
             result.status = false;
             result.message = 'Error retrieving names';
             result.err = err;
             callback(result);
-        }
-        for (var i = 0; i < documents.length; i++) {
-            var item = documents[i];
-            var driver = _.find(names, function (users) {
-                if(users._id && item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
-                else return '';
-            });
-            if (driver) {
-                if (!item.attrs) {
-                    item.attrs = {};
+        } else {
+            for (var i = 0; i < documents.length; i++) {
+                var item = documents[i];
+                var driver = _.find(names, function (users) {
+                    if(users._id && item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                    else return '';
+                });
+                if (driver) {
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs[fieldToGet] = driver[fieldToGet];
                 }
-                item.attrs[fieldToGet] = driver[fieldToGet];
             }
+            result.status = true;
+            result.message = 'Error retrieving names';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
         }
-        result.status = true;
-        result.message = 'Error retrieving names';
-        result.documents = documents;
-        result.err = err;
-        callback(result);
     });
 };
 
