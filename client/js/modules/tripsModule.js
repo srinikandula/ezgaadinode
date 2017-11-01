@@ -270,6 +270,33 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!_.isNumber(params.tripExpenses)) {
             params.errors.push('Please add tripExpenses');
         }
+        if (!_.isNumber(params.bookLoad)) {
+            params.errors.push('Please add bookLoad');
+        }
+        if (!_.isNumber(params.dieselAmount)) {
+            params.errors.push('Please add dieselAmount');
+        }
+        if (!_.isNumber(params.tollgateAmount)) {
+            params.errors.push('Please add tollgateAmount');
+        }
+        if (!params.from) {
+            params.errors.push('Please add from');
+        }
+        if (!params.to) {
+            params.errors.push('Please add to');
+        }
+        if (!_.isNumber(params.tonnage)) {
+            params.errors.push('Please add tonnage');
+        }
+        if (!_.isNumber(params.rate)) {
+            params.errors.push('Please add rate');
+        }
+        if (!params.paymentType) {
+            params.errors.push('Please add paymentType');
+        }
+        if (!params.remarks) {
+            params.errors.push('Please add remarks');
+        }
 
         if (!params.errors.length) {
             if (params._id) {
