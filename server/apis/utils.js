@@ -189,24 +189,25 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
             result.message = 'Error retrieving Trucks';
             result.err = err;
             callback(result);
-        }
-        for (var i = 0; i < documents.length; i++) {
-            var item = documents[i];
-            var Trucks = _.find(names, function (users) {
-                return users._id.toString() === item[fieldTopopulate].toString();
-            });
-            if (Trucks) {
-                if (!item.attrs) {
-                    item.attrs = {};
+        } else {
+            for (var i = 0; i < documents.length; i++) {
+                var item = documents[i];
+                var Trucks = _.find(names, function (users) {
+                    return users._id.toString() === item[fieldTopopulate].toString();
+                });
+                if (Trucks) {
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs.truckName = Trucks.registrationNo;
                 }
-                item.attrs.truckName = Trucks.registrationNo;
             }
+            result.status = true;
+            result.message = 'Error retrieving names';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
         }
-        result.status = true;
-        result.message = 'Error retrieving names';
-        result.documents = documents;
-        result.err = err;
-        callback(result);
     });
 };
 
