@@ -143,7 +143,17 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         advance: '',
         tripLane: '',
         tripExpenses: '',
-        errors: []
+        bookLoad: '',   //new...
+        dieselAmount: '',   //new...
+        tollgateAmount: '', //new..
+        from: '',    //new...
+        to: '',  //new...
+        tonnage: '',    //new...
+        rate: '',   //new...
+        paymentType: '',    //new
+        remarks: '',    //new
+        error:[],
+        success:[]
     };
 
     $scope.cancel = function () {
@@ -211,6 +221,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     getParties();
     getTripLanes();
 
+    $scope.calculateBalance = function () {
+        $scope.trip.balance = $scope.trip.freightAmount - $scope.trip.advance;
+    };
     if ($stateParams.tripId) {
         $scope.pagetitle = "Edit Trip";
         TripServices.getTrip($stateParams.tripId, function (success) {
