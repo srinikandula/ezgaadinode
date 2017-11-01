@@ -89,7 +89,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
         tripDetails.createdBy = jwt.id;
         tripDetails.updatedBy = jwt.id;
         tripDetails.accountId = jwt.accountId;
-
+        tripDetails.tripId = "TR"+parseInt(Math.random()*100000);
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err) {
             if (err) {
