@@ -121,6 +121,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
 }]);
 
+
 app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','DriverService','PartyService','TripLaneServices', '$stateParams', 'Notification', function ($scope,$state, Utils, TripServices,DriverService,PartyService,TripLaneServices, $stateParams, Notification) {
     console.log('-->', $stateParams);
     $scope.pagetitle = "Add Trip";
