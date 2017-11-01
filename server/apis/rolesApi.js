@@ -1,5 +1,4 @@
 var mongoose = require('mongoose');
-var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
@@ -13,36 +12,37 @@ var Roles = function () {
 };
 
 Roles.prototype.addRole = function (jwt, roleDetails, callback) {
-    console.log('roles',roleDetails);
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!roleDetails.roleName || !_.isString(roleDetails.roleName)) {
-        result.status = false;
-        result.message = "Please provide valid role name";
-        callback(result);
-    } else {
+        retObj.messages.push("Please provide valid role name");
+        callback(retObj);
+    }
+
+    if (!retObj.messages.length) {
         RolesColl.findOne({roleName: roleDetails.roleName}, function (err, role) {
             if (err) {
-                result.status = false;
-                result.message = "Error, try again!";
-                callback(result);
+                retObj.messages.push("Error, try again!");
+                callback(retObj);
             } else if (role) {
-                result.status = false;
-                result.message = "Role already exists";
-                console.log(result);
-                callback(result);
+                retObj.messages.push("Role already exists");
+                callback(retObj);
             } else {
                 roleDetails.createdBy = jwt.id;
                 roleDetails.updatedBy = jwt.id;
+
                 var insertDoc = new RolesColl(roleDetails);
                 insertDoc.save(function (err) {
                     if (err) {
-                        result.status = false;
-                        result.message = "Error, try Again";
-                        callback(result);
+                        retObj.messages.push("Error, try Again");
+                        callback(retObj);
                     } else {
-                        result.status = true;
-                        result.message = "Successfully Added";
-                        callback(result);
+                        retObj.status = false;
+                        retObj.messages.push("Successfully Added");
+                        callback(retObj);
                     }
                 });
             }
@@ -74,7 +74,7 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
                 .lean()
                 .exec(function (err, roles) {
                     Utils.populateNameInUsersColl(roles, "createdBy", function (response) {
-                        if(response.status) {
+                        if (response.status) {
                             accountsCallback(err, response.documents);
                         } else {
                             accountsCallback(err, null);
@@ -106,7 +106,7 @@ Roles.prototype.getAllRoles = function (callback) {
         status: false,
         messages: []
     };
-    RolesColl.find({},{roleName:1},function (err, roles) {
+    RolesColl.find({}, {roleName: 1}, function (err, roles) {
         if (err) {
             result.messages.push('Error getting roles');
             callback(result);
@@ -120,56 +120,64 @@ Roles.prototype.getAllRoles = function (callback) {
 };
 
 Roles.prototype.getRole = function (id, callback) {
-    var result = {};
-    RolesColl.findOne({_id:id}, function (err, role) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    RolesColl.findOne({_id: id}, function (err, role) {
         if (err) {
-            result.status = false;
-            result.message = 'Error getting role';
-            callback(result);
+            retObj.messages.push('Error getting role');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.role = role;
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.role = role;
+            callback(retObj);
         }
     });
 };
 
 Roles.prototype.updateRole = function (jwt, roleDetails, callback) {
-    console.log('==>',roleDetails);
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
     roleDetails = Utils.removeEmptyFields(roleDetails);
-    RolesColl.findOneAndUpdate({_id:roleDetails._id},
-        {$set:roleDetails},
-        {new: true}, function (err, role) {
-            if(err) {
-                result.status = false;
-                result.message = "Error while updating role, try Again";
-                callback(result);
-            } else if(role) {
-                result.status = true;
-                result.message = "Role updated successfully";
-                // result.truck = role;
-                callback(result);
+
+    RolesColl.findOneAndUpdate(
+        {_id: roleDetails._id},
+        {$set: roleDetails},
+        {new: true},
+        function (err, role) {
+            if (err) {
+                retObj.messages.push("Error while updating role, try Again");
+                callback(retObj);
+            } else if (role) {
+                retObj.status = true;
+                retObj.messages.push("Role updated successfully");
+                callback(retObj);
             } else {
-                result.status = false;
-                result.message = "Error, finding role";
-                callback(result);
+                retObj.messages.push("Error, finding role");
+                callback(retObj);
             }
         });
 };
 
 Roles.prototype.deleteRole = function (id, callback) {
-    var result = {};
-    RolesColl.remove({_id:id}, function (err) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    RolesColl.remove({_id: id}, function (err) {
         if (err) {
-            result.status = false;
-            result.message = 'Error deleting role';
-            callback(result);
+            retObj.messages.push('Error deleting role');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Successfully Deleted !!';
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Successfully Deleted !!');
+            callback(retObj);
         }
     });
 };
