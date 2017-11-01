@@ -132,8 +132,11 @@ var maintenanceCostSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     vehicleNumber: String,
     description:String,
-    cost: Number,
     date: Date,
+    shedName: String,
+    shedArea: String,
+    paymentType: String,
+    cost: Number,
     updatedBy: String,
     createdBy: String,
     attrs: {}

@@ -80,7 +80,7 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
         paginationPageSize: 9,
         columnDefs: [{
             name: 'Vehicle Number',
-            field: 'vehicleNumber'
+            field: 'attrs.truckName'
         }, {
             name: 'Description',
             field: 'description'
@@ -108,14 +108,18 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
     };
 }]);
 
-app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', function ($scope, MaintenanceService, $stateParams, $state) {
-    console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
+app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'DriverService', 'Notification', function ($scope, MaintenanceService, $stateParams, $state, DriverService, Notification) {
+    // console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
     $scope.pagetitle = "Add Maintenance";
+    $scope.dateCallback = "past";
 
     $scope.maintenanceDetails = {
         vehicleNumber: '',
         description: '',
         date: '',
+        shedName: '',
+        shedArea: '',
+        paymentType: '',
         cost: '',
         error: [],
         success: []
@@ -124,6 +128,19 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
     $scope.goToMaintenancePage = function () {
         $state.go('maintenance');
     };
+
+    function getTruckIds() {
+        DriverService.getAllTrucks(function (success) {
+            if (success.data.status) {
+                $scope.trucks = success.data.trucks;
+            } else {
+                Notification.error(success.data.message);
+            }
+        }, function (error) {
+
+        });
+    }
+    getTruckIds();
 
     if ($stateParams.maintenanceId) {
         $scope.pagetitle = "Edit Maintenance";
@@ -151,32 +168,45 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         if (!params.date) {
             params.error.push('Invalid date');
         }
+        if (!params.shedName) {
+            params.error.push('Invalid Shedname');
+        }
+        if (!params.shedArea) {
+            params.error.push('Invalid Shed Area');
+        }
+        if (!params.paymentType) {
+            params.error.push('Invalid Payment Type');
+        }
         if (!_.isNumber(params.cost)) {
             params.error.push('Invalid cost');
         }
-        if ($stateParams.maintenanceId) {
-            MaintenanceService.updateRecord(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                } else {
-                    params.error = success.data.message;
-                }
-                $scope.goToMaintenancePage();
+        if (!params.error.length) {
+            if ($stateParams.maintenanceId) {
+                MaintenanceService.updateRecord(params, function (success) {
+                    if (success.data.status) {
+                        // params.success = success.data.message[0];
+                        Notification.success({message: success.data.message});
+                    } else {
+                        params.error = success.data.message;
+                    }
+                    $scope.goToMaintenancePage();
 
-            }, function (err) {
-                console.log(err);
-            });
-        } else {
-            MaintenanceService.addMaintenance(params, function (success) {
-                if (success.data.status) {
-                    params.success = success.data.message;
-                    $state.go('maintenance');
-                } else {
-                    params.error = success.data.message;
-                }
+                }, function (err) {
+                    console.log(err);
+                });
+            } else {
+                MaintenanceService.addMaintenance(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        Notification.success({message: success.data.message});
+                        $state.go('maintenance');
+                    } else {
+                        params.error = success.data.message;
+                    }
 
-            }, function (err) {
-            });
+                }, function (err) {
+                });
+            }
         }
     }
 }]);
