@@ -192,7 +192,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
             retObj.message = 'Success';
             retObj.count = results.count;
             retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
-            callback(result);
+            callback(retObj);
         }
     });
 };
