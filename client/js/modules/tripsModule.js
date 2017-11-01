@@ -80,7 +80,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             field: 'date'
         }, {
             name: 'Registration No',
-            field: 'registrationNo'
+            field: 'attrs.truckName'
         },{
             name: 'Driver',
             field: 'attrs.fullName'
@@ -183,6 +183,18 @@ app.controller('AddEditTripCtrl', ['$scope','$state', 'Utils', 'TripServices','D
 
         });
     }
+    function getTruckIds() {
+        DriverService.getAllTrucks(function (success) {
+            if (success.data.status) {
+                $scope.trucks = success.data.trucks;
+            } else {
+                Notification.error(success.data.message);
+            }
+        }, function (error) {
+
+        });
+    }
+    getTruckIds();
     getDrivers();
     getParties();
     getTripLanes();

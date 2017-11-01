@@ -6,6 +6,7 @@ var UsersColl = require('./../models/schemas').UsersColl;
 var DriversColl = require('./../models/schemas').DriversColl;
 var PartyColl = require('./../models/schemas').PartyCollection;
 var TripLaneColl = require('./../models/schemas').TripLanesCollection;
+var TrucksColl = require('./../models/schemas').TrucksColl;
 
 var Utils = function () {
 };
@@ -168,6 +169,37 @@ Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulat
                     item.attrs = {};
                 }
                 item.attrs.tripLaneName = tripLane.name;
+            }
+        }
+        result.status = true;
+        result.message = 'Error retrieving names';
+        result.documents = documents;
+        result.err = err;
+        callback(result);
+    });
+};
+
+Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    TrucksColl.find({'_id': {$in: ids}}, {"registrationNo": 1}, function (err, names) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving Trucks';
+            result.err = err;
+            callback(result);
+        }
+        console.log('names==>',names);
+        for (var i = 0; i < documents.length; i++) {
+            var item = documents[i];
+            var Trucks = _.find(names, function (users) {
+                return users._id.toString() === item[fieldTopopulate].toString();
+            });
+            if (Trucks) {
+                if (!item.attrs) {
+                    item.attrs = {};
+                }
+                item.attrs.truckName = Trucks.registrationNo;
             }
         }
         result.status = true;

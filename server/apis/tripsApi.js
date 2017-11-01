@@ -152,6 +152,11 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                             Helpers.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
                                 triplaneCallback(response.err, response.documents);
                             });
+                        },
+                        truckNo: function (truckscallback) {
+                            Helpers.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                                truckscallback(response.err, response.documents);
+                            })
                         }
                     }, function (populateErr, populateResults) {
                         tripsCallback(populateErr, populateResults);
