@@ -29,8 +29,10 @@
         <div class="clearfix"></div>
 
         <div class="col-xs-10 col-xs-push-1">
-            <div class="alert alert-danger" role="alert" ng-show="loginParams.error">
-                <strong>{{loginParams.error}}</strong>
+            <div class="alert alert-danger" role="alert" ng-show="loginParams.errors.length">
+                <ul>
+                    <li ng-repeat="error in loginParams.errors">{{error}}</li>
+                </ul>
             </div>
         </div>
         <div class="clearfix"></div>

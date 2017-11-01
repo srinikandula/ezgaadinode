@@ -7,23 +7,27 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
         accountName: '',
         userName: '',
         password: '',
-        error: '',
-        success: ''
+        errors: []
     };
 
     $scope.login = function () {
         var params = $scope.loginParams;
-        params.success = '';
-        params.error = '';
+        params.errors = [];
 
         if (!params.accountName) {
-            params.error = 'Invalid account Name';
-        } else if (!params.userName) {
-            params.error = 'Invalid user name';
-        } else if (!Utils.isValidPassword(params.password)) {
-            params.error = 'Password length should be atleast 8';
-        } else {
-            // http call
+            params.errors.push('Invalid account Name');
+        }
+
+        if (!params.userName) {
+            params.errors.push('Invalid user name');
+        }
+
+        if (!Utils.isValidPassword(params.password)) {
+            params.errors.push('Password length should be at least 8');
+        }
+
+
+        if(!params.errors.length) {
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
                     $cookies.put('token', success.data.token);
@@ -31,7 +35,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('firstName', success.data.firstName);
                     $state.go('accounts');
                 } else {
-                    params.error = success.data.message;
+                    params.errors = success.data.messages;
                 }
             }, function (error) {
             });
