@@ -28,7 +28,7 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
         callback(result);
     } else if (!maintenanceDetails.cost || _.isNaN(maintenanceDetails.cost)) {
         result.status = false;
-        result.message = "Please provide valid model and year";
+        result.message = "Please provide valid cost";
         callback(result);
     } else {
 

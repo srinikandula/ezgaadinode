@@ -45,13 +45,6 @@ AuthRouter.get('/getUser/:userId', function (req, res) {
     })
 });
 
-AuthRouter.post('/getUserNames', function (req, res) {
-    Users.getUserNames(req.body, function (result) {
-        console.log(" usernames " + result);
-        res.send(result)
-    })
-});
-
 AuthRouter.delete('/deleteUSer/:id', function (req, res) {
     Users.deleteUSer(req.params.id, function (result) {
         res.send(result);

@@ -51,14 +51,18 @@ Roles.prototype.addRole = function (jwt, roleDetails, callback) {
 };
 
 Roles.prototype.getRoles = function (pageNumber, callback) {
-    var result = {};
+    var result = {
+        status: false,
+        messages: []
+    };
+
     if (!pageNumber) {
         pageNumber = 1;
     } else if (!_.isNumber(Number(pageNumber))) {
-        result.status = false;
-        result.message = 'Invalid page number';
+        result.messages.push('Invalid page number');
         return callback(result);
     }
+
     var skipNumber = (pageNumber - 1) * pageLimits.rolesPaginationLimit;
     async.parallel({
         roles: function (accountsCallback) {
@@ -76,7 +80,6 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
                             accountsCallback(err, null);
                         }
                     });
-                    // accountsCallback(err, roles);
                 });
         },
         count: function (countCallback) {
@@ -86,12 +89,11 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
         }
     }, function (err, results) {
         if (err) {
-            result.status = false;
-            result.message = 'Error retrieving roles';
+            result.messages.push('Error retrieving roles');
             callback(result);
         } else {
             result.status = true;
-            result.message = 'Success';
+            result.messages.push('Success');
             result.count = results.count;
             result.roles = results.roles;
             callback(result);
@@ -100,15 +102,17 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
 };
 
 Roles.prototype.getAllRoles = function (callback) {
-    var result = {};
+    var result = {
+        status: false,
+        messages: []
+    };
     RolesColl.find({},{roleName:1},function (err, roles) {
         if (err) {
-            result.status = false;
-            result.message = 'Error getting roles';
+            result.messages.push('Error getting roles');
             callback(result);
         } else {
             result.status = true;
-            result.message = 'Success';
+            result.messages.push('Success');
             result.roles = roles;
             callback(result);
         }
