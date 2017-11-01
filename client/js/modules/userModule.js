@@ -104,6 +104,7 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
         UserServices.getUser($stateParams.userId, function (success) {
             if (success.data.status) {
                 $scope.userDetails = success.data.user;
+                console.log('$scope.userDetails',$scope.userDetails);
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -117,6 +118,7 @@ app.controller('userEditController', ['$scope', 'UserServices', 'RoleServices', 
         RoleServices.getAllRoles(function (success) {
             if (success.data.status) {
                 $scope.roles = success.data.roles;
+                console.log('roles',$scope.roles);
             } else {
                 success.data.messages.forEach(function(message) {
                     Notification.error({message: message});
