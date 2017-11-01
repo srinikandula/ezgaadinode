@@ -86,7 +86,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'trucks'},
         params: {
             access: 'open',
-            truckId:null
+            truckId: null
         },
         controller: 'AddEditTruckCtrl'
     }).state({
@@ -177,11 +177,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     });
     $urlRouterProvider.otherwise('/login');
 });
-app.config(function(NotificationProvider) {
+app.config(function (NotificationProvider) {
     NotificationProvider.setOptions({
-        delay:3000,
+        delay: 3000,
         startTop: 150,
-        startRight:500,
+        startRight: 500,
         verticalSpacing: 20,
         horizontalSpacing: 20,
         positionX: 'center',
@@ -193,6 +193,6 @@ app.run(function ($transitions, $rootScope) {
     $transitions.onSuccess({to: '*'}, function (to) {
 
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
-        console.log('to', $rootScope.activeTab)
+
     });
 });
