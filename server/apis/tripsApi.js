@@ -214,6 +214,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                 TripCollection.count(function (err, count) {
                     countCallback(err, count);
                 });
+
             }
         }, function (err, results) {
             if (err) {
