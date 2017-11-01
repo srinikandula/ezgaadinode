@@ -184,14 +184,14 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
         }
     }, function (err, results) {
         if (err) {
-            result.status = false;
-            result.message = 'Error retrieving trucks';
-            callback(result);
+            retObj.status = false;
+            retObj.message = 'Error retrieving trucks';
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.count = results.count;
-            result.trucks = results.trucks.createdbyname; //trucks is callby reference
+            retObj.status = true;
+            retObj.message = 'Success';
+            retObj.count = results.count;
+            retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
             callback(result);
         }
     });
