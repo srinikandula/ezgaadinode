@@ -96,7 +96,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
                 retObj.messages.push("Error while adding trip, try Again");
                 callback(retObj);
             } else {
-                retObj.status = false;
+                retObj.status = true;
                 retObj.messages.push("Trip Added Successfully");
                 callback(retObj);
             }
