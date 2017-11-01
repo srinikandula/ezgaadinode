@@ -39,7 +39,7 @@ Users.prototype.addUser = function (jwt, regDetails, callback) {
     if (!regDetails.password) {
         errors.push("Please provide valid password");
     }
-    if(errors.length){
+    if (errors.length) {
         retObj.status = false;
         retObj.message = errors;
         callback(retObj);
@@ -73,40 +73,44 @@ Users.prototype.addUser = function (jwt, regDetails, callback) {
             }
         });
     }
-    // }
 };
 
 Users.prototype.login = function (userName, accountName, password, callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!_.isString(userName)) {
-        result.status = false;
-        result.message = 'Please type the username';
-        callback(result);
-    } else if (!_.isString(accountName)) {
-        result.status = false;
-        result.message = 'Please type the account name';
-        callback(result);
-    } else if (!_.isString(password) || !password.length) {
-        result.status = false;
-        result.message = 'Please type the password';
-        callback(result);
+        retObj.messages.push('Please provide the username');
+    }
+
+    if (!_.isString(accountName)) {
+        retObj.messages.push('Please provide account name');
+    }
+
+    if (!Utils.isValidPassword(password)) {
+        retObj.messages.push('Please provide valid password');
+    }
+
+    if (retObj.messages.length) {
+        return callback(retObj);
     } else {
         var query = {
             userName: userName
         };
+
         UsersColl
             .findOne(query)
             .populate('accountId')
             .exec(function (err, user) {
                 console.log(err, user);
                 if (err) {
-                    result.status = false;
-                    result.message = "Error, try again!";
-                    callback(result);
+                    retObj.messages.push('Error finding user');
+                    callback(retObj);
                 } else if (!user) {
-                    result.status = false;
-                    result.message = "User doesn't exist";
-                    callback(result);
+                    retObj.messages.push("User doesn't exist");
+                    callback(retObj);
                 } else if ((user.password === password) && user.accountId && (user.accountId.name === accountName)) {
                     jwt.sign({
                         id: user._id,
@@ -116,22 +120,20 @@ Users.prototype.login = function (userName, accountName, password, callback) {
                         role: user.role
                     }, config.jwt.secret, config.jwt.options, function (err, token) {
                         if (err) {
-                            result.status = false;
-                            result.message = 'Please try again';
-                            callback(result);
+                            retObj.messages.push('Please try again');
+                            callback(retObj);
                         } else {
-                            result.status = true;
-                            result.message = "Success";
-                            result.role = user.role;
-                            result.token = token;
-                            result.firstName = user.firstName;
-                            callback(result);
+                            retObj.status = true;
+                            retObj.messages = ["Success"];
+                            retObj.role = user.role;
+                            retObj.token = token;
+                            retObj.firstName = user.firstName;
+                            callback(retObj);
                         }
                     });
                 } else {
-                    result.status = false;
-                    result.message = "Invalid Credentials";
-                    callback(result);
+                    retObj.messages.push("Invalid Credentials");
+                    callback(retObj);
                 }
             });
     }
@@ -143,9 +145,9 @@ Users.prototype.update = function (jwt, user, callback) {
     user = Utils.removeEmptyFields(user);
     user.updatedBy = jwt.id;
     user.accountId = jwt.accountId;
-    UsersColl.findOneAndUpdate({_id: user._id},{$set:user}).exec(function (err, savedUser) {
-        console.log('err',err);
-        console.log('savedUser',savedUser);
+    UsersColl.findOneAndUpdate({_id: user._id}, {$set: user}).exec(function (err, savedUser) {
+        console.log('err', err);
+        console.log('savedUser', savedUser);
         if (err) {
             result.status = false;
             result.message = ["Error, updating user"];
@@ -199,7 +201,7 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
                 .lean()
                 .exec(function (err, users) {
                     Utils.populateNameInUsersColl(users, "createdBy", function (response) {
-                        if(response.status) {
+                        if (response.status) {
                             accountsCallback(err, response.documents);
                         } else {
                             accountsCallback(err, null);
@@ -230,7 +232,7 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
 
 Users.prototype.getUser = function (id, callback) {
     var result = {};
-    UsersColl.findOne({_id:id},function (err, user) {
+    UsersColl.findOne({_id: id}, function (err, user) {
         if (err) {
             result.status = false;
             result.message = 'Error getting user';
@@ -247,7 +249,7 @@ Users.prototype.getUser = function (id, callback) {
 
 Users.prototype.getUserNames = function (ids, callback) {
     var result = {};
-    UsersColl.find({'_id':{$in: ids}},{"userName":1},function (err, userNames) {
+    UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
         if (err) {
             result.status = false;
             result.message = 'Error getting user names';
