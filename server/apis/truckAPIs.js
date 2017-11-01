@@ -24,75 +24,86 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
     // truckDetails.pollutionExpiry = new Date(truckDetails.pollutionExpiry);
     // truckDetails.taxDueDate = new Date(truckDetails.taxDueDate);
     // console.log(truckDetails);
-    var result = {};
+
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
-        result.status = false;
-        result.message = "Please fill all the required truck details";
-        callback(result);
-    } else if (!truckDetails.registrationNo || !_.isString(truckDetails.registrationNo)) {
-        result.status = false;
-        result.message = "Please provide valid registration number";
-        callback(result);
-    } else if (!truckDetails.truckType || !_.isString(truckDetails.truckType)) {
-        result.status = false;
-        result.message = "Please provide valid Truck type";
-        callback(result);
+        retObj.messages.push("Please fill all the required truck details");
+    }
+
+    if (!truckDetails.registrationNo || !_.isString(truckDetails.registrationNo)) {
+        retObj.messages.push("Please provide valid registration number");
+    }
+
+    if (!truckDetails.truckType || !_.isString(truckDetails.truckType)) {
+        retObj.messages.push("Please provide valid Truck type");
+    }
+
+
+    if(retObj.messages.length) {
+        callback(retObj);
     } else {
         TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
             if (err) {
-                result.status = false;
-                result.message = "Error, try again!";
-                callback(result);
+                retObj.messages.push("Error, try again!");
+                callback(retObj);
             } else if (truck && truck.length > 0) {
-                result.status = false;
-                result.message = "Truck already exists";
-                callback(result);
+                retObj.messages.push("Truck already exists");
+                callback(retObj);
             } else {
                 truckDetails.createdBy = jwt.id;
                 truckDetails.updatedBy = jwt.id;
                 truckDetails.accountId = jwt.accountId;
+
                 var truckDoc = new TrucksColl(truckDetails);
                 truckDoc.save(function (err, truck) {
-                    console.log(err);
                     if (err) {
-                        result.status = false;
-                        result.message = "Error while adding truck, try Again";
-                        callback(result);
+                        retObj.messages.push("Error while adding truck, try Again");
+                        callback(retObj);
                     } else {
-                        result.status = true;
-                        result.message = "Truck Added Successfully";
-                        result.truck = truck;
-                        callback(result);
+                        retObj.status = true;
+                        retObj.messages.push("Truck Added Successfully");
+                        retObj.truck = truck;
+                        callback(retObj);
                     }
                 });
             }
-        })
+        });
     }
 };
 
 Trucks.prototype.findTruck = function (jwt, truckId, callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     TrucksColl.findOne({_id: truckId, accountId: jwt.accountId}, function (err, truck) {
         if (err) {
-            result.status = false;
-            result.message = "Error while finding truck, try Again";
-            callback(result);
+            retObj.messages.push("Error while finding truck, try Again");
+            callback(retObj);
         } else if (truck) {
-            result.status = true;
-            result.message = "Truck found successfully";
-            result.truck = truck;
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push("Truck found successfully");
+            retObj.truck = truck;
+            callback(retObj);
         } else {
-            result.status = false;
-            result.message = "Truck is not found!";
-            callback(result);
+            retObj.messages.push("Truck is not found!");
+            callback(retObj);
         }
     });
 };
 
 
 Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     TrucksColl.findOneAndUpdate({registrationNo: truckDetails.registrationNo},
         {
             $set: {
@@ -110,31 +121,29 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
         },
         {new: true}, function (err, truck) {
             if (err) {
-                result.status = false;
-                result.message = "Error while updating truck, try Again";
-                callback(result);
+                retObj.messages.push("Error while updating truck, try Again");
+                callback(retObj);
             } else if (truck) {
-                result.status = true;
-                result.message = "Truck updated successfully";
-                result.truck = truck;
-                callback(result);
+                retObj.status = true;
+                retObj.messages.push("Truck updated successfully");
+                retObj.truck = truck;
+                callback(retObj);
             } else {
-                result.status = false;
-                result.message = "Error, finding truck";
-                callback(result);
+                retObj.status = false;
+                retObj.message.push("Error, finding truck");
+                callback(retObj);
             }
         });
 };
 
 Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
-    console.log('pageNumber', pageNumber);
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     if (!pageNumber) {
         pageNumber = 1;
-    } else if (!_.isNumber(Number(pageNumber))) {
-        result.status = false;
-        result.message = 'Invalid page number';
-        return callback(result);
     }
 
     var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
@@ -166,7 +175,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                     },function (populateErr, populateResults) {
                         trucksCallback(populateErr, populateResults);
                     });
-                });
+            })
         },
         count: function (countCallback) {
             TrucksColl.count({accountId: accountId}, function (err, count) {
@@ -208,16 +217,19 @@ Trucks.prototype.getAllTrucks = function (callback) {
 };
 
 Trucks.prototype.deleteTruck = function (truckId, callback) {
-    var result = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     TrucksColl.remove({_id: truckId}, function (err) {
         if (err) {
-            result.status = false;
-            result.message = 'Error deleting truck';
-            callback(result);
+            retObj.messages.push('Error deleting truck');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            callback(retObj);
         }
     });
 };

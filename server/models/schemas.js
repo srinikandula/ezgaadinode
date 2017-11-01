@@ -158,6 +158,5 @@ module.exports = {
     PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
-    DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     Roles: mongoose.model('roles', rolesSchema, 'roles')
 };
