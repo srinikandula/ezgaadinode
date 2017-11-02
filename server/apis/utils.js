@@ -63,27 +63,32 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
             result.message = 'Error retrieving users';
             result.err = err;
             callback(result);
-        }
-        for (var i = 0; i < documents.length; i++) {
-            var item = documents[i];
-            // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
-            if(item.createdBy) {
-                var user = _.find(names, function (users) {
-                    return users._id.toString() === item.createdBy.toString();
-                });
-                if (user) {
-                    if (!item.attrs) {
-                        item.attrs = {};
+        } else {
+            var item;
+
+            for (var i = 0; i < documents.length; i++) {
+                item = documents[i];
+                // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
+                if(item.createdBy) {
+                    var user = _.find(names, function (users) {
+                        return users._id.toString() === item.createdBy.toString();
+                    });
+
+                    if (user) {
+                        if (!item.attrs) {
+                            item.attrs = {};
+                        }
+                        item.attrs.createdByName = user.userName;
                     }
-                    item.attrs.createdByName = user.userName;
                 }
             }
+
+            result.status = true;
+            result.message = 'Error retrieving users';
+            result.err = err;
+            result.documents = documents;
+            callback(result);
         }
-        result.status = true;
-        result.message = 'Error retrieving users';
-        result.err = err;
-        result.documents = documents;
-        callback(result);
     });
 };
 
@@ -131,24 +136,25 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
             result.message = 'Error retrieving names';
             result.err = err;
             callback(result);
-        }
-        for (var i = 0; i < documents.length; i++) {
-            var item = documents[i];
-            var party = _.find(names, function (users) {
-                return users._id.toString() === item.bookedFor.toString();
-            });
-            if (party) {
-                if (!item.attrs) {
-                    item.attrs = {};
+        } else {
+            for (var i = 0; i < documents.length; i++) {
+                var item = documents[i];
+                var party = _.find(names, function (users) {
+                    return users._id.toString() === item.bookedFor.toString();
+                });
+                if (party) {
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs.partyName = party.name;
                 }
-                item.attrs.partyName = party.name;
             }
+            result.status = true;
+            result.message = 'Error retrieving names';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
         }
-        result.status = true;
-        result.message = 'Error retrieving names';
-        result.documents = documents;
-        result.err = err;
-        callback(result);
     });
 };
 
