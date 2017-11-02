@@ -10,7 +10,7 @@ var pageLimits = require('./../config/pagination');
 var Drivers = function () {
 };
 
-Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
+Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -41,8 +41,8 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        driverInfo.createdBy = jwtObj.id;
-        driverInfo.accountId = jwtObj.accountId;
+        driverInfo.createdBy = jwt.id;
+        driverInfo.accountId = jwt.accountId;
         driverInfo.mobile = Number(driverInfo.mobile);
         var today = new Date();
         driverInfo.driverId = "DR" + parseInt((Math.random() * 100000)); // Need to fix this
@@ -84,6 +84,7 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
                         retObj.status = true;
                         retObj.messages.push('Success');
                         retObj.driver = newDoc;
+                        Utils.cleanUpTruckDriverAssignment(jwt, newDoc.truckId, newDoc._id);
                         callback(retObj);
                     }
                 });
@@ -92,7 +93,7 @@ Drivers.prototype.addDriver = function (jwtObj, driverInfo, callback) {
     }
 };
 
-Drivers.prototype.getDriverByPageNumber = function (pageNum, callback) {
+Drivers.prototype.getDriverByPageNumber = function (jwt, pageNum, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -111,7 +112,7 @@ Drivers.prototype.getDriverByPageNumber = function (pageNum, callback) {
         async.parallel({
             drivers: function (driversCallback) {
                 DriversColl
-                    .find({})
+                    .find({"accountId": jwt.accountId})
                     .sort({createdAt: 1})
                     .skip(skipNumber)
                     .limit(pageLimits.driverPaginationLimit)
@@ -148,7 +149,7 @@ Drivers.prototype.getDriverByPageNumber = function (pageNum, callback) {
     }
 };
 
-Drivers.prototype.getDriverDetails = function (driverId, callback) {
+Drivers.prototype.getDriverDetails = function (jwt, driverId, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -161,7 +162,7 @@ Drivers.prototype.getDriverDetails = function (driverId, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        DriversColl.findOne({_id: driverId}, function (err, driver) {
+        DriversColl.findOne({_id: driverId, accountId: jwt.accountId}, function (err, driver) {
             if (err) {
                 retObj.messages.push('Error retrieving driver');
                 callback(retObj);
@@ -178,7 +179,7 @@ Drivers.prototype.getDriverDetails = function (driverId, callback) {
     }
 };
 
-Drivers.prototype.updateDriver = function (jwtObj, driverInfo, callback) {
+Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -191,7 +192,7 @@ Drivers.prototype.updateDriver = function (jwtObj, driverInfo, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        driverInfo.updatedBy = jwtObj.id;
+        driverInfo.updatedBy = jwt.id;
         driverInfo.mobile = Number(driverInfo.mobile);
 
         DriversColl.find({
@@ -212,6 +213,7 @@ Drivers.prototype.updateDriver = function (jwtObj, driverInfo, callback) {
                         retObj.status = true;
                         retObj.messages.push('Success');
                         retObj.driver = oldDriver;
+                        Utils.cleanUpTruckDriverAssignment(jwt, oldDriver.truckId, oldDriver._id);
                         callback(retObj);
                     } else {
                         retObj.messages.push('Driver does\'t exist');
@@ -240,7 +242,7 @@ Drivers.prototype.updateDriver = function (jwtObj, driverInfo, callback) {
         });
     }
 };
-
+/*
 Drivers.prototype.getAllDrivers = function (callback) {
     var retObj = {
         status: false,
@@ -259,6 +261,7 @@ Drivers.prototype.getAllDrivers = function (callback) {
         }
     });
 };
+*/
 
 Drivers.prototype.getAccountDrivers = function (accountId, callback) {
     var retObj = {

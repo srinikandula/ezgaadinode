@@ -7,19 +7,7 @@ app.factory('DriverService', function ($http) {
                 data: driverInfo
             }).then(success, error)
         },
-        getAllTrucks: function (success, error) {
-            $http({
-                url: '/v1/trucks',
-                method: "GET"
-            }).then(success, error)
-        },
         getAllDrivers: function (success, error) {
-            $http({
-                url: '/v1/drivers',
-                method: "GET"
-            }).then(success, error)
-        },
-        getAccountDrivers: function (success, error) {
             $http({
                 url: '/v1/drivers/account/drivers',
                 method: "GET"
@@ -184,7 +172,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     }
 
     function getTruckIds() {
-        DriverService.getAllTrucks(function (success) {
+        TrucksService.getAccountTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             } else {
