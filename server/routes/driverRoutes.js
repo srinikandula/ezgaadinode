@@ -11,13 +11,13 @@ AuthRouter.post('/', function (req, res) {
 });
 
 AuthRouter.get('/:pageNumber', function (req, res) {
-    Drivers.getDriverByPageNumber(req.params.pageNumber, function (result) {
+    Drivers.getDriverByPageNumber(req.jwt, req.params.pageNumber, function (result) {
         res.json(result);
     });
 });
 
 AuthRouter.get('/get/:driverId', function (req, res) {
-    Drivers.getDriverDetails(req.params.driverId, function (result) {
+    Drivers.getDriverDetails(req.jwt, req.params.driverId, function (result) {
         res.json(result);
     });
 });
@@ -27,11 +27,14 @@ AuthRouter.put('/', function (req, res) {
         res.json(result);
     });
 });
+
+/*
 AuthRouter.get('/', function (req, res) {
     Drivers.getAllDrivers(function (result) {
         res.json(result);
     });
 });
+*/
 
 AuthRouter.get('/account/drivers', function (req, res) {
     Drivers.getAccountDrivers(req.jwt.accountId, function (result) {

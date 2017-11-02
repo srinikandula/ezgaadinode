@@ -68,6 +68,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
                         retObj.status = true;
                         retObj.messages.push("Truck Added Successfully");
                         retObj.truck = truck;
+                        Utils.prototype.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
                         callback(retObj);
                     }
                 });
@@ -128,6 +129,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
                 retObj.status = true;
                 retObj.messages.push("Truck updated successfully");
                 retObj.truck = truck;
+                Helpers.cleanUpTruckDriverAssignment(jwt, truck._id.toString(), truck.driverId)
                 callback(retObj);
             } else {
                 retObj.status = false;
@@ -164,13 +166,8 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
                             });
                         },
                         driversname: function (driversnameCallback) {
-                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'fullName', function (driver) {
+                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName','mobile'], function (driver) {
                                 driversnameCallback(driver.err, driver.documents);
-                            });
-                        },
-                        driversmobile: function (driversmobileCallback) {
-                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', 'mobile', function (mobile) {
-                                driversmobileCallback(mobile.err, mobile.documents);
                             });
                         }
                     },function (populateErr, populateResults) {
@@ -198,6 +195,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
     });
 };
 
+/*
 Trucks.prototype.getAllTrucks = function (callback) {
     var retObj = {
         status: false,
@@ -216,6 +214,7 @@ Trucks.prototype.getAllTrucks = function (callback) {
         }
     });
 };
+*/
 
 Trucks.prototype.deleteTruck = function (truckId, callback) {
     var retObj = {

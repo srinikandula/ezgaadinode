@@ -150,7 +150,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
 
     function getAccountDrivers() {
-        DriverService.getAccountDrivers(function (success) {
+        DriverService.getAllDrivers(function (success) {
             if (success.data.status) {
                 $scope.drivers = success.data.drivers;
             } else {
