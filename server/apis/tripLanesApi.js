@@ -118,7 +118,7 @@ TripLanes.prototype.getTripLanes = function (jwt, req, pageNumber, callback) {
     async.parallel({
         triplanes: function (accountsCallback) {
             TripLanesCollection
-                .find({})
+                .find({'accountId':jwt.accountId})
                 .sort({createdAt: 1})
                 .skip(skipNumber)
                 .limit(pageLimits.triplanesPaginationLimit)
@@ -134,7 +134,7 @@ TripLanes.prototype.getTripLanes = function (jwt, req, pageNumber, callback) {
                 });
         },
         count: function (countCallback) {
-            TripLanesCollection.count(function (err, count) {
+            TripLanesCollection.count({'accountId':jwt.accountId},function (err, count) {
                 countCallback(err, count);
             });
         }

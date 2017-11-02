@@ -22,7 +22,7 @@ AuthRouter.put('/', function (req, res) {
 });
 
 AuthRouter.get('/get/accountParties', function (req, res) {
-    Party.getAccountParties(req.jwt.accountId, function (result) {
+    Party.getAccountParties(req.jwt, function (result) {
         res.send(result);
     });
 });
