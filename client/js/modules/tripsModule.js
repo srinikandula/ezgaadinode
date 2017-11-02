@@ -127,7 +127,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 }]);
 
 
-app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification) {
+app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification','TrucksService', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService) {
     $scope.pagetitle = "Add Trip";
 
     $scope.drivers = [];
@@ -143,7 +143,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         advance: '',
         tripLane: '',
         tripExpenses: '',
-        bookLoad: '',   //new...
         dieselAmount: '',   //new...
         tollgateAmount: '', //new..
         from: '',    //new...
@@ -203,7 +202,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     function getTruckIds() {
-        DriverService.getAllTrucks(function (success) {
+        TrucksService.getAccountTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             } else {

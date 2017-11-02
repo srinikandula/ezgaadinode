@@ -81,7 +81,6 @@ var tripSchema = new mongoose.Schema({
     freightAmount: Number,
     advance: Number,
     balance: Number,
-    bookLoad: Number,   //new
     dieselAmount: Number,   //new
     tollgateAmount: Number, //new
     from: String,    //new
