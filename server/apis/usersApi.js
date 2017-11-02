@@ -192,7 +192,7 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
         pageNumber = 1;
     } else if (!_.isNumber(Number(pageNumber))) {
         retObj.messages.push('Invalid page number');
-        return callback(result);
+        return callback(retObj);
     }
 
     var skipNumber = (pageNumber - 1) * pageLimits.usersPaginationLimit;
