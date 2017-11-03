@@ -31,6 +31,13 @@ app.factory('TripServices', function ($http) {
                 url: '/v1/trips/' + tripId,
                 method: "DELETE"
             }).then(success, error)
+        },
+        addPayment: function (paymentdetails, success, error) {
+            $http({
+                url: '/v1/payments',
+                method: "PUT",
+                data: paymentdetails
+            }).then(success, error)
         }
     }
 });
@@ -223,12 +230,13 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.calculateBalance = function () {
         $scope.trip.balance = $scope.trip.freightAmount - $scope.trip.advance;
     };
-    if ($stateParams.tripId) {
-        $scope.pagetitle = "Edit Trip";
+    $scope.getTrip = function () {
         TripServices.getTrip($stateParams.tripId, function (success) {
             if (success.data.status) {
                 $scope.trip = success.data.trip;
                 $scope.trip.date = new Date($scope.trip.date);
+                $scope.trip.paymentHistory.paymentDate = new Date($scope.trip.paymentHistory.paymentDate);
+                $scope.paymentGridOptions.data = $scope.trip.paymentHistory;
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -236,7 +244,81 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             }
         }, function (err) {
         })
+    };
+    $scope.showHistory = false;
+    if ($stateParams.tripId) {
+        $scope.showHistory = true;
+        $scope.pagetitle = "Edit Trip";
+        $scope.getTrip();
     }
+
+    $scope.paymentFlag = false;
+    $scope.addPaymentFlag = function () {
+        $scope.paymentFlag = !$scope.paymentFlag;
+    };
+
+    $scope.paymentDetails = {
+        tripId: '',
+        paymentDate: '',
+        amount: '',
+        paymentType: '',
+        errors: [],
+        success: []
+    };
+
+    $scope.addTripPayment = function () {
+        var params = $scope.paymentDetails;
+        params.errors = [];
+        params.success = [];
+
+        if (!params.paymentDate) {
+            params.errors.push('Please Add Payment Date');
+        }
+        if (!params.amount) {
+            params.errors.push('Please Add Amount');
+        }
+        if (!params.paymentType) {
+            params.errors.push('Please Add Payment Type');
+        }
+        if(!params.errors.length){
+            $scope.paymentDetails.tripId = $scope.trip._id;
+            TripServices.addPayment($scope.paymentDetails, function (success) {
+                console.log(success.data);
+                if(success.data.status) {
+                    Notification.success({message: 'Payment added successfully'});
+                    $scope.getTrip();
+                } else {
+                    params.errors = success.data.messages;
+                }
+            },function (err) {
+            });
+        }
+    };
+
+    $scope.paymentGridOptions = {
+        enableSorting: true,
+        paginationPageSizes: [9, 20, 50],
+        paginationPageSize: 9,
+        columnDefs: [{
+            name: 'Date',
+            field: 'paymentDate',
+            cellFilter: 'date:"dd-MM-yyyy"'
+        }, {
+            name: 'Added By',
+            field: 'attrs.createdByName'
+        }, {
+            name: 'Amount',
+            field: 'amount'
+        }, {
+            name: 'Payment Type',
+            field: 'paymentType'
+        }],
+        rowHeight: 30,
+        data: [],
+        onRegisterApi: function (gridApi) {
+            $scope.gridApi = gridApi;
+        }
+    };
 
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;

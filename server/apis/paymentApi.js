@@ -24,12 +24,14 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
         retObj.messages.push('please provide payment date');
     }
     if(!paymentDetails.amount) {
-        retObj.push('please provide amount');
+        retObj.messages.push('please provide amount');
     }
     if(!paymentDetails.paymentType) {
-        retObj.push('please provide payment type');
+        retObj.messages.push('please provide payment type');
     }
-    if(!retObj.messages.length) {
+    if(retObj.messages.length) {
+        callback(retObj);
+    } else {
         paymentDetails = Utils.removeEmptyFields(paymentDetails);
         paymentDetails.accountId = jwt.accountId;
         paymentDetails.updatedBy = jwt.id;
@@ -47,6 +49,7 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
             }
         });
     }
+
 };
 
 Payments.prototype.getPaymentsOfTrip = function (accountId, tripId, callback) {
@@ -54,15 +57,17 @@ Payments.prototype.getPaymentsOfTrip = function (accountId, tripId, callback) {
         status: false,
         messages: []
     };
-    PaymentsColl.find({tripId:tripId, accountId:accountId}, function (err, payments) {
+    PaymentsColl.find({tripId:tripId, accountId:accountId}, {createdAt:0,updatedAt:0}, function (err, payments) {
         if(err){
             retObj.messages.push('Error while finding payment, try again');
             callback(retObj);
         } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.payments = payments;
-            callback(retObj);
+            Utils.populateNameInUsersColl(payments, "createdBy", function (response) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.payments = payments;
+                callback(retObj);
+            });
         }
     });
 };
