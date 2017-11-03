@@ -95,6 +95,7 @@ var tripSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String,
+    paymentHistory: [],
     attrs: {}
 }, {timestamps: true});
 
@@ -160,6 +161,16 @@ var rolesSchema = new mongoose.Schema({
     attrs: {}
 },{timestamps: true});
 
+var payments = new mongoose.Schema({
+    tripId: String,
+    accountId: String,
+    paymentDate: Date,
+    amount: Number,
+    paymentType: String,
+    updatedBy: String,
+    createdBy: String,
+    attrs: {}
+},{timestamps: true});
 
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
@@ -170,5 +181,6 @@ module.exports = {
     PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
-    Roles: mongoose.model('roles', rolesSchema, 'roles')
+    Roles: mongoose.model('roles', rolesSchema, 'roles'),
+    PaymentsColl: mongoose.model('payments', payments, 'payments')
 };
