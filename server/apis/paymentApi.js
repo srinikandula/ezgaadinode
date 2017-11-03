@@ -25,10 +25,10 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
         retObj.messages.push('please provide payment date');
     }
     if(!paymentDetails.amount) {
-        retObj.push('please provide amount');
+        retObj.messages.push('please provide amount');
     }
     if(!paymentDetails.paymentType) {
-        retObj.push('please provide payment type');
+        retObj.messages.push('please provide payment type');
     }
     console.log('retObj1...',retObj);
     if(retObj.messages.length) {
