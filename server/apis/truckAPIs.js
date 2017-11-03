@@ -181,7 +181,7 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
             });
         }
     }, function (err, results) {
-        console.log('--->', err, results)
+        console.log('--->', err, results);
         if (err) {
             retObj.messages.push('Error retrieving trucks');
             callback(retObj);
