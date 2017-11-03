@@ -13,6 +13,7 @@ var Payments = function () {
 };
 
 Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
+    console.log('here...');
     var retObj = {
         status: false,
         messages: []
@@ -29,13 +30,17 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
     if(!paymentDetails.paymentType) {
         retObj.push('please provide payment type');
     }
-    if(!retObj.messages.length) {
+    console.log('retObj1...',retObj);
+    if(retObj.messages.length) {
+        callback(retObj);
+    } else {
         paymentDetails = Utils.removeEmptyFields(paymentDetails);
         paymentDetails.accountId = jwt.accountId;
         paymentDetails.updatedBy = jwt.id;
         paymentDetails.createdBy = jwt.id;
 
         var insertDoc = new PaymentsColl(paymentDetails);
+        console.log('here2...');
         insertDoc.save(function (err) {
             if(err){
                 retObj.messages.push('Error while adding payment, try again');
@@ -43,10 +48,12 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
             } else {
                 retObj.status = true;
                 retObj.messages.push('Payment added Succesfuly');
+                console.log('retObj2...',retObj);
                 callback(retObj);
             }
         });
     }
+
 };
 
 Payments.prototype.getPaymentsOfTrip = function (accountId, tripId, callback) {
@@ -54,15 +61,17 @@ Payments.prototype.getPaymentsOfTrip = function (accountId, tripId, callback) {
         status: false,
         messages: []
     };
-    PaymentsColl.find({tripId:tripId, accountId:accountId}, function (err, payments) {
+    PaymentsColl.find({tripId:tripId, accountId:accountId}, {createdAt:0,updatedAt:0}, function (err, payments) {
         if(err){
             retObj.messages.push('Error while finding payment, try again');
             callback(retObj);
         } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.payments = payments;
-            callback(retObj);
+            Utils.populateNameInUsersColl(payments, "createdBy", function (response) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.payments = payments;
+                callback(retObj);
+            });
         }
     });
 };
