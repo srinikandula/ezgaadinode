@@ -13,7 +13,6 @@ var Payments = function () {
 };
 
 Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
-    console.log('here...');
     var retObj = {
         status: false,
         messages: []
@@ -30,7 +29,6 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
     if(!paymentDetails.paymentType) {
         retObj.messages.push('please provide payment type');
     }
-    console.log('retObj1...',retObj);
     if(retObj.messages.length) {
         callback(retObj);
     } else {
@@ -40,7 +38,6 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
         paymentDetails.createdBy = jwt.id;
 
         var insertDoc = new PaymentsColl(paymentDetails);
-        console.log('here2...');
         insertDoc.save(function (err) {
             if(err){
                 retObj.messages.push('Error while adding payment, try again');
@@ -48,7 +45,6 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
             } else {
                 retObj.status = true;
                 retObj.messages.push('Payment added Succesfuly');
-                console.log('retObj2...',retObj);
                 callback(retObj);
             }
         });
