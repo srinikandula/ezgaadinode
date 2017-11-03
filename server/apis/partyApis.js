@@ -102,9 +102,9 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
         });
 };
 
-Party.prototype.getAccountParties = function (accountId, callback) {
+Party.prototype.getAccountParties = function (jwt, callback) {
     var result = {};
-    PartyCollection.find({accountId: accountId}, function (err, accountParties) {
+    PartyCollection.find({accountId: jwt.accountId}, function (err, accountParties) {
         if (err) {
             result.status = false;
             result.message = 'Error getting parties';

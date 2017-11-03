@@ -9,6 +9,12 @@ app.factory('PartyService', function ($http, $cookies) {
         },
         getParties: function (success, error) {
             $http({
+                url: '/v1/party/get/accountParties',
+                method: "GET"
+            }).then(success, error)
+        },
+        getAllParties: function (success, error) {
+            $http({
                 url: '/v1/party/get/all',
                 method: "GET"
             }).then(success, error)
@@ -59,12 +65,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
     $scope.pageNumber = 1;
 
     $scope.getParties = function () {
-        console.log('--==--');
         PartyService.getParties(function (success) {
-            console.log('--==--gotit', success);
             if (success.data.status) {
                 $scope.partyGridOptions.data = success.data.parties;
-                console.log('party...',$scope.partyGridOptions.data);
                 $scope.totalItems = success.data.count;
             } else {
                 Notification.error({message: success.data.message});

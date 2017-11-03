@@ -51,33 +51,6 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
     $scope.maxSize = 5;
     $scope.pageNumber = 1;
 
-    $scope.getTripLanesData = function () {
-        TripLaneServices.getTripLanes(function (success) {
-            console.log(success)
-            if (success.data.status) {
-                $scope.tripLaneGridOptions.data = success.data.tripLanes;
-                $scope.totalItems = success.data.count;
-            } else {
-                Notification.error({message: success.data.message});
-            }
-        }, function (err) {
-
-        });
-    };
-
-    $scope.getTripLanesData();
-
-    $scope.deleteTripLane = function (tripLaneId) {
-        TripLaneServices.deleteTripLane(tripLaneId, function (success) {
-            if (success) {
-                $scope.getTripLanesData();
-                Notification.error({message: "Trip Lane Deleted"});
-            } else {
-                console.log("Error in deleting")
-            }
-        });
-    };
-
     $scope.tripLaneGridOptions = {
         enableSorting: true,
         paginationPageSizes: [9, 20, 50],
@@ -113,11 +86,9 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'TripLaneServices', 
 
     $scope.getTripLanesData = function () {
         TripLaneServices.getTripLanes($scope.pageNumber, function (success) {
-            console.log(success);
             if (success.data.status) {
                 $scope.tripLaneGridOptions.data = success.data.tripLanes;
                 $scope.totalItems = success.data.count;
-                // console.log('---here---', success.data.tripLanes);
             } else {
                 Notification.error({message: success.data.message});
             }
