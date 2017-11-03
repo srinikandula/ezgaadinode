@@ -245,7 +245,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         }, function (err) {
         })
     };
+    $scope.showHistory = false;
     if ($stateParams.tripId) {
+        $scope.showHistory = true;
         $scope.pagetitle = "Edit Trip";
         $scope.getTrip();
     }
