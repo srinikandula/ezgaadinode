@@ -116,7 +116,7 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
             retObj.messages.push("Error while finding trip, try Again");
             callback(retObj);
         } else if (trip) {
-            paymentsApi.getPaymentsOfTrip(tripId, function (payments) {
+            paymentsApi.getPaymentsOfTrip(jwt.accountId, tripId, function (payments) {
                 if(!payments.status) {
                     retObj.messages.push("Error while finding trip payments, try Again");
                     callback(retObj);
@@ -195,7 +195,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                                 });
                             },
                             driversname: function (driversnameCallback) {
-                                Utils.populateNameInDriversCollmultiple(trips, 'driver', 'fullName', function (response) {
+                                Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName'], function (response) {
                                     driversnameCallback(response.err, response.documents);
                                 });
                             },

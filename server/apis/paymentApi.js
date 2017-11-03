@@ -12,7 +12,7 @@ var pageLimits = require('./../config/pagination');
 var Payments = function () {
 };
 
-Payments.prototype.addPayment = function (accountId, paymentDetails, callback) {
+Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -31,8 +31,9 @@ Payments.prototype.addPayment = function (accountId, paymentDetails, callback) {
     }
     if(!retObj.messages.length) {
         paymentDetails = Utils.removeEmptyFields(paymentDetails);
-        paymentDetails.updatedBy = accountId;
-        paymentDetails.createdBy = accountId;
+        paymentDetails.accountId = jwt.accountId;
+        paymentDetails.updatedBy = jwt.id;
+        paymentDetails.createdBy = jwt.id;
 
         var insertDoc = new PaymentsColl(paymentDetails);
         insertDoc.save(function (err) {
@@ -48,12 +49,12 @@ Payments.prototype.addPayment = function (accountId, paymentDetails, callback) {
     }
 };
 
-Payments.prototype.getPaymentsOfTrip = function (tripId, callback) {
+Payments.prototype.getPaymentsOfTrip = function (accountId, tripId, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    PaymentsColl.find({tripId:tripId}, function (err, payments) {
+    PaymentsColl.find({tripId:tripId, accountId:accountId}, function (err, payments) {
         if(err){
             retObj.messages.push('Error while finding payment, try again');
             callback(retObj);

@@ -101,17 +101,11 @@ Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fi
         return;
     }
     var conditions = {};
-// <<<<<<< 0e2bcfa7478c31924e2d5baee4de5d5259c37f10
     for(var fieldIndex =0; fieldIndex<fieldsToGet.length; fieldIndex++) {
         conditions[fieldsToGet[fieldIndex]] = 1;
     }
     console.log(truckDocuments,driverIds);
     DriversColl.find({'_id': {$in: driverIds}}, conditions, function (err, driverDocuments) {
-// =======
-//     conditions[fieldToGet] = 1;
-//     // console.log(documents,ids);
-//     DriversColl.find({'_id': {$in: ids}}, conditions, function (err, names) {
-// >>>>>>> commit nov03
         if (err) {
             result.status = false;
             result.message = 'Error retrieving names';

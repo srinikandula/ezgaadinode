@@ -4,13 +4,14 @@ var AuthRouter = express.Router();
 var payments = require('./../apis/paymentApi');
 
 AuthRouter.put('/', function (req, res) {
-    payments.addPayment(req.jwt.accountId, req.body, function (result) {
+    console.log('req.jwt',req.jwt);
+    payments.addPayment(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/:tripId', function (req, res) {
-    payments.getPaymentsOfTrip(req.params.tripId, function (result) {
+    payments.getPaymentsOfTrip(req.jwt.accountId, req.params.tripId, function (result) {
         res.send(result);
     });
 });
