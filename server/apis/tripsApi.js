@@ -116,17 +116,45 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
             retObj.messages.push("Error while finding trip, try Again");
             callback(retObj);
         } else if (trip) {
-            paymentsApi.getPaymentsOfTrip(jwt.accountId, tripId, function (payments) {
-                if(!payments.status) {
-                    retObj.messages.push("Error while finding trip payments, try Again");
-                    callback(retObj);
-                } else {
-                    trip['paymentHistory'] = payments.payments;
-                    retObj.status = true;
-                    retObj.messages.push("Trip found successfully");
-                    retObj.trip = trip;
-                    callback(retObj);
+            async.parallel({
+                createdbyname: function (createdbyCallback) {
+                    Utils.populateNameInUsersColl([trip], "createdBy", function (response) {
+                        createdbyCallback(response.err, response.documents);
+                    });
+                },
+                driversname: function (driversnameCallback) {
+                    Utils.populateNameInDriversCollmultiple([trip], 'driver', ['fullName'], function (response) {
+                        driversnameCallback(response.err, response.documents);
+                    });
+                },
+                bookedfor: function (bookedforCallback) {
+                    Utils.populateNameInPartyColl([trip], 'bookedFor', function (response) {
+                        bookedforCallback(response.err, response.documents);
+                    });
+                },
+                triplane: function (triplaneCallback) {
+                    Utils.populateNameInTripLaneColl([trip], 'tripLane', function (response) {
+                        triplaneCallback(response.err, response.documents);
+                    });
+                },
+                truckNo: function (truckscallback) {
+                    Utils.populateNameInTrucksColl([trip], 'registrationNo', function (response) {
+                        truckscallback(response.err, response.documents);
+                    })
                 }
+            }, function (populateErr, populateResults) {
+                paymentsApi.getPaymentsOfTrip(jwt.accountId, tripId, function (payments) {
+                    if(!payments.status) {
+                        retObj.messages.push("Error while finding trip payments, try Again");
+                        callback(retObj);
+                    } else {
+                        trip['paymentHistory'] = payments.payments;
+                        retObj.status = true;
+                        retObj.messages.push("Trip found successfully");
+                        retObj.trip = trip;
+                        callback(retObj);
+                    }
+                });
             });
         } else {
             retObj.messages.push("Trip is not found!");
