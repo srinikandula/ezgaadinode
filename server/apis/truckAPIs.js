@@ -15,7 +15,6 @@ var Trucks = function () {
 };
 
 Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
-    console.log(truckDetails);
     // console.log(typeof truckDetails.fitnessExpiry);
     // truckDetails.fitnessExpiry = new Date(truckDetails.fitnessExpiry);
     // console.log(typeof truckDetails.fitnessExpiry,truckDetails.fitnessExpiry);
@@ -181,9 +180,9 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
             });
         }
     }, function (err, results) {
-        console.log('--->', err, results);
+        // console.log(err);
         if (err) {
-            retObj.messages.push('Error retrieving trucks');
+            retObj.messages.push('Error retrieving trucks..!');
             callback(retObj);
         } else {
             retObj.status = true;
@@ -195,26 +194,26 @@ Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
     });
 };
 
-/*
-Trucks.prototype.getAllTrucks = function (callback) {
+
+Trucks.prototype.getAllAccountTrucks = function (accountId,callback) {
     var retObj = {
         status: false,
         messages: []
     };
-
-    TrucksColl.find(function (err, trucks) {
+    TrucksColl.find({accountId:accountId},{updatedAt:0,createdAt:0},function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
         } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.trucks = trucks;
-            callback(retObj);
+            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName'], function (driver) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.trucks = trucks;
+                callback(retObj);
+            });
         }
     });
 };
-*/
 
 Trucks.prototype.deleteTruck = function (truckId, callback) {
     var retObj = {

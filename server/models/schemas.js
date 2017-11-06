@@ -78,9 +78,9 @@ var tripSchema = new mongoose.Schema({
     registrationNo: String,
     driver: {type: ObjectId, ref: 'drivers'},
     bookedFor: {type: ObjectId, ref: 'parties'},
-    freightAmount: Number,
-    advance: Number,
-    balance: Number,
+    freightAmount: Number, //5000
+    advance: Number, //3000
+    balance: Number, //2000
     dieselAmount: Number,   //new
     tollgateAmount: Number, //new
     from: String,    //new

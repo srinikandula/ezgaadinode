@@ -31,6 +31,12 @@ app.factory('TrucksService', function ($http, $cookies) {
                 url: '/v1/trucks/' + truckId,
                 method: "DELETE"
             }).then(success, error)
+        },
+        getAllAccountTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks',
+                method: "GET"
+            }).then(success, error)
         }
     }
 });

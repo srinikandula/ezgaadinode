@@ -106,7 +106,6 @@ Users.prototype.login = function (userName, accountName, password, callback) {
             .findOne(query)
             .populate('accountId')
             .exec(function (err, user) {
-                console.log(err, user);
                 if (err) {
                     retObj.messages.push('Error finding user');
                     callback(retObj);

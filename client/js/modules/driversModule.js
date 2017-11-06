@@ -172,7 +172,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     }
 
     function getTruckIds() {
-        TrucksService.getAccountTrucks(1, function (success) {
+        TrucksService.getAllAccountTrucks(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             } else {
