@@ -254,7 +254,10 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.paymentFlag = false;
     $scope.addPaymentFlag = function () {
-        $scope.paymentFlag = !$scope.paymentFlag;
+        $scope.paymentFlag = true;
+    };
+    $scope.removePaymentFlag = function () {
+        $scope.paymentFlag = false;
     };
 
     $scope.paymentDetails = {

@@ -68,7 +68,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
                         retObj.status = true;
                         retObj.messages.push("Truck Added Successfully");
                         retObj.truck = truck;
-                        Utils.prototype.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
+                        Helpers.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
                         callback(retObj);
                     }
                 });
