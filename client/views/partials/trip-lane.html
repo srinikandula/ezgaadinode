@@ -7,14 +7,41 @@
         <div class="main-right col-xs-9" ng-controller="ShowTripLanesCtrl">
 
             <h3>Trip Lanes</h3>
+            <div class="toolbar-button-div pull-right">
             <button class="btn  btn-blue pull-right" ng-click="goToEditTripLanePage()">Add Trip Lanes</button>
-
-            <div class="margin-top-40">
-                <div class="grid" ui-grid="tripLaneGridOptions"></div>
             </div>
+            <!--<div class="margin-top-40">-->
+                <!--<div class="grid" ui-grid="tripLaneGridOptions"></div>-->
+            <!--</div>-->
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getTripLanesData()" ng-show="totalItems > 10"></ul>
+            <!--<ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"-->
+                <!--boundary-link-numbers="true" rotate="false" ng-change="getTripLanesData()" ng-show="totalItems > 10"></ul>-->
+
+
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="tripLanesParams" >
+                <tr ng-repeat="trip in currentPageOfTrips">
+                    <td data-title="'Name'"  sortable="'name'" class="clickable-item col-sm-2" >{{ trip.name }}</td>
+                    <td data-title="'From'"  sortable="'from'" class="clickable-item col-sm-2" >{{ trip.from }}</td>
+                    <td data-title="'To'"  sortable="'to'" class="clickable-item col-sm-2" >{{ trip.to }}</td>
+                    <td data-title="'Estimated Distance'"  sortable="'distance'" class="clickable-item col-sm-2" >{{ trip.estimatedDistance }}</td>
+                    <td data-title="'Created By'"  sortable="'agent.attrs.createdByName'" class="clickable-item col-sm-2" >{{ trip.attributes.createdByName }}</td>
+                    <td data-title="'Action'" class="col-sm-1">
+                        <md-button>
+                            <md-icon type="button" class="btn" ng-click="goToEditTripLanePage(trip.id)">
+                                <span class="glyphicon glyphicon-pencil"></span></md-icon>
+                        </md-button>
+
+                        <md-button>
+                            <md-icon type="button" class="btn" ng-click="deleteTripLane(trip.id)">
+                                <span class="glyphicon glyphicon-remove"></span></md-icon>
+                        </md-button>
+                    </td>
+                </tr>
+                <tr ng-if="!currentPageOfTrips || currentPageOfTrips.length === 0">
+                    <td colspan="7">No trips exist.  </td>
+                </tr>
+            </table>
+
 
         </div>
     </div>

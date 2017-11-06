@@ -13,8 +13,8 @@ AuthRouter.get('/', function (req, res) {
         res.send(result);
     });
 });
-AuthRouter.get('/:pageNumber', function (req, res) {
-    TripLanes.getTripLanes(req.jwt, req.body, req.params.pageNumber, function (result) {
+AuthRouter.post('/getTripLanes', function (req, res) {
+    TripLanes.getTripLanes(req.jwt, req.query, function (result) {
         res.send(result);
     });
 });
@@ -30,6 +30,11 @@ AuthRouter.get('/update/:tripLaneId', function (req, res) {
 });
 AuthRouter.delete('/:tripId', function (req, res) {
     TripLanes.deleteTripLane(req.params.tripId, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.get('/total/count', function (req, res) {
+    TripLanes.countTripLanes(req.jwt , function (result) {
         res.send(result);
     });
 });
