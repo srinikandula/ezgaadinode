@@ -6,14 +6,13 @@
         </div>
         <div class="main-right col-xs-9" ng-controller="UserCtrl">
             <h3>Users</h3>
-            <button class="btn  btn-blue pull-right" ng-click="goToEditUserPage()">Add User</button>
+            <button class="btn btn-blue pull-right" ng-click="goToEditUserPage()">Add User</button>
 
             <div class="margin-top-40">
                 <div class="grid" ui-grid="userGridOptions"></div>
             </div>
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getAllUsers()" ng-show="totalItems > 10"></ul>
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right" boundary-link-numbers="true" rotate="false" ng-change="getAllUsers()" ng-show="totalItems > 10"></ul>
         </div>
     </div>
 </div>
