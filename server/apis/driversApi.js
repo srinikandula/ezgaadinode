@@ -200,7 +200,6 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
             _id: {$ne: driverInfo._id},
             $or: [{"mobile": driverInfo.mobile}, {"fullName": driverInfo.fullName}]
         }, function (err, drivers) {
-            console.log('driverLenth=>', drivers.length);
             if (err) {
                 retObj.messages.push('Error fetching accounts');
                 callback(retObj);

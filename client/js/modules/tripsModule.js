@@ -209,7 +209,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     function getTruckIds() {
-        TrucksService.getAccountTrucks(1, function (success) {
+        TrucksService.getAllAccountTrucks(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             } else {
@@ -254,7 +254,10 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.paymentFlag = false;
     $scope.addPaymentFlag = function () {
-        $scope.paymentFlag = !$scope.paymentFlag;
+        $scope.paymentFlag = true;
+    };
+    $scope.removePaymentFlag = function () {
+        $scope.paymentFlag = false;
     };
 
     $scope.paymentDetails = {
@@ -404,6 +407,15 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 });
             }
         }
+    };
+    $scope.assignDriver = function () {
+        // console.log($scope.trip.registrationNo);
+        var id = _.find($scope.trucks, function(item) {
+            // console.log(item._id , $scope.trip.registrationNo);
+            return item._id === $scope.trip.registrationNo;
+        });
+        console.log(id);
+        $scope.trip.driver = id.driverId;
     }
 }]);
 

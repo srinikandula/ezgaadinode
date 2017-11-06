@@ -20,9 +20,7 @@
                         <div class="form-group col-xs-12">
                             <label for="registrationNo" class="col-sm-4 col-xs-12 pall-zero">Registration No</label>
                             <div class="col-xs-12 col-sm-8">
-                                <select ng-model="trip.registrationNo"
-                                        ng-options="truck._id as truck.registrationNo for truck in trucks" type="text"
-                                        class="form-control" id="registrationNo">
+                                <select ng-model="trip.registrationNo" ng-options="truck._id as truck.registrationNo for truck in trucks" type="text" class="form-control" id="registrationNo" ng-change="assignDriver()">
                                 </select>
                             </div>
                         </div>
@@ -206,7 +204,7 @@
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-primary" ng-click="addTripPayment()">Submit</button>
-                            <input type="button" value="Cancel" class="btn btn-red" ng-click="addPaymentFlag()"/>
+                            <input type="button" value="Cancel" class="btn btn-red" ng-click="removePaymentFlag()"/>
                         </div>
                     </form>
                 <!--</div>-->
