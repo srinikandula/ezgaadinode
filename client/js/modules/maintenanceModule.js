@@ -187,6 +187,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                     if (success.data.status) {
                         // params.success = success.data.message[0];
                         Notification.success({message: success.data.message});
+                        $state.go('maintenance');
                     } else {
                         params.error = success.data.message;
                     }

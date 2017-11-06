@@ -139,7 +139,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.drivers = [];
     $scope.parties = [];
-
+    $scope.isFirstOpen=true;
     $scope.trip = {
         date: '',
         driver: '',

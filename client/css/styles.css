@@ -106,8 +106,8 @@ body{
 .body-nav ul li a{
     text-decoration: none;
 }
-.margin-top-20 {
-    margin-top: 20px;
+.mb-10 {
+    margin-bottom: 10px;
 }
 
 .cursor-pointer {
@@ -190,6 +190,13 @@ body{
 .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover{
  background-color: transparent;
     color: #d9534f;
+}
+.payment-grid{
+    height:200px;
+}
+.acc .glyphicon-chevron-right, .acc .glyphicon-chevron-down{
+    top: -17px;
+    font-size: 14px;
 }
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:after,

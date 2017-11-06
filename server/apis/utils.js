@@ -241,7 +241,7 @@ Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Roles = _.find(names, function (users) {
-                    return users._id.toString() === item[fieldTopopulate].toString();
+                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (Roles) {
                     if (!item.attrs) {
