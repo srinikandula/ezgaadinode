@@ -105,25 +105,28 @@ TripLanes.prototype.getAllTripLanes = function (callback) {
     })
 };
 
-TripLanes.prototype.getTripLanes = function (jwt, req, pageNumber, callback) {
+TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
+    console.log(params);
     var result = {};
-    if (!pageNumber) {
-        pageNumber = 1;
-    } else if (!_.isNumber(Number(pageNumber))) {
+    if (!params.page) {
+        params.page = 1;
+    } else if (!_.isNumber(Number(params.page))) {
         result.status = false;
         result.message = 'Invalid page number';
         return callback(result);
     }
-    var skipNumber = (pageNumber - 1) * pageLimits.triplanesPaginationLimit;
+    var skipNumber = (params.page - 1) * params.size;
+    console.log(skipNumber);
     async.parallel({
         triplanes: function (accountsCallback) {
             TripLanesCollection
-                .find({'accountId':jwt.accountId})
-                .sort({createdAt: 1})
-                .skip(skipNumber)
-                .limit(pageLimits.triplanesPaginationLimit)
-                .lean()
+                .find({'accountId': jwt.accountId})
+                 .sort(params.sort)
+                // .skip(skipNumber)
+                // .limit(params.size)
+                // .lean()
                 .exec(function (err, triplanes) {
+                     console.log(triplanes);
                     Helpers.populateNameInUsersColl(triplanes, "createdBy", function (response) {
                         if(response.status) {
                             accountsCallback(err, response.documents);
@@ -192,6 +195,22 @@ TripLanes.prototype.deleteTripLane = function (tripLaneId, callback) {
                     callback(result);
                 }
             })
+        }
+    })
+};
+
+TripLanes.prototype.countTripLanes = function (jwt, callback) {
+    var result = {};
+    TripLanesCollection.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
         }
     })
 };
