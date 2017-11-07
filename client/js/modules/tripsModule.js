@@ -139,7 +139,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.drivers = [];
     $scope.parties = [];
-
+    $scope.isFirstOpen=true;
     $scope.trip = {
         date: '',
         driver: '',
@@ -408,6 +408,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             }
         }
     };
+  /*  $scope.addPaymentFlag= function () {
+        $state.go('trips');
+    };*/
     $scope.assignDriver = function () {
         // console.log($scope.trip.registrationNo);
         var id = _.find($scope.trucks, function(item) {

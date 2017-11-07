@@ -62,6 +62,9 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             name: 'TruckType',
             field: 'truckType'
         }, {
+            name: 'Tonnage',
+            field: 'tonnage'
+        }, {
             name: 'Permit',
             field: 'permitExpiry',
             cellFilter: 'date:"dd-MM-yyyy"'
@@ -143,6 +146,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.truck = {
         registrationNo: '',
         truckType: '',
+        tonnage: '',
         modelAndYear: '',
         driverId: '',
         fitnessExpiry: '',

@@ -4,6 +4,7 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
+
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var UsersAPI = require('./usersApi');
 var config = require('./../config/config');
@@ -109,6 +110,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
         {
             $set: {
                 "truckType": truckDetails.truckType,
+                "tonnage":truckDetails.tonnage,
                 "updatedBy": jwt.id,
                 "modelAndYear": truckDetails.modelAndYear,
                 "registrationNo": truckDetails.registrationNo,
