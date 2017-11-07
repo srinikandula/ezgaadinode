@@ -10,7 +10,7 @@
                 <uib-accordion>
                     <div uib-accordion-group class="panel-default" is-open="isFirstOpen">
                         <uib-accordion-heading>
-                            <h4>Edit Trip</h4>
+                            <h4>{{pagetitle}}</h4>
                             <i class="pull-right glyphicon acc"
                                ng-class="{'glyphicon-chevron-down': isFirstOpen, 'glyphicon-chevron-right': !isFirstOpen}"
                                style="top: -16px;font-size: 13px;">
@@ -96,6 +96,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="col-sm-6 col-xs-12">
                                 <div class="form-group col-xs-12">
                                     <label for="tripExpenses" class="col-xs-12 col-sm-4 pall-zero">Trip
@@ -185,71 +186,65 @@
                             </div>
                         </form>
                     </div>
+                </uib-accordion>
 
-                    <div uib-accordion-group class="panel-default" is-open="status.open" ng-show="showHistory">
-                        <uib-accordion-heading>
-                            <h4 ng-click="paymentGridOptions">Payment History</h4>
-                            <i class="pull-right acc glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"
-                               style="top: -16px;font-size: 13px;">
-                            </i>
-                        </uib-accordion-heading>
-                        <div class="col-xs-12">
-                            <div class="col-md-12 mb-10">
-                                <button class="btn btn-blue pull-right" ng-click="addPaymentFlag()">Add</button>
-                            </div>
+                <div class="col-xs-12 pall-zero" ng-show="showHistory">
+                    <h4 ng-click="paymentGridOptions">Payment History</h4>
 
-                            <!--<div class="col-md-12 account-edit">-->
-                            <form class=" col-md-12" ng-show="paymentFlag">
-                                <div class="col-sm-6 col-xs-12">
-                                    <div class="form-group col-xs-12">
-                                        <label for="paymentdate" class="col-xs-12 col-sm-4 pall-zero">From</label>
-                                        <div class="col-sm-8 col-xs-12">
-                                            <date-picker id="paymentdate"
-                                                         ng-model="paymentDetails.paymentDate"></date-picker>
-                                            <!--<input ng-model="paymentDetails.paymentDate" type="text" class="form-control" id="paymentdate" placeholder="Payment Date">-->
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-xs-12">
-                                        <label for="amount" class="col-xs-12 col-sm-4 pall-zero">Amount</label>
-                                        <div class="col-sm-8 col-xs-12">
-                                            <input ng-model="paymentDetails.amount" type="text" class="form-control"
-                                                   id="amount"
-                                                   placeholder="Amount">
-                                        </div>
-                                    </div>
-                                    <div class="form-group col-xs-12">
-                                        <label for="type" class="col-xs-12 col-sm-4 pall-zero">Payment Type</label>
-                                        <div class="col-sm-8 col-xs-12">
-                                            <input ng-model="paymentDetails.paymentType" type="text"
-                                                   class="form-control" id="type"
-                                                   placeholder="Payment Type">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="clearfix"></div>
-                                <div class="col-xs-4 col-xs-push-4 margin-top-20 mb-10">
-                                    <div>
-                                        <div class="alert alert-danger" role="alert"
-                                             ng-show="paymentDetails.errors.length">
-                                            <ul>
-                                                <li ng-repeat="error in paymentDetails.errors">{{error}}</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary" ng-click="addTripPayment()">Submit
-                                    </button>
-                                    <input type="button" value="Cancel" class="btn btn-red"
-                                           ng-click="addPaymentFlag()"/>
-                                </div>
-                            </form>
-                            <div class="clearfix"></div>
+                    <div class="">
+                        <div class="col-md-12 mb-10">
+                            <button class="btn btn-blue pull-right" ng-click="addPaymentFlag()">Add</button>
                         </div>
 
-
-                                <div class="grid payment-grid" ui-grid="paymentGridOptions"></div>
+                        <!--<div class="col-md-12 account-edit">-->
+                        <form class=" col-md-12" ng-show="paymentFlag">
+                            <div class="col-sm-6 col-xs-12">
+                                <div class="form-group col-xs-12">
+                                    <label for="paymentdate" class="col-xs-12 col-sm-4 pall-zero">From</label>
+                                    <div class="col-sm-8 col-xs-12">
+                                        <date-picker id="paymentdate"
+                                                     ng-model="paymentDetails.paymentDate"></date-picker>
+                                        <!--<input ng-model="paymentDetails.paymentDate" type="text" class="form-control" id="paymentdate" placeholder="Payment Date">-->
+                                    </div>
+                                </div>
+                                <div class="form-group col-xs-12">
+                                    <label for="amount" class="col-xs-12 col-sm-4 pall-zero">Amount</label>
+                                    <div class="col-sm-8 col-xs-12">
+                                        <input ng-model="paymentDetails.amount" type="text" class="form-control"
+                                               id="amount"
+                                               placeholder="Amount">
+                                    </div>
+                                </div>
+                                <div class="form-group col-xs-12">
+                                    <label for="type" class="col-xs-12 col-sm-4 pall-zero">Payment Type</label>
+                                    <div class="col-sm-8 col-xs-12">
+                                        <input ng-model="paymentDetails.paymentType" type="text" class="form-control"
+                                               id="type"
+                                               placeholder="Payment Type">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="clearfix"></div>
+                            <div class="col-xs-4 col-xs-push-4 margin-top-20 mb-10">
+                                <div>
+                                    <div class="alert alert-danger" role="alert" ng-show="paymentDetails.errors.length">
+                                        <ul>
+                                            <li ng-repeat="error in paymentDetails.errors">{{error}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary" ng-click="addTripPayment()">Submit
+                                </button>
+                                <input type="button" value="Cancel" class="btn btn-red" ng-click="addPaymentFlag()"/>
+                            </div>
+                        </form>
+                        <div class="clearfix"></div>
                     </div>
-                </uib-accordion>
+                    <!--</div>-->
+                    <div class="col-xs-12">
+                        <div class="grid payment-grid" ui-grid="paymentGridOptions"></div>
+                    </div>
+                </div>
 
             </div>
             <div class="clearfix"></div>

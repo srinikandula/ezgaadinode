@@ -110,6 +110,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
         {
             $set: {
                 "truckType": truckDetails.truckType,
+                "tonnage":truckDetails.tonnage,
                 "updatedBy": jwt.id,
                 "modelAndYear": truckDetails.modelAndYear,
                 "registrationNo": truckDetails.registrationNo,
