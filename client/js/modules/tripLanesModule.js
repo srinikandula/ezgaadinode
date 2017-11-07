@@ -140,8 +140,8 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
     //     }
     // };
     //
-    // $scope.getTripLanesData = function () {
-    //     TripLaneServices.getTripLanes($scope.pageNumber, function (success) {
+    //  $scope.getTripLanesData = function () {
+    //      TripLaneServices.getTripLanes($scope.pageNumber, function (success) {
     //         if (success.data.status) {
     //             $scope.tripLaneGridOptions.data = success.data.tripLanes;
     //             $scope.totalItems = success.data.count;
@@ -158,7 +158,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
     $scope.deleteTripLane = function (tripLaneId) {
         TripLaneServices.deleteTripLane(tripLaneId,function (success) {
             if (success){
-                $scope.getTripLanesData();
+                $scope.init();
                 Notification.error({message: "Trip Lane Deleted"});
             }else {
                 console.log("Error in deleting")
