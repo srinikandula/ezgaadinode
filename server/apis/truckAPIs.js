@@ -68,11 +68,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
                         retObj.status = true;
                         retObj.messages.push("Truck Added Successfully");
                         retObj.truck = truck;
-<<<<<<< fd81829fea443ba3be7f9fe62f2b25b9610c4d96
                         Helpers.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
-=======
-                            Helpers.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
->>>>>>> payments UI in trips module
                         callback(retObj);
                     }
                 });

@@ -12,7 +12,8 @@
                         <uib-accordion-heading>
                             <h4>Edit Trip</h4>
                             <i class="pull-right glyphicon acc"
-                               ng-class="{'glyphicon-chevron-down': isFirstOpen, 'glyphicon-chevron-right': !isFirstOpen}" style="top: -16px;font-size: 13px;">
+                               ng-class="{'glyphicon-chevron-down': isFirstOpen, 'glyphicon-chevron-right': !isFirstOpen}"
+                               style="top: -16px;font-size: 13px;">
                             </i>
                         </uib-accordion-heading>
                         <form class="">
@@ -95,66 +96,6 @@
                                     </div>
                                 </div>
                             </div>
-
-<<<<<<< fd81829fea443ba3be7f9fe62f2b25b9610c4d96
-                        <div class="form-group col-xs-12">
-                            <label for="registrationNo" class="col-sm-4 col-xs-12 pall-zero">Registration No</label>
-                            <div class="col-xs-12 col-sm-8">
-                                <select ng-model="trip.registrationNo" ng-options="truck._id as truck.registrationNo for truck in trucks" type="text" class="form-control" id="registrationNo" ng-change="assignDriver()">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label for="driver" class="col-xs-12 col-sm-4 pall-zero">Driver</label>
-                            <div class="col-sm-8 col-xs-12">
-                                <select ng-model="trip.driver"
-                                        ng-options="driver._id as driver.fullName for driver in drivers" type="text"
-                                        class="form-control" id="driver">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label for="bookedFor" class="col-xs-12 col-sm-4 pall-zero">Booked For</label>
-                            <div class="col-sm-8 col-xs-12">
-                                <select ng-model="trip.bookedFor"
-                                        ng-options="party._id as party.name for party in parties"
-                                        type="text" class="form-control" id="bookedFor">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label for="tripLane" class="col-xs-12 col-sm-4 pall-zero">Trip Lane</label>
-                            <div class="col-sm-8 col-xs-12">
-                                <select ng-model="trip.tripLane"
-                                        ng-options="tripLane._id as tripLane.name for tripLane in tripLanes"
-                                        type="text"
-                                        class="form-control" id="tripLane">
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label for="from" class="col-xs-12 col-sm-4 pall-zero">From</label>
-                            <div class="col-sm-8 col-xs-12">
-                                <input ng-model="trip.from" type="text" class="form-control"
-                                       id="from"
-                                       placeholder="From">
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label for="to" class="col-xs-12 col-sm-4 pall-zero">To</label>
-                            <div class="col-sm-8 col-xs-12">
-                                <input ng-model="trip.to" type="text" class="form-control"
-                                       id="to"
-                                       placeholder="To">
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label for="tonnage" class="col-xs-12 col-sm-4 pall-zero">Tonnage</label>
-                            <div class="col-sm-8 col-xs-12">
-                                <input ng-model="trip.tonnage" type="number" class="form-control"
-                                       id="tonnage"
-                                       placeholder="Tonnage">
-=======
                             <div class="col-sm-6 col-xs-12">
                                 <div class="form-group col-xs-12">
                                     <label for="tripExpenses" class="col-xs-12 col-sm-4 pall-zero">Trip
@@ -227,7 +168,6 @@
                                                placeholder="Remarks">
                                     </div>
                                 </div>
->>>>>>> payments UI in trips module
                             </div>
                             <div class="clearfix"></div>
                             <div class="col-xs-4 col-xs-push-4 margin-top-20">
@@ -250,10 +190,11 @@
                         <uib-accordion-heading>
                             <h4 ng-click="paymentGridOptions">Payment History</h4>
                             <i class="pull-right acc glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}" style="top: -16px;font-size: 13px;">
+                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"
+                               style="top: -16px;font-size: 13px;">
                             </i>
                         </uib-accordion-heading>
-                        <div class="" >
+                        <div class="col-xs-12">
                             <div class="col-md-12 mb-10">
                                 <button class="btn btn-blue pull-right" ng-click="addPaymentFlag()">Add</button>
                             </div>
@@ -264,21 +205,24 @@
                                     <div class="form-group col-xs-12">
                                         <label for="paymentdate" class="col-xs-12 col-sm-4 pall-zero">From</label>
                                         <div class="col-sm-8 col-xs-12">
-                                            <date-picker id="paymentdate" ng-model="paymentDetails.paymentDate"></date-picker>
+                                            <date-picker id="paymentdate"
+                                                         ng-model="paymentDetails.paymentDate"></date-picker>
                                             <!--<input ng-model="paymentDetails.paymentDate" type="text" class="form-control" id="paymentdate" placeholder="Payment Date">-->
                                         </div>
                                     </div>
                                     <div class="form-group col-xs-12">
                                         <label for="amount" class="col-xs-12 col-sm-4 pall-zero">Amount</label>
                                         <div class="col-sm-8 col-xs-12">
-                                            <input ng-model="paymentDetails.amount" type="text" class="form-control" id="amount"
+                                            <input ng-model="paymentDetails.amount" type="text" class="form-control"
+                                                   id="amount"
                                                    placeholder="Amount">
                                         </div>
                                     </div>
                                     <div class="form-group col-xs-12">
                                         <label for="type" class="col-xs-12 col-sm-4 pall-zero">Payment Type</label>
                                         <div class="col-sm-8 col-xs-12">
-                                            <input ng-model="paymentDetails.paymentType" type="text" class="form-control" id="type"
+                                            <input ng-model="paymentDetails.paymentType" type="text"
+                                                   class="form-control" id="type"
                                                    placeholder="Payment Type">
                                         </div>
                                     </div>
@@ -286,36 +230,24 @@
                                 <div class="clearfix"></div>
                                 <div class="col-xs-4 col-xs-push-4 margin-top-20 mb-10">
                                     <div>
-                                        <div class="alert alert-danger" role="alert" ng-show="paymentDetails.errors.length">
+                                        <div class="alert alert-danger" role="alert"
+                                             ng-show="paymentDetails.errors.length">
                                             <ul>
                                                 <li ng-repeat="error in paymentDetails.errors">{{error}}</li>
                                             </ul>
                                         </div>
                                     </div>
-                                    <button type="submit" class="btn btn-primary" ng-click="addTripPayment()">Submit</button>
-                                    <input type="button" value="Cancel" class="btn btn-red" ng-click="addPaymentFlag()"/>
+                                    <button type="submit" class="btn btn-primary" ng-click="addTripPayment()">Submit
+                                    </button>
+                                    <input type="button" value="Cancel" class="btn btn-red"
+                                           ng-click="addPaymentFlag()"/>
                                 </div>
                             </form>
                             <div class="clearfix"></div>
                         </div>
-<<<<<<< fd81829fea443ba3be7f9fe62f2b25b9610c4d96
-                        <div class="clearfix"></div>
-                        <div class="col-xs-4 col-xs-push-4 margin-top-20">
-                            <div>
-                                <div class="alert alert-danger" role="alert" ng-show="paymentDetails.errors.length">
-                                    <ul>
-                                        <li ng-repeat="error in paymentDetails.errors">{{error}}</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary" ng-click="addTripPayment()">Submit</button>
-                            <input type="button" value="Cancel" class="btn btn-red" ng-click="removePaymentFlag()"/>
-=======
-                        <!--</div>-->
-                        <div class="col-xs-12">
-                            <div class="grid payment-grid" ui-grid="paymentGridOptions"></div>
->>>>>>> payments UI in trips module
-                        </div>
+
+
+                                <div class="grid payment-grid" ui-grid="paymentGridOptions"></div>
                     </div>
                 </uib-accordion>
 
