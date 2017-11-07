@@ -11,7 +11,7 @@ angular.module('paginationService', ['ngTable'])
                 //         sortingProps[prop] = -1;
                 //     }
                 // }
-                console.log(sortingProps);
+                console.log("Sorting options are "+ sortingProps);
                 callback(sortingProps);
             }
         }

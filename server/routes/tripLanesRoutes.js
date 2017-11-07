@@ -13,7 +13,7 @@ AuthRouter.get('/', function (req, res) {
         res.send(result);
     });
 });
-AuthRouter.post('/getTripLanes', function (req, res) {
+AuthRouter.get('/getTripLanes', function (req, res) {
     TripLanes.getTripLanes(req.jwt, req.query, function (result) {
         res.send(result);
     });

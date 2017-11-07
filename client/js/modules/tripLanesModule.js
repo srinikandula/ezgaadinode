@@ -16,7 +16,7 @@ app.factory('TripLaneServices', function ($http) {
         getTripLanes: function (params, success, error) {
             $http({
                 url: '/v1/tripLanes/getTripLanes',
-                method: "POST",
+                method: "GET",
                 params: params
             }).then(success, error)
         },
@@ -66,9 +66,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
     var pageable;
 
     var loadTableData = function (tableParams) {
-        paginationService.pagination(tableParams, function(response){
-            pageable = {page:tableParams.page(), size:tableParams.count(), sort:response};
-        });
+        var pageable = {page:tableParams.page(), size:tableParams.count(), sort:tableParams.sorting()};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         TripLaneServices.getTripLanes(pageable, function(response){
