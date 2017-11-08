@@ -1,0 +1,12 @@
+{
+  "jwt": {
+    "secret": "info@easygaadi.com",
+    "options": {
+      "expiresIn": 86400
+    }
+  },
+  "mongo":{
+    "url": "mongodb://localhost/easygaadi"
+  },
+  "port": 3000
+}
