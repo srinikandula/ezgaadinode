@@ -27,12 +27,12 @@
                     <td data-title="'Created By'"  sortable="'agent.attrs.createdByName'" class="clickable-item col-sm-2" >{{ trip.attributes.createdByName }}</td>
                     <td data-title="'Action'" class="col-sm-1">
                         <md-button>
-                            <md-icon type="button" class="btn" ng-click="goToEditTripLanePage(trip.id)">
+                            <md-icon type="button" class="btn" ng-click="goToEditTripLanePage(trip._id)">
                                 <span class="glyphicon glyphicon-pencil"></span></md-icon>
                         </md-button>
 
                         <md-button>
-                            <md-icon type="button" class="btn" ng-click="deleteTripLane(trip.id)">
+                            <md-icon type="button" class="btn" ng-click="deleteTripLane(trip._id)">
                                 <span class="glyphicon glyphicon-remove"></span></md-icon>
                         </md-button>
                     </td>

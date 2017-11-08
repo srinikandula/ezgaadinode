@@ -38,6 +38,11 @@ AuthRouter.post('/report', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.put('/sendEmail', function (req, res) {
+    Trips.sendEmail(req.jwt, req.body, function (result) {
+        res.send(result);
+    })
+});
 
 module.exports = {
     OpenRouter: OpenRouter,
