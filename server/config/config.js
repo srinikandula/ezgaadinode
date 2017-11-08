@@ -5,12 +5,12 @@ function getUserHome() {
 }
 
 var localConfigPath = getUserHome() + '/easygaadi-config.json';
-var projectConfigPath = './config.json';
+var projectConfigPath = __dirname + '/config.json';
 var selectedConfigPath;
 
-if(fs.existsSync(localConfigPath)) {
+if (fs.existsSync(localConfigPath)) {
     selectedConfigPath = localConfigPath;
-} else if(fs.existsSync(projectConfigPath)) {
+} else if (fs.existsSync(projectConfigPath)) {
     selectedConfigPath = projectConfigPath;
 } else {
     console.log('CONFIG FILE DOESNT EXIST');
