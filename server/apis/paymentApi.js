@@ -12,6 +12,11 @@ var pageLimits = require('./../config/pagination');
 var Payments = function () {
 };
 
+// var trips = [];
+// Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
+//     console.log("userscoll",response);
+// });
+
 Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
     var retObj = {
         status: false,
@@ -32,6 +37,17 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
+        // TripsColl.findOne({_id: paymentDetails.tripId}, function (errtrip, trip) {
+        //     if(errtrip) {
+        //         if (err) {
+        //             retObj.messages.push('Error while adding payment, try again');
+        //             callback(retObj);
+        //         } else if(!trip.freightAmount) {
+        //             retObj.messages.push('No freight amount details found with this trip');
+        //             callback(retObj);
+        //         }
+        //     }
+        // });
         paymentDetails = Utils.removeEmptyFields(paymentDetails);
         paymentDetails.accountId = jwt.accountId;
         paymentDetails.updatedBy = jwt.id;
@@ -72,17 +88,20 @@ Payments.prototype.getPaymentsOfTrip = function (accountId, tripId, callback) {
         status: false,
         messages: []
     };
+
+    console.log(Utils.prototype);
     PaymentsColl.find({tripId: tripId, accountId: accountId}, {createdAt: 0, updatedAt: 0}, function (err, payments) {
         if (err) {
             retObj.messages.push('Error while finding payment, try again');
             callback(retObj);
         } else {
-            Utils.populateNameInUsersColl(payments, "createdBy", function (response) {
+            // Utils.populateNameInUsersColl(payments, "createdBy", function (response) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.payments = payments;
+                retObj.err = err;
                 callback(retObj);
-            });
+            // });
         }
     });
 };

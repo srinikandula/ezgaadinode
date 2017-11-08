@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var moment = require('moment');
 var mongoose = require('mongoose');
+var async = require('async');
 var ObjectId = mongoose.Types.ObjectId;
 var UsersColl = require('./../models/schemas').UsersColl;
 var DriversColl = require('./../models/schemas').DriversColl;
@@ -9,6 +10,7 @@ var TripLaneColl = require('./../models/schemas').TripLanesCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var RolesColl = require('./../models/schemas').Roles;
 var DriversCollection = require('./../models/schemas').DriversColl;
+var Payments = require('./../apis/paymentApi');
 
 
 var Utils = function () {
@@ -71,7 +73,7 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 item = documents[i];
                 // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
-                if(item.createdBy) {
+                if (item.createdBy) {
                     var user = _.find(names, function (users) {
                         return users._id.toString() === item.createdBy.toString();
                     });
@@ -97,11 +99,11 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
 Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fieldTopopulate, fieldsToGet, callback) {
     var result = {};
     var driverIds = _.pluck(truckDocuments, fieldTopopulate);
-    if(!fieldsToGet) {
+    if (!fieldsToGet) {
         return;
     }
     var conditions = {};
-    for(var fieldIndex =0; fieldIndex<fieldsToGet.length; fieldIndex++) {
+    for (var fieldIndex = 0; fieldIndex < fieldsToGet.length; fieldIndex++) {
         conditions[fieldsToGet[fieldIndex]] = 1;
     }
     DriversColl.find({'_id': {$in: driverIds}}, conditions, function (err, driverDocuments) {
@@ -114,14 +116,14 @@ Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fi
             for (var i = 0; i < truckDocuments.length; i++) {
                 var truckDocument = truckDocuments[i];
                 var driverDocument = _.find(driverDocuments, function (driver) {
-                    if(driver._id && truckDocument[fieldTopopulate]) return driver._id.toString() === truckDocument[fieldTopopulate].toString();
+                    if (driver._id && truckDocument[fieldTopopulate]) return driver._id.toString() === truckDocument[fieldTopopulate].toString();
                     else return '';
                 });
                 if (driverDocument) {
                     if (!truckDocument.attrs) {
                         truckDocument.attrs = {};
                     }
-                    for(var fieldIndex =0; fieldIndex<fieldsToGet.length; fieldIndex++) {
+                    for (var fieldIndex = 0; fieldIndex < fieldsToGet.length; fieldIndex++) {
                         truckDocument.attrs[fieldsToGet[fieldIndex]] = driverDocument[fieldsToGet[fieldIndex]];
                     }
                 }
@@ -258,6 +260,38 @@ Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, 
     });
 };
 
+Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) {
+    var result = {};
+    var ids = _.pluck(documents, '_id');
+    async.map(ids, function (id, asyncCallback) {
+        Payments.getPaymentsOfTrip(accountId, id, function (tripPayments) {
+            if (tripPayments.status) {
+                var trip = _.find(documents, function (document) {
+                    return document._id.toString() === id.toString();
+                });
+                if (trip) {
+                    trip['paymentHistory'] = tripPayments.payments;
+                }
+            }
+            asyncCallback(tripPayments.err, tripPayments.payments);
+        });
+    }, function (err, trips) {
+        if (!trips.status) {
+            result.status = false;
+            result.message = 'Error retrieving trip payments';
+            result.err = err;
+            callback(result);
+        } else {
+            console.log('trips', trips);
+            result.status = true;
+            result.message = 'Success';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
+        }
+    });
+};
+
 /**
  * Module to clean up when a driver is assigned to truck or vice versa.
  * When a driver is assigned to a truck check if the driver is already assigned to a different truck, if so remove old
@@ -265,25 +299,39 @@ Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, 
  *
  * Do it in the background, no callback is needed
  */
-Utils.prototype.cleanUpTruckDriverAssignment = function(jwt, truckId, driverId) {
+Utils.prototype.cleanUpTruckDriverAssignment = function (jwt, truckId, driverId) {
     //no valid data
-    if(!truckId || !driverId) {
+    if (!truckId || !driverId) {
         return;
     }
-    TrucksColl.update({"_id":{ $ne: truckId },"accountId":jwt.accountId, "driverId":driverId},{$set:{"driverId":null}},function(err, trucks){
-        if(err){
+    TrucksColl.update({
+        "_id": {$ne: truckId},
+        "accountId": jwt.accountId,
+        "driverId": driverId
+    }, {$set: {"driverId": null}}, function (err, trucks) {
+        if (err) {
             console.error("Error cleaning up the trucks collection");
         }
     });
-    TrucksColl.update({"_id":truckId,"accountId":jwt.accountId},{$set:{"driverId":driverId}},function(err, trucks){
-        if(err){
+    TrucksColl.update({
+        "_id": truckId,
+        "accountId": jwt.accountId
+    }, {$set: {"driverId": driverId}}, function (err, trucks) {
+        if (err) {
             console.error("Error cleaning up the trucks collection");
         }
     });
-    DriversColl.update({"_id":{ $ne: driverId },"accountId":jwt.accountId, "truckId":truckId},{$set:{"truckId":null}},function(err, drivers){
+    DriversColl.update({
+        "_id": {$ne: driverId},
+        "accountId": jwt.accountId,
+        "truckId": truckId
+    }, {$set: {"truckId": null}}, function (err, drivers) {
         console.error("Error cleaning up the drivers collection");
     });
-    DriversColl.update({"_id":driverId ,"accountId":jwt.accountId},{$set:{"truckId":truckId}},function(err, drivers){
+    DriversColl.update({
+        "_id": driverId,
+        "accountId": jwt.accountId
+    }, {$set: {"truckId": truckId}}, function (err, drivers) {
         console.error("Error cleaning up the drivers collection");
     });
 

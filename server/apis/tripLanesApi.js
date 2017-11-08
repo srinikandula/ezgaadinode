@@ -137,7 +137,7 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
                 });
         },
         count: function (countCallback) {
-            TripLanesCollection.count({'accountId':jwt.accountId},function (err, count) {
+            TripLanesCollection.count({'accountId': jwt.accountId}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -154,6 +154,31 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
             callback(result);
         }
     });
+};
+
+TripLanes.prototype.getAllAccountTripLanes = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TripLanesCollection
+        .find({'accountId': jwt.accountId})
+        .sort({createdAt: 1})
+        .lean()
+        .exec(function (err, triplanes) {
+            Helpers.populateNameInUsersColl(triplanes, "createdBy", function (response) {
+                if (!response.status) {
+                    retObj.status = false;
+                    retObj.messages.push('Error retrieving trips');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.tripLanes = response.documents;
+                    callback(retObj);
+                }
+            });
+        });
 };
 
 TripLanes.prototype.findTripLane = function (jwt, tripLaneId, callback) {

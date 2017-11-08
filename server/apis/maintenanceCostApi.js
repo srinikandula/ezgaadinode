@@ -109,6 +109,43 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum, jwt, callback
     });
 };
 
+MaintenanceCost.prototype.getAllAccountMaintenanceCosts = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    maintenanceColl
+        .find({accountId: jwt.accountId})
+        // .sort({createdAt: 1})
+        // .populate('maintenanceCostId')
+        .lean()
+        .exec(function (err, mCosts) {
+            async.parallel({
+                createdbyname: function (createdbyCallback) {
+                    Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
+                        createdbyCallback(response.err, response.documents);
+                    });
+                },
+                truckNo: function (truckscallback) {
+                    Helpers.populateNameInTrucksColl(mCosts, 'vehicleNumber', function (response) {
+                        truckscallback(response.err, response.documents);
+                    })
+                }
+            }, function (populateErr, populateResults) {
+                if (err) {
+                    retObj.status = false;
+                    retObj.messages.push('Error retrieving Maintenance Costs');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.message = 'Success';
+                    retObj.maintanenceCosts = mCosts;
+                    callback(retObj);
+                }
+            });
+        });
+};
+
 MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
     var result = {};
     maintenanceColl.find({}, function (err, maintenanceRecords) {

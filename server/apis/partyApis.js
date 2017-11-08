@@ -32,6 +32,7 @@ Party.prototype.add = function (jwt, partyDetails, callback) {
         partyDetails.createdBy = jwt.id;
         partyDetails.updatedBy = jwt.id;
         partyDetails.accountId = jwt.accountId;
+        console.log(partyDetails);
         var partyDoc = new PartyCollection(partyDetails);
         partyDoc.save(function (err, party) {
             if (err) {
@@ -110,10 +111,17 @@ Party.prototype.getAccountParties = function (jwt, callback) {
             result.message = 'Error getting parties';
             callback(result);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.parties = accountParties;
-            callback(result);
+            Utils.populateNameInUsersColl(accountParties, "createdBy", function (response) {
+                if (response.status) {
+                    result.status = true;
+                    result.message = 'Success';
+                    result.parties = response.documents;
+                    callback(result);
+                } else {
+                    result.message = 'Error getting parties';
+                    callback(result);
+                }
+            });
         }
     });
 };
@@ -137,7 +145,7 @@ Party.prototype.getAllParties = function (callback) {
                     callback(retObj);
                 } else {
                     retObj.messages.push('Error getting parties');
-                    callback(result);
+                    callback(retObj);
                 }
             });
         }

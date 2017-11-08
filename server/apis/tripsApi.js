@@ -223,7 +223,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                                 });
                             },
                             driversname: function (driversnameCallback) {
-                                Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName'], function (response) {
+                                Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
                                     driversnameCallback(response.err, response.documents);
                                 });
                             },
@@ -268,6 +268,56 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
     }
 };
 
+Trips.prototype.getAllAccountTrips = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TripCollection
+        .find({'accountId':jwt.accountId})
+        .sort({createdAt: 1})
+        .lean()
+        .exec(function (err, trips) {
+            async.parallel({
+                createdbyname: function (createdbyCallback) {
+                    Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
+                        createdbyCallback(response.err, response.documents);
+                    });
+                },
+                driversname: function (driversnameCallback) {
+                    Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
+                        driversnameCallback(response.err, response.documents);
+                    });
+                },
+                bookedfor: function (bookedforCallback) {
+                    Utils.populateNameInPartyColl(trips, 'bookedFor', function (response) {
+                        bookedforCallback(response.err, response.documents);
+                    });
+                },
+                triplane: function (triplaneCallback) {
+                    Utils.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
+                        triplaneCallback(response.err, response.documents);
+                    });
+                },
+                truckNo: function (truckscallback) {
+                    Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                        truckscallback(response.err, response.documents);
+                    })
+                }
+            }, function (populateErr, populateResults) {
+                if (populateErr) {
+                    retObj.messages.push('Error retrieving trips');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.trips = trips; //as trips is callby reference
+                    callback(retObj);
+                }
+            });
+        });
+};
+
 Trips.prototype.deleteTrip = function (tripId, callback) {
     var retObj = {
         status: false,
@@ -295,6 +345,72 @@ Trips.prototype.deleteTrip = function (tripId, callback) {
                         callback(retObj);
                     }
                 })
+            }
+        });
+    }
+};
+
+Trips.prototype.getReport = function (jwt, details, callback) {
+    console.log(details);
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if(!details.fromDate) {
+        retObj.messages.push("Please select from date");
+    }
+    if(!details.toDate) {
+        retObj.messages.push("Please select to date");
+    }
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        var query = {date:{$gte:details.fromDate, $lte:details.toDate}};
+        if(details.registrationNo) query.registrationNo=details.registrationNo;
+        if(details.driver) query.driver=details.driver;
+        TripCollection.find(query,{date:1,registrationNo:1,driver:1,bookedFor:1,freightAmount:1,advance:1,balance:1,from:1,to:1,createdBy:1}, function (err, trips) {
+            if (err) {
+                retObj.messages.push('Error finding trips');
+                callback(retObj);
+            } else {
+                async.parallel({
+                    createdbyname: function (createdbyCallback) {
+                        Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
+                            createdbyCallback(response.err, response.documents);
+                        });
+                    },
+                    driversname: function (driversnameCallback) {
+                        Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
+                            driversnameCallback(response.err, response.documents);
+                        });
+                    },
+                    bookedfor: function (bookedforCallback) {
+                        Utils.populateNameInPartyColl(trips, 'bookedFor', function (response) {
+                            bookedforCallback(response.err, response.documents);
+                        });
+                    },
+                    truckNo: function (truckscallback) {
+                        Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                            truckscallback(response.err, response.documents);
+                        })
+                    }
+                    // ,
+                    // payments: function (paymentsCallback) {
+                    //     Utils.getPaymentsforTrips(jwt.accountId, trips, function (response) {
+                    //         paymentsCallback(response.err, response.documents);
+                    //     })
+                    // }
+                }, function (populateErr, populateResults) {
+                    if (populateErr) {
+                        retObj.messages.push('Error retrieving trips');
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.trips = trips;
+                        callback(retObj);
+                    }
+                });
             }
         });
     }

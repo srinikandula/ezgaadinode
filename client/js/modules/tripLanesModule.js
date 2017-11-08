@@ -7,9 +7,9 @@ app.factory('TripLaneServices', function ($http) {
                 data: tripLane
             }).then(success, error)
         },
-        getAllTripLanes: function (success, error) {
+        getAllAccountTripLanes: function (success, error) {
             $http({
-                url: '/v1/tripLanes',
+                url: '/v1/tripLanes/all/accountTrips',
                 method: "GET"
             }).then(success, error)
         },
