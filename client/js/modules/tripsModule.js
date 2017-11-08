@@ -195,7 +195,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     function getTripLanes() {
-        TripLaneServices.getAllTripLanes(function (success) {
+        TripLaneServices.getAllAccountTripLanes(function (success) {
             if (success.data.status) {
                 $scope.tripLanes = success.data.tripLanes;
             } else {
@@ -336,6 +336,10 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!params.driver) {
             params.errors.push('Please Select Driver');
         }
+        if(params.freightAmount < params.advance) {
+            params.errors.push('Freight Amount should be greater than advance');
+        }
+
         /*if (!params.bookedFor) {
             params.errors.push('Valid Booked For');
         }
@@ -419,6 +423,13 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         });
         console.log(id);
         $scope.trip.driver = id.driverId;
-    }
+    };
+    $scope.calcFreightAmount = function () {
+        var params = $scope.trip;
+        console.log(params.tonnage.length>0, params.rate.length>0);
+        if(params.tonnage>0 && params.rate>0) {
+            params.freightAmount = params.tonnage*params.rate;
+        }
+    };
 }]);
 

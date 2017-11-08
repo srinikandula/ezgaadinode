@@ -14,6 +14,11 @@ AuthRouter.get('/:pageNumber', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/all/accountMaintenance', function (req, res) {
+    MaintenanceCost.getAllAccountMaintenanceCosts(req.jwt, function (result) {
+        res.send(result);
+    });
+});
 
 
 AuthRouter.get('/getAll', function (req, res) {

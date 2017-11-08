@@ -8,9 +8,13 @@ AuthRouter.post('/addTrip', function (req, res) {
         res.send(result);
     });
 });
-
 AuthRouter.get('/getAll/:pageNumber', function (req, res) {
     Trips.getAll(req.jwt, req.body, req.params.pageNumber, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.get('/getAllAccountTrips', function (req, res) {
+    Trips.getAllAccountTrips(req.jwt, function (result) {
         res.send(result);
     });
 });
@@ -26,6 +30,11 @@ AuthRouter.get('/:tripId', function (req, res) {
 });
 AuthRouter.delete('/:tripId', function (req, res) {
     Trips.deleteTrip(req.params.tripId, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.post('/report', function (req, res) {
+    Trips.getReport(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });

@@ -105,22 +105,11 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
         status: false,
         messages: []
     };
-
+    truckDetails = Helpers.removeEmptyFields(truckDetails);
+    truckDetails.updatedBy = jwt.id;
     TrucksColl.findOneAndUpdate({_id: truckDetails._id},
         {
-            $set: {
-                "truckType": truckDetails.truckType,
-                "tonnage":truckDetails.tonnage,
-                "updatedBy": jwt.id,
-                "modelAndYear": truckDetails.modelAndYear,
-                "registrationNo": truckDetails.registrationNo,
-                "driverId": truckDetails.driverId,
-                "fitnessExpiry": truckDetails.fitnessExpiry,
-                "permitExpiry": truckDetails.permitExpiry,
-                "insuranceExpiry": truckDetails.insuranceExpiry,
-                "pollutionExpiry": truckDetails.pollutionExpiry,
-                "taxDueDate": truckDetails.taxDueDate
-            }
+            $set: truckDetails
         },
         {new: true}, function (err, truck) {
             if (err) {
@@ -134,7 +123,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
                 callback(retObj);
             } else {
                 retObj.status = false;
-                retObj.message.push("Error, finding truck");
+                retObj.messages.push("Error, finding truck");
                 callback(retObj);
             }
         });
@@ -207,12 +196,29 @@ Trucks.prototype.getAllAccountTrucks = function (accountId,callback) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
         } else {
-            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName'], function (driver) {
+            async.parallel({
+                createdbyname: function (createdbyCallback) {
+                    Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                        createdbyCallback(createdby.err,createdby.documents);
+                    });
+                },
+                driversname: function (driversnameCallback) {
+                    Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName','mobile'], function (driver) {
+                        driversnameCallback(driver.err, driver.documents);
+                    });
+                }
+            },function (populateErr, populateResults) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.trucks = trucks;
                 callback(retObj);
             });
+            // Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
+            //     retObj.status = true;
+            //     retObj.messages.push('Success');
+            //     retObj.trucks = trucks;
+            //     callback(retObj);
+            // });
         }
     });
 };

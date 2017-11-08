@@ -18,6 +18,11 @@ AuthRouter.get('/getTripLanes', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/all/accountTrips', function (req, res) {
+    TripLanes.getAllAccountTripLanes(req.jwt, function (result) {
+        res.send(result);
+    });
+});
 AuthRouter.put('/', function (req, res) {
     TripLanes.updateTripLane(req.jwt, req.body, function (result) {
         res.send(result);
