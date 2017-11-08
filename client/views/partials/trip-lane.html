@@ -24,7 +24,7 @@
                     <td data-title="'Name'" sortable="'name'" class="clickable-item col-sm-2">{{ trip.name }}</td>
                     <td data-title="'From'" sortable="'from'" class="clickable-item col-sm-2">{{ trip.from }}</td>
                     <td data-title="'To'" sortable="'to'" class="clickable-item col-sm-2">{{ trip.to }}</td>
-                    <td data-title="'Estimated Distance'" sortable="'distance'" class="clickable-item col-sm-2">{{
+                    <td data-title="'Estimated Distance'" sortable="'estimatedDistance'" class="clickable-item col-sm-2">{{
                         trip.estimatedDistance }}
                     </td>
                     <td data-title="'Created By'" sortable="'agent.attrs.createdByName'"
@@ -40,10 +40,9 @@
                     </td>
                 </tr>
                 <tr ng-if="!currentPageOfTrips || currentPageOfTrips.length === 0">
-                    <td colspan="7">No trips exist.</td>
+                    <td colspan="8">No trips exist.</td>
                 </tr>
             </table>
-
 
         </div>
     </div>

@@ -63,6 +63,7 @@ Utils.prototype.isValidDateStr = function (dateStr) {
 
 Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, callback) {
     var result = {};
+    if(documents === null) documents=[];
     var ids = _.pluck(documents, fieldTopopulate);
 //  UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
     GroupsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
