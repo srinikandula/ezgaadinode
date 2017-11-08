@@ -52,15 +52,14 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
     $scope.goToEditTripLanePage = function (tripLaneId) {
         $state.go('tripLanesEdit', {tripLaneId: tripLaneId});
     };
-
+    $scope.count = 0;
     TripLaneServices.count(function (success) {
         if (success.data.status) {
             $scope.count = success.data.count;
-            console.log($scope.count);
+            $scope.init();
         } else {
             Notification.error({message: success.data.message});
         }
-
     });
 
     var pageable;
@@ -72,7 +71,6 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
         TripLaneServices.getTripLanes(pageable, function(response){
             $scope.invalidCount = 0;
             if(angular.isArray(response.data.tripLanes)) {
-                console.log(response);
                 $scope.loading = false;
                 $scope.trips = response.data.tripLanes;
                 tableParams.total(response.totalElements);
@@ -99,7 +97,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
             });
     };
 
-    $scope.init();
+
 
 
 

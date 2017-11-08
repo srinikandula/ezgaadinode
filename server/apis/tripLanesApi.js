@@ -117,20 +117,23 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     async.parallel({
         triplanes: function (accountsCallback) {
+            var limit = params.limit? parseInt(params.limit) : Number.MAX_SAFE_INTEGER;
             TripLanesCollection
                 .find({'accountId': jwt.accountId})
                 .sort(JSON.parse(params.sort))
                 .skip(skipNumber)
-                .limit(params.size)
+                .limit(limit)
                 .lean()
                 .exec(function (err, triplanes) {
-                    Helpers.populateNameInUsersColl(triplanes, "createdBy", function (response) {
-                        if(response.status) {
-                            accountsCallback(err, response.documents);
-                        } else {
-                            accountsCallback(err, null);
-                        }
-                    });
+                    if(triplanes){
+                        Helpers.populateNameInUsersColl(triplanes, "createdBy", function (response) {
+                            if(response.status) {
+                                accountsCallback(err, response.documents);
+                            } else {
+                                accountsCallback(err, null);
+                            }
+                        });
+                    }
                 });
         },
         count: function (countCallback) {
