@@ -20,3 +20,4 @@ if(fs.existsSync(localConfigPath)) {
 var finalJSONConfig = JSON.parse(fs.readFileSync(selectedConfigPath));
 
 module.exports = finalJSONConfig;
+

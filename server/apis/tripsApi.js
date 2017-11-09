@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
+var nodeMailer = require('nodemailer');
 
 var TripCollection = require('./../models/schemas').TripCollection;
 var paymentsApi = require('./../apis/paymentApi');
@@ -351,7 +352,6 @@ Trips.prototype.deleteTrip = function (tripId, callback) {
 };
 
 Trips.prototype.getReport = function (jwt, details, callback) {
-    console.log(details);
     var retObj = {
         status: false,
         messages: []
@@ -368,7 +368,7 @@ Trips.prototype.getReport = function (jwt, details, callback) {
         var query = {date:{$gte:details.fromDate, $lte:details.toDate}};
         if(details.registrationNo) query.registrationNo=details.registrationNo;
         if(details.driver) query.driver=details.driver;
-        TripCollection.find(query,{date:1,registrationNo:1,driver:1,bookedFor:1,freightAmount:1,advance:1,balance:1,from:1,to:1,createdBy:1}, function (err, trips) {
+        TripCollection.find(query,{date:1,registrationNo:1,driver:1,bookedFor:1,freightAmount:1,advance:1,balance:1,from:1,to:1,tripId:1,createdBy:1}, function (err, trips) {
             if (err) {
                 retObj.messages.push('Error finding trips');
                 callback(retObj);
@@ -405,15 +405,57 @@ Trips.prototype.getReport = function (jwt, details, callback) {
                         retObj.messages.push('Error retrieving trips');
                         callback(retObj);
                     } else {
+                        var tripsSimplified = [];
+                        for(var i = 0;i < trips.length;i++) {
+                            tripsSimplified.push({
+                                trips: {
+                                    registrationNo:trips[i].attrs.truckName,
+                                    date:trips[i].date,
+                                    bookedFor:trips[i].attrs.partyName,
+                                    from:trips[i].from,
+                                    to:trips[i].to,
+                                    driverName:trips[i].attrs.fullName,
+                                    mobile:trips[i].attrs.mobile
+                                },
+                                payments: {
+                                    freightAmount:trips[i].freightAmount,
+                                    advance:trips[i].advance,
+                                    balance:trips[i].balance
+                                }
+                            });
+                        }
                         retObj.status = true;
                         retObj.messages.push('Success');
-                        retObj.trips = trips;
+                        retObj.tripsReport = tripsSimplified;
                         callback(retObj);
                     }
                 });
             }
         });
     }
+};
+
+Trips.prototype.sendEmail = function (jwt, details, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var mailoptions = {
+        email: 'sai@mtwlabs.com',
+        subject: "Easygaadi Test",
+        text: "Hello User"//details.tripsReport
+    };
+    Utils.sendEmail(mailoptions, function (err, emailsuccess) {
+        if (err) {
+            retObj.status = false;
+            retObj.message = "Error while sending report";
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.message = "Email sent successfully";
+            callback(retObj);
+        }
+    });
 };
 
 module.exports = new Trips();

@@ -2,7 +2,9 @@ var _ = require('underscore');
 var moment = require('moment');
 var mongoose = require('mongoose');
 var async = require('async');
+var nodeMailer = require('nodemailer');
 var ObjectId = mongoose.Types.ObjectId;
+var config = require('./../config/config');
 var UsersColl = require('./../models/schemas').UsersColl;
 var DriversColl = require('./../models/schemas').DriversColl;
 var PartyColl = require('./../models/schemas').PartyCollection;
@@ -288,6 +290,33 @@ Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) 
             result.documents = documents;
             result.err = err;
             callback(result);
+        }
+    });
+}
+
+Utils.prototype.sendEmail = function(data, callback){
+    var retObj = {};
+    var transporter = nodeMailer.createTransport(config.smtp);
+    var mailOptions = {
+        from: '"Easygaadi"<' + config.smtp.auth.user + '>',
+        to: data.email,
+        subject: data.subject + " ✔",
+        text: "Hello"
+        // html: data.html
+        // attachments: data.attach
+    };
+    if(data.text) mailOptions.text = data.text;
+    if(data.html) mailOptions.html = data.html;
+    transporter.sendMail(mailOptions, function (err, info) {
+        if (err) {
+            retObj.status = false;
+            retObj.message = "Error";
+            callback(null, retObj);
+        } else {
+            //console.log('Message sent: ' + info.response);
+            retObj.status = true;
+            retObj.message = "Invitation successfully sent ";
+            callback(null, retObj);
         }
     });
 };
