@@ -1,13 +1,13 @@
 var fs = require('fs');
 
 function getUserHome() {
-    return process.env[(process.platform === 'win32') ? 'USERPROFILE' : 'HOME'];
+    return process.env[(process.platform === 'linux') ? 'USERPROFILE' : '/home/sai/'];
 }
 
 var localConfigPath = getUserHome() + '/easygaadi-config.json';
-var projectConfigPath = './config.json';
+var projectConfigPath = __dirname+'/config.json';
 var selectedConfigPath;
-
+// console.log(fs.existsSync(projectConfigPath), projectConfigPath);
 if(fs.existsSync(localConfigPath)) {
     selectedConfigPath = localConfigPath;
 } else if(fs.existsSync(projectConfigPath)) {
