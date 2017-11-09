@@ -417,7 +417,8 @@ Trips.prototype.getReport = function (jwt, details, callback) {
                                     from:trips[i].from,
                                     to:trips[i].to,
                                     driverName:trips[i].attrs.fullName,
-                                    mobile:trips[i].attrs.mobile
+                                    mobile:trips[i].attrs.mobile,
+                                    tripId:trips[i].tripId
                                 },
                                 payments: {
                                     freightAmount:trips[i].freightAmount,
@@ -438,37 +439,62 @@ Trips.prototype.getReport = function (jwt, details, callback) {
 };
 
 Trips.prototype.sendEmail = function (jwt, details, callback) {
-    console.log(details);
     var retObj = {
         status: false,
         messages: []
     };
-    var template = null;
-    if(!fs.existsSync(__dirname + '/../emailTemplates/tripReport.html')){
-        retObj.status = false;
-        retObj.messages.push("Error while sending report");
-        callback(retObj);
-    } else {
-        template = fs.readFileSync(__dirname + '/../emailTemplates/tripReport.html', 'utf8');
-        // var temp = Velocity.render(template, {a: 100, b: {c: 200}});
-        var temp = Velocity.render(template, {emailData:details.tripsReport});
-        var mailoptions = {
-            email: 'sai@mtwlabs.com',
-            subject: "Easygaadi Test",
-            html: temp//"Hello User"
-        };
-        Utils.sendEmail(mailoptions, function (emailsuccess) {
-            if (!emailsuccess.status) {
+    new Trips().getReport(jwt, details, function (dataToEmail) {
+        if(!dataToEmail.status){
+            retObj.messages.push('Error retrieving trips');
+            callback(retObj);
+        } else {
+            var template = null;
+            if(!fs.existsSync(__dirname + '/../emailTemplates/tripReport.html')){
                 retObj.status = false;
                 retObj.messages.push("Error while sending report");
                 callback(retObj);
             } else {
-                retObj.status = true;
-                retObj.messages.push("Email sent successfully");
-                callback(retObj);
+                template = fs.readFileSync(__dirname + '/../emailTemplates/tripReport.html', 'utf8');
+                var dataSimplifiedForEmail = [];
+                for(var i = 0;i < dataToEmail.tripsReport.length;i++) {
+                    var trip = {};
+                    if(dataToEmail.tripsReport[i].trips.registrationNo) trip['Registration No'] = dataToEmail.tripsReport[i].trips.registrationNo;
+                    if(dataToEmail.tripsReport[i].trips.date) trip['Date'] = dataToEmail.tripsReport[i].trips.date;
+                    if(dataToEmail.tripsReport[i].trips.bookedFor) trip['Party'] = dataToEmail.tripsReport[i].trips.bookedFor;
+                    if(dataToEmail.tripsReport[i].trips.from) trip['From'] = dataToEmail.tripsReport[i].trips.from;
+                    if(dataToEmail.tripsReport[i].trips.to) trip['To'] = dataToEmail.tripsReport[i].trips.to;
+                    if(dataToEmail.tripsReport[i].trips.driverName) trip['Driver Name'] = dataToEmail.tripsReport[i].trips.driverName;
+                    if(dataToEmail.tripsReport[i].trips.mobile) trip['Mobile'] = dataToEmail.tripsReport[i].trips.mobile;
+                    if(dataToEmail.tripsReport[i].trips.tripId) trip['Trip Id'] = dataToEmail.tripsReport[i].trips.tripId;
+                    var payment = {};
+                    if(dataToEmail.tripsReport[i].payments.freightAmount) payment['Freight Amount'] = dataToEmail.tripsReport[i].payments.freightAmount;
+                    if(dataToEmail.tripsReport[i].payments.advance) payment['Advance'] = dataToEmail.tripsReport[i].payments.advance;
+                    if(dataToEmail.tripsReport[i].payments.balance) payment['Balance'] = dataToEmail.tripsReport[i].payments.balance;
+                    dataSimplifiedForEmail.push({trip:trip,payment:payment});
+                }
+                // console.log(dataToEmail.tripsReport[0]);
+                // console.log(dataSimplifiedForEmail[0]);
+                template = Velocity.render(template, {emailData:dataSimplifiedForEmail});
+                var mailoptions = {
+                    email: 'sai@mtwlabs.com', //jwt.email
+                    subject: "Easygaadi Test",
+                    html: template //"Hello User"
+                };
+                Utils.sendEmail(mailoptions, function (emailsuccess) {
+                    if (!emailsuccess.status) {
+                        retObj.status = false;
+                        retObj.err = emailsuccess.err;
+                        retObj.messages.push(emailsuccess.message);
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push(emailsuccess.message);
+                        callback(retObj);
+                    }
+                });
             }
-        });
-    }
+        }
+    });
 };
 
 module.exports = new Trips();

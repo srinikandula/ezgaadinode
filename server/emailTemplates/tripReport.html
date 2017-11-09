@@ -7,23 +7,76 @@
 <body>
 <div>
     <!--<ul>-->
-        <!--#foreach($key in $trips.keySet())-->
-        <!--<li>Key: $key -> Value: $trips.get($key)</li>-->
-        <!--#end-->
+    <!--#foreach($key in $trips.keySet())-->
+    <!--<li>Key: $key -> Value: $trips.get($key)</li>-->
+    <!--#end-->
     <!--</ul>-->
-    <table>
+
+    <!--<table>-->
+    <!--#foreach($record in $emailData)-->
+    <!--Trip-->
+    <!--<tr>-->
+    <!--<td>Registration No</td> <td>$record.trips.registrationNo</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>Date</td> <td> $record.trips.date</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>Record</td> <td> $record.trips.bookedFor</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>Form</td> <td> $record.trips.from</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>To</td> <td> $record.trips.to</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>Driver Name</td> <td> $record.trips.driverName</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>Mobile</td> <td> $record.trips.mobile</td>-->
+    <!--</tr>-->
+    <!--Payment-->
+    <!--<tr>-->
+    <!--<td>freightAmount</td> <td> $record.payments.freightAmount</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>advance</td> <td> $record.payments.advance</td>-->
+    <!--</tr>-->
+    <!--<tr>-->
+    <!--<td>balance</td> <td> $record.payments.balance</td>-->
+    <!--</tr>-->
+    <!--<hr>-->
+    <!--#end-->
+    <!--</table>-->
+
+
+    <table style="width: 600px;">
         #foreach($record in $emailData)
-        <tr>
-            <td>$record.trips.registrationNo</td>
-            <td>$record.trips.date</td>
-            <td>$record.trips.bookedFor</td>
-            <td>$record.trips.from</td>
-            <td>$record.trips.to</td>
-            <td>$record.trips.driverName</td>
-            <td>$record.trips.mobile</td>
-        </tr>
+
+        <table style="width: 400px;">
+            <tr><b>Trip</b></tr>
+            #foreach($key in $record.trip.keySet())
+            <tr>
+                <td>$key</td>
+                <td>$record.trip.get($key)</td>
+            </tr>
+            #end
+        </table>
+
+        <table style="width: 200px;">
+            <tr><b>Payment</b></tr>
+            #foreach($key in $record.payment.keySet())
+            <tr>
+                <td>$key</td>
+                <td> $record.payment.get($key)</td>
+            </tr>
+            #end
+        </table>
+
         #end
     </table>
+
 </div>
 </body>
 </html>

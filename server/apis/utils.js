@@ -296,28 +296,36 @@ Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) 
 
 Utils.prototype.sendEmail = function(data, callback){
     var retObj = {};
-    var transporter = nodeMailer.createTransport(config.smtp);
-    var mailOptions = {
-        from: '"Easygaadi"<' + config.smtp.auth.user + '>',
-        to: data.email,
-        subject: data.subject + " ✔",
-        text: "Hello"
-        // html: data.html
-        // attachments: data.attach
-    };
-    if(data.text) mailOptions.text = data.text;
-    if(data.html) mailOptions.html = data.html;
-    transporter.sendMail(mailOptions, function (err, info) {
-        if (err) {
-            retObj.status = false;
-            retObj.message = "Error";
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.message = "mail sent successfully";
-            callback(retObj);
-        }
-    });
+    if(config.smtp) {
+        var transporter = nodeMailer.createTransport(config.smtp);
+        var mailOptions = {
+            from: '"Easygaadi"<' + config.smtp.auth.user + '>',
+            to: data.email,
+            subject: data.subject + " ✔",
+            text: "Hello"
+            // html: data.html
+            // attachments: data.attach
+        };
+        if(data.text) mailOptions.text = data.text;
+        if(data.html) mailOptions.html = data.html;
+        transporter.sendMail(mailOptions, function (err, info) {
+            // console.log(err);
+            if (err) {
+                retObj.status = false;
+                retObj.message = "Error";
+                retObj.err = err;
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.message = "mail sent successfully";
+                callback(retObj);
+            }
+        });
+    } else {
+        retObj.status = false;
+        retObj.message = "Error while reading smtp configuration";
+        callback(retObj);
+    }
 };
 
 /**
