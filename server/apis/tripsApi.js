@@ -3,6 +3,8 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 var nodeMailer = require('nodemailer');
+var Velocity = require('velocityjs');
+var fs = require('fs');
 
 var TripCollection = require('./../models/schemas').TripCollection;
 var paymentsApi = require('./../apis/paymentApi');
@@ -436,26 +438,37 @@ Trips.prototype.getReport = function (jwt, details, callback) {
 };
 
 Trips.prototype.sendEmail = function (jwt, details, callback) {
+    console.log(details);
     var retObj = {
         status: false,
         messages: []
     };
-    var mailoptions = {
-        email: 'sai@mtwlabs.com',
-        subject: "Easygaadi Test",
-        text: "Hello User"//details.tripsReport
-    };
-    Utils.sendEmail(mailoptions, function (err, emailsuccess) {
-        if (err) {
-            retObj.status = false;
-            retObj.message = "Error while sending report";
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.message = "Email sent successfully";
-            callback(retObj);
-        }
-    });
+    var template = null;
+    if(!fs.existsSync(__dirname + '/../emailTemplates/tripReport.html')){
+        retObj.status = false;
+        retObj.messages.push("Error while sending report");
+        callback(retObj);
+    } else {
+        template = fs.readFileSync(__dirname + '/../emailTemplates/tripReport.html', 'utf8');
+        // var temp = Velocity.render(template, {a: 100, b: {c: 200}});
+        var temp = Velocity.render(template, {emailData:details.tripsReport});
+        var mailoptions = {
+            email: 'sai@mtwlabs.com',
+            subject: "Easygaadi Test",
+            html: temp//"Hello User"
+        };
+        Utils.sendEmail(mailoptions, function (emailsuccess) {
+            if (!emailsuccess.status) {
+                retObj.status = false;
+                retObj.messages.push("Error while sending report");
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push("Email sent successfully");
+                callback(retObj);
+            }
+        });
+    }
 };
 
 module.exports = new Trips();

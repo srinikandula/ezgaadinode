@@ -311,12 +311,11 @@ Utils.prototype.sendEmail = function(data, callback){
         if (err) {
             retObj.status = false;
             retObj.message = "Error";
-            callback(null, retObj);
+            callback(retObj);
         } else {
-            //console.log('Message sent: ' + info.response);
             retObj.status = true;
-            retObj.message = "Invitation successfully sent ";
-            callback(null, retObj);
+            retObj.message = "mail sent successfully";
+            callback(retObj);
         }
     });
 };

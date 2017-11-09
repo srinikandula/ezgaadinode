@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+<body>
+<div>
+    <!--<ul>-->
+        <!--#foreach($key in $trips.keySet())-->
+        <!--<li>Key: $key -> Value: $trips.get($key)</li>-->
+        <!--#end-->
+    <!--</ul>-->
+    <table>
+        #foreach($record in $emailData)
+        <tr>
+            <td>$record.trips.registrationNo</td>
+            <td>$record.trips.date</td>
+            <td>$record.trips.bookedFor</td>
+            <td>$record.trips.from</td>
+            <td>$record.trips.to</td>
+            <td>$record.trips.driverName</td>
+            <td>$record.trips.mobile</td>
+        </tr>
+        #end
+    </table>
+</div>
+</body>
+</html>
