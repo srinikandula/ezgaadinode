@@ -1,7 +1,7 @@
 var fs = require('fs');
 
 function getUserHome() {
-    return process.env[(process.platform === 'linux') ? 'USERPROFILE' : '/home/sai/'];
+    return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
 var localConfigPath = getUserHome() + '/easygaadi-config.json';
