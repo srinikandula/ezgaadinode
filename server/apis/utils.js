@@ -77,7 +77,7 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
                 // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
                 if (item.createdBy) {
                     var user = _.find(names, function (users) {
-                        return users._id.toString() === item.createdBy.toString();
+                        if(item.createdBy) return users._id.toString() === item.createdBy.toString();
                     });
 
                     if (user) {
@@ -152,7 +152,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var party = _.find(names, function (users) {
-                    return users._id.toString() === item.bookedFor.toString();
+                    if(item.bookedFor) return users._id.toString() === item.bookedFor.toString();
                 });
                 if (party) {
                     if (!item.attrs) {
@@ -183,7 +183,7 @@ Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulat
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             var tripLane = _.find(names, function (users) {
-                return users._id.toString() === item[fieldTopopulate].toString();
+                if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
             });
             if (tripLane) {
                 if (!item.attrs) {
@@ -213,7 +213,7 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Trucks = _.find(names, function (users) {
-                    return users._id.toString() === item[fieldTopopulate].toString();
+                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (Trucks) {
                     if (!item.attrs) {
