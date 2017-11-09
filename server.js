@@ -17,6 +17,7 @@ var Drivers = require('./server/routes/driverRoutes');
 var Roles = require('./server/routes/roles');
 var TripLanes = require('./server/routes/tripLanesRoutes');
 var Payments = require('./server/routes/paynemtRoutes');
+var Events = require('./server/routes/eventsRoutes');
 
 var authMiddleware = require('./server/middleware/auth');
 
@@ -37,6 +38,7 @@ app.use(function (req, res, next) {
 });
 
 app.use('/v1/user', Users.OpenRouter);
+app.use('/v1/events', Events.OpenRouter);
 
 app.use(authMiddleware);
 
