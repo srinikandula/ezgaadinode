@@ -367,7 +367,7 @@ Trips.prototype.getReport = function (jwt, details, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        var query = {date:{$gte:details.fromDate, $lte:details.toDate}};
+        var query = {accountId:jwt.accountId,date:{$gte:details.fromDate, $lte:details.toDate}};
         if(details.registrationNo) query.registrationNo=details.registrationNo;
         if(details.driver) query.driver=details.driver;
         TripCollection.find(query,{date:1,registrationNo:1,driver:1,bookedFor:1,freightAmount:1,advance:1,balance:1,from:1,to:1,tripId:1,createdBy:1}, function (err, trips) {
