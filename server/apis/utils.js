@@ -291,8 +291,6 @@ Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) 
     });
 }
 
-
-
 /**
  * Module to clean up when a driver is assigned to truck or vice versa.
  * When a driver is assigned to a truck check if the driver is already assigned to a different truck, if so remove old
