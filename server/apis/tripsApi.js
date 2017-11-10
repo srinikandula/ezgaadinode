@@ -9,6 +9,8 @@ var paymentsApi = require('./../apis/paymentApi');
 var config = require('./../config/config');
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
+var emailService = require('./mailerApi');
+
 var Trips = function () {
 };
 
@@ -351,26 +353,34 @@ Trips.prototype.deleteTrip = function (tripId, callback) {
     }
 };
 
-Trips.prototype.getReport = function (jwt, details, callback) {
+/**
+ * Api for trip report
+ * fields for filter
+ * @param fromDate
+ * @param toDate
+ * @param registrationNo (optional)
+ * @param driver (optional)
+ * **/
+Trips.prototype.getReport = function (jwt, filter, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    if(!details.fromDate) {
+    if(!filter.fromDate) {
         retObj.messages.push("Please select from date");
     }
-    if(!details.toDate) {
+    if(!filter.toDate) {
         retObj.messages.push("Please select to date");
     }
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        var query = {date:{$gte:details.fromDate, $lte:details.toDate}};
-        if(details.registrationNo){
-            query.registrationNo=details.registrationNo;
+        var query = {date:{$gte:filter.fromDate, $lte:filter.toDate}};
+        if(filter.registrationNo){
+            query.registrationNo=filter.registrationNo;
         }
-        if(details.driver){
-            query.driver=details.driver;
+        if(filter.driver){
+            query.driver=filter.driver;
         }
         TripCollection.find(query,{date:1,registrationNo:1,driver:1,bookedFor:1,freightAmount:1,advance:1,balance:1,from:1,to:1,tripId:1,createdBy:1}, function (err, trips) {
             if (err) {
@@ -413,7 +423,7 @@ Trips.prototype.getReport = function (jwt, details, callback) {
                                     from:trips[i].from,
                                     to:trips[i].to,
                                     driverName:trips[i].attrs.fullName,
-                                    mobile:trips[i].attrs.mobile
+                                    mobile:trips[i].attrs.mobile,
                                     payments: {
                                         freightAmount:trips[i].freightAmount,
                                         advance:trips[i].advance,
@@ -431,6 +441,46 @@ Trips.prototype.getReport = function (jwt, details, callback) {
             }
         });
     }
+};
+
+Trips.prototype.sendEmail = function (jwt, data, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    new Trips().getReport(jwt, data, function (dataToEmail) {
+        if(!dataToEmail.status){
+            retObj.messages.push('Error retrieving trips');
+            callback(retObj);
+        } else {
+            var dataSimplifiedForEmail = [];
+            for(var i = 0;i < dataToEmail.tripsReport.length;i++) {
+                var trip = {};
+                if(dataToEmail.tripsReport[i].trip.registrationNo) trip['Registration No'] = dataToEmail.tripsReport[i].trip.registrationNo;
+                if(dataToEmail.tripsReport[i].trip.date) trip['Date'] = dataToEmail.tripsReport[i].trip.date;
+                if(dataToEmail.tripsReport[i].trip.bookedFor) trip['Party'] = dataToEmail.tripsReport[i].trip.bookedFor;
+                if(dataToEmail.tripsReport[i].trip.from) trip['From'] = dataToEmail.tripsReport[i].trip.from;
+                if(dataToEmail.tripsReport[i].trip.to) trip['To'] = dataToEmail.tripsReport[i].trip.to;
+                if(dataToEmail.tripsReport[i].trip.driverName) trip['Driver Name'] = dataToEmail.tripsReport[i].trip.driverName;
+                if(dataToEmail.tripsReport[i].trip.mobile) trip['Mobile'] = dataToEmail.tripsReport[i].trip.mobile;
+                if(dataToEmail.tripsReport[i].trip.tripId) trip['Trip Id'] = dataToEmail.tripsReport[i].trip.tripId;
+                var payment = {};
+                if(dataToEmail.tripsReport[i].trip.payments.freightAmount) payment['Freight Amount'] = dataToEmail.tripsReport[i].trip.payments.freightAmount;
+                if(dataToEmail.tripsReport[i].trip.payments.advance) payment['Advance'] = dataToEmail.tripsReport[i].trip.payments.advance;
+                if(dataToEmail.tripsReport[i].trip.payments.balance) payment['Balance'] = dataToEmail.tripsReport[i].trip.payments.balance;
+                dataSimplifiedForEmail.push({trip:trip,payment:payment});
+            }
+            var params = {
+                templateName: 'tripReport',
+                subject: "Easygaadi Test",
+                to: jwt.email,
+                data: dataSimplifiedForEmail//dataToEmail.tripsReport
+            };
+            emailService.sendEmail(params, function (response) {
+                callback(response);
+            });
+        }
+    });
 };
 
 module.exports = new Trips();

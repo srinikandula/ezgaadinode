@@ -149,7 +149,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var party = _.find(names, function (users) {
-                    return users._id.toString() === item.bookedFor.toString();
+                    if(item.bookedFor) return users._id.toString() === item.bookedFor.toString();
                 });
                 if (party) {
                     if (!item.attrs) {
