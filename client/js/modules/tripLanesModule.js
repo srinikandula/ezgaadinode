@@ -39,7 +39,7 @@ app.factory('TripLaneServices', function ($http) {
                 method: "DELETE"
             }).then(success, error)
         },
-        count : function ( success, error) {
+        count: function (success, error) {
             $http({
                 url: '/v1/tripLanes/total/count',
                 method: "GET"
@@ -48,7 +48,7 @@ app.factory('TripLaneServices', function ($http) {
     }
 });
 
-app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'TripLaneServices','paginationService', '$state', 'Notification', function ($scope, $uibModal, NgTableParams,TripLaneServices, paginationService,$state, Notification) {
+app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'TripLaneServices', 'paginationService', '$state', 'Notification', function ($scope, $uibModal, NgTableParams, TripLaneServices, paginationService, $state, Notification) {
     $scope.goToEditTripLanePage = function (tripLaneId) {
         $state.go('tripLanesEdit', {tripLaneId: tripLaneId});
     };
@@ -57,48 +57,44 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
         if (success.data.status) {
             $scope.count = success.data.count;
             $scope.init();
+
         } else {
             Notification.error({message: success.data.message});
         }
     });
-
     var pageable;
 
     var loadTableData = function (tableParams) {
-        var pageable = {page:tableParams.page(), size:tableParams.count(), sort:tableParams.sorting()};
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
-        TripLaneServices.getTripLanes(pageable, function(response){
+        TripLaneServices.getTripLanes(pageable, function (response) {
             $scope.invalidCount = 0;
-            if(angular.isArray(response.data.tripLanes)) {
+            if (angular.isArray(response.data.tripLanes)) {
                 $scope.loading = false;
                 $scope.trips = response.data.tripLanes;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trips;
-                $scope.currentPageOfTrips =  $scope.trips;
+                $scope.currentPageOfTrips = $scope.trips;
             }
         });
     };
 
-    $scope.init = function() {
-            $scope.tripLanesParams = new NgTableParams({
-                page: 1, // show first page
-                size: 10,
-                count: 10,
-                sorting: {
-                    name: -1
-                },
-            }, {
-                counts: [],
-                total: $scope.count,
-                getData: function (params) {
-                    loadTableData(params);
-                }
-            });
+    $scope.init = function () {
+        $scope.tripLanesParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                name: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
     };
-
-
-
 
 
     //
@@ -156,11 +152,11 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
     // $scope.getTripLanesData();
 
     $scope.deleteTripLane = function (tripLaneId) {
-        TripLaneServices.deleteTripLane(tripLaneId,function (success) {
-            if (success){
+        TripLaneServices.deleteTripLane(tripLaneId, function (success) {
+            if (success) {
                 $scope.init();
                 Notification.error({message: "Trip Lane Deleted"});
-            }else {
+            } else {
                 console.log("Error in deleting")
             }
         })
@@ -179,7 +175,7 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
         from: '',
         to: '',
         estimatedDistance: '',
-        error:[],
+        error: [],
         success: []
     };
 
@@ -205,19 +201,19 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
         params.success = [];
         params.error = [];
         console.log(params.error);
-        if(!params.name){
+        if (!params.name) {
             params.error.push('Invalid Trip Lane Name');
         }
-        if(!params.from){
+        if (!params.from) {
             params.error.push('Invalid From Location');
         }
-        if(!params.to){
+        if (!params.to) {
             params.error.push('Invalid to Location');
         }
-        if(!params.estimatedDistance){
+        if (!params.estimatedDistance) {
             params.error.push('Invalid Estimated Dist');
         }
-        if(!params.error.length) {
+        if (!params.error.length) {
             if (params._id) {
                 TripLaneServices.updateTripLane(params, function (success) {
                     if (success.data.status) {

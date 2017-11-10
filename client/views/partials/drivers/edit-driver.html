@@ -30,10 +30,11 @@
                         <div class="form-group col-xs-12">
                             <label for="truckId" class="col-xs-12 col-sm-4 pall-zero">Truck Registration Number</label>
                             <div class="col-sm-8 col-xs-12">
-                                <select ng-model="driver.truckId"
+                                <input type="text" ng-model="driver.truckId" placeholder="Trucks" uib-typeahead="address for address in getLocation($viewValue)" typeahead-loading="loadingLocations" typeahead-no-results="noResults" class="form-control">
+                                <!--<select ng-model="driver.truckId"
                                         ng-options="truck._id as truck.registrationNo for truck in trucks" type="text"
                                         class="form-control" id="truckId">
-                                </select>
+                                </select>-->
                             </div>
                         </div>
                         <div class="form-group col-xs-12">

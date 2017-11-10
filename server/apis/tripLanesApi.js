@@ -118,10 +118,12 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
      console.log('params',params);
     async.parallel({
         triplanes: function (accountsCallback) {
-            var limit = params.limit? parseInt(params.limit) : Number.MAX_SAFE_INTEGER;
+            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) :{};
+
             TripLanesCollection
                 .find({'accountId': jwt.accountId})
-                .sort(JSON.parse(params.sort))
+                .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 //.limit(Number(params.size))
