@@ -14,10 +14,11 @@ var Maintenance = require('./server/routes/maintenanceCost');
 var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
 var Drivers = require('./server/routes/driverRoutes');
-var Roles = require('./server/routes/roles');
+var Roles = require('./server/routes/roleRoutes');
 var TripLanes = require('./server/routes/tripLanesRoutes');
 var Payments = require('./server/routes/paynemtRoutes');
 var Events = require('./server/routes/eventsRoutes');
+var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 
 var authMiddleware = require('./server/middleware/auth');
 
@@ -52,6 +53,7 @@ app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/maintenance', Maintenance.AuthRouter);
 app.use('/v1/tripLanes',TripLanes.AuthRouter);
 app.use('/v1/payments', Payments.AuthRouter);
+app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

@@ -172,6 +172,22 @@ var payments = new mongoose.Schema({
     attrs: {}
 },{timestamps: true});
 
+var expenseMaster = new mongoose.Schema({
+    expenseName: String,
+    updatedBy: String,
+    createdBy: String,
+    attrs: {}
+},{timestamps: String});
+
+var paymentsReceived = mongoose.Schema({
+    tripId: String,
+    driverId: String,
+    description: String,
+    expenseType: String,
+    amount: String,
+    attrs: {}
+},{timestamps: String});
+
 module.exports = {
     UsersColl: mongoose.model('users', usersSchema, 'users'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -182,5 +198,7 @@ module.exports = {
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
-    PaymentsColl: mongoose.model('payments', payments, 'payments')
+    PaymentsColl: mongoose.model('payments', payments, 'payments'),
+    expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
+    paymentsReceivedColl: mongoose.model('paymentsReceived', expenseMaster, 'paymentsReceived')
 };
