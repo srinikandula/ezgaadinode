@@ -19,6 +19,7 @@ var TripLanes = require('./server/routes/tripLanesRoutes');
 var Payments = require('./server/routes/paynemtRoutes');
 var Events = require('./server/routes/eventsRoutes');
 var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
+var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
 
 var authMiddleware = require('./server/middleware/auth');
 
@@ -54,6 +55,7 @@ app.use('/v1/maintenance', Maintenance.AuthRouter);
 app.use('/v1/tripLanes',TripLanes.AuthRouter);
 app.use('/v1/payments', Payments.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
+app.use('/v1/paymentsReceived', PaymentsReceived.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

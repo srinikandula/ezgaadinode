@@ -185,6 +185,7 @@ var paymentsReceived = mongoose.Schema({
     description: String,
     expenseType: String,
     amount: String,
+    accountId: String,
     attrs: {}
 },{timestamps: String});
 
@@ -200,5 +201,5 @@ module.exports = {
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
     PaymentsColl: mongoose.model('payments', payments, 'payments'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
-    paymentsReceivedColl: mongoose.model('paymentsReceived', expenseMaster, 'paymentsReceived')
+    paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived')
 };

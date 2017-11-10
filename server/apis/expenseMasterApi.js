@@ -71,7 +71,7 @@ ExpenseMaster.prototype.updateExpense = function (jwt, expenseDetails, callback)
         messages: []
     };
     expenseDetails = Utils.removeEmptyFields(expenseDetails);
-
+    expenseDetails.updatedBy = jwt.id;
     ExpenseMasterColl.findOneAndUpdate({_id: expenseDetails._id}, {$set: expenseDetails}, {new: true}, function (err, expense) {
         if (err) {
             retObj.messages.push("Error while updating expense, try Again");
@@ -81,7 +81,7 @@ ExpenseMaster.prototype.updateExpense = function (jwt, expenseDetails, callback)
             retObj.messages.push("Expense updated successfully");
             callback(retObj);
         } else {
-            retObj.messages.push("Error, finding expense    ");
+            retObj.messages.push("Error, finding expense");
             callback(retObj);
         }
     });
