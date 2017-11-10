@@ -7,15 +7,10 @@ var PaymentsColl = require('./../models/schemas').PaymentsColl;
 
 var config = require('./../config/config');
 var Utils = require('./utils');
-var pageLimits = require('./../config/pagination');
 
 var Payments = function () {
 };
 
-// var trips = [];
-// Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
-//     console.log("userscoll",response);
-// });
 
 Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
     var retObj = {
@@ -88,8 +83,6 @@ Payments.prototype.getPaymentsOfTrip = function (accountId, tripId, callback) {
         status: false,
         messages: []
     };
-
-    console.log(Utils.prototype);
     PaymentsColl.find({tripId: tripId, accountId: accountId}, {createdAt: 0, updatedAt: 0}, function (err, payments) {
         if (err) {
             retObj.messages.push('Error while finding payment, try again');

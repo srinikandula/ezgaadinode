@@ -63,32 +63,29 @@ Utils.prototype.isValidDateStr = function (dateStr) {
 Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, names) {
+    UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
         if (err) {
             result.status = false;
             result.message = 'Error retrieving users';
             result.err = err;
             callback(result);
         } else {
-            var item;
-
             for (var i = 0; i < documents.length; i++) {
-                item = documents[i];
+                var document = documents[i];
                 // if(!item.createdBy) item.createdBy = '59f33aa384d7b9b87842eb9f';
-                if (item.createdBy) {
-                    var user = _.find(names, function (users) {
-                        return users._id.toString() === item.createdBy.toString();
+                if (document.createdBy) {
+                    var user = _.find(userNames, function (users) {
+                        return users._id.toString() === document.createdBy.toString();
                     });
 
                     if (user) {
-                        if (!item.attrs) {
-                            item.attrs = {};
+                        if (!document.attrs) {
+                            document.attrs = {};
                         }
-                        item.attrs.createdByName = user.userName;
+                        document.attrs.createdByName = user.userName;
                     }
                 }
             }
-
             result.status = true;
             result.message = 'Error retrieving users';
             result.err = err;
@@ -294,31 +291,7 @@ Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) 
     });
 }
 
-Utils.prototype.sendEmail = function(data, callback){
-    var retObj = {};
-    var transporter = nodeMailer.createTransport(config.smtp);
-    var mailOptions = {
-        from: '"Easygaadi"<' + config.smtp.auth.user + '>',
-        to: data.email,
-        subject: data.subject + " ✔",
-        text: "Hello"
-        // html: data.html
-        // attachments: data.attach
-    };
-    if(data.text) mailOptions.text = data.text;
-    if(data.html) mailOptions.html = data.html;
-    transporter.sendMail(mailOptions, function (err, info) {
-        if (err) {
-            retObj.status = false;
-            retObj.message = "Error";
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.message = "mail sent successfully";
-            callback(retObj);
-        }
-    });
-};
+
 
 /**
  * Module to clean up when a driver is assigned to truck or vice versa.
