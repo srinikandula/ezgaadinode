@@ -473,7 +473,7 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
             var params = {
                 templateName: 'tripReport',
                 subject: "Easygaadi Test",
-                to: 'sai@mtwlabs.com', //jwt.email,
+                to: jwt.email,
                 data: dataSimplifiedForEmail//dataToEmail.tripsReport
             };
             emailService.sendEmail(params, function (response) {
