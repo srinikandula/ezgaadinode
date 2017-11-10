@@ -6,21 +6,32 @@
 </head>
 <body>
 <div>
-    <!--<ul>-->
-        <!--#foreach($key in $trips.keySet())-->
-        <!--<li>Key: $key -> Value: $trips.get($key)</li>-->
-        <!--#end-->
-    <!--</ul>-->
-    <table>
+    <table style="width: 600px;">
         #foreach($record in $emailData)
         <tr>
-            <td>$record.trips.registrationNo</td>
-            <td>$record.trips.date</td>
-            <td>$record.trips.bookedFor</td>
-            <td>$record.trips.from</td>
-            <td>$record.trips.to</td>
-            <td>$record.trips.driverName</td>
-            <td>$record.trips.mobile</td>
+            <td style="width: 400px;">
+                <table>
+                    <tr><b>Trip</b></tr>
+                    #foreach($key in $record.trip.keySet())
+                    <tr>
+                        <td>$key</td>
+                        <td>$record.trip.get($key)</td>
+                    </tr>
+                    #end
+                </table>
+            </td>
+            <td style="width: 200px;">
+                <table>
+                    <tr><b>Payment</b></tr>
+                    #foreach($key in $record.payment.keySet())
+                    <tr>
+                        <td>$key</td>
+                        <td> $record.payment.get($key)</td>
+                    </tr>
+                    #end
+                </table
+                >
+            </td>
         </tr>
         #end
     </table>

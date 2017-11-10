@@ -3,7 +3,7 @@ var async = require('async');
 
 var config = require('./../config/config');
 var Events = function() {};
-var pool  = mysql.createPool(config.mysql);
+// var pool  = mysql.createPool(config.mysql);
 
 Events.prototype.getEventData = function(accountId, callback) {
     var retObj = {};

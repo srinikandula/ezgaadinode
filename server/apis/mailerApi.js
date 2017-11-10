@@ -1,69 +1,76 @@
 var nodeMailer = require('nodemailer');
 var Velocity = require('velocityjs');
 var fs = require('fs');
+var config = require('./../config/config');
 
 /**
  * Module for sending emails using node mailer
- * @param jwt
- * @param templateName
- * @param to -- to address
- * @param data
- * @param callback
+ * @param templateName -- html file name
+ * @param subject      -- subject
+ * @param to           -- to address
+ * @param data         -- data to include in the email
  */
-EmailService.prototype.sendEmail = function (jwt, templateName, to, from, subject, data, callback) {
-    console.log(details);
+
+var EmailService = function () {
+};
+
+EmailService.prototype.sendEmail = function (data, callback) {
+    console.log(data.tripsData);
     var retObj = {
         status: false,
         messages: []
     };
     var template = null;
-    if(!fs.existsSync(__dirname + '/../emailTemplates/'+templateName)){
+    if(!data.templateName) {
         retObj.status = false;
-        retObj.messages.push("Error while sending report");
+        retObj.messages.push("Please provide template name");
+    }
+    if(!data.subject){
+        retObj.status = false;
+        retObj.messages.push("Please provide subject name");
+    }
+    if(!data.to){
+        retObj.status = false;
+        retObj.messages.push("Please provide to address");
+    }
+    if(!data.data){
+        retObj.status = false;
+        retObj.messages.push("Please provide data for email");
+    }
+    if (!fs.existsSync(__dirname + '/../emailTemplates/' + data.templateName+'.html')) {
+        retObj.status = false;
+        retObj.messages.push("Cannot find html template for email");
+    }
+    if(retObj.messages.length) {
         callback(retObj);
     } else {
-        template = fs.readFileSync(__dirname + '/../emailTemplates/'+templateName, 'utf8');
-        // var temp = Velocity.render(template, {a: 100, b: {c: 200}});
-        var mailBody = Velocity.render(template, {emailData:data});
-        var mailoptions = {
-            email: 'sai@mtwlabs.com',
-            subject: "Easygaadi Test",
-            html: mailBody
-        };
-
-
-        Utils.prototype.sendEmail = function(data, callback){
-            var retObj = {};
+        template = fs.readFileSync(__dirname + '/../emailTemplates/' + data.templateName + '.html', 'utf8');
+        var mailBody = Velocity.render(template, {emailData: data.data});
+        if(!config.smtp){
+            retObj.status = false;
+            retObj.messages.push("Error while finding config file");
+            callback(retObj);
+        } else {
             var transporter = nodeMailer.createTransport(config.smtp);
             var mailOptions = {
                 from: '"Easygaadi"<' + config.smtp.auth.user + '>',
-                to: data.email,
-                subject: data.subject
+                to: data.to,
+                subject: data.subject,
+                html: mailBody
             };
-            if(data.text) mailOptions.text = data.text;
-            if(data.html) mailOptions.html = data.html;
             transporter.sendMail(mailOptions, function (err, info) {
                 if (err) {
                     retObj.status = false;
-                    retObj.message = "Error";
+                    retObj.messages.push("Error while sending   report");
                     callback(retObj);
                 } else {
                     retObj.status = true;
-                    retObj.message = "mail sent successfully";
+                    retObj.messages.push("Email sent successfully");
                     callback(retObj);
                 }
             });
-        };
-        Utils.sendEmail(mailoptions, function (emailsuccess) {
-            if (!emailsuccess.status) {
-                retObj.status = false;
-                retObj.messages.push("Error while sending report");
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push("Email sent successfully");
-                callback(retObj);
-            }
-        });
+        }
     }
 };
+
+module.exports = new EmailService();
