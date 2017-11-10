@@ -180,7 +180,7 @@ Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulat
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             var tripLane = _.find(names, function (users) {
-                return users._id.toString() === item[fieldTopopulate].toString();
+                if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
             });
             if (tripLane) {
                 if (!item.attrs) {
@@ -210,7 +210,7 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Trucks = _.find(names, function (users) {
-                    return users._id.toString() === item[fieldTopopulate].toString();
+                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (Trucks) {
                     if (!item.attrs) {
@@ -290,8 +290,6 @@ Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) 
         }
     });
 }
-
-
 
 /**
  * Module to clean up when a driver is assigned to truck or vice versa.

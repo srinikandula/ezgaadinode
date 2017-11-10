@@ -61,7 +61,7 @@ EmailService.prototype.sendEmail = function (data, callback) {
             transporter.sendMail(mailOptions, function (err, info) {
                 if (err) {
                     retObj.status = false;
-                    retObj.messages.push("Error while sending   report");
+                    retObj.messages.push("Error while sending report");
                     callback(retObj);
                 } else {
                     retObj.status = true;

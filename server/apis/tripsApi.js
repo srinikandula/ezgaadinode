@@ -424,6 +424,7 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
                                     to:trips[i].to,
                                     driverName:trips[i].attrs.fullName,
                                     mobile:trips[i].attrs.mobile,
+                                    tripId:trips[i].tripId,
                                     payments: {
                                         freightAmount:trips[i].freightAmount,
                                         advance:trips[i].advance,
@@ -444,6 +445,7 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
 };
 
 Trips.prototype.sendEmail = function (jwt, data, callback) {
+
     var retObj = {
         status: false,
         messages: []
