@@ -25,20 +25,15 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
-    address: String,
-    contact: Number,
     updatedBy: String,
     createdBy: String,
     isActive: {type: Boolean, default:true}
 }, {
     timestamps: true
 });
-
-var usersSchema = new mongoose.Schema({
-    firstName: String,
-    lastName: String,
-    email: String,
-    role: String,
+var groupSchema = new mongoose.Schema({
+    name: String,
+    type: String,
     accountId: {
         type: ObjectId, ref: 'accounts'
     },
@@ -59,6 +54,7 @@ var usersSchema = new mongoose.Schema({
 var truckSchema = new mongoose.Schema({
     registrationNo: {type: String, unique: true},
     accountId: {type: ObjectId, ref: 'accounts'},
+    groupId: {type: ObjectId, ref: 'groups'},
     truckType: String,
     driverId: String,
     modelAndYear: String,
@@ -93,6 +89,7 @@ var tripSchema = new mongoose.Schema({
     tripLane: {type: ObjectId, ref: 'tripLanes'},
     tripExpenses: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
+    groupId: {type: ObjectId, ref: 'groups'},
     updatedBy: String,
     createdBy: String,
     paymentHistory: [],
@@ -126,6 +123,7 @@ var driverSchema = new mongoose.Schema({
     fullName: {type: String, trim: true},
     truckId: {type: ObjectId, ref: 'trucks'},
     accountId: {type: ObjectId, ref: 'accounts'},
+    groupId: {type: ObjectId, ref: 'groups'},
     mobile: Number,
     joiningDate: {type: Date, default: new Date()},
     licenseNumber: String,
@@ -190,7 +188,6 @@ var paymentsReceived = mongoose.Schema({
 },{timestamps: String});
 
 module.exports = {
-    UsersColl: mongoose.model('users', usersSchema, 'users'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
@@ -201,5 +198,6 @@ module.exports = {
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
     PaymentsColl: mongoose.model('payments', payments, 'payments'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
-    paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived')
+    paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
+    GroupsColl: mongoose.model('groups', groupSchema, 'groups')
 };

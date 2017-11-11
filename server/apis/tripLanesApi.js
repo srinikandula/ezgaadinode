@@ -6,7 +6,6 @@ var async = require('async');
 var TripLanesCollection = require('./../models/schemas').TripLanesCollection;
 var config = require('./../config/config');
 var Helpers = require('./utils');
-var UsersAPI = require('./usersApi');
 var pageLimits = require('./../config/pagination');
 
 var TripLanes = function () {

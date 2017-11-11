@@ -4,7 +4,7 @@ var _ = require('underscore');
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
 var AccountsColl = require('./../models/schemas').AccountsColl;
-var UsersColl = require('./../models/schemas').UsersColl;
+var GroupsColl = require('./../models/schemas').GroupsColl;
 
 var Accounts = function () {
 };
@@ -27,14 +27,6 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
         retObj.messages.push('Invalid password');
     }
 
-    if (!Utils.isValidPhoneNumber(accountInfo.contact)) {
-        retObj.messages.push('Invalid contact number');
-    }
-
-    if (!accountInfo.address || !_.isString(accountInfo.address)) {
-        retObj.messages.push('Invalid Address');
-    }
-
     if (retObj.messages.length) {
         callback(retObj);
     } else {
@@ -46,7 +38,7 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
                 retObj.messages.push('Account with the name already exists');
                 callback(retObj);
             } else {
-                UsersColl.findOne({userName: accountInfo.userName}, function (err, user) {
+                GroupsColl.findOne({userName: accountInfo.userName}, function (err, user) {
                     if (err) {
                         retObj.messages.push('Error fetching account');
                         callback(retObj);
@@ -61,7 +53,8 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
                                 callback(retObj);
                             } else {
                                 accountInfo.accountId = savedAcc._id;
-                                (new UsersColl(accountInfo)).save(function (err) {
+                                accountInfo.type = "account";
+                                (new GroupsColl(accountInfo)).save(function (err) {
                                     if (err) {
                                         retObj.messages.push('Error saving user');
                                         callback(retObj);
@@ -98,8 +91,8 @@ Accounts.prototype.getAccounts = function (pageNum, callback) {
     var skipNumber = (pageNum - 1) * pageLimits.accountPaginationLimit;
     async.parallel({
         accounts: function (accountsCallback) {
-            AccountsColl
-                .find({})
+            GroupsColl
+                .find({type: "account"})
                 .sort({createdAt: 1})
                 .skip(skipNumber)
                 .limit(pageLimits.accountPaginationLimit)
@@ -139,7 +132,7 @@ Accounts.prototype.getAllAccounts = function (callback) {
         messages: []
     };
 
-    AccountsColl.find({}, {name: 1}, function (err, accounts) {
+    GroupsColl.find({type: "account"}, {name: 1}, function (err, accounts) {
         if (err) {
             retObj.messages.push('Error retrieving accounts');
             callback(retObj);
@@ -165,7 +158,7 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({_id: accountId}, function (err, account) {
+        GroupsColl.findOne({_id: accountId,type: "account"}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error retrieving account');
                 callback(retObj);
@@ -197,7 +190,7 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
     } else {
         accountInfo.updatedBy = jwtObj.id;
         accountInfo = Utils.removeEmptyFields(accountInfo);
-        AccountsColl.findOneAndUpdate({_id: accountInfo._id}, {$set: accountInfo}, function (err, oldAcc) {
+        GroupsColl.findOneAndUpdate({_id: accountInfo._id, type: "account"}, {$set: accountInfo}, function (err, oldAcc) {
             if (err) {
                 retObj.messages.push('Error updating the account');
                 callback(retObj);

@@ -209,7 +209,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     function getTruckIds() {
-        TrucksService.getAllAccountTrucks(function (success) {
+     // TrucksService.getAllAccountTrucks(1,function (success) {
+        TrucksService.getGroupTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             } else {

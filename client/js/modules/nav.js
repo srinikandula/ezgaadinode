@@ -3,7 +3,6 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', '$cookies', function ($s
         Utils.logout();
         $state.go('login');
     };
-    $scope.displayName=$cookies.get('firstName');
+    $scope.displayName=$cookies.get('userName');
     $scope.isLoggedin=$cookies.get('token');
-
 }]);

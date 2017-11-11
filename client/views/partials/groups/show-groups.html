@@ -1,0 +1,18 @@
+<top-navigation></top-navigation>
+<div class="container-fluid">
+    <div class="row pall-zero">
+        <div class="col-xs-2 pall-zero">
+            <left-navigation></left-navigation>
+        </div>
+
+        <div class="main-right col-xs-9" ng-controller="GroupCtrl">
+            <h3>Groups</h3>
+            <button class="btn  btn-blue pull-right" ng-click="goToEditGroupPage()">Add Group</button>
+            <div class="margin-top-40">
+                <div class="grid" ui-grid="groupGridOptions"></div>
+            </div>
+
+            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right" boundary-link-numbers="true" rotate="false" ng-change="getAllUsers()" ng-show="totalItems > 10"></ul>
+        </div>
+    </div>
+</div>

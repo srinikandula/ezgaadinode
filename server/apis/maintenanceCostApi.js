@@ -6,7 +6,6 @@ var async = require('async');
 var maintenanceColl = require('./../models/schemas').MaintenanceCostColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
-var UsersAPI = require('./usersApi');
 var pageLimits = require('./../config/pagination');
 
 var MaintenanceCost = function () {

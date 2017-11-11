@@ -3,39 +3,29 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
-var UsersColl = require('./../models/schemas').UsersColl;
+var GroupsColl = require('./../models/schemas').GroupsColl;
+var TrucksColl = require('./../models/schemas').TrucksColl;
+
 
 var config = require('./../config/config');
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
+var trucksAPI = require('./truckAPIs');
 
-var Users = function () {
+var Groups = function () {
 };
 
-Users.prototype.addUser = function (jwt, regDetails, callback) {
+Groups.prototype.addGroup = function (jwt, regDetails, callback) {
     var retObj = {
         status: false,
         messages: []
     };
+    var unAssignedTrucks = {
+        trucks: []
+    };
 
     if (!_.isObject(regDetails) || _.isEmpty(regDetails)) {
         retObj.messages.push("Please fill all the required details");
-    }
-
-    if (!regDetails.firstName || !_.isString(regDetails.firstName)) {
-        retObj.messages.push("Please provide valid first name");
-    }
-
-    if (!regDetails.lastName || !_.isString(regDetails.lastName)) {
-        retObj.messages.push("Please provide valid last name");
-    }
-
-    if (!Utils.isEmail(regDetails.email)) {
-        retObj.messages.push("Please provide valid email");
-    }
-
-    if (!regDetails.role) {
-        retObj.messages.push("Please provide role");
     }
 
     if (!regDetails.userName || !_.isString(regDetails.userName)) {
@@ -49,7 +39,7 @@ Users.prototype.addUser = function (jwt, regDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        UsersColl.findOne({userName: regDetails.userName}, function (err, user) {
+        GroupsColl.findOne({userName: regDetails.userName,name: regDetails.name}, function (err, user) {
             if (err) {
                 retObj.messages.push("Error, try again!");
                 callback(retObj);
@@ -57,27 +47,61 @@ Users.prototype.addUser = function (jwt, regDetails, callback) {
                 retObj.messages.push("User already exists");
                 callback(retObj);
             } else {
-                regDetails.createdBy = jwt.id;
-                regDetails.updatedBy = jwt.id;
-                regDetails.accountId = jwt.accountId;
+                for (var i = 0; i < regDetails.checkedTrucks.length; i++){
+                    var truck = regDetails.checkedTrucks[i];
+                    trucksAPI.findTruck(jwt,truck,function (retTruck) {
+                        if (retTruck.truck.groupId){
+                            retObj.messages.push("Truck is already assigned for a group");
+                        }
+                        else {
+                            unAssignedTrucks.trucks.push(retTruck.truck._id)
+                        }
+                    })
+                }
+                if(retObj.messages.length){
+                    callback(retObj);
+                }
+                else {
+                    regDetails.createdBy = jwt.id;
+                    regDetails.updatedBy = jwt.id;
+                    regDetails.accountId = jwt.accountId;
+                    regDetails.type = "group";
 
-                var insertDoc = new UsersColl(regDetails);
-                insertDoc.save(function (err) {
-                    if (err) {
-                        retObj.messages.push("Error, try Again");
-                        callback(retObj);
-                    } else {
-                        retObj.status = true;
-                        retObj.messages.push("Successfully Added");
-                        callback(retObj);
-                    }
-                });
+                    var insertDoc = new GroupsColl(regDetails);
+                    insertDoc.save(function (err,group) {
+                        if (err) {
+                            retObj.messages.push("Error, try Again");
+                            callback(retObj);
+                        } else {
+                            var groupId = group._id;
+                            for (var i = 0; i<unAssignedTrucks.trucks.length;i++){
+                                var newTruck = unAssignedTrucks.trucks[i];
+                                    TrucksColl.findOneAndUpdate({_id: newTruck},{$set: {"groupId": groupId}},{new: true}, function (err, truck) {
+                                        if (err) {
+                                            retObj.messages.push("Error while updating truck, try Again");
+                                            callback(retObj);
+                                        } else if (truck) {
+                                            retObj.messages.push("Truck updated successfully");
+
+                                        } else {
+                                            retObj.status = false;
+                                            retObj.message.push("Error, finding truck");
+                                            callback(retObj);
+                                        }
+                                    })
+                            }
+                            retObj.status = true;
+                            retObj.messages.push("Successfully Created and Added Trucks to the Group");
+                            callback(retObj);
+                        }
+                    });
+                }
             }
         });
     }
 };
 
-Users.prototype.login = function (userName, accountName, password, callback) {
+Groups.prototype.login = function (accountName, userName, password, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -98,11 +122,12 @@ Users.prototype.login = function (userName, accountName, password, callback) {
     if (retObj.messages.length) {
         return callback(retObj);
     } else {
-        var query = {
-            userName: userName
-        };
 
-        UsersColl
+        var query = {
+            userName: userName,
+            name: accountName
+        };
+        GroupsColl
             .findOne(query)
             .populate('accountId')
             .exec(function (err, user) {
@@ -112,13 +137,12 @@ Users.prototype.login = function (userName, accountName, password, callback) {
                 } else if (!user) {
                     retObj.messages.push("User doesn't exist");
                     callback(retObj);
-                } else if ((user.password === password) && user.accountId && (user.accountId.name === accountName)) {
+                } else if ((user.password === password)) {
                     jwt.sign({
                         id: user._id,
                         accountId: user.accountId._id,
-                        name: user.firstName,
-                        email: user.email,
-                        role: user.role
+                        name: user.name,
+                        type: user.type
                     }, config.jwt.secret, config.jwt.options, function (err, token) {
                         if (err) {
                             retObj.messages.push('Please try again');
@@ -126,66 +150,52 @@ Users.prototype.login = function (userName, accountName, password, callback) {
                         } else {
                             retObj.status = true;
                             retObj.messages.push("Success");
-                            retObj.role = user.role;
                             retObj.token = token;
-                            retObj.firstName = user.firstName;
+                            retObj.userName = userName;
                             callback(retObj);
                         }
                     });
+
                 } else {
                     retObj.messages.push("Invalid Credentials");
                     callback(retObj);
                 }
             });
-    }
+        }
 };
 
-Users.prototype.update = function (jwt, user, callback) {
+Groups.prototype.update = function (jwt, group, callback) {
     var retObj = {
         status: false,
         messages: []
     };
+    group = Utils.removeEmptyFields(group);
+    group.updatedBy = jwt.id;
+    group.accountId = jwt.accountId;
 
-    user = Utils.removeEmptyFields(user);
-    user.updatedBy = jwt.id;
-    user.accountId = jwt.accountId;
-
-    UsersColl.findOneAndUpdate({_id: user._id}, {$set: user}).exec(function (err, savedUser) {
+    GroupsColl.findOneAndUpdate({_id: group._id}, {$set: group}).exec(function (err, savedGroup) {
         if (err) {
-            retObj.messages.push("Error, updating user");
+            retObj.messages.push("Error, updating group");
+            console.log(err)
             callback(retObj);
-        } else if (savedUser) {
+        } else if (savedGroup) {
             retObj.status = true;
-            retObj.messages.push("User updated successfully");
+            retObj.messages.push("Group updated successfully");
             callback(retObj);
         } else {
-            retObj.messages.push("Error, finding user");
+            retObj.messages.push("Error, finding group");
             callback(retObj);
         }
     });
 };
 
-Users.prototype.getAccountUsers = function (id, callback) {
-    var result = {};
-    UsersColl.find({accountId: id}, function (err, accountUsers) {
-        if (err) {
-            result.status = false;
-            result.message = 'Error getting users';
-            callback(result);
-        } else {
-            result.status = true;
-            result.message = 'Success';
-            result.details = accountUsers;
-            callback(result);
-        }
-    });
-};
 
-Users.prototype.getAllUsers = function (pageNumber, callback) {
+Groups.prototype.getGroups = function (jwt, callback) {
     var retObj = {
         status: false,
         messages: []
     };
+    var pageNumber = 0;
 
     if (!pageNumber) {
         pageNumber = 1;
@@ -194,14 +204,14 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
         return callback(retObj);
     }
 
-    var skipNumber = (pageNumber - 1) * pageLimits.usersPaginationLimit;
+    var skipNumber = (pageNumber - 1) * pageLimits.groupsPaginationLimit;
     async.parallel({
         users: function (usersCallback) {
-            UsersColl
-                .find({})
+            GroupsColl
+                .find({accountId: jwt.accountId,type: "group"})
                 .sort({createdAt: 1})
                 .skip(skipNumber)
-                .limit(pageLimits.usersPaginationLimit)
+                .limit(pageLimits.groupsPaginationLimit)
                 .lean()
                 .exec(function (err, users) {
                     async.parallel({
@@ -222,53 +232,53 @@ Users.prototype.getAllUsers = function (pageNumber, callback) {
                 });
         },
         count: function (countCallback) {
-            UsersColl.count(function (err, count) {
+            GroupsColl.count({accountId: jwt.accountId,type: "group"},function (err, count) {
                 countCallback(err, count);
             });
         }
     }, function (err, results) {
         if (err) {
-            retObj.messages.push('Error retrieving users');
+            retObj.messages.push('Error retrieving groups');
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
-            retObj.users = results.users.createdbyname;
+            retObj.groups = results.users.createdbyname;
             callback(retObj);
         }
     });
 };
 
-Users.prototype.getUser = function (id, callback) {
+Groups.prototype.getGroup = function (id, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    UsersColl.findOne({_id: id}, function (err, user) {
+    GroupsColl.findOne({_id: id}, function (err, group) {
         if (err) {
-            retObj.messages.push('Error getting user');
+            retObj.messages.push('Error getting Group');
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.user = user;
+            retObj.group = group;
             callback(retObj);
         }
     });
 };
-
-Users.prototype.deleteUSer = function (id, callback) {
+//
+Groups.prototype.deleteGroup = function (id, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    UsersColl.remove({_id: id}, function (err) {
+    GroupsColl.remove({_id: id}, function (err) {
         if (err) {
             retObj.status = false;
-            retObj.messages.push('Error deleting user');
+            retObj.messages.push('Error deleting group');
             callback(retObj);
         } else {
             retObj.status = true;
@@ -278,4 +288,4 @@ Users.prototype.deleteUSer = function (id, callback) {
     });
 };
 
-module.exports = new Users();
+module.exports = new Groups();

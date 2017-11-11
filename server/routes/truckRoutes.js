@@ -20,12 +20,11 @@ AuthRouter.put('/', function (req, res) {
     });
 });
 
-AuthRouter.get('/get/accountTrucks/:pageNumber', function (req, res) {
-    Trucks.getAccountTrucks(req.jwt.accountId, req.params.pageNumber, function (result) {
+AuthRouter.get('/groupTrucks/:pageNumber', function (req, res) {
+    Trucks.getTrucks(req.jwt, req.params.pageNumber, function (result) {
         res.send(result);
     });
 });
-
 AuthRouter.delete('/:truckId', function (req, res) {
     Trucks.deleteTruck(req.params.truckId, function (result) {
         res.send(result);
@@ -34,6 +33,11 @@ AuthRouter.delete('/:truckId', function (req, res) {
 
 AuthRouter.get('/', function (req, res) {
     Trucks.getAllAccountTrucks(req.jwt.accountId,function (result) {
+        res.json(result);
+    });
+});
+AuthRouter.get('/getUnAssignedTrucks/getAll', function (req, res) {
+    Trucks.getUnAssignedTrucks(req.jwt,function (result) {
         res.json(result);
     });
 });

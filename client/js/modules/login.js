@@ -4,7 +4,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
     }
 
     $scope.loginParams = {
-        accountName: '',
+        name: '',
         userName: '',
         password: '',
         errors: []
@@ -14,7 +14,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
         var params = $scope.loginParams;
         params.errors = [];
 
-        if (!params.accountName) {
+        if (!params.name) {
             params.errors.push('Invalid account Name');
         }
 
@@ -32,7 +32,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                 if (success.data.status) {
                     $cookies.put('token', success.data.token);
                     $cookies.put('role', success.data.role);
-                    $cookies.put('firstName', success.data.firstName);
+                    $cookies.put('userName', success.data.userName);
                     $state.go('accounts');
                 } else {
                     params.errors = success.data.messages;

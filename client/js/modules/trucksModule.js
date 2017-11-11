@@ -19,6 +19,18 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        getGroupTrucks: function (pageNumber, success, error) {
+            $http({
+                url: '/v1/trucks/groupTrucks/' + pageNumber,
+                method: "GET"
+            }).then(success, error)
+        },
+        getUnAssignedTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks/getUnAssignedTrucks/getAll/',
+                method: "GET"
+            }).then(success, error)
+        },
         updateTruck: function (truckInfo, success, error) {
             $http({
                 url: '/v1/trucks',
@@ -105,7 +117,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     };
 
     $scope.getTrucksData = function () {
-        TrucksService.getAccountTrucks($scope.pageNumber, function (success) {
+        TrucksService.getGroupTrucks($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.truckGridOptions.data = success.data.trucks;
                 $scope.totalItems = success.data.count;
