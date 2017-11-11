@@ -62,11 +62,8 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             name: 'Account name',
             field: 'name'
         }, {
-            name: 'Address',
-            field: 'address'
-        }, {
-            name: 'Contact',
-            field: 'contact'
+            name: 'User name',
+            field: 'userName'
         }, {
             name: 'Status',
             field: 'isActive'
@@ -95,8 +92,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         name: '',
         userName: '',
         password: '',
-        address: '',
-        contact: '',
         isActive: true,
         success: [],
         errors: []
@@ -122,7 +117,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         params.success = [];
 
         if (params._id) {
-            delete params.userName;
             delete params.password;
         }
 
@@ -136,14 +130,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
 
         if (!params._id && !Utils.isValidPassword(params.password)) {
             params.errors.push('Invalid Password');
-        }
-
-        if (!params.address || !params.address.trim()) {
-            params.errors.push('Invalid Address');
-        }
-
-        if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.errors.push('Invalid phone number, it should be 10 digits');
         }
 
         if (!params.errors.length) {

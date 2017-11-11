@@ -36,22 +36,41 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             accountId: null
         },
         controller: 'AddEditPartyCtrl'
-    }).state({
-        name: 'users',
-        url: '/users',
-        templateUrl: 'views/partials/users/show-users.html',
-        data: {activeTab: 'users'},
+    })
+        //.state({
+    //     name: 'users',
+    //     url: '/users',
+    //     templateUrl: 'views/partials/users/show-users.html',
+    //     data: {activeTab: 'users'},
+    //     params: {
+    //         access: 'open'
+    //     }
+    // }).state({
+    //     name: 'usersEdit',
+    //     url: '/usersEdit/:userId',
+    //     templateUrl: 'views/partials/users/usersEdit.html',
+    //     data: {activeTab: 'users'},
+    //     params: {
+    //         access: 'open',
+    //         userId: null
+    //     }
+    // })
+        .state({
+        name: 'groups',
+        url: '/groups',
+        templateUrl: 'views/partials/groups/show-groups.html',
+        data: {activeTab: 'groups'},
         params: {
             access: 'open'
         }
     }).state({
-        name: 'usersEdit',
-        url: '/usersEdit/:userId',
-        templateUrl: 'views/partials/users/usersEdit.html',
-        data: {activeTab: 'users'},
+        name: 'groupsEdit',
+        url: '/groupsEdit/:groupId',
+        templateUrl: 'views/partials/groups/groupsEdit.html',
+        data: {activeTab: 'groups'},
         params: {
             access: 'open',
-            userId: null
+            groupId: null
         }
     }).state({
         name: 'drivers',

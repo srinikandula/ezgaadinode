@@ -6,7 +6,6 @@ var async = require('async');
 
 
 var TrucksColl = require('./../models/schemas').TrucksColl;
-var UsersAPI = require('./usersApi');
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -54,10 +53,15 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
                 retObj.messages.push("Truck already exists");
                 callback(retObj);
             } else {
-                truckDetails.createdBy = jwt.id;
-                truckDetails.updatedBy = jwt.id;
-                truckDetails.accountId = jwt.accountId;
-
+                if (jwt.type === "account"){
+                    truckDetails.createdBy = jwt.id;
+                    truckDetails.accountId = jwt.accountId;
+                }
+                else {
+                    truckDetails.createdBy = jwt.id;
+                    truckDetails.groupId = jwt.id;
+                    truckDetails.accountId = jwt.accountId;
+                }
                 truckDetails = Helpers.removeEmptyFields(truckDetails);
                 var truckDoc = new TrucksColl(truckDetails);
                 truckDoc.save(function (err, truck) {
@@ -128,63 +132,147 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
             }
         });
 };
+// Trucks.prototype.updateTruckGroupId = function (truckId, groupId, callback) {
+//     var retObj = {
+//         status: false,
+//         messages: []
+//     };
+//     TrucksColl.findOneAndUpdate({_id: truckId},{$set: {"groupId": groupId}},{new: true}, function (err, truck) {
+//             if (err) {
+//                 retObj.messages.push("Error while updating truck, try Again");
+//                 callback(retObj);
+//             } else if (truck) {
+//                 retObj.status = true;
+//                 retObj.messages.push("Truck updated successfully");
+//                 retObj.truck = truck;
+//                 callback(retObj);
+//             } else {
+//                 retObj.status = false;
+//                 retObj.message.push("Error, finding truck");
+//                 callback(retObj);
+//             }
+//         });
+// };
 
-Trucks.prototype.getAccountTrucks = function (accountId, pageNumber, callback) {
+
+Trucks.prototype.getTrucks = function (jwt, pageNumber, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!pageNumber) {
+        pageNumber = 1;
+    }
+    var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
+    if(jwt.type === "account"){
+        async.parallel({
+            trucks: function (trucksCallback) {
+                TrucksColl
+                    .find({accountId: jwt.accountId})
+                    .sort({createdAt: 1})
+                    .skip(skipNumber)
+                    .limit(pageLimits.trucksPaginationLimit)
+                    .lean()
+                    .exec(function (err, trucks) {
+                        async.parallel({
+                            createdbyname: function (createdbyCallback) {
+                                Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                                    createdbyCallback(createdby.err,createdby.documents);
+                                });
+                            },
+                            driversname: function (driversnameCallback) {
+                                Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName','mobile'], function (driver) {
+                                    driversnameCallback(driver.err, driver.documents);
+                                });
+                            }
+                        },function (populateErr, populateResults) {
+                            trucksCallback(populateErr, populateResults);
+                        });
+                    })
+            },
+            count: function (countCallback) {
+                TrucksColl.count({accountId: jwt.accountId}, function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, results) {
+            if (err) {
+                retObj.messages.push('Error retrieving trucks');
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = results.count;
+                retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
+                callback(retObj);
+            }
+        });}
+        else {
+        async.parallel({
+            trucks: function (trucksCallback) {
+                TrucksColl
+                    .find({accountId: jwt.accountId, groupId: jwt.id})
+                    .sort({createdAt: 1})
+                    .skip(skipNumber)
+                    .limit(pageLimits.trucksPaginationLimit)
+                    .lean()
+                    .exec(function (err, trucks) {
+                        async.parallel({
+                            createdbyname: function (createdbyCallback) {
+                                Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                                    createdbyCallback(createdby.err,createdby.documents);
+                                });
+                            },
+                            driversname: function (driversnameCallback) {
+                                Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName','mobile'], function (driver) {
+                                    driversnameCallback(driver.err, driver.documents);
+                                });
+                            }
+                        },function (populateErr, populateResults) {
+                            trucksCallback(populateErr, populateResults);
+                        });
+                    })
+            },
+            count: function (countCallback) {
+                TrucksColl.count({accountId: jwt.accountId, groupId: jwt.groupId}, function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, results) {
+            if (err) {
+                retObj.messages.push('Error retrieving trucks');
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = results.count;
+                retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
+                callback(retObj);
+            }
+        });
+    }
+};
+
+
+
+Trucks.prototype.getUnAssignedTrucks = function (jwt,callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    if (!pageNumber) {
-        pageNumber = 1;
-    }
-
-    var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
-    async.parallel({
-        trucks: function (trucksCallback) {
-            TrucksColl
-                .find({accountId: accountId})
-                .sort({createdAt: 1})
-                .skip(skipNumber)
-                .limit(pageLimits.trucksPaginationLimit)
-                .lean()
-                .exec(function (err, trucks) {
-                    async.parallel({
-                        createdbyname: function (createdbyCallback) {
-                            Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
-                                createdbyCallback(createdby.err,createdby.documents);
-                            });
-                        },
-                        driversname: function (driversnameCallback) {
-                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName','mobile'], function (driver) {
-                                driversnameCallback(driver.err, driver.documents);
-                            });
-                        }
-                    },function (populateErr, populateResults) {
-                        trucksCallback(populateErr, populateResults);
-                    });
-            })
-        },
-        count: function (countCallback) {
-            TrucksColl.count({accountId: accountId}, function (err, count) {
-                countCallback(err, count);
-            });
-        }
-    }, function (err, results) {
-        // console.log(err);
+    TrucksColl.find({groupId: null,accountId: jwt.accountId},function (err, trucks) {
         if (err) {
-            retObj.messages.push('Error retrieving trucks..!');
+            retObj.messages.push('Error getting trucks');
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.count = results.count;
-            retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
+            retObj.trucks = trucks;
             callback(retObj);
         }
     });
 };
-
 
 Trucks.prototype.getAllAccountTrucks = function (accountId,callback) {
     var retObj = {

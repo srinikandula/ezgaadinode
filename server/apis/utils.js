@@ -6,6 +6,7 @@ var nodeMailer = require('nodemailer');
 var ObjectId = mongoose.Types.ObjectId;
 var config = require('./../config/config');
 var UsersColl = require('./../models/schemas').UsersColl;
+var GroupsColl = require('./../models/schemas').GroupsColl;
 var DriversColl = require('./../models/schemas').DriversColl;
 var PartyColl = require('./../models/schemas').PartyCollection;
 var TripLaneColl = require('./../models/schemas').TripLanesCollection;
@@ -63,7 +64,8 @@ Utils.prototype.isValidDateStr = function (dateStr) {
 Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
+//  UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
+    GroupsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
         if (err) {
             result.status = false;
             result.message = 'Error retrieving users';

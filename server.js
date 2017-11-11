@@ -5,7 +5,6 @@ var cookieParser = require('cookie-parser');
 
 var app = express();
 
-var Users = require('./server/routes/users');
 var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 
@@ -13,6 +12,7 @@ var Trips = require('./server/routes/tripRoutes');
 var Maintenance = require('./server/routes/maintenanceCost');
 var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
+// var Users = require('./server/routes/users')
 var Drivers = require('./server/routes/driverRoutes');
 var Roles = require('./server/routes/roleRoutes');
 var TripLanes = require('./server/routes/tripLanesRoutes');
@@ -20,6 +20,7 @@ var Payments = require('./server/routes/paynemtRoutes');
 var Events = require('./server/routes/eventsRoutes');
 var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
+var Groups = require('./server/routes/groupRoutes');
 
 var authMiddleware = require('./server/middleware/auth');
 
@@ -39,12 +40,13 @@ app.use(function (req, res, next) {
     }
 });
 
-app.use('/v1/user', Users.OpenRouter);
+
+// app.use('/v1/user', Users.OpenRouter);
 app.use('/v1/events', Events.OpenRouter);
+app.use('/v1/group', Groups.OpenRouter);
 
 app.use(authMiddleware);
 
-app.use('/v1/user', Users.AuthRouter);
 app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
 app.use('/v1/trucks', Trucks.AuthRouter);
@@ -56,6 +58,7 @@ app.use('/v1/tripLanes',TripLanes.AuthRouter);
 app.use('/v1/payments', Payments.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/paymentsReceived', PaymentsReceived.AuthRouter);
+app.use('/v1/group', Groups.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

@@ -5,7 +5,7 @@ app.directive('leftNavigation', function () {
         '        <ul class="list-unstyled">\n' +
         '            \n' +
         '            <account-directive></account-directive>\n' +
-        '            <user-directive></user-directive>\n' +
+        '            <group-directive></group-directive>\n' +
         '            <driver-directive></driver-directive>\n' +
         '            <roles-directive></roles-directive>\n' +
         '            <truck-directive></truck-directive>\n' +
@@ -26,16 +26,14 @@ app.directive('accountDirective',function () {
        '          </li>'
    } ;
 });
-
-app.directive('userDirective',function () {
+app.directive('groupDirective',function () {
     return{
         restrict: 'E',
-        template: '<li ng-class="{selected: activeTab === \'users\'}" class="left-nav-li"> \n' +
-        '             <a class="left-nav-anchor" ui-sref="users">Users</a>\n' +
+        template: '<li ng-class="{selected: activeTab === \'groups\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="groups">Groups</a>\n' +
         '          </li>'
     } ;
 });
-
 app.directive('driverDirective',function () {
     return{
         restrict: 'E',

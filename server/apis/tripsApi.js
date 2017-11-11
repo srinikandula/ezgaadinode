@@ -90,9 +90,15 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        tripDetails.createdBy = jwt.id;
-        tripDetails.updatedBy = jwt.id;
-        tripDetails.accountId = jwt.accountId;
+        if(jwt.type === "account"){
+            tripDetails.createdBy = jwt.id;
+            tripDetails.accountId = jwt.accountId;
+        }
+        else {
+            tripDetails.createdBy = jwt.id;
+            tripDetails.groupId = jwt.id;
+            tripDetails.accountId = jwt.accountId;
+        }
         tripDetails.tripId = "TR"+parseInt(Math.random()*100000);
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err) {
@@ -209,6 +215,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
+        if(jwt.type = "account"){
         var skipNumber = (pageNumber - 1) * pageLimits.tripsPaginationLimit;
         async.parallel({
             trips: function (tripsCallback) {
@@ -247,27 +254,89 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                             }
                         }, function (populateErr, populateResults) {
                             tripsCallback(populateErr, populateResults);
+                            });
                         });
+                },
+                count: function (countCallback) {
+                    TripCollection.count(function (err, count) {
+                        countCallback(err, count);
                     });
-            },
-            count: function (countCallback) {
-                TripCollection.count(function (err, count) {
-                    countCallback(err, count);
-                });
 
-            }
-        }, function (err, results) {
-            if (err) {
-                retObj.messages.push('Error retrieving trips');
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.count = results.count;
-                retObj.trips = results.trips.createdbyname; //as trips is callby reference
-                callback(retObj);
-            }
-        });
+                }
+            }, function (err, results) {
+                if (err) {
+                    retObj.messages.push('Error retrieving trips');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.count = results.count;
+                    retObj.trips = results.trips.createdbyname; //as trips is callby reference
+                    callback(retObj);
+                }
+            });
+        }
+        else {
+            var skipNumber = (pageNumber - 1) * pageLimits.tripsPaginationLimit;
+            async.parallel({
+                trips: function (tripsCallback) {
+                    TripCollection
+                        .find({'accountId':jwt.accountId,'groupId':jwt.id})
+                        .sort({createdAt: 1})
+                        .skip(skipNumber)
+                        .limit(pageLimits.tripsPaginationLimit)
+                        .lean()
+                        .exec(function (err, trips) {
+                            async.parallel({
+                                createdbyname: function (createdbyCallback) {
+                                    Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
+                                        createdbyCallback(response.err, response.documents);
+                                    });
+                                },
+                                driversname: function (driversnameCallback) {
+                                    Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName'], function (response) {
+                                        driversnameCallback(response.err, response.documents);
+                                    });
+                                },
+                                bookedfor: function (bookedforCallback) {
+                                    Utils.populateNameInPartyColl(trips, 'bookedFor', function (response) {
+                                        bookedforCallback(response.err, response.documents);
+                                    });
+                                },
+                                triplane: function (triplaneCallback) {
+                                    Utils.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
+                                        triplaneCallback(response.err, response.documents);
+                                    });
+                                },
+                                truckNo: function (truckscallback) {
+                                    Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                                        truckscallback(response.err, response.documents);
+                                    })
+                                }
+                            }, function (populateErr, populateResults) {
+                                tripsCallback(populateErr, populateResults);
+                            });
+                        });
+                },
+                count: function (countCallback) {
+                    TripCollection.count(function (err, count) {
+                        countCallback(err, count);
+                    });
+
+                }
+            }, function (err, results) {
+                if (err) {
+                    retObj.messages.push('Error retrieving trips');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.count = results.count;
+                    retObj.trips = results.trips.createdbyname; //as trips is callby reference
+                    callback(retObj);
+                }
+            });
+        }
     }
 };
 
