@@ -32,10 +32,10 @@
                     </div>
                     <div class="form-group col-xs-12">
                         <label class="col-sm-2 pall-zero">Group Status</label>
-                        <div class="col-sm-2"><input type="checkbox" ng-model="groupDetails.status"></div>
+                        <div class="col-sm-2"><input type="checkbox" ng-model="groupDetails.isActive"></div>
 
                     </div>
-                    <div class="form-group col-xs-12">
+                    <div class="form-group col-xs-12" ng-hide="groupDetails._id">
                         <label class="col-sm-2 pall-zero">Trucks</label>
                         <span class="col-sm-2" ng-repeat="truck in trucks">
                             <input type='checkbox' value="{{truck._id}}" check-list='checked_trucks'> {{truck.registrationNo}}<br />

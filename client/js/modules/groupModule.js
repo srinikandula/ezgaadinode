@@ -22,7 +22,7 @@ app.factory('GroupServices', function ($http) {
         updateGroup: function (groupData, success, error) {
             $http({
                 url: '/v1/group/updateGroup',
-                method: "POST",
+                method: "PUT",
                 data: groupData
             }).then(success, error)
         }
