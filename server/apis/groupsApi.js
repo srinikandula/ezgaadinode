@@ -3,9 +3,12 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
+var log4js = require('log4js')
+    , logger = log4js.getLogger("file-log");
 var GroupsColl = require('./../models/schemas').GroupsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 
+log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60});
 
 var config = require('./../config/config');
 var Utils = require('./utils');
@@ -102,6 +105,7 @@ Groups.prototype.addGroup = function (jwt, regDetails, callback) {
 };
 
 Groups.prototype.login = function (accountName, userName, password, callback) {
+    logger.info("logging in user:" + userName);
     var retObj = {
         status: false,
         messages: []
