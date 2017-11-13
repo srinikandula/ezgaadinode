@@ -10,18 +10,18 @@ var Utils = require('./utils');
 var ExpenseMaster = function () {
 };
 
-ExpenseMaster.prototype.addExpense = function (jwt, details, callback) {
+ExpenseMaster.prototype.addExpense = function (jwt, expenseMasterdetails, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    if (!details.expenseName || !_.isString(details.expenseName)) {
+    if (!expenseMasterdetails.expenseName || !_.isString(expenseMasterdetails.expenseName)) {
         retObj.messages.push("Please provide valid expense name");
         callback(retObj);
     }
     if (!retObj.messages.length) {
-        ExpenseMasterColl.findOne({expenseName: details.expenseName}, function (err, expense) {
+        ExpenseMasterColl.findOne({expenseName: expenseMasterdetails.expenseName}, function (err, expense) {
             if (err) {
                 retObj.messages.push("Error, try again!");
                 callback(retObj);
@@ -29,9 +29,10 @@ ExpenseMaster.prototype.addExpense = function (jwt, details, callback) {
                 retObj.messages.push("Expense already exists");
                 callback(retObj);
             } else {
-                details.createdBy = jwt.id;
-                details.updatedBy = jwt.id;
-                var insertDoc = new ExpenseMasterColl(details);
+                expenseMasterdetails.createdBy = jwt.id;
+                expenseMasterdetails.updatedBy = jwt.id;
+                expenseMasterdetails.accountId = jwt.accountId;
+                var insertDoc = new ExpenseMasterColl(expenseMasterdetails);
                 insertDoc.save(function (err) {
                     if (err) {
                         retObj.messages.push("Error, try Again");
@@ -47,12 +48,12 @@ ExpenseMaster.prototype.addExpense = function (jwt, details, callback) {
     }
 };
 
-ExpenseMaster.prototype.getAllExpenses = function (callback) {
+ExpenseMaster.prototype.getAllAccountExpenses = function (jwt, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    ExpenseMasterColl.find({}, {expenseName: 1}, function (err, expenses) {
+    ExpenseMasterColl.find({accountId:jwt.accountId}, {expenseName: 1}, function (err, expenses) {
         if (err) {
             retObj.messages.push('Error getting expenses');
             callback(retObj);
@@ -65,14 +66,14 @@ ExpenseMaster.prototype.getAllExpenses = function (callback) {
     });
 };
 
-ExpenseMaster.prototype.updateExpense = function (jwt, expenseDetails, callback) {
+ExpenseMaster.prototype.updateExpense = function (jwt, expenseMasterdetails, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    expenseDetails = Utils.removeEmptyFields(expenseDetails);
-    expenseDetails.updatedBy = jwt.id;
-    ExpenseMasterColl.findOneAndUpdate({_id: expenseDetails._id}, {$set: expenseDetails}, {new: true}, function (err, expense) {
+    expenseMasterdetails = Utils.removeEmptyFields(expenseMasterdetails);
+    expenseMasterdetails.updatedBy = jwt.id;
+    ExpenseMasterColl.findOneAndUpdate({accountId:jwt.accountId, _id: expenseMasterdetails._id}, {$set: expenseMasterdetails}, {new: true}, function (err, expense) {
         if (err) {
             retObj.messages.push("Error while updating expense, try Again");
             callback(retObj);
@@ -87,13 +88,13 @@ ExpenseMaster.prototype.updateExpense = function (jwt, expenseDetails, callback)
     });
 };
 
-ExpenseMaster.prototype.deleteExpense = function (id, callback) {
+ExpenseMaster.prototype.deleteExpense = function (jwt, id, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    ExpenseMasterColl.remove({_id: id}, function (err) {
+    ExpenseMasterColl.remove({accountId:jwt.accountId, _id: id}, function (err) {
         if (err) {
             retObj.messages.push('Error deleting expense');
             callback(retObj);
