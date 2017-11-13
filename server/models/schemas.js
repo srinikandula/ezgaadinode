@@ -171,6 +171,7 @@ var payments = new mongoose.Schema({
 },{timestamps: true});
 
 var expenseMaster = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
     expenseName: String,
     updatedBy: String,
     createdBy: String,
@@ -178,12 +179,12 @@ var expenseMaster = new mongoose.Schema({
 },{timestamps: String});
 
 var paymentsReceived = mongoose.Schema({
-    tripId: String,
-    driverId: String,
+    accountId: {type: ObjectId, ref: 'accounts'},
+    tripId: {type: ObjectId, ref: 'trips'},
+    truckId: {type: ObjectId, ref: 'trucks'},
     description: String,
-    expenseType: String,
+    expenseType: {type: ObjectId, ref: 'expenseMaster'},
     amount: String,
-    accountId: String,
     attrs: {}
 },{timestamps: String});
 

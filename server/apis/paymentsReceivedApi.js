@@ -69,7 +69,7 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
     };
     paymentDetails = Utils.removeEmptyFields(paymentDetails);
     paymentDetails.updatedBy = jwt.id;
-    PaymentsReceivedColl.findOneAndUpdate({_id: paymentDetails._id}, {$set: paymentDetails}, {new: true}, function (err, payment) {
+    PaymentsReceivedColl.findOneAndUpdate({accountId: jwt.accountId,_id: paymentDetails._id}, {$set: paymentDetails}, {new: true}, function (err, payment) {
         if (err) {
             retObj.messages.push("Error while updating payment, try Again");
             callback(retObj);
@@ -84,13 +84,13 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
     });
 };
 
-PaymentsReceived.prototype.deletePayment = function (id, callback) {
+PaymentsReceived.prototype.deletePayment = function (jwt, id, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    PaymentsReceivedColl.remove({_id: id}, function (err) {
+    PaymentsReceivedColl.remove({accountId: jwt.accountId, _id: id}, function (err) {
         if (err) {
             retObj.messages.push('Error deleting payment');
             callback(retObj);
