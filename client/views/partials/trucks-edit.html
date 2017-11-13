@@ -42,8 +42,12 @@
                     <div class="form-group col-xs-12">
                         <label class="col-sm-4 pall-zero">Driver:</label>
                         <div class="col-sm-8 col-xs-12">
-                            <select id="driver" ng-options="driver._id as driver.fullName for driver in drivers"
-                                    class="form-control" ng-model="truck.driverId" required></select>
+                         <!--   Driver Name: {{getDriver}}-->
+                            <input id="city" type="text"  ng-model="driverName"  uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue" class="form-control" typeahead-min-length="1" typeahead-on-select="selectDriverId($item)"  typeahead-select-on-exact="true">
+                          <!--  <select id="driver" ng-options="driver._id as driver.fullName for driver in drivers"
+                                    class="form-control" ng-model="truck.driverId" required>
+
+                            </select>-->
                         </div>
                     </div>
 

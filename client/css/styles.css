@@ -205,6 +205,9 @@ body{
 .ng-table th.sortable{
     padding: 6px !important;
 }
+.red{
+    color: red;
+}
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:after,
 #ui-grid-twbs #ui-grid-twbs .btn-toolbar:before,

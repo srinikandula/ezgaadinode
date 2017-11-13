@@ -23,6 +23,7 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     }
 
     if (!driverInfo.truckId || !Utils.isValidObjectId(driverInfo.truckId)) {
+        console.log('----->',driverInfo.truckId);
         retObj.messages.push('Invalid truckId');
     }
 
