@@ -36,6 +36,7 @@ AuthRouter.get('/', function (req, res) {
         res.json(result);
     });
 });
+
 AuthRouter.get('/getUnAssignedTrucks/getAll', function (req, res) {
     Trucks.getUnAssignedTrucks(req.jwt,function (result) {
         res.json(result);

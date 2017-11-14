@@ -43,7 +43,7 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
         //         }
         //     }
         // });
-        paymentDetails = Utils.removeEmptyFields(paymentDetails);
+        // paymentDetails = Utils.removeEmptyFields(paymentDetails);
         paymentDetails.accountId = jwt.accountId;
         paymentDetails.updatedBy = jwt.id;
         paymentDetails.createdBy = jwt.id;

@@ -191,6 +191,23 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open',
             maintenanceId: null
         }
+    }).state({
+        name: 'expenseMaster',
+        url: '/expenseMaster',
+        templateUrl: 'views/partials/ExpenseMaster/expense-master.html',
+        data: {activeTab: 'expenseMaster'},
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'expenseMasterEdit',
+        url: '/expenseMasterEdit/:expenseTypeId',
+        templateUrl: 'views/partials/ExpenseMaster/expense-master-edit.html',
+        data: {activeTab: 'expenseMaster'},
+        params: {
+            access: 'open',
+            expenseTypeId: null
+        }
     });
     $urlRouterProvider.otherwise('/login');
 });
