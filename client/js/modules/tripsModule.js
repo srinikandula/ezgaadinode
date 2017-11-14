@@ -331,7 +331,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if(!params.errors.length){
             $scope.paymentDetails.tripId = $scope.trip._id;
             TripServices.addPayment($scope.paymentDetails, function (success) {
-                console.log(success.data);
+               // console.log(success.data);
                 if(success.data.status) {
                     Notification.success({message: 'Payment added successfully'});
                     $scope.getTrip();
