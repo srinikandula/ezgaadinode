@@ -11,6 +11,7 @@ app.directive('leftNavigation', function () {
         '            <truck-directive></truck-directive>\n' +
         '            <trip-directive></trip-directive>\n' +
         '            <party-directive></party-directive>\n' +
+        '            <expense-master-directive></expense-master-directive>\n' +
         '            <maintenance-directive></maintenance-directive>\n' +
         '            <lane-directive></lane-directive>\n' +
         '        </ul>\n' +
@@ -75,6 +76,15 @@ app.directive('partyDirective',function () {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'party\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="party">Party</a>\n' +
+        '          </li>'
+    } ;
+});
+
+app.directive('expenseMasterDirective',function () {
+    return{
+        restrict: 'E',
+        template: '<li ng-class="{selected: activeTab === \'expenseMaster\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="expenseMaster">Expense Master</a>\n' +
         '          </li>'
     } ;
 });

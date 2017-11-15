@@ -103,7 +103,6 @@ Trucks.prototype.findTruck = function (jwt, truckId, callback) {
     });
 };
 
-
 Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
     var retObj = {
         status: false,

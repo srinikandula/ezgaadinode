@@ -10,7 +10,13 @@ AuthRouter.post('/', function (req, res) {
 });
 
 AuthRouter.get('/', function (req, res) {
-    ExpenseMaster.getAllAccountExpenses(req.jwt, function (result) {
+    ExpenseMaster.getAllAccountExpenses(req.jwt, req.query, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/getExpense/:id', function (req, res) {
+    ExpenseMaster.getExpense(req.jwt, req.params.id, function (result) {
         res.send(result);
     });
 });
@@ -23,6 +29,12 @@ AuthRouter.put('/', function (req, res) {
 
 AuthRouter.delete('/:id', function (req, res) {
     ExpenseMaster.deleteExpense(req.jwt, req.params.id, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/count', function (req, res) {
+    ExpenseMaster.count(req.jwt, function (result) {
         res.send(result);
     });
 });
