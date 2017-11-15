@@ -3,8 +3,8 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var PaymentsReceived = require('./../apis/paymentsReceivedApi');
 
-AuthRouter.post('/', function (req, res) {
-    PaymentsReceived.addPayment(req.jwt, req.body, function (result) {
+AuthRouter.post('/addPayments', function (req, res) {
+    PaymentsReceived.addPayments(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
@@ -15,7 +15,7 @@ AuthRouter.get('/', function (req, res) {
     });
 });
 
-AuthRouter.put('/', function (req, res) {
+AuthRouter.put('/updatePayments', function (req, res) {
     PaymentsReceived.updatePayment(req.jwt, req.body, function (result) {
         res.send(result);
     });
@@ -23,6 +23,18 @@ AuthRouter.put('/', function (req, res) {
 
 AuthRouter.delete('/:id', function (req, res) {
     PaymentsReceived.deletePayment(req.jwt, req.params.id, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/countPayments', function (req, res) {
+    PaymentsReceived.countPayments(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/getPayments', function (req, res) {
+    PaymentsReceived.getPayments(req.params, req.jwt, function (result) {
         res.send(result);
     });
 });

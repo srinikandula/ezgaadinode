@@ -13,6 +13,7 @@ var TripLaneColl = require('./../models/schemas').TripLanesCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var RolesColl = require('./../models/schemas').Roles;
 var DriversCollection = require('./../models/schemas').DriversColl;
+var TripsColl = require('./../models/schemas').TripCollection;
 var Payments = require('./../apis/paymentApi');
 
 
@@ -140,8 +141,10 @@ Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fi
 };
 
 Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, callback) {
+    //console.log("==>",documents, fieldTopopulate);
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
+    //console.log("==>",ids, fieldTopopulate);
     PartyColl.find({'_id': {$in: ids}}, {"name": 1}, function (err, names) {
         if (err) {
             result.status = false;
@@ -152,7 +155,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var party = _.find(names, function (users) {
-                    if(item.bookedFor) return users._id.toString() === item.bookedFor.toString();
+                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (party) {
                     if (!item.attrs) {
@@ -337,6 +340,37 @@ Utils.prototype.cleanUpTruckDriverAssignment = function (jwt, truckId, driverId)
         console.error("Error cleaning up the drivers collection");
     });
 
+};
+
+Utils.prototype.populateNameInTripsColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    TripsColl.find({'_id': {$in: ids}}, {"tripId": 1}, function (err, names) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving Trips';
+            result.err = err;
+            callback(result);
+        } else {
+            for (var i = 0; i < documents.length; i++) {
+                var item = documents[i];
+                var Trips = _.find(names, function (users) {
+                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                });
+                if (Trips) {
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs.tripId = Trips.tripId;
+                }
+            }
+            result.status = true;
+            result.message = 'Error retrieving Trips';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
+        }
+    });
 };
 
 module.exports = new Utils();

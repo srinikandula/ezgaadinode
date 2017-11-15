@@ -208,6 +208,23 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open',
             expenseTypeId: null
         }
+    }).state({
+        name: 'paymentsReceived',
+        url: '/paymentsReceived',
+        templateUrl: 'views/partials/payments/paymentsReceived.html',
+        data: {activeTab: 'paymentsReceived'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'paymentsEdit',
+        url: '/paymentsEdit/:paymentsId',
+        templateUrl: 'views/partials/payments/paymentsEdit.html',
+        data: {activeTab: 'paymentsReceived'},
+        params: {
+            access: 'open',
+            paymentsId: null
+        }
     });
     $urlRouterProvider.otherwise('/login');
 });

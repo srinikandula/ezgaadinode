@@ -38,7 +38,14 @@ app.factory('TripServices', function ($http) {
                 method: "PUT",
                 data: paymentdetails
             }).then(success, error)
-        }
+        },
+        getAllAccountTrips: function (success, error) {
+            $http({
+                url: '/v1/trips/getAllAccountTrips',
+                method: "GET"
+            }).then(success, error)
+        },
+
     }
 });
 
