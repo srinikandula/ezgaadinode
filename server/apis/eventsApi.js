@@ -15,8 +15,8 @@ Events.prototype.getEventData = function(accountId, startDate, endDate, callback
     }
 
     if(retObj.messages.length == 0) {
-        var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + accountId + "' and timestamp >= "+ startDate +" and timestamp <= "+ endDate;
-        var eventDataTempQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventDataTemp WHERE accountID='" + accountId + "' and timestamp >= "+ startDate+" and timestamp <= "+ endDate;
+        var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + accountId + "' and timestamp >= "+ startDate +" and timestamp <= "+ endDate;
+        var eventDataTempQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventDataTemp WHERE accountID='" + accountId + "' and timestamp >= "+ startDate+" and timestamp <= "+ endDate;
 
         async.parallel({
             eventData: function(eventDataCallback) {
