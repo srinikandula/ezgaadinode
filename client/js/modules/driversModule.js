@@ -161,6 +161,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             if (success.data.status) {
                 $scope.driver = success.data.driver;
                 $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
+                getTruckIds();
                 console.log('driver',$scope.driver);
             } else {
                 success.data.messages.forEach(function (message) {
@@ -169,6 +170,8 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             }
         }, function (err) {
         })
+    } else{
+        getTruckIds();
     }
 
     function getTruckIds() {
@@ -176,6 +179,13 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         TrucksService.getGroupTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
+                var selectedTruck = _.find( $scope.trucks, function (truck) {
+                    return truck._id.toString() === $scope.driver.truckId;
+                });
+                if(selectedTruck){
+                    $scope.truckRegNo = selectedTruck.registrationNo;
+                }
+
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(success.data.message);
@@ -186,12 +196,14 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         });
     }
 
-    getTruckIds();
+
 
     $scope.cancel = function () {
         $state.go('drivers');
     };
-
+    $scope.selectTruckId = function (truck) {
+        $scope.driver.truckId = truck._id;
+    }
     $scope.addOrSaveDriver = function () {
         var params = $scope.driver;
         params.errors = [];
