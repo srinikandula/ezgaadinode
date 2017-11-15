@@ -3,18 +3,20 @@ var async = require('async');
 
 var config = require('./../config/config');
 var Events = function() {};
-// var pool  = mysql.createPool(config.mysql);
+var pool  = mysql.createPool(config.mysql);
 
-Events.prototype.getEventData = function(accountId, callback) {
+Events.prototype.getEventData = function(accountId, startDate, endDate, callback) {
     var retObj = {};
+    retObj.messages = [];
 
     if(!accountId) {
         retObj.status = false;
-        retObj.message = 'Invalid account Id';
-        callback(retObj);
-    } else {
-        var eventDataQuery = "SELECT deviceID, timestamp, latitude, longitude FROM gts.EventData WHERE accountID='" + accountId + "'";
-        var eventDataTempQuery = "SELECT deviceID, timestamp, latitude, longitude FROM gts.EventDataTemp WHERE accountID='" + accountId + "'";
+        retObj.messages.push('Invalid account Id');
+    }
+
+    if(retObj.messages.length == 0) {
+        var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + accountId + "' and timestamp >= "+ startDate +" and timestamp <= "+ endDate;
+        var eventDataTempQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventDataTemp WHERE accountID='" + accountId + "' and timestamp >= "+ startDate+" and timestamp <= "+ endDate;
 
         async.parallel({
             eventData: function(eventDataCallback) {
@@ -30,15 +32,20 @@ Events.prototype.getEventData = function(accountId, callback) {
         }, function(err, results) {
             if(err) {
                 retObj.status = false;
-                retObj.message = 'Error fetching data';
+                retObj.messages.push('Error fetching data');
+                retObj.messages.push(JSON.stringify(err));
+
                 callback(retObj);
             } else {
                 retObj.status = true;
-                retObj.message = 'Success';
+                retObj.messages.push('Success');
                 retObj.results = results.eventData.concat(results.eventDataTemp);
+                retObj.count = retObj.results.length;
                 callback(retObj);
             }
         });
+    } else {
+        callback(retObj);
     }
 };
 
