@@ -10,14 +10,7 @@ AuthRouter.post('/accounts/add', function (req, res) {
 });
 
 AuthRouter.get('/accounts/fetch/:pageNum', function (req, res) {
-    logger.log({'level':'debug', 'message':'finding account for page'});
-
     Accounts.getAccounts(req.params.pageNum, function (result) {
-        logger.log({
-            level: 'error',
-            message: "lhadlhwalhdlw"
-        });
-
         res.json(result);
     });
 });
