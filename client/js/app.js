@@ -37,7 +37,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         },
         controller: 'AddEditPartyCtrl'
     })
-        //.state({
+    //.state({
     //     name: 'users',
     //     url: '/users',
     //     templateUrl: 'views/partials/users/show-users.html',
@@ -56,14 +56,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     //     }
     // })
         .state({
-        name: 'groups',
-        url: '/groups',
-        templateUrl: 'views/partials/groups/show-groups.html',
-        data: {activeTab: 'groups'},
-        params: {
-            access: 'open'
-        }
-    }).state({
+            name: 'groups',
+            url: '/groups',
+            templateUrl: 'views/partials/groups/show-groups.html',
+            data: {activeTab: 'groups'},
+            params: {
+                access: 'open'
+            }
+        }).state({
         name: 'groupsEdit',
         url: '/groupsEdit/:groupId',
         templateUrl: 'views/partials/groups/groupsEdit.html',

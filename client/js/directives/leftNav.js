@@ -19,66 +19,69 @@ app.directive('leftNavigation', function () {
     };
 });
 
-app.directive('accountDirective',function () {
-   return{
-       restrict: 'E',
-       template: '<li ng-class="{selected: activeTab === \'accounts\'}" class="left-nav-li"> \n' +
-       '             <a class="left-nav-anchor" ui-sref="accounts">Accounts</a>\n' +
-       '          </li>'
-   } ;
+app.directive('accountDirective', function () {
+    return {
+        restrict: 'E',
+        template: '<li ng-class="{selected: activeTab === \'accounts\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="accounts">Accounts</a>\n' +
+        '          </li>'
+    };
 });
-app.directive('groupDirective',function () {
-    return{
+app.directive('groupDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'groups\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="groups">Groups</a>\n' +
         '          </li>'
-    } ;
+    };
 });
-app.directive('driverDirective',function () {
-    return{
+app.directive('driverDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'drivers\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="drivers">Drivers</a>\n' +
         '          </li>'
-    } ;
+    };
 });
 
-app.directive('rolesDirective',function () {
-    return{
+app.directive('rolesDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'roles\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="roles">Roles</a>\n' +
         '          </li>'
-    } ;
+    };
 });
 
-app.directive('truckDirective',function () {
-    return{
+app.directive('truckDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'trucks\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="trucks">Trucks</a>\n' +
         '          </li>'
-    } ;
+    };
 });
 
-app.directive('tripDirective',function () {
-    return{
+app.directive('tripDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'trips\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="trips">Trips</a>\n' +
         '          </li>'
-    } ;
+    };
 });
 
-app.directive('partyDirective',function () {
-    return{
+app.directive('partyDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'party\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="party">Party</a>\n' +
         '          </li>'
-    } ;
+    };
 });
+
+
+
 
 app.directive('expenseMasterDirective',function () {
     return{
@@ -89,13 +92,14 @@ app.directive('expenseMasterDirective',function () {
     } ;
 });
 
-app.directive('maintenanceDirective',function () {
-    return{
+
+app.directive('maintenanceDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'maintenance\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="maintenance">Maintenance</a>\n' +
         '          </li>'
-    } ;
+    };
 });
 
 app.directive('paymentsDirective',function () {
@@ -113,5 +117,5 @@ app.directive('laneDirective',function () {
         template: '<li ng-class="{selected: activeTab === \'tripLanes\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="tripLanes">Trip Lanes</a>\n' +
         '          </li>'
-    } ;
+    };
 });
