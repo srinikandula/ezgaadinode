@@ -208,6 +208,9 @@ body{
 .red{
     color: red;
 }
+.drop-check .dropdown-toggle {
+    width:200px;
+}
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:before,
 #ui-grid-twbs #ui-grid-twbs .form-horizontal .form-group:after,
 #ui-grid-twbs #ui-grid-twbs .btn-toolbar:before,
@@ -1244,6 +1247,10 @@ input[type="text"].ui-grid-filter-input:hover {
     right:0;
 
 }
+.ml-10{
+    margin-left: 10px;
+}
+
 /*.ui-notification > .message {
     margin: 0;
 }*/

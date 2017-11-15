@@ -260,7 +260,7 @@ Trucks.prototype.getUnAssignedTrucks = function (jwt,callback) {
         messages: []
     };
 
-    TrucksColl.find({groupId: null,accountId: jwt.accountId},function (err, trucks) {
+    TrucksColl.find({$or:[{groupId: jwt.groupId},{groupId:{ $exists: false}}],accountId: jwt.accountId},function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);

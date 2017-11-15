@@ -13,9 +13,9 @@ app.factory('GroupServices', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getGroup: function (id,success, error) {
+        getGroup: function (id, success, error) {
             $http({
-                url: '/v1/group/getGroup/'+id,
+                url: '/v1/group/getGroup/' + id,
                 method: "GET"
             }).then(success, error)
         },
@@ -44,7 +44,7 @@ app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification'
                 $scope.groupGridOptions.data = success.data.groups;
                 $scope.totalItems = success.data.count;
             } else {
-                success.data.messages.forEach(function(message) {
+                success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
                 });
             }
@@ -59,10 +59,10 @@ app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification'
         columnDefs: [{
             name: 'User name',
             field: 'userName'
-        },{
+        }, {
             name: 'Group Name',
             field: 'name'
-        },{
+        }, {
             name: 'Created By',
             field: 'attrs.createdByName'
         }, {
@@ -78,12 +78,12 @@ app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification'
     };
 }]);
 
-app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServices','TrucksService', 'Notification', '$stateParams', 'Utils', '$state', function ($scope, GroupServices, AccountServices,TrucksService, Notification, $stateParams, Utils, $state) {
+app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServices', 'TrucksService', 'Notification', '$stateParams', 'Utils', '$state', function ($scope, GroupServices, AccountServices, TrucksService, Notification, $stateParams, Utils, $state) {
     $scope.pagetitle = "Add Group";
     $scope.trucks = [];
     $scope.checked_trucks = [];
     $scope.groupDetails = {
-        name:'',
+        name: '',
         userName: '',
         password: '',
         status: true,
@@ -173,5 +173,28 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
                 });
             }
         }
-    }
+    };
+    $scope.example14model = [];
+    $scope.example14settings = {
+        scrollable: true,
+        scrollableHeight: '300px',
+        closeOnBlur: true,
+        displayProp: 'registrationNo',
+        idProp: 'registrationNo',
+        buttonDefaultText: 'Select Trucks'
+    };
+
+    TrucksService.getUnAssignedTrucks(function (success) {
+        if(success.data.status){
+            $scope.example14data = success.data.trucks;
+           /* console.log('------>',  $scope.example14data);*/
+        }
+    });
+
+    $scope.example2settings = {
+        displayProp: 'registrationNo'
+    };
+
+
+
 }]);

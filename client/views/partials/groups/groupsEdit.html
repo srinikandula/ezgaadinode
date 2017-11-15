@@ -35,30 +35,47 @@
                         <div class="col-sm-2"><input type="checkbox" ng-model="groupDetails.isActive"></div>
 
                     </div>
-                    <div class="form-group col-xs-12" ng-hide="groupDetails._id">
+                    <div class="form-group col-xs-12" >
                         <label class="col-sm-2 pall-zero">Trucks</label>
-                        <span class="col-sm-2" ng-repeat="truck in trucks">
-                            <input type='checkbox' value="{{truck._id}}" check-list='checked_trucks'> {{truck.registrationNo}}<br />
-                         </span>
-                    </div>
 
-                        <div class="clearfix"></div>
-                    <div class="col-xs-4 col-xs-push-4">
-                        <div>
-                            <div class="alert alert-danger" role="alert" ng-show="groupDetails.errors.length">
-                                <ul>
-                                    <li ng-repeat="error in groupDetails.errors">{{error}}</li>
-                                </ul>
-                            </div>
-                        </div>
+                        <div class="col-sm-8 drop-check">
+                            <div ng-dropdown-multiselect="" options="example14data" selected-model="example14model"
+                                 checkboxes="true" extra-settings="example14settings"></div>
 
-                        <div class="margin-top-20">
-                            <button type="submit" class="btn btn-primary" ng-click="AddorUpdateGroup()">Submit</button>
-                            <button type="submit" class="btn btn-red" ng-click="goToGroupsPage()">Cancel</button>
                         </div>
                     </div>
-                </form>
+
+                    <div class="form-group col-xs-12" >
+                        <label class="col-sm-2 pall-zero">Assigned Trucks</label>
+                        <div class="col-sm-8">
+                            <span class="ml-10" ng-repeat="truckId in example14model">
+                               <input type="checkbox"> {{truckId.id}}
+                            </span>
+                        </div>
+
+                    </div>
+                   <!--  <span class="col-sm-2" ng-repeat="truck in trucks">
+                         <input type='checkbox' value="{{truck._id}}" check-list='checked_trucks'> {{truck.registrationNo}}<br />
+                      </span>-->
+
+
+            <div class="clearfix"></div>
+            <div class="col-xs-4 col-xs-push-4">
+                <div>
+                    <div class="alert alert-danger" role="alert" ng-show="groupDetails.errors.length">
+                        <ul>
+                            <li ng-repeat="error in groupDetails.errors">{{error}}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="margin-top-20">
+                    <button type="submit" class="btn btn-primary" ng-click="AddorUpdateGroup()">Submit</button>
+                    <button type="submit" class="btn btn-red" ng-click="goToGroupsPage()">Cancel</button>
+                </div>
             </div>
+            </form>
         </div>
     </div>
+</div>
 </div>
