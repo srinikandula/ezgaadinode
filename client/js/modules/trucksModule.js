@@ -153,7 +153,9 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
-
+    $scope.selectDriverId = function (driver) {
+        $scope.truck.driverId = driver._id;
+    }
     $scope.drivers = [];
     $scope.truck = {
         registrationNo: '',
@@ -197,6 +199,12 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                 $scope.truck.permitExpiry = new Date($scope.truck.permitExpiry);
                 $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
                 $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
+                var selectedDriver = _.find( $scope.drivers, function (driver) {
+                    return driver._id.toString() === $scope.truck.driverId;
+                });
+                if(selectedDriver){
+                    $scope.driverName = selectedDriver.fullName;
+                }
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);

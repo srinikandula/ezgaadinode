@@ -105,6 +105,7 @@ TripLanes.prototype.getAllTripLanes = function (callback) {
 };
 
 TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
+    // console.log('params',params);
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -114,14 +115,18 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
         return callback(result);
     }
     var skipNumber = (params.page - 1) * params.size;
+     console.log('params',params);
     async.parallel({
         triplanes: function (accountsCallback) {
-            var limit = params.limit? parseInt(params.limit) : Number.MAX_SAFE_INTEGER;
+            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) :{};
+
             TripLanesCollection
                 .find({'accountId': jwt.accountId})
-                .sort(JSON.parse(params.sort))
+                .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
+                //.limit(Number(params.size))
                 .lean()
                 .exec(function (err, triplanes) {
                     if(triplanes){

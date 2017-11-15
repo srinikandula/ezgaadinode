@@ -51,25 +51,28 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
     }
 };
 
-MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum, jwt, callback) {
-    var retObj = {};
-    if (!pageNum) {
-        pageNum = 1;
-    } else if (isNaN(Number(pageNum))) {
-        retObj.status = false;
-        retObj.message = 'Invalid page number';
-        return callback(retObj);
+MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback) {
+    var result = {};
+    if (!params.page) {
+        params.page = 1;
+    } else if (!_.isNumber(Number(params.page))) {
+        result.status = false;
+        result.message = 'Invalid page number';
+        return callback(result);
     }
 
-    var skipNumber = (pageNum - 1) * pageLimits.maintenanceCostsPaginationLimit;
+    var skipNumber = (params.page - 1) * params.size;
     async.parallel({
         mCosts: function (mCostsCallback) {
+            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) :{};
             maintenanceColl
-                .find({accountId: jwt.accountId})
+                .find({'accountId': jwt.accountId})
                 .sort({createdAt: 1})
+                .sort(sort)
                 .skip(skipNumber)
-                .limit(pageLimits.maintenanceCostsPaginationLimit)
-                .populate('maintenanceCostId')
+                .limit(limit)
+                //.populate('maintenanceCostId')
                 .lean()
                 .exec(function (err, mCosts) {
                     async.parallel({
@@ -95,15 +98,15 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (pageNum, jwt, callback
         }
     }, function (err, results) {
         if (err) {
-            retObj.status = false;
-            retObj.message = 'Error retrieving Maintenance Costs';
+            result.status = false;
+            result.message = 'Error retrieving Maintenance Costs';
             callback(retObj);
         } else {
-            retObj.status = true;
-            retObj.message = 'Success';
-            retObj.count = results.count;
-            retObj.maintanenceCosts = results.mCosts.createdbyname;
-            callback(retObj);
+            result.status = true;
+            result.message = 'Success';
+            result.count = results.count;
+            result.maintanenceCosts = results.mCosts;
+            callback(result);
         }
     });
 };
@@ -237,5 +240,19 @@ MaintenanceCost.prototype.deleteMaintenanceRecord = function (maintenanceId, cal
         }
     });
 };
-
+MaintenanceCost.prototype.countMaintenance = function (jwt, callback) {
+    var result = {};
+    maintenanceColl.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
 module.exports = new MaintenanceCost();

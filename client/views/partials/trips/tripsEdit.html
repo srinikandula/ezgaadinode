@@ -29,38 +29,79 @@
                                     <label for="registrationNo" class="col-sm-4 col-xs-12 pall-zero">Registration
                                         No</label>
                                     <div class="col-xs-12 col-sm-8">
-                                        <select ng-model="trip.registrationNo"
+                                        <!--<select ng-model="trip.registrationNo"
                                                 ng-options="truck._id as truck.registrationNo for truck in trucks"
                                                 class="form-control" id="registrationNo">
-                                        </select>
+                                        </select>-->
+                                        <input type="text" ng-model="truckRegNo"
+                                               uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue"
+                                               class="form-control" typeahead-min-length="1"
+                                               typeahead-on-select="selectTruckId($item)"
+                                               typeahead-select-on-exact="true" placeholder="Registration Num"
+                                               typeahead-no-results="noTrucks">
+                                        <div ng-show="noTrucks">
+                                            <i class="glyphicon glyphicon-remove red"></i>
+                                            <span class="red"> No Results Found </span>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-12">
                                     <label for="driver" class="col-xs-12 col-sm-4 pall-zero">Driver</label>
                                     <div class="col-sm-8 col-xs-12">
-                                        <select ng-model="trip.driver"
+                                        <input type="text" ng-model="driverName"
+                                               uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue"
+                                               class="form-control" typeahead-min-length="1"
+                                               typeahead-on-select="selectTruckDriver($item)"
+                                               typeahead-select-on-exact="true" placeholder="Driver Name"
+                                               typeahead-no-results="noDriver">
+                                        <div ng-show="noDriver">
+                                            <i class="glyphicon glyphicon-remove red"></i>
+                                            <span class="red"> No Results Found </span>
+                                        </div>
+                                        <!--<select ng-model="trip.driver"
                                                 ng-options="driver._id as driver.fullName for driver in drivers"
                                                 class="form-control" id="driver">
-                                        </select>
+                                        </select>-->
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-12">
                                     <label for="bookedFor" class="col-xs-12 col-sm-4 pall-zero">Booked
                                         For</label>
                                     <div class="col-sm-8 col-xs-12">
-                                        <select ng-model="trip.bookedFor"
+                                        <input type="text" ng-model="getPartyName"
+                                               uib-typeahead="party.name for party in parties | filter:$viewValue"
+                                               class="form-control" typeahead-min-length="1"
+                                               typeahead-on-select="selectBookedFor($item)"
+                                               typeahead-select-on-exact="true" placeholder="Booked For"
+                                               typeahead-no-results="noBooked">
+                                        <div ng-show="noBooked">
+                                            <i class="glyphicon glyphicon-remove red"></i>
+                                            <span class="red"> No Results Found </span>
+                                        </div>
+                                        <!--<select ng-model="trip.bookedFor"
                                                 ng-options="party._id as party.name for party in parties"
                                                 class="form-control" id="bookedFor">
-                                        </select>
+                                        </select>-->
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-12">
                                     <label for="tripLane" class="col-xs-12 col-sm-4 pall-zero">Trip Lane</label>
                                     <div class="col-sm-8 col-xs-12">
-                                        <select ng-model="trip.tripLane"
-                                                ng-options="tripLane._id as tripLane.name for tripLane in tripLanes"
-                                                class="form-control" id="tripLane">
-                                        </select>
+
+                                        <input type="text" ng-model="getTripLane"
+                                               uib-typeahead="tripLane.name for tripLane in tripLanes | filter:$viewValue"
+                                               class="form-control" typeahead-min-length="1"
+                                               typeahead-on-select="selectTripLane($item)"
+                                               typeahead-select-on-exact="true" typeahead-no-results="noTlane"
+                                               placeholder="Traip Lane">
+                                        <div ng-show="noTlane">
+                                            <i class="glyphicon glyphicon-remove red"></i>
+                                            <span class="red"> No Results Found </span>
+                                        </div>
+                                        <!-- <select ng-model="trip.tripLane"
+                                                 ng-options="tripLane._id as tripLane.name for tripLane in tripLanes"
+                                                 class="form-control" id="tripLane">
+                                         </select>-->
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-12">
@@ -200,7 +241,7 @@
                         <form class=" col-md-12" ng-show="paymentFlag">
                             <div class="col-sm-6 col-xs-12">
                                 <div class="form-group col-xs-12">
-                                    <label for="paymentdate" class="col-xs-12 col-sm-4 pall-zero">From</label>
+                                    <label for="paymentdate" class="col-xs-12 col-sm-4 pall-zero">Date</label>
                                     <div class="col-sm-8 col-xs-12">
                                         <date-picker id="paymentdate"
                                                      ng-model="paymentDetails.paymentDate"></date-picker>

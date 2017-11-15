@@ -6,14 +6,43 @@
         </div>
         <div class="main-right col-xs-9" ng-controller="MaintenanceCtrl">
             <h3>Maintenance</h3>
-            <button class="btn  btn-blue pull-right" ng-click="goToEditMaintenancePage()">Add Maintenance</button>
-
-            <div class="margin-top-40">
-                <div class="grid" ui-grid="maintenanceGridOptions"></div>
+            <div class="toolbar-button-div pull-right mb-10">
+                <button class="btn  btn-blue pull-right" ng-click="goToEditMaintenancePage()">Add Maintenance</button>
             </div>
+       <!--          <div class="margin-top-40">
+                     <div class="grid" ui-grid="maintenanceGridOptions"></div>
+                 </div>
 
-            <ul ng-show="totalItems > 10" uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getMaintenanceRecords()"></ul>
+                 <ul ng-show="totalItems > 10" uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
+                     boundary-link-numbers="true" rotate="false" ng-change="getMaintenanceRecords()"></ul>-->
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="maintenanceParams">
+                <tr ng-repeat="maintenance in currentPageOfMaintanence" style="text-align: center;">
+                    <td data-title="'Vehicle Number'" sortable="'vehicleNumber'" class="clickable-item col-sm-2">{{
+                        maintenance.vehicleNumber }}
+                    </td>
+                    <td data-title="'Description'" sortable="'description'" class="clickable-item col-sm-2">{{ maintenance.description
+                        }}
+                    </td>
+                    <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">{{ maintanence.date }}</td>
+                    <td data-title="'Amount'" sortable="'cost'" class="clickable-item col-sm-2">{{
+                        maintenance.estimatedDistance }}
+                    </td>
+                    <td data-title="'Created By'" sortable="'agent.attrs.createdByName'"
+                        class="clickable-item col-sm-2">{{ maintenance.attrs.createdByName }}
+                    </td>
+                    <td data-title="'Action'" class="col-sm-2">
+                        <a href="#" class="btn" ng-click="goToEditMaintenancePage(maintanence._id)">
+                            <span class="glyphicon glyphicon-pencil"></span></a>
+
+                        <a href="#" class="btn" ng-click="deleteMaintenanceRecord(maintanence._id)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
+                </tr>
+                <tr ng-if="!currentPageOfTrips || currentPageOfTrips.length === 0">
+                    <td colspan="8">No Maintenance Records exist.</td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

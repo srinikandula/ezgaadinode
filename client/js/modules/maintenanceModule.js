@@ -25,6 +25,13 @@ app.factory('MaintenanceService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+        getMaintenance: function (params, success, error) {
+            $http({
+                url: '/v1/maintenance/getMaintenance/',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
         updateRecord: function (object, success, error) {
             $http({
                 url: '/v1/maintenance/updateMaintenance',
@@ -37,31 +44,84 @@ app.factory('MaintenanceService', function ($http) {
                 url: '/v1/maintenance/' + maintenanceId,
                 method: "DELETE"
             }).then(success, error)
+        },
+        count: function (success, error) {
+            $http({
+                url: '/v1/maintenance/total/count',
+                method: "GET"
+            }).then(success, error)
         }
     }
 });
 
-app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'Notification', function ($scope, $state, MaintenanceService, Notification) {
+app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'Notification','NgTableParams','paginationService', function ($scope, $state, MaintenanceService, Notification, NgTableParams, paginationService) {
     $scope.goToEditMaintenancePage = function (maintenanceId) {
         $state.go('maintenanceEdit', {maintenanceId: maintenanceId});
     };
+    $scope.count = 0;
+    MaintenanceService.count(function (success) {
 
-    $scope.totalItems = 10;
-    $scope.maxSize = 5;
-    $scope.pageNumber = 1;
+        if (success.data.status) {
+            $scope.count = success.data.count;
+            $scope.init();
 
-    $scope.getMaintenanceRecords = function () {
-        MaintenanceService.getMaintenanceRecords($scope.pageNumber,function (success) {
-            if (success.data.status) {
-                $scope.maintenanceGridOptions.data = success.data.maintanenceCosts;
-                $scope.totalItems = success.data.count;
-            } else {
-                Notification.error({message: success.data.message});
+        } else {
+            Notification.error({message: success.data.message});
+        }
+    });
+
+
+    var loadTableData = function (tableParams) {
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        $scope.loading = true;
+        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+        MaintenanceService.getMaintenance(pageable, function (response) {
+            $scope.invalidCount = 0;
+
+            if (angular.isArray(response.data.maintanenceCosts)) {
+                $scope.loading = false;
+                $scope.maintanence = response.data.maintanenceCosts;
+                tableParams.total(response.totalElements);
+
+                tableParams.data = $scope.maintanence;
+                $scope.currentPageOfMaintanence = $scope.maintanence;
+
             }
-        }, function (err) {
         });
     };
-    $scope.getMaintenanceRecords();
+
+
+    $scope.init = function () {
+        $scope.maintenanceParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                name: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
+    };
+    // $scope.totalItems = 10;
+    // $scope.maxSize = 5;
+    // $scope.pageNumber = 1;
+    //
+    // $scope.getMaintenanceRecords = function () {
+    //     MaintenanceService.getMaintenanceRecords($scope.pageNumber, function (success) {
+    //         if (success.data.status) {
+    //             $scope.maintenanceGridOptions.data = success.data.maintanenceCosts;
+    //             $scope.totalItems = success.data.count;
+    //         } else {
+    //             Notification.error({message: success.data.message});
+    //         }
+    //     }, function (err) {
+    //     });
+    // };
+    // $scope.getMaintenanceRecords();
 
     $scope.deleteMaintenanceRecord = function (id) {
         MaintenanceService.deleteRecord(id, function (success) {
@@ -74,38 +134,38 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
         })
     };
 
-    $scope.maintenanceGridOptions = {
-        enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
-        columnDefs: [{
-            name: 'Vehicle Number',
-            field: 'attrs.truckName'
-        }, {
-            name: 'Description',
-            field: 'description'
-        }, {
-            name: 'Date',
-            field: 'date',
-            cellFilter: 'date:"dd-MM-yyyy"'
-        }, {
-            name: 'Amount',
-            field: 'cost'
-        }, {
-            name: 'Created By',
-            field: 'attrs.createdByName'
-        }, {
-            name: 'Action',
-            cellTemplate: '<div class="text-center"> <a ng-click="grid.appScope.goToEditMaintenancePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
-            '<a ng-click="grid.appScope.deleteMaintenanceRecord(row.entity._id)" class="glyphicon glyphicon-trash dele"> </a></div>'
-
-        }],
-        rowHeight: 30,
-        data: [],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-        }
-    };
+    // $scope.maintenanceGridOptions = {
+    //     enableSorting: true,
+    //     paginationPageSizes: [9, 20, 50],
+    //     paginationPageSize: 9,
+    //     columnDefs: [{
+    //         name: 'Vehicle Number',
+    //         field: 'attrs.truckName'
+    //     }, {
+    //         name: 'Description',
+    //         field: 'description'
+    //     }, {
+    //         name: 'Date',
+    //         field: 'date',
+    //         cellFilter: 'date:"dd-MM-yyyy"'
+    //     }, {
+    //         name: 'Amount',
+    //         field: 'cost'
+    //     }, {
+    //         name: 'Created By',
+    //         field: 'attrs.createdByName'
+    //     }, {
+    //         name: 'Action',
+    //         cellTemplate: '<div class="text-center"> <a ng-click="grid.appScope.goToEditMaintenancePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
+    //         '<a ng-click="grid.appScope.deleteMaintenanceRecord(row.entity._id)" class="glyphicon glyphicon-trash dele"> </a></div>'
+    //
+    //     }],
+    //     rowHeight: 30,
+    //     data: [],
+    //     onRegisterApi: function (gridApi) {
+    //         $scope.gridApi = gridApi;
+    //     }
+    // };
 }]);
 
 app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', function ($scope, MaintenanceService, $stateParams, $state, DriverService, Notification, TrucksService) {

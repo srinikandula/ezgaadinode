@@ -43,7 +43,6 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
         //         }
         //     }
         // });
-        // paymentDetails = Utils.removeEmptyFields(paymentDetails);
         paymentDetails.accountId = jwt.accountId;
         paymentDetails.updatedBy = jwt.id;
         paymentDetails.createdBy = jwt.id;
@@ -61,7 +60,7 @@ Payments.prototype.addPayment = function (jwt, paymentDetails, callback) {
                     }
                 }, function (errupdating, updated) {
                     if (errupdating) {
-                        retObj.messages.push('Error while adding payment, try again');
+                        retObj.messages.push('Error while adding payment, try again.');
                         callback(retObj);
                     } else if(updated) {
                         retObj.status = true;
