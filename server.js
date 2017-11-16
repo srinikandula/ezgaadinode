@@ -16,7 +16,6 @@ var Party = require('./server/routes/partyRoutes');
 var Drivers = require('./server/routes/driverRoutes');
 var Roles = require('./server/routes/roleRoutes');
 var TripLanes = require('./server/routes/tripLanesRoutes');
-var Payments = require('./server/routes/paynemtRoutes');
 var Events = require('./server/routes/eventsRoutes');
 var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
@@ -55,9 +54,8 @@ app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/maintenance', Maintenance.AuthRouter);
 app.use('/v1/tripLanes',TripLanes.AuthRouter);
-app.use('/v1/payments', Payments.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
-app.use('/v1/paymentsReceived', PaymentsReceived.AuthRouter);
+app.use('/v1/payments', PaymentsReceived.AuthRouter);
 app.use('/v1/group', Groups.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {

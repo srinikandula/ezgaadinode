@@ -1,25 +1,36 @@
 var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
 var PaymentsReceivedColl = require('./../models/schemas').paymentsReceivedColl;
 
 var config = require('./../config/config');
-var Utils = require('./utils');
+var Helpers = require('./utils');
+var pageLimits = require('./../config/pagination');
 
 var PaymentsReceived = function () {
 };
 
-PaymentsReceived.prototype.addPayment = function (jwt, details, callback) {
+PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
     var retObj = {
         status: false,
         messages: []
     };
+    if (!details.date) {
+        retObj.messages.push("Please provide Date");
+    }
+    if (!details.tripId) {
+        retObj.messages.push("Please provide Trip");
+    }
+    if (!details.truckId) {
+        retObj.messages.push("Please provide Truck");
+    }
+    if (!details.partyId) {
+        retObj.messages.push("Please provide Party");
+    }
     if (!details.description || !_.isString(details.description)) {
         retObj.messages.push("Please provide description");
-    }
-    if (!details.expenseType || !_.isString(details.expenseType)) {
-        retObj.messages.push("Please provide expense type");
     }
     if (!details.amount) {
         retObj.messages.push("Please provide amount");
@@ -42,6 +53,102 @@ PaymentsReceived.prototype.addPayment = function (jwt, details, callback) {
             }
         });
     }
+};
+
+PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
+    var result = {};
+    if (!params.page) {
+        params.page = 1;
+    } else if (!_.isNumber(Number(params.page))) {
+        result.status = false;
+        result.message = 'Invalid page number';
+        return callback(result);
+    }
+    var skipNumber = (params.page - 1) * params.size;
+
+    async.parallel({
+        mCosts: function (mCostsCallback) {
+            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) :{};
+            PaymentsReceivedColl
+                .find({'accountId': jwt.accountId})
+                .sort({createdAt: 1})
+                .sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                //.populate('paymentsCostId')
+                .lean()
+                .exec(function (err, mCosts) {
+                    //console.log(mCosts);
+                    if(mCosts) {
+                        async.parallel({
+                            createdbyname: function (createdbyCallback) {
+                                Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
+                                    createdbyCallback(response.err, response.documents);
+                                });
+                            },
+                            partyId: function (partiescallback) {
+                                Helpers.populateNameInPartyColl(mCosts, 'partyId', function (response) {
+                                    partiescallback(response.err, response.documents);
+                                })
+                            },
+                            tripId: function (tripscallback) {
+                                Helpers.populateNameInTripsColl(mCosts, 'tripId', function (response) {
+                                    tripscallback(response.err, response.documents);
+                                })
+                            },
+                            truckId: function (truckscallback) {
+                                Helpers.populateNameInTrucksColl(mCosts, 'truckId', function (response) {
+                                    truckscallback(response.err, response.documents);
+                                })
+                            }
+                        }, function (populateErr, populateResults) {
+                            mCostsCallback(populateErr, populateResults);
+                        });
+                    }
+                });
+        },
+        count: function (countCallback) {
+            PaymentsReceivedColl.count({'accountId': jwt.accountId},function (err, count) {
+                console.log(count);
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        //console.log(results);
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving Payments Costs';
+            callback(retObj);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = results.count;
+            result.paymentsCosts = results.mCosts.createdbyname;
+            callback(result);
+        }
+    });
+};
+
+PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
+    var result = {};
+    PaymentsReceivedColl.findOne({_id: paymentsId, accountId: jwt.accountId}, function (err, paymentsReceived) {
+        //console.log(paymentsReceived);
+        if (err) {
+            result.status = false;
+            result.message = "Error while finding Payments, try Again";
+            callback(result);
+        } else if (paymentsReceived) {
+            result.status = true;
+            result.message = "Payment found successfully";
+            result.paymentsDetails = paymentsReceived;
+            callback(result);
+        } else {
+            result.status = false;
+            result.message = "Payment is not found!";
+            callback(result);
+        }
+    });
 };
 
 PaymentsReceived.prototype.getAllAccountPayments = function (jwt, callback) {
@@ -67,7 +174,7 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
         status: false,
         messages: []
     };
-    paymentDetails = Utils.removeEmptyFields(paymentDetails);
+    // paymentDetails = Utils.removeEmptyFields(paymentDetails);
     paymentDetails.updatedBy = jwt.id;
     PaymentsReceivedColl.findOneAndUpdate({accountId: jwt.accountId,_id: paymentDetails._id}, {$set: paymentDetails}, {new: true}, function (err, payment) {
         if (err) {
@@ -84,7 +191,7 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
     });
 };
 
-PaymentsReceived.prototype.deletePayment = function (jwt, id, callback) {
+PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -100,6 +207,22 @@ PaymentsReceived.prototype.deletePayment = function (jwt, id, callback) {
             callback(retObj);
         }
     });
+};
+
+PaymentsReceived.prototype.countPayments = function (jwt, callback) {
+    var result = {};
+    PaymentsReceivedColl.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
 };
 
 module.exports = new PaymentsReceived();

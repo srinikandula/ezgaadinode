@@ -81,7 +81,7 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback)
                                 createdbyCallback(response.err, response.documents);
                             });
                         },
-                        truckNo: function (truckscallback) {
+                        partyName: function (truckscallback) {
                             Helpers.populateNameInTrucksColl(mCosts, 'vehicleNumber', function (response) {
                                 truckscallback(response.err, response.documents);
                             })

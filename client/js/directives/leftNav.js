@@ -7,12 +7,12 @@ app.directive('leftNavigation', function () {
         '            <account-directive></account-directive>\n' +
         '            <group-directive></group-directive>\n' +
         '            <driver-directive></driver-directive>\n' +
-        '            <roles-directive></roles-directive>\n' +
         '            <truck-directive></truck-directive>\n' +
         '            <trip-directive></trip-directive>\n' +
         '            <party-directive></party-directive>\n' +
         '            <expense-master-directive></expense-master-directive>\n' +
         '            <maintenance-directive></maintenance-directive>\n' +
+        '            <payments-directive></payments-directive>\n' +
         '            <lane-directive></lane-directive>\n' +
         '        </ul>\n' +
         '    </div>'
@@ -94,6 +94,15 @@ app.directive('maintenanceDirective',function () {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'maintenance\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="maintenance">Maintenance</a>\n' +
+        '          </li>'
+    } ;
+});
+
+app.directive('paymentsDirective',function () {
+    return{
+        restrict: 'E',
+        template: '<li ng-class="{selected: activeTab === \'paymentsReceived\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="paymentsReceived">Payments Received</a>\n' +
         '          </li>'
     } ;
 });

@@ -182,9 +182,12 @@ var paymentsReceived = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     tripId: {type: ObjectId, ref: 'trips'},
     truckId: {type: ObjectId, ref: 'trucks'},
+    partyId: {type: ObjectId, ref: 'parties'},
     description: String,
-    expenseType: {type: ObjectId, ref: 'expenseMaster'},
     amount: String,
+    updatedBy: String,
+    createdBy: String,
+    date: Date,
     attrs: {}
 },{timestamps: String});
 
@@ -200,5 +203,5 @@ module.exports = {
     PaymentsColl: mongoose.model('payments', payments, 'payments'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
     paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
-    GroupsColl: mongoose.model('groups', groupSchema, 'groups')
+    GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
 };
