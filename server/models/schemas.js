@@ -101,8 +101,9 @@ var partySchema = new mongoose.Schema({
     contact: Number,
     email: String,
     city: String,
-    operatingLane: String,
     accountId: {type: ObjectId, ref: 'accounts'},
+    groupId: String,
+    tripLanes:[],
     updatedBy: String,
     createdBy: String,
     attrs: {}
@@ -112,8 +113,9 @@ var tripLanesSchema = new mongoose.Schema({
     name:String,
     from: String,
     to: String,
-    estimatedDistance: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
+    partyId: {type: ObjectId, ref: 'parties'},
+    groupId: String,
     updatedBy: String,
     createdBy: String,
     attrs: {}
