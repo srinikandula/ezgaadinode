@@ -21,7 +21,7 @@ app.factory('PaymentsService', function ($http) {
         },
         getPaymentsRecord: function (paymentsId, success, error) {
             $http({
-                url: '/v1/payments/getPayments/' + paymentsId,
+                url: '/v1/payments/getPaymentsRecord/' + paymentsId,
                 method: "GET"
             }).then(success, error)
         },
@@ -39,7 +39,7 @@ app.factory('PaymentsService', function ($http) {
                 data: object
             }).then(success, error)
         },
-        deleteRecord: function (paymentsId, success, error) {
+        deletePaymentsRecord: function (paymentsId, success, error) {
             $http({
                 url: '/v1/payments/' + paymentsId,
                 method: "DELETE"
@@ -62,7 +62,6 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
     PaymentsService.count(function (success) {
         if (success.data.status) {
             $scope.count = success.data.count;
-            //console.log($scope.count);
             $scope.init();
 
         } else {
@@ -70,24 +69,21 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
         }
     });
 
+    var pageable;
 
     var loadTableData = function (tableParams) {
-        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         PaymentsService.getPayments(pageable, function (response) {
-            //console.log("--->",response.data);
             $scope.invalidCount = 0;
 
-            if (response.data.status) {
-                //console.log(response.data.paymentsCosts);
+            if (angular.isArray(response.data.paymentsCosts)) {
                 $scope.loading = false;
                 $scope.payments = response.data.paymentsCosts;
-                //console.log($scope.payments);
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.payments;
                 $scope.currentPageOfPayments = $scope.payments;
-                // console.log(currentPageOfPayments);
             }
         });
     };
@@ -98,12 +94,13 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             page: 1, // show first page
             size: 10,
             sorting: {
-                name: -1
+                amount: -1
             }
         }, {
             counts: [],
             total: $scope.count,
             getData: function (params) {
+                //console.log($scope.count);
                 loadTableData(params);
             }
         });
@@ -126,9 +123,9 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
     // $scope.getPaymentsRecords();
 
     $scope.deletePaymentsRecord = function (id) {
-        PaymentsService.deleteRecord(id, function (success) {
+        PaymentsService.deletePaymentsRecord(id, function (success) {
             if (success.data.status) {
-                $scope.getPaymentsRecords();
+                $scope.init();
                 Notification.error({message: "Successfully Deleted"});
             } else {
                 Notification.error({message: success.data.message});
@@ -269,8 +266,10 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         $scope.pagetitle = "Edit Payments";
         PaymentsService.getPaymentsRecord($stateParams.paymentsId, function (success) {
             if (success.data.status) {
-                $scope.paymentsDetails = success.data.trip;
+                $scope.paymentsDetails = success.data.paymentsDetails;
+                //console.log(success.data);
                 $scope.paymentsDetails.date = new Date($scope.paymentsDetails.date);
+                $scope.paymentsDetails.amount = parseInt($scope.paymentsDetails.amount);
             } else {
                 Notification.error(success.data.message)
             }
@@ -302,11 +301,11 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                     if (success.data.status) {
                         // params.success = success.data.message[0];
                         Notification.success({message: success.data.messages[0]});
-                        $state.go('payments');
+                        $state.go('paymentsReceived');
                     } else {
                         params.error = success.data.message;
                     }
-                    $state.go('payments');
+                    $state.go('paymentsReceived');
 
                 }, function (err) {
                     console.log(err);

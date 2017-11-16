@@ -222,7 +222,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 });
 
                 if(selectedTriplane){
-                    console.log('----->',selectedTriplane);
+                    //console.log('----->',selectedTriplane);
                     $scope.getTripLane = selectedTriplane.name;
                 }
             } else {

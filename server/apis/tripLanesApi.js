@@ -115,7 +115,7 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
         return callback(result);
     }
     var skipNumber = (params.page - 1) * params.size;
-     console.log('params',params);
+     //console.log('params',params);
     async.parallel({
         triplanes: function (accountsCallback) {
             var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
@@ -123,6 +123,7 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
 
             TripLanesCollection
                 .find({'accountId': jwt.accountId})
+                .sort({createdAt: 1})
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)

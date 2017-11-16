@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
@@ -6,12 +7,12 @@ var PaymentsReceivedColl = require('./../models/schemas').paymentsReceivedColl;
 
 var config = require('./../config/config');
 var Helpers = require('./utils');
+var pageLimits = require('./../config/pagination');
 
 var PaymentsReceived = function () {
 };
 
 PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
-    console.log(details);
     var retObj = {
         status: false,
         messages: []
@@ -63,8 +64,8 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
         result.message = 'Invalid page number';
         return callback(result);
     }
-
     var skipNumber = (params.page - 1) * params.size;
+
     async.parallel({
         mCosts: function (mCostsCallback) {
             var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
@@ -79,34 +80,37 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
                 .lean()
                 .exec(function (err, mCosts) {
                     //console.log(mCosts);
-                    async.parallel({
-                        createdbyname: function (createdbyCallback) {
-                            Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
-                                createdbyCallback(response.err, response.documents);
-                            });
-                        },
-                        partyId: function (partiescallback) {
-                            Helpers.populateNameInPartyColl(mCosts, 'partyId', function (response) {
-                                partiescallback(response.err, response.documents);
-                            })
-                        },
-                        tripId: function (tripscallback) {
-                            Helpers.populateNameInTripsColl(mCosts, 'tripId', function (response) {
-                                tripscallback(response.err, response.documents);
-                            })
-                        },
-                        truckId: function (truckscallback) {
-                            Helpers.populateNameInTrucksColl(mCosts, 'truckId', function (response) {
-                                truckscallback(response.err, response.documents);
-                            })
-                        }
-                    }, function (populateErr, populateResults) {
-                        mCostsCallback(populateErr, populateResults);
-                    });
+                    if(mCosts) {
+                        async.parallel({
+                            createdbyname: function (createdbyCallback) {
+                                Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
+                                    createdbyCallback(response.err, response.documents);
+                                });
+                            },
+                            partyId: function (partiescallback) {
+                                Helpers.populateNameInPartyColl(mCosts, 'partyId', function (response) {
+                                    partiescallback(response.err, response.documents);
+                                })
+                            },
+                            tripId: function (tripscallback) {
+                                Helpers.populateNameInTripsColl(mCosts, 'tripId', function (response) {
+                                    tripscallback(response.err, response.documents);
+                                })
+                            },
+                            truckId: function (truckscallback) {
+                                Helpers.populateNameInTrucksColl(mCosts, 'truckId', function (response) {
+                                    truckscallback(response.err, response.documents);
+                                })
+                            }
+                        }, function (populateErr, populateResults) {
+                            mCostsCallback(populateErr, populateResults);
+                        });
+                    }
                 });
         },
         count: function (countCallback) {
-            PaymentsReceivedColl.count(function (err, count) {
+            PaymentsReceivedColl.count({'accountId': jwt.accountId},function (err, count) {
+                console.log(count);
                 countCallback(err, count);
             });
         }
@@ -121,6 +125,27 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
             result.message = 'Success';
             result.count = results.count;
             result.paymentsCosts = results.mCosts.createdbyname;
+            callback(result);
+        }
+    });
+};
+
+PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
+    var result = {};
+    PaymentsReceivedColl.findOne({_id: paymentsId, accountId: jwt.accountId}, function (err, paymentsReceived) {
+        //console.log(paymentsReceived);
+        if (err) {
+            result.status = false;
+            result.message = "Error while finding Payments, try Again";
+            callback(result);
+        } else if (paymentsReceived) {
+            result.status = true;
+            result.message = "Payment found successfully";
+            result.paymentsDetails = paymentsReceived;
+            callback(result);
+        } else {
+            result.status = false;
+            result.message = "Payment is not found!";
             callback(result);
         }
     });
@@ -166,7 +191,7 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
     });
 };
 
-PaymentsReceived.prototype.deletePayment = function (jwt, id, callback) {
+PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
     var retObj = {
         status: false,
         messages: []
