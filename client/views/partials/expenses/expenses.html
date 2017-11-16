@@ -9,26 +9,21 @@
             <div class="toolbar-button-div pull-right mb-10">
                 <button class="btn  btn-blue pull-right" ng-click="goToEditExpensePage()">Add Expenses</button>
             </div>
-            <!--          <div class="margin-top-40">
-                          <div class="grid" ui-grid="expenseGridOptions"></div>
-                      </div>
-
-                      <ul ng-show="totalItems > 10" uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                          boundary-link-numbers="true" rotate="false" ng-change="getExpenseRecords()"></ul>-->
 
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
                 <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
+                    <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-1">{{ maintanence.date |
+                        date:'yyyy-MM-dd'}}
+                    </td>
                     <td data-title="'Vehicle Number'" sortable="'truckName'" class="clickable-item col-sm-2">{{
                         maintanence.attrs.truckName}}
                     </td>
-                    <td data-title="'Expense Type'" sortable="'expenseName'" class="clickable-item col-sm-2" >{{
+                    <td data-title="'Expense Type'" sortable="'expenseName'" class="clickable-item col-sm-2">{{
                         maintanence.attrs.expenseName }}
                     </td>
                     <td data-title="'Description'" sortable="'description'" class="clickable-item col-sm-2">{{
                         maintanence.description
                         }}
-                    </td>
-                    <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-1">{{ maintanence.date | date:'yyyy-MM-dd'}}
                     </td>
                     <td data-title="'Amount'" sortable="'cost'" class="clickable-item col-sm-1">{{
                         maintanence.cost }}

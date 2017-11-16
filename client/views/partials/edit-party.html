@@ -69,6 +69,80 @@
                     </div>
                 </form>
             </div>
+            <div class="col-xs-12">
+                <div class="toolbar-button-div pull-right mb-10">
+                    <button class="btn  btn-blue pull-right" ng-click="addTripLane()">Add Trip Lanes</button>
+                </div>
+                <form class="mt-10" ng-show="tripLaneFlag">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group col-xs-12">
+                            <label for="name" class="col-sm-4 col-xs-12 pall-zero">Name</label>
+                            <div class="col-sm-8 col-xs-12">
+                                <input ng-model="tripLane.name" type="text" class="form-control" id="name"
+                                       placeholder="Name">
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label for="from" class="col-sm-4 col-xs-12 pall-zero">From</label>
+                            <div class="col-xs-12 col-sm-8">
+                                <input ng-model="tripLane.from" type="text" class="form-control" id="from"
+                                       placeholder="From">
+                            </div>
+                        </div>
+
+                        <div class="form-group col-xs-12">
+                            <label class="col-sm-4 col-xs-12 pall-zero">To</label>
+                            <div class="col-sm-8 col-xs-12">
+                                <input ng-model="tripLane.to" type="text" class="form-control" id="to"
+                                       placeholder="To">
+                            </div>
+                        </div>
+
+                    <div class="text-right">
+                        <div>
+                            <div class="alert alert-danger" role="alert" ng-show="tripLane.error.length">
+                                <ul><li ng-repeat="error in tripLane.error">{{error}}</li></ul>
+                            </div>
+
+                            <div class="alert alert-success" role="alert" ng-show="tripLane.success.length">
+                                <ul><li ng-repeat="success in tripLane.success">{{success}}</li></ul>
+                            </div>
+                        </div>
+
+                        <div class="margin-top-20">
+                            <button type="submit" class="btn btn-primary" ng-click="addOrUpdateTripLane()">Submit</button>
+                            <input type="button" value="Cancel" class="btn btn-red" ng-click="cancel()"/>
+                        </div>
+                    </div>
+                    </div>
+
+                </form>
+
+
+
+                <table class="table table-bordered table-striped table-condensed table-hover" ng-table="tripLanesParams">
+                    <tr ng-repeat="trip in currentPageOfTrips" style="text-align: center;">
+                        <td data-title="'Name'" sortable="'name'" class="clickable-item col-sm-2">{{ trip.name }}</td>
+                        <td data-title="'From'" sortable="'from'" class="clickable-item col-sm-3">{{ trip.from }}</td>
+                        <td data-title="'To'" sortable="'to'" class="clickable-item col-sm-3">{{ trip.to }}</td>
+
+                        <td data-title="'Created By'" sortable="'agent.attrs.createdByName'"
+                            class="clickable-item col-sm-2">{{ trip.attrs.createdByName }}
+                        </td>
+                        <td data-title="'Action'" class="col-sm-2">
+                            <a href="#" class="btn" ng-click="goToEditTripLanePage(trip._id)">
+                                <span class="glyphicon glyphicon-pencil"></span></a>
+
+                            <a href="#" class="btn" ng-click="deleteTripLane(trip._id)">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr ng-if="!currentPageOfTrips || currentPageOfTrips.length === 0">
+                        <td colspan="8">No trips exist.</td>
+                    </tr>
+                </table>
+            </div>
         </div>
     </div>
 </div>

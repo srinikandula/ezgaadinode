@@ -142,6 +142,11 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         }, function (err) {
         });
     }
+
+    $scope.tripLaneFlag = false;
+    $scope.addTripLane = function () {
+        $scope.tripLaneFlag = true;
+    };
     $scope.addOrUpdateParty = function () {
         var params = $scope.party;
         params.success = [];
@@ -190,7 +195,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         }
     };
     $scope.cancel = function () {
-        $state.go('party');
+        $state.go('partyEdit');
     }
 }]);
 

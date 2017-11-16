@@ -13,7 +13,6 @@ app.directive('leftNavigation', function () {
         '            <expense-master-directive></expense-master-directive>\n' +
         '            <expenses-directive></expenses-directive>\n' +
         '            <payments-directive></payments-directive>\n' +
-        '            <lane-directive></lane-directive>\n' +
         '        </ul>\n' +
         '    </div>'
     };
@@ -111,11 +110,4 @@ app.directive('paymentsDirective',function () {
     } ;
 });
 
-app.directive('laneDirective',function () {
-    return{
-        restrict: 'E',
-        template: '<li ng-class="{selected: activeTab === \'tripLanes\'}" class="left-nav-li"> \n' +
-        '             <a class="left-nav-anchor" ui-sref="tripLanes">Trip Lanes</a>\n' +
-        '          </li>'
-    };
-});
+
