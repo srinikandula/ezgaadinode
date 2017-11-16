@@ -6,7 +6,6 @@ var _ = require('underscore');
 var PartyCollection = require('./../models/schemas').PartyCollection;
 var config = require('./../config/config');
 var Utils = require('./utils');
-var TripLanes = require('./tripLanesApi');
 
 var Party = function () {
 };
