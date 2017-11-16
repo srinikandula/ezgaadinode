@@ -30,17 +30,16 @@ TripLanes.prototype.addTripLane = function (jwt, tripLaneDetails, callback) {
         result.status = false;
         result.message = "Please enter to location";
         callback(result);
-    } else if (!tripLaneDetails.estimatedDistance) {
-        result.status = false;
-        result.message = "Please enter Estimated Distance";
-        callback(result);
     }
     else {
         tripLaneDetails.createdBy = jwt.id;
         tripLaneDetails.updatedBy = jwt.id;
         tripLaneDetails.accountId = jwt.accountId;
+        if(jwt.groupId) {
+            tripLaneDetails.groupId = jwt.groupId;
+        }
         var tripLaneDoc = new TripLanesCollection(tripLaneDetails);
-        tripLaneDoc.save(function (err) {
+        tripLaneDoc.save(function (err, triplane) {
             if (err) {
                 result.status = false;
                 result.message = "Error while adding trip lanes, try Again";
@@ -48,6 +47,7 @@ TripLanes.prototype.addTripLane = function (jwt, tripLaneDetails, callback) {
             } else {
                 result.status = true;
                 result.message = "Trip Lanes Added Successfully";
+                result.tripLane = triplane;
                 callback(result);
             }
         });
@@ -71,16 +71,22 @@ TripLanes.prototype.updateTripLane = function (jwt, tripLaneDetails, callback) {
                 result.status = false;
                 result.message = "Error while updating Trip Lane, try Again";
                 result.error = err;
-                callback(result);
+                if(callback){
+                    callback(result);
+                }
             } else if (tripLane) {
                 result.status = true;
                 result.message = "Trip Lane updated successfully";
                 result.tripLane = tripLane;
-                callback(result);
+                if(callback){
+                    callback(result);
+                }
             } else {
                 result.status = false;
                 result.message = "Error, finding trip lane";
-                callback(result);
+                if(callback){
+                    callback(result);
+                }
             }
         });
 };
@@ -94,15 +100,42 @@ TripLanes.prototype.getAllTripLanes = function (callback) {
     TripLanesCollection.find({}, function (err, triplanes) {
         if (err) {
             retObj.messages.push("Error while retrieving Trip Lanes, try Again");
-            callback(retObj);
+            if(callback) {
+                callback(retObj);
+            }
         } else {
             retObj.status = true;
             retObj.messages.push("Success");
             retObj.tripLanes = triplanes;
-            callback(retObj);
+            if(callback) {
+                callback(retObj);
+            }
         }
     })
 };
+
+TripLanes.prototype.getTripLanesForParty = function (jwt, partyId, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TripLanesCollection.find({'partyId':partyId, 'accountId': jwt.accountId}, function (err, triplanes) {
+        if (err) {
+            retObj.messages.push("Error while retrieving Trip Lanes for party, try Again");
+            if(callback) {
+                callback(retObj);
+            }
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.tripLanes = triplanes;
+            if(callback) {
+                callback(retObj);
+            }
+        }
+    })
+};
+
 
 TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
     // console.log('params',params);
