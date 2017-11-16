@@ -1,5 +1,5 @@
 <top-navigation></top-navigation>
-<div class="container-fluid" ng-controller="groupEditController">
+<div class="container-fluid" ng-controller="groupEditController" ng-init="getGroupDetails();">
     <div class="row pall-zero">
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
@@ -38,22 +38,32 @@
                     <div class="form-group col-xs-12" >
                         <label class="col-sm-2 pall-zero">Trucks</label>
 
+
+
                         <div class="col-sm-8 drop-check">
+                            <div class="ml-10" ng-repeat="truck in trucksList">
+                                <label>
+                                    <input type="checkbox" name="truck._id" ng-model="checkboxModel[$index]" ng-true-value="'{{truck._id}}'" ng-checked="truck.groupId"> {{truck.registrationNo}}
+                                </label>
+                            </div>
+
+                        </div>
+                        <!--<div class="col-sm-8 drop-check">
                             <div ng-dropdown-multiselect="" options="example14data" selected-model="example14model"
                                  checkboxes="true" extra-settings="example14settings"></div>
 
-                        </div>
+                        </div>-->
                     </div>
 
-                    <div class="form-group col-xs-12" >
+                    <!--<div class="form-group col-xs-12" >
                         <label class="col-sm-2 pall-zero">Assigned Trucks</label>
                         <div class="col-sm-8">
                             <span class="ml-10" ng-repeat="truckId in example14model">
-                               <input type="checkbox"> {{truckId.id}}
+                               <input type="checkbox" ng-checked="truckId" onclick="return false;">  {{truckId}}
                             </span>
                         </div>
 
-                    </div>
+                    </div>-->
                    <!--  <span class="col-sm-2" ng-repeat="truck in trucks">
                          <input type='checkbox' value="{{truck._id}}" check-list='checked_trucks'> {{truck.registrationNo}}<br />
                       </span>-->

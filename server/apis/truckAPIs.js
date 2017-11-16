@@ -103,6 +103,52 @@ Trucks.prototype.findTruck = function (jwt, truckId, callback) {
     });
 };
 
+
+Trucks.prototype.assignTrucks=function(jwt,groupId,truckIds,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+      TrucksColl.update({_id:{$in:truckIds}}, {$set:{groupId:groupId}},{multi: true},function(err,truck){
+         // console.log(err);
+          if(err){
+              retObj.messages.push("Error While updating Details");
+              callback(retObj);
+          }else if(truck){
+              retObj.status=true;
+              retObj.messages.push("Truck Has successfully Assigned");
+              retObj.truck=truck;
+              callback(retObj);
+          }else{
+              retObj.messages.push("No Truck Found For the Given Registration ID");
+              callback(retObj);
+          }
+      });
+};
+
+Trucks.prototype.unAssignTrucks=function(jwt,truckIds,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TrucksColl.update({_id:{$in:truckIds}}, {$set:{groupId:null}},{multi: true},function(err,truck){
+        if(err){
+            retObj.messages.push("Error While updating Details");
+            callback(retObj);
+        }else if(truck){
+            retObj.status=true;
+            retObj.messages.push("Truck Has successfully Assigned");
+            retObj.truck=truck;
+            callback(retObj);
+        }else{
+            retObj.messages.push("No Truck Found For the Given Registration ID");
+            callback(retObj);
+        }
+    });
+};
+
+
+
 Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
     var retObj = {
         status: false,
@@ -254,13 +300,15 @@ Trucks.prototype.getTrucks = function (jwt, pageNumber, callback) {
 
 
 
-Trucks.prototype.getUnAssignedTrucks = function (jwt,callback) {
+Trucks.prototype.getUnAssignedTrucks = function (jwt,gId,callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    TrucksColl.find({$or:[{groupId: jwt.groupId},{groupId:{ $exists: false}}],accountId: jwt.accountId},function (err, trucks) {
+//group == currentgroupId or group === null
+    //db.inventory.find( { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } )
+    TrucksColl.find({$or:[{groupId: gId},{groupId:{ $exists: false}}],accountId: jwt.accountId},function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
@@ -272,7 +320,6 @@ Trucks.prototype.getUnAssignedTrucks = function (jwt,callback) {
         }
     });
 };
-
 Trucks.prototype.getAllAccountTrucks = function (accountId,callback) {
     var retObj = {
         status: false,

@@ -25,10 +25,11 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        getUnAssignedTrucks: function (success, error) {
+        getUnAssignedTrucks: function (groupId,success, error) {
             $http({
                 url: '/v1/trucks/getUnAssignedTrucks/getAll/',
-                method: "GET"
+                method: "GET",
+                params:groupId
             }).then(success, error)
         },
         updateTruck: function (truckInfo, success, error) {
@@ -49,6 +50,20 @@ app.factory('TrucksService', function ($http, $cookies) {
                 url: '/v1/trucks',
                 method: "GET"
             }).then(success, error)
+        },
+        assignTrucks: function (assignedTrucks, success, error) {
+            $http({
+                url: '/v1/trucks/assignTrucks',
+                method: "POST",
+                data: assignedTrucks
+            }).then(success, error);
+        },
+        unAssignTrucks:function(unAssignTrucks,success,error){
+            $http({
+                url:'/v1/trucks/unassign-trucks',
+                method:"POST",
+                data:unAssignTrucks
+            }).then(success,error);
         }
     }
 });

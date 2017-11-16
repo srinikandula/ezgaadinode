@@ -180,7 +180,6 @@ Groups.prototype.update = function (jwt, group, callback) {
     GroupsColl.findOneAndUpdate({_id: group._id}, {$set: group}).exec(function (err, savedGroup) {
         if (err) {
             retObj.messages.push("Error, updating group");
-            console.log(err)
             callback(retObj);
         } else if (savedGroup) {
             retObj.status = true;
