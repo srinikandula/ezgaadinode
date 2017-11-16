@@ -49,10 +49,8 @@ app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices'
 
     $scope.count = 0;
     ExpenseMasterServices.count(function (success) {
-        console.log(success.data);
         if (success.data.status) {
             $scope.count = success.data.count;
-            console.log('count',$scope.count);
             $scope.init();
         } else {
             Notification.error({message: success.data.messages[0]});
@@ -64,7 +62,6 @@ app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices'
         $scope.loading = true;
 
         ExpenseMasterServices.getExpenses(pageable, function(response){
-            console.log(response.data);
             $scope.invalidCount = 0;
             if(angular.isArray(response.data.expenses)) {
                 $scope.loading = false;
@@ -72,7 +69,6 @@ app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices'
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.expenses;
                 $scope.currentPageOfexpenses =  $scope.expenses;
-                console.log('------>>>',$scope.currentPageOfexpenses);
             }
         });
     };
@@ -123,7 +119,7 @@ app.controller('ExpenseMasterEditCrtl', ['$scope', '$state', 'ExpenseMasterServi
     if ($stateParams.expenseTypeId) {
         $scope.pagetitle = "Edit Expense Type";
         ExpenseMasterServices.getExpense($stateParams.expenseTypeId, function (success) {
-            console.log('acc===>', success.data);
+
             if (success.data.status) {
                 $scope.expenseType = success.data.expenseType;
             } else {

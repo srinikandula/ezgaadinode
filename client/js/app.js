@@ -1,4 +1,4 @@
-var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui.grid', 'ui-notification', 'ui.grid.selection','angularjs-dropdown-multiselect']);
+var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui.grid', 'ui-notification', 'ui.grid.selection']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -184,12 +184,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         }
     }).state({
         name: 'expensesEdit',
-        url: '/expensesEdit/:maintenanceId',
+        url: '/expensesEdit/:expenseId',
         templateUrl: 'views/partials/expenses/expensesEdit.html',
         data: {activeTab: 'expenses'},
         params: {
             access: 'open',
-            maintenanceId: null
+            expenseId: null
         }
     }).state({
         name: 'expenseMaster',

@@ -11,8 +11,8 @@ app.directive('leftNavigation', function () {
         '            <trip-directive></trip-directive>\n' +
         '            <party-directive></party-directive>\n' +
         '            <expense-master-directive></expense-master-directive>\n' +
-        '            <payments-directive></payments-directive>\n' +
         '            <expenses-directive></expenses-directive>\n' +
+        '            <payments-directive></payments-directive>\n' +
         '            <lane-directive></lane-directive>\n' +
         '        </ul>\n' +
         '    </div>'

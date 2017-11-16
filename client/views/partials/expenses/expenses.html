@@ -4,19 +4,19 @@
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
         </div>
-        <div class="main-right col-xs-9" ng-controller="MaintenanceCtrl">
+        <div class="main-right col-xs-9" ng-controller="ExpenseCtrl">
             <h3>Expenses</h3>
             <div class="toolbar-button-div pull-right mb-10">
-                <button class="btn  btn-blue pull-right" ng-click="goToEditMaintenancePage()">Add Expenses</button>
+                <button class="btn  btn-blue pull-right" ng-click="goToEditExpensePage()">Add Expenses</button>
             </div>
             <!--          <div class="margin-top-40">
-                          <div class="grid" ui-grid="maintenanceGridOptions"></div>
+                          <div class="grid" ui-grid="expenseGridOptions"></div>
                       </div>
 
                       <ul ng-show="totalItems > 10" uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                          boundary-link-numbers="true" rotate="false" ng-change="getMaintenanceRecords()"></ul>-->
+                          boundary-link-numbers="true" rotate="false" ng-change="getExpenseRecords()"></ul>-->
 
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="maintenanceParams">
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
                 <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
                     <td data-title="'Vehicle Number'" sortable="'truckName'" class="clickable-item col-sm-2">{{
                         maintanence.attrs.truckName}}
@@ -37,16 +37,16 @@
                         class="clickable-item col-sm-2">{{ maintanence.attrs.createdByName }}
                     </td>
                     <td data-title="'Action'" class="col-sm-2">
-                        <a href="#" class="btn" ng-click="goToEditMaintenancePage(maintanence._id)">
+                        <a href="#" class="btn" ng-click="goToEditExpensePage(maintanence._id)">
                             <span class="glyphicon glyphicon-pencil"></span></a>
 
-                        <a href="#" class="btn" ng-click="deleteMaintenanceRecord(maintanence._id)">
+                        <a href="#" class="btn" ng-click="deleteExpenseRecord(maintanence._id)">
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
                 </tr>
                 <tr ng-if="!currentPageOfMaintanence || currentPageOfMaintanence.length === 0">
-                    <td colspan="8">No Maintenance Records exist.</td>
+                    <td colspan="8">No Expense Records exist.</td>
                 </tr>
             </table>
         </div>

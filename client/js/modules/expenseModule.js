@@ -1,68 +1,68 @@
-app.factory('MaintenanceService', function ($http) {
+app.factory('ExpenseService', function ($http) {
     return {
-        addMaintenance: function (object, success, error) {
+        addExpense: function (object, success, error) {
             $http({
-                url: '/v1/maintenance/addMaintenance',
+                url: '/v1/expense/addExpense',
                 method: "POST",
                 data: object
             }).then(success, error)
         },
-        getMaintenanceRecords: function (pageNumber, success, error) {
+        getExpenseRecords: function (pageNumber, success, error) {
             $http({
-                url: '/v1/maintenance/' + pageNumber,
+                url: '/v1/expense/' + pageNumber,
                 method: "GET"
             }).then(success, error)
         },
         getAllRecords: function (success, error) {
             $http({
-                url: '/v1/maintenance/getAll',
+                url: '/v1/expense/getAll',
                 method: "GET"
             }).then(success, error)
         },
-        getMaintenanceRecord: function (maintenanceId, success, error) {
+        getExpenseRecord: function (expenseId, success, error) {
             $http({
-                url: '/v1/maintenance/getMaintenance/' + maintenanceId,
+                url: '/v1/expense/getExpense/' + expenseId,
                 method: "GET"
             }).then(success, error)
         },
-        getMaintenance: function (params, success, error) {
+        getExpense: function (params, success, error) {
             $http({
-                url: '/v1/maintenance/getAllMaintenance',
+                url: '/v1/expense/getAllExpense',
                 method: "GET",
                 params: params
             }).then(success, error)
         },
         updateRecord: function (object, success, error) {
             $http({
-                url: '/v1/maintenance/updateMaintenance',
+                url: '/v1/expense/updateExpense',
                 method: "PUT",
                 data: object
             }).then(success, error)
         },
-        deleteRecord: function (maintenanceId, success, error) {
+        deleteRecord: function (expenseId, success, error) {
             $http({
-                url: '/v1/maintenance/' + maintenanceId,
+                url: '/v1/expense/' + expenseId,
                 method: "DELETE"
             }).then(success, error)
         },
         count: function (success, error) {
             $http({
-                url: '/v1/maintenance/total/count',
+                url: '/v1/expense/total/count',
                 method: "GET"
             }).then(success, error)
         }
     }
 });
 
-app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, MaintenanceService, Notification, NgTableParams, paginationService) {
+app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService) {
 
-    $scope.goToEditMaintenancePage = function (maintenanceId) {
-        $state.go('expensesEdit', {maintenanceId: maintenanceId});
+    $scope.goToEditExpensePage = function (expenseId) {
+        $state.go('expensesEdit', {expenseId: expenseId});
     };
 
     $scope.count = 0;
     $scope.getCount = function () {
-        MaintenanceService.count(function (success) {
+        ExpenseService.count(function (success) {
 
             if (success.data.status) {
                 $scope.count = success.data.count;
@@ -81,7 +81,7 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
-        MaintenanceService.getMaintenance(pageable, function (response) {
+        ExpenseService.getExpense(pageable, function (response) {
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.maintanenceCosts)) {
                 $scope.loading = false;
@@ -95,7 +95,7 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
     };
 
     $scope.init = function () {
-        $scope.maintenanceParams = new NgTableParams({
+        $scope.expenseParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
@@ -112,8 +112,8 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
 
 
 
-    $scope.deleteMaintenanceRecord = function (id) {
-        MaintenanceService.deleteRecord(id, function (success) {
+    $scope.deleteExpenseRecord = function (id) {
+        ExpenseService.deleteRecord(id, function (success) {
             if (success.data.status) {
                 $scope.getCount();
                 Notification.success({message: "Successfully Deleted"});
@@ -124,15 +124,15 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
     };
 }]);
 
-app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, MaintenanceService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
-    // console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
+app.controller('expenseEditController', ['$scope', 'ExpenseService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
+    // console.log('-->', $stateParams, $stateParams.expenseId, !!$stateParams.expenseId);
     $scope.pagetitle = "Add Expenses";
     $scope.dateCallback = "past";
 
     $scope.trucks=[];
     $scope.expenses=[];
 
-    $scope.maintenanceDetails = {
+    $scope.expenseDetails = {
         vehicleNumber: '',
         expenseType: '',
         description: '',
@@ -151,7 +151,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
             if (success.data.status) {
                 $scope.expenses = success.data.expenses;
                 var selectedExpesneType = _.find($scope.expenses, function (expenses) {
-                    return expenses._id.toString() === $scope.maintenanceDetails.expenseType;
+                    return expenses._id.toString() === $scope.expenseDetails.expenseType;
                 });
                 if (selectedExpesneType) {
                     $scope.expenseTitle = selectedExpesneType.expenseName;
@@ -165,7 +165,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
     }
 
     $scope.selectExpenseType = function (expenses) {
-        $scope.maintenanceDetails.expenseType = expenses._id;
+        $scope.expenseDetails.expenseType = expenses._id;
     };
 
     function getTruckIds() {
@@ -173,7 +173,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find($scope.trucks, function (truck) {
-                    return truck._id.toString() === $scope.maintenanceDetails.vehicleNumber;
+                    return truck._id.toString() === $scope.expenseDetails.vehicleNumber;
                 });
                 if (selectedTruck) {
                     $scope.truckRegNo = selectedTruck.registrationNo;
@@ -188,17 +188,17 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
     }
 
     $scope.selectTruckId = function (truck) {
-        $scope.maintenanceDetails.vehicleNumber = truck._id;
+        $scope.expenseDetails.vehicleNumber = truck._id;
     };
 
 
 
-    if ($stateParams.maintenanceId) {
+    if ($stateParams.expenseId) {
         $scope.pagetitle = "Edit expenses";
-        MaintenanceService.getMaintenanceRecord($stateParams.maintenanceId, function (success) {
+        ExpenseService.getExpenseRecord($stateParams.expenseId, function (success) {
             if (success.data.status) {
-                $scope.maintenanceDetails = success.data.trip;
-                $scope.maintenanceDetails.date = new Date($scope.maintenanceDetails.date);
+                $scope.expenseDetails = success.data.trip;
+                $scope.expenseDetails.date = new Date($scope.expenseDetails.date);
                 getAllExpenses();
                 getTruckIds();
             } else {
@@ -211,8 +211,8 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         getTruckIds();
     }
 
-    $scope.AddorUpdateMaintenance = function () {
-        var params = $scope.maintenanceDetails;
+    $scope.AddorUpdateExpense = function () {
+        var params = $scope.expenseDetails;
         params.error = [];
         params.success = [];
 
@@ -232,8 +232,8 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
             params.error.push('Invalid cost');
         }
         if (!params.error.length) {
-            if ($stateParams.maintenanceId) {
-                MaintenanceService.updateRecord(params, function (success) {
+            if ($stateParams.expenseId) {
+                ExpenseService.updateRecord(params, function (success) {
                     if (success.data.status) {
                         // params.success = success.data.message[0];
                         Notification.success({message: success.data.message});
@@ -247,7 +247,7 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                     console.log(err);
                 });
             } else {
-                MaintenanceService.addMaintenance(params, function (success) {
+                ExpenseService.addExpense(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
                         console.log('--->>>>', params.success);

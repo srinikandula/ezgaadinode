@@ -9,15 +9,17 @@
             <div class="toolbar-button-div pull-right mb-10">
                 <button class="btn  btn-blue pull-right" ng-click="goToEditPaymentsPage()">Add Payments</button>
             </div>
-       <!--          <div class="margin-top-40">
-                     <div class="grid" ui-grid="paymentsGridOptions"></div>
-                 </div>
+            <!--          <div class="margin-top-40">
+                          <div class="grid" ui-grid="paymentsGridOptions"></div>
+                      </div>
 
-                 <ul ng-show="totalItems > 10" uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                     boundary-link-numbers="true" rotate="false" ng-change="getPaymentsRecords()"></ul>-->
+                      <ul ng-show="totalItems > 10" uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
+                          boundary-link-numbers="true" rotate="false" ng-change="getPaymentsRecords()"></ul>-->
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentsParams">
                 <tr ng-repeat="payments in currentPageOfPayments" style="text-align: center;">
-                    <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">{{ payments.date | date:'MM-dd-yyyy'}}</td>
+                    <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">{{ payments.date |
+                        date:'MM-dd-yyyy'}}
+                    </td>
                     <td data-title="'Party'" sortable="'partyName'" class="clickable-item col-sm-2">{{
                         payments.attrs.partyName }}
                     </td>
@@ -27,7 +29,8 @@
                     <td data-title="'Truck'" sortable="'truckName'" class="clickable-item col-sm-2">{{
                         payments.attrs.truckName }}
                     </td>
-                    <td data-title="'Description'" sortable="'description'" class="clickable-item col-sm-2">{{ payments.description
+                    <td data-title="'Description'" sortable="'description'" class="clickable-item col-sm-2">{{
+                        payments.description
                         }}
                     </td>
                     <td data-title="'Amount'" sortable="'amount'" class="clickable-item col-sm-2">{{
