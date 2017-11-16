@@ -33,8 +33,8 @@ Party.prototype.add = function (jwt, partyDetails, callback) {
         partyDetails.createdBy = jwt.id;
         partyDetails.updatedBy = jwt.id;
         partyDetails.accountId = jwt.accountId;
-        var tripLanes = partyDetails.tripLanes;
-        delete partyDetails.tripLanes;
+        //var tripLanes = partyDetails.tripLanes;
+        //delete partyDetails.tripLanes;
         var partyDoc = new PartyCollection(partyDetails);
         partyDoc.save(function (err, party) {
             if (err) {
@@ -46,14 +46,6 @@ Party.prototype.add = function (jwt, partyDetails, callback) {
                 result.status = true;
                 result.message = "Party Added Successfully";
                 result.party = party;
-                if(tripLanes) {
-                    for(var t=0; t<tripLanes.length; t++) {
-                        tripLanes[t].partyId = party._id;
-                        TripLanes.addTripLane(jwt,tripLanes[t], function(tripLaneResponse){
-                            result.party.tripLanes.push(tripLaneResponse.tripLane);
-                        });
-                    }
-                }
                 callback(result);
             }
         });
@@ -72,10 +64,7 @@ Party.prototype.findParty = function (jwt, partyId, callback) {
             result.status = true;
             result.message = "Party found successfully";
             result.party = party;
-            TripLanes.getTripLanesForParty(jwt, party._id,function(tripLanesResponse){
-                result.party.tripLanes = tripLanesResponse.tripLanes;
-                callback(result);
-            });
+            callback(result);
         } else {
             result.status = false;
             result.message = "Party is not found!";
@@ -94,7 +83,7 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 "contact": partyDetails.contact,
                 "email": partyDetails.email,
                 "city": partyDetails.city,
-                "operatingLane": partyDetails.operatingLane,
+                "tripLanes": partyDetails.tripLanes,
                 "updatedBy": jwt.id
             }
         },
@@ -107,13 +96,6 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 result.status = true;
                 result.message = "Party updated successfully";
                 result.party = party;
-                if(partyDetails.tripLanes) {
-                    for(var t=0; t<partyDetails.tripLanes.length; t++) {
-                        partyDetails.tripLanes[t].partyId = party._id;
-                        TripLanes.updateTripLane(jwt,partyDetails.tripLanes[t]);
-                        callback(result);
-                    }
-                }
             } else {
                 result.status = false;
                 result.message = "Error, finding party";
