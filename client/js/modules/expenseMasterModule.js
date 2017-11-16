@@ -72,6 +72,7 @@ app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices'
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.expenses;
                 $scope.currentPageOfexpenses =  $scope.expenses;
+                console.log('------>>>',$scope.currentPageOfexpenses);
             }
         });
     };

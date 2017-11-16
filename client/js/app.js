@@ -175,18 +175,18 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             roleId: null
         }
     }).state({
-        name: 'maintenance',
-        url: '/maintenance',
-        templateUrl: 'views/partials/Maintenance/maintenance.html',
-        data: {activeTab: 'maintenance'},
+        name: 'expenses',
+        url: '/expenses',
+        templateUrl: 'views/partials/expenses/expenses.html',
+        data: {activeTab: 'expenses'},
         params: {
             access: 'open'
         }
     }).state({
-        name: 'maintenanceEdit',
-        url: '/maintenanceEdit/:maintenanceId',
-        templateUrl: 'views/partials/Maintenance/maintenanceEdit.html',
-        data: {activeTab: 'maintenance'},
+        name: 'expensesEdit',
+        url: '/expensesEdit/:maintenanceId',
+        templateUrl: 'views/partials/expenses/expensesEdit.html',
+        data: {activeTab: 'expenses'},
         params: {
             access: 'open',
             maintenanceId: null

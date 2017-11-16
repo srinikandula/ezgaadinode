@@ -9,25 +9,27 @@ AuthRouter.post('/addMaintenance', function (req, res) {
     });
 });
 
-/*AuthRouter.get('/:pageNumber', function (req, res) {
-    MaintenanceCost.getMaintenanceCosts(req.params,req.jwt, function (result) {
-        res.send(result);
-    });
-<<<<<<< 6139acf860a0c559f23a14136c6b47610342d55b
-});
+// AuthRouter.get('/:pageNumber', function (req, res) {
+//     MaintenanceCost.getMaintenanceCosts(req.params, req.jwt, function (result) {
+//         res.send(result);
+//     });
+// });
+
 AuthRouter.get('/all/accountMaintenance', function (req, res) {
     MaintenanceCost.getAllAccountMaintenanceCosts(req.jwt, function (result) {
         res.send(result);
     });
 });
 
-
 AuthRouter.get('/getAll', function (req, res) {
     MaintenanceCost.getAll(req.jwt, req.body, function (result) {
-=======
-});*/
-AuthRouter.get('/getMaintenance', function (req, res) {
-    MaintenanceCost.getMaintenanceCosts(req.jwt, req.query, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/getAllMaintenance', function (req, res) {
+    console.log('==>',req.query);
+    MaintenanceCost.getMaintenanceCosts(req.query, req.jwt, function (result) {
         res.send(result);
     });
 });
@@ -47,7 +49,7 @@ AuthRouter.put('/updateMaintenance', function (req, res) {
 });
 
 AuthRouter.delete('/:maintenanceId', function (req, res) {
-    MaintenanceCost.deleteMaintenanceRecord( req.params.maintenanceId, function (result) {
+    MaintenanceCost.deleteMaintenanceRecord(req.params.maintenanceId, function (result) {
         res.send(result);
     });
 });

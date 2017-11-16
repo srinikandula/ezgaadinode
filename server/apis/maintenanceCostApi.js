@@ -40,11 +40,11 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
         maintenanceDoc.save(function (err) {
             if (err) {
                 result.status = false;
-                result.message = "Error while adding Maintenance Cost, try Again";
+                result.message = "Error while adding expenses Cost, try Again";
                 callback(result);
             } else {
                 result.status = true;
-                result.message = "Maintenance Cost Added Successfully";
+                result.message = "expenses Cost Added Successfully";
                 callback(result);
             }
         });
@@ -52,6 +52,7 @@ MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, ca
 };
 
 MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback) {
+    console.log('params==>',params, jwt);
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -85,6 +86,11 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback)
                             Helpers.populateNameInTrucksColl(mCosts, 'vehicleNumber', function (response) {
                                 truckscallback(response.err, response.documents);
                             })
+                        },
+                        expenseType: function (expensecallback) {
+                            Helpers.populateNameInExpenseColl(mCosts, 'expenseType', function (response) {
+                                expensecallback(response.err, response.documents);
+                            })
                         }
                     }, function (populateErr, populateResults) {
                         mCostsCallback(populateErr, populateResults);
@@ -99,13 +105,13 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback)
     }, function (err, results) {
         if (err) {
             result.status = false;
-            result.message = 'Error retrieving Maintenance Costs';
+            result.message = 'Error retrieving expenses Costs';
             callback(retObj);
         } else {
             result.status = true;
             result.message = 'Success';
             result.count = results.count;
-            result.maintanenceCosts = results.mCosts;
+            result.maintanenceCosts = results.mCosts.createdbyname;
             callback(result);
         }
     });
@@ -136,7 +142,7 @@ MaintenanceCost.prototype.getAllAccountMaintenanceCosts = function (jwt, callbac
             }, function (populateErr, populateResults) {
                 if (err) {
                     retObj.status = false;
-                    retObj.messages.push('Error retrieving Maintenance Costs');
+                    retObj.messages.push('Error retrieving expenses Costs');
                     callback(retObj);
                 } else {
                     retObj.status = true;
@@ -151,9 +157,10 @@ MaintenanceCost.prototype.getAllAccountMaintenanceCosts = function (jwt, callbac
 MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
     var result = {};
     maintenanceColl.find({}, function (err, maintenanceRecords) {
+
         if (err) {
             result.status = false;
-            result.message = 'Error getting Maintenance Records';
+            result.message = 'Error getting expenses Records';
             callback(result);
         } else {
             Helpers.populateNameInUsersColl(maintenanceRecords, "createdBy", function (response) {
@@ -164,7 +171,7 @@ MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
                     callback(result);
                 } else {
                     result.status = false;
-                    result.message = 'Error getting Maintenance Records';
+                    result.message = 'Error getting expenses Records';
                     callback(result);
                 }
             });
@@ -177,16 +184,16 @@ MaintenanceCost.prototype.findMaintenanceRecord = function (maintenanceId, callb
     maintenanceColl.findOne({_id: maintenanceId}, function (err, record) {
         if (err) {
             result.status = false;
-            result.message = "Error while finding Maintenance Record, try Again";
+            result.message = "Error while finding expenses Record, try Again";
             callback(result);
         } else if (record) {
             result.status = true;
-            result.message = "Maintenance Record found successfully";
+            result.message = "expenses Record found successfully";
             result.trip = record;
             callback(result);
         } else {
             result.status = false;
-            result.message = "Maintenance Record is not found!";
+            result.message = "expenses Record is not found!";
             callback(result);
         }
     });
@@ -199,7 +206,8 @@ MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callba
             $set: {
                 "updatedBy": jwt.id,
                 "vehicleNumber": Details.vehicleNumber,
-                "repairType": Details.repairType,
+                "description": Details.description,
+                "expenseType": Details.expenseType,
                 "cost": Details.cost,
                 "date": Details.date
             }
@@ -208,15 +216,15 @@ MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callba
         function (err, Details) {
             if (err) {
                 result.status = false;
-                result.message = "Error while updating Maintenance Cost Record, try Again";
+                result.message = "Error while updating expenses Cost Record, try Again";
                 callback(result);
             } else if (Details) {
                 result.status = true;
-                result.message = "Maintenance Cost updated successfully";
+                result.message = "expenses Cost updated successfully";
                 callback(result);
             } else {
                 result.status = false;
-                result.message = "Error, finding Maintenance Record";
+                result.message = "Error, finding expenses Record";
                 callback(result);
             }
         });
@@ -227,11 +235,11 @@ MaintenanceCost.prototype.deleteMaintenanceRecord = function (maintenanceId, cal
     maintenanceColl.remove({_id: maintenanceId}, function (err, returnValue) {
         if (err) {
             result.status = false;
-            result.message = 'Error deleting Maintenance Record';
+            result.message = 'Error deleting expenses Record';
             callback(result);
         } else if (returnValue.result.n === 0) {
             result.status = false;
-            result.message = 'Error deleting Maintenance Record';
+            result.message = 'Error deleting expenses Record';
             callback(result);
         } else {
             result.status = true;

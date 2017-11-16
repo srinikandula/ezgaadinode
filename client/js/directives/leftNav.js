@@ -11,8 +11,8 @@ app.directive('leftNavigation', function () {
         '            <trip-directive></trip-directive>\n' +
         '            <party-directive></party-directive>\n' +
         '            <expense-master-directive></expense-master-directive>\n' +
-        '            <maintenance-directive></maintenance-directive>\n' +
         '            <payments-directive></payments-directive>\n' +
+        '            <expenses-directive></expenses-directive>\n' +
         '            <lane-directive></lane-directive>\n' +
         '        </ul>\n' +
         '    </div>'
@@ -93,11 +93,11 @@ app.directive('expenseMasterDirective',function () {
 });
 
 
-app.directive('maintenanceDirective', function () {
+app.directive('expensesDirective', function () {
     return {
         restrict: 'E',
-        template: '<li ng-class="{selected: activeTab === \'maintenance\'}" class="left-nav-li"> \n' +
-        '             <a class="left-nav-anchor" ui-sref="maintenance">Maintenance</a>\n' +
+        template: '<li ng-class="{selected: activeTab === \'expenses\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="expenses">Expenses</a>\n' +
         '          </li>'
     };
 });

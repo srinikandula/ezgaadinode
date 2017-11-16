@@ -27,7 +27,7 @@ app.factory('MaintenanceService', function ($http) {
         },
         getMaintenance: function (params, success, error) {
             $http({
-                url: '/v1/maintenance/getMaintenance/',
+                url: '/v1/maintenance/getAllMaintenance',
                 method: "GET",
                 params: params
             }).then(success, error)
@@ -54,42 +54,45 @@ app.factory('MaintenanceService', function ($http) {
     }
 });
 
-app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'Notification','NgTableParams','paginationService', function ($scope, $state, MaintenanceService, Notification, NgTableParams, paginationService) {
+app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, MaintenanceService, Notification, NgTableParams, paginationService) {
+
     $scope.goToEditMaintenancePage = function (maintenanceId) {
-        $state.go('maintenanceEdit', {maintenanceId: maintenanceId});
+        $state.go('expensesEdit', {maintenanceId: maintenanceId});
     };
+
     $scope.count = 0;
-    MaintenanceService.count(function (success) {
+    $scope.getCount = function () {
+        MaintenanceService.count(function (success) {
 
-        if (success.data.status) {
-            $scope.count = success.data.count;
-            $scope.init();
-
-        } else {
-            Notification.error({message: success.data.message});
-        }
-    });
-
-
-    var loadTableData = function (tableParams) {
-        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
-        $scope.loading = true;
-        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
-        MaintenanceService.getMaintenance(pageable, function (response) {
-            $scope.invalidCount = 0;
-
-            if (angular.isArray(response.data.maintanenceCosts)) {
-                $scope.loading = false;
-                $scope.maintanence = response.data.maintanenceCosts;
-                tableParams.total(response.totalElements);
-
-                tableParams.data = $scope.maintanence;
-                $scope.currentPageOfMaintanence = $scope.maintanence;
-
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.init();
+            } else {
+                Notification.error({message: success.data.message});
             }
         });
     };
+    $scope.getCount();
 
+
+    var loadTableData = function (tableParams) {
+
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        $scope.loading = true;
+        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+
+        MaintenanceService.getMaintenance(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (angular.isArray(response.data.maintanenceCosts)) {
+                $scope.loading = false;
+                $scope.maintanenceCosts = response.data.maintanenceCosts;
+                tableParams.total(response.totalElements);
+                tableParams.data = $scope.maintanenceCosts;
+                $scope.currentPageOfMaintanence = $scope.maintanenceCosts;
+            }
+
+        });
+    };
 
     $scope.init = function () {
         $scope.maintenanceParams = new NgTableParams({
@@ -106,93 +109,53 @@ app.controller('MaintenanceCtrl', ['$scope', '$state', 'MaintenanceService', 'No
             }
         });
     };
-    // $scope.totalItems = 10;
-    // $scope.maxSize = 5;
-    // $scope.pageNumber = 1;
-    //
-    // $scope.getMaintenanceRecords = function () {
-    //     MaintenanceService.getMaintenanceRecords($scope.pageNumber, function (success) {
-    //         if (success.data.status) {
-    //             $scope.maintenanceGridOptions.data = success.data.maintanenceCosts;
-    //             $scope.totalItems = success.data.count;
-    //         } else {
-    //             Notification.error({message: success.data.message});
-    //         }
-    //     }, function (err) {
-    //     });
-    // };
-    // $scope.getMaintenanceRecords();
+
+
 
     $scope.deleteMaintenanceRecord = function (id) {
         MaintenanceService.deleteRecord(id, function (success) {
             if (success.data.status) {
-                $scope.getMaintenanceRecords();
-                Notification.error({message: "Successfully Deleted"});
+                $scope.getCount();
+                Notification.success({message: "Successfully Deleted"});
             } else {
                 Notification.error({message: success.data.message});
             }
         })
     };
-
-    // $scope.maintenanceGridOptions = {
-    //     enableSorting: true,
-    //     paginationPageSizes: [9, 20, 50],
-    //     paginationPageSize: 9,
-    //     columnDefs: [{
-    //         name: 'Vehicle Number',
-    //         field: 'attrs.truckName'
-    //     }, {
-    //         name: 'Description',
-    //         field: 'description'
-    //     }, {
-    //         name: 'Date',
-    //         field: 'date',
-    //         cellFilter: 'date:"dd-MM-yyyy"'
-    //     }, {
-    //         name: 'Amount',
-    //         field: 'cost'
-    //     }, {
-    //         name: 'Created By',
-    //         field: 'attrs.createdByName'
-    //     }, {
-    //         name: 'Action',
-    //         cellTemplate: '<div class="text-center"> <a ng-click="grid.appScope.goToEditMaintenancePage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
-    //         '<a ng-click="grid.appScope.deleteMaintenanceRecord(row.entity._id)" class="glyphicon glyphicon-trash dele"> </a></div>'
-    //
-    //     }],
-    //     rowHeight: 30,
-    //     data: [],
-    //     onRegisterApi: function (gridApi) {
-    //         $scope.gridApi = gridApi;
-    //     }
-    // };
 }]);
 
-app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', function ($scope, MaintenanceService, $stateParams, $state, DriverService, Notification, TrucksService) {
+app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, MaintenanceService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
     // console.log('-->', $stateParams, $stateParams.maintenanceId, !!$stateParams.maintenanceId);
-    $scope.pagetitle = "Add Maintenance";
+    $scope.pagetitle = "Add Expenses";
     $scope.dateCallback = "past";
+
+    $scope.trucks=[];
+    $scope.expenses=[];
 
     $scope.maintenanceDetails = {
         vehicleNumber: '',
+        expenseType: '',
         description: '',
         date: '',
-        shedName: '',
-        shedArea: '',
-        paymentType: '',
         cost: '',
         error: [],
         success: []
     };
 
     $scope.cancel = function () {
-        $state.go('maintenance');
+        $state.go('expenses');
     };
 
-    function getTruckIds() {
-        TrucksService.getAllAccountTrucks(function (success) {
+    function getAllExpenses(params) {
+        ExpenseMasterServices.getExpenses(params, function (success) {
             if (success.data.status) {
-                $scope.trucks = success.data.trucks;
+                $scope.expenses = success.data.expenses;
+                var selectedExpesneType = _.find($scope.expenses, function (expenses) {
+                    return expenses._id.toString() === $scope.maintenanceDetails.expenseType;
+                });
+                if (selectedExpesneType) {
+                    $scope.expenseTitle = selectedExpesneType.expenseName;
+                }
             } else {
                 Notification.error(success.data.message);
             }
@@ -201,20 +164,53 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         });
     }
 
-    getTruckIds();
+    $scope.selectExpenseType = function (expenses) {
+        $scope.maintenanceDetails.expenseType = expenses._id;
+    };
+
+    function getTruckIds() {
+        TrucksService.getAllAccountTrucks(function (success) {
+            if (success.data.status) {
+                $scope.trucks = success.data.trucks;
+                var selectedTruck = _.find($scope.trucks, function (truck) {
+                    return truck._id.toString() === $scope.maintenanceDetails.vehicleNumber;
+                });
+                if (selectedTruck) {
+                    $scope.truckRegNo = selectedTruck.registrationNo;
+                }
+
+            } else {
+                Notification.error(success.data.message);
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.selectTruckId = function (truck) {
+        $scope.maintenanceDetails.vehicleNumber = truck._id;
+    };
+
+
 
     if ($stateParams.maintenanceId) {
-        $scope.pagetitle = "Edit Maintenance";
+        $scope.pagetitle = "Edit expenses";
         MaintenanceService.getMaintenanceRecord($stateParams.maintenanceId, function (success) {
             if (success.data.status) {
                 $scope.maintenanceDetails = success.data.trip;
                 $scope.maintenanceDetails.date = new Date($scope.maintenanceDetails.date);
+                getAllExpenses();
+                getTruckIds();
             } else {
                 Notification.error(success.data.message)
             }
         }, function (err) {
         })
+    } else {
+        getAllExpenses();
+        getTruckIds();
     }
+
     $scope.AddorUpdateMaintenance = function () {
         var params = $scope.maintenanceDetails;
         params.error = [];
@@ -223,20 +219,14 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
         if (!params.vehicleNumber) {
             params.error.push('Invalid vehicle Number');
         }
+        if (!params.expenseType) {
+            params.error.push('Invalid expenseType');
+        }
         if (!params.description) {
             params.error.push('Invalid description');
         }
         if (!params.date) {
             params.error.push('Invalid date');
-        }
-        if (!params.shedName) {
-            params.error.push('Invalid Shedname');
-        }
-        if (!params.shedArea) {
-            params.error.push('Invalid Shed Area');
-        }
-        if (!params.paymentType) {
-            params.error.push('Invalid Payment Type');
         }
         if (!_.isNumber(params.cost)) {
             params.error.push('Invalid cost');
@@ -247,11 +237,11 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                     if (success.data.status) {
                         // params.success = success.data.message[0];
                         Notification.success({message: success.data.message});
-                        $state.go('maintenance');
+                        $state.go('expenses');
                     } else {
                         params.error = success.data.message;
                     }
-                    $state.go('maintenance');
+                    $state.go('expenses');
 
                 }, function (err) {
                     console.log(err);
@@ -260,8 +250,9 @@ app.controller('maintenanceEditController', ['$scope', 'MaintenanceService', '$s
                 MaintenanceService.addMaintenance(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
+                        console.log('--->>>>', params.success);
                         Notification.success({message: success.data.message});
-                        $state.go('maintenance');
+                        $state.go('expenses');
                     } else {
                         params.error = success.data.message;
                     }

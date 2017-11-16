@@ -140,11 +140,9 @@ var driverSchema = new mongoose.Schema({
 var maintenanceCostSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     vehicleNumber: String,
+    expenseType: String,
     description:String,
     date: Date,
-    shedName: String,
-    shedArea: String,
-    paymentType: String,
     cost: Number,
     updatedBy: String,
     createdBy: String,

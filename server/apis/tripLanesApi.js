@@ -116,6 +116,7 @@ TripLanes.prototype.getTripLanes = function (jwt, params, callback) {
     }
     var skipNumber = (params.page - 1) * params.size;
      //console.log('params',params);
+
     async.parallel({
         triplanes: function (accountsCallback) {
             var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;

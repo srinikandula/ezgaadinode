@@ -62,13 +62,15 @@ ExpenseMaster.prototype.getAllAccountExpenses = function (jwt, params, callback)
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.limit ? parseInt(params.limit) : Number.MAX_SAFE_INTEGER;
-
-    ExpenseMasterColl.find({'accountId': jwt.accountId})
-        .sort(JSON.parse(params.sort))
+    var sort = params.sort ? JSON.parse(params.sort) :{};
+    ExpenseMasterColl
+        .find({'accountId': jwt.accountId})
+        .sort(sort)
         .skip(skipNumber)
         .limit(limit)
         .lean()
         .exec(function (err, expenses) {
+            console.log('--->', expenses);
             if(expenses){
                 Utils.populateNameInUsersColl(expenses, "createdBy", function (response) {
                     if (!response.status) {
