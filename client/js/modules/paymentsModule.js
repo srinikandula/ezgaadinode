@@ -174,8 +174,6 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
     $scope.paymentsDetails = {
         date: '',
-        //tripId: '',
-        //truckId: '',
         partyId: '',
         description: '',
         amount: '',
