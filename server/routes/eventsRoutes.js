@@ -130,10 +130,19 @@ OpenRouter.get('/get/srlogistics/reload', function (request, res) {
         });
 
     }
-
 });
 
+OpenRouter.get('/get/groupMap', function (request, res) {
+    EventData.getGroupMapEvents(function(results){
+        res.json(results);
+    });
+});
 
+OpenRouter.get('/get/trackEvents/:vehicleNumber', function (request, res) {
+    EventData.getTrackEvents(request.params.vehicleNumber, function(results){
+        res.json(results);
+    });
+});
 
 module.exports = {
     OpenRouter: OpenRouter,

@@ -45,4 +45,44 @@ EventData.prototype.deleteAll = function (callback) {
 }
 
 
+EventData.prototype.getGroupMapEvents = function (callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    EventDataCollection.aggregate([{$group : {_id : "$vehicle_number",latitude: { $first: "$latitude"},longitude: { $first: "$longitude"},}}], function (err, resutls) {
+        if (err) {
+            retObj.messages.push('Error saving EventData');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.resutls = resutls;
+            callback(retObj);
+        }
+    });
+}
+
+
+EventData.prototype.getTrackEvents = function (vehicleNumber, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    EventDataCollection.find({"vehicle_number" : vehicleNumber}, function (err, resutls) {
+        if (err) {
+            retObj.messages.push('Error saving EventData');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.resutls = resutls;
+            callback(retObj);
+        }
+    });
+}
+
+
+
+
 module.exports = new EventData();
