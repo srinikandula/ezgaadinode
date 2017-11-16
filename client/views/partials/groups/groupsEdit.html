@@ -1,5 +1,5 @@
 <top-navigation></top-navigation>
-<div class="container-fluid" ng-controller="groupEditController">
+<div class="container-fluid" ng-controller="groupEditController" ng-init="getGroupDetails();">
     <div class="row pall-zero">
         <div class="col-xs-2 pall-zero">
             <left-navigation></left-navigation>
@@ -35,30 +35,57 @@
                         <div class="col-sm-2"><input type="checkbox" ng-model="groupDetails.isActive"></div>
 
                     </div>
-                    <div class="form-group col-xs-12" ng-hide="groupDetails._id">
+                    <div class="form-group col-xs-12" >
                         <label class="col-sm-2 pall-zero">Trucks</label>
-                        <span class="col-sm-2" ng-repeat="truck in trucks">
-                            <input type='checkbox' value="{{truck._id}}" check-list='checked_trucks'> {{truck.registrationNo}}<br />
-                         </span>
-                    </div>
 
-                        <div class="clearfix"></div>
-                    <div class="col-xs-4 col-xs-push-4">
-                        <div>
-                            <div class="alert alert-danger" role="alert" ng-show="groupDetails.errors.length">
-                                <ul>
-                                    <li ng-repeat="error in groupDetails.errors">{{error}}</li>
-                                </ul>
+
+
+                        <div class="col-sm-8 drop-check">
+                            <div class="ml-10" ng-repeat="truck in trucksList">
+                                <label>
+                                    <input type="checkbox" name="truck._id" ng-model="checkboxModel[$index]" ng-true-value="'{{truck._id}}'" ng-checked="truck.groupId"> {{truck.registrationNo}}
+                                </label>
                             </div>
+
+                        </div>
+                        <!--<div class="col-sm-8 drop-check">
+                            <div ng-dropdown-multiselect="" options="example14data" selected-model="example14model"
+                                 checkboxes="true" extra-settings="example14settings"></div>
+
+                        </div>-->
+                    </div>
+
+                    <!--<div class="form-group col-xs-12" >
+                        <label class="col-sm-2 pall-zero">Assigned Trucks</label>
+                        <div class="col-sm-8">
+                            <span class="ml-10" ng-repeat="truckId in example14model">
+                               <input type="checkbox" ng-checked="truckId" onclick="return false;">  {{truckId}}
+                            </span>
                         </div>
 
-                        <div class="margin-top-20">
-                            <button type="submit" class="btn btn-primary" ng-click="AddorUpdateGroup()">Submit</button>
-                            <button type="submit" class="btn btn-red" ng-click="goToGroupsPage()">Cancel</button>
-                        </div>
+                    </div>-->
+                   <!--  <span class="col-sm-2" ng-repeat="truck in trucks">
+                         <input type='checkbox' value="{{truck._id}}" check-list='checked_trucks'> {{truck.registrationNo}}<br />
+                      </span>-->
+
+
+            <div class="clearfix"></div>
+            <div class="col-xs-4 col-xs-push-4">
+                <div>
+                    <div class="alert alert-danger" role="alert" ng-show="groupDetails.errors.length">
+                        <ul>
+                            <li ng-repeat="error in groupDetails.errors">{{error}}</li>
+                        </ul>
                     </div>
-                </form>
+                </div>
+
+                <div class="margin-top-20">
+                    <button type="submit" class="btn btn-primary" ng-click="AddorUpdateGroup()">Submit</button>
+                    <button type="submit" class="btn btn-red" ng-click="goToGroupsPage()">Cancel</button>
+                </div>
             </div>
+            </form>
         </div>
     </div>
+</div>
 </div>
