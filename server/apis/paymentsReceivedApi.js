@@ -20,18 +20,18 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
     if (!details.date) {
         retObj.messages.push("Please provide Date");
     }
-    if (!details.tripId) {
+    /*if (!details.tripId) {
         retObj.messages.push("Please provide Trip");
     }
     if (!details.truckId) {
         retObj.messages.push("Please provide Truck");
-    }
+    }*/
     if (!details.partyId) {
         retObj.messages.push("Please provide Party");
     }
-    if (!details.description || !_.isString(details.description)) {
+    /*if (!details.description || !_.isString(details.description)) {
         retObj.messages.push("Please provide description");
-    }
+    }*/
     if (!details.amount) {
         retObj.messages.push("Please provide amount");
     }
@@ -92,7 +92,7 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
                                     partiescallback(response.err, response.documents);
                                 })
                             },
-                            tripId: function (tripscallback) {
+                            /*tripId: function (tripscallback) {
                                 Helpers.populateNameInTripsColl(mCosts, 'tripId', function (response) {
                                     tripscallback(response.err, response.documents);
                                 })
@@ -101,7 +101,7 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
                                 Helpers.populateNameInTrucksColl(mCosts, 'truckId', function (response) {
                                     truckscallback(response.err, response.documents);
                                 })
-                            }
+                            }*/
                         }, function (populateErr, populateResults) {
                             mCostsCallback(populateErr, populateResults);
                         });

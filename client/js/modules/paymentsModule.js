@@ -174,8 +174,8 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
     $scope.paymentsDetails = {
         date: '',
-        tripId: '',
-        truckId: '',
+        //tripId: '',
+        //truckId: '',
         partyId: '',
         description: '',
         amount: '',
@@ -187,7 +187,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         $state.go('paymentsReceived');
     };
 
-    function getTripIds() {
+    /*function getTripIds() {
         TripServices.getAllAccountTrips(function (success) {
             if (success.data.status) {
                 $scope.trips = success.data.trips;
@@ -210,10 +210,10 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
     $scope.selectTripId = function (trip) {
         $scope.paymentsDetails.tripId = trip._id;
-    }
+    }*/
 
 
-    function getTruckIds() {
+    /*function getTruckIds() {
         TrucksService.getAllAccountTrucks(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
@@ -235,7 +235,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
     $scope.selectTruckId = function (truck) {
         $scope.paymentsDetails.truckId = truck._id;
-    }
+    }*/
 
     function getPartyIds() {
         PartyService.getAllParties(function (success) {
