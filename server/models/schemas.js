@@ -121,6 +121,18 @@ var tripLanesSchema = new mongoose.Schema({
     attrs: {}
 }, {timestamps: true});
 
+
+var eventDataSchema = new mongoose.Schema({
+    transportername: String,
+    vehicle_number: String,
+    latitude: Number,
+    longitude: Number,
+    speed: Number,
+    distance: Number,
+    datetime:Number,
+    attrs: {}
+}, {timestamps: true});
+
 var driverSchema = new mongoose.Schema({
     fullName: {type: String, trim: true},
     truckId: {type: ObjectId, ref: 'trucks'},
@@ -192,6 +204,7 @@ var paymentsReceived = mongoose.Schema({
 },{timestamps: String});
 
 module.exports = {
+    EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
