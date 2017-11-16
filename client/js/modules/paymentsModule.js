@@ -284,15 +284,9 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
         if (!params.date) {
             params.error.push('InValid Date');
-        }else if (!params.partyId) {
+        } if (!params.partyId) {
             params.error.push('Invalid Party Id');
-        }else if (!params.tripId) {
-            params.error.push('Invalid Trip Id');
-        }else if (!params.truckId) {
-            params.error.push('Invalid Truck Id');
-        }else if (!params.description) {
-            params.error.push('Invalid Description');
-        }else if (!(params.amount)) {
+        } if (!(params.amount)) {
             params.error.push('Invalid Amount');
         }
         if (!params.error.length) {
