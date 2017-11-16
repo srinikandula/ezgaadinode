@@ -14,6 +14,8 @@ var TrucksColl = require('./../models/schemas').TrucksColl;
 var RolesColl = require('./../models/schemas').Roles;
 var DriversCollection = require('./../models/schemas').DriversColl;
 var TripsColl = require('./../models/schemas').TripCollection;
+var ExpenseMasterColl = require('./../models/schemas').expenseMasterColl;
+
 var Payments = require('./../apis/paymentApi');
 
 
@@ -234,6 +236,37 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
     });
 };
 
+Utils.prototype.populateNameInExpenseColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    ExpenseMasterColl.find({'_id': {$in: ids}}, {"expenseName": 1}, function (err, names) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving ExpenseNames';
+            result.err = err;
+            callback(result);
+        } else {
+            for (var i = 0; i < documents.length; i++) {
+                var item = documents[i];
+                var Trucks = _.find(names, function (users) {
+                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                });
+                if (Trucks) {
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs.expenseName = Trucks.expenseName;
+                }
+            }
+            result.status = true;
+            result.message = 'Error retrieving names';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
+        }
+    });
+};
+
 Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
@@ -296,6 +329,7 @@ Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) 
         }
     });
 }
+
 
 /**
  * Module to clean up when a driver is assigned to truck or vice versa.

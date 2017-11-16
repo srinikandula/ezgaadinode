@@ -137,14 +137,12 @@ var driverSchema = new mongoose.Schema({
 }, {
     timestamps: true
 });
-var maintenanceCostSchema = new mongoose.Schema({
+var expenseCostSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     vehicleNumber: String,
+    expenseType: String,
     description:String,
     date: Date,
-    shedName: String,
-    shedArea: String,
-    paymentType: String,
     cost: Number,
     updatedBy: String,
     createdBy: String,
@@ -195,7 +193,7 @@ module.exports = {
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
-    MaintenanceCostColl: mongoose.model('maintenance', maintenanceCostSchema, 'maintenance'),
+    ExpenseCostColl: mongoose.model('expense', expenseCostSchema, 'expense'),
     PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),

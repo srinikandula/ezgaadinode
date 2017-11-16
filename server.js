@@ -9,7 +9,7 @@ var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 
 var Trips = require('./server/routes/tripRoutes');
-var Maintenance = require('./server/routes/maintenanceCost');
+var Expense = require('./server/routes/expenseCost');
 var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
 // var Users = require('./server/routes/users')
@@ -52,7 +52,7 @@ app.use('/v1/trucks', Trucks.AuthRouter);
 app.use('/v1/party', Party.AuthRouter);
 app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);
-app.use('/v1/maintenance', Maintenance.AuthRouter);
+app.use('/v1/expense', Expense.AuthRouter);
 app.use('/v1/tripLanes',TripLanes.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);

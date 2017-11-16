@@ -3,55 +3,56 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
-var maintenanceColl = require('./../models/schemas').MaintenanceCostColl;
+var expenseColl = require('./../models/schemas').ExpenseCostColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
 
-var MaintenanceCost = function () {
+var ExpenseCost = function () {
 };
 
-MaintenanceCost.prototype.addMaintenance = function (jwt, maintenanceDetails, callback) {
+ExpenseCost.prototype.addExpense = function (jwt, expenseDetails, callback) {
     var result = {};
-    if (!_.isObject(maintenanceDetails) || _.isEmpty(maintenanceDetails)) {
+    if (!_.isObject(expenseDetails) || _.isEmpty(expenseDetails)) {
         result.status = false;
-        result.message = "Please fill all the required maintenance cost details";
+        result.message = "Please fill all the required expense cost details";
         callback(result);
-    } else if (!maintenanceDetails.vehicleNumber || !_.isString(maintenanceDetails.vehicleNumber)) {
+    } else if (!expenseDetails.vehicleNumber || !_.isString(expenseDetails.vehicleNumber)) {
         result.status = false;
         result.message = "Please provide valid vehicle number";
         callback(result);
-    } else if (!maintenanceDetails.description || !_.isString(maintenanceDetails.description)) {
+    } else if (!expenseDetails.description || !_.isString(expenseDetails.description)) {
         result.status = false;
         result.message = "Please provide valid repair type";
         callback(result);
-    } else if (!maintenanceDetails.cost || _.isNaN(maintenanceDetails.cost)) {
+    } else if (!expenseDetails.cost || _.isNaN(expenseDetails.cost)) {
         result.status = false;
         result.message = "Please provide valid cost";
         callback(result);
     } else {
 
-        maintenanceDetails.createdBy = jwt.id;
-        maintenanceDetails.updatedBy = jwt.id;
-        maintenanceDetails.accountId = jwt.accountId;
+        expenseDetails.createdBy = jwt.id;
+        expenseDetails.updatedBy = jwt.id;
+        expenseDetails.accountId = jwt.accountId;
 
-        var maintenanceDoc = new maintenanceColl(maintenanceDetails);
+        var expenseDoc = new expenseColl(expenseDetails);
 
-        maintenanceDoc.save(function (err) {
+        expenseDoc.save(function (err) {
             if (err) {
                 result.status = false;
-                result.message = "Error while adding Maintenance Cost, try Again";
+                result.message = "Error while adding expenses Cost, try Again";
                 callback(result);
             } else {
                 result.status = true;
-                result.message = "Maintenance Cost Added Successfully";
+                result.message = "expenses Cost Added Successfully";
                 callback(result);
             }
         });
     }
 };
 
-MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback) {
+ExpenseCost.prototype.getExpenseCosts = function (params, jwt, callback) {
+    console.log('params==>',params, jwt);
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -66,13 +67,13 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback)
         mCosts: function (mCostsCallback) {
             var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
             var sort = params.sort ? JSON.parse(params.sort) :{};
-            maintenanceColl
+            expenseColl
                 .find({'accountId': jwt.accountId})
                 .sort({createdAt: 1})
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                //.populate('maintenanceCostId')
+                //.populate('expenseCostId')
                 .lean()
                 .exec(function (err, mCosts) {
                     async.parallel({
@@ -85,6 +86,11 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback)
                             Helpers.populateNameInTrucksColl(mCosts, 'vehicleNumber', function (response) {
                                 truckscallback(response.err, response.documents);
                             })
+                        },
+                        expenseType: function (expensecallback) {
+                            Helpers.populateNameInExpenseColl(mCosts, 'expenseType', function (response) {
+                                expensecallback(response.err, response.documents);
+                            })
                         }
                     }, function (populateErr, populateResults) {
                         mCostsCallback(populateErr, populateResults);
@@ -92,34 +98,34 @@ MaintenanceCost.prototype.getMaintenanceCosts = function (params, jwt, callback)
                 });
         },
         count: function (countCallback) {
-            maintenanceColl.count(function (err, count) {
+            expenseColl.count(function (err, count) {
                 countCallback(err, count);
             });
         }
     }, function (err, results) {
         if (err) {
             result.status = false;
-            result.message = 'Error retrieving Maintenance Costs';
+            result.message = 'Error retrieving expenses Costs';
             callback(retObj);
         } else {
             result.status = true;
             result.message = 'Success';
             result.count = results.count;
-            result.maintanenceCosts = results.mCosts;
+            result.maintanenceCosts = results.mCosts.createdbyname;
             callback(result);
         }
     });
 };
 
-MaintenanceCost.prototype.getAllAccountMaintenanceCosts = function (jwt, callback) {
+ExpenseCost.prototype.getAllAccountExpenseCosts = function (jwt, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    maintenanceColl
+    expenseColl
         .find({accountId: jwt.accountId})
         // .sort({createdAt: 1})
-        // .populate('maintenanceCostId')
+        // .populate('expenseCostId')
         .lean()
         .exec(function (err, mCosts) {
             async.parallel({
@@ -136,7 +142,7 @@ MaintenanceCost.prototype.getAllAccountMaintenanceCosts = function (jwt, callbac
             }, function (populateErr, populateResults) {
                 if (err) {
                     retObj.status = false;
-                    retObj.messages.push('Error retrieving Maintenance Costs');
+                    retObj.messages.push('Error retrieving expenses Costs');
                     callback(retObj);
                 } else {
                     retObj.status = true;
@@ -148,15 +154,16 @@ MaintenanceCost.prototype.getAllAccountMaintenanceCosts = function (jwt, callbac
         });
 };
 
-MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
+ExpenseCost.prototype.getAll = function (jwt, req, callback) {
     var result = {};
-    maintenanceColl.find({}, function (err, maintenanceRecords) {
+    expenseColl.find({}, function (err, expenseRecords) {
+
         if (err) {
             result.status = false;
-            result.message = 'Error getting Maintenance Records';
+            result.message = 'Error getting expenses Records';
             callback(result);
         } else {
-            Helpers.populateNameInUsersColl(maintenanceRecords, "createdBy", function (response) {
+            Helpers.populateNameInUsersColl(expenseRecords, "createdBy", function (response) {
                 if (response.status) {
                     result.status = true;
                     result.message = 'Success';
@@ -164,7 +171,7 @@ MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
                     callback(result);
                 } else {
                     result.status = false;
-                    result.message = 'Error getting Maintenance Records';
+                    result.message = 'Error getting expenses Records';
                     callback(result);
                 }
             });
@@ -172,34 +179,35 @@ MaintenanceCost.prototype.getAll = function (jwt, req, callback) {
     });
 };
 
-MaintenanceCost.prototype.findMaintenanceRecord = function (maintenanceId, callback) {
+ExpenseCost.prototype.findExpenseRecord = function (expenseId, callback) {
     var result = {};
-    maintenanceColl.findOne({_id: maintenanceId}, function (err, record) {
+    expenseColl.findOne({_id: expenseId}, function (err, record) {
         if (err) {
             result.status = false;
-            result.message = "Error while finding Maintenance Record, try Again";
+            result.message = "Error while finding expenses Record, try Again";
             callback(result);
         } else if (record) {
             result.status = true;
-            result.message = "Maintenance Record found successfully";
+            result.message = "expenses Record found successfully";
             result.trip = record;
             callback(result);
         } else {
             result.status = false;
-            result.message = "Maintenance Record is not found!";
+            result.message = "expenses Record is not found!";
             callback(result);
         }
     });
 };
 
-MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callback) {
+ExpenseCost.prototype.updateExpenseCost = function (jwt, Details, callback) {
     var result = {};
-    maintenanceColl.findOneAndUpdate({_id: Details._id},
+    expenseColl.findOneAndUpdate({_id: Details._id},
         {
             $set: {
                 "updatedBy": jwt.id,
                 "vehicleNumber": Details.vehicleNumber,
-                "repairType": Details.repairType,
+                "description": Details.description,
+                "expenseType": Details.expenseType,
                 "cost": Details.cost,
                 "date": Details.date
             }
@@ -208,30 +216,30 @@ MaintenanceCost.prototype.updateMaintenanceCost = function (jwt, Details, callba
         function (err, Details) {
             if (err) {
                 result.status = false;
-                result.message = "Error while updating Maintenance Cost Record, try Again";
+                result.message = "Error while updating expenses Cost Record, try Again";
                 callback(result);
             } else if (Details) {
                 result.status = true;
-                result.message = "Maintenance Cost updated successfully";
+                result.message = "expenses Cost updated successfully";
                 callback(result);
             } else {
                 result.status = false;
-                result.message = "Error, finding Maintenance Record";
+                result.message = "Error, finding expenses Record";
                 callback(result);
             }
         });
 };
 
-MaintenanceCost.prototype.deleteMaintenanceRecord = function (maintenanceId, callback) {
+ExpenseCost.prototype.deleteExpenseRecord = function (expenseId, callback) {
     var result = {};
-    maintenanceColl.remove({_id: maintenanceId}, function (err, returnValue) {
+    expenseColl.remove({_id: expenseId}, function (err, returnValue) {
         if (err) {
             result.status = false;
-            result.message = 'Error deleting Maintenance Record';
+            result.message = 'Error deleting expenses Record';
             callback(result);
         } else if (returnValue.result.n === 0) {
             result.status = false;
-            result.message = 'Error deleting Maintenance Record';
+            result.message = 'Error deleting expenses Record';
             callback(result);
         } else {
             result.status = true;
@@ -240,9 +248,9 @@ MaintenanceCost.prototype.deleteMaintenanceRecord = function (maintenanceId, cal
         }
     });
 };
-MaintenanceCost.prototype.countMaintenance = function (jwt, callback) {
+ExpenseCost.prototype.countExpense = function (jwt, callback) {
     var result = {};
-    maintenanceColl.count({'accountId':jwt.accountId},function (err, data) {
+    expenseColl.count({'accountId':jwt.accountId},function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -255,4 +263,4 @@ MaintenanceCost.prototype.countMaintenance = function (jwt, callback) {
         }
     })
 };
-module.exports = new MaintenanceCost();
+module.exports = new ExpenseCost();

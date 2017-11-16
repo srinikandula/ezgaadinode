@@ -1,4 +1,4 @@
-var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui.grid', 'ui-notification', 'ui.grid.selection','angularjs-dropdown-multiselect']);
+var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui.grid', 'ui-notification', 'ui.grid.selection']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -37,7 +37,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         },
         controller: 'AddEditPartyCtrl'
     })
-        //.state({
+    //.state({
     //     name: 'users',
     //     url: '/users',
     //     templateUrl: 'views/partials/users/show-users.html',
@@ -56,14 +56,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     //     }
     // })
         .state({
-        name: 'groups',
-        url: '/groups',
-        templateUrl: 'views/partials/groups/show-groups.html',
-        data: {activeTab: 'groups'},
-        params: {
-            access: 'open'
-        }
-    }).state({
+            name: 'groups',
+            url: '/groups',
+            templateUrl: 'views/partials/groups/show-groups.html',
+            data: {activeTab: 'groups'},
+            params: {
+                access: 'open'
+            }
+        }).state({
         name: 'groupsEdit',
         url: '/groupsEdit/:groupId',
         templateUrl: 'views/partials/groups/groupsEdit.html',
@@ -175,21 +175,21 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             roleId: null
         }
     }).state({
-        name: 'maintenance',
-        url: '/maintenance',
-        templateUrl: 'views/partials/Maintenance/maintenance.html',
-        data: {activeTab: 'maintenance'},
+        name: 'expenses',
+        url: '/expenses',
+        templateUrl: 'views/partials/expenses/expenses.html',
+        data: {activeTab: 'expenses'},
         params: {
             access: 'open'
         }
     }).state({
-        name: 'maintenanceEdit',
-        url: '/maintenanceEdit/:maintenanceId',
-        templateUrl: 'views/partials/Maintenance/maintenanceEdit.html',
-        data: {activeTab: 'maintenance'},
+        name: 'expensesEdit',
+        url: '/expensesEdit/:expenseId',
+        templateUrl: 'views/partials/expenses/expensesEdit.html',
+        data: {activeTab: 'expenses'},
         params: {
             access: 'open',
-            maintenanceId: null
+            expenseId: null
         }
     }).state({
         name: 'expenseMaster',

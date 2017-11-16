@@ -76,6 +76,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trips;
                 $scope.currentPageOfTrips = $scope.trips;
+
             }
         });
     };
@@ -93,63 +94,11 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
             getData: function (params) {
                 loadTableData(params);
             }
+
         });
     };
 
 
-    //
-    // // pagination options
-    // $scope.totalItems = 200;
-    // $scope.maxSize = 5;
-    // $scope.pageNumber = 1;
-    //
-    // $scope.tripLaneGridOptions = {
-    //     enableSorting: true,
-    //     paginationPageSizes: [9, 20, 50],
-    //     paginationPageSize: 9,
-    //     columnDefs: [{
-    //         name: 'Name',
-    //         field: 'name'
-    //     }, {
-    //         name: 'From',
-    //         field: 'from'
-    //     }, {
-    //         name: 'To',
-    //         field: 'to'
-    //     }, {
-    //         name: 'Estimated Distance',
-    //         field: 'estimatedDistance'
-    //     },  {
-    //         name: 'Created By',
-    //         field: 'attrs.createdByName'
-    //     }, {
-    //         name: 'Action',
-    //         cellTemplate: '<div class="text-center">' +
-    //         '<a href="#" ng-click="grid.appScope.goToEditTripLanePage(row.entity._id)" class="glyphicon glyphicon-edit edit"> </a>' +
-    //         '<a ng-click="grid.appScope.deleteTripLane(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
-    //         '</div>'
-    //     }],
-    //     rowHeight: 30,
-    //     data: [],
-    //     onRegisterApi: function (gridApi) {
-    //         $scope.gridApi = gridApi;
-    //     }
-    // };
-    //
-    //  $scope.getTripLanesData = function () {
-    //      TripLaneServices.getTripLanes($scope.pageNumber, function (success) {
-    //         if (success.data.status) {
-    //             $scope.tripLaneGridOptions.data = success.data.tripLanes;
-    //             $scope.totalItems = success.data.count;
-    //         } else {
-    //             Notification.error({message: success.data.message});
-    //         }
-    //     }, function (err) {
-    //
-    //     });
-    // };
-    //
-    // $scope.getTripLanesData();
 
     $scope.deleteTripLane = function (tripLaneId) {
         TripLaneServices.deleteTripLane(tripLaneId, function (success) {
