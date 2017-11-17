@@ -96,6 +96,11 @@ AuthRouter.post('/unassign-trucks',function(req,res){
         res.json(result);
     });
 });
+AuthRouter.get('/total/count',function(req,res){
+    Trucks.countTrucks(req.jwt,function(result){
+        res.send(result);
+    });
+});
 
 
 module.exports = {

@@ -374,6 +374,7 @@ Trucks.prototype.deleteTruck = function (truckId, callback) {
         }
     });
 };
+<<<<<<< 596086a68b395dbbf2e97bc6f1c1361ee4288314
 
 Trucks.prototype.findExpiryCount = function (jwt,callback) {
     var retObj = {
@@ -533,4 +534,19 @@ Trucks.prototype.taxExpiryTrucks = function (jwt,callback) {
     });
 };
 
+Trucks.prototype.countTrucks = function (jwt, callback) {
+    var result = {};
+    TrucksColl.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
 module.exports = new Trucks();
