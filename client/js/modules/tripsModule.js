@@ -184,20 +184,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 if(selectedParty){
                     $scope.trip.party = selectedParty.name;
                 }
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        }, function (error) {
-
-        });
-    }
-
-    function getTripLanes() {
-        TripLaneServices.getAllAccountTripLanes(function (success) {
-            if (success.data.status) {
-                $scope.tripLanes = success.data.tripLanes;
+                $scope.tripLanes = $scope.parties.tripLanes;
 
                 var selectedTriplane = _.find( $scope.tripLanes, function (triplane) {
                     return triplane._id.toString() === $scope.trip.tripLane;
@@ -216,6 +203,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
         });
     }
+
+
 
     function getTruckIds() {
      // TrucksService.getAllAccountTrucks(1,function (success) {
