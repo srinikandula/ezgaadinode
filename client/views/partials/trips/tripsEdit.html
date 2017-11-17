@@ -41,12 +41,6 @@
                                                    typeahead-on-select="selectTruckId($item)"
                                                    typeahead-select-on-exact="true" placeholder="Registration Num"
                                                    typeahead-no-results="noTrucks">
-                                            <div class="input-group-btn">
-                                                <button type="button" class="btn btn-default btn-custom"
-
-                                                        disabled><span class="caret"></span></button>
-
-                                            </div>
 
                                         </div>
                                         <div ng-show="noTrucks && truckRegNo.length" class="mt-5">
@@ -61,14 +55,15 @@
                                     </label>
                                     <div class="col-sm-8 col-xs-12">
                                         <div class="input-group custom-dropdown-dynamic">
-                                            <input type="text" id="bookedFor" ng-model="trip.party"
+                                            <input type="text" id="bookedFor" ng-model="trip.partyName"
                                                    uib-typeahead="party.name for party in parties | filter:$viewValue"
                                                    class="form-control" typeahead-min-length="1"
-                                                   typeahead-on-select="selectBookedFor($item)"
+                                                   typeahead-on-select="selectParty($item);"
                                                    typeahead-select-on-exact="true" placeholder="Party"
                                                    typeahead-no-results="noBooked">
-                                            <div class="input-group-btn ">
+                                            {{trip.party}}
 
+                                            <div class="input-group-btn ">
                                                 <button type="button" class="btn btn-default btn-custom" disabled><span
                                                         class="caret" ></span></button>
                                             </div>
@@ -89,8 +84,8 @@
                                     <label for="tripLane" class="col-xs-12 col-sm-4 pall-zero">Trip Lane</label>
                                     <div class="col-sm-8 col-xs-12">
                                         <div class="input-group custom-dropdown-dynamic">
-                                            <input id="tripLane" type="text" ng-model="getTripLane"
-                                                   uib-typeahead="tripLane.name for tripLane in tripLanes | filter:$viewValue"
+                                            <input id="tripLane" type="text" ng-model="trip.tripLane"
+                                                   uib-typeahead="tripLane.name for tripLane in tripLanesList | filter:$viewValue"
                                                    class="form-control" typeahead-min-length="1"
                                                    typeahead-on-select="selectTripLane($item)"
                                                    typeahead-select-on-exact="true" typeahead-no-results="noTlane"

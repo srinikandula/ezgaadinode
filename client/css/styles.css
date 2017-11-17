@@ -180,6 +180,14 @@ body{
     min-width: 190px!important;
     border-radius: 0!important;
 }
+
+.custom-dropdown-dynamic .dropdown-menu>.active>a, .dropdown-menu>.active>a:focus, .dropdown-menu>.active>a:hover {
+     color: #000;
+    text-decoration: none;
+    background-color: #337ab7;
+    outline: 0;
+}
+
 .mt-10{
     margin-top: 30px;
 }

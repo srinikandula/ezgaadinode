@@ -78,7 +78,7 @@ var tripSchema = new mongoose.Schema({
     rate: Number,   //new
     tripId: String,
     remarks: String,    //new
-    tripLane: {type: ObjectId, ref: 'tripLanes'},
+    tripLane: String,
     tripExpenses: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: {type: ObjectId, ref: 'groups'},
