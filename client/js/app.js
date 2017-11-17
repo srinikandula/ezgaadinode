@@ -225,6 +225,54 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open',
             paymentsId: null
         }
+    }).state({
+        name: 'expiry',
+        url: '/expiry',
+        templateUrl: 'views/partials/expiry/expiryCount.html',
+        data: {activeTab: 'expiry'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'fitnessExpiryTrucks',
+        url: '/fitnessExpiryTrucks',
+        templateUrl: 'views/partials/expiry/fitnessExpiryTrucks.html',
+        data: {activeTab: 'expiry'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'permitExpiryTrucks',
+        url: '/permitExpiryTrucks',
+        templateUrl: 'views/partials/expiry/permitExpiryTrucks.html',
+        data: {activeTab: 'expiry'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'insuranceExpiryTrucks',
+        url: '/insuranceExpiryTrucks',
+        templateUrl: 'views/partials/expiry/insuranceExpiryTrucks.html',
+        data: {activeTab: 'expiry'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'pollutionExpiryTrucks',
+        url: '/pollutionExpiryTrucks',
+        templateUrl: 'views/partials/expiry/pollutionExpiryTrucks.html',
+        data: {activeTab: 'expiry'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'taxExpiryTrucks',
+        url: '/taxExpiryTrucks',
+        templateUrl: 'views/partials/expiry/taxExpiryTrucks.html',
+        data: {activeTab: 'expiry'},
+        params: {
+            access: 'auth'
+        }
     });
     $urlRouterProvider.otherwise('/login');
 });

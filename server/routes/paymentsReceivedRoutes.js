@@ -30,7 +30,7 @@ AuthRouter.get('/getPaymentsRecord/:paymentsId', function (req, res) {
 
 AuthRouter.delete('/:id', function (req, res) {
     PaymentsReceived.deletePaymentsRecord(req.jwt, req.params.id, function (result) {
-        res.send(result);mtwlabs@321
+        res.send(result);
 
     });
 });

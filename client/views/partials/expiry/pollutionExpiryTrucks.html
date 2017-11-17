@@ -1,0 +1,27 @@
+<top-navigation></top-navigation>
+<div class="container-fluid">
+    <div class="row pall-zero">
+        <div class="col-xs-2 pall-zero">
+            <left-navigation></left-navigation>
+        </div>
+        <div class="main-right col-xs-9" ng-controller="TrucksController">
+            <h3>Pollution Expiry Trucks List</h3>
+            <div class="toolbar-button-div pull-right mb-10">
+                &nbsp;
+            </div>
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentsParams">
+                <tr ng-repeat="pollutionExpiryList in pollutionExpiryTrucksdata" style="text-align: center;">
+                    <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
+                        {{pollutionExpiryList.registrationNo }}
+                    </td>
+                    <td data-title="'pollution Expiry Date'" sortable="'pollutionExpiry'" class="clickable-item col-sm-2">
+                        {{ pollutionExpiryList.pollutionExpiry | date:'MM-dd-yyyy'}}
+                    </td>
+                </tr>
+                <tr ng-if="!pollutionExpiryTrucksdata || pollutionExpiryTrucksdata.length === 0">
+                    <td colspan="8">No Payments Records exist.</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
