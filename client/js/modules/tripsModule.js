@@ -309,12 +309,17 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             }
         }
     };
-    $scope.calcFreightAmount = function () {
-        var params = $scope.trip;
-        console.log(params.tonnage.length>0, params.rate.length>0);
-        if(params.tonnage>0 && params.rate>0) {
-            params.freightAmount = params.tonnage*params.rate;
+    $scope.$watch("trip.tonnage", function(newValue, oldValue){
+        $scope.calculateFreightAmount();
+    });
+    $scope.$watch("trip.rate", function(newValue, oldValue){
+        $scope.calculateFreightAmount();
+    });
+    $scope.calculateFreightAmount = function () {
+        if($scope.trip.tonnage>0 && $scope.trip.rate>0) {
+            $scope.trip.freightAmount = $scope.trip.tonnage * $scope.trip.rate;
         }
+        return $scope.trip.freightAmount;
     };
 }]);
 
