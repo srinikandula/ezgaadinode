@@ -374,7 +374,6 @@ Trucks.prototype.deleteTruck = function (truckId, callback) {
         }
     });
 };
-<<<<<<< 596086a68b395dbbf2e97bc6f1c1361ee4288314
 
 Trucks.prototype.findExpiryCount = function (jwt,callback) {
     var retObj = {
@@ -549,4 +548,5 @@ Trucks.prototype.countTrucks = function (jwt, callback) {
         }
     })
 };
+
 module.exports = new Trucks();

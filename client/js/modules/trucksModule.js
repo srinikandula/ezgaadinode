@@ -129,8 +129,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     };
     $scope.getCount();
 
-
-    var loadTableData = function (tableParams) {
+     var loadTableData = function (tableParams) {
 
         var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
         $scope.loading = true;
@@ -152,7 +151,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     $scope.init = function () {
         $scope.truckParams = new NgTableParams({
             page: 1, // show first page
-            size: 10,
+            size: 4,
             sorting: {
                 name: -1
             }
@@ -282,6 +281,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
+
     $scope.selectDriverId = function (driver) {
         $scope.truck.driverId = driver._id;
     }
