@@ -10,7 +10,7 @@ var Utils = require('./utils');
 var Party = function () {
 };
 
-Party.prototype.add = function (jwt, partyDetails, callback) {
+Party.prototype.addParty = function (jwt, partyDetails, callback) {
     var result = {message: '', status: true};
 
     if (!_.isObject(partyDetails) || _.isEmpty(partyDetails)) {
@@ -95,6 +95,7 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 result.status = true;
                 result.message = "Party updated successfully";
                 result.party = party;
+                callback(result);
             } else {
                 result.status = false;
                 result.message = "Error, finding party";
