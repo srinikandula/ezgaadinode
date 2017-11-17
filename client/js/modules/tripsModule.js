@@ -104,20 +104,11 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             name: 'Driver',
             field: 'attrs.fullName'
         }, {
-            name: 'Booked For',
+            name: 'Party',
             field: 'attrs.partyName'
         }, {
             name: 'FreightAmount',
             field: 'freightAmount'
-        }, {
-            name: 'Advance',
-            field: 'advance'
-        }, {
-            name: 'Balance',
-            field: 'balance'
-        }, {
-            name: 'Trip Expenses',
-            field: 'tripExpenses'
         }, {
             name: 'Trip Lane',
             field: 'attrs.tripLaneName'
@@ -150,20 +141,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.trip = {
         date: '',
         driver: '',
-        bookedFor: '',
+        Party: '',
         registrationNo: '',
         freightAmount: '',
-        balance: '',
-        advance: '',
-        tripLane: '',
-        tripExpenses: '',
-        dieselAmount: '',   //new...
-        tollgateAmount: '', //new..
-        from: '',    //new...
-        to: '',  //new...
+        tripLane: '',  //new..//new...
         tonnage: '',    //new...
         rate: '',   //new...
-        paymentType: '',    //new
         remarks: '',    //new
         error:[],
         success:[]
@@ -173,35 +156,18 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         $state.go('trips');
     };
 
-    function getDrivers() {
-        DriverService.getAllDrivers(function (success) {
-            if (success.data.status) {
-                $scope.drivers = success.data.drivers;
-                var selectedDriver = _.find( $scope.drivers, function (driver) {
-                    return driver._id.toString() === $scope.trip.driver;
-                });
-                if(selectedDriver){
-                    $scope.driverName = selectedDriver.fullName;
-                }
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        }, function (error) {
 
-        });
-    }
 
     function getParties() {
-        PartyService.getParties(function (success) {
+       PartyService.getParties(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
                 var selectedParty = _.find( $scope.parties, function (party) {
-                    return party._id.toString() === $scope.trip.bookedFor;
+                    return party._id.toString() === $scope.trip.partyId;
                 });
-                if(selectedParty){
-                    $scope.getPartyName = selectedParty.name;
+                 if(selectedParty){
+                    $scope.trip.partyName = selectedParty.name;
+                    $scope.tripLanesList = selectedParty.tripLanes;
                 }
             } else {
                 success.data.messages.forEach(function (message) {
@@ -213,27 +179,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         });
     }
 
-    function getTripLanes() {
-        TripLaneServices.getAllAccountTripLanes(function (success) {
-            if (success.data.status) {
-                $scope.tripLanes = success.data.tripLanes;
-                var selectedTriplane = _.find( $scope.tripLanes, function (triplane) {
-                    return triplane._id.toString() === $scope.trip.tripLane;
-                });
 
-                if(selectedTriplane){
-                    //console.log('----->',selectedTriplane);
-                    $scope.getTripLane = selectedTriplane.name;
-                }
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        }, function (error) {
-
-        });
-    }
 
     function getTruckIds() {
      // TrucksService.getAllAccountTrucks(1,function (success) {
@@ -265,25 +211,26 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         $scope.trip.bookedFor = booked._id;
     }
     $scope.selectTripLane = function (triplane) {
-        $scope.trip.tripLane = triplane._id;
+        console.log("selected triplane " + JSON.stringify(triplane));
+        $scope.trip.tripLane = triplane.name;
+
+    }
+    $scope.selectParty = function(party) {
+        $scope.trip.partyId = party._id;
+        $scope.tripLanesList = party.tripLanes;
     }
 
 
 
-    $scope.calculateBalance = function () {
-        $scope.trip.balance = $scope.trip.freightAmount - $scope.trip.advance;
-    };
     $scope.getTrip = function () {
         TripServices.getTrip($stateParams.tripId, function (success) {
             if (success.data.status) {
                 $scope.trip = success.data.trip;
+                console.log($scope.trip);
                 $scope.trip.date = new Date($scope.trip.date);
-                $scope.trip.paymentHistory.paymentDate = new Date($scope.trip.paymentHistory.paymentDate);
-                $scope.paymentGridOptions.data = $scope.trip.paymentHistory;
+
                 getTruckIds();
-                getDrivers();
                 getParties();
-                getTripLanes();
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -299,9 +246,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         $scope.getTrip();
     } else {
         getTruckIds();
-        getDrivers();
         getParties();
-        getTripLanes();
     }
 
     $scope.paymentFlag = false;
@@ -321,127 +266,27 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         success: []
     };
 
-    $scope.addTripPayment = function () {
-        var params = $scope.paymentDetails;
-        params.errors = [];
-        params.success = [];
 
-        if (!params.paymentDate) {
-            params.errors.push('Please Add Payment Date');
-        }
-        if (!params.amount) {
-            params.errors.push('Please Add Amount');
-        }
-        if (!params.paymentType) {
-            params.errors.push('Please Add Payment Type');
-        }
-        if(!params.errors.length){
-            $scope.paymentDetails.tripId = $scope.trip._id;
-            TripServices.addPayment($scope.paymentDetails, function (success) {
-               // console.log(success.data);
-                if(success.data.status) {
-                    Notification.success({message: 'Payment added successfully'});
-                    $scope.getTrip();
-                } else {
-                    params.errors = success.data.messages;
-                }
-            },function (err) {
-            });
-        }
-    };
 
-    $scope.paymentGridOptions = {
-        enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
-        columnDefs: [{
-            name: 'Date',
-            field: 'paymentDate',
-            cellFilter: 'date:"dd-MM-yyyy"'
-        }, {
-            name: 'Added By',
-            field: 'attrs.createdByName'
-        }, {
-            name: 'Amount',
-            field: 'amount'
-        }, {
-            name: 'Payment Type',
-            field: 'paymentType'
-        }],
-        rowHeight: 30,
-        data: [],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-        }
-    };
 
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
+        console.log($scope.trip);
         params.errors = [];
-        console.log('------->', params);
         if (!params.date) {
             params.errors.push('Valid Trip Date');
         }
         if (!params.registrationNo) {
             params.errors.push('Valid Registration Number');
         }
-        if (!params.driver) {
-            params.errors.push('Please Select Driver');
-        }
-        if(params.freightAmount < params.advance) {
-            params.errors.push('Freight Amount should be greater than advance');
-        }
 
-        /*if (!params.bookedFor) {
-            params.errors.push('Valid Booked For');
-        }
-        if (!_.isNumber(params.freightAmount)) {
-            params.errors.push('Please add freightAmount');
-        }
-        if (!_.isNumber(params.balance)) {
-            params.errors.push('Please add Balance');
-        }
-        if (!params.tripLane) {
-            params.errors.push('Please Select Trip Lane');
-        }
-        if (!_.isNumber(params.advance)) {
-            params.errors.push('Please add Advance');
-        }
-        if (!_.isNumber(params.tripExpenses)) {
-            params.errors.push('Please add tripExpenses');
-        }
-        if (!_.isNumber(params.bookLoad)) {
-            params.errors.push('Please add bookLoad');
-        }
-        if (!_.isNumber(params.dieselAmount)) {
-            params.errors.push('Please add dieselAmount');
-        }
-        if (!_.isNumber(params.tollgateAmount)) {
-            params.errors.push('Please add tollgateAmount');
-        }
-        if (!params.from) {
-            params.errors.push('Please add from');
-        }
-        if (!params.to) {
-            params.errors.push('Please add to');
-        }
-        if (!_.isNumber(params.tonnage)) {
-            params.errors.push('Please add tonnage');
-        }
-        if (!_.isNumber(params.rate)) {
-            params.errors.push('Please add rate');
-        }
-        if (!params.paymentType) {
-            params.errors.push('Please add paymentType');
-        }
-        if (!params.remarks) {
-            params.errors.push('Please add remarks');
-        }*/
         if (!params.errors.length) {
             if (params._id) {
                 params.date = Number(params.date);
-                TripServices.updateTrip(params, function (success) {
+
+                TripServices.updateTrip($scope.trip, function (success) {
                     if (success.data.status) {
+                        console.log(success.data);
                         Notification.success({message: 'Trip updated successfully'});
                         $state.go('trips');
                     } else {
@@ -451,7 +296,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
                 });
             } else {
-                TripServices.addTrip(params, function (success) {
+                TripServices.addTrip($scope.trip, function (success) {
                     if (success.data.status) {
                         Notification.success('Trip added successfully');
                         $state.go('trips');
@@ -463,18 +308,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 });
             }
         }
-    };
-  /*  $scope.addPaymentFlag= function () {
-        $state.go('trips');
-    };*/
-    $scope.assignDriver = function () {
-        // console.log($scope.trip.registrationNo);
-        var id = _.find($scope.trucks, function(item) {
-            // console.log(item._id , $scope.trip.registrationNo);
-            return item._id === $scope.trip.registrationNo;
-        });
-        console.log(id);
-        $scope.trip.driver = id.driverId;
     };
     $scope.calcFreightAmount = function () {
         var params = $scope.trip;

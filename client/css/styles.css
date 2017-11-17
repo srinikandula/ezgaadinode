@@ -7,6 +7,16 @@ body{
 .pall-zero {
     padding: 0;
 }
+.btn-custom{
+    border-radius: 0px!important;
+}
+
+.btn-custom[disabled]{
+    cursor: auto;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .85;
+}
 
 .menu-header {
     background-color: rgba(25, 149, 199, .6);
@@ -163,6 +173,21 @@ body{
 .selected a{
     color: #fff;
 }
+.mt-5{
+    margin-top: 5px;
+}
+.custom-dropdown-dynamic>ul{
+    min-width: 190px!important;
+    border-radius: 0!important;
+}
+
+.custom-dropdown-dynamic .dropdown-menu>.active>a, .dropdown-menu>.active>a:focus, .dropdown-menu>.active>a:hover {
+     color: #000;
+    text-decoration: none;
+    background-color: #337ab7;
+    outline: 0;
+}
+
 .mt-10{
     margin-top: 30px;
 }

@@ -72,21 +72,13 @@ var truckSchema = new mongoose.Schema({
 var tripSchema = new mongoose.Schema({
     date: Date,
     registrationNo: String,
-    driver: {type: ObjectId, ref: 'drivers'},
-    bookedFor: {type: ObjectId, ref: 'parties'},
+    partyId: {type: ObjectId, ref: 'parties'},
     freightAmount: Number, //5000
-    advance: Number, //3000
-    balance: Number, //2000
-    dieselAmount: Number,   //new
-    tollgateAmount: Number, //new
-    from: String,    //new
-    to: String,  //new
     tonnage: Number,    //new
     rate: Number,   //new
-    paymentType: String,    //new
     tripId: String,
     remarks: String,    //new
-    tripLane: {type: ObjectId, ref: 'tripLanes'},
+    tripLane: String,
     tripExpenses: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: {type: ObjectId, ref: 'groups'},
@@ -216,5 +208,5 @@ module.exports = {
     PaymentsColl: mongoose.model('payments', payments, 'payments'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
     paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
-    GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
+    GroupsColl: mongoose.model('groups', groupSchema, 'groups')
 };
