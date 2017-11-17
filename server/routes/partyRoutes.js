@@ -3,8 +3,8 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Party = require('./../apis/partyApis');
 
-AuthRouter.post('/', function (req, res) {
-    Party.add(req.jwt, req.body, function (result) {
+AuthRouter.post('/addParty', function (req, res) {
+    Party.addParty(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
@@ -15,7 +15,7 @@ AuthRouter.get('/:partyId', function (req, res) {
     });
 });
 
-AuthRouter.put('/', function (req, res) {
+AuthRouter.put('/updateParty', function (req, res) {
     Party.updateParty(req.jwt, req.body, function (result) {
         res.send(result);
     });

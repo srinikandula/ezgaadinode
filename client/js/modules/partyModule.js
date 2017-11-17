@@ -1,8 +1,9 @@
 app.factory('PartyService', function ($http, $cookies) {
     return {
         addParty: function (partyDetails, success, error) {
+            console.log(partyDetails);
             $http({
-                url: '/v1/party/',
+                url: '/v1/party/addParty',
                 method: "POST",
                 data: partyDetails
             }).then(success, error)
@@ -27,7 +28,7 @@ app.factory('PartyService', function ($http, $cookies) {
         },
         updateParty: function (partyDetails, success, error) {
             $http({
-                url: '/v1/party',
+                url: '/v1/party/updateParty',
                 method: "PUT",
                 data: partyDetails
             }).then(success, error)
@@ -94,9 +95,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             name: 'City',
             field: 'city'
         }, {
-            name: 'Operating Lane',
-            field: 'operatingLane'
-        }, {
             name: 'Created By',
             field: 'attrs.createdByName'
         }, {
@@ -116,20 +114,25 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
 }]);
 
 app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $stateParams, Notification, $state) {
-    console.log('adding a party....');
+
     $scope.pageTitle = "Add Party";
+
     if ($stateParams.partyId) {
         $scope.pageTitle = "Edit Party";
     }
 
+
     $scope.party = {
-        name:'',
-        contact:'',
-        email:'',
-        city:'',
-        operatingLane:'',
-        error:[],
-        success:[]
+        name: '',
+        contact: '',
+        email: '',
+        city: '',
+        tripLanes: [{
+            index:0
+        }],
+        error: [],
+        success: []
+
 
     };
     if ($stateParams.partyId) {
@@ -142,6 +145,28 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         }, function (err) {
         });
     }
+
+
+    $scope.addTripLane = function () {
+        var length = $scope.party.tripLanes.length;
+        console.log($scope.party.tripLanes[0].name);
+        if(!$scope.party.tripLanes[length-1].name || !$scope.party.tripLanes[length-1].from || !$scope.party.tripLanes[length-1].to){
+            $scope.party.error.push("Please Fill all TripLane Fields");
+        }else{
+            $scope.party.tripLanes.push({
+                index:length
+            });
+        }
+        console.log($scope.party);
+    };
+
+    $scope.deleteTripLane=function(index){
+
+          $scope.party.tripLanes.splice(index,1);
+
+    };
+
+
     $scope.addOrUpdateParty = function () {
         var params = $scope.party;
         params.success = [];
@@ -159,10 +184,11 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         if (!params.city) {
             params.error.push('Invalid city');
         }
-        if (!params.operatingLane) {
-            params.error.push('Invalid Opeating Lane');
+        if (!params.tripLanes) {
+            params.error.push('Invalid Lane');
         }
-        if(!params.error.length) {
+
+        if (!params.error.length) {
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
@@ -180,7 +206,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('party');
-                         Notification.success({message: "Party Added Successfully"});
+                        Notification.success({message: "Party Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
@@ -190,7 +216,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         }
     };
     $scope.cancel = function () {
-        $state.go('party');
+        $state.go('partyEdit');
     }
 }]);
 

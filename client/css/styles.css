@@ -1250,7 +1250,18 @@ input[type="text"].ui-grid-filter-input:hover {
 .ml-10{
     margin-left: 10px;
 }
-
+.pl4-pr0{
+    padding-left: 4px;
+    padding-right: 0;
+}
+.add-trip-lane{
+    position: absolute;
+    top: 0;
+    right:12px;
+}
+.fa-minus-circle{
+    color: red!important;
+}
 /*.ui-notification > .message {
     margin: 0;
 }*/
