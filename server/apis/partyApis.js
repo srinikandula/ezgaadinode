@@ -174,6 +174,20 @@ Party.prototype.deleteParty = function (jwt, partyId, callback) {
         }
     });
 };
-
+Party.prototype.countParty = function (jwt, callback) {
+    var result = {};
+    PartyCollection.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
 
 module.exports = new Party();
