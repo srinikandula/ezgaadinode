@@ -26,54 +26,55 @@
                                 </div>
 
                                 <div class="form-group col-xs-12">
-                                    <label for="registrationNo" class="col-sm-4 col-xs-12 pall-zero">Registration
+                                    <label for="registrationNo" class="col-sm-4 col-xs-12 pall-zero">Vehicle
                                         No</label>
                                     <div class="col-xs-12 col-sm-8">
                                         <!--<select ng-model="trip.registrationNo"
                                                 ng-options="truck._id as truck.registrationNo for truck in trucks"
                                                 class="form-control" id="registrationNo">
                                         </select>-->
-                                        <input type="text" ng-model="truckRegNo"
-                                               uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue"
-                                               class="form-control" typeahead-min-length="1"
-                                               typeahead-on-select="selectTruckId($item)"
-                                               typeahead-select-on-exact="true" placeholder="Registration Num"
-                                               typeahead-no-results="noTrucks">
-                                        <div ng-show="noTrucks">
+                                        <div class="input-group custom-dropdown-dynamic">
+
+                                            <input id="registrationNo" type="text" ng-model="truckRegNo"
+                                                   uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue"
+                                                   class="form-control" typeahead-min-length="1"
+                                                   typeahead-on-select="selectTruckId($item)"
+                                                   typeahead-select-on-exact="true" placeholder="Registration Num"
+                                                   typeahead-no-results="noTrucks">
+                                            <div class="input-group-btn">
+                                                <button type="button" class="btn btn-default btn-custom"
+
+                                                        disabled><span class="caret"></span></button>
+
+                                            </div>
+
+                                        </div>
+                                        <div ng-show="noTrucks && truckRegNo.length" class="mt-5">
                                             <i class="glyphicon glyphicon-remove red"></i>
                                             <span class="red"> No Results Found </span>
                                         </div>
                                     </div>
+                                    <div class="clearfix"></div>
                                 </div>
                                 <div class="form-group col-xs-12">
-                                    <label for="driver" class="col-xs-12 col-sm-4 pall-zero">Driver</label>
+                                    <label for="bookedFor" class="col-sm-4 col-xs-12  pall-zero">Party
+                                    </label>
                                     <div class="col-sm-8 col-xs-12">
-                                        <input type="text" ng-model="driverName"
-                                               uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue"
-                                               class="form-control" typeahead-min-length="1"
-                                               typeahead-on-select="selectTruckDriver($item)"
-                                               typeahead-select-on-exact="true" placeholder="Driver Name"
-                                               typeahead-no-results="noDriver">
-                                        <div ng-show="noDriver">
-                                            <i class="glyphicon glyphicon-remove red"></i>
-                                            <span class="red"> No Results Found </span>
+                                        <div class="input-group custom-dropdown-dynamic">
+                                            <input type="text" id="bookedFor" ng-model="trip.party"
+                                                   uib-typeahead="party.name for party in parties | filter:$viewValue"
+                                                   class="form-control" typeahead-min-length="1"
+                                                   typeahead-on-select="selectBookedFor($item)"
+                                                   typeahead-select-on-exact="true" placeholder="Party"
+                                                   typeahead-no-results="noBooked">
+                                            <div class="input-group-btn ">
+
+                                                <button type="button" class="btn btn-default btn-custom" disabled><span
+                                                        class="caret" ></span></button>
+                                            </div>
                                         </div>
-                                        <!--<select ng-model="trip.driver"
-                                                ng-options="driver._id as driver.fullName for driver in drivers"
-                                                class="form-control" id="driver">
-                                        </select>-->
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="bookedFor" class="col-xs-12 col-sm-4 pall-zero">Booked
-                                        For</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <input type="text" ng-model="getPartyName"
-                                               uib-typeahead="party.name for party in parties | filter:$viewValue"
-                                               class="form-control" typeahead-min-length="1"
-                                               typeahead-on-select="selectBookedFor($item)"
-                                               typeahead-select-on-exact="true" placeholder="Booked For"
-                                               typeahead-no-results="noBooked">
+
+
                                         <div ng-show="noBooked">
                                             <i class="glyphicon glyphicon-remove red"></i>
                                             <span class="red"> No Results Found </span>
@@ -87,13 +88,19 @@
                                 <div class="form-group col-xs-12">
                                     <label for="tripLane" class="col-xs-12 col-sm-4 pall-zero">Trip Lane</label>
                                     <div class="col-sm-8 col-xs-12">
+                                        <div class="input-group custom-dropdown-dynamic">
+                                            <input id="tripLane" type="text" ng-model="getTripLane"
+                                                   uib-typeahead="tripLane.name for tripLane in tripLanes | filter:$viewValue"
+                                                   class="form-control" typeahead-min-length="1"
+                                                   typeahead-on-select="selectTripLane($item)"
+                                                   typeahead-select-on-exact="true" typeahead-no-results="noTlane"
+                                                   placeholder="Traip Lane">
+                                            <div class="input-group-btn ">
 
-                                        <input type="text" ng-model="getTripLane"
-                                               uib-typeahead="tripLane.name for tripLane in tripLanes | filter:$viewValue"
-                                               class="form-control" typeahead-min-length="1"
-                                               typeahead-on-select="selectTripLane($item)"
-                                               typeahead-select-on-exact="true" typeahead-no-results="noTlane"
-                                               placeholder="Traip Lane">
+                                                <button type="button" class="btn btn-default btn-custom" disabled><span
+                                                        class="caret"></span></button>
+                                            </div>
+                                        </div>
                                         <div ng-show="noTlane">
                                             <i class="glyphicon glyphicon-remove red"></i>
                                             <span class="red"> No Results Found </span>
@@ -104,22 +111,10 @@
                                          </select>-->
                                     </div>
                                 </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="from" class="col-xs-12 col-sm-4 pall-zero">From</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <input ng-model="trip.from" type="text" class="form-control"
-                                               id="from"
-                                               placeholder="From">
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="to" class="col-xs-12 col-sm-4 pall-zero">To</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <input ng-model="trip.to" type="text" class="form-control"
-                                               id="to"
-                                               placeholder="To">
-                                    </div>
-                                </div>
+
+                            </div>
+
+                            <div class="col-sm-6 col-xs-12">
                                 <div class="form-group col-xs-12">
                                     <label for="tonnage" class="col-xs-12 col-sm-4 pall-zero">Tonnage</label>
                                     <div class="col-sm-8 col-xs-12">
@@ -136,70 +131,13 @@
                                                placeholder="Rate">
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="col-sm-6 col-xs-12">
-                                <div class="form-group col-xs-12">
-                                    <label for="tripExpenses" class="col-xs-12 col-sm-4 pall-zero">Trip
-                                        Expenses</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <input ng-model="trip.tripExpenses" type="number" class="form-control"
-                                               id="tripExpenses"
-                                               placeholder="Trip Expenses">
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="dieselAmount" class="col-xs-12 col-sm-4 pall-zero">Diesel
-                                        Amount</label>
-                                    <div class="col-xs-12 col-sm-8">
-                                        <input ng-model="trip.dieselAmount" type="number" class="form-control"
-                                               id="dieselAmount"
-                                               placeholder="Diesel Amount">
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="tollgateAmount" class="col-xs-12 col-sm-4 pall-zero">Tollgate
-                                        Amount</label>
-                                    <div class="col-xs-12 col-sm-8">
-                                        <input ng-model="trip.tollgateAmount" type="number" class="form-control"
-                                               id="tollgateAmount"
-                                               placeholder="tollgateAmount">
-                                    </div>
-                                </div>
                                 <div class="form-group col-xs-12">
                                     <label for="freightAmount" class="col-xs-12 col-sm-4 pall-zero">Freight
                                         Amount</label>
                                     <div class="col-sm-8 col-xs-12">
                                         <input ng-model="trip.freightAmount" type="number" class="form-control"
-                                               ng-change="calculateBalance()"
                                                id="freightAmount"
-                                               placeholder="Freight Amount">
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="advance" class="col-xs-12 col-sm-4 pall-zero">Advance</label>
-                                    <div class="col-xs-12 col-sm-8">
-                                        <input ng-model="trip.advance" type="number" class="form-control"
-                                               id="advance"
-                                               ng-change="calculateBalance()"
-                                               placeholder="Advance">
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="balance" class="col-xs-12 col-sm-4 pall-zero">Balance</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <input ng-model="trip.balance" type="number" class="form-control"
-                                               id="balance"
-                                               placeholder="Balance" readonly>
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="paymentType" class="col-xs-12 col-sm-4 pall-zero">Payment
-                                        Type</label>
-                                    <div class="col-xs-12 col-sm-8">
-                                        <input ng-model="trip.paymentType" type="text" class="form-control"
-                                               id="paymentType"
-                                               placeholder="Payment Type">
+                                               placeholder="Freight Amount" readonly>
                                     </div>
                                 </div>
                                 <div class="form-group col-xs-12">
@@ -229,63 +167,6 @@
                     </div>
                 </uib-accordion>
 
-                <div class="col-xs-12 pall-zero" ng-show="showHistory">
-                    <h4 ng-click="paymentGridOptions">Payment History</h4>
-
-                    <div class="">
-                        <div class="col-md-12 mb-10">
-                            <button class="btn btn-blue pull-right" ng-click="addPaymentFlag()">Add</button>
-                        </div>
-
-                        <!--<div class="col-md-12 account-edit">-->
-                        <form class=" col-md-12" ng-show="paymentFlag">
-                            <div class="col-sm-6 col-xs-12">
-                                <div class="form-group col-xs-12">
-                                    <label for="paymentdate" class="col-xs-12 col-sm-4 pall-zero">Date</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <date-picker id="paymentdate"
-                                                     ng-model="paymentDetails.paymentDate"></date-picker>
-                                        <!--<input ng-model="paymentDetails.paymentDate" type="text" class="form-control" id="paymentdate" placeholder="Payment Date">-->
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="amount" class="col-xs-12 col-sm-4 pall-zero">Amount</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <input ng-model="paymentDetails.amount" type="text" class="form-control"
-                                               id="amount"
-                                               placeholder="Amount">
-                                    </div>
-                                </div>
-                                <div class="form-group col-xs-12">
-                                    <label for="type" class="col-xs-12 col-sm-4 pall-zero">Payment Type</label>
-                                    <div class="col-sm-8 col-xs-12">
-                                        <input ng-model="paymentDetails.paymentType" type="text" class="form-control"
-                                               id="type"
-                                               placeholder="Payment Type">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="col-xs-4 col-xs-push-4 margin-top-20 mb-10">
-                                <div>
-                                    <div class="alert alert-danger" role="alert" ng-show="paymentDetails.errors.length">
-                                        <ul>
-                                            <li ng-repeat="error in paymentDetails.errors">{{error}}</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary" ng-click="addTripPayment()">Submit
-                                </button>
-                                <input type="button" value="Cancel" class="btn btn-red" ng-click="addPaymentFlag()"/>
-                            </div>
-                        </form>
-                        <div class="clearfix"></div>
-                    </div>
-                    <!--</div>-->
-                    <div class="col-xs-12">
-                        <div class="grid payment-grid" ui-grid="paymentGridOptions"></div>
-                    </div>
-                </div>
 
             </div>
             <div class="clearfix"></div>
