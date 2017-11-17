@@ -38,6 +38,12 @@ app.factory('PartyService', function ($http, $cookies) {
                 url: '/v1/party/' + partyId,
                 method: "DELETE"
             }).then(success, error)
+        },
+        count: function (success, error) {
+            $http({
+                url: '/v1/party/total/count',
+                method: "GET"
+            }).then(success, error)
         }
     }
 });
@@ -46,6 +52,18 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
     $scope.goToEditPartyPage = function (partyId) {
         $state.go('editParty', {partyId: partyId});
     };
+
+    $scope.count = 0;
+    $scope.getCount = function () {
+        PartyService.count(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+    $scope.getCount();
 
     $scope.deleteParty = function (partyId) {
         PartyService.deleteParty(partyId, function (success) {
@@ -59,6 +77,21 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             console.log('error deleting party');
         });
     };
+ /*    $scope.init = function () {
+        $scope.partyParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                name: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
+    };*/
 
     // pagination options
     $scope.totalItems = 200;
@@ -95,6 +128,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             name: 'City',
             field: 'city'
         }, {
+            name: 'Triplanes',
+            field: 'tripLanes.length'
+        }, {
             name: 'Created By',
             field: 'attrs.createdByName'
         }, {
@@ -121,20 +157,19 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         $scope.pageTitle = "Edit Party";
     }
 
-
     $scope.party = {
         name: '',
         contact: '',
         email: '',
         city: '',
         tripLanes: [{
-            index:0
+            index: 0
         }],
         error: [],
         success: []
 
-
     };
+
     if ($stateParams.partyId) {
         PartyService.getParty($stateParams.partyId, function (success) {
             if (success.data.status) {
@@ -146,23 +181,21 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         });
     }
 
-
     $scope.addTripLane = function () {
         var length = $scope.party.tripLanes.length;
-        console.log($scope.party.tripLanes[0].name);
-        if(!$scope.party.tripLanes[length-1].name || !$scope.party.tripLanes[length-1].from || !$scope.party.tripLanes[length-1].to){
+        /*if (!$scope.party.tripLanes[length - 1].name || !$scope.party.tripLanes[length - 1].from || !$scope.party.tripLanes[length - 1].to) {
             $scope.party.error.push("Please Fill all TripLane Fields");
-        }else{
+        }*/
+        // else {
             $scope.party.tripLanes.push({
-                index:length
+                index: length
             });
-        }
+       // }
         console.log($scope.party);
     };
 
-    $scope.deleteTripLane=function(index){
-
-          $scope.party.tripLanes.splice(index,1);
+    $scope.deleteTripLane = function (index) {
+        $scope.party.tripLanes.splice(index, 1);
 
     };
 
@@ -216,7 +249,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         }
     };
     $scope.cancel = function () {
-        $state.go('partyEdit');
+        $state.go('party');
     }
 }]);
 

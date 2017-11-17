@@ -39,6 +39,13 @@ AuthRouter.delete('/:partyId', function (req, res) {
     });
 });
 
+AuthRouter.get('/total/count', function (req, res) {
+    Party.countParty(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
