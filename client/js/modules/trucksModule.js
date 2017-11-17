@@ -64,6 +64,42 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method:"POST",
                 data:unAssignTrucks
             }).then(success,error);
+        },
+        findExpiryCount: function (success, error) {
+            $http({
+                url: '/v1/trucks/findExpiryCount',
+                method: "GET"
+            }).then(success, error)
+        },
+        fitnessExpiryTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks/fitnessExpiryTrucks',
+                method: "GET"
+            }).then(success, error)
+        },
+        permitExpiryTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks/permitExpiryTrucks',
+                method: "GET"
+            }).then(success, error)
+        },
+        insuranceExpiryTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks/insuranceExpiryTrucks',
+                method: "GET"
+            }).then(success, error)
+        },
+        pollutionExpiryTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks/pollutionExpiryTrucks',
+                method: "GET"
+            }).then(success, error)
+        },
+        taxExpiryTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks/taxExpiryTrucks',
+                method: "GET"
+            }).then(success, error)
         }
     }
 });
@@ -162,6 +198,103 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
         });
     }
+
+    $scope.getExpiryCount = function () {
+        TrucksService.findExpiryCount(function (success) {
+            if (success.data.status) {
+                $scope.allExpiryCountdata = success.data.expiryCount;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getExpiryCount();
+
+    $scope.getfitnessExpiryTrucks = function () {
+        TrucksService.fitnessExpiryTrucks(function (success) {
+            if (success.data.status) {
+                $scope.fitnessExpiryTrucksdata = success.data.trucks;
+                //console.log($scope.fitnessExpiryTrucksdata);
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getfitnessExpiryTrucks();
+
+    $scope.getpermitExpiryTrucks = function () {
+        TrucksService.permitExpiryTrucks(function (success) {
+            if (success.data.status) {
+                $scope.permitExpiryTrucksdata = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getpermitExpiryTrucks();
+
+    $scope.getinsuranceExpiryTrucks = function () {
+        TrucksService.insuranceExpiryTrucks(function (success) {
+            if (success.data.status) {
+                $scope.insuranceExpiryTrucksdata = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getinsuranceExpiryTrucks();
+
+    $scope.getpollutionExpiryTrucks = function () {
+        TrucksService.pollutionExpiryTrucks(function (success) {
+            if (success.data.status) {
+                $scope.pollutionExpiryTrucksdata = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.getpollutionExpiryTrucks();
+
+    $scope.gettaxExpiryTrucks = function () {
+        TrucksService.taxExpiryTrucks(function (success) {
+            if (success.data.status) {
+                $scope.taxExpiryTrucksdata = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+
+    $scope.gettaxExpiryTrucks();
 }]);
 
 app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state) {

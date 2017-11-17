@@ -13,6 +13,7 @@ app.directive('leftNavigation', function () {
         '            <expense-master-directive></expense-master-directive>\n' +
         '            <expenses-directive></expenses-directive>\n' +
         '            <payments-directive></payments-directive>\n' +
+        '            <expiry-directive></expiry-directive>\n' +
         '        </ul>\n' +
         '    </div>'
     };
@@ -106,6 +107,15 @@ app.directive('paymentsDirective',function () {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'paymentsReceived\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="paymentsReceived">Payments Received</a>\n' +
+        '          </li>'
+    } ;
+});
+
+app.directive('expiryDirective',function () {
+    return{
+        restrict: 'E',
+        template: '<li ng-class="{selected: activeTab === \'expiry\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="expiry">Expiry</a>\n' +
         '          </li>'
     } ;
 });
