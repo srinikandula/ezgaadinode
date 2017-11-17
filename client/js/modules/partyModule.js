@@ -122,14 +122,20 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         $scope.pageTitle = "Edit Party";
     }
 
-    $scope.party = {
+    $scope.triplaneList = [{
         name:'',
-        contact:'',
-        email:'',
-        city:'',
-        operatingLane:'',
-        error:[],
-        success:[]
+        from:'',
+        to:''
+    }];
+
+    $scope.party = {
+        name: '',
+        contact: '',
+        email: '',
+        city: '',
+        operatingLane: '',
+        error: [],
+        success: []
 
     };
     if ($stateParams.partyId) {
@@ -143,10 +149,32 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         });
     }
 
-    $scope.tripLaneFlag = false;
+
     $scope.addTripLane = function () {
-        $scope.tripLaneFlag = true;
+        var length = $scope.triplaneList.length - 1;
+       /*// console.log($scope.triplaneList[length].name);
+        if (!$scope.triplaneList[length].name || !$scope.triplaneList[length].from || !$scope.triplaneList[length].to) {
+            $scope.party.error.push("Please Fill All Fileds");
+        } else {*/
+       //console.log($scope.triplaneList[length].name);
+            $scope.triplaneList.push({
+                name: '',
+                from: '',
+                to: ''
+            });
+       /* }*/
     };
+
+    $scope.deleteTripLane=function(){
+      var length = $scope.triplaneList.length-1;
+      if(!length){
+          $scope.party.error.push("Atleast One Trip Lane is Mandatory");
+      }else{
+          $scope.triplaneList.splice(length,1);
+      }
+    };
+
+
     $scope.addOrUpdateParty = function () {
         var params = $scope.party;
         params.success = [];
@@ -167,7 +195,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         if (!params.operatingLane) {
             params.error.push('Invalid Opeating Lane');
         }
-        if(!params.error.length) {
+        if (!params.error.length) {
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
@@ -185,7 +213,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('party');
-                         Notification.success({message: "Party Added Successfully"});
+                        Notification.success({message: "Party Added Successfully"});
                     } else {
                         params.error = success.data.message;
                     }
