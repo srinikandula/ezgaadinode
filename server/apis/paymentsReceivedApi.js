@@ -255,8 +255,6 @@ PaymentsReceived.prototype.findPendingDueForAccount = function(jwt, callback){
     };
     async.parallel({
         tripFrightTotal: function (callback) {
-            //TODO add match
-            //it is not working now
             TripColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
                 { $group: { _id : null , totalFright : { $sum: "$freightAmount" }} },
                 function (err, totalFrieght) {
