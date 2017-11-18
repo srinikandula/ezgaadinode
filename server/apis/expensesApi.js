@@ -2,16 +2,18 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
-
+const ObjectId = mongoose.Types.ObjectId;
 var expenseColl = require('./../models/schemas').ExpenseCostColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
 
-var ExpenseCost = function () {
+var Utils = require('./utils');
+
+var Expenses = function () {
 };
 
-ExpenseCost.prototype.addExpense = function (jwt, expenseDetails, callback) {
+Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
     var result = {};
     if (!_.isObject(expenseDetails) || _.isEmpty(expenseDetails)) {
         result.status = false;
@@ -51,7 +53,7 @@ ExpenseCost.prototype.addExpense = function (jwt, expenseDetails, callback) {
     }
 };
 
-ExpenseCost.prototype.getExpenseCosts = function (params, jwt, callback) {
+Expenses.prototype.getExpenseCosts = function (params, jwt, callback) {
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -117,7 +119,7 @@ ExpenseCost.prototype.getExpenseCosts = function (params, jwt, callback) {
     });
 };
 
-ExpenseCost.prototype.getAllAccountExpenseCosts = function (jwt, callback) {
+Expenses.prototype.getAllAccountExpenseCosts = function (jwt, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -154,7 +156,7 @@ ExpenseCost.prototype.getAllAccountExpenseCosts = function (jwt, callback) {
         });
 };
 
-ExpenseCost.prototype.getAll = function (jwt, req, callback) {
+Expenses.prototype.getAll = function (jwt, req, callback) {
     var result = {};
     expenseColl.find({}, function (err, expenseRecords) {
 
@@ -179,7 +181,7 @@ ExpenseCost.prototype.getAll = function (jwt, req, callback) {
     });
 };
 
-ExpenseCost.prototype.findExpenseRecord = function (expenseId, callback) {
+Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
     var result = {};
     expenseColl.findOne({_id: expenseId}, function (err, record) {
         if (err) {
@@ -199,7 +201,7 @@ ExpenseCost.prototype.findExpenseRecord = function (expenseId, callback) {
     });
 };
 
-ExpenseCost.prototype.updateExpenseCost = function (jwt, Details, callback) {
+Expenses.prototype.updateExpenseCost = function (jwt, Details, callback) {
     var result = {};
     expenseColl.findOneAndUpdate({_id: Details._id},
         {
@@ -230,7 +232,7 @@ ExpenseCost.prototype.updateExpenseCost = function (jwt, Details, callback) {
         });
 };
 
-ExpenseCost.prototype.deleteExpenseRecord = function (expenseId, callback) {
+Expenses.prototype.deleteExpenseRecord = function (expenseId, callback) {
     var result = {};
     expenseColl.remove({_id: expenseId}, function (err, returnValue) {
         if (err) {
@@ -248,7 +250,7 @@ ExpenseCost.prototype.deleteExpenseRecord = function (expenseId, callback) {
         }
     });
 };
-ExpenseCost.prototype.countExpense = function (jwt, callback) {
+Expenses.prototype.countExpense = function (jwt, callback) {
     var result = {};
     expenseColl.count({'accountId':jwt.accountId},function (err, data) {
         if (err) {
@@ -263,4 +265,79 @@ ExpenseCost.prototype.countExpense = function (jwt, callback) {
         }
     })
 };
-module.exports = new ExpenseCost();
+
+/**
+ * Find total of expenses in the account
+ * @param jwt
+ * @param callback
+ */
+Expenses.prototype.findTotalExpenses = function (jwt, callback) {
+    expenseColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+        { $group: { _id : null , totalExpenses : { $sum: "$cost" }} },
+        function (error, result) {
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+            } else {
+                retObj.status = true;
+                retObj.totalExpenses= result[0].totalExpenses;
+            }
+            callback(retObj)
+        });
+};
+
+/**
+ * Find expenses totals by vehicles
+ * @param jwt
+ * @param callback
+ */
+Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
+    expenseColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+        { $group: { _id : "$vehicleNumber" , totalExpenses : { $sum: "$cost" }} },
+        function (error, expenses) {
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+                callback(retObj);
+            } else {
+                Utils.populateNameInTrucksColl(expenses, '_id', function(results){
+                    retObj.status = true;
+                    retObj.expenses = results;
+                    callback(retObj);
+                });
+
+            }
+        });
+}
+/**
+ * Find expenses for a vehicle
+ * @param jwt
+ * @param vehicleId
+ * @param callback
+ */
+
+Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) {
+    var result = {};
+    expenseColl.find({'accountId':jwt.accountId,"vehicleNumber":vehicleId },function (err, expenses) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.expenses = expenses;
+            callback(result);
+        }
+    })
+};
+
+module.exports = new Expenses();

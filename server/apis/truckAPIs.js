@@ -549,4 +549,6 @@ Trucks.prototype.countTrucks = function (jwt, callback) {
     })
 };
 
+
+
 module.exports = new Trucks();

@@ -9,7 +9,7 @@ var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 
 var Trips = require('./server/routes/tripRoutes');
-var Expense = require('./server/routes/expenseCost');
+var Expense = require('./server/routes/expensesRoutes');
 var Trucks = require('./server/routes/truckRoutes');
 var Party = require('./server/routes/partyRoutes');
 // var Users = require('./server/routes/users')
