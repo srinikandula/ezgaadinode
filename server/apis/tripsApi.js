@@ -577,7 +577,7 @@ Trips.prototype.findTotalRevenue = function(jwt, callback) {
 
 Trips.prototype.findRevenueByParty =  function(jwt, callback) {
     TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
-        { $group: { _id : "$partyId" , totalFright : { $sum: "$freightAmount" }} },
+        { $group: { _id : "$partyId" , totalFreight : { $sum: "$freightAmount" }} },
         function (error, revenue) {
             var retObj = {
                 status: false,
@@ -586,11 +586,15 @@ Trips.prototype.findRevenueByParty =  function(jwt, callback) {
             if(error) {
                 retObj.status = false;
                 retObj.messages.push(JSON.stringify(error));
+                callback(retObj);
             } else {
-                retObj.status = true;
-                retObj.revenue= revenue;
+                Utils.populateNameInPartyColl(revenue, '_id', function (response) {
+                    //console.log(response);
+                    retObj.status = true;
+                    retObj.revenue = response.documents;
+                    callback(retObj);
+                });
             }
-            callback(retObj)
         });
 }
 

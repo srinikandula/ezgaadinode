@@ -81,6 +81,7 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
 };
 
 PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
+    //console.log(params);
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -124,8 +125,8 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
                 });
         },
         count: function (countCallback) {
-            PaymentsReceivedColl.count({'accountId': jwt.accountId}, function (err, count) {
-                console.log(count);
+            PaymentsReceivedColl.count({'accountId': jwt.accountId},function (err, count) {
+                //console.log(count);
                 countCallback(err, count);
             });
         }

@@ -22,7 +22,7 @@ AuthRouter.put('/updatePayments', function (req, res) {
 });
 
 AuthRouter.get('/getPaymentsRecord/:paymentsId', function (req, res) {
-    console.log(req);
+    //console.log(req);
     PaymentsReceived.findPaymentsReceived(req.jwt,req.params.paymentsId, function (result) {
         res.send(result);
     });

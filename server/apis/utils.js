@@ -159,6 +159,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
                 var party = _.find(names, function (users) {
                     if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
+                //console.log(party);
                 if (party) {
                     if (!item.attrs) {
                         item.attrs = {};
@@ -167,7 +168,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
                 }
             }
             result.status = true;
-            result.message = 'Error retrieving names';
+            result.message = 'Success';
             result.documents = documents;
             result.err = err;
             callback(result);
