@@ -46,6 +46,13 @@ AuthRouter.get('/total/count', function (req, res) {
 });
 
 
+AuthRouter.get('/tripsPayments/:partyId', function (req, res) {
+    Party.findTripsAndPaymentsForParty(req.jwt, req.params.partyId, function (result) {
+        res.send(result);
+    });
+});
+
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

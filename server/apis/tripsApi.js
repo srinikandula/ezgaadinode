@@ -39,48 +39,6 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
         retObj.messages.push("Please add Freight Amount");
     }
 
-    /*if (!_.isNumber(tripDetails.advance)) {
-       retObj.messages.push("Please add Advance");
-   }
-
-   if (!_.isNumber(tripDetails.balance)) {
-       retObj.messages.push("Please add Balance");
-   }
-
-   if (!tripDetails.tripLane) {
-       retObj.messages.push("Please add Trip Lane");
-   }
-
-   if (!_.isNumber(tripDetails.tripExpenses)) {
-       retObj.messages.push('Please add tripExpenses');
-   }
-   if (!_.isNumber(tripDetails.bookLoad)) {
-       retObj.messages.push('Please add bookLoad');
-   }
-   if (!_.isNumber(tripDetails.dieselAmount)) {
-       retObj.messages.push('Please add dieselAmount');
-   }
-   if (!_.isNumber(tripDetails.tollgateAmount)) {
-       retObj.messages.push('Please add tollgateAmount');
-   }
-   if (!tripDetails.from) {
-       retObj.messages.push('Please add from');
-   }
-   if (!tripDetails.to) {
-       retObj.messages.push('Please add to');
-   }
-   if (!_.isNumber(tripDetails.tonnage)) {
-       retObj.messages.push('Please add tonnage');
-   }
-   if (!_.isNumber(tripDetails.rate)) {
-       retObj.messages.push('Please add rate');
-   }
-   if (!tripDetails.paymentType) {
-       retObj.messages.push('Please add paymentType');
-   }
-   if (!tripDetails.remarks) {
-       retObj.messages.push('Please add remarks');
-   }*/
     if (retObj.messages.length) {
         callback(retObj);
     } else {
@@ -566,6 +524,11 @@ Trips.prototype.findTotalRevenue = function(jwt, callback) {
         });
 }
 
+/**
+ * Find revenue by party
+ * @param jwt
+ * @param callback
+ */
 Trips.prototype.findRevenueByParty =  function(jwt, callback) {
     TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
         { $group: { _id : "$partyId" , totalFreight : { $sum: "$freightAmount" }} },
@@ -599,11 +562,14 @@ Trips.prototype.findTripsByParty =  function(jwt, partyId, callback) {
             if(error) {
                 retObj.status = false;
                 retObj.messages.push(JSON.stringify(error));
+                callback(retObj)
             } else {
-                retObj.status = true;
-                retObj.trips= trips;
+                Utils.populateNameInTrucksColl(trips,"registrationNo",function(tripDocuments){
+                    retObj.status = true;
+                    retObj.trips= tripDocuments;
+                    callback(retObj)
+                });
             }
-            callback(retObj)
         });
 }
 

@@ -2,11 +2,12 @@
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
-
+var async = require('async');
 var PartyCollection = require('./../models/schemas').PartyCollection;
 var config = require('./../config/config');
 var Utils = require('./utils');
-
+var Trips = require('./tripsApi');
+var PaymentsReceived = require('./paymentsReceivedAPI');
 var Party = function () {
 };
 
@@ -190,4 +191,33 @@ Party.prototype.countParty = function (jwt, callback) {
     })
 };
 
+Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        trips: function(tripsCallback) {
+            Trips.findTripsByParty(jwt,partyId,function (tripsResults) {
+                tripsCallback(tripsResults.error, tripsResults.trips);
+            });
+        },
+        payments: function(paymentsCallback){
+            PaymentsReceived.findPartyPayments(jwt,partyId, function(partyResults){
+                paymentsCallback(partyResults.error, partyResults.payments);
+            });
+        }
+    },function (error, tripsAndPayments) {
+        if(error){
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(error));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.tripsAndPayments = tripsAndPayments
+            callback(retObj);
+        }
+    });
+}
 module.exports = new Party();

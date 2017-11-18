@@ -9,7 +9,7 @@ var TripColl = require('./../models/schemas').TripCollection;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
-
+var Utils = require('./utils');
 
 var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
@@ -18,6 +18,11 @@ log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60})
 var PaymentsReceived = function () {
 };
 
+/**
+ * Find total of the payments received in the account
+ * @param accId
+ * @param callback
+ */
 PaymentsReceived.prototype.getTotalAmount = function (accId, callback) {
     var retObj = {
         status: false,
@@ -185,6 +190,30 @@ PaymentsReceived.prototype.getAllAccountPayments = function (jwt, callback) {
     });
 };
 
+/**
+ * Find payments made by a party
+ * @param jwt
+ * @param callback
+ */
+
+PaymentsReceived.prototype.findPartyPayments = function (jwt, partyId, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    PaymentsReceivedColl.find({accountId: jwt.accountId, partyId:partyId}, function (err, payments) {
+        if (err) {
+            retObj.messages.push('Error getting payments');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.payments = payments;
+            callback(retObj);
+        }
+    });
+};
+
 PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callback) {
     var retObj = {
         status: false,
@@ -315,8 +344,8 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
             retObj.messages.push(JSON.stringify(populateErr));
             callback(retObj);
         } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
+
+
             var partyIds = _.pluck(populateResults.tripFrightTotal,"_id");
             var parties = [];
             for(var i=0;i<partyIds.length;i++) {
@@ -333,8 +362,13 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
                 }).totalPayments;
                 parties.push(party);
             }
-            retObj.parties = parties;
-            callback(retObj);
+            Utils.populateNameInPartyColl(parties,'id', function(result){
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.parties = result.documents;
+                callback(retObj);
+            })
+
         }
     });
 };
