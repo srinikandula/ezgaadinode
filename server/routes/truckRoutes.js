@@ -9,6 +9,42 @@ AuthRouter.post('/', function (req, res) {
     });
 });
 
+AuthRouter.get('/findExpiryCount', function (req, res) {
+    Trucks.findExpiryCount(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/fitnessExpiryTrucks', function (req, res) {
+    Trucks.fitnessExpiryTrucks(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/permitExpiryTrucks', function (req, res) {
+    Trucks.permitExpiryTrucks(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/insuranceExpiryTrucks', function (req, res) {
+    Trucks.insuranceExpiryTrucks(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/pollutionExpiryTrucks', function (req, res) {
+    Trucks.pollutionExpiryTrucks(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/taxExpiryTrucks', function (req, res) {
+    Trucks.taxExpiryTrucks(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/:truckId', function (req, res) {
     Trucks.findTruck(req.jwt, req.params.truckId, function (result) {
         res.send(result);
@@ -58,6 +94,11 @@ AuthRouter.post('/assignTrucks',function(req,res){
 AuthRouter.post('/unassign-trucks',function(req,res){
     Trucks.unAssignTrucks(req.jwt,req.body,function(result){
         res.json(result);
+    });
+});
+AuthRouter.get('/total/count',function(req,res){
+    Trucks.countTrucks(req.jwt,function(result){
+        res.send(result);
     });
 });
 

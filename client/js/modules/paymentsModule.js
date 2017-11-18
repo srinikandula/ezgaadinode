@@ -268,6 +268,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                 //console.log(success.data);
                 $scope.paymentsDetails.date = new Date($scope.paymentsDetails.date);
                 $scope.paymentsDetails.amount = parseInt($scope.paymentsDetails.amount);
+                getPartyIds();
             } else {
                 Notification.error(success.data.message)
             }

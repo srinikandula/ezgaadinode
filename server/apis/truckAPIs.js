@@ -375,4 +375,178 @@ Trucks.prototype.deleteTruck = function (truckId, callback) {
     });
 };
 
+Trucks.prototype.findExpiryCount = function (jwt,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    // var todaysDate = new Date().toISOString();
+    // var dateplus30 = todaysDate.setDate(todaysDate.getDate() + 30);
+    var today = new Date();
+    var dateplus30 = new Date(today.setDate(today.getDate()+30));
+    //console.log(dateplus30);
+    async.parallel({
+        fitnessExpiryCount: function (fitnessExpiryCallback) {
+            TrucksColl.count({accountId: jwt.accountId,fitnessExpiry:{$lte:dateplus30}},function (err, expiryCount) {
+                //console.log(expiryCount);
+                fitnessExpiryCallback(err, expiryCount);
+            });
+        },permitExpiryCount: function (permitExpiryCallback) {
+            TrucksColl.count({accountId: jwt.accountId,permitExpiry:{$lte:dateplus30}},function (err, expiryCount) {
+                //console.log(expiryCount);
+                permitExpiryCallback(err, expiryCount);
+            });
+        },insuranceExpiryCount: function (insuranceExpiryCallback) {
+            TrucksColl.count({accountId: jwt.accountId,insuranceExpiry:{$lte:dateplus30}},function (err, expiryCount) {
+                //console.log(expiryCount);
+                insuranceExpiryCallback(err, expiryCount);
+            });
+        },pollutionExpiryCount: function (pollutionExpiryCallback) {
+            TrucksColl.count({accountId: jwt.accountId,pollutionExpiry:{$lte:dateplus30}},function (err, expiryCount) {
+                //console.log(expiryCount);
+                pollutionExpiryCallback(err, expiryCount);
+            });
+        },taxExpiryCount: function (taxExpiryCallback) {
+            TrucksColl.count({accountId: jwt.accountId,taxDueDate:{$lte:dateplus30}},function (err, expiryCount) {
+                //console.log(expiryCount);
+                taxExpiryCallback(err, expiryCount);
+            });
+        }
+    },function (populateErr, populateResults) {
+        //console.log(populateErr,populateResults);
+        retObj.status = true;
+        retObj.messages.push('Success');
+        retObj.expiryCount = populateResults;
+        callback(retObj);
+    });
+
+};
+
+Trucks.prototype.fitnessExpiryTrucks = function (jwt,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var today = new Date();
+    var dateplus30 = new Date(today.setDate(today.getDate()+30));
+
+    TrucksColl.find({accountId:jwt.accountId,fitnessExpiry:{$lte:dateplus30}},function (err, trucks) {
+        if (err) {
+            retObj.messages.push('Error getting trucks');
+            callback(retObj);
+        } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.trucks = trucks;
+                callback(retObj);
+        }
+    });
+};
+
+Trucks.prototype.permitExpiryTrucks = function (jwt,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var today = new Date();
+    var dateplus30 = new Date(today.setDate(today.getDate()+30));
+
+    TrucksColl.find({accountId:jwt.accountId,permitExpiry:{$lte:dateplus30}},function (err, trucks) {
+        if (err) {
+            retObj.messages.push('Error getting trucks');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.trucks = trucks;
+            callback(retObj);
+        }
+    });
+};
+
+Trucks.prototype.insuranceExpiryTrucks = function (jwt,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var today = new Date();
+    var dateplus30 = new Date(today.setDate(today.getDate()+30));
+
+    TrucksColl.find({accountId:jwt.accountId,insuranceExpiry:{$lte:dateplus30}},function (err, trucks) {
+        if (err) {
+            retObj.messages.push('Error getting trucks');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.trucks = trucks;
+            callback(retObj);
+        }
+    });
+};
+
+Trucks.prototype.pollutionExpiryTrucks = function (jwt,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var today = new Date();
+    var dateplus30 = new Date(today.setDate(today.getDate()+30));
+
+    TrucksColl.find({accountId:jwt.accountId,pollutionExpiry:{$lte:dateplus30}},function (err, trucks) {
+        if (err) {
+            retObj.messages.push('Error getting trucks');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.trucks = trucks;
+            callback(retObj);
+        }
+    });
+};
+
+Trucks.prototype.taxExpiryTrucks = function (jwt,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var today = new Date();
+    var dateplus30 = new Date(today.setDate(today.getDate()+30));
+
+    TrucksColl.find({accountId:jwt.accountId,taxDueDate:{$lte:dateplus30}},function (err, trucks) {
+        if (err) {
+            retObj.messages.push('Error getting trucks');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.trucks = trucks;
+            callback(retObj);
+        }
+    });
+};
+
+Trucks.prototype.countTrucks = function (jwt, callback) {
+    var result = {};
+    TrucksColl.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
+
 module.exports = new Trucks();

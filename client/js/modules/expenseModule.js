@@ -110,8 +110,6 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
         });
     };
 
-
-
     $scope.deleteExpenseRecord = function (id) {
         ExpenseService.deleteRecord(id, function (success) {
             if (success.data.status) {
@@ -125,7 +123,6 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
 }]);
 
 app.controller('expenseEditController', ['$scope', 'ExpenseService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
-    // console.log('-->', $stateParams, $stateParams.expenseId, !!$stateParams.expenseId);
     $scope.pagetitle = "Add Expenses";
     $scope.dateCallback = "past";
 
@@ -192,7 +189,6 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
     };
 
 
-
     if ($stateParams.expenseId) {
         $scope.pagetitle = "Edit expenses";
         ExpenseService.getExpenseRecord($stateParams.expenseId, function (success) {
@@ -235,7 +231,6 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
             if ($stateParams.expenseId) {
                 ExpenseService.updateRecord(params, function (success) {
                     if (success.data.status) {
-                        // params.success = success.data.message[0];
                         Notification.success({message: success.data.message});
                         $state.go('expenses');
                     } else {
@@ -250,7 +245,6 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
                 ExpenseService.addExpense(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        console.log('--->>>>', params.success);
                         Notification.success({message: success.data.message});
                         $state.go('expenses');
                     } else {

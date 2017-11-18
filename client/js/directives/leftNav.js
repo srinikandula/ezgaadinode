@@ -12,8 +12,9 @@ app.directive('leftNavigation', function () {
         '            <party-directive></party-directive>\n' +
         '            <expense-master-directive></expense-master-directive>\n' +
         '            <expenses-directive></expenses-directive>\n' +
-        '            <payments-directive></payments-directive>\n' +
-        '<pending-balance-directive></pending-balance-directive>' +
+        '            <payments-directive></payments-directive>\n'+
+        '            <pending-balance-directive></pending-balance-directive>\n' +
+        '            <expiry-directive></expiry-directive>\n' +
         '        </ul>\n' +
         '    </div>'
     };
@@ -116,6 +117,15 @@ app.directive('pendingBalanceDirective', function () {
         '             <a class="left-nav-anchor" ui-sref="pendingBalance">Pending Balance</a>\n' +
         '          </li>'
     };
+});
+
+app.directive('expiryDirective',function () {
+    return{
+        restrict: 'E',
+        template: '<li ng-class="{selected: activeTab === \'expiry\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="expiry">Expiry</a>\n' +
+        '          </li>'
+    } ;
 });
 
 
