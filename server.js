@@ -18,7 +18,7 @@ var Roles = require('./server/routes/roleRoutes');
 var TripLanes = require('./server/routes/tripLanesRoutes');
 var Events = require('./server/routes/eventsRoutes');
 var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
-var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
+var PaymentsReceived = require('./server/routes/incomeRoutes');
 var Groups = require('./server/routes/groupRoutes');
 
 var authMiddleware = require('./server/middleware/auth');

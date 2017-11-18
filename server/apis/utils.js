@@ -16,8 +16,6 @@ var DriversCollection = require('./../models/schemas').DriversColl;
 var TripsColl = require('./../models/schemas').TripCollection;
 var ExpenseMasterColl = require('./../models/schemas').expenseMasterColl;
 
-var Payments = require('./../apis/paymentApi');
-
 
 var Utils = function () {
 };
@@ -296,38 +294,6 @@ Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, 
         }
     });
 };
-
-Utils.prototype.getPaymentsforTrips = function (accountId, documents, callback) {
-    var result = {};
-    var ids = _.pluck(documents, '_id');
-    async.map(ids, function (id, asyncCallback) {
-        Payments.getPaymentsOfTrip(accountId, id, function (tripPayments) {
-            if (tripPayments.status) {
-                var trip = _.find(documents, function (document) {
-                    return document._id.toString() === id.toString();
-                });
-                if (trip) {
-                    trip['paymentHistory'] = tripPayments.payments;
-                }
-            }
-            asyncCallback(tripPayments.err, tripPayments.payments);
-        });
-    }, function (err, trips) {
-        if (!trips.status) {
-            result.status = false;
-            result.message = 'Error retrieving trip payments';
-            result.err = err;
-            callback(result);
-        } else {
-            console.log('trips', trips);
-            result.status = true;
-            result.message = 'Success';
-            result.documents = documents;
-            result.err = err;
-            callback(result);
-        }
-    });
-}
 
 
 /**

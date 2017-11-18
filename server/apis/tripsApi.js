@@ -7,7 +7,6 @@ var async = require('async');
 const ObjectId = mongoose.Types.ObjectId;
 
 var TripCollection = require('./../models/schemas').TripCollection;
-var paymentsApi = require('./../apis/paymentApi');
 var config = require('./../config/config');
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -142,18 +141,10 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
                     })
                 }
             }, function (populateErr, populateResults) {
-                paymentsApi.getPaymentsOfTrip(jwt.accountId, tripId, function (payments) {
-                    if (!payments.status) {
-                        retObj.messages.push("Error while finding trip payments, try Again");
-                        callback(retObj);
-                    } else {
-                        trip['paymentHistory'] = payments.payments;
-                        retObj.status = true;
-                        retObj.messages.push("Trip found successfully");
-                        retObj.trip = trip;
-                        callback(retObj);
-                    }
-                });
+                retObj.status = true;
+                retObj.messages.push("Trip found successfully");
+                retObj.trip = trip;
+                callback(retObj);
             });
         } else {
             retObj.messages.push("Trip is not found!");
