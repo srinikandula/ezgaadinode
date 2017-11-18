@@ -38,6 +38,24 @@ AuthRouter.post('/report', function (req, res) {
         res.send(result);
     });
 });
+
+AuthRouter.get('/find/totalRevenue', function (req, res) {
+    Trips.findTotalRevenue(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.get('/find/revenueByParty', function (req, res) {
+    Trips.findRevenueByParty(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/find/tripsByParty/:partyId', function (req, res) {
+    Trips.findTripsByParty(req.jwt,req.params.partyId, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.put('/sendEmail', function (req, res) {
     Trips.sendEmail(req.jwt, req.body, function (result) {
         res.send(result);

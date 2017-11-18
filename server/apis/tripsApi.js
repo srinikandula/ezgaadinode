@@ -4,6 +4,8 @@ var _ = require('underscore');
 var async = require('async');
 
 
+const ObjectId = mongoose.Types.ObjectId;
+
 var TripCollection = require('./../models/schemas').TripCollection;
 var paymentsApi = require('./../apis/paymentApi');
 var config = require('./../config/config');
@@ -536,5 +538,65 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
         }
     });
 };
+
+/**
+ * Find the Total fright from the trips in the account
+ */
+
+Trips.prototype.findTotalRevenue = function(jwt, callback) {
+    TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+        { $group: { _id : null , totalFright : { $sum: "$freightAmount" }} },
+        function (error, result) {
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+            } else {
+                retObj.status = true;
+                retObj.totalRevenue= result[0].totalFright;
+            }
+            callback(retObj)
+        });
+}
+
+Trips.prototype.findRevenueByParty =  function(jwt, callback) {
+    TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+        { $group: { _id : "$partyId" , totalFright : { $sum: "$freightAmount" }} },
+        function (error, revenue) {
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+            } else {
+                retObj.status = true;
+                retObj.revenue= revenue;
+            }
+            callback(retObj)
+        });
+}
+
+Trips.prototype.findTripsByParty =  function(jwt, partyId, callback) {
+    TripCollection.find({"accountId":jwt.accountId, "partyId":partyId},
+        function (error, trips) {
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+            } else {
+                retObj.status = true;
+                retObj.trips= trips;
+            }
+            callback(retObj)
+        });
+}
 
 module.exports = new Trips();
