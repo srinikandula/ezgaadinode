@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var PaymentsReceived = require('../apis/incomeAPI');
+var PaymentsReceived = require('../apis/paymentsReceivedAPI');
 
 AuthRouter.post('/addPayments', function (req, res) {
     PaymentsReceived.addPayments(req.jwt, req.body, function (result) {
@@ -59,7 +59,7 @@ AuthRouter.get('/getPartyTotal',function(req,res){
     })
 });
 
-AuthRouter.get('/getAccountDues',function(req,res){
+AuthRouter.get('/getAccountDue',function(req,res){
     PaymentsReceived.findPendingDueForAccount(req.jwt,function(result){
         res.send(result);
     })
@@ -70,6 +70,9 @@ AuthRouter.get('/getDuesByParty',function(req,res){
         res.send(result);
     })
 });
+
+
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

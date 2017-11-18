@@ -168,7 +168,6 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
             result.status = true;
             result.message = 'Success';
             result.documents = documents;
-            result.err = err;
             callback(result);
         }
     });
