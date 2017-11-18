@@ -87,7 +87,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trips;
                 $scope.currentPageOfTrips = $scope.trips;
-                console.log('asdasd...>>>>', $scope.currentPageOfTrips);
+                console.log('asdasd...>>>>', $scope.trips);
 
             }
         });
@@ -110,33 +110,10 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     };
 
 
-
-    /*  // pagination options
-      $scope.totalItems = 200;
-      $scope.maxSize = 5;
-      $scope.pageNumber = 1;
-
-      $scope.getTripsData = function () {
-          TripServices.getTrips($scope.pageNumber, function (success) {
-              if (success.data.status) {
-                  $scope.tripGridOptions.data = success.data.trips;
-                  $scope.totalItems = success.data.count;
-              } else {
-                  success.data.messages.forEach(function (message) {
-                      Notification.error({message: message});
-                  });
-              }
-          }, function (err) {
-
-          });
-      };
-
-      $scope.getTripsData();
-
       $scope.deleteTrip = function (tripId) {
           TripServices.deleteTrip(tripId, function (success) {
               if (success) {
-                  $scope.getTripsData();
+                  $scope.getCount();
                   Notification.success({message: "Trip deleted successfully"});
               } else {
                   success.data.messages.forEach(function (message) {
@@ -147,16 +124,6 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
       };
 
 
-              '<a href="#" ng-click="grid.appScope.goToEditTripPage(row.entity._id)" class="glyphicon glyphicon-edit edit" "></a>' +
-              '<a ng-click="grid.appScope.deleteTrip(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
-              '</div>'
-          }],
-          rowHeight: 30,
-          data: [],
-          onRegisterApi: function (gridApi) {
-              $scope.gridApi = gridApi;
-          }
-      };*/
 
 }]);
 

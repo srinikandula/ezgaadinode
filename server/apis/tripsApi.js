@@ -318,6 +318,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                     retObj.messages.push('Success');
                     retObj.count = results.count;
                     retObj.trips = results.trips.createdbyname; //as trips is callby reference
+                    console.log('dfsafd>>>==', results.trips);
                     callback(retObj);
                 }
             });
