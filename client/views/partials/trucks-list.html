@@ -52,14 +52,10 @@
                     </td>
                 </tr>
                 <tr ng-if="!currentPageOfTrucks || currentPageOfTrucks.length === 0">
-                    <td colspan="8">No Expense Records exist.</td>
+                    <td colspan="8">No trucks Records exist.</td>
                 </tr>
             </table>
 
-
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize"
-                class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getTrucksData()" ng-show="totalItems > 10"></ul>
         </div>
     </div>
 </div>

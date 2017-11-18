@@ -56,6 +56,11 @@ AuthRouter.delete('/:driverId', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/total/count',function(req,res){
+    Drivers.countDrivers(req.jwt,function(result){
+        res.send(result);
+    });
+});
 module.exports = {
     AuthRouter: AuthRouter,
     OpenRouter: OpenRouter

@@ -45,89 +45,118 @@ app.factory('TripServices', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+        count: function (success, error) {
+            $http({
+                url: '/v1/trips/total/count',
+                method: "GET"
+            }).then(success, error)
+        }
 
     }
 });
 
-app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', function ($scope, $uibModal, TripServices, $state, Notification) {
+app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService','NgTableParams', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams) {
     $scope.goToEditTripPage = function (tripId) {
         $state.go('tripsEdit', {tripId: tripId});
     };
 
-    // pagination options
-    $scope.totalItems = 200;
-    $scope.maxSize = 5;
-    $scope.pageNumber = 1;
-
-    $scope.getTripsData = function () {
-        TripServices.getTrips($scope.pageNumber, function (success) {
+    $scope.count = 0;
+    $scope.getCount = function () {
+        TripServices.count(function (success) {
             if (success.data.status) {
-                $scope.tripGridOptions.data = success.data.trips;
-                $scope.totalItems = success.data.count;
+                $scope.count = success.data.count;
+                console.log('Count ------>>>>', $scope.count);
+                $scope.init();
             } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
+                Notification.error({message: success.data.message});
             }
-        }, function (err) {
+        });
+    };
+    $scope.getCount();
 
+    var loadTableData = function (tableParams) {
+
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        $scope.loading = true;
+        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+        TripServices.getTrips(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (angular.isArray(response.data.trips)) {
+                $scope.loading = false;
+                $scope.trips = response.data.trips;
+                tableParams.total(response.totalElements);
+                tableParams.data = $scope.trips;
+                $scope.currentPageOfTrips = $scope.trips;
+                console.log('asdasd...>>>>', $scope.currentPageOfTrips);
+
+            }
         });
     };
 
-    $scope.getTripsData();
-
-    $scope.deleteTrip = function (tripId) {
-        TripServices.deleteTrip(tripId, function (success) {
-            if (success) {
-                $scope.getTripsData();
-                Notification.success({message: "Trip deleted successfully"});
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
+    $scope.init = function () {
+        $scope.tripParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                name: -1
             }
-        })
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
     };
 
-    $scope.tripGridOptions = {
-        enableSorting: true,
-        paginationPageSizes: [9, 20, 50],
-        paginationPageSize: 9,
-        columnDefs: [{
-            name: 'Date',
-            field: 'date',
-            cellFilter: 'date:"dd-MM-yyyy"'
-        }, {
-            name: 'Registration No',
-            field: 'attrs.truckName'
-        }, {
-            name: 'Driver',
-            field: 'attrs.fullName'
-        }, {
-            name: 'Party',
-            field: 'attrs.partyName'
-        }, {
-            name: 'FreightAmount',
-            field: 'freightAmount'
-        }, {
-            name: 'Trip Lane',
-            field: 'attrs.tripLaneName'
-        }, {
-            name: 'Created By',
-            field: 'attrs.createdByName'
-        }, {
-            name: 'Action',
-            cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditTripPage(row.entity._id)" class="glyphicon glyphicon-edit edit" "></a>' +
-            '<a ng-click="grid.appScope.deleteTrip(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
-            '</div>'
-        }],
-        rowHeight: 30,
-        data: [],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-        }
-    };
+
+
+    /*  // pagination options
+      $scope.totalItems = 200;
+      $scope.maxSize = 5;
+      $scope.pageNumber = 1;
+
+      $scope.getTripsData = function () {
+          TripServices.getTrips($scope.pageNumber, function (success) {
+              if (success.data.status) {
+                  $scope.tripGridOptions.data = success.data.trips;
+                  $scope.totalItems = success.data.count;
+              } else {
+                  success.data.messages.forEach(function (message) {
+                      Notification.error({message: message});
+                  });
+              }
+          }, function (err) {
+
+          });
+      };
+
+      $scope.getTripsData();
+
+      $scope.deleteTrip = function (tripId) {
+          TripServices.deleteTrip(tripId, function (success) {
+              if (success) {
+                  $scope.getTripsData();
+                  Notification.success({message: "Trip deleted successfully"});
+              } else {
+                  success.data.messages.forEach(function (message) {
+                      Notification.error(message);
+                  });
+              }
+          })
+      };
+
+
+              '<a href="#" ng-click="grid.appScope.goToEditTripPage(row.entity._id)" class="glyphicon glyphicon-edit edit" "></a>' +
+              '<a ng-click="grid.appScope.deleteTrip(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
+              '</div>'
+          }],
+          rowHeight: 30,
+          data: [],
+          onRegisterApi: function (gridApi) {
+              $scope.gridApi = gridApi;
+          }
+      };*/
 
 }]);
 
