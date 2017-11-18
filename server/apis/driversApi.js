@@ -23,7 +23,7 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     }
 
     if (!driverInfo.truckId || !Utils.isValidObjectId(driverInfo.truckId)) {
-        console.log('----->',driverInfo.truckId);
+        console.log('----->', driverInfo.truckId);
         retObj.messages.push('Invalid truckId');
     }
 
@@ -42,10 +42,10 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        if(jwt.type === "account"){
+        if (jwt.type === "account") {
             driverInfo.createdBy = jwt.id;
             driverInfo.accountId = jwt.accountId;
-        }else {
+        } else {
             driverInfo.createdBy = jwt.id;
             driverInfo.groupId = jwt.id;
             driverInfo.accountId = jwt.accountId;
@@ -115,7 +115,7 @@ Drivers.prototype.getDriverByPageNumber = function (jwt, pageNum, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        if(jwt.type = "account"){
+        if (jwt.type = "account") {
             var skipNumber = (pageNum - 1) * pageLimits.driverPaginationLimit;
             async.parallel({
                 drivers: function (driversCallback) {
@@ -160,7 +160,7 @@ Drivers.prototype.getDriverByPageNumber = function (jwt, pageNum, callback) {
             async.parallel({
                 drivers: function (driversCallback) {
                     DriversColl
-                        .find({"accountId": jwt.accountId,"groupId": jwt.id})
+                        .find({"accountId": jwt.accountId, "groupId": jwt.id})
                         .sort({createdAt: 1})
                         .skip(skipNumber)
                         .limit(pageLimits.driverPaginationLimit)
@@ -290,26 +290,7 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
         });
     }
 };
-/*
-Drivers.prototype.getAllDrivers = function (callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
 
-    DriversColl.find({}, function (err, drivers) {
-        if (err) {
-            retObj.messages.push('Error getting trucks');
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.drivers = drivers;
-            callback(retObj);
-        }
-    });
-};
-*/
 
 Drivers.prototype.getAccountDrivers = function (accountId, callback) {
     var retObj = {
