@@ -332,10 +332,11 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
             result.message = 'Error getting count';
             callback(result);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.expenses = expenses;
-            callback(result);
+            Utils.populateNameInExpenseColl(expenses, 'expenseType', function(results){
+                result.status = true;
+                result.expenses = results.documents;
+                callback(result);
+            });
         }
     })
 };
