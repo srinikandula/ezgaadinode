@@ -5,6 +5,10 @@ var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
+var Trips = require('./tripsApi');
+var Expenses = require('./expensesApi');
+var PaymentsReceived = require('./paymentsReceivedAPI');
+var Trucks = require('./truckAPIs');
 
 var Accounts = function () {
 };
@@ -205,5 +209,44 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
         });
     }
 };
+
+Accounts.prototype.erpDashBoardContent = function(jwt, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        expensesTotal: function(expensesTotalCallback) {
+            Expenses.findTotalExpenses(jwt,function (response) {
+                expensesTotalCallback(response.error, response.totalExpenses);
+            });
+        },
+        totalRevenue:function(totalRevenueCallback) {
+            Trips.findTotalRevenue(jwt,function (response) {
+                totalRevenueCallback(response.error, response.totalRevenue);
+            });
+        },
+        pendingDue:function(pendingDueCallback) {
+            PaymentsReceived.findPendingDueForAccount(jwt,function (response) {
+                pendingDueCallback(response.error, response.pendingDue);
+            });
+        },
+        expiring:function(expiringCallback) {
+            Trucks.findExpiryCount(jwt,function (response) {
+                expiringCallback(response.error, response.expiryCount);
+            });
+        },
+    },function (error, dashboardContent) {
+        if(error){
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(error));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.result = dashboardContent;
+            callback(retObj);
+        }
+    });
+}
 
 module.exports = new Accounts();

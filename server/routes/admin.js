@@ -33,6 +33,12 @@ AuthRouter.post('/accounts/update', function (req, res) {
     });
 });
 
+AuthRouter.get('/erpDashboard', function (req, res) {
+    Accounts.erpDashBoardContent(req.jwt, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
