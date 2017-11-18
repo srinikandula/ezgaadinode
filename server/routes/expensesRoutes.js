@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var ExpenseCost = require('../apis/expenseCostApi');
+var ExpenseCost = require('../apis/expensesApi');
 
 AuthRouter.post('/addExpense', function (req, res) {
     ExpenseCost.addExpense(req.jwt, req.body, function (result) {
@@ -54,6 +54,24 @@ AuthRouter.delete('/:expenseId', function (req, res) {
 });
 AuthRouter.get('/total/count', function (req, res) {
     ExpenseCost.countExpense(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/total', function (req, res) {
+    ExpenseCost.findTotalExpenses(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/groupByVehicle', function (req, res) {
+    ExpenseCost.findExpensesByVehicles(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/vehicleExpense/:vehicleId', function (req, res) {
+    ExpenseCost.findExpensesForVehicle(req.jwt,req.params.vehicleId, function (result) {
         res.send(result);
     });
 });

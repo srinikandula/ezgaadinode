@@ -229,9 +229,7 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
                 }
             }
             result.status = true;
-            result.message = 'Error retrieving names';
             result.documents = documents;
-            result.err = err;
             callback(result);
         }
     });
