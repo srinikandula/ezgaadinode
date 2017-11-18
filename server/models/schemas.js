@@ -163,17 +163,6 @@ var rolesSchema = new mongoose.Schema({
     attrs: {}
 },{timestamps: true});
 
-var payments = new mongoose.Schema({
-    tripId: String,
-    accountId: String,
-    paymentDate: Date,
-    amount: Number,
-    paymentType: String,
-    updatedBy: String,
-    createdBy: String,
-    attrs: {}
-},{timestamps: true});
-
 var expenseMaster = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     expenseName: String,
@@ -203,7 +192,6 @@ module.exports = {
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
-    PaymentsColl: mongoose.model('payments', payments, 'payments'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
     paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
     GroupsColl: mongoose.model('groups', groupSchema, 'groups')
