@@ -225,6 +225,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open',
             paymentsId: null
         }
+    }).state({
+        name:'pendingBalance',
+        url:'/pending-balance',
+        templateUrl:'/views/partials/pendingBalance.html',
+        data:{activeTab:'pendingBalance'}
     });
     $urlRouterProvider.otherwise('/login');
 });

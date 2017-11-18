@@ -1,10 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+<top-navigation></top-navigation>
+<div class="container-fluid" ng-controller="PendingBalanceCtrl" ng-init="getPendingBalance();">
+    <div class="row pall-zero">
+        <div class="col-xs-2 pall-zero">
+            <left-navigation></left-navigation>
+        </div>
+        <div class="main-right col-xs-9">
+            <div>
+                <a href="#" ng-click="getPartyDetailsPendingBalance();"><span>Total Pending Balance</span>{{totalFreightAmount-totalAmount}}</a>
+            </div>
+            <div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>
+                                Party Name
+                            </th>
+                            <th>
+                                Pending Balance
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+
+
+
+

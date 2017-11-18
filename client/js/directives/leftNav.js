@@ -13,6 +13,7 @@ app.directive('leftNavigation', function () {
         '            <expense-master-directive></expense-master-directive>\n' +
         '            <expenses-directive></expenses-directive>\n' +
         '            <payments-directive></payments-directive>\n' +
+        '<pending-balance-directive></pending-balance-directive>' +
         '        </ul>\n' +
         '    </div>'
     };
@@ -80,15 +81,13 @@ app.directive('partyDirective', function () {
 });
 
 
-
-
-app.directive('expenseMasterDirective',function () {
-    return{
+app.directive('expenseMasterDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'expenseMaster\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="expenseMaster">Expense Master</a>\n' +
         '          </li>'
-    } ;
+    };
 });
 
 
@@ -101,13 +100,22 @@ app.directive('expensesDirective', function () {
     };
 });
 
-app.directive('paymentsDirective',function () {
-    return{
+app.directive('paymentsDirective', function () {
+    return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'paymentsReceived\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="paymentsReceived">Payments Received</a>\n' +
         '          </li>'
-    } ;
+    };
+});
+
+app.directive('pendingBalanceDirective', function () {
+    return {
+        restrict: 'E',
+        template: '<li ng-class="{selected: activeTab === \'pendingBalance\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="pendingBalance">Pending Balance</a>\n' +
+        '          </li>'
+    };
 });
 
 
