@@ -46,6 +46,29 @@ AuthRouter.get('/getPayments', function (req, res) {
     });
 });
 
+AuthRouter.get('/getTotalAmount',function(req,res){
+   PaymentsReceived.getTotalAmount(req.jwt.accountId,function(result){
+       res.send(result);
+   })
+});
+
+AuthRouter.get('/getPartyTotal',function(req,res){
+    PaymentsReceived.getPartyTotal(req.jwt.accountId,function(result){
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getAccountDues',function(req,res){
+    PaymentsReceived.findPendingDueForAccount(req.jwt,function(result){
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getDuesByParty',function(req,res){
+    PaymentsReceived.getDuesByParty(req.jwt,function(result){
+        res.send(result);
+    })
+});
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

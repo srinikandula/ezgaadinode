@@ -2,14 +2,48 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
-
+const ObjectId = mongoose.Types.ObjectId;
 var PaymentsReceivedColl = require('./../models/schemas').paymentsReceivedColl;
+var TripColl = require('./../models/schemas').TripCollection;
 
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
 
+
+var log4js = require('log4js')
+    , logger = log4js.getLogger("file-log");
+log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60});
+
 var PaymentsReceived = function () {
+};
+
+PaymentsReceived.prototype.getTotalAmount = function (accId, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    PaymentsReceivedColl.aggregate([
+        {
+            "$match": {accountId: ObjectId(accId)}
+        },
+        {
+            "$group": {
+                "_id": null,
+                "total": {"$sum": "$amount"}
+            }
+        }
+    ], function (err, sum) {
+        if (err) {
+            retObj.messages.push("Error while getting amount details, try Again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.amounts = sum;
+            callback(retObj);
+        }
+    });
 };
 
 PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
@@ -59,8 +93,8 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
 
     async.parallel({
         mCosts: function (mCostsCallback) {
-            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) :{};
+            var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) : {};
             PaymentsReceivedColl
                 .find({'accountId': jwt.accountId})
                 .sort({createdAt: 1})
@@ -71,7 +105,7 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
                 .lean()
                 .exec(function (err, mCosts) {
                     //console.log(mCosts);
-                    if(mCosts) {
+                    if (mCosts) {
                         async.parallel({
                             createdbyname: function (createdbyCallback) {
                                 Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
@@ -90,7 +124,7 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
                 });
         },
         count: function (countCallback) {
-            PaymentsReceivedColl.count({'accountId': jwt.accountId},function (err, count) {
+            PaymentsReceivedColl.count({'accountId': jwt.accountId}, function (err, count) {
                 console.log(count);
                 countCallback(err, count);
             });
@@ -157,7 +191,10 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
     };
     // paymentDetails = Utils.removeEmptyFields(paymentDetails);
     paymentDetails.updatedBy = jwt.id;
-    PaymentsReceivedColl.findOneAndUpdate({accountId: jwt.accountId,_id: paymentDetails._id}, {$set: paymentDetails}, {new: true}, function (err, payment) {
+    PaymentsReceivedColl.findOneAndUpdate({
+        accountId: jwt.accountId,
+        _id: paymentDetails._id
+    }, {$set: paymentDetails}, {new: true}, function (err, payment) {
         if (err) {
             retObj.messages.push("Error while updating payment, try Again");
             callback(retObj);
@@ -192,7 +229,7 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
 
 PaymentsReceived.prototype.countPayments = function (jwt, callback) {
     var result = {};
-    PaymentsReceivedColl.count({'accountId':jwt.accountId},function (err, data) {
+    PaymentsReceivedColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -205,5 +242,103 @@ PaymentsReceived.prototype.countPayments = function (jwt, callback) {
         }
     })
 };
+
+
+/**
+ * Find the total of pending payments in the account using the below formula
+ * sum(total_trips_frieght) - sum(payment amount)
+ */
+PaymentsReceived.prototype.findPendingDueForAccount = function(jwt, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        tripFrightTotal: function (callback) {
+            //TODO add match
+            //it is not working now
+            TripColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id : null , totalFright : { $sum: "$freightAmount" }} },
+                function (err, totalFrieght) {
+                    callback(err, totalFrieght);
+                });
+        },
+        paymentsTotal: function (callback) {
+            PaymentsReceivedColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id :null , totalPayments : { $sum: "$amount" } } },
+                function (err, totalPayments) {
+                    callback(err, totalPayments);
+                });
+        }
+    },function (populateErr, populateResults) {
+        if(populateErr){
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(populateErr));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.pendingDue = populateResults.tripFrightTotal[0].totalFright - populateResults.paymentsTotal[0].totalPayments;
+            callback(retObj);
+        }
+    });
+}
+/**
+ * Find the dues grouped by party
+ * @param jwt
+ * @param callback
+ */
+PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        tripFrightTotal: function (callback) {
+            //TODO add match
+            //it is not working now
+            TripColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id : "$partyId" , totalFright : { $sum: "$freightAmount" }} },
+                function (err, totalFrieght) {
+                    callback(err, totalFrieght);
+                });
+        },
+        paymentsTotal: function (callback) {
+            PaymentsReceivedColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id :"$partyId" , totalPayments : { $sum: "$amount" } } },
+                function (err, totalPayments) {
+                    callback(err, totalPayments);
+                });
+        }
+    },function (populateErr, populateResults) {
+        if(populateErr){
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(populateErr));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            var partyIds = _.pluck(populateResults.tripFrightTotal,"_id");
+            var parties = [];
+            for(var i=0;i<partyIds.length;i++) {
+                var party = {"id":partyIds[i]};
+                party.totalFright = _.find(populateResults.tripFrightTotal, function (total) {
+                    if(total._id === party.id) {
+                        return total;
+                    }
+                }).totalFright;
+                party.totalPayment= _.find(populateResults.paymentsTotal, function (payment) {
+                    if(payment._id.toString() === party.id.toString()){
+                        return payment;
+                    }
+                }).totalPayments;
+                parties.push(party);
+            }
+            retObj.parties = parties;
+            callback(retObj);
+        }
+    });
+};
+
 
 module.exports = new PaymentsReceived();
