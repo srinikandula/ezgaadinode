@@ -566,7 +566,7 @@ Trips.prototype.findTripsByParty =  function(jwt, partyId, callback) {
             } else {
                 Utils.populateNameInTrucksColl(trips,"registrationNo",function(tripDocuments){
                     retObj.status = true;
-                    retObj.trips= tripDocuments;
+                    retObj.trips= tripDocuments.documents;
                     callback(retObj)
                 });
             }
