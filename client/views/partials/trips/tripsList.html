@@ -7,14 +7,43 @@
         <div class="main-right col-xs-9" ng-controller="ShowTripsCtrl">
 
             <h3>Trips</h3>
-            <button class="btn  btn-blue pull-right" ng-click="goToEditTripPage()">Add Trips</button>
+            <button class="btn btn-blue pull-right mb-10" ng-click="goToEditTripPage()">Add Trips</button>
 
-            <div class="margin-top-40">
-                <div class="grid" ui-grid="tripGridOptions"></div>
-            </div>
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="tripParams">
+                <tr ng-repeat="trips in currentPageOfTrips" style="text-align: center;">
+                    <td data-title="'Trip Date'" sortable="'driverId'" class="clickable-item col-sm-1">
+                        {{trips.date | date:'yyyy-MM-dd'}}
+                    </td>
+                    <td data-title="'Reg No'" sortable="'fullName'" class="clickable-item col-sm-1">{{
+                        trips.attrs.truckName}}
+                    </td>
+                    <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-1">{{
+                        trips.attrs.partyName }}
+                    </td>
+                    <td data-title="'Freight Amount'" sortable="'freightAmount'" class="clickable-item col-sm-2">{{
+                        trips.freightAmount }}
+                    </td>
+                    <td data-title="'Trip Lane'" sortable="'tripLaneName'" class="clickable-item col-sm-2">{{
+                        trips.tripLane }}
+                    </td>
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getTripsData()" ng-show="totalItems > 10"></ul>
+                    <td data-title="'Created By'" sortable="'createdByName'"
+                        class="clickable-item col-sm-1">{{ trips.attrs.createdByName }}
+                    </td>
+                    <td data-title="'Action'" class="col-sm-2">
+                        <a href="#" class="btn" ng-click="goToEditTripPage(trips._id)">
+                            <span class="glyphicon glyphicon-pencil"></span></a>
+
+                        <a href="#" class="btn" ng-click="deleteTrip(trips._id)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
+                </tr>
+                <tr ng-if="!currentPageOfTrips || currentPageOfTrips.length === 0">
+                    <td colspan="8">No trips Records exist.</td>
+                </tr>
+            </table>
+
         </div>
     </div>
 </div>

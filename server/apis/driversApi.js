@@ -108,8 +108,6 @@ Drivers.prototype.getDriverByPageNumber = function (jwt, pageNum, callback) {
 
     if (!pageNum) {
         pageNum = 1;
-    } else if (isNaN(Number(pageNum))) {
-        retObj.messages.push('Invalid page number');
     }
 
     if (retObj.messages.length) {
@@ -335,6 +333,22 @@ Drivers.prototype.deleteDriver = function (driverId, callback) {
         });
     }
 
+};
+Drivers.prototype.countDrivers = function (jwt, callback) {
+    var result = {};
+    DriversColl.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+            console.log('sadfsadfasfasf--->');
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
 };
 
 module.exports = new Drivers();

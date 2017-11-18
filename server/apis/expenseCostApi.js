@@ -52,11 +52,11 @@ ExpenseCost.prototype.addExpense = function (jwt, expenseDetails, callback) {
 };
 
 ExpenseCost.prototype.getExpenseCosts = function (params, jwt, callback) {
-    console.log('params==>',params, jwt);
     var result = {};
     if (!params.page) {
         params.page = 1;
-    } else if (!_.isNumber(Number(params.page))) {
+    }
+    else if (!_.isNumber(Number(params.page))) {
         result.status = false;
         result.message = 'Invalid page number';
         return callback(result);

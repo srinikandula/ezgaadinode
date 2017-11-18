@@ -103,7 +103,7 @@ app.factory('TrucksService', function ($http, $cookies) {
         },
         count: function (success, error) {
             $http({
-                url: '/v1/expense/total/count',
+                url: '/v1/trucks/total/count',
                 method: "GET"
             }).then(success, error)
         }
@@ -143,15 +143,14 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trucks;
                 $scope.currentPageOfTrucks = $scope.trucks;
-            }
 
+            }
         });
     };
-
     $scope.init = function () {
         $scope.truckParams = new NgTableParams({
             page: 1, // show first page
-            size: 4,
+            size: 10,
             sorting: {
                 name: -1
             }

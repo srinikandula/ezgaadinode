@@ -9,14 +9,49 @@
             <h3>Drivers</h3>
 
             <div>
-                <button class="btn  btn-blue pull-right" ng-click="goToEditDriverPage()">Add Driver</button>
+                <button class="btn btn-blue pull-right mb-10" ng-click="goToEditDriverPage()">Add Driver</button>
             </div>
 
-            <div class="margin-top-40">
-                <div class="grid" ui-grid="driverGridOptions"></div>
-            </div>
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getDriversData()" ng-show="totalItems > 10"></ul>
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="driverParams">
+                <tr ng-repeat="drivers in currentPageOfDrivers" style="text-align: center;">
+                    <td data-title="'Driver ID'" sortable="'driverId'" class="clickable-item col-sm-1">
+                        {{drivers.driverId}}
+                    </td>
+                    <td data-title="'Name'" sortable="'fullName'" class="clickable-item col-sm-1">{{
+                        drivers.fullName}}
+                    </td>
+                    <td data-title="'Mobile'" sortable="'mobile'" class="clickable-item col-sm-1">{{
+                        drivers.mobile }}
+                    </td>
+                    <td data-title="'Truck Reg No'" sortable="'truckId'" class="clickable-item col-sm-1">{{
+                        drivers.truckId.registrationNo }}
+                    </td>
+                    <td data-title="'Salary'" sortable="'salary'" class="clickable-item col-sm-1">{{
+                        drivers.salary }}
+                    </td>
+                    <td data-title="'License Number'" sortable="'licenseNumber'" class="clickable-item col-sm-2">{{
+                        drivers.licenseNumber }}
+                    </td>
+                    <td data-title="'License Validity'" sortable="'licenseValidity'" class="clickable-item col-sm-1">{{
+                        drivers.licenseValidity | date:'yyyy-MM-dd'
+                        }}
+                    </td>
+                                     <td data-title="'Created By'" sortable="'createdByName'"
+                        class="clickable-item col-sm-1">{{ drivers.attrs.createdByName }}
+                    </td>
+                    <td data-title="'Action'" class="col-sm-2">
+                        <a href="#" class="btn" ng-click="goToEditDriverPage(drivers._id)">
+                            <span class="glyphicon glyphicon-pencil"></span></a>
+
+                        <a href="#" class="btn" ng-click="deleteDriver(drivers._id)">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </a>
+                    </td>
+                </tr>
+                <tr ng-if="!currentPageOfDrivers || currentPageOfDrivers.length === 0">
+                    <td colspan="8">No drivers Records exist.</td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

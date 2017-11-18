@@ -37,94 +37,73 @@ app.factory('DriverService', function ($http) {
                 url: '/v1/drivers/' + driverId,
                 method: "DELETE"
             }).then(success, error)
+        },
+        count: function (success, error) {
+            $http({
+                url: '/v1/drivers/total/count',
+                method: "GET"
+            }).then(success, error)
         }
     }
 });
 
-app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification', function ($scope, $state, DriverService, Notification) {
+app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification','paginationService','NgTableParams',
+    function ($scope, $state, DriverService, Notification, paginationService, NgTableParams) {
 
     $scope.goToEditDriverPage = function (driverId) {
         $state.go('driversEdit', {driverId: driverId});
     };
 
-    $scope.deleteDriver = function (driverId) {
-        DriverService.deleteDriver(driverId, function (success) {
-            if (success) {
-                $scope.getDrivers();
-                Notification.success({message: "Driver deleted successfully"});
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
+        $scope.count = 0;
+        $scope.getCount = function () {
+            DriverService.count(function (success) {
+                if (success.data.status) {
+                    $scope.count = success.data.count;
+                    $scope.init();
+                } else {
+                    Notification.error({message: success.data.message});
+                }
+            });
+        };
+        $scope.getCount();
+
+        var loadTableData = function (tableParams) {
+
+            var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+            $scope.loading = true;
+            // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+            DriverService.getDrivers(pageable, function (response) {
+                $scope.invalidCount = 0;
+                if (angular.isArray(response.data.drivers)) {
+                    $scope.loading = false;
+                    $scope.drivers = response.data.drivers;
+                    tableParams.total(response.totalElements);
+                    tableParams.data = $scope.drivers;
+                    $scope.currentPageOfDrivers = $scope.drivers;
+                   // console.log('<<>>===', $scope.drivers);
+                }
+            });
+        };
+
+    $scope.init = function () {
+        $scope.driverParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                name: -1
             }
-        })
-    }
-
-
-    $scope.driverGridOptions = {
-        enableSorting: true,
-        columnDefs: [{
-            name: 'ID',
-            field: 'driverId'
         }, {
-            name: 'Full Name',
-            field: 'fullName'
-        },{
-            name: 'Mobile',
-            field: 'mobile'
-        }, {
-            name: 'Truck Reg No',
-            field: 'truckId.registrationNo'
-        }, {
-            name: 'License Validity',
-            field: 'licenseValidity',
-            cellFilter: 'date:"dd-MM-yyyy"'
-        }, {
-            name: 'Salary',
-            field: 'salary'
-        }, {
-            name: 'License Number',
-            field: 'licenseNumber'
-        }, {
-            name: 'Created By',
-            field: 'attrs.createdByName'
-        }, {
-            name: 'Action',
-            cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditDriverPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>'+
-            '<a ng-click="grid.appScope.deleteDriver(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
-            '</div>'
-        }],
-        rowHeight: 30,
-        data: [],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-        }
-    };
-
-    // pagination options
-    $scope.totalItems = 200;
-    $scope.maxSize = 5;
-    $scope.pageNumber = 1;
-
-    $scope.getDrivers = function () {
-        DriverService.getDrivers($scope.pageNumber, function (success) {
-            if (success.data.status) {
-                $scope.driverGridOptions.data = success.data.drivers;
-                $scope.totalItems = success.data.count;
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
             }
-        }, function (err) {
         });
     };
 
     $scope.deleteDriver = function (driverId) {
         DriverService.deleteDriver(driverId, function (success) {
             if (success) {
-                $scope.getDrivers();
                 Notification.error({message: 'Successfully deleted driver'});
             } else {
                 success.data.messages.forEach(function (message) {
@@ -134,7 +113,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         })
     };
 
-    $scope.getDrivers();
+    // $scope.getDrivers();
 }]);
 
 app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams) {

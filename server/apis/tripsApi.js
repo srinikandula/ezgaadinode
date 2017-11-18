@@ -32,7 +32,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     }
 
 
-   if (!tripDetails.partyId) {
+    if (!tripDetails.partyId) {
         retObj.messages.push("Please select a party");
     }
 
@@ -85,7 +85,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        if(jwt.type === "account"){
+        if (jwt.type === "account") {
             tripDetails.createdBy = jwt.id;
             tripDetails.accountId = jwt.accountId;
         }
@@ -94,7 +94,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
             tripDetails.groupId = jwt.id;
             tripDetails.accountId = jwt.accountId;
         }
-        tripDetails.tripId = "TR"+parseInt(Math.random()*100000);
+        tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err) {
             if (err) {
@@ -143,7 +143,7 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
                 }
             }, function (populateErr, populateResults) {
                 paymentsApi.getPaymentsOfTrip(jwt.accountId, tripId, function (payments) {
-                    if(!payments.status) {
+                    if (!payments.status) {
                         retObj.messages.push("Error while finding trip payments, try Again");
                         callback(retObj);
                     } else {
@@ -198,47 +198,47 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
         pageNumber = 1;
     }
 
-    if (!_.isNumber(Number(pageNumber))) {
+   /* if (!_.isNumber(Number(pageNumber))) {
         retObj.messages.push('Invalid page number');
-    }
+    }*/
 
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        if(jwt.type = "account"){
-        var skipNumber = (pageNumber - 1) * pageLimits.tripsPaginationLimit;
-        async.parallel({
-            trips: function (tripsCallback) {
-                TripCollection
-                    .find({'accountId':jwt.accountId})
-                    .sort({createdAt: 1})
-                    .skip(skipNumber)
-                    .limit(pageLimits.tripsPaginationLimit)
-                    .lean()
-                    .exec(function (err, trips) {
-                        async.parallel({
-                            createdbyname: function (createdbyCallback) {
-                                Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
-                                    createdbyCallback(response.err, response.documents);
-                                });
-                            },
-                            driversname: function (driversnameCallback) {
-                                Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
-                                    driversnameCallback(response.err, response.documents);
-                                });
-                            },
-                            bookedfor: function (bookedforCallback) {
-                                Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
-                                    bookedforCallback(response.err, response.documents);
-                                });
-                            },
-                            truckNo: function (truckscallback) {
-                                Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
-                                    truckscallback(response.err, response.documents);
-                                })
-                            }
-                        }, function (populateErr, populateResults) {
-                            tripsCallback(populateErr, populateResults);
+        if (jwt.type = "account") {
+            var skipNumber = (pageNumber - 1) * pageLimits.tripsPaginationLimit;
+            async.parallel({
+                trips: function (tripsCallback) {
+                    TripCollection
+                        .find({'accountId': jwt.accountId})
+                        .sort({createdAt: 1})
+                        .skip(skipNumber)
+                        .limit(pageLimits.tripsPaginationLimit)
+                        .lean()
+                        .exec(function (err, trips) {
+                            async.parallel({
+                                createdbyname: function (createdbyCallback) {
+                                    Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
+                                        createdbyCallback(response.err, response.documents);
+                                    });
+                                },
+                                driversname: function (driversnameCallback) {
+                                    Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
+                                        driversnameCallback(response.err, response.documents);
+                                    });
+                                },
+                                bookedfor: function (bookedforCallback) {
+                                    Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
+                                        bookedforCallback(response.err, response.documents);
+                                    });
+                                },
+                                truckNo: function (truckscallback) {
+                                    Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                                        truckscallback(response.err, response.documents);
+                                    })
+                                }
+                            }, function (populateErr, populateResults) {
+                                tripsCallback(populateErr, populateResults);
                             });
                         });
                 },
@@ -266,7 +266,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
             async.parallel({
                 trips: function (tripsCallback) {
                     TripCollection
-                        .find({'accountId':jwt.accountId,'groupId':jwt.id})
+                        .find({'accountId': jwt.accountId, 'groupId': jwt.id})
                         .sort({createdAt: 1})
                         .skip(skipNumber)
                         .limit(pageLimits.tripsPaginationLimit)
@@ -318,6 +318,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                     retObj.messages.push('Success');
                     retObj.count = results.count;
                     retObj.trips = results.trips.createdbyname; //as trips is callby reference
+                    console.log('dfsafd>>>==', results.trips);
                     callback(retObj);
                 }
             });
@@ -331,7 +332,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, callback) {
         messages: []
     };
     TripCollection
-        .find({'accountId':jwt.accountId})
+        .find({'accountId': jwt.accountId})
         .sort({createdAt: 1})
         .lean()
         .exec(function (err, trips) {
@@ -420,23 +421,35 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
         status: false,
         messages: []
     };
-    if(!filter.fromDate) {
+    if (!filter.fromDate) {
         retObj.messages.push("Please select from date");
     }
-    if(!filter.toDate) {
+    if (!filter.toDate) {
         retObj.messages.push("Please select to date");
     }
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        var query = {date:{$gte:filter.fromDate, $lte:filter.toDate}};
-        if(filter.registrationNo){
-            query.registrationNo=filter.registrationNo;
+        var query = {date: {$gte: filter.fromDate, $lte: filter.toDate}};
+        if (filter.registrationNo) {
+            query.registrationNo = filter.registrationNo;
         }
-        if(filter.driver){
-            query.driver=filter.driver;
+        if (filter.driver) {
+            query.driver = filter.driver;
         }
-        TripCollection.find(query,{date:1,registrationNo:1,driver:1,bookedFor:1,freightAmount:1,advance:1,balance:1,from:1,to:1,tripId:1,createdBy:1}, function (err, trips) {
+        TripCollection.find(query, {
+            date: 1,
+            registrationNo: 1,
+            driver: 1,
+            bookedFor: 1,
+            freightAmount: 1,
+            advance: 1,
+            balance: 1,
+            from: 1,
+            to: 1,
+            tripId: 1,
+            createdBy: 1
+        }, function (err, trips) {
             if (err) {
                 retObj.messages.push('Error finding trips');
                 callback(retObj);
@@ -468,21 +481,21 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
                         callback(retObj);
                     } else {
                         var tripsSimplified = [];
-                        for(var i = 0;i < trips.length;i++) {
+                        for (var i = 0; i < trips.length; i++) {
                             tripsSimplified.push({
                                 trip: {
-                                    registrationNo:trips[i].attrs.truckName,
-                                    date:trips[i].date,
-                                    bookedFor:trips[i].attrs.partyName,
-                                    from:trips[i].from,
-                                    to:trips[i].to,
-                                    driverName:trips[i].attrs.fullName,
-                                    mobile:trips[i].attrs.mobile,
-                                    tripId:trips[i].tripId,
+                                    registrationNo: trips[i].attrs.truckName,
+                                    date: trips[i].date,
+                                    bookedFor: trips[i].attrs.partyName,
+                                    from: trips[i].from,
+                                    to: trips[i].to,
+                                    driverName: trips[i].attrs.fullName,
+                                    mobile: trips[i].attrs.mobile,
+                                    tripId: trips[i].tripId,
                                     payments: {
-                                        freightAmount:trips[i].freightAmount,
-                                        advance:trips[i].advance,
-                                        balance:trips[i].balance
+                                        freightAmount: trips[i].freightAmount,
+                                        advance: trips[i].advance,
+                                        balance: trips[i].balance
                                     }
                                 }
                             });
@@ -505,26 +518,26 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
         messages: []
     };
     new Trips().getReport(jwt, data, function (dataToEmail) {
-        if(!dataToEmail.status){
+        if (!dataToEmail.status) {
             retObj.messages.push('Error retrieving trips');
             callback(retObj);
         } else {
             var dataSimplifiedForEmail = [];
-            for(var i = 0;i < dataToEmail.tripsReport.length;i++) {
+            for (var i = 0; i < dataToEmail.tripsReport.length; i++) {
                 var trip = {};
-                if(dataToEmail.tripsReport[i].trip.registrationNo) trip['Registration No'] = dataToEmail.tripsReport[i].trip.registrationNo;
-                if(dataToEmail.tripsReport[i].trip.date) trip['Date'] = dataToEmail.tripsReport[i].trip.date;
-                if(dataToEmail.tripsReport[i].trip.bookedFor) trip['Party'] = dataToEmail.tripsReport[i].trip.bookedFor;
-                if(dataToEmail.tripsReport[i].trip.from) trip['From'] = dataToEmail.tripsReport[i].trip.from;
-                if(dataToEmail.tripsReport[i].trip.to) trip['To'] = dataToEmail.tripsReport[i].trip.to;
-                if(dataToEmail.tripsReport[i].trip.driverName) trip['Driver Name'] = dataToEmail.tripsReport[i].trip.driverName;
-                if(dataToEmail.tripsReport[i].trip.mobile) trip['Mobile'] = dataToEmail.tripsReport[i].trip.mobile;
-                if(dataToEmail.tripsReport[i].trip.tripId) trip['Trip Id'] = dataToEmail.tripsReport[i].trip.tripId;
+                if (dataToEmail.tripsReport[i].trip.registrationNo) trip['Registration No'] = dataToEmail.tripsReport[i].trip.registrationNo;
+                if (dataToEmail.tripsReport[i].trip.date) trip['Date'] = dataToEmail.tripsReport[i].trip.date;
+                if (dataToEmail.tripsReport[i].trip.bookedFor) trip['Party'] = dataToEmail.tripsReport[i].trip.bookedFor;
+                if (dataToEmail.tripsReport[i].trip.from) trip['From'] = dataToEmail.tripsReport[i].trip.from;
+                if (dataToEmail.tripsReport[i].trip.to) trip['To'] = dataToEmail.tripsReport[i].trip.to;
+                if (dataToEmail.tripsReport[i].trip.driverName) trip['Driver Name'] = dataToEmail.tripsReport[i].trip.driverName;
+                if (dataToEmail.tripsReport[i].trip.mobile) trip['Mobile'] = dataToEmail.tripsReport[i].trip.mobile;
+                if (dataToEmail.tripsReport[i].trip.tripId) trip['Trip Id'] = dataToEmail.tripsReport[i].trip.tripId;
                 var payment = {};
-                if(dataToEmail.tripsReport[i].trip.payments.freightAmount) payment['Freight Amount'] = dataToEmail.tripsReport[i].trip.payments.freightAmount;
-                if(dataToEmail.tripsReport[i].trip.payments.advance) payment['Advance'] = dataToEmail.tripsReport[i].trip.payments.advance;
-                if(dataToEmail.tripsReport[i].trip.payments.balance) payment['Balance'] = dataToEmail.tripsReport[i].trip.payments.balance;
-                dataSimplifiedForEmail.push({trip:trip,payment:payment});
+                if (dataToEmail.tripsReport[i].trip.payments.freightAmount) payment['Freight Amount'] = dataToEmail.tripsReport[i].trip.payments.freightAmount;
+                if (dataToEmail.tripsReport[i].trip.payments.advance) payment['Advance'] = dataToEmail.tripsReport[i].trip.payments.advance;
+                if (dataToEmail.tripsReport[i].trip.payments.balance) payment['Balance'] = dataToEmail.tripsReport[i].trip.payments.balance;
+                dataSimplifiedForEmail.push({trip: trip, payment: payment});
             }
             var params = {
                 templateName: 'tripReport',
@@ -599,4 +612,19 @@ Trips.prototype.findTripsByParty =  function(jwt, partyId, callback) {
         });
 }
 
+Trips.prototype.countTrips = function (jwt, callback) {
+    var result = {};
+    TripCollection.count({'accountId':jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
 module.exports = new Trips();
