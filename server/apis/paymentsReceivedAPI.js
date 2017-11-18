@@ -350,16 +350,23 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
             var parties = [];
             for(var i=0;i<partyIds.length;i++) {
                 var party = {"id":partyIds[i]};
-                party.totalFright = _.find(populateResults.tripFrightTotal, function (total) {
+                var partyInfo = _.find(populateResults.tripFrightTotal, function (total) {
                     if(total._id === party.id) {
                         return total;
                     }
-                }).totalFright;
-                party.totalPayment= _.find(populateResults.paymentsTotal, function (payment) {
+                });
+                if(partyInfo){
+                    party.totalFright = partyInfo.totalFright;
+                }
+                partyInfo =  _.find(populateResults.paymentsTotal, function (payment) {
                     if(payment._id.toString() === party.id.toString()){
                         return payment;
                     }
-                }).totalPayments;
+                });
+                if(partyInfo){
+                    party.totalPayment = partyInfo.totalPayments;
+                }
+
                 parties.push(party);
             }
             Utils.populateNameInPartyColl(parties,'id', function(result){

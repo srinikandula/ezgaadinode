@@ -71,8 +71,6 @@ AuthRouter.get('/getDuesByParty',function(req,res){
     })
 });
 
-
-
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
