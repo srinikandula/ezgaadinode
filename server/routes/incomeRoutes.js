@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var PaymentsReceived = require('./../apis/paymentsReceivedApi');
+var PaymentsReceived = require('../apis/incomeAPI');
 
 AuthRouter.post('/addPayments', function (req, res) {
     PaymentsReceived.addPayments(req.jwt, req.body, function (result) {

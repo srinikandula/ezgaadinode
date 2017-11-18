@@ -310,7 +310,7 @@ Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
             } else {
                 Utils.populateNameInTrucksColl(expenses, '_id', function(results){
                     retObj.status = true;
-                    retObj.expenses = results;
+                    retObj.expenses = results.expenses;
                     callback(retObj);
                 });
 
