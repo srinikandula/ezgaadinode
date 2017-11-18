@@ -216,8 +216,8 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.results = tripsAndPayments.payments;
-            if(tripsAndPayments.trips.documents){
-                retObj.results = retObj.results.concat(tripsAndPayments.trips.documents);
+            if(tripsAndPayments.trips){
+                retObj.results = retObj.results.concat(tripsAndPayments.trips);
             }
             callback(retObj);
         }
