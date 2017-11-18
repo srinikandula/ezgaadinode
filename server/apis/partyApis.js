@@ -215,7 +215,8 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.tripsAndPayments = tripsAndPayments
+            retObj.results = tripsAndPayments.payments;
+            retObj.results = retObj.results.concat(tripsAndPayments.trips.documents);
             callback(retObj);
         }
     });
