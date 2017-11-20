@@ -50,8 +50,20 @@ AuthRouter.get('/find/revenueByParty', function (req, res) {
     });
 });
 
+AuthRouter.get('/find/revenueByVehicle', function (req, res) {
+    Trips.findRevenueByVehicle(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/find/tripsByParty/:partyId', function (req, res) {
     Trips.findTripsByParty(req.jwt,req.params.partyId, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/find/tripsByVehicle/:VehicleId', function (req, res) {
+    Trips.findTripsByVehicle(req.jwt,req.params.partyId, function (result) {
         res.send(result);
     });
 });
