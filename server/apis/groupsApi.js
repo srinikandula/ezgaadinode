@@ -202,6 +202,7 @@ Groups.prototype.getGroups = function (jwt, callback) {
 
     if (!pageNumber) {
         pageNumber = 1;
+
     } else if (!_.isNumber(Number(pageNumber))) {
         retObj.messages.push('Invalid page number');
         return callback(retObj);
@@ -249,6 +250,7 @@ Groups.prototype.getGroups = function (jwt, callback) {
             retObj.count = results.count;
             retObj.groups = results.users.createdbyname;
             callback(retObj);
+
         }
     });
 };

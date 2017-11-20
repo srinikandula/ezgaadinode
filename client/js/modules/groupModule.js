@@ -7,10 +7,11 @@ app.factory('GroupServices', function ($http) {
                 data: userData
             }).then(success, error)
         },
-        getGroups: function (success, error) {
+        getGroups: function (params, success, error) {
             $http({
                 url: '/v1/group/getGroups/',
-                method: "GET"
+                method: "GET",
+                params: params
             }).then(success, error)
         },
         getGroup: function (id, success, error) {
@@ -53,19 +54,18 @@ app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification'
     $scope.getCount();
 
     var loadTableData = function (tableParams) {
-
         var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
         $scope.loading = true;
-        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+        console.log('---->>1', $scope.groups);
         GroupServices.getGroups(pageable, function (response) {
             $scope.invalidCount = 0;
-            if (angular.isArray(response.data.users)) {
+            console.log('response',response.data);
+            if (angular.isArray(response.data.groups)) {
                 $scope.loading = false;
-                $scope.users = response.data.users;
+                $scope.groups = response.data.groups;
                 tableParams.total(response.totalElements);
-                tableParams.data = $scope.users;
-                $scope.currentPageOfGroups = $scope.users;
-                console.log('====>>>>', $scope.currentPageOfGroups);
+                tableParams.data = $scope.groups;
+                $scope.currentPageOfGroups = $scope.groups;
             }
         });
     };
