@@ -10,7 +10,7 @@ app.directive('topNavigation', function () {
         '                        <li class="active" ui-sref="accounts"><a href="#" style="color: #fff;" >FMS</a></li>\n' +
         '                        <li><a href="#">GPS Listing</a></li>\n' +
         '                        <li><a href="#">Group Map</a></li>\n' +
-        '                        <li><a href="#">Track Map</a></li>\n' +
+        '                        <li><a href="#" ui-sref="trackMap">Track Map</a></li>\n' +
         '                        <li><a href="#">Create Group</a></li>\n' +
         '                        <li><a href="#">Trips</a></li>\n' +
         '                        <li><a href="#">Reports</a></li>\n' +
