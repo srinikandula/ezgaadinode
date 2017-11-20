@@ -217,6 +217,15 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'auth'
         }
     }).state({
+        name: 'groupMap',
+        url: '/groupMap',
+        templateUrl: 'views/partials/groupMap.html',
+        data: {activeTab: 'groupMap'},
+        params: {
+            access: 'auth'
+        }
+
+    }).state({
         name: 'paymentsEdit',
         url: '/paymentsEdit/:paymentsId',
         templateUrl: 'views/partials/payments/paymentsEdit.html',
