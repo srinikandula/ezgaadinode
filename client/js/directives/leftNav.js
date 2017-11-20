@@ -13,8 +13,8 @@ app.directive('leftNavigation', function () {
         '            <expense-master-directive></expense-master-directive>\n' +
         '            <expenses-directive></expenses-directive>\n' +
         '            <payments-directive></payments-directive>\n'+
-        '            <pending-balance-directive></pending-balance-directive>\n' +
-        '            <expiry-directive></expiry-directive>\n' +
+        //'            <pending-balance-directive></pending-balance-directive>\n' +
+       // '            <expiry-directive></expiry-directive>\n' +
         '        </ul>\n' +
         '    </div>'
     };
@@ -105,7 +105,7 @@ app.directive('paymentsDirective', function () {
     return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'paymentsReceived\'}" class="left-nav-li"> \n' +
-        '             <a class="left-nav-anchor" ui-sref="paymentsReceived">Payments Received</a>\n' +
+        '             <a class="left-nav-anchor" ui-sref="paymentsReceived">Payments</a>\n' +
         '          </li>'
     };
 });

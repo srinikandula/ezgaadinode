@@ -7,15 +7,34 @@
         <div class="main-right col-xs-9" ng-controller="ShowAccountsCtrl">
 
             <h3>Accounts</h3>
-            <button class="btn  btn-blue pull-right" ng-click="goToEditAccountPage()">Add Account</button>
+            <button class="btn  btn-blue pull-right mb-10" ng-click="goToEditAccountPage()">Add Account</button>
 
-            <div class="margin-top-40">
-                <div class="grid" ui-grid="accountGridOptions" ></div>
-            </div>
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="accountParams">
+                <tr ng-repeat="accounts in currentPageOfAccounts" style="text-align: center;">
 
+                    <td data-title="'Account Name'" sortable="'name'" class="clickable-item col-sm-2">{{
+                        accounts.name}}
+                    </td>
+                    <td data-title="'User Name'" sortable="'userName'" class="clickable-item col-sm-2">{{
+                        accounts.userName }}
+                    </td>
+                    <td data-title="'Status'" sortable="'isActive'" class="clickable-item col-sm-1">{{
+                        accounts.isActive }}
+                    </td>
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right"
-                boundary-link-numbers="true" rotate="false" ng-change="getAccountsData()" ng-show="totalItems > 10"></ul>
+                    <td data-title="'Created By'" sortable="'createdByName'"
+                        class="clickable-item col-sm-1">{{ accounts.attrs.createdByName }}
+                    </td>
+                    <td data-title="'Action'" class="col-sm-2">
+                        <a href="#" class="btn" ng-click="goToEditAccountPage(accounts._id)">
+                            <span class="glyphicon glyphicon-pencil"></span></a>
+                    </td>
+                </tr>
+                <tr ng-if="!currentPageOfAccounts || currentPageOfAccounts.length === 0">
+                    <td colspan="8">No account Records exist.</td>
+                </tr>
+            </table>
+
         </div>
     </div>
 </div>

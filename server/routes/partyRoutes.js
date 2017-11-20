@@ -3,6 +3,7 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Party = require('./../apis/partyApis');
 
+
 AuthRouter.post('/addParty', function (req, res) {
     Party.addParty(req.jwt, req.body, function (result) {
         res.send(result);
@@ -32,6 +33,7 @@ AuthRouter.get('/get/all', function (req, res) {
         res.send(result);
     });
 });
+
 
 AuthRouter.delete('/:partyId', function (req, res) {
     Party.deleteParty(req.jwt, req.params.partyId, function (result) {

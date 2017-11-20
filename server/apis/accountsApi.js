@@ -248,5 +248,20 @@ Accounts.prototype.erpDashBoardContent = function(jwt, callback){
         }
     });
 }
+Accounts.prototype.countAccounts = function (jwt, callback) {
+    var result = {};
+    AccountsColl.count(function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
 
 module.exports = new Accounts();

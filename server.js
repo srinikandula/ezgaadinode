@@ -49,7 +49,7 @@ app.use(authMiddleware);
 app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
 app.use('/v1/trucks', Trucks.AuthRouter);
-app.use('/v1/party', Party.AuthRouter);
+    app.use('/v1/party', Party.AuthRouter);
 app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/expense', Expense.AuthRouter);

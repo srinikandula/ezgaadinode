@@ -290,5 +290,20 @@ Groups.prototype.deleteGroup = function (id, callback) {
         }
     });
 };
+Groups.prototype.countGroups = function (jwt, callback) {
+    var result = {};
+    GroupsColl.count({"accountId":jwt.accountId},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
 
 module.exports = new Groups();
