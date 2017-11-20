@@ -341,4 +341,28 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
     })
 };
 
+Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    expenseColl.find({accountId: jwt.accountId, vehicleNumber:vehicleId}, function (err, expenses) {
+        //console.log(expenses);
+        if (err) {
+            retObj.messages.push('Error getting Expenses');
+            callback(retObj);
+        } else {
+            Utils.populateNameInTrucksColl(expenses,"vehicleNumber",function(tripDocuments){
+                retObj.status = true;
+                retObj.expenses= tripDocuments.documents;
+                callback(retObj)
+            });
+            /*retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.expenses = expenses;
+            callback(retObj);*/
+        }
+    });
+};
+
 module.exports = new Expenses();
