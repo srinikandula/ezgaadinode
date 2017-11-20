@@ -555,6 +555,7 @@ Trips.prototype.findRevenueByParty =  function(jwt, callback) {
 Trips.prototype.findTripsByParty =  function(jwt, partyId, callback) {
     TripCollection.find({"accountId":jwt.accountId, "partyId":partyId},
         function (error, trips) {
+        //console.log(trips);
             var retObj = {
                 status: false,
                 messages: []
@@ -569,6 +570,7 @@ Trips.prototype.findTripsByParty =  function(jwt, partyId, callback) {
                     retObj.trips= tripDocuments.documents;
                     callback(retObj)
                 });
+                callback(retObj);
             }
         });
 }
