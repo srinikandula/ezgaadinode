@@ -36,7 +36,7 @@ app.factory('GroupServices', function ($http) {
     }
 });
 
-app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification','paginationService','NgTableParams', function ($scope, $state, GroupServices, Notification, paginationService, NgTableParams) {
+app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification', 'paginationService', 'NgTableParams', function ($scope, $state, GroupServices, Notification, paginationService, NgTableParams) {
     $scope.goToEditGroupPage = function (groupId) {
         $state.go('groupsEdit', {groupId: groupId});
     };
@@ -56,10 +56,8 @@ app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification'
     var loadTableData = function (tableParams) {
         var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
         $scope.loading = true;
-        console.log('---->>1', $scope.groups);
         GroupServices.getGroups(pageable, function (response) {
             $scope.invalidCount = 0;
-            console.log('response',response.data);
             if (angular.isArray(response.data.groups)) {
                 $scope.loading = false;
                 $scope.groups = response.data.groups;
@@ -88,11 +86,11 @@ app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification'
 
 }]);
 
-app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServices', 'TrucksService', 'Notification', '$stateParams', 'Utils', '$state','$cookies', function ($scope, GroupServices, AccountServices, TrucksService, Notification, $stateParams, Utils, $state,$cookies) {
+app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServices', 'TrucksService', 'Notification', '$stateParams', 'Utils', '$state', '$cookies', function ($scope, GroupServices, AccountServices, TrucksService, Notification, $stateParams, Utils, $state, $cookies) {
     $scope.pagetitle = "Add Group";
     $scope.trucks = [];
-    $scope.checkedTrucks=[];
-    $scope.uncheckedTruckList=[];
+    $scope.checkedTrucks = [];
+    $scope.uncheckedTruckList = [];
     $scope.groupDetails = {
         name: '',
         userName: '',
@@ -108,7 +106,7 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
             GroupServices.getGroup($stateParams.groupId, function (success) {
                 if (success.data.status) {
                     $scope.groupDetails = success.data.group;
-                    $scope.groupId=$scope.groupDetails._id;
+                    $scope.groupId = $scope.groupDetails._id;
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -118,7 +116,7 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
                 Notification.error(err);
             })
         }
-        else{
+        else {
             $scope.goToGroupsPage = function () {
                 $state.go('groups');
             };
@@ -126,13 +124,14 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
         getFullGroupTruckDetails();
         TrucksService.getUnAssignedTrucks({groupId: $scope.groupId}, function (success) {
             if (success.data.status) {
-                console.log(success.data.trucks);
                 $scope.trucksList = success.data.trucks;
             }
         });
 
     };
-
+    $scope.goToGroupsPage = function () {
+        $state.go('groups');
+    };
 
 
     /*function getTruckIds() {
@@ -151,17 +150,14 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
 
     getTruckIds();*/
     var params = [];
-    $scope.checkboxModel=[];
-
+    $scope.checkboxModel = [];
 
 
     $scope.AddorUpdateGroup = function () {
 
         params = $scope.groupDetails;
-        console.log($scope.groupDetails);
-        $scope.checkboxModel.forEach(function(assignedTruck){
-            console.log(assignedTruck);
-            if(assignedTruck){
+        $scope.checkboxModel.forEach(function (assignedTruck) {
+            if (assignedTruck) {
                 $scope.checkedTrucks.push(assignedTruck);
             }
         });
@@ -188,13 +184,11 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
         if (!params.errors.length) {
             if (params._id) {
                 unassignTruck();
-                TrucksService.unAssignTrucks($scope.uncheckedTruckList,function(success){
-                    if(success.data.status){
-                        console.log(success.data);
-                    }else{
-                        console.log(success.data);
+                TrucksService.unAssignTrucks($scope.uncheckedTruckList, function (success) {
+                    if (success.data.status) {
+                    } else {
                     }
-                },function(error){
+                }, function (error) {
 
                 });
                 TrucksService.assignTrucks({
@@ -202,9 +196,7 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
                     trucks: $scope.checkedTrucks
                 }, function (success) {
                     if (success.data.status) {
-                        console.log(success);
                     } else {
-                        console.log(success);
                     }
                 }, function (error) {
 
@@ -229,9 +221,7 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
                         }, function (success) {
                             if (success.data.status) {
                                 getFullGroupTruckDetails();
-                                console.log(success);
                             } else {
-                                console.log(success);
                             }
                         }, function (error) {
 
@@ -249,33 +239,33 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
 
     };
 
-    $scope.pageNumber=0;
+    $scope.pageNumber = 0;
+
     function getFullGroupTruckDetails() {
-        TrucksService.getAccountTrucks($scope.pageNumber,function (success) {
+        TrucksService.getAccountTrucks($scope.pageNumber, function (success) {
             if (success.data.status) {
-                $scope.allTrucks=success.data.trucks;
-                 $scope.allTrucks.forEach(function(truck){
-                    if((truck.groupId===$scope.groupId)){
+                $scope.allTrucks = success.data.trucks;
+                $scope.allTrucks.forEach(function (truck) {
+                    if ((truck.groupId === $scope.groupId)) {
                         $scope.trucksList.push(truck);
                     }
                 });
-                $scope.trucksList.forEach(function(truck,key){
-                    console.log(truck,key);
-                    if(truck.groupId){
-                        $scope.checkboxModel[key]=truck._id;
+                $scope.trucksList.forEach(function (truck, key) {
+                    if (truck.groupId) {
+                        $scope.checkboxModel[key] = truck._id;
                     }
                 });
             }
         });
     }
 
-    function unassignTruck(){
-        $scope.trucksList.forEach(function(truck,key){
-            if(truck.groupId) {
-                if (!$scope.checkboxModel[key]){
+    function unassignTruck() {
+        $scope.trucksList.forEach(function (truck, key) {
+            if (truck.groupId) {
+                if (!$scope.checkboxModel[key]) {
                     $scope.uncheckedTruckList.push(truck._id);
                 }
-                    }
+            }
         });
     }
 
