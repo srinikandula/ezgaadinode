@@ -340,5 +340,55 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
         }
     })
 };
+/*
+* Retrieve expenseType and truckName based on truck
+* */
+Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    expenseColl.find({accountId: jwt.accountId, vehicleNumber:vehicleId}, function (err, expenses) {
+        //console.log(expenses);
+        if (err) {
+            retObj.messages.push('Error getting Expenses');
+            callback(retObj);
+        } else {
+            async.parallel({
+                expenseType: function (createdbyCallback) {
+                    Helpers.populateNameInExpenseColl(expenses, "expenseType", function (response) {
+                        createdbyCallback(response.err, response.documents);
+                    });
+                },
+                truckName: function (truckscallback) {
+                    Helpers.populateNameInTrucksColl(expenses, 'vehicleNumber', function (response) {
+                        truckscallback(response.err, response.documents);
+                    })
+                }
+            }, function (populateErr, populateResults) {
+                //console.log("populateResults : ",populateResults);
+                if (err) {
+                    retObj.status = false;
+                    retObj.messages.push('Error retrieving data');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.message = 'Success';
+                    retObj.expenses = expenses;
+                    callback(retObj);
+                }
+            });
+            /*Utils.populateNameInTrucksColl(expenses,"vehicleNumber",function(tripDocuments){
+                retObj.status = true;
+                retObj.expenses= tripDocuments.documents;
+                callback(retObj)
+            });*/
+            /*retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.expenses = expenses;
+            callback(retObj);*/
+        }
+    });
+};
 
 module.exports = new Expenses();
