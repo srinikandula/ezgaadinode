@@ -509,8 +509,6 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
 Trips.prototype.findTotalRevenue = function(jwt, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
-            //TODO add match
-            //it is not working now
             TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
                 { $group: { _id :null , totalFreight : { $sum: "$freightAmount" }} },
                 function (err, totalFreight) {
@@ -730,6 +728,47 @@ Trips.prototype.findTripsByVehicle =  function(jwt, vehicleId, callback) {
                 });
             }
         });
+}
+
+Trips.prototype.gettotalRevenue =  function(jwt, vehicleId, callback) {
+    async.parallel({
+        totalVehicleFreight: function (callback) {
+            TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId),"registrationNo":vehicleId}},
+                { $group: { _id :"$registrationNo" , totalFreight : { $sum: "$freightAmount" }} },
+                function (err, totalFreight) {
+                    //console.log(totalFreight);
+                    callback(err, totalFreight);
+                });
+        },
+        totalVehicleExpenses: function (callback) {
+            ExpenseCostColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId),"vehicleNumber":vehicleId}},
+                { $group: { _id :"$vehicleNumber" , totalExpenses : { $sum: "$cost" } } },
+                function (err, totalExpenses) {
+                    //console.log(totalExpenses);
+                    callback(err, totalExpenses);
+                });
+        }
+    },function (populateErr, populateResults) {
+        var retObj = {
+            status: false,
+            messages: []
+        };
+        if(populateErr){
+            retObj.status = false;
+            retObj.messages.push(JSON.stringify(populateErr));
+            callback(retObj);
+        } else {
+            //console.log(populateResults);
+            //retObj.totalRevenue = populateResults.totalVehicleFreight.totalFreight;
+            retObj.status = true;
+            retObj.totalFreight = populateResults.totalVehicleFreight[0].totalFreight;
+            retObj.totalExpenses = populateResults.totalVehicleExpenses[0].totalExpenses;
+            //console.log(retObj.totalFreight);
+            //console.log(retObj.totalExpenses);
+            retObj.totalRevenue = {totalFreight : retObj.totalFreight,totalExpenses : retObj.totalExpenses};
+            callback(retObj);
+        }
+    });
 }
 
 Trips.prototype.countTrips = function (jwt, callback) {

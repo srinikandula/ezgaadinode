@@ -9,6 +9,9 @@ var Utils = require('./utils');
 var Trips = require('./tripsApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
 var ExpenseCostColl = require('./expensesApi');
+var TripCollection = require('./../models/schemas').TripCollection;
+var ExpenseCostColl1 = require('./../models/schemas').ExpenseCostColl;
+const ObjectId = mongoose.Types.ObjectId;
 var Party = function () {
 };
 
@@ -246,9 +249,31 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
                 //console.log("expensesResults :",expensesResults);
                 expensesCallback(expensesResults.error, expensesResults.expenses);
             });
-        }
+        },
+        totalRevenue: function(totalRevenueCallback) {
+            Trips.gettotalRevenue(jwt,vehicleId,function (totalRevenue) {
+                //console.log("totalRevenue :",totalRevenue);
+                totalRevenueCallback(totalRevenue.error, totalRevenue.totalRevenue);
+            });
+        },
+        /*totalVehicleFreight: function (callback) {
+            TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId),"registrationNo":vehicleId}},
+                { $group: { _id :"$registrationNo" , totalFreight : { $sum: "$freightAmount" }} },
+                function (err, totalFreight) {
+                    //console.log(totalFreight);
+                    callback(err, totalFreight);
+                });
+        },
+        totalVehicleExpenses: function (callback) {
+            ExpenseCostColl1.aggregate({ $match: {"accountId":ObjectId(jwt.accountId),"vehicleNumber":vehicleId}},
+                { $group: { _id :"$vehicleNumber" , totalExpenses : { $sum: "$cost" } } },
+                function (err, totalExpenses) {
+                    //console.log(totalExpenses);
+                    callback(err, totalExpenses);
+                });
+        }*/
     },function (error, tripsAndExpenses) {
-        //console.log("tripsAndExpenses : ",tripsAndExpenses);
+        console.log("tripsAndExpenses : ",tripsAndExpenses);
         if(error){
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
@@ -258,12 +283,15 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
             retObj.messages.push('Success');
             retObj.trips = tripsAndExpenses.expenses;
             //console.log("results : ",tripsAndExpenses.expenses);
+            //console.log("total freight : ",tripsAndExpenses.totalFreight);
 
             Utils.populateNameInPartyColl(tripsAndExpenses.trips,"partyId",function(partyDocuments){
                 //console.log("partyDocuments :",partyDocuments.documents[0].attrs.partyName);
                 retObj.trips = retObj.trips.concat(partyDocuments.documents);
+                retObj.totalRevenue = tripsAndExpenses.totalRevenue;
                 callback(retObj);
             });
+
         }
     });
 }
