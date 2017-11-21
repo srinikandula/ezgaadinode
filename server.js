@@ -23,7 +23,7 @@ var Groups = require('./server/routes/groupRoutes');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
-// app.use(morgan('dev'));
+app.use(morgan('dev'));
 app.use(express.static('client', {index: "/views/index.html"}));
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
@@ -48,7 +48,7 @@ app.use(authMiddleware);
 app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
 app.use('/v1/trucks', Trucks.AuthRouter);
-app.use('/v1/party', Party.AuthRouter);
+    app.use('/v1/party', Party.AuthRouter);
 app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/expense', Expense.AuthRouter);

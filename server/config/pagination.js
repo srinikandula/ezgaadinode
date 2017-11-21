@@ -6,5 +6,6 @@ module.exports = {
     trucksPaginationLimit: 10,
     tripLanesPaginationLimit: 10,
     expenseCostsPaginationLimit: 10,
-    tripsPaginationLimit: 10
+    tripsPaginationLimit: 10,
+    partiesPaginationLimit: 10
 };

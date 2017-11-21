@@ -341,7 +341,6 @@ Drivers.prototype.countDrivers = function (jwt, callback) {
             result.status = false;
             result.message = 'Error getting count';
             callback(result);
-            console.log('sadfsadfasfasf--->');
         } else {
             result.status = true;
             result.message = 'Success';

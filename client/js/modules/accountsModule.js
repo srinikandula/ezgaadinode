@@ -25,61 +25,66 @@ app.factory('AccountServices', function ($http, $cookies) {
                 method: "POST",
                 data: accountInfo
             }).then(success, error)
+        },
+        count: function (success, error) {
+            $http({
+                url: '/v1/admin/accounts/total/count',
+                method: "GET"
+            }).then(success, error)
         }
     }
 });
 
-app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', function ($scope, $uibModal, AccountServices, Notification, $state) {
+app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', 'paginationService','NgTableParams', function ($scope, $uibModal, AccountServices, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditAccountPage = function (accountId) {
         $state.go('accountsEdit', {accountId: accountId});
     };
 
-    // pagination options
-    $scope.totalItems = 200;
-    $scope.maxSize = 5;
-    $scope.pageNumber = 1;
-
-    $scope.getAccountsData = function () {
-        AccountServices.getAccounts($scope.pageNumber, function (success) {
+    $scope.count = 0;
+    $scope.getCount = function () {
+        AccountServices.count(function (success) {
             if (success.data.status) {
-                $scope.accountGridOptions.data = success.data.accounts;
-                $scope.totalItems = success.data.count;
+                $scope.count = success.data.count;
+                    $scope.init();
             } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
+                Notification.error({message: success.data.message});
             }
-        }, function (err) {
+        });
+    };
+    $scope.getCount();
 
+    var loadTableData = function (tableParams) {
+
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        $scope.loading = true;
+        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+        AccountServices.getAccounts(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (angular.isArray(response.data.accounts)) {
+                $scope.loading = false;
+                $scope.accounts = response.data.accounts;
+                tableParams.total(response.totalElements);
+                tableParams.data = $scope.accounts;
+                $scope.currentPageOfAccounts = $scope.accounts;
+
+            }
         });
     };
 
-    $scope.getAccountsData();
-
-    $scope.accountGridOptions = {
-        enableSorting: true,
-        columnDefs: [{
-            name: 'Account name',
-            field: 'name'
+    $scope.init = function () {
+        $scope.accountParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                name: -1
+            }
         }, {
-            name: 'User name',
-            field: 'userName'
-        }, {
-            name: 'Status',
-            field: 'isActive'
-        }, {
-            name: 'Created By',
-            field: 'attrs.createdByName'
-        }, {
-            name: 'Action',
-            cellTemplate: '<div class="text-center">' +
-            '<a href="#" ng-click="grid.appScope.goToEditAccountPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a> </div>'
-        }],
-        rowHeight: 30,
-        data: [],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-        }
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
     };
 
 }]);

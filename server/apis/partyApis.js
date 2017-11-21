@@ -8,6 +8,7 @@ var config = require('./../config/config');
 var Utils = require('./utils');
 var Trips = require('./tripsApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
+var pageLimits = require('./../config/pagination');
 var ExpenseCostColl = require('./expensesApi');
 var Party = function () {
 };
@@ -106,7 +107,7 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
         });
 };
 
-Party.prototype.getAccountParties = function (jwt, callback) {
+/*Party.prototype.getAccountParties = function (jwt, callback) {
     var result = {};
     PartyCollection.find({accountId: jwt.accountId}, function (err, accountParties) {
         if (err) {
@@ -125,6 +126,62 @@ Party.prototype.getAccountParties = function (jwt, callback) {
                     callback(result);
                 }
             });
+        }
+    });
+};*/
+Party.prototype.getAccountParties = function (jwt, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var pageNumber = 0;
+
+    if (!pageNumber) {
+        pageNumber = 1;
+
+    } else if (!_.isNumber(Number(pageNumber))) {
+        retObj.messages.push('Invalid page number');
+        return callback(retObj);
+    }
+
+    var skipNumber = (pageNumber - 1) * pageLimits.partiesPaginationLimit;
+    async.parallel({
+        parties: function (partiesCallback) {
+            PartyCollection
+                .find({accountId: jwt.accountId})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.partiesPaginationLimit)
+                .lean()
+                .exec(function (err, parties) {
+                    async.parallel({
+                        createdbyname: function (createdbyCallback) {
+                            Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
+                                createdbyCallback(response.err,response.documents);
+                            });
+                        }
+                        // rolesname:
+                    }, function (populateErr, populateResults) {
+                        partiesCallback(populateErr, populateResults);
+                    });
+                });
+        },
+        count: function (countCallback) {
+            PartyCollection.count({accountId: jwt.accountId},function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            retObj.messages.push('Error retrieving parties');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = results.count;
+            retObj.parties = results.parties.createdbyname;
+            callback(retObj);
+
         }
     });
 };

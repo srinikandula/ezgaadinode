@@ -3,7 +3,8 @@ app.directive('datePicker', function () {
         restrict: 'E',
         scope: {
             ngModel: "=",
-            banFuture: "="
+            banFuture: "=",
+            pastPresent: "="
         },
         template: '<div class="input-group">\n' +
         '          <input type="text" readonly class="form-control" datepicker-options="options" show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened" ng-required="true"  />\n' +
@@ -26,8 +27,12 @@ app.directive('datePicker', function () {
             };
             if (scope.banFuture) {
                 scope.options = {
-                    showWeeks: false,
+                    showWeeks: true,
                     maxDate: new Date()
+                }
+            }else if(scope.pastPresent){
+                scope.options = {
+                    showWeeks: false
                 }
             } else {
                 scope.options = {

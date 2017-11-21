@@ -32,6 +32,11 @@ AuthRouter.post('/accounts/update', function (req, res) {
         res.json(result);
     });
 });
+AuthRouter.get('/accounts/total/count',function(req,res){
+    Accounts.countAccounts(req.jwt,function(result){
+        res.send(result);
+    });
+});
 
 AuthRouter.get('/erpDashboard', function (req, res) {
     Accounts.erpDashBoardContent(req.jwt, function (result) {
