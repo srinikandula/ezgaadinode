@@ -22,8 +22,8 @@ AuthRouter.put('/updateGroup', function (req, res) {
 });
 
 AuthRouter.get('/getGroups', function (req, res) {
-    Groups.getGroups(req.jwt, function (result) {
-        res.send(result);
+    Groups.getGroups(req.jwt, req.query, function (result) {
+        res.json(result);
     });
 });
 
