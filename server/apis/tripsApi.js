@@ -7,6 +7,7 @@ var async = require('async');
 const ObjectId = mongoose.Types.ObjectId;
 
 var TripCollection = require('./../models/schemas').TripCollection;
+var ExpenseCostColl = require('./../models/schemas').ExpenseCostColl;
 var config = require('./../config/config');
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -237,11 +238,6 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                                         bookedforCallback(response.err, response.documents);
                                     });
                                 },
-                                triplane: function (triplaneCallback) {
-                                    Utils.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
-                                        triplaneCallback(response.err, response.documents);
-                                    });
-                                },
                                 truckNo: function (truckscallback) {
                                     Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
                                         truckscallback(response.err, response.documents);
@@ -267,7 +263,7 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                     retObj.messages.push('Success');
                     retObj.count = results.count;
                     retObj.trips = results.trips.createdbyname; //as trips is callby reference
-                    console.log('dfsafd>>>==', results.trips);
+                    //console.log('dfsafd>>>==', results.trips);
                     callback(retObj);
                 }
             });
@@ -297,13 +293,8 @@ Trips.prototype.getAllAccountTrips = function (jwt, callback) {
                     });
                 },
                 bookedfor: function (bookedforCallback) {
-                    Utils.populateNameInPartyColl(trips, 'bookedFor', function (response) {
+                    Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
                         bookedforCallback(response.err, response.documents);
-                    });
-                },
-                triplane: function (triplaneCallback) {
-                    Utils.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
-                        triplaneCallback(response.err, response.documents);
                     });
                 },
                 truckNo: function (truckscallback) {
@@ -506,7 +497,41 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
  */
 
 Trips.prototype.findTotalRevenue = function(jwt, callback) {
-    TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+    async.parallel({
+        tripFreightTotal: function (callback) {
+            //TODO add match
+            //it is not working now
+            TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id :null , totalFreight : { $sum: "$freightAmount" }} },
+                function (err, totalFreight) {
+                //console.log(totalFreight);
+                    callback(err, totalFreight);
+                });
+        },
+        expensesTotal: function (callback) {
+            ExpenseCostColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id :null , totalExpenses : { $sum: "$cost" } } },
+                function (err, totalExpenses) {
+                    //console.log(totalExpenses);
+                    callback(err, totalExpenses);
+                });
+        }
+    },function (populateErr, populateResults) {
+        var retObj = {
+            status: false,
+            messages: []
+        };
+        if(populateErr){
+            retObj.status = false;
+            retObj.messages.push(JSON.stringify(populateErr));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.totalRevenue = populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
+            callback(retObj);
+        }
+    });
+    /*TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
         { $group: { _id : null , totalFright : { $sum: "$freightAmount" }} },
         function (error, result) {
             var retObj = {
@@ -521,7 +546,7 @@ Trips.prototype.findTotalRevenue = function(jwt, callback) {
                 retObj.totalRevenue= result[0].totalFright;
             }
             callback(retObj)
-        });
+        });*/
 }
 
 /**
@@ -552,9 +577,133 @@ Trips.prototype.findRevenueByParty =  function(jwt, callback) {
         });
 }
 
+/**
+ * Find revenue by Vehicle
+ * @param jwt
+ * @param callback
+ */
+Trips.prototype.findRevenueByVehicle =  function(jwt, callback) {
+    async.parallel({
+        tripFreightTotal: function (callback) {
+            //TODO add match
+            //it is not working now
+            TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id : "$registrationNo" , totalFreight : { $sum: "$freightAmount" }} },
+                function (err, totalFreight) {
+                    //console.log(totalFreight);
+                    callback(err, totalFreight);
+                });
+        },
+        expensesTotal: function (callback) {
+            ExpenseCostColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+                { $group: { _id :"$vehicleNumber" , totalExpenses : { $sum: "$cost" } } },
+                function (err, totalExpenses) {
+                    //console.log(totalExpenses);
+                    callback(err, totalExpenses);
+                });
+        }
+    },function (populateErr, populateResults) {
+        var retObj = {
+            status: false,
+            messages: []
+        };
+        if(populateErr){
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(populateErr));
+            callback(retObj);
+        } else {
+            //console.log(populateResults);
+            var vehicleIds = _.pluck(populateResults.tripFreightTotal,"_id");
+            //console.log(vehicleIds);
+            var vehicles = [];
+            for(var i=0;i<vehicleIds.length;i++) {
+                var vehicle = {"registrationNo":vehicleIds[i]};
+                //console.log(vehicle);
+                var vehicleInfo = _.find(populateResults.tripFreightTotal, function (freight) {
+                    if(freight._id === vehicle.registrationNo) {
+                        return freight;
+                    }
+                });
+                if(vehicleInfo){
+                    vehicle.totalFreight = vehicleInfo.totalFreight;
+                    //console.log(vehicle.totalFreight);
+                } else {
+                    vehicle.totalFreight = 0;
+                }
+                vehicleInfo =  _.find(populateResults.expensesTotal, function (expense) {
+                    if(expense._id === vehicle.registrationNo){
+                        return expense;
+                    }
+                });
+                if(vehicleInfo){
+                    vehicle.totalExpense = vehicleInfo.totalExpenses;
+                    //console.log(vehicle.totalExpense);
+                } else {
+                    vehicle.totalExpense = 0;
+                }
+
+
+                vehicle.totalRevenue = parseFloat(vehicle.totalFreight) - parseFloat(vehicle.totalExpense);
+
+                vehicles.push(vehicle);
+            }
+
+            Utils.populateNameInTrucksColl(vehicles,'registrationNo', function(result){
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.revenue = result.documents;
+                callback(retObj);
+            })
+        }
+    });
+    /*TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+        { $group: { _id : "$partyId" , totalFreight : { $sum: "$freightAmount" }} },
+        function (error, revenue) {
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+                callback(retObj);
+            } else {
+                Utils.populateNameInPartyColl(revenue, '_id', function (response) {
+                    //console.log(response);
+                    retObj.status = true;
+                    retObj.revenue = response.documents;
+                    callback(retObj);
+                });
+            }
+        });*/
+}
+
 Trips.prototype.findTripsByParty =  function(jwt, partyId, callback) {
     TripCollection.find({"accountId":jwt.accountId, "partyId":partyId},
         function (error, trips) {
+        //console.log(trips);
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+                callback(retObj)
+            } else {
+                Utils.populateNameInTrucksColl(trips,"registrationNo",function(tripDocuments){
+                    retObj.status = true;
+                    retObj.trips= tripDocuments.documents;
+                    callback(retObj)
+                });
+            }
+        });
+}
+
+Trips.prototype.findTripsByVehicle =  function(jwt, vehicleId, callback) {
+    TripCollection.find({"accountId":jwt.accountId, "registrationNo":vehicleId},
+        function (error, trips) {
+            //console.log(trips);
             var retObj = {
                 status: false,
                 messages: []

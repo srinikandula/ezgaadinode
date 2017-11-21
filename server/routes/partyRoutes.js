@@ -54,6 +54,12 @@ AuthRouter.get('/tripsPayments/:partyId', function (req, res) {
     });
 });
 
+AuthRouter.get('/vehiclePayments/:vehicleId', function (req, res) {
+    Party.findTripsAndPaymentsForVehicle(req.jwt, req.params.vehicleId, function (result) {
+        res.send(result);
+    });
+});
+
 
 module.exports = {
     OpenRouter: OpenRouter,
