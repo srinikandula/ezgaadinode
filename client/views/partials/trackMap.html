@@ -1,0 +1,74 @@
+<top-navigation></top-navigation>
+<div class="container-fluid">
+    <div class="col-xs-12" ng-controller="ShowTrackMapCtrl">
+        <h3>Track Map</h3><br/><br/>
+        <div class="row">
+            <div class="form-group col-md-12">
+                <div class="col-xs-3">
+                    <form>
+                        <div>
+                            <input type="text" ng-model="truckRegNo"
+                                   uib-typeahead="truck for truck in trucks | filter:$viewValue"
+                                   class="form-control" typeahead-min-length="1"
+                                   typeahead-on-select="selectTruckId($item)"
+                                   typeahead-select-on-exact="true" placeholder="Registration Num"
+                                   typeahead-no-results="noTrucks">
+                            <div ng-show="noTrucks">
+                                <i class="glyphicon glyphicon-remove red"></i>
+                                <span class="red"> No Results Found </span>
+                            </div>
+                        </div><br/><br/>
+                        <div>
+                            <date-picker id="fromDate" ng-model="fromDate"></date-picker>
+                        </div><br/><br/>
+                        <div>
+                            <date-picker id="toDate" ng-model="toDate"></date-picker>
+                        </div><br/><br/>
+                        <div>
+                            <input class="btn btn-primary" type="button" value="Submit">
+                        </div><br/><br/>
+                        <div>
+                            <label>Only Stops:</label>
+                            <input type="checkbox" id="showOnlyStops" ng-model="showOnlyStops" ng-change="loadMap()">
+                        </div><br/><br/><br/>
+                        <div>
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <strong>Summary</strong>
+                                </li>
+                                <li class="list-group-item">
+                                    Distance Travelled :
+                                </li>
+                                <li class="list-group-item">
+                                    Time Travelled :
+                                </li>
+                                <li class="list-group-item">
+                                    Average Speed : <b>{{averageSpeed | number:2}}</b>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <strong>PushPin Info</strong>
+                                </li>
+                                <li class="list-group-item">
+                                    Current Position
+                                </li>
+                                <li class="list-group-item">
+                                    Start Position
+                                </li>
+                                <li class="list-group-item">
+                                    Stop Position
+                                </li>
+                            </ul>
+                        </div>
+                    </form>
+                </div>
+                <div  class="col-xs-9 pull-left">
+                <div id="map" style="width: 100%;height: 540px;margin: auto;border: 2px solid black;position: relative;overflow: hidden;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

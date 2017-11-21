@@ -69,14 +69,14 @@ EventData.prototype.getTrackEvents = function (vehicleNumber, callback) {
         status: false,
         messages: []
     };
-    EventDataCollection.find({"vehicle_number" : vehicleNumber}, function (err, resutls) {
+    EventDataCollection.find({"vehicle_number" : vehicleNumber}, function (err, results) {
         if (err) {
             retObj.messages.push('Error saving EventData');
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.resutls = resutls;
+            retObj.results = results;
             callback(retObj);
         }
     });

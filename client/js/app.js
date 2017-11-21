@@ -141,6 +141,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             partyId: null
         }
     }).state({
+        name: 'trackMap',
+        url: '/trackMap',
+        templateUrl: 'views/partials/trackMap.html',
+        data: {activeTab: 'trackMap'},
+        params: {
+            access: 'open'
+        }
+    }).state({
         name: 'tripLanes',
         url: '/tripLanes',
         templateUrl: 'views/partials/trip-lane.html',
