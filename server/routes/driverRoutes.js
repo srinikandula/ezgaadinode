@@ -10,11 +10,11 @@ AuthRouter.post('/', function (req, res) {
     });
 });
 
-AuthRouter.get('/:pageNumber', function (req, res) {
+/*AuthRouter.get('/:pageNumber', function (req, res) {
     Drivers.getDriverByPageNumber(req.jwt, req.params.pageNumber, function (result) {
         res.json(result);
     });
-});
+});*/
 
 AuthRouter.get('/get/:driverId', function (req, res) {
     Drivers.getDriverDetails(req.jwt, req.params.driverId, function (result) {
@@ -37,7 +37,7 @@ AuthRouter.get('/', function (req, res) {
 */
 
 AuthRouter.get('/account/drivers', function (req, res) {
-    Drivers.getAccountDrivers(req.jwt.accountId, function (result) {
+    Drivers.getDrivers(req.jwt, req.query, function (result) {
         res.json(result);
     });
 });
