@@ -9,7 +9,7 @@ app.factory('TripServices', function ($http) {
         },
         getTrips: function (pageNumber, success, error) {
             $http({
-                url: '/v1/trips/getAll/' + pageNumber,
+                url: '/v1/trips/getAllAccountTrips/',
                 method: "GET"
             }).then(success, error)
         },
@@ -65,7 +65,6 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.count(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                console.log('Count ------>>>>', $scope.count);
                 $scope.init();
             } else {
                 Notification.error({message: success.data.message});
@@ -87,7 +86,6 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trips;
                 $scope.currentPageOfTrips = $scope.trips;
-                console.log('asdasd...>>>>', $scope.trips);
 
             }
         });

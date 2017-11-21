@@ -7,12 +7,29 @@
 
         <div class="main-right col-xs-9" ng-controller="GroupCtrl">
             <h3>Groups</h3>
-            <button class="btn  btn-blue pull-right" ng-click="goToEditGroupPage()">Add Group</button>
-            <div class="margin-top-40">
-                <div class="grid" ui-grid="groupGridOptions"></div>
-            </div>
+            <button class="btn btn-blue pull-right mb-10" ng-click="goToEditGroupPage()">Add Group</button>
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="groupParams">
+                <tr ng-repeat="groups in currentPageOfGroups" style="text-align: center;">
 
-            <ul uib-pagination total-items="totalItems" ng-model="pageNumber" max-size="maxSize" class="pagination-sm pull-right" boundary-link-numbers="true" rotate="false" ng-change="getAllUsers()" ng-show="totalItems > 10"></ul>
+                    <td data-title="'User Name'" sortable="'userName'" class="clickable-item col-sm-2">{{
+                        groups.userName}}
+                    </td>
+                    <td data-title="'Group Name'" sortable="'name'" class="clickable-item col-sm-2">{{
+                        groups.name }}
+                    </td>
+
+                    <td data-title="'Created By'" sortable="'createdByName'"
+                        class="clickable-item col-sm-1">{{ groups.attrs.createdByName }}
+                    </td>
+                    <td data-title="'Action'" class="col-sm-2">
+                        <a href="#" class="btn" ng-click="goToEditGroupPage(groups._id)">
+                            <span class="glyphicon glyphicon-pencil"></span></a>
+                    </td>
+                </tr>
+                <tr ng-if="!currentPageOfGroups || currentPageOfGroups.length === 0">
+                    <td colspan="8">No account Records exist.</td>
+                </tr>
+            </table>
         </div>
     </div>
 </div>

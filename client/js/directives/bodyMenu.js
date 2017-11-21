@@ -8,9 +8,9 @@ app.directive('topNavigation', function () {
         '                <div class="body-nav">\n' +
         '                    <ul class="list-inline">\n' +
         '                        <li class="active" ui-sref="accounts"><a href="#" style="color: #fff;" >FMS</a></li>\n' +
-        '                        <li><a href="#">GPS Listing</a></li>\n' +
-        '                        <li><a href="#">Group Map</a></li>\n' +
-        '                        <li><a href="#" ui-sref="trackMap">Track Map</a></li>\n' +
+        '                        <li><a  href="#">GPS Listing</a></li>\n' +
+        '                        <li ng-class="{selected: activeTab === \'groupMap\'}" ><a ui-sref="groupMap">Group Map</a></li>\n' +
+        '                        <li><a href="#">Track Map</a></li>\n' +
         '                        <li><a href="#">Create Group</a></li>\n' +
         '                        <li><a href="#">Trips</a></li>\n' +
         '                        <li><a href="#">Reports</a></li>\n' +

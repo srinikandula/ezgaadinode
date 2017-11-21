@@ -8,6 +8,8 @@ var config = require('./../config/config');
 var Utils = require('./utils');
 var Trips = require('./tripsApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
+var pageLimits = require('./../config/pagination');
+var ExpenseCostColl = require('./expensesApi');
 var Party = function () {
 };
 
@@ -105,7 +107,7 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
         });
 };
 
-Party.prototype.getAccountParties = function (jwt, callback) {
+/*Party.prototype.getAccountParties = function (jwt, callback) {
     var result = {};
     PartyCollection.find({accountId: jwt.accountId}, function (err, accountParties) {
         if (err) {
@@ -124,6 +126,62 @@ Party.prototype.getAccountParties = function (jwt, callback) {
                     callback(result);
                 }
             });
+        }
+    });
+};*/
+Party.prototype.getAccountParties = function (jwt, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var pageNumber = 0;
+
+    if (!pageNumber) {
+        pageNumber = 1;
+
+    } else if (!_.isNumber(Number(pageNumber))) {
+        retObj.messages.push('Invalid page number');
+        return callback(retObj);
+    }
+
+    var skipNumber = (pageNumber - 1) * pageLimits.partiesPaginationLimit;
+    async.parallel({
+        parties: function (partiesCallback) {
+            PartyCollection
+                .find({accountId: jwt.accountId})
+                .sort({createdAt: 1})
+                .skip(skipNumber)
+                .limit(pageLimits.partiesPaginationLimit)
+                .lean()
+                .exec(function (err, parties) {
+                    async.parallel({
+                        createdbyname: function (createdbyCallback) {
+                            Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
+                                createdbyCallback(response.err,response.documents);
+                            });
+                        }
+                        // rolesname:
+                    }, function (populateErr, populateResults) {
+                        partiesCallback(populateErr, populateResults);
+                    });
+                });
+        },
+        count: function (countCallback) {
+            PartyCollection.count({accountId: jwt.accountId},function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            retObj.messages.push('Error retrieving parties');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = results.count;
+            retObj.parties = results.parties.createdbyname;
+            callback(retObj);
+
         }
     });
 };
@@ -223,4 +281,70 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
         }
     });
 }
+
+/*
+* Retrieve trip details based on vehicle number
+* */
+
+Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        trips: function(tripsCallback) {
+            Trips.findTripsByVehicle(jwt,vehicleId,function (tripsResults) {
+                //console.log("tripsResults :",tripsResults);
+                tripsCallback(tripsResults.error, tripsResults.trips);
+            });
+        },
+        expenses: function(expensesCallback){
+            ExpenseCostColl.findVehicleExpenses(jwt,vehicleId, function(expensesResults){
+                //console.log("expensesResults :",expensesResults);
+                expensesCallback(expensesResults.error, expensesResults.expenses);
+            });
+        }
+    },function (error, tripsAndExpenses) {
+        //console.log("tripsAndExpenses : ",tripsAndExpenses);
+        if(error){
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(error));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.trips = tripsAndExpenses.expenses;
+            //console.log("results : ",tripsAndExpenses.expenses);
+
+            Utils.populateNameInPartyColl(tripsAndExpenses.trips,"partyId",function(partyDocuments){
+                //console.log("partyDocuments :",partyDocuments.documents[0].attrs.partyName);
+                retObj.trips = retObj.trips.concat(partyDocuments.documents);
+                callback(retObj);
+            });
+        }
+    });
+}
+
+Party.prototype.findPartyByVehicle =  function(jwt, vehicleId, callback) {
+    PartyCollection.find({"accountId":jwt.accountId, "registrationNo":vehicleId},
+        function (error, party) {
+            //console.log(party);
+            var retObj = {
+                status: false,
+                messages: []
+            };
+            if(error) {
+                retObj.status = false;
+                retObj.messages.push(JSON.stringify(error));
+                callback(retObj)
+            } else {
+                Utils.populateNameInTrucksColl(party,"registrationNo",function(partyDocuments){
+                    retObj.status = true;
+                    retObj.party= partyDocuments.documents;
+                    callback(retObj)
+                });
+            }
+        });
+}
+
 module.exports = new Party();

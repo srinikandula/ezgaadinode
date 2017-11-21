@@ -91,7 +91,7 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
                 }
             }
             result.status = true;
-            result.message = 'Error retrieving users';
+            result.message = 'Success';
             result.err = err;
             result.documents = documents;
             callback(result);
@@ -165,6 +165,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
                     item.attrs.partyName = party.name;
                 }
             }
+            console.log(documents);
             result.status = true;
             result.message = 'Success';
             result.documents = documents;
@@ -226,6 +227,7 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
                 }
             }
             result.status = true;
+            result.message = 'Success';
             result.documents = documents;
             callback(result);
         }

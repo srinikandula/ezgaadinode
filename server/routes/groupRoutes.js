@@ -38,6 +38,11 @@ AuthRouter.delete('/deleteUSer/:id', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/total/count',function(req,res){
+    Groups.countGroups(req.jwt,function(result){
+        res.send(result);
+    });
+});
 
 module.exports = {
     OpenRouter: OpenRouter,

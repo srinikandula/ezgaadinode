@@ -41,11 +41,11 @@
 
 
                         <div class="col-sm-8 drop-check">
-                            <div class="ml-10" ng-repeat="truck in trucksList">
-                                <label>
-                                    <input type="checkbox" name="truck._id" ng-model="checkboxModel[$index]" ng-true-value="'{{truck._id}}'" ng-checked="truck.groupId"> {{truck.registrationNo}}
+                            <span class="ml-10" ng-repeat="truck in trucksList">
+                                <label >
+                                    <input type="checkbox" name="truck._id" ng-model="checkboxModel[$index]" ng-true-value="'{{truck._id}}'" ng-checked="truck.groupId" > {{truck.registrationNo}}
                                 </label>
-                            </div>
+                            </span>
 
                         </div>
                         <!--<div class="col-sm-8 drop-check">

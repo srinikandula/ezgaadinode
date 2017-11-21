@@ -8,10 +8,11 @@ app.factory('PartyService', function ($http, $cookies) {
                 data: partyDetails
             }).then(success, error)
         },
-        getParties: function (success, error) {
+        getParties: function (params, success, error) {
             $http({
                 url: '/v1/party/get/accountParties',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         getAllParties: function (success, error) {
@@ -48,7 +49,7 @@ app.factory('PartyService', function ($http, $cookies) {
     }
 });
 
-app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', function ($scope, $uibModal, PartyService, Notification, $state) {
+app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state','paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditPartyPage = function (partyId) {
         $state.go('editParty', {partyId: partyId});
     };
@@ -58,26 +59,30 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         PartyService.count(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
+                $scope.init();
             } else {
                 Notification.error({message: success.data.message});
             }
         });
     };
-    $scope.getCount();
 
-    $scope.deleteParty = function (partyId) {
-        PartyService.deleteParty(partyId, function (success) {
-            if (success.data.status) {
-                $scope.getParties();
-                Notification.error({message: "Successfully Deleted"});
-            } else {
-                Notification.error(success.data.message)
+
+    var loadTableData = function (tableParams) {
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        $scope.loading = true;
+        PartyService.getParties(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (angular.isArray(response.data.parties)) {
+                $scope.loading = false;
+                $scope.parties = response.data.parties;
+                tableParams.total(response.totalElements);
+                tableParams.data = $scope.parties;
+                $scope.currentPageOfParties = $scope.parties;
             }
-        }, function (err) {
-            console.log('error deleting party');
         });
     };
- /*    $scope.init = function () {
+
+    $scope.init = function () {
         $scope.partyParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -91,61 +96,23 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 loadTableData(params);
             }
         });
-    };*/
+    };
+    $scope.getCount();
 
-    // pagination options
-    $scope.totalItems = 200;
-    $scope.maxSize = 5;
-    $scope.pageNumber = 1;
-
-    $scope.getParties = function () {
-        PartyService.getParties(function (success) {
+    $scope.deleteParty = function (partyId) {
+        PartyService.deleteParty(partyId, function (success) {
             if (success.data.status) {
-                $scope.partyGridOptions.data = success.data.parties;
-                $scope.totalItems = success.data.count;
+                $scope.getCount();
+                Notification.error({message: "Successfully Deleted"});
             } else {
-                Notification.error({message: success.data.message});
+                Notification.error(success.data.message)
             }
         }, function (err) {
-
+            console.log('error deleting party');
         });
     };
 
-    $scope.getParties();
 
-    $scope.partyGridOptions = {
-        enableSorting: true,
-        columnDefs: [{
-            name: 'Party name',
-            field: 'name'
-        }, {
-            name: 'Contact',
-            field: 'contact'
-        }, {
-            name: 'Email',
-            field: 'email'
-        }, {
-            name: 'City',
-            field: 'city'
-        }, {
-            name: 'Triplanes',
-            field: 'tripLanes.length'
-        }, {
-            name: 'Created By',
-            field: 'attrs.createdByName'
-        }, {
-            name: 'Action',
-            cellTemplate: '<div class="text-center">' +
-            '<a ng-click="grid.appScope.goToEditPartyPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
-            '<a ng-click="grid.appScope.deleteParty(row.entity._id)" class="glyphicon glyphicon-trash dele"></a>' +
-            '</div>'
-        }],
-        rowHeight: 30,
-        data: [],
-        onRegisterApi: function (gridApi) {
-            $scope.gridApi = gridApi;
-        }
-    };
 
 }]);
 

@@ -3,6 +3,7 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Party = require('./../apis/partyApis');
 
+
 AuthRouter.post('/addParty', function (req, res) {
     Party.addParty(req.jwt, req.body, function (result) {
         res.send(result);
@@ -33,6 +34,7 @@ AuthRouter.get('/get/all', function (req, res) {
     });
 });
 
+
 AuthRouter.delete('/:partyId', function (req, res) {
     Party.deleteParty(req.jwt, req.params.partyId, function (result) {
         res.send(result);
@@ -48,6 +50,12 @@ AuthRouter.get('/total/count', function (req, res) {
 
 AuthRouter.get('/tripsPayments/:partyId', function (req, res) {
     Party.findTripsAndPaymentsForParty(req.jwt, req.params.partyId, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/vehiclePayments/:vehicleId', function (req, res) {
+    Party.findTripsAndPaymentsForVehicle(req.jwt, req.params.vehicleId, function (result) {
         res.send(result);
     });
 });

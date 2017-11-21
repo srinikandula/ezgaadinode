@@ -101,18 +101,6 @@ var partySchema = new mongoose.Schema({
     attrs: {}
 }, {timestamps: true});
 
-var tripLanesSchema = new mongoose.Schema({
-    name:String,
-    from: String,
-    to: String,
-    accountId: {type: ObjectId, ref: 'accounts'},
-    partyId: {type: ObjectId, ref: 'parties'},
-    groupId: String,
-    updatedBy: String,
-    createdBy: String,
-    attrs: {}
-}, {timestamps: true});
-
 
 var eventDataSchema = new mongoose.Schema({
     transportername: String,
@@ -131,7 +119,6 @@ var driverSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: {type: ObjectId, ref: 'groups'},
     mobile: Number,
-    joiningDate: {type: Date, default: new Date()},
     licenseNumber: String,
     licenseValidity: Date,
     salary:  Number,
@@ -190,7 +177,6 @@ module.exports = {
     ExpenseCostColl: mongoose.model('expense', expensesSchema, 'expense'),
     PartyCollection: mongoose.model('parties', partySchema, 'parties'),
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
-    TripLanesCollection: mongoose.model('tripLanes', tripLanesSchema, 'tripLanes'),
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
     paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
