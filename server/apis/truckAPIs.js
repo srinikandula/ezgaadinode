@@ -200,23 +200,26 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
 // };
 
 
-Trucks.prototype.getTrucks = function (jwt, pageNumber, callback) {
+Trucks.prototype.getTrucks = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    if (!pageNumber) {
-        pageNumber = 1;
+    if (!params.page) {
+        params.page = 1;
     }
-    var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
+    //var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
     if(jwt.type === "account"){
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) :{};
         async.parallel({
             trucks: function (trucksCallback) {
                 TrucksColl
                     .find({accountId: jwt.accountId})
-                    .sort({createdAt: 1})
+                    .sort(sort)
                     .skip(skipNumber)
-                    .limit(pageLimits.trucksPaginationLimit)
+                    .limit(limit)
                     .lean()
                     .exec(function (err, trucks) {
                         async.parallel({
@@ -259,7 +262,7 @@ Trucks.prototype.getTrucks = function (jwt, pageNumber, callback) {
                     .find({accountId: jwt.accountId, groupId: jwt.id})
                     .sort({createdAt: 1})
                     .skip(skipNumber)
-                    .limit(pageLimits.trucksPaginationLimit)
+                    .limit(limit)
                     .lean()
                     .exec(function (err, trucks) {
                         async.parallel({

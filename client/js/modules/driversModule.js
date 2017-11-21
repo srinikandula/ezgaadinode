@@ -13,10 +13,11 @@ app.factory('DriverService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getDrivers: function (pageNumber, success, error) {
+        getDrivers: function (pageable, success, error) {
             $http({
-                url: '/v1/drivers/' + pageNumber,
-                method: "GET"
+                url: '/v1/drivers/account/drivers',
+                method: "GET",
+                params:pageable
             }).then(success, error)
         },
         getDriver: function (driverId, success, error) {

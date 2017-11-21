@@ -9,6 +9,12 @@ AuthRouter.post('/', function (req, res) {
     });
 });
 
+AuthRouter.get('/groupTrucks', function (req, res) {
+    Trucks.getTrucks(req.jwt, req.query, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.get('/findExpiryCount', function (req, res) {
     Trucks.findExpiryCount(req.jwt, function (result) {
         res.send(result);
@@ -56,11 +62,7 @@ AuthRouter.put('/', function (req, res) {
     });
 });
 
-AuthRouter.get('/groupTrucks/:pageNumber', function (req, res) {
-    Trucks.getTrucks(req.jwt, req.params.pageNumber, function (result) {
-        res.send(result);
-    });
-});
+
 AuthRouter.delete('/:truckId', function (req, res) {
     Trucks.deleteTruck(req.params.truckId, function (result) {
         res.send(result);

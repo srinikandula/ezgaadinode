@@ -90,7 +90,6 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 }]);
 
 app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServices', '$stateParams', 'Notification', function ($scope, Utils, $state, AccountServices, $stateParams, Notification) {
-    console.log('-->', $stateParams);
     $scope.pagetitle = "Add Account";
 
     $scope.account = {
