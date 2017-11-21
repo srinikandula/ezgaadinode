@@ -8,11 +8,7 @@ AuthRouter.post('/addTrip', function (req, res) {
         res.send(result);
     });
 });
-AuthRouter.get('/getAll/:pageNumber', function (req, res) {
-    Trips.getAll(req.jwt, req.body, req.params.pageNumber, function (result) {
-        res.send(result);
-    });
-});
+
 AuthRouter.get('/getAllAccountTrips', function (req, res) {
     Trips.getAllAccountTrips(req.jwt, function (result) {
         res.send(result);

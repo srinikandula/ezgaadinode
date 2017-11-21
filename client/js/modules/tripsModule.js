@@ -9,7 +9,7 @@ app.factory('TripServices', function ($http) {
         },
         getTrips: function (pageNumber, success, error) {
             $http({
-                url: '/v1/trips/getAll/' + pageNumber,
+                url: '/v1/trips/getAllAccountTrips/',
                 method: "GET"
             }).then(success, error)
         },

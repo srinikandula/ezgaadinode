@@ -238,11 +238,6 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
                                         bookedforCallback(response.err, response.documents);
                                     });
                                 },
-                                triplane: function (triplaneCallback) {
-                                    Utils.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
-                                        triplaneCallback(response.err, response.documents);
-                                    });
-                                },
                                 truckNo: function (truckscallback) {
                                     Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
                                         truckscallback(response.err, response.documents);
@@ -298,13 +293,8 @@ Trips.prototype.getAllAccountTrips = function (jwt, callback) {
                     });
                 },
                 bookedfor: function (bookedforCallback) {
-                    Utils.populateNameInPartyColl(trips, 'bookedFor', function (response) {
+                    Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
                         bookedforCallback(response.err, response.documents);
-                    });
-                },
-                triplane: function (triplaneCallback) {
-                    Utils.populateNameInTripLaneColl(trips, 'tripLane', function (response) {
-                        triplaneCallback(response.err, response.documents);
                     });
                 },
                 truckNo: function (truckscallback) {
