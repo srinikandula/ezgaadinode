@@ -23,8 +23,8 @@ AuthRouter.put('/updateParty', function (req, res) {
 });
 
 AuthRouter.get('/get/accountParties', function (req, res) {
-    Party.getAccountParties(req.jwt, function (result) {
-        res.send(result);
+    Party.getAccountParties(req.jwt, req.query, function (result) {
+        res.json(result);
     });
 });
 

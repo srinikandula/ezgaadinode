@@ -7,11 +7,11 @@ app.factory('ExpenseMasterServices', function ($http) {
                 data: expenseData
             }).then(success, error)
         },
-        getExpenses: function (params, success, error) {
+        getExpenses: function (pageable, success, error) {
             $http({
                 url: '/v1/expenseMaster',
                 method: "GET",
-                params: params
+                params: pageable
             }).then(success, error)
         },
         deleteExpense: function (expenseId, success, error) {
