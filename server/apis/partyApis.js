@@ -10,6 +10,9 @@ var Trips = require('./tripsApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
 var pageLimits = require('./../config/pagination');
 var ExpenseCostColl = require('./expensesApi');
+var TripCollection = require('./../models/schemas').TripCollection;
+var ExpenseCostColl1 = require('./../models/schemas').ExpenseCostColl;
+const ObjectId = mongoose.Types.ObjectId;
 var Party = function () {
 };
 
@@ -303,9 +306,11 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
                 //console.log("expensesResults :",expensesResults);
                 expensesCallback(expensesResults.error, expensesResults.expenses);
             });
-        }
+        },
     },function (error, tripsAndExpenses) {
         //console.log("tripsAndExpenses : ",tripsAndExpenses);
+        var totalFreight = 0;
+        var totalExpenses = 0;
         if(error){
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
@@ -314,13 +319,24 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trips = tripsAndExpenses.expenses;
-            //console.log("results : ",tripsAndExpenses.expenses);
+            //console.log("trips : ",tripsAndExpenses.trips);
+            //console.log("expenses : ",tripsAndExpenses.expenses);
 
+            for(var i =0; i < tripsAndExpenses.trips.length; i++) {
+                totalFreight = totalFreight + tripsAndExpenses.trips[i].freightAmount;
+            }
+            for(var i =0; i < tripsAndExpenses.expenses.length; i++) {
+                totalExpenses = totalExpenses + tripsAndExpenses.expenses[i].cost;
+            }
+            //console.log(totalFreight);
+            //console.log(totalExpenses);
             Utils.populateNameInPartyColl(tripsAndExpenses.trips,"partyId",function(partyDocuments){
                 //console.log("partyDocuments :",partyDocuments.documents[0].attrs.partyName);
                 retObj.trips = retObj.trips.concat(partyDocuments.documents);
+                retObj.totalRevenue = {totalFreight : totalFreight,totalExpenses : totalExpenses};
                 callback(retObj);
             });
+
         }
     });
 }

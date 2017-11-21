@@ -499,8 +499,6 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
 Trips.prototype.findTotalRevenue = function(jwt, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
-            //TODO add match
-            //it is not working now
             TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
                 { $group: { _id :null , totalFreight : { $sum: "$freightAmount" }} },
                 function (err, totalFreight) {
