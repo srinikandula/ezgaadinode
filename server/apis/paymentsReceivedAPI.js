@@ -305,7 +305,19 @@ PaymentsReceived.prototype.findPendingDueForAccount = function(jwt, callback){
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.pendingDue = populateResults.tripFrightTotal[0].totalFright - populateResults.paymentsTotal[0].totalPayments;
+            var totalFright = 0;
+            var totalPayments = 0;
+            if(populateResults.length > 0){
+                if(populateResults.tripFreightTotal[0]){
+                    totalFright = populateResults.tripFreightTotal[0].totalFreight;
+                }
+                if(populateResults.paymentsTotal[0]){
+                    totalPayments = populateResults.paymentsTotal[0].totalPayments;
+                }
+                retObj.totalRevenue = totalFright- totalPayments;
+            } else {
+                retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
+            }
             callback(retObj);
         }
     });

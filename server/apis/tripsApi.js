@@ -555,7 +555,19 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             callback(retObj);
         } else {
             retObj.status = true;
-            retObj.totalRevenue = populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
+            var totalFright = 0;
+            var totalExpenses = 0;
+            if(populateResults.length > 0){
+                if(populateResults.tripFreightTotal[0]){
+                    totalFright = populateResults.tripFreightTotal[0].totalFreight;
+                }
+                if(populateResults.expensesTotal[0]){
+                    totalExpenses = populateResults.expensesTotal[0].totalExpenses;
+                }
+                retObj.totalRevenue = totalFright- totalExpenses;
+            } else {
+                retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
+            }
             callback(retObj);
         }
     });
