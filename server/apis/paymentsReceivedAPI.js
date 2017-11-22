@@ -85,7 +85,7 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
     }
 };
 
-PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
+PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
     //console.log(params);
     var result = {};
     if (!params.page) {
@@ -103,7 +103,6 @@ PaymentsReceived.prototype.getPayments = function (params, jwt, callback) {
             var sort = params.sort ? JSON.parse(params.sort) : {};
             PaymentsReceivedColl
                 .find({'accountId': jwt.accountId})
-                .sort({createdAt: 1})
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)

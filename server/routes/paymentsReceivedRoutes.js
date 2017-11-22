@@ -42,8 +42,8 @@ AuthRouter.get('/countPayments', function (req, res) {
 });
 
 AuthRouter.get('/getPayments', function (req, res) {
-    PaymentsReceived.getPayments(req.params, req.jwt, function (result) {
-        res.send(result);
+    PaymentsReceived.getPayments(req.jwt, req.query, function (result) {
+        res.json(result);
     });
 });
 

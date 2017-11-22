@@ -25,11 +25,11 @@ app.factory('PaymentsService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getPayments: function (params, success, error) {
+        getPayments: function (pageable, success, error) {
             $http({
                 url: '/v1/payments/getPayments/',
                 method: "GET",
-                params: params
+                params: pageable
             }).then(success, error)
         },
         updateRecord: function (object, success, error) {
@@ -90,7 +90,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
 
 
     $scope.init = function () {
-        $scope.paymentsParams = new NgTableParams({
+        $scope.paymentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
@@ -100,27 +100,10 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                //console.log($scope.count);
                 loadTableData(params);
             }
         });
     };
-    // $scope.totalItems = 10;
-    // $scope.maxSize = 5;
-    // $scope.pageNumber = 1;
-    //
-    // $scope.getPaymentsRecords = function () {
-    //     PaymentsService.getPaymentsRecords($scope.pageNumber, function (success) {
-    //         if (success.data.status) {
-    //             $scope.paymentsGridOptions.data = success.data.paymentsCosts;
-    //             $scope.totalItems = success.data.count;
-    //         } else {
-    //             Notification.error({message: success.data.message});
-    //         }
-    //     }, function (err) {
-    //     });
-    // };
-    // $scope.getPaymentsRecords();
 
     $scope.deletePaymentsRecord = function (id) {
         PaymentsService.deletePaymentsRecord(id, function (success) {
@@ -133,38 +116,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
         })
     };
 
-    // $scope.paymentsGridOptions = {
-    //     enableSorting: true,
-    //     paginationPageSizes: [9, 20, 50],
-    //     paginationPageSize: 9,
-    //     columnDefs: [{
-    //         name: 'Vehicle Number',
-    //         field: 'attrs.truckName'
-    //     }, {
-    //         name: 'Description',
-    //         field: 'description'
-    //     }, {
-    //         name: 'Date',
-    //         field: 'date',
-    //         cellFilter: 'date:"dd-MM-yyyy"'
-    //     }, {
-    //         name: 'Amount',
-    //         field: 'cost'
-    //     }, {
-    //         name: 'Created By',
-    //         field: 'attrs.createdByName'
-    //     }, {
-    //         name: 'Action',
-    //         cellTemplate: '<div class="text-center"> <a ng-click="grid.appScope.goToEditPaymentsPage(row.entity._id)" class="glyphicon glyphicon-edit edit"></a>' +
-    //         '<a ng-click="grid.appScope.deletePaymentsRecord(row.entity._id)" class="glyphicon glyphicon-trash dele"> </a></div>'
-    //
-    //     }],
-    //     rowHeight: 30,
-    //     data: [],
-    //     onRegisterApi: function (gridApi) {
-    //         $scope.gridApi = gridApi;
-    //     }
-    // };
+
 }]);
 
 app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$stateParams', '$state', 'Notification', 'TripServices', 'TrucksService', 'PartyService', function ($scope, PaymentsService, $stateParams, $state, Notification, TripServices, TrucksService, PartyService) {

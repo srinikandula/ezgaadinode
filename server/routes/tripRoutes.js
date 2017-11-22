@@ -14,6 +14,11 @@ AuthRouter.get('/getAllAccountTrips', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/getAllTrips', function (req, res) {
+    Trips.getAllTrips(req.jwt, req.query, function (result) {
+        res.json(result);
+    });
+});
 AuthRouter.put('/', function (req, res) {
     Trips.updateTrip(req.jwt, req.body, function (result) {
         res.send(result);

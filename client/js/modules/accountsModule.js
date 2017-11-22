@@ -7,10 +7,11 @@ app.factory('AccountServices', function ($http, $cookies) {
                 data: accountInfo
             }).then(success, error)
         },
-        getAccounts: function (pageNumber, success, error) {
+        getAllAccounts: function (pageable, success, error) {
             $http({
-                url: '/v1/admin/accounts/fetch/' + pageNumber,
-                method: "GET"
+                url: '/v1/admin/accounts/fetch/',
+                method: "GET",
+                params:pageable
             }).then(success, error)
         },
         getAccount: function (accountId, success, error) {
@@ -58,7 +59,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
         var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
-        AccountServices.getAccounts(pageable, function (response) {
+        AccountServices.getAllAccounts(pageable, function (response) {
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.accounts)) {
                 $scope.loading = false;

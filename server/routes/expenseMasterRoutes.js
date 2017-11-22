@@ -11,7 +11,7 @@ AuthRouter.post('/', function (req, res) {
 
 AuthRouter.get('/', function (req, res) {
     ExpenseMaster.getAllAccountExpenses(req.jwt, req.query, function (result) {
-        res.send(result);
+        res.json(result);
     });
 });
 

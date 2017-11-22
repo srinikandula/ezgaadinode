@@ -131,40 +131,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open'
         }
     }).state({
-        name: 'tripLanes',
-        url: '/tripLanes',
-        templateUrl: 'views/partials/triplane/trip-lane.html',
-        data: {activeTab: 'tripLanes'},
-        params: {
-            access: 'open'
-        }
-    }).state({
-        name: 'tripLanesEdit',
-        url: '/tripLanesEdit/:tripLaneId',
-        templateUrl: 'views/partials/triplane/trip-lane-edit.html',
-        data: {activeTab: 'tripLanes'},
-        params: {
-            access: 'open',
-            tripLaneId: null
-        }
-    }).state({
-        name: 'roles',
-        url: '/roles',
-        templateUrl: 'views/partials/roles/roles.html',
-        data: {activeTab: 'roles'},
-        params: {
-            access: 'open'
-        }
-    }).state({
-        name: 'rolesEdit',
-        url: '/rolesEdit/:roleId',
-        templateUrl: 'views/partials/roles/roles-edit.html',
-        data: {activeTab: 'roles'},
-        params: {
-            access: 'open',
-            roleId: null
-        }
-    }).state({
         name: 'expenses',
         url: '/expenses',
         templateUrl: 'views/partials/expenses/expenses.html',
@@ -207,15 +173,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'auth'
         }
     }).state({
-        name: 'groupMap',
-        url: '/groupMap',
-        templateUrl: 'views/partials/groupMap.html',
-        data: {activeTab: 'groupMap'},
-        params: {
-            access: 'auth'
-        }
-
-    }).state({
         name: 'paymentsEdit',
         url: '/paymentsEdit/:paymentsId',
         templateUrl: 'views/partials/payments/paymentsEdit.html',
@@ -223,6 +180,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open',
             paymentsId: null
+        }
+    }).state({
+        name: 'groupMap',
+        url: '/groupMap',
+        templateUrl: 'views/partials/groupMap.html',
+        data: {activeTab: 'groupMap'},
+        params: {
+            access: 'auth'
         }
     }).state({
         name:'pendingBalance',

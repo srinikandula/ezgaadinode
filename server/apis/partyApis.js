@@ -132,29 +132,30 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
         }
     });
 };*/
-Party.prototype.getAccountParties = function (jwt, callback){
+Party.prototype.getAccountParties = function (jwt, params, callback){
     var retObj = {
         status: false,
         messages: []
     };
-    var pageNumber = 0;
 
-    if (!pageNumber) {
-        pageNumber = 1;
+    if (!params.page) {
+        params.page = 1;
 
-    } else if (!_.isNumber(Number(pageNumber))) {
+    } /*else if (!_.isNumber(Number(pageNumber))) {
         retObj.messages.push('Invalid page number');
         return callback(retObj);
-    }
+    }*/
 
-    var skipNumber = (pageNumber - 1) * pageLimits.partiesPaginationLimit;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
     async.parallel({
         parties: function (partiesCallback) {
             PartyCollection
                 .find({accountId: jwt.accountId})
-                .sort({createdAt: 1})
+                .sort(sort)
                 .skip(skipNumber)
-                .limit(pageLimits.partiesPaginationLimit)
+                .limit(limit)
                 .lean()
                 .exec(function (err, parties) {
                     async.parallel({

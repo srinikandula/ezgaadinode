@@ -177,6 +177,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
             }
         });
 };
+
 // Trucks.prototype.updateTruckGroupId = function (truckId, groupId, callback) {
 //     var retObj = {
 //         status: false,
@@ -198,6 +199,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
 //             }
 //         });
 // };
+
 
 
 Trucks.prototype.getTrucks = function (jwt, params, callback) {

@@ -77,29 +77,27 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
     }
 };
 
-Accounts.prototype.getAccounts = function (pageNum, callback) {
+Accounts.prototype.getAccounts = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    if (!pageNum) {
-        pageNum = 1;
+    if (!params.page) {
+        params.page = 1;
     }
 
-    if (!_.isNumber(Number(pageNum))) {
-        retObj.messages.push('Invalid page number');
-        return callback(retObj);
-    }
 
-    var skipNumber = (pageNum - 1) * pageLimits.accountPaginationLimit;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
     async.parallel({
         accounts: function (accountsCallback) {
             GroupsColl
                 .find({type: "account"})
-                .sort({createdAt: 1})
+                .sort(sort)
                 .skip(skipNumber)
-                .limit(pageLimits.accountPaginationLimit)
+                .limit(limit)
                 .lean()
                 .exec(function (err, accounts) {
                     Utils.populateNameInUsersColl(accounts, "createdBy", function (response) {

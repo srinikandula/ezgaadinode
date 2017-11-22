@@ -9,7 +9,7 @@
             <div class="toolbar-button-div pull-right mb-10">
                 <button class="btn  btn-blue pull-right" ng-click="goToEditPaymentsPage()">Add Payments</button>
             </div>
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentsParams">
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentParams">
                 <tr ng-repeat="payments in currentPageOfPayments" style="text-align: center;">
                     <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">{{ payments.date |
                         date:'MM-dd-yyyy'}}

@@ -25,11 +25,11 @@ app.factory('ExpenseService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getExpenses: function (params, success, error) {
+        getExpenses: function (pageable, success, error) {
             $http({
-                url: '/v1/expense/getAllExpense',
+                url: '/v1/expense/getAllExpenses',
                 method: "GET",
-                params: params
+                params: pageable
             }).then(success, error)
         },
         updateRecord: function (object, success, error) {

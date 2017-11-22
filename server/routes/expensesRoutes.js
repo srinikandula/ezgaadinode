@@ -27,8 +27,8 @@ AuthRouter.get('/getAll', function (req, res) {
     });
 });
 
-AuthRouter.get('/getAllExpense', function (req, res) {
-    ExpenseCost.getExpenseCosts(req.query, req.jwt, function (result) {
+AuthRouter.get('/getAllExpenses', function (req, res) {
+    ExpenseCost.getExpenseCosts(req.jwt, req.query, function (result) {
         res.send(result);
     });
 });

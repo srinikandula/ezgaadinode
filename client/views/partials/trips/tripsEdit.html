@@ -40,7 +40,7 @@
                                     <label for="bookedFor" class="col-sm-4 col-xs-12  pall-zero">Party
                                     </label>
                                     <div class="col-sm-8 col-xs-12">
-                                            <input type="text" id="bookedFor" ng-model="trip.partyName"
+                                            <input type="text" id="bookedFor" ng-model="partyName"
                                                    uib-typeahead="party.name for party in parties | filter:$viewValue"
                                                    class="form-control" typeahead-min-length="1"
                                                    typeahead-on-select="selectParty($item);"

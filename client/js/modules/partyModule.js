@@ -8,11 +8,11 @@ app.factory('PartyService', function ($http, $cookies) {
                 data: partyDetails
             }).then(success, error)
         },
-        getParties: function (params, success, error) {
+        getParties: function (pageable, success, error) {
             $http({
                 url: '/v1/party/get/accountParties',
                 method: "GET",
-                params:params
+                params:pageable
             }).then(success, error)
         },
         getAllParties: function (success, error) {
