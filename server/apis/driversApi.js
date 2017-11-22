@@ -21,7 +21,7 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     if (!driverInfo.fullName || !_.isString(driverInfo.fullName)) {
         retObj.messages.push('Invalid full name');
     }
-
+    /*
     if (!driverInfo.truckId || !Utils.isValidObjectId(driverInfo.truckId)) {
         console.log('----->', driverInfo.truckId);
         retObj.messages.push('Invalid truckId');
@@ -37,7 +37,7 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
 
     if (isNaN(Number(driverInfo.salary))) {
         retObj.messages.push('Invalid salary, should be a number');
-    }
+    }*/
 
     if (retObj.messages.length) {
         callback(retObj);

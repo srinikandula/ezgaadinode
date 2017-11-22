@@ -81,7 +81,11 @@ Events.prototype.getUserData = function (callback) {
             retObj.messages.push('Success');
             retObj.results = results.accountData.concat(results.groupData);
             for(var i = 0; i < retObj.results.length; i++) {
-                EventData.createUserData(retObj.results[i]);
+                var userData = retObj.results[i];
+                if(!userData.contactPhone || userData.contactPhone.trim().length == 0 || isNaN(userData.contactPhone)){
+                    delete userData.contactPhone;
+                }
+                EventData.createUserData(userData)
             }
             //retObj.count = retObj.results.length;
             callback(retObj);
