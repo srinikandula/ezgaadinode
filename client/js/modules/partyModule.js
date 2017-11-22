@@ -184,9 +184,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         if (!params.city) {
             params.error.push('Invalid city');
         }
-        if (!params.tripLanes) {
-            params.error.push('Invalid Lane');
-        }
+
 
         if (!params.error.length) {
             if (params._id) {
