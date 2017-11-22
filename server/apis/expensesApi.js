@@ -287,7 +287,12 @@ Expenses.prototype.findTotalExpenses = function (jwt, callback) {
                 retObj.messages.push(JSON.stringify(error));
             } else {
                 retObj.status = true;
-                retObj.totalExpenses= result[0].totalExpenses;
+                if(result.length > 0){
+                    retObj.totalExpenses= result[0].totalExpenses;
+                } else{
+                    retObj.totalExpenses= 0;
+                }
+
             }
             callback(retObj)
         });
