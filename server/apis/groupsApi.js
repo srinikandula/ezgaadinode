@@ -52,6 +52,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                 } else if ((user.password === password)) {
                     jwt.sign({
                         id: user._id,
+                        accountId: user._id,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
                         type: user.type

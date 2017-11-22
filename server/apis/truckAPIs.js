@@ -4,6 +4,8 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 
+var mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var config = require('./../config/config');
@@ -15,15 +17,6 @@ var Trucks = function () {
 };
 
 Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
-    // console.log(typeof truckDetails.fitnessExpiry);
-    // truckDetails.fitnessExpiry = new Date(truckDetails.fitnessExpiry);
-    // console.log(typeof truckDetails.fitnessExpiry,truckDetails.fitnessExpiry);
-    // truckDetails.insuranceExpiry = new Date(truckDetails.insuranceExpiry);
-    // truckDetails.permitExpiry = new Date(truckDetails.permitExpiry);
-    // truckDetails.pollutionExpiry = new Date(truckDetails.pollutionExpiry);
-    // truckDetails.taxDueDate = new Date(truckDetails.taxDueDate);
-    // console.log(truckDetails);
-
     var retObj = {
         status: false,
         messages: []
@@ -53,15 +46,8 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
                 retObj.messages.push("Truck already exists");
                 callback(retObj);
             } else {
-                if (jwt.type === "account"){
-                    truckDetails.createdBy = jwt.id;
-                    truckDetails.accountId = jwt.accountId;
-                }
-                else {
-                    truckDetails.createdBy = jwt.id;
-                    truckDetails.groupId = jwt.id;
-                    truckDetails.accountId = jwt.accountId;
-                }
+                truckDetails.createdBy = jwt.id;
+                truckDetails.accountId = jwt.id;
                 truckDetails = Helpers.removeEmptyFields(truckDetails);
                 var truckDoc = new TrucksColl(truckDetails);
                 truckDoc.save(function (err, truck) {
