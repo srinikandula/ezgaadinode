@@ -314,10 +314,11 @@ PaymentsReceived.prototype.findPendingDueForAccount = function(jwt, callback){
                 if(populateResults.paymentsTotal[0]){
                     totalPayments = populateResults.paymentsTotal[0].totalPayments;
                 }
-                retObj.totalRevenue = totalFright- totalPayments;
+                retObj.pendingDue = totalFright- totalPayments;
             } else {
-                retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
+                retObj.pendingDue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             }
+           // retObj.pendingDue = populateResults.tripFrightTotal[0].totalFright - populateResults.paymentsTotal[0].totalPayments;
             callback(retObj);
         }
     });
