@@ -19,16 +19,16 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
         messages: []
     };
 
-    if (!accountInfo.name || !_.isString(accountInfo.name)) {
-        retObj.messages.push('Invalid account name');
-    }
-
     if (!accountInfo.userName || !_.isString(accountInfo.userName)) {
-        retObj.messages.push('Invalid user name');
+        retObj.messages.push('Invalid User Name');
     }
 
     if (!Utils.isValidPassword(accountInfo.password)) {
         retObj.messages.push('Invalid password');
+    }
+
+    if (!accountInfo.contactPhone) {
+        retObj.messages.push('Invalid Mobile Number');
     }
 
     if (retObj.messages.length) {

@@ -144,6 +144,13 @@ OpenRouter.get('/get/trackEvents/:vehicleNumber', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/user', function (request, res) {
+    Events.getUserData(function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

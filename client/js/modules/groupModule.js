@@ -214,6 +214,7 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
 
             } else {
                 GroupServices.addGroup(params, function (success) {
+                    console.log(success);
                     if (success.data.status) {
                         TrucksService.assignTrucks({
                             groupId: $scope.groupId,

@@ -4,9 +4,9 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
     }
 
     $scope.loginParams = {
-        name: '',
         userName: '',
         password: '',
+        contactPhone: '',
         errors: []
     };
 
@@ -14,20 +14,22 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
         var params = $scope.loginParams;
         params.errors = [];
 
-        if (!params.name) {
-            params.errors.push('Invalid account Name');
-        }
-
         if (!params.userName) {
-            params.errors.push('Invalid user name');
+            params.errors.push('Invalid User Name');
         }
 
         if (!params.password) {
-            params.errors.push('Password length should be at least 8');
+
+            params.errors.push('Invalid Password');
         }
 
+        if (!params.contactPhone) {
+            params.errors.push('Invalid Contact Number');
+        }
         if(!params.errors.length) {
             CommonServices.login($scope.loginParams, function (success) {
+                console.log('==>',$scope.loginParams);
+                console.log(success.data);
                 if (success.data.status) {
                     $cookies.put('token', success.data.token);
                     $cookies.put('role', success.data.role);
