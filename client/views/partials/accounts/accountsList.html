@@ -10,31 +10,26 @@
             <button class="btn  btn-blue pull-right mb-10" ng-click="goToEditAccountPage()">Add Account</button>
 
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="accountParams">
-                <tr ng-repeat="accounts in currentPageOfAccounts" style="text-align: center;">
+                <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
 
-                    <td data-title="'Username'" sortable="'userName'" class="clickable-item col-sm-2">{{accounts.userName}}
+                    <td data-title="'Username'" sortable="'userName'" class="clickable-item col-sm-2">{{account.userName}}
                     </td>
-                    <td data-title="'password'" sortable="'password'" class="clickable-item col-sm-2">{{
-                        accounts.password }}
+                    <td data-title="'password'" sortable="'password'" class="clickable-item col-sm-2">{{account.password }}
                     </td>
-                    <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item col-sm-2">{{
-                        accounts.contactPhone }}
+                    <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item col-sm-2">{{account.contactPhone }}
                     </td>
-                    <td data-title="'ERP Status'" sortable="'erpEnabled'" class="clickable-item col-sm-2">{{
-                        accounts.erpEnabled }}
+                    <td data-title="'ERP Status'" sortable="'erpEnabled'" class="clickable-item col-sm-2">{{account.erpEnabled }}
                     </td>
-                    <td data-title="'GPS Status'" sortable="'gpsEnabled'" class="clickable-item col-sm-2">{{
-                        accounts.gpsEnabled }}
+                    <td data-title="'GPS Status'" sortable="'gpsEnabled'" class="clickable-item col-sm-2">{{account.gpsEnabled }}
                     </td>
-                    <td data-title="'Status'" sortable="'isActive'" class="clickable-item col-sm-1">{{
-                        accounts.isActive }}
+                    <td data-title="'Status'" sortable="'isActive'" class="clickable-item col-sm-1">{{account.isActive }}
                     </td>
 
                     <td data-title="'Created By'" sortable="'createdByName'"
-                        class="clickable-item col-sm-1">{{ accounts.attrs.createdByName }}
+                        class="clickable-item col-sm-1">{{ account.attrs.createdByName }}
                     </td>
                     <td data-title="'Action'" class="col-sm-2">
-                        <a href="#" class="btn" ng-click="goToEditAccountPage(accounts._id)">
+                        <a href="#" class="btn" ng-click="goToEditAccountPage(account._id)">
                             <span class="glyphicon glyphicon-pencil"></span></a>
                     </td>
                 </tr>

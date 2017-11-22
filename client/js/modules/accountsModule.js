@@ -38,6 +38,7 @@ app.factory('AccountServices', function ($http, $cookies) {
 
 app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', 'paginationService','NgTableParams', function ($scope, $uibModal, AccountServices, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditAccountPage = function (accountId) {
+        console.log('editing account '+ accountId);
         $state.go('accountsEdit', {accountId: accountId});
     };
 
@@ -122,10 +123,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         var params = $scope.account;
         params.errors = [];
         params.success = [];
-
-        if (params._id) {
-            delete params.password;
-        }
 
         if (!params._id && !params.userName) {
             params.errors.push('Invalid User Name');
