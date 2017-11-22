@@ -93,8 +93,8 @@ Accounts.prototype.getAccounts = function (jwt, params, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {};
     async.parallel({
         accounts: function (accountsCallback) {
-            GroupsColl
-                .find({type: "account"})
+            AccountsColl
+                .find()
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
@@ -134,7 +134,7 @@ Accounts.prototype.getAllAccounts = function (callback) {
         messages: []
     };
 
-    GroupsColl.find({type: "account"}, {name: 1}, function (err, accounts) {
+    AccountsColl.find({}, {name: 1}, function (err, accounts) {
         if (err) {
             retObj.messages.push('Error retrieving accounts');
             callback(retObj);
@@ -160,7 +160,7 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        GroupsColl.findOne({_id: accountId,type: "account"}, function (err, account) {
+        AccountsColl.findOne({}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error retrieving account');
                 callback(retObj);
@@ -192,7 +192,7 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
     } else {
         accountInfo.updatedBy = jwtObj.id;
         accountInfo = Utils.removeEmptyFields(accountInfo);
-        GroupsColl.findOneAndUpdate({_id: accountInfo._id, type: "account"}, {$set: accountInfo}, function (err, oldAcc) {
+        AccountsColl.findOneAndUpdate({_id: accountInfo._id, type: "account"}, {$set: accountInfo}, function (err, oldAcc) {
             if (err) {
                 retObj.messages.push('Error updating the account');
                 callback(retObj);

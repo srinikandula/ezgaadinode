@@ -5,6 +5,10 @@ var GroupsColl = require('./../models/schemas').GroupsColl;
 var EventData = function () {
 };
 
+var log4js = require('log4js')
+    , logger = log4js.getLogger("file-log");
+log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60});
+
 EventData.prototype.createEventData = function (eventData, callback) {
     var retObj = {
         status: false,
@@ -89,9 +93,11 @@ EventData.prototype.createUserData = function (userData, callback) {
         status: false,
         messages: []
     };
-    var userDataDoc = new AccountsColl(userData);
-    userDataDoc.save(userData, function (err, newDoc) {
+    var accountDoc = new AccountsColl(userData);
+    accountDoc.save(userData, function (err, newDoc) {
+
         if (err) {
+            logger.info(JSON.stringify(err));
             retObj.messages.push('Error saving User Data');
             if(callback){
                 callback(retObj);

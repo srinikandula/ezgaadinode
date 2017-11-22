@@ -192,7 +192,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         if (!params.fullName) {
             params.errors.push('Please provide driver\'s full name')
         }
-
+/*
         if (!Utils.isValidPhoneNumber(params.mobile)) {
             params.errors.push('Please provide valid mobile number');
         }
@@ -208,7 +208,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         if (!params.licenseNumber) {
             params.errors.push('Please provide  licenseNumber');
         }
-
+*/
         if (!params.errors.length) {
             if (params._id) {
                 DriverService.updateDriver(params, function (success) {

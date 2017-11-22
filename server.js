@@ -54,7 +54,7 @@ app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/expense', Expense.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
-app.use('/v1/group', Groups.AuthRouter);
+
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

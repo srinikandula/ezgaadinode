@@ -12,20 +12,19 @@
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="accountParams">
                 <tr ng-repeat="accounts in currentPageOfAccounts" style="text-align: center;">
 
-                    <td data-title="'Username'" sortable="'userName'" class="clickable-item col-sm-2">{{
-                        accounts.name}}
+                    <td data-title="'Username'" sortable="'userName'" class="clickable-item col-sm-2">{{accounts.userName}}
                     </td>
                     <td data-title="'password'" sortable="'password'" class="clickable-item col-sm-2">{{
-                        accounts.userName }}
+                        accounts.password }}
                     </td>
                     <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item col-sm-2">{{
-                        accounts.userName }}
+                        accounts.contactPhone }}
                     </td>
                     <td data-title="'ERP Status'" sortable="'erpEnabled'" class="clickable-item col-sm-2">{{
-                        accounts.userName }}
+                        accounts.erpEnabled }}
                     </td>
                     <td data-title="'GPS Status'" sortable="'gpsEnabled'" class="clickable-item col-sm-2">{{
-                        accounts.userName }}
+                        accounts.gpsEnabled }}
                     </td>
                     <td data-title="'Status'" sortable="'isActive'" class="clickable-item col-sm-1">{{
                         accounts.isActive }}
