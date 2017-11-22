@@ -529,8 +529,8 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now
-            TripCollection.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
-                {$group: {_id: null, totalFreight: {$sum: "$freightAmount"}}},
+            TripCollection.aggregate([{$match: {"accountId": ObjectId(jwt.accountId)}},
+                {$group: {_id: null, totalFreight: {$sum: "$freightAmount"}}}],
                 function (err, totalFreight) {
                     //console.log(totalFreight);
                     callback(err, totalFreight);
@@ -557,7 +557,7 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             retObj.status = true;
             var totalFright = 0;
             var totalExpenses = 0;
-            if(populateResults.length > 0){
+            if(populateResults){
                 if(populateResults.tripFreightTotal[0]){
                     totalFright = populateResults.tripFreightTotal[0].totalFreight;
                 }
