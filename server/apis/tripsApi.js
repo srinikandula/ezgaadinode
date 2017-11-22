@@ -138,7 +138,14 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
         });
 };
 
-Trips.prototype.getAllTrips = function (jwt, params, callback) {
+/** this is to be used with super user login
+ *
+ * @param jwt
+ * @param req
+ * @param pageNumber
+ * @param callback
+ */
+Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -269,7 +276,7 @@ Trips.prototype.getAllTrips = function (jwt, params, callback) {
     }
 };
 
-/*Trips.prototype.getAllAccountTrips = function (jwt, callback) {
+Trips.prototype.getAllAccountTrips = function (jwt, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -312,7 +319,7 @@ Trips.prototype.getAllTrips = function (jwt, params, callback) {
                 }
             });
         });
-};*/
+};
 
 Trips.prototype.deleteTrip = function (tripId, callback) {
     var retObj = {

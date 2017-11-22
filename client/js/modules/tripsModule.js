@@ -158,7 +158,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             if (success.data.status) {
                 $scope.parties = success.data.parties;
                 var selectedParty = _.find( $scope.parties, function (party) {
-                    return party._id.toString() === $scope.trip.partyId;
+                    return party._id.toString() === $scope.trip.party.name;
                 });
                  if(selectedParty){
                     $scope.partyName = selectedParty.name;

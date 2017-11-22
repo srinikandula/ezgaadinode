@@ -131,23 +131,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open'
         }
     }).state({
-        name: 'roles',
-        url: '/roles',
-        templateUrl: 'views/partials/roles/roles.html',
-        data: {activeTab: 'roles'},
-        params: {
-            access: 'open'
-        }
-    }).state({
-        name: 'rolesEdit',
-        url: '/rolesEdit/:roleId',
-        templateUrl: 'views/partials/roles/roles-edit.html',
-        data: {activeTab: 'roles'},
-        params: {
-            access: 'open',
-            roleId: null
-        }
-    }).state({
         name: 'expenses',
         url: '/expenses',
         templateUrl: 'views/partials/expenses/expenses.html',

@@ -102,7 +102,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                 name: -1
             }
         }, {
-            counts: [],
+            counts: [25,50,100],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);

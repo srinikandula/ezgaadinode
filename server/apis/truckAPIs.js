@@ -178,6 +178,30 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
         });
 };
 
+// Trucks.prototype.updateTruckGroupId = function (truckId, groupId, callback) {
+//     var retObj = {
+//         status: false,
+//         messages: []
+//     };
+//     TrucksColl.findOneAndUpdate({_id: truckId},{$set: {"groupId": groupId}},{new: true}, function (err, truck) {
+//             if (err) {
+//                 retObj.messages.push("Error while updating truck, try Again");
+//                 callback(retObj);
+//             } else if (truck) {
+//                 retObj.status = true;
+//                 retObj.messages.push("Truck updated successfully");
+//                 retObj.truck = truck;
+//                 callback(retObj);
+//             } else {
+//                 retObj.status = false;
+//                 retObj.message.push("Error, finding truck");
+//                 callback(retObj);
+//             }
+//         });
+// };
+
+
+
 Trucks.prototype.getTrucks = function (jwt, params, callback) {
     var retObj = {
         status: false,

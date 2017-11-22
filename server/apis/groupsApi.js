@@ -119,7 +119,7 @@ Groups.prototype.login = function (accountName, userName, password, callback) {
         retObj.messages.push('Please provide account name');
     }
 
-    if (!Utils.isValidPassword(password)) {
+    if (!_.isString(password)) {
         retObj.messages.push('Please provide valid password');
     }
 
