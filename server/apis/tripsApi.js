@@ -276,49 +276,78 @@ Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
     }
 };
 
-Trips.prototype.getAllAccountTrips = function (jwt, callback) {
+Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    TripCollection
-        .find({'accountId': jwt.accountId})
-        .sort({createdAt: 1})
-        .lean()
-        .exec(function (err, trips) {
+
+    if (!params.page) {
+        params.page = 1;
+    }
+
+  else {
+        if (jwt.type = "account") {
+            var skipNumber = (params.page - 1) * params.size;
+            var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) : {};
             async.parallel({
-                createdbyname: function (createdbyCallback) {
-                    Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
-                        createdbyCallback(response.err, response.documents);
-                    });
+                trips: function (tripsCallback) {
+                    TripCollection
+                        .find({'accountId': jwt.accountId})
+                        .sort(sort)
+                        .skip(skipNumber)
+                        .limit(limit)
+                        .lean()
+                        .exec(function (err, trips) {
+                            async.parallel({
+                                createdbyname: function (createdbyCallback) {
+                                    Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
+                                        createdbyCallback(response.err, response.documents);
+                                    });
+                                },
+                                driversname: function (driversnameCallback) {
+                                    Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
+                                        driversnameCallback(response.err, response.documents);
+                                    });
+                                },
+                                bookedfor: function (bookedforCallback) {
+                                    Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
+                                        bookedforCallback(response.err, response.documents);
+                                    });
+                                },
+                                truckNo: function (truckscallback) {
+                                    Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                                        truckscallback(response.err, response.documents);
+                                    })
+                                }
+                            }, function (populateErr, populateResults) {
+                                tripsCallback(populateErr, populateResults);
+                            });
+                        });
                 },
-                driversname: function (driversnameCallback) {
-                    Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
-                        driversnameCallback(response.err, response.documents);
+                count: function (countCallback) {
+                    TripCollection.count(function (err, count) {
+                        countCallback(err, count);
                     });
-                },
-                bookedfor: function (bookedforCallback) {
-                    Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
-                        bookedforCallback(response.err, response.documents);
-                    });
-                },
-                truckNo: function (truckscallback) {
-                    Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
-                        truckscallback(response.err, response.documents);
-                    })
+
                 }
-            }, function (populateErr, populateResults) {
-                if (populateErr) {
+            }, function (err, results) {
+                if (err) {
                     retObj.messages.push('Error retrieving trips');
                     callback(retObj);
                 } else {
                     retObj.status = true;
                     retObj.messages.push('Success');
-                    retObj.trips = trips; //as trips is callby reference
+                    retObj.count = results.count;
+                    retObj.trips = results.trips.createdbyname; //as trips is callby reference
                     callback(retObj);
                 }
             });
-        });
+        }
+
+
+    }
 };
 
 Trips.prototype.deleteTrip = function (tripId, callback) {
