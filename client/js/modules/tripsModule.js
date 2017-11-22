@@ -7,11 +7,10 @@ app.factory('TripServices', function ($http) {
                 data: trip
             }).then(success, error)
         },
-        getAllTrips: function (pageable, success, error) {
+        getAllTrips: function ( success, error) {
             $http({
                 url: '/v1/trips/getAllTrips/',
                 method: "GET",
-                params: pageable
             }).then(success, error)
         },
         getTrip: function (tripId, success, error) {
