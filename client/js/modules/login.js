@@ -22,7 +22,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
             params.errors.push('Invalid user name');
         }
 
-        if (!Utils.isValidPassword(params.password)) {
+        if (!params.password) {
             params.errors.push('Password length should be at least 8');
         }
 
