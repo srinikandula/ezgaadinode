@@ -15,9 +15,9 @@ app.factory('PartyService', function ($http, $cookies) {
                 params:pageable
             }).then(success, error)
         },
-        getAllParties: function (success, error) {
+        getAccountParties: function (success, error) {
             $http({
-                url: '/v1/party/get/all',
+                url: '/v1/party/get/accountParties',
                 method: "GET"
             }).then(success, error)
         },

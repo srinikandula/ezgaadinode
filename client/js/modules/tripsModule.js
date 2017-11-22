@@ -153,7 +153,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
 
     function getParties() {
-        PartyService.getAllParties(function (success) {
+        PartyService.getAccountParties(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
                 var selectedParty = _.find($scope.parties, function (party) {
