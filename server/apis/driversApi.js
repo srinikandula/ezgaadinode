@@ -100,28 +100,29 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     }
 };
 
-Drivers.prototype.getDriverByPageNumber = function (jwt, pageNum, callback) {
+Drivers.prototype.getDrivers= function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    if (!pageNum) {
-        pageNum = 1;
+    if (!params.page) {
+        params.page = 1;
     }
-
-    if (retObj.messages.length) {
+     if (retObj.messages.length) {
         callback(retObj);
     } else {
         if (jwt.type = "account") {
-            var skipNumber = (pageNum - 1) * pageLimits.driverPaginationLimit;
+            var skipNumber = (params.page - 1) * params.size;
+            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) :{};
             async.parallel({
                 drivers: function (driversCallback) {
                     DriversColl
                         .find({"accountId": jwt.accountId})
-                        .sort({createdAt: 1})
+                        .sort(sort)
                         .skip(skipNumber)
-                        .limit(pageLimits.driverPaginationLimit)
+                        .limit(limit)
                         .populate('truckId')
                         .lean()
                         .exec(function (err, drivers) {
@@ -154,7 +155,7 @@ Drivers.prototype.getDriverByPageNumber = function (jwt, pageNum, callback) {
             });
         }
         else {
-            var skipNumber = (pageNum - 1) * pageLimits.driverPaginationLimit;
+            var skipNumber = (params.page - 1) * params.size;
             async.parallel({
                 drivers: function (driversCallback) {
                     DriversColl

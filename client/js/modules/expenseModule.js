@@ -25,7 +25,7 @@ app.factory('ExpenseService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getExpense: function (params, success, error) {
+        getExpenses: function (params, success, error) {
             $http({
                 url: '/v1/expense/getAllExpense',
                 method: "GET",
@@ -81,7 +81,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
-        ExpenseService.getExpense(pageable, function (response) {
+        ExpenseService.getExpenses(pageable, function (response) {
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.maintanenceCosts)) {
                 $scope.loading = false;
@@ -102,7 +102,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                 name: -1
             }
         }, {
-            counts: [],
+            counts: [25,50,100],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
