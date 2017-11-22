@@ -10,12 +10,12 @@ AuthRouter.post('/addTrip', function (req, res) {
 });
 
 AuthRouter.get('/getAllAccountTrips', function (req, res) {
-    Trips.getAllAccountTrips(req.jwt, function (result) {
-        res.send(result);
+    Trips.getAllAccountTrips(req.jwt, req.query, function (result) {
+        res.json(result);
     });
 });
 AuthRouter.get('/getAllTrips', function (req, res) {
-    Trips.getAllTrips(req.jwt, req.query, function (result) {
+    Trips.getAll(req.jwt, req.query, function (result) {
         res.json(result);
     });
 });

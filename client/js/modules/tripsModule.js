@@ -40,10 +40,11 @@ app.factory('TripServices', function ($http) {
                 data: paymentdetails
             }).then(success, error)
         },
-        getAllAccountTrips: function (success, error) {
+        getAllAccountTrips: function (pageable, success, error) {
             $http({
                 url: '/v1/trips/getAllAccountTrips',
-                method: "GET"
+                method: "GET",
+                params: pageable
             }).then(success, error)
         },
         count: function (success, error) {
@@ -56,7 +57,7 @@ app.factory('TripServices', function ($http) {
     }
 });
 
-app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService','NgTableParams', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams) {
+app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams) {
     $scope.goToEditTripPage = function (tripId) {
         $state.go('tripsEdit', {tripId: tripId});
     };
@@ -79,7 +80,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
-        TripServices.getAllTrips(pageable, function (response) {
+        TripServices.getAllAccountTrips(pageable, function (response) {
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.trips)) {
                 $scope.loading = false;
@@ -109,30 +110,29 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     };
 
 
-      $scope.deleteTrip = function (tripId) {
-          TripServices.deleteTrip(tripId, function (success) {
-              if (success) {
-                  $scope.getCount();
-                  Notification.success({message: "Trip deleted successfully"});
-              } else {
-                  success.data.messages.forEach(function (message) {
-                      Notification.error(message);
-                  });
-              }
-          })
-      };
-
+    $scope.deleteTrip = function (tripId) {
+        TripServices.deleteTrip(tripId, function (success) {
+            if (success) {
+                $scope.getCount();
+                Notification.success({message: "Trip deleted successfully"});
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        })
+    };
 
 
 }]);
 
 
-app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification','TrucksService', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService) {
+app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', 'TrucksService', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService) {
     $scope.pagetitle = "Add Trip";
 
     $scope.drivers = [];
     $scope.parties = [];
-    $scope.isFirstOpen=true;
+    $scope.isFirstOpen = true;
     $scope.trip = {
         date: '',
         driver: '',
@@ -143,8 +143,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         tonnage: '',    //new...
         rate: '',   //new...
         remarks: '',    //new
-        error:[],
-        success:[]
+        error: [],
+        success: []
     };
 
     $scope.cancel = function () {
@@ -152,15 +152,14 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     };
 
 
-
     function getParties() {
-       PartyService.getAllParties(function (success) {
+        PartyService.getAllParties(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
-                var selectedParty = _.find( $scope.parties, function (party) {
-                    return party._id.toString() === $scope.trip.party.name;
+                var selectedParty = _.find($scope.parties, function (party) {
+                    return party._id.toString() === $scope.trip.partyId;
                 });
-                 if(selectedParty){
+                if (selectedParty) {
                     $scope.partyName = selectedParty.name;
                     $scope.tripLanesList = selectedParty.tripLanes;
                 }
@@ -174,20 +173,21 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
         });
     }
+
     $scope.selectBookedFor = function (booked) {
         $scope.trip.bookedFor = booked._id;
     }
 
 
     function getTruckIds() {
-     // TrucksService.getAllAccountTrucks(1,function (success) {
+        // TrucksService.getAllAccountTrucks(1,function (success) {
         TrucksService.getAllAccountTrucks(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
-                var selectedTruck = _.find( $scope.trucks, function (truck) {
+                var selectedTruck = _.find($scope.trucks, function (truck) {
                     return truck._id.toString() === $scope.trip.registrationNo;
                 });
-                if(selectedTruck){
+                if (selectedTruck) {
                     $scope.truckRegNo = selectedTruck.registrationNo;
                 }
             } else {
@@ -199,6 +199,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
         });
     }
+
     $scope.selectTruckId = function (truck) {
         $scope.trip.registrationNo = truck._id;
     }
@@ -211,12 +212,11 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         $scope.trip.tripLane = triplane.name;
 
     }
-    $scope.selectParty = function(party) {
+    $scope.selectParty = function (party) {
         $scope.trip.partyId = party._id;
         $scope.tripLanesList = party.tripLanes;
 
     }
-
 
 
     $scope.getTrip = function () {
@@ -264,8 +264,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     };
 
 
-
-
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
         console.log($scope.trip);
@@ -306,14 +304,14 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             }
         }
     };
-    $scope.$watch("trip.tonnage", function(newValue, oldValue){
+    $scope.$watch("trip.tonnage", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
     });
-    $scope.$watch("trip.rate", function(newValue, oldValue){
+    $scope.$watch("trip.rate", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
     });
     $scope.calculateFreightAmount = function () {
-        if($scope.trip.tonnage>0 && $scope.trip.rate>0) {
+        if ($scope.trip.tonnage > 0 && $scope.trip.rate > 0) {
             $scope.trip.freightAmount = $scope.trip.tonnage * $scope.trip.rate;
         }
         return $scope.trip.freightAmount;
