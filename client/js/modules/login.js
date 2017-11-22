@@ -26,7 +26,6 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
             params.errors.push('Password length should be at least 8');
         }
 
-
         if(!params.errors.length) {
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
