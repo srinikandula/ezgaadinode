@@ -2,6 +2,8 @@ var async = require('async');
 var _ = require('underscore');
 
 var Utils = require('./utils');
+var mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 var pageLimits = require('./../config/pagination');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
@@ -160,7 +162,7 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({}, function (err, account) {
+        AccountsColl.findOne({"_id": ObjectId(accountId)}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error retrieving account');
                 callback(retObj);
@@ -191,8 +193,8 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
         callback(retObj);
     } else {
         accountInfo.updatedBy = jwtObj.id;
-        accountInfo = Utils.removeEmptyFields(accountInfo);
-        AccountsColl.findOneAndUpdate({_id: accountInfo._id, type: "account"}, {$set: accountInfo}, function (err, oldAcc) {
+        ///accountInfo = Utils.removeEmptyFields(accountInfo);
+        AccountsColl.findOneAndUpdate({_id: accountInfo._id}, {$set: accountInfo}, function (err, oldAcc) {
             if (err) {
                 retObj.messages.push('Error updating the account');
                 callback(retObj);
