@@ -7,11 +7,11 @@ app.factory('GroupServices', function ($http) {
                 data: userData
             }).then(success, error)
         },
-        getGroups: function (params, success, error) {
+        getGroups: function (pageable, success, error) {
             $http({
                 url: '/v1/group/getGroups/',
                 method: "GET",
-                params: params
+                params: pageable
             }).then(success, error)
         },
         getGroup: function (id, success, error) {

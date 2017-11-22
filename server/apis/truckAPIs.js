@@ -208,7 +208,7 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
     if (!params.page) {
         params.page = 1;
     }
-    //var skipNumber = (pageNumber - 1) * pageLimits.trucksPaginationLimit;
+
     if(jwt.type === "account"){
         var skipNumber = (params.page - 1) * params.size;
         var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
@@ -262,7 +262,7 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
                     .find({accountId: jwt.accountId, groupId: jwt.id})
                     .sort({createdAt: 1})
                     .skip(skipNumber)
-                    .limit(limit)
+                    .limit(pageLimits.trucksPaginationLimit)
                     .lean()
                     .exec(function (err, trucks) {
                         async.parallel({
