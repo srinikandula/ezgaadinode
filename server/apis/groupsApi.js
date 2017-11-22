@@ -6,6 +6,7 @@ var async = require('async');
 var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
 var GroupsColl = require('./../models/schemas').GroupsColl;
+var AccountsCollection = require('./../models/schemas').AccountsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 
 log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60});
@@ -104,23 +105,23 @@ Groups.prototype.addGroup = function (jwt, regDetails, callback) {
     }
 };
 
-Groups.prototype.login = function (accountName, userName, password, callback) {
+Groups.prototype.login = function (userName, password, contactPhone, callback) {
     logger.info("logging in user:" + userName);
     var retObj = {
         status: false,
         messages: []
     };
 
-    if (!_.isString(userName)) {
-        retObj.messages.push('Please provide the username');
+    if (!userName) {
+        retObj.messages.push('Please provide the Username');
     }
 
-    if (!_.isString(accountName)) {
-        retObj.messages.push('Please provide account name');
+    if (!password) {
+        retObj.messages.push('Please provide valid Password');
     }
 
-    if (!Utils.isValidPassword(password)) {
-        retObj.messages.push('Please provide valid password');
+    if (!contactPhone) {
+        retObj.messages.push('Please provide Mobile Number');
     }
 
     if (retObj.messages.length) {
@@ -129,11 +130,11 @@ Groups.prototype.login = function (accountName, userName, password, callback) {
 
         var query = {
             userName: userName,
-            name: accountName
+            password: password,
+            contactPhone: parseInt(contactPhone),
         };
-        GroupsColl
+        AccountsCollection
             .findOne(query)
-            .populate('accountId')
             .exec(function (err, user) {
                 if (err) {
                     retObj.messages.push('Error finding user');
@@ -144,8 +145,8 @@ Groups.prototype.login = function (accountName, userName, password, callback) {
                 } else if ((user.password === password)) {
                     jwt.sign({
                         id: user._id,
-                        accountId: user.accountId._id,
-                        name: user.name,
+                        userName: user.userName,
+                        contactPhone: user.contactPhone,
                         type: user.type
                     }, config.jwt.secret, config.jwt.options, function (err, token) {
                         if (err) {

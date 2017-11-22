@@ -94,9 +94,11 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     $scope.pagetitle = "Add Account";
 
     $scope.account = {
-        name: '',
         userName: '',
         password: '',
+        contactPhone: '',
+        erpEnabled: '',
+        gpsEnabled: '',
         isActive: true,
         success: [],
         errors: []
@@ -125,16 +127,16 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             delete params.password;
         }
 
-        if (!params.name) {
-            params.errors.push('Invalid Account Name');
-        }
-
         if (!params._id && !params.userName) {
             params.errors.push('Invalid User Name');
         }
 
-        if (!params._id && !Utils.isValidPassword(params.password)) {
+        if (!params._id && !params.password) {
             params.errors.push('Invalid Password');
+        }
+
+        if (!params._id && !params.contactPhone) {
+            params.errors.push('Invalid Mobile Number');
         }
 
         if (!params.errors.length) {

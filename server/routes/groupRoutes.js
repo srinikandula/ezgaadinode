@@ -10,7 +10,7 @@ AuthRouter.post('/addGroup', function (req, res) {
 });
 
 OpenRouter.post('/login', function (req, res) {
-    Groups.login(req.body.name,req.body.userName, req.body.password,function (result) {
+    Groups.login(req.body.userName, req.body.password, req.body.contactPhone, function (result) {
         res.json(result);
     });
 });

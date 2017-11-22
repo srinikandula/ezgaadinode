@@ -5,7 +5,7 @@ app.directive('leftNavigation', function () {
         '        <ul class="list-unstyled">\n' +
         '            \n' +
         '            <account-directive></account-directive>\n' +
-        '            <group-directive></group-directive>\n' +
+        //'            <group-directive></group-directive>\n' +
         '            <driver-directive></driver-directive>\n' +
         '            <truck-directive></truck-directive>\n' +
         '            <trip-directive></trip-directive>\n' +
@@ -28,14 +28,14 @@ app.directive('accountDirective', function () {
         '          </li>'
     };
 });
-app.directive('groupDirective', function () {
+/*app.directive('groupDirective', function () {
     return {
         restrict: 'E',
         template: '<li ng-class="{selected: activeTab === \'groups\'}" class="left-nav-li"> \n' +
         '             <a class="left-nav-anchor" ui-sref="groups">Groups</a>\n' +
         '          </li>'
     };
-});
+});*/
 app.directive('driverDirective', function () {
     return {
         restrict: 'E',

@@ -1,5 +1,7 @@
 
 var EventDataCollection = require('./../models/schemas').EventDataCollection;
+var AccountsColl = require('./../models/schemas').AccountsColl;
+var GroupsColl = require('./../models/schemas').GroupsColl;
 var EventData = function () {
 };
 
@@ -82,7 +84,29 @@ EventData.prototype.getTrackEvents = function (vehicleNumber, callback) {
     });
 }
 
+EventData.prototype.createUserData = function (userData, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var userDataDoc = new AccountsColl(userData);
+    userDataDoc.save(userData, function (err, newDoc) {
+        if (err) {
+            retObj.messages.push('Error saving User Data');
+            if(callback){
+                callback(retObj);
+            }
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.userData = newDoc;
+            if(callback){
+                callback(retObj);
+            }
+        }
+    });
 
+}
 
 
 module.exports = new EventData();

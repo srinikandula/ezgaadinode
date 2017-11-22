@@ -20,20 +20,25 @@ connection.on('error', function (err) {
 });
 
 var accountSchema = new mongoose.Schema({
-    name: {   // name of the account is called accountId
+    userName: {   // name of the account is called accountId
         type: String,
         index: true,
         unique: true
     },
+    contactPhone: Number,
+    password: String,
+    type: {type: String, default:"account"},
     updatedBy: String,
     createdBy: String,
-    isActive: {type: Boolean, default:true}
+    isActive: {type: Boolean, default:true},
+    gpsEnabled: {type: Boolean, default:false},
+    erpEnabled: {type: Boolean, default:false}
 }, {
     timestamps: true
 });
 var groupSchema = new mongoose.Schema({
     name: String,
-    type: String,
+    type: {type: Boolean, default:"account"},
     accountId: {
         type: ObjectId, ref: 'accounts'
     },
@@ -42,7 +47,7 @@ var groupSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
-    password: String,
+
     updatedBy: String,
     createdBy: String,
     isActive: {type: Boolean, default:true},
