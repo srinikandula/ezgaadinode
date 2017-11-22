@@ -25,11 +25,11 @@ app.factory('ExpenseService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getExpense: function (params, success, error) {
+        getExpenses: function (pageable, success, error) {
             $http({
-                url: '/v1/expense/getAllExpense',
+                url: '/v1/expense/getAllExpenses',
                 method: "GET",
-                params: params
+                params: pageable
             }).then(success, error)
         },
         updateRecord: function (object, success, error) {
@@ -81,7 +81,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
-        ExpenseService.getExpense(pageable, function (response) {
+        ExpenseService.getExpenses(pageable, function (response) {
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.maintanenceCosts)) {
                 $scope.loading = false;

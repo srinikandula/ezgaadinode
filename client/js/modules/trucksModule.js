@@ -19,10 +19,11 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        getGroupTrucks: function (pageNumber, success, error) {
+        getAllTrucks: function (pagebale, success, error) {
             $http({
-                url: '/v1/trucks/groupTrucks/' + pageNumber,
-                method: "GET"
+                url: '/v1/trucks/groupTrucks/',
+                method: "GET",
+                params:pagebale
             }).then(success, error)
         },
         getUnAssignedTrucks: function (groupId, success, error) {
@@ -135,7 +136,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
-        TrucksService.getGroupTrucks(pageable, function (response) {
+        TrucksService.getAllTrucks(pageable, function (response) {
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.trucks)) {
                 $scope.loading = false;

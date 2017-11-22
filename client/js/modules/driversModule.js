@@ -13,10 +13,11 @@ app.factory('DriverService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getDrivers: function (pageNumber, success, error) {
+        getDrivers: function (pageable, success, error) {
             $http({
-                url: '/v1/drivers/' + pageNumber,
-                method: "GET"
+                url: '/v1/drivers/account/drivers',
+                method: "GET",
+                params:pageable
             }).then(success, error)
         },
         getDriver: function (driverId, success, error) {
@@ -105,6 +106,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         DriverService.deleteDriver(driverId, function (success) {
             if (success) {
                 Notification.error({message: 'Successfully deleted driver'});
+                $scope.getCount();
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -155,7 +157,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
 
     function getTruckIds() {
      // TrucksService.getAllAccountTrucks(1, function (success) {
-        TrucksService.getGroupTrucks(1, function (success) {
+        TrucksService.getAllTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find( $scope.trucks, function (truck) {

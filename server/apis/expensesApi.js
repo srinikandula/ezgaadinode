@@ -56,7 +56,7 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
     }
 };
 
-Expenses.prototype.getExpenseCosts = function (params, jwt, callback) {
+Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -74,7 +74,7 @@ Expenses.prototype.getExpenseCosts = function (params, jwt, callback) {
             var sort = params.sort ? JSON.parse(params.sort) :{};
             expenseColl
                 .find({'accountId': jwt.accountId})
-                .sort({createdAt: 1})
+                //.sort({createdAt: 1})
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)

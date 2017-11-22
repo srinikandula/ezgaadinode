@@ -8,16 +8,16 @@ app.factory('PartyService', function ($http, $cookies) {
                 data: partyDetails
             }).then(success, error)
         },
-        getParties: function (params, success, error) {
+        getParties: function (pageable, success, error) {
             $http({
                 url: '/v1/party/get/accountParties',
                 method: "GET",
-                params:params
+                params:pageable
             }).then(success, error)
         },
-        getAllParties: function (success, error) {
+        getAccountParties: function (success, error) {
             $http({
-                url: '/v1/party/get/all',
+                url: '/v1/party/get/accountParties',
                 method: "GET"
             }).then(success, error)
         },
@@ -184,9 +184,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$statePa
         if (!params.city) {
             params.error.push('Invalid city');
         }
-        if (!params.tripLanes) {
-            params.error.push('Invalid Lane');
-        }
+
 
         if (!params.error.length) {
             if (params._id) {

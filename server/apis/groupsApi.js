@@ -9,7 +9,7 @@ var GroupsColl = require('./../models/schemas').GroupsColl;
 var AccountsCollection = require('./../models/schemas').AccountsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 
-log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60});
+log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 
 var config = require('./../config/config');
 var Utils = require('./utils');
@@ -43,7 +43,7 @@ Groups.prototype.addGroup = function (jwt, regDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        GroupsColl.findOne({userName: regDetails.userName,name: regDetails.name}, function (err, user) {
+        GroupsColl.findOne({userName: regDetails.userName, name: regDetails.name}, function (err, user) {
             if (err) {
                 retObj.messages.push("Error, try again!");
                 callback(retObj);
@@ -51,10 +51,10 @@ Groups.prototype.addGroup = function (jwt, regDetails, callback) {
                 retObj.messages.push("User already exists");
                 callback(retObj);
             } else {
-                for (var i = 0; i < regDetails.checkedTrucks.length; i++){
+                for (var i = 0; i < regDetails.checkedTrucks.length; i++) {
                     var truck = regDetails.checkedTrucks[i];
-                    trucksAPI.findTruck(jwt,truck,function (retTruck) {
-                        if (retTruck.truck.groupId){
+                    trucksAPI.findTruck(jwt, truck, function (retTruck) {
+                        if (retTruck.truck.groupId) {
                             retObj.messages.push("Truck is already assigned for a group");
                         }
                         else {
@@ -62,7 +62,7 @@ Groups.prototype.addGroup = function (jwt, regDetails, callback) {
                         }
                     })
                 }
-                if(retObj.messages.length){
+                if (retObj.messages.length) {
                     callback(retObj);
                 }
                 else {
@@ -72,27 +72,27 @@ Groups.prototype.addGroup = function (jwt, regDetails, callback) {
                     regDetails.type = "group";
 
                     var insertDoc = new GroupsColl(regDetails);
-                    insertDoc.save(function (err,group) {
+                    insertDoc.save(function (err, group) {
                         if (err) {
                             retObj.messages.push("Error, try Again");
                             callback(retObj);
                         } else {
                             var groupId = group._id;
-                            for (var i = 0; i<unAssignedTrucks.trucks.length;i++){
+                            for (var i = 0; i < unAssignedTrucks.trucks.length; i++) {
                                 var newTruck = unAssignedTrucks.trucks[i];
-                                    TrucksColl.findOneAndUpdate({_id: newTruck},{$set: {"groupId": groupId}},{new: true}, function (err, truck) {
-                                        if (err) {
-                                            retObj.messages.push("Error while updating truck, try Again");
-                                            callback(retObj);
-                                        } else if (truck) {
-                                            retObj.messages.push("Truck updated successfully");
+                                TrucksColl.findOneAndUpdate({_id: newTruck}, {$set: {"groupId": groupId}}, {new: true}, function (err, truck) {
+                                    if (err) {
+                                        retObj.messages.push("Error while updating truck, try Again");
+                                        callback(retObj);
+                                    } else if (truck) {
+                                        retObj.messages.push("Truck updated successfully");
 
-                                        } else {
-                                            retObj.status = false;
-                                            retObj.message.push("Error, finding truck");
-                                            callback(retObj);
-                                        }
-                                    })
+                                    } else {
+                                        retObj.status = false;
+                                        retObj.message.push("Error, finding truck");
+                                        callback(retObj);
+                                    }
+                                })
                             }
                             retObj.status = true;
                             retObj.messages.push("Successfully Created and Added Trucks to the Group");
@@ -122,6 +122,8 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
 
     if (!contactPhone) {
         retObj.messages.push('Please provide Mobile Number');
+    if (!_.isString(password)) {
+        retObj.messages.push('Please provide valid password');
     }
 
     if (retObj.messages.length) {
@@ -166,7 +168,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                     callback(retObj);
                 }
             });
-        }
+    }
 };
 
 Groups.prototype.update = function (jwt, group, callback) {
@@ -194,40 +196,38 @@ Groups.prototype.update = function (jwt, group, callback) {
 };
 
 
-Groups.prototype.getGroups = function (jwt, callback) {
+Groups.prototype.getGroups = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var pageNumber = 0;
 
-    if (!pageNumber) {
-        pageNumber = 1;
-
-    } else if (!_.isNumber(Number(pageNumber))) {
-        retObj.messages.push('Invalid page number');
-        return callback(retObj);
+    if (!params.page) {
+        params.page = 1;
     }
 
-    var skipNumber = (pageNumber - 1) * pageLimits.groupsPaginationLimit;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
+    //var skipNumber = (pageNumber - 1) * pageLimits.groupsPaginationLimit;
     async.parallel({
         users: function (usersCallback) {
             GroupsColl
-                .find({accountId: jwt.accountId,type: "group"})
-                .sort({createdAt: 1})
+                .find({accountId: jwt.accountId, type: "group"})
+                .sort(sort)
                 .skip(skipNumber)
-                .limit(pageLimits.groupsPaginationLimit)
+                .limit(limit)
                 .lean()
                 .exec(function (err, users) {
                     async.parallel({
                         createdbyname: function (createdbyCallback) {
                             Utils.populateNameInUsersColl(users, "createdBy", function (response) {
-                                createdbyCallback(response.err,response.documents);
+                                createdbyCallback(response.err, response.documents);
                             });
                         },
                         rolesNames: function (rolesCallback) {
                             Utils.populateNameInRolesColl(users, "role", function (response) {
-                                rolesCallback(response.err,response.documents);
+                                rolesCallback(response.err, response.documents);
                             });
                         }
                         // rolesname:
@@ -237,7 +237,7 @@ Groups.prototype.getGroups = function (jwt, callback) {
                 });
         },
         count: function (countCallback) {
-            GroupsColl.count({accountId: jwt.accountId,type: "group"},function (err, count) {
+            GroupsColl.count({accountId: jwt.accountId, type: "group"}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -295,7 +295,7 @@ Groups.prototype.deleteGroup = function (id, callback) {
 };
 Groups.prototype.countGroups = function (jwt, callback) {
     var result = {};
-    GroupsColl.count({"accountId":jwt.accountId},function (err, data) {
+    GroupsColl.count({"accountId": jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';

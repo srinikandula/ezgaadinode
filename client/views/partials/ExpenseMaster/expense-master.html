@@ -14,7 +14,7 @@
 
             <table class="table table-bordered table-striped table-condensed table-hover text-center" ng-table="expenseMasterParams" >
                 <tr ng-repeat="expense in currentPageOfexpenses">
-                    <td data-title="'Name'"  sortable="'name'" class="clickable-item col-sm-2" >{{ expense.expenseName }}</td>
+                    <td data-title="'Name'"  sortable="'expenseName'" class="clickable-item col-sm-2" >{{ expense.expenseName }}</td>
                     <td data-title="'Created By'"  sortable="'agent.attrs.createdByName'" class="clickable-item col-sm-2" >{{ expense.attrs.createdByName }}</td>
                     <td data-title="'Action'" class="col-sm-1">
 

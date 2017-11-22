@@ -37,24 +37,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         },
         controller: 'AddEditPartyCtrl'
     })
-    //.state({
-    //     name: 'users',
-    //     url: '/users',
-    //     templateUrl: 'views/partials/users/show-users.html',
-    //     data: {activeTab: 'users'},
-    //     params: {
-    //         access: 'open'
-    //     }
-    // }).state({
-    //     name: 'usersEdit',
-    //     url: '/usersEdit/:userId',
-    //     templateUrl: 'views/partials/users/usersEdit.html',
-    //     data: {activeTab: 'users'},
-    //     params: {
-    //         access: 'open',
-    //         userId: null
-    //     }
-    // })
         .state({
             name: 'groups',
             url: '/groups',
@@ -92,7 +74,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'trucks',
         url: '/trucks',
-        templateUrl: 'views/partials/trucks-list.html',
+        templateUrl: 'views/partials/trucks/trucks-list.html',
         data: {activeTab: 'trucks'},
         params: {
             access: 'open'
@@ -100,7 +82,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'trucksEdit',
         url: '/trucksEdit/:truckId',
-        templateUrl: 'views/partials/trucks-edit.html',
+        templateUrl: 'views/partials/trucks/trucks-edit.html',
         data: {activeTab: 'trucks'},
         params: {
             access: 'open',
@@ -126,7 +108,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'party',
         url: '/party',
-        templateUrl: 'views/partials/party-list.html',
+        templateUrl: 'views/partials/party/party-list.html',
         data: {activeTab: 'party'},
         params: {
             access: 'open'
@@ -134,7 +116,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'editParty',
         url: '/editParty/:partyId',
-        templateUrl: 'views/partials/edit-party.html',
+        templateUrl: 'views/partials/party/edit-party.html',
         data: {activeTab: 'party'},
         params: {
             access: 'auth',
@@ -147,40 +129,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'trackMap'},
         params: {
             access: 'open'
-        }
-    }).state({
-        name: 'tripLanes',
-        url: '/tripLanes',
-        templateUrl: 'views/partials/trip-lane.html',
-        data: {activeTab: 'tripLanes'},
-        params: {
-            access: 'open'
-        }
-    }).state({
-        name: 'tripLanesEdit',
-        url: '/tripLanesEdit/:tripLaneId',
-        templateUrl: 'views/partials/trip-lane-edit.html',
-        data: {activeTab: 'tripLanes'},
-        params: {
-            access: 'open',
-            tripLaneId: null
-        }
-    }).state({
-        name: 'roles',
-        url: '/roles',
-        templateUrl: 'views/partials/roles/roles.html',
-        data: {activeTab: 'roles'},
-        params: {
-            access: 'open'
-        }
-    }).state({
-        name: 'rolesEdit',
-        url: '/rolesEdit/:roleId',
-        templateUrl: 'views/partials/roles/roles-edit.html',
-        data: {activeTab: 'roles'},
-        params: {
-            access: 'open',
-            roleId: null
         }
     }).state({
         name: 'expenses',
@@ -225,15 +173,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'auth'
         }
     }).state({
-        name: 'groupMap',
-        url: '/groupMap',
-        templateUrl: 'views/partials/groupMap.html',
-        data: {activeTab: 'groupMap'},
-        params: {
-            access: 'auth'
-        }
-
-    }).state({
         name: 'paymentsEdit',
         url: '/paymentsEdit/:paymentsId',
         templateUrl: 'views/partials/payments/paymentsEdit.html',
@@ -241,6 +180,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open',
             paymentsId: null
+        }
+    }).state({
+        name: 'groupMap',
+        url: '/groupMap',
+        templateUrl: 'views/partials/groupMap.html',
+        data: {activeTab: 'groupMap'},
+        params: {
+            access: 'auth'
         }
     }).state({
         name:'pendingBalance',

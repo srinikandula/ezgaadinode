@@ -19,13 +19,13 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
         }
 
         if (!params.password) {
+
             params.errors.push('Invalid Password');
         }
 
         if (!params.contactPhone) {
             params.errors.push('Invalid Contact Number');
         }
-
         if(!params.errors.length) {
             CommonServices.login($scope.loginParams, function (success) {
                 console.log('==>',$scope.loginParams);
