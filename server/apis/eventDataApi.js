@@ -94,23 +94,31 @@ EventData.prototype.createUserData = function (userData, callback) {
         messages: []
     };
     var accountDoc = new AccountsColl(userData);
-    accountDoc.save(userData, function (err, newDoc) {
+    AccountsColl.find({"userName":userData.userName} , function(error, userFound){
+        if(!userFound || userFound.length === 0){
+            accountDoc.save(userData, function (err, newDoc) {
 
-        if (err) {
-            logger.info(JSON.stringify(err));
-            retObj.messages.push('Error saving User Data');
-            if(callback){
-                callback(retObj);
-            }
-        } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.userData = newDoc;
-            if(callback){
-                callback(retObj);
-            }
+                if (err) {
+                    logger.info(JSON.stringify(err));
+                    retObj.messages.push('Error saving User Data');
+                    if(callback){
+                        callback(retObj);
+                    }
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.userData = newDoc;
+                    if(callback){
+                        callback(retObj);
+                    }
+                }
+            });
+        } else{
+            logger.info("ignoring to save userdata" + userData);
         }
+
     });
+
 
 }
 
