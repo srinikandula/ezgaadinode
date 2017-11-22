@@ -26,9 +26,9 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Please provide valid vehicle number";
         callback(result);
-    } else if (!expenseDetails.description || !_.isString(expenseDetails.description)) {
+    } else if (!expenseDetails.expenseType || !_.isString(expenseDetails.expenseType)) {
         result.status = false;
-        result.message = "Please provide valid repair type";
+        result.message = "Please provide Expense Type";
         callback(result);
     } else if (!expenseDetails.cost || _.isNaN(expenseDetails.cost)) {
         result.status = false;
