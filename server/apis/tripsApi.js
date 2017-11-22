@@ -137,7 +137,13 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
             }
         });
 };
-
+/** this is to be used with super user login
+ *
+ * @param jwt
+ * @param req
+ * @param pageNumber
+ * @param callback
+ */
 Trips.prototype.getAll = function (jwt, req, pageNumber, callback) {
     var retObj = {
         status: false,
