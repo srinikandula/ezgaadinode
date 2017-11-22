@@ -568,6 +568,7 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             } else {
                 retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             }
+            retObj.totalRevenue = populateResults.tripFreightTotal.totalFreight - populateResults.expensesTotal.totalExpenses;
             callback(retObj);
         }
     });
@@ -625,8 +626,6 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
 Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
-            //TODO add match
-            //it is not working now
             TripCollection.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
                 {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
                 function (err, totalFreight) {
