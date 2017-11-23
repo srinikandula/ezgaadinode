@@ -258,6 +258,8 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
         status: false,
         messages: []
     };
+    var totalFreight = 0;
+    var totalPaid = 0;
     async.parallel({
         trips: function(tripsCallback) {
             Trips.findTripsByParty(jwt,partyId,function (tripsResults) {
@@ -280,6 +282,17 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
             retObj.results = tripsAndPayments.payments;
             if(tripsAndPayments.trips){
                 retObj.results = retObj.results.concat(tripsAndPayments.trips);
+                console.log(retObj.results[0].amount);
+                for(var i = 0;i < retObj.results.length;i++){
+                    if(retObj.results[i].freightAmount) {
+                        totalFreight = totalFreight + retObj.results[i].freightAmount;
+                    }
+                    if(retObj.results[i].amount) {
+                        totalPaid = totalPaid + retObj.results[i].amount;
+                    }
+                }
+
+                retObj.totalPendingPayments = {totalFreight:totalFreight,totalPaid:totalPaid}
             }
             callback(retObj);
         }

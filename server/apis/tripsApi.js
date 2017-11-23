@@ -545,6 +545,7 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
                 });
         }
     }, function (populateErr, populateResults) {
+        //console.log(populateResults.tripFreightTotal[0].totalFreight);
         var retObj = {
             status: false,
             messages: []
@@ -568,6 +569,8 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             } else {
                 retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             }
+            retObj.totalRevenue = populateResults.tripFreightTotal.totalFreight - populateResults.expensesTotal.totalExpenses;
+            retObj.totalRevenue = populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             callback(retObj);
         }
     });
@@ -625,8 +628,6 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
 Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
-            //TODO add match
-            //it is not working now
             TripCollection.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
                 {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
                 function (err, totalFreight) {
@@ -656,6 +657,9 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
             var vehicleIds = _.pluck(populateResults.tripFreightTotal, "_id");
             //console.log(vehicleIds);
             var vehicles = [];
+            var grossFreight = 0;
+            var grossExpenses = 0;
+            var grossRevenue = 0;
             for (var i = 0; i < vehicleIds.length; i++) {
                 var vehicle = {"registrationNo": vehicleIds[i]};
                 //console.log(vehicle);
@@ -682,8 +686,11 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
                     vehicle.totalExpense = 0;
                 }
 
-
                 vehicle.totalRevenue = parseFloat(vehicle.totalFreight) - parseFloat(vehicle.totalExpense);
+
+                grossFreight = grossFreight + vehicle.totalFreight;
+                grossExpenses = grossExpenses + vehicle.totalExpense;
+                grossRevenue = grossRevenue + vehicle.totalRevenue;
 
                 vehicles.push(vehicle);
             }
@@ -692,6 +699,7 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.revenue = result.documents;
+                retObj.grossAmounts = {grossFreight:grossFreight,grossExpenses:grossExpenses,grossRevenue:grossRevenue}
                 callback(retObj);
             })
         }
@@ -741,6 +749,7 @@ Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
 }
 
 Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
+    console.log(vehicleId);
     TripCollection.find({"accountId": jwt.accountId, "registrationNo": vehicleId},
         function (error, trips) {
             //console.log(trips);

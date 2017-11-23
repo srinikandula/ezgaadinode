@@ -64,7 +64,8 @@ AuthRouter.get('/find/tripsByParty/:partyId', function (req, res) {
 });
 
 AuthRouter.get('/find/tripsByVehicle/:VehicleId', function (req, res) {
-    Trips.findTripsByVehicle(req.jwt,req.params.partyId, function (result) {
+    console.log(req.params);
+    Trips.findTripsByVehicle(req.jwt,req.params.VehicleId, function (result) {
         res.send(result);
     });
 });
