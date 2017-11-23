@@ -411,20 +411,29 @@ Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
                 }
             }
             var results =[];
+            var totalDieselExpense = 0;
+            var totaltollExpense = 0;
+            var totalmExpense = 0;
+            var totalmisc = 0;
             for(id in vehicleExpenses) {
                 var vehicleExpense = vehicleExpenses[id];
                 vehicleExpense.exps = [];
                 var resultExpense = {"dieselExpense":0, "tollExpense":0, "mExpense":0, "misc":0};
                 for(e in vehicleExpense.expenses) {
                     var vExpense = vehicleExpense.expenses[e];
+                    //console.log(vExpense);
                     if(vExpense["name"] == "Diesel"){
                         resultExpense["dieselExpense"] += vExpense.expenseTotal;
+                        totalDieselExpense = totalDieselExpense + resultExpense["dieselExpense"];
                     } else if(vExpense["name"] == "Toll"){
                         resultExpense["tollExpense"] += vExpense.expenseTotal;
-                    } else if(vExpense["name"] == "Maintainence"){
+                        totaltollExpense = totaltollExpense + resultExpense["tollExpense"];
+                    } else if(vExpense["name"] == "Maintenance"){
                         resultExpense["mExpense"] += vExpense.expenseTotal;
+                        totalmExpense = totalmExpense + resultExpense["mExpense"];
                     } else {
                         resultExpense["misc"] += vExpense.expenseTotal;
+                        totalmisc = totalmisc + resultExpense["misc"];
                     }
                 }
                 vehicleExpense.exps.push(resultExpense);
@@ -433,6 +442,7 @@ Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
                 results.push(vehicleExpenses[id]);
             }
             retObj.expenses = results;
+            retObj.totalExpenses = {totalDieselExpense:totalDieselExpense,totaltollExpense:totaltollExpense,totalmExpense:totalmExpense,totalmisc:totalmisc};
             callback(retObj);
         }
     });
@@ -446,6 +456,10 @@ Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
 
 Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) {
     var result = {};
+    var totalDieselExpense = 0;
+    var totaltollExpense = 0;
+    var totalmExpense = 0;
+    var totalmisc = 0;
     expenseColl.find({'accountId':jwt.accountId,"vehicleNumber":vehicleId },function (err, expenses) {
         if (err) {
             result.status = false;
@@ -455,6 +469,19 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function(results){
                 result.status = true;
                 result.expenses = results.documents;
+                console.log(result.expenses.length);
+                for(var i = 0; i < result.expenses.length;i++) {
+                    if(result.expenses[i].attrs.expenseName === 'Diesel') {
+                        totalDieselExpense = totalDieselExpense + result.expenses[i].cost;
+                    } else if(result.expenses[i].attrs.expenseName === 'Toll') {
+                        totaltollExpense = totaltollExpense + result.expenses[i].cost;
+                    } else if(result.expenses[i].attrs.expenseName === 'Maintenance') {
+                        totalmExpense = totalmExpense + result.expenses[i].cost;
+                    } else {
+                        totalmisc = totalmisc + result.expenses[i].cost;
+                    }
+                }
+                result.totalExpenses = {totalDieselExpense:totalDieselExpense,totaltollExpense:totaltollExpense,totalmExpense:totalmExpense,totalmisc:totalmisc};
                 callback(result);
             });
         }

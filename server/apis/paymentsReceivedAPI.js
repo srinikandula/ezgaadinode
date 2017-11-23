@@ -335,8 +335,6 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
     };
     async.parallel({
         tripFrightTotal: function (callback) {
-            //TODO add match
-            //it is not working now
             TripColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
                 { $group: { _id : "$partyId" , totalFright : { $sum: "$freightAmount" }} },
                 function (err, totalFrieght) {
@@ -360,6 +358,9 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
 
             var partyIds = _.pluck(populateResults.tripFrightTotal,"_id");
             var parties = [];
+            var grossFreight = 0;
+            var grossExpenses = 0;
+            var grossDue = 0;
             for(var i=0;i<partyIds.length;i++) {
                 var party = {"id":partyIds[i]};
                 var partyInfo = _.find(populateResults.tripFrightTotal, function (total) {
@@ -378,13 +379,18 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
                 if(partyInfo){
                     party.totalPayment = partyInfo.totalPayments;
                 }
-
+                party.totalDue = parseFloat(party.totalFright) - parseFloat(party.totalPayment);
                 parties.push(party);
+
+                grossFreight = grossFreight + party.totalFright;
+                grossExpenses = grossExpenses + party.totalPayment;
+                grossDue = grossDue + party.totalDue;
             }
             Utils.populateNameInPartyColl(parties,'id', function(result){
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.parties = result.documents;
+                retObj.grossAmounts = {grossFreight:grossFreight,grossExpenses:grossExpenses,grossDue:grossDue}
                 callback(retObj);
             })
 
