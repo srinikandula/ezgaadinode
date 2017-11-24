@@ -27,7 +27,7 @@
                                        class="form-control" typeahead-min-length="1"
                                        typeahead-on-select="selectTruckId($item)"
                                        typeahead-select-on-exact="true" placeholder="Registration Num"
-                                       typeahead-no-results="noTrucks">
+                                       typeahead-no-results="noTrucks" autocomplete="false">
 
                                 <div ng-show="noTrucks && truckRegNo.length" class="mt-5">
                                     <i class="glyphicon glyphicon-remove red"></i>
@@ -45,7 +45,7 @@
                                        class="form-control" typeahead-min-length="1"
                                        typeahead-on-select="selectParty($item);"
                                        typeahead-select-on-exact="true" placeholder="Party"
-                                       typeahead-no-results="noBooked">
+                                       typeahead-no-results="noBooked" autocomplete="false">
                                 <div ng-show="noBooked">
                                     <i class="glyphicon glyphicon-remove red"></i>
                                     <span class="red"> No Results Found </span>
