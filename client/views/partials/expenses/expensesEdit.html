@@ -25,7 +25,7 @@
                                        class="form-control" typeahead-min-length="1"
                                        typeahead-on-select="selectTruckId($item)"
                                        typeahead-select-on-exact="true" placeholder="Registration Num"
-                                       typeahead-no-results="noTrucks">
+                                       typeahead-no-results="noTrucks" autocomplete="false">
                                 <div ng-show="noTrucks">
                                     <i class="glyphicon glyphicon-remove red"></i>
                                     <span class="red"> No Results Found </span>
@@ -40,7 +40,7 @@
                                         uib-typeahead="expense.expenseName for expense in expenses  |                                                           filter:$viewValue" class="form-control" typeahead-min-length="1"
                                        typeahead-on-select="selectExpenseType($item)"
                                        typeahead-select-on-exact="true" placeholder="Expense Type"
-                                       typeahead-no-results="noExpenseTypes">
+                                       typeahead-no-results="noExpenseTypes" autocomplete="false">
                                 <div ng-show="noExpenseTypes">
                                     <i class="glyphicon glyphicon-remove red"></i>
                                     <span class="red"> No Results Found </span>

@@ -29,7 +29,7 @@ AuthRouter.get('/getAll', function (req, res) {
 
 AuthRouter.get('/getAllExpenses', function (req, res) {
     ExpenseCost.getExpenseCosts(req.jwt, req.query, function (result) {
-        res.send(result);
+        res.json(result);
     });
 });
 

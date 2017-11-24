@@ -32,13 +32,17 @@
                             <div class="col-sm-8 col-xs-12">
 
 
-                               <!-- <input type="text" ng-model="driver.truckId" uib-typeahead="truck as truck.registrationNo for truck in trucks | filter:$viewValue" class="form-control" id="truckId" typeahead-show-hint="true" >
--->
-                                <input type="text" ng-model="truckRegNo"  uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue" class="form-control" typeahead-min-length="1" typeahead-on-select="selectTruckId($item)"  typeahead-select-on-exact="true" typeahead-select-on-blur="true">
-                                 <!--<select ng-model="driver.truckId"
-                                        ng-options="truck._id as truck.registrationNo for truck in trucks" type="text"
-                                        class="form-control" >
-                                </select>-->
+                                <!-- <input type="text" ng-model="driver.truckId" uib-typeahead="truck as truck.registrationNo for truck in trucks | filter:$viewValue" class="form-control" id="truckId" typeahead-show-hint="true" >
+ -->
+                                <input type="text" ng-model="truckRegNo"
+                                       uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue"
+                                       class="form-control" typeahead-min-length="1"
+                                       typeahead-on-select="selectTruckId($item)" typeahead-select-on-exact="true"
+                                       typeahead-select-on-blur="true" autocomplete="false" id="truckId">
+                                <!--<select ng-model="driver.truckId"
+                                       ng-options="truck._id as truck.registrationNo for truck in trucks" type="text"
+                                       class="form-control" >
+                               </select>-->
                             </div>
                         </div>
                         <div class="form-group col-xs-12">

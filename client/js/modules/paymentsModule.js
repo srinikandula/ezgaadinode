@@ -191,7 +191,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         PartyService.getAccountParties(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
-                //console.log($scope.parties);
+                console.log($scope.parties);
                 var selectedParty = _.find( $scope.parties, function (party) {
                     return party._id.toString() === $scope.paymentsDetails.partyId;
                 });
