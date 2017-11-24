@@ -252,7 +252,12 @@ Party.prototype.countParty = function (jwt, callback) {
         }
     })
 };
-
+/**
+ * Find trips and parties combined for a party
+ * @param jwt
+ * @param partyId
+ * @param callback
+ */
 Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
     var retObj = {
         status: false,
@@ -282,8 +287,7 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
             retObj.results = tripsAndPayments.payments;
             if(tripsAndPayments.trips){
                 retObj.results = retObj.results.concat(tripsAndPayments.trips);
-                console.log(retObj.results[0].amount);
-                for(var i = 0;i < retObj.results.length;i++){
+               for(var i = 0;i < retObj.results.length;i++){
                     if(retObj.results[i].freightAmount) {
                         totalFreight = totalFreight + retObj.results[i].freightAmount;
                     }
@@ -291,8 +295,12 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
                         totalPaid = totalPaid + retObj.results[i].amount;
                     }
                 }
-
                 retObj.totalPendingPayments = {totalFreight:totalFreight,totalPaid:totalPaid}
+            }
+            if(retObj.results){
+                retObj.results = retObj.results.sort(function(x,y){
+                    return x.date > y.date ? 1 : -1;
+                });
             }
             callback(retObj);
         }
