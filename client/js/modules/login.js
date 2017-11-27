@@ -1,6 +1,6 @@
 app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$cookies','$rootScope', function ($scope, Utils, CommonServices, $state, $cookies, $rootScope) {
     if (Utils.isLoggedIn()) {
-        $state.go('accounts');
+        $state.go('dashboard');
     }
 
     $scope.loginParams = {
