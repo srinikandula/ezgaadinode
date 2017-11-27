@@ -67,6 +67,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                             retObj.gpsEnabled = user.gpsEnabled;
                             retObj.erpEnabled = user.erpEnabled;
                             retObj.loadEnabled = user.loadEnabled;
+                            retObj.editAccounts = user.editAccounts;
                             callback(retObj);
                         }
                     });
