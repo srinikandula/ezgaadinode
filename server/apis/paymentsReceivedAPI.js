@@ -42,6 +42,7 @@ PaymentsReceived.prototype.getTotalAmount = function (accId, callback) {
         if (err) {
             retObj.messages.push("Error while getting amount details, try Again");
             callback(retObj);
+            logger.error("Error:   failed find amount total by account" + JSON.stringify(err));
         } else {
             retObj.status = true;
             retObj.messages.push("Success");

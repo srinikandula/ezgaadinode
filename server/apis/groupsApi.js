@@ -56,15 +56,17 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                         userName: user.userName,
                         contactPhone: user.contactPhone,
                         type: user.type
-                    }, config.jwt.secret, config.jwt.options, function (err, token) {
+                    }, config.jwt.secret, config.jwt.options, function (err, token, options) {
                         if (err) {
                             retObj.messages.push('Please try again');
                             callback(retObj);
                         } else {
                             retObj.status = true;
-                            retObj.messages.push("Success");
                             retObj.token = token;
                             retObj.userName = userName;
+                            retObj.gpsEnabled = user.gpsEnabled;
+                            retObj.erpEnabled = user.erpEnabled;
+                            retObj.loadEnabled = user.loadEnabled;
                             callback(retObj);
                         }
                     });
