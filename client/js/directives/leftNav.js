@@ -4,6 +4,7 @@ app.directive('leftNavigation', function () {
         template: ' <div class="left-nav">\n' +
         '        <ul class="list-unstyled">\n' +
         '            \n' +
+        '            <dashboard-directive></dashboard-directive>\n' +
         '            <account-directive></account-directive>\n' +
         //'            <group-directive></group-directive>\n' +
         '            <driver-directive></driver-directive>\n' +
@@ -17,6 +18,15 @@ app.directive('leftNavigation', function () {
        // '            <expiry-directive></expiry-directive>\n' +
         '        </ul>\n' +
         '    </div>'
+    };
+});
+
+app.directive('dashboardDirective', function () {
+    return {
+        restrict: 'E',
+        template: '<li ng-class="{selected: activeTab === \'dashboard\'}" class="left-nav-li"> \n' +
+        '             <a class="left-nav-anchor" ui-sref="dashboard">Dashboard</a>\n' +
+        '          </li>'
     };
 });
 

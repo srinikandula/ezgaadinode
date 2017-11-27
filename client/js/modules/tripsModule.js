@@ -46,6 +46,18 @@ app.factory('TripServices', function ($http) {
                 params: pageable
             }).then(success, error)
         },
+        findTotalRevenue:function(success, error){
+          $http({
+              url:'/v1/trips/find/totalRevenue',
+              method:"GET"
+          }).then(success, error)
+        },
+        findRevenueByVehicle:function(success, error){
+            $http({
+                url:'/v1/trips/find/revenueByVehicle',
+                method:"GET"
+            }).then(success, error)
+        },
         count: function (success, error) {
             $http({
                 url: '/v1/trips/total/count',
@@ -252,6 +264,41 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.removePaymentFlag = function () {
         $scope.paymentFlag = false;
     };
+
+
+
+
+    $scope.getTotalRevenue = function () {
+        TripServices.findTotalRevenue(function (success) {
+            if (success.data.status) {
+                $scope.totalRevenue = success.data.totalRevenue;
+             //   console.log('=====>>> Tottal', $scope.totalRevenue);
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+    $scope.getTotalRevenue();
+
+    $scope.getRevenueByVehicle = function () {
+        TripServices.findRevenueByVehicle(function (success) {
+            if (success.data.status) {
+                $scope.revenueByVehicle = success.data.revenue;
+                  console.log('=====>>> Tottal', $scope.revenueByVehicle);
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+    $scope.getRevenueByVehicle();
 
     $scope.paymentDetails = {
         tripId: '',
