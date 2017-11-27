@@ -25,8 +25,8 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
         retObj.messages.push('Invalid User Name');
     }
 
-    if (!Utils.isValidPassword(accountInfo.password)) {
-        retObj.messages.push('Invalid password');
+    if (!accountInfo.password || accountInfo.password.trim().length < 5) {
+        retObj.messages.push('Invalid password. Password has to be atleast 5 characters');
     }
 
     if (!accountInfo.contactPhone) {
@@ -36,42 +36,37 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({name: accountInfo.name}, function (err, account) {
+        AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error fetching account');
                 callback(retObj);
             } else if (account) {
-                retObj.messages.push('Account with the name already exists');
+                retObj.messages.push('Account with same userName already exists');
                 callback(retObj);
             } else {
-                GroupsColl.findOne({userName: accountInfo.userName}, function (err, user) {
+                accountInfo.createdBy = jwtObj.id;
+                accountInfo.type = "account";
+                (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
                     if (err) {
-                        retObj.messages.push('Error fetching account');
-                        callback(retObj);
-                    } else if (user) {
-                        retObj.messages.push('Username already exists');
+                        retObj.messages.push('Error saving account');
                         callback(retObj);
                     } else {
-                        accountInfo.createdBy = jwtObj.id;
-                        (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
+                        accountInfo.accountId = savedAcc._id;
+                        accountInfo.type = "account";
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        callback(retObj);
+                        /*(new GroupsColl(accountInfo)).save(function (err) {
                             if (err) {
-                                retObj.messages.push('Error saving account');
+                                retObj.messages.push('Error saving user');
                                 callback(retObj);
                             } else {
-                                accountInfo.accountId = savedAcc._id;
-                                accountInfo.type = "account";
-                                (new GroupsColl(accountInfo)).save(function (err) {
-                                    if (err) {
-                                        retObj.messages.push('Error saving user');
-                                        callback(retObj);
-                                    } else {
-                                        retObj.status = true;
-                                        retObj.messages.push('Success');
-                                        callback(retObj);
-                                    }
-                                });
+                                retObj.status = true;
+                                retObj.messages.push('Success');
+                                callback(retObj);
                             }
-                        });
+                        });*/
+
                     }
                 });
             }

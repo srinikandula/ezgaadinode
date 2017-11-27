@@ -33,7 +33,8 @@ var accountSchema = new mongoose.Schema({
     isActive: {type: Boolean, default:true},
     gpsEnabled: {type: Boolean, default:false},
     erpEnabled: {type: Boolean, default:false},
-    loadEnabled:{type: Boolean, default:false}
+    loadEnabled:{type: Boolean, default:false},
+    editAccounts: {type: Boolean, default:false}
 }, {
     timestamps: true
 });
