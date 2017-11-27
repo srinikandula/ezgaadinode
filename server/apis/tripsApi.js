@@ -569,8 +569,8 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             } else {
                 retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             }
-            retObj.totalRevenue = populateResults.tripFreightTotal.totalFreight - populateResults.expensesTotal.totalExpenses;
-            retObj.totalRevenue = populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
+            //retObj.totalRevenue = populateResults.tripFreightTotal.totalFreight - populateResults.expensesTotal.totalExpenses;
+            //retObj.totalRevenue = populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             callback(retObj);
         }
     });
