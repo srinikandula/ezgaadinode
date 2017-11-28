@@ -40,6 +40,12 @@ app.factory('PartyService', function ($http, $cookies) {
                 method: "DELETE"
             }).then(success, error)
         },
+        getRevenueByPartyId: function (vehicleId, success, error) {
+            $http({
+                url: '/v1/party/vehiclePayments/'+vehicleId,
+                method: "GET"
+            }).then(success, error)
+        },
         count: function (success, error) {
             $http({
                 url: '/v1/party/total/count',
@@ -111,9 +117,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             console.log('error deleting party');
         });
     };
-
-
-
 }]);
 
 app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $stateParams, Notification, $state) {

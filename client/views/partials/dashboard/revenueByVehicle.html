@@ -1,0 +1,29 @@
+<div class="main-right col-xs-9" ng-controller="dashboardController">
+    <h3>Revenue by Vehicle</h3>
+    <div class="toolbar-button-div pull-right mb-10">
+        &nbsp;
+    </div>
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
+        <tr ng-repeat="revenueListByRegNo in revenueByVehicle" style="text-align: center;">
+            <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
+                <a href="#"
+                   ng-click="gotorevenueByVehicleId(revenueListByRegNo.registrationNo)"> {{revenueListByRegNo.attrs.truckName
+                    }}</a>
+            </td>
+            <td data-title="'Total Freight'" sortable="'totalFreight'" class="clickable-item col-sm-2">
+                {{ revenueListByRegNo.totalFreight}}
+            </td>
+            <td data-title="'Total Expense'" sortable="'totalExpense'" class="clickable-item col-sm-2">
+                {{ revenueListByRegNo.totalExpense}}
+            </td>
+
+            <td data-title="'Total Revenue'" sortable="'totalRevenue'" class="clickable-item col-sm-2">
+                {{ revenueListByRegNo.totalRevenue}}
+            </td>
+        </tr>
+        <tr ng-if="!revenueByVehicle || revenueByVehicle.length === 0">
+            <td colspan="8">No Records exist.</td>
+        </tr>
+    </table>
+</div>
+
