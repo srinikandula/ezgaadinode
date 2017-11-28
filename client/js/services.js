@@ -12,6 +12,7 @@ app.factory('Utils', function ($http, $cookies) {
         },
         logout: function () {
             $cookies.remove('token');
+            $cookies.remove('editAccounts');
             $cookies.remove('role');
             $cookies.remove('userName');
         },

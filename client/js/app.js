@@ -156,8 +156,8 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             expenseId: null
         }
     }).state({
-        name: 'expenseMaster',
-        url: '/expenseMaster',
+        name: 'expense-master',
+        url: '/expense-master',
         templateUrl: 'views/partials/ExpenseMaster/expense-master.html',
         data: {activeTab: 'expenseMaster'},
         params: {
@@ -173,8 +173,8 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             expenseTypeId: null
         }
     }).state({
-        name: 'paymentsReceived',
-        url: '/paymentsReceived',
+        name: 'payments',
+        url: '/payments',
         templateUrl: 'views/partials/payments/paymentsReceived.html',
         data: {activeTab: 'paymentsReceived'},
         params: {

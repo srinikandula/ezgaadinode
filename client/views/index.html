@@ -21,9 +21,10 @@
 <body ng-app="EasyGaadi">
 
 <left-nav-li name="Accounts" link="drivers"></left-nav-li>
+<span  ng-controller="NavCtrl">
 
-<nav class="navbar navbar-default menu-header" ng-controller="NavCtrl">
-    <div class="container">
+<nav class="navbar navbar-default menu-header">
+    <div class="container" >
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -57,11 +58,28 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
+<top-navigation ng-if="isLoggedIn()"></top-navigation>
+<div class="container-fluid">
+    <div class="row pall-zero">
+        <div class="col-xs-2 pall-zero"  ng-if="isLoggedIn()" ng-controller="LeftNavCtrl">
+          <!--  <left-menu label="Dashboard"></left-menu>-->
+            <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>
+            <left-menu label="Drivers"></left-menu>
+            <left-menu label="Trucks"></left-menu>
+            <left-menu label="Trips"></left-menu>
+            <left-menu label="Party"></left-menu>
+            <left-menu label="Expense-Master" ></left-menu>
+            <left-menu label="Expenses"></left-menu>
+            <left-menu label="Payments"></left-menu>
+        </div>
 
-<div>
-    <ui-view></ui-view>
+        <div>
+            <ui-view></ui-view>
+        </div>
+    </div>
 </div>
 
+</span>
 <!--bower scripts-->
 <script src="components/jquery/dist/jquery.min.js"></script>
 <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -72,7 +90,8 @@
 <script src="components/underscore/underscore-min.js"></script>
 <script src="components/angular-ui-grid/ui-grid.min.js"></script>
 <script src="components/angular-ui-notification/dist/angular-ui-notification.js"></script>
-<script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyC3JuGIZkNVnzrOthyMWEWf3zA0J-aui0M"></script>
+<script type="text/javascript"
+        src="http://maps.google.com/maps/api/js?key=AIzaSyC3JuGIZkNVnzrOthyMWEWf3zA0J-aui0M"></script>
 
 
 <!--app-->
@@ -80,7 +99,7 @@
 
 <!--services-->
 <script src="js/services.js"></script>
-<script src="js/directives/leftNav.js"></script>
+<script src="js/directives/leftMenu.js"></script>
 <script src="js/directives/datePicker.js"></script>
 <script src="js/directives/bodyMenu.js"></script>
 <script src="js/services/paginationService.js"></script>

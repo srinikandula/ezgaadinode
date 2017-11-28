@@ -60,24 +60,25 @@ body{
     margin-bottom: 0 !important;
 }
 
-.left-nav {
+.left-menu {
     height: 100%;
-    padding: 15px;
     color: #000;
     text-align:center;
+    width:90%;
+    margin-left: 15px;
 }
 
-.left-nav-li {
+.left-menu-li {
    margin-bottom: 10px;
     font-size: 18px;
 }
-.left-nav-li:hover{
+.left-menu-li:hover{
     background-color: #cccccc;
-    color: red;
+
     border-radius: 5px;
 }
 
-.left-nav-anchor {
+.left-menu-anchor {
     text-align: center;
     cursor: pointer;
     text-decoration: none;
@@ -89,7 +90,7 @@ body{
     border-radius: 5px;
 }
 
-.left-nav-anchor:hover {
+.left-menu-anchor:hover {
     text-decoration: none;
     color: #000;
 
@@ -161,9 +162,17 @@ body{
     background-color: #d9534f;
     border:1px solid #d9534f;
 }
-.active{
+.active {
     background-color: #d9534f !important;
     color: #fff !important;
+    border-radius: 5px;
+    text-decoration: none;
+}
+.active a{
+    background-color: #d9534f !important;
+    color: #fff !important;
+    border-radius: 5px;
+    text-decoration: none;
 }
 .selected{
     background-color: #d9534f !important;

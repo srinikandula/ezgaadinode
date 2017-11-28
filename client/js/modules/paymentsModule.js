@@ -227,6 +227,9 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         }, function (err) {
         })
     }
+    $scope.cancel = function () {
+        $state.go('payments');
+    };
     $scope.AddorUpdatePayments = function () {
         var params = $scope.paymentsDetails;
         //console.log(params);

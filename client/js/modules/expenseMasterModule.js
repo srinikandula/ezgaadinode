@@ -103,7 +103,7 @@ app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices'
 }]);
 
 app.controller('ExpenseMasterEditCrtl', ['$scope', '$state', 'ExpenseMasterServices', 'Notification', '$stateParams', function ($scope, $state, ExpenseMasterServices, Notification, $stateParams) {
-    console.log('tl-->', $stateParams);
+
     $scope.pagetitle = "Add Expense Type";
 
     $scope.cancel = function () {
@@ -127,6 +127,10 @@ app.controller('ExpenseMasterEditCrtl', ['$scope', '$state', 'ExpenseMasterServi
             }
         }, function (err) {
         })
+    }
+
+    $scope.cancel = function () {
+        $state.go('expense-master');
     }
 
     $scope.addOrUpdateExpenseType = function () {

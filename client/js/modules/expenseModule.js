@@ -55,8 +55,7 @@ app.factory('ExpenseService', function ($http) {
 });
 
 app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService) {
-
-    $scope.goToEditExpensePage = function (expenseId) {
+     $scope.goToEditExpensePage = function (expenseId) {
         $state.go('expensesEdit', {expenseId: expenseId});
     };
 
