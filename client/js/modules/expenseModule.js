@@ -45,6 +45,18 @@ app.factory('ExpenseService', function ($http) {
                 method: "DELETE"
             }).then(success, error)
         },
+        findTotalExpenses: function(success, error){
+          $http({
+              url: '/v1/expense/total',
+              method:"GET"
+          }).then(success, error)
+        },
+        findExpensesbyVehicle: function(success, error){
+            $http({
+                url: '/v1/expense/groupByVehicle',
+                method:"GET"
+            }).then(success, error)
+        },
         count: function (success, error) {
             $http({
                 url: '/v1/expense/total/count',

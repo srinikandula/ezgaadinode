@@ -21,7 +21,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'dashboard',
         url: '/dashboard',
-        templateUrl: 'views/partials/expiry/expiryCount.html',
+        templateUrl: 'views/partials/dashboard/dashboard.html',
         data: {activeTab: 'dashboard'},
         params: {
             access: 'auth'
@@ -200,7 +200,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'fitnessExpiryTrucks',
         url: '/fitnessExpiryTrucks',
-        templateUrl: 'views/partials/expiry/fitnessExpiryTrucks.html',
+        templateUrl: 'views/partials/dashboard/fitnessExpiryTrucks.html',
         data: {activeTab: 'dashboard'},
         params: {
             access: 'auth'
@@ -208,7 +208,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'permitExpiryTrucks',
         url: '/permitExpiryTrucks',
-        templateUrl: 'views/partials/expiry/permitExpiryTrucks.html',
+        templateUrl: 'views/partials/dashboard/permitExpiryTrucks.html',
         data: {activeTab: 'dashboard'},
         params: {
             access: 'auth'
@@ -216,7 +216,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'insuranceExpiryTrucks',
         url: '/insuranceExpiryTrucks',
-        templateUrl: 'views/partials/expiry/insuranceExpiryTrucks.html',
+        templateUrl: 'views/partials/dashboard/insuranceExpiryTrucks.html',
         data: {activeTab: 'dashboard'},
         params: {
             access: 'auth'
@@ -224,7 +224,15 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'revenueByVehicle',
         url: '/revenueByVehicle',
-        templateUrl: 'views/partials/expiry/revenueByVehicle.html',
+        templateUrl: 'views/partials/dashboard/revenueByVehicle.html',
+        data: {activeTab: 'dashboard'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'expenseByVehicle',
+        url: '/expenseByVehicle',
+        templateUrl: 'views/partials/dashboard/expenseByVehicle.html',
         data: {activeTab: 'dashboard'},
         params: {
             access: 'auth'
@@ -232,7 +240,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'pollutionExpiryTrucks',
         url: '/pollutionExpiryTrucks',
-        templateUrl: 'views/partials/expiry/pollutionExpiryTrucks.html',
+        templateUrl: 'views/partials/dashboard/pollutionExpiryTrucks.html',
         data: {activeTab: 'dashboard'},
         params: {
             access: 'auth'
@@ -240,10 +248,19 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'taxExpiryTrucks',
         url: '/taxExpiryTrucks',
-        templateUrl: 'views/partials/expiry/taxExpiryTrucks.html',
+        templateUrl: 'views/partials/dashboard/taxExpiryTrucks.html',
         data: {activeTab: 'dashboard'},
         params: {
             access: 'auth'
+        }
+    }).state({
+        name: 'revenueByVehicleId',
+        url: '/revenueByVehicleId/:vehicleId',
+        templateUrl: 'views/partials/dashboard/revenueByvehicleId.html',
+        data: {activeTab: 'dashboard'},
+        params: {
+            access: 'auth',
+            vehicleId: null
         }
     });
     $urlRouterProvider.otherwise('/login');

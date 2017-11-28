@@ -2,9 +2,24 @@
         <div class="main-right col-xs-9" ng-controller="ShowAccountsCtrl">
 
             <h3>Accounts</h3>
-            <button class="btn  btn-blue pull-right mb-10" ng-click="goToEditAccountPage()">Add Account</button>
+            <div class="col-xs-12 pall-zero mt-10">
+                <div class="col-xs-8 pall-zero">
+                    <div class="input-group stylish-input-group col-xs-6">
+                        <input type="text" class="form-control"  placeholder="Search" >
+                        <span class="input-group-addon">
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                    </div>
+                </div>
+                <div class="col-xs-4 pall-zero">
+                    <button class="btn btn-blue pull-right mb-10" ng-click="goToEditAccountPage()">Add Account</button>
+                </div>
+            </div>
 
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="accountParams">
+            <table class="table table-bordered tiv>
+-striped table-condensed table-hover" ng-table="accountParams">
                 <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
 
                     <td data-title="'Username'" sortable="'userName'" class="clickable-item col-sm-2">{{account.userName}}

@@ -1,0 +1,31 @@
+
+<div class="main-right col-xs-9" ng-controller="paymentsById">
+    <h3>Revenue by Vehicle</h3>
+    <div class="toolbar-button-div pull-right mb-10">
+        &nbsp;
+    </div>
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
+        <tr ng-repeat="revenueListbyId in revenueByVehicleId" style="text-align: center;">
+            <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">
+               {{revenueListbyId.date | date:'yyyy-MM-dd'}}
+            </td>
+            <td data-title="'Trip ID'" sortable="'tripId'" class="clickable-item col-sm-2">
+                {{ revenueListbyId.tripId}}
+            </td>
+            <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
+                {{ revenueListbyId.attrs.partyName}}
+            </td>
+
+            <td data-title="'Frieight Amount'" sortable="'freightAmount'" class="clickable-item col-sm-2">
+                {{ revenueListbyId.freightAmount}}
+            </td>
+            <td data-title="'Expenses'" sortable="'freightAmount'" class="clickable-item col-sm-2">
+                {{ revenueListbyId.freightAmount}}
+            </td>
+        </tr>
+        <tr ng-if="!revenueByVehicleId || revenueByVehicleId.length === 0">
+            <td colspan="8">No Records exist.</td>
+        </tr>
+    </table>
+</div>
+
