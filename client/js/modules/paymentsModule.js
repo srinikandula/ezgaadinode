@@ -134,7 +134,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
     };
 
     $scope.cancel = function () {
-        $state.go('paymentsReceived');
+        $state.go('payments');
     };
 
     /*function getTripIds() {
@@ -249,11 +249,11 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                     if (success.data.status) {
                         // params.success = success.data.message[0];
                         Notification.success({message: success.data.messages[0]});
-                        $state.go('paymentsReceived');
+                        $state.go('payments');
                     } else {
                         params.error = success.data.message;
                     }
-                    $state.go('paymentsReceived');
+                    $state.go('payments');
 
                 }, function (err) {
                     console.log(err);
@@ -266,7 +266,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                     if (success.data.status) {
                         params.success = success.data.message;
                         Notification.success({message: success.data.messages[0]});
-                        $state.go('paymentsReceived');
+                        $state.go('payments');
                     } else {
                         params.error = success.data.message;
                     }

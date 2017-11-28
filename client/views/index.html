@@ -61,8 +61,8 @@
 <top-navigation ng-if="isLoggedIn()"></top-navigation>
 <div class="container-fluid">
     <div class="row pall-zero">
-        <div class="col-xs-2 pall-zero"  ng-if="isLoggedIn()" ng-controller="LeftNavCtrl">
-          <!--  <left-menu label="Dashboard"></left-menu>-->
+        <div class="col-sm-2 col-xs-12 pall-zero"  ng-if="isLoggedIn()" ng-controller="LeftNavCtrl">
+         <!--   <left-menu label="Dashboard"></left-menu>-->
             <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>
             <left-menu label="Drivers"></left-menu>
             <left-menu label="Trucks"></left-menu>

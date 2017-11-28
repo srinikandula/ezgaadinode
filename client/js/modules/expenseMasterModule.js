@@ -95,6 +95,7 @@ app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices'
             if(success.data.status) {
                 $scope.count--;
                 $scope.init();
+                Notification.error({message: "Successfully Deleted"});
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -146,7 +147,7 @@ app.controller('ExpenseMasterEditCrtl', ['$scope', '$state', 'ExpenseMasterServi
                 ExpenseMasterServices.updateExpense(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('expenseMaster');
+                        $state.go('expense-master');
                         Notification.success({message: success.data.messages[0]});
                     } else {
                         params.error = success.data.message;
@@ -157,7 +158,7 @@ app.controller('ExpenseMasterEditCrtl', ['$scope', '$state', 'ExpenseMasterServi
                 ExpenseMasterServices.addExpense(params, function (success) {
                     if(success.data.status) {
                         params.success = success.data.message;
-                        $state.go('expenseMaster');
+                        $state.go('expense-master');
                         Notification.success({message: success.data.messages[0]});
                     } else {
                         params.error = success.data.message;
