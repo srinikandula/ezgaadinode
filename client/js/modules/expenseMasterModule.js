@@ -129,6 +129,10 @@ app.controller('ExpenseMasterEditCrtl', ['$scope', '$state', 'ExpenseMasterServi
         })
     }
 
+    $scope.cancel = function () {
+        $state.go('expense-master');
+    }
+
     $scope.addOrUpdateExpenseType = function () {
         var params = $scope.expenseType;
         params.success = [];

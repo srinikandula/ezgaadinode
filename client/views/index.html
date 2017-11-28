@@ -21,9 +21,10 @@
 <body ng-app="EasyGaadi">
 
 <left-nav-li name="Accounts" link="drivers"></left-nav-li>
+<span  ng-controller="NavCtrl">
 
-<nav class="navbar navbar-default menu-header" ng-controller="NavCtrl">
-    <div class="container">
+<nav class="navbar navbar-default menu-header">
+    <div class="container" >
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
@@ -57,12 +58,12 @@
         </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
 </nav>
-<top-navigation></top-navigation>
+<top-navigation ng-if="isLoggedIn()"></top-navigation>
 <div class="container-fluid">
     <div class="row pall-zero">
-        <div class="col-xs-2 pall-zero">
-            <left-menu label="Dashboard"></left-menu>
-            <left-menu label="Accounts"></left-menu>
+        <div class="col-xs-2 pall-zero"  ng-if="isLoggedIn()" ng-controller="LeftNavCtrl">
+          <!--  <left-menu label="Dashboard"></left-menu>-->
+            <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>
             <left-menu label="Drivers"></left-menu>
             <left-menu label="Trucks"></left-menu>
             <left-menu label="Trips"></left-menu>
@@ -78,6 +79,7 @@
     </div>
 </div>
 
+</span>
 <!--bower scripts-->
 <script src="components/jquery/dist/jquery.min.js"></script>
 <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
