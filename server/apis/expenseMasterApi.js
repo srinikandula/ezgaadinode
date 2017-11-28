@@ -21,7 +21,7 @@ ExpenseMaster.prototype.addExpense = function (jwt, expenseMasterdetails, callba
         callback(retObj);
     }
     if (!retObj.messages.length) {
-        ExpenseMasterColl.findOne({expenseName: expenseMasterdetails.expenseName}, function (err, expense) {
+        ExpenseMasterColl.findOne({'accountId':jwt.accountId, expenseName: expenseMasterdetails.expenseName}, function (err, expense) {
             if (err) {
                 retObj.messages.push("Error, try again!");
                 callback(retObj);
