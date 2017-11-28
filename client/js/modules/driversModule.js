@@ -91,7 +91,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             page: 1, // show first page
             size: 10,
             sorting: {
-                name: -1
+                createdAt: -1
             }
         }, {
             counts: [],

@@ -38,8 +38,6 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
         partyDetails.createdBy = jwt.id;
         partyDetails.updatedBy = jwt.id;
         partyDetails.accountId = jwt.accountId;
-        //var tripLanes = partyDetails.tripLanes;
-        //delete partyDetails.tripLanes;
         var partyDoc = new PartyCollection(partyDetails);
         partyDoc.save(function (err, party) {
             if (err) {
@@ -110,28 +108,6 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
         });
 };
 
-/*Party.prototype.getAccountParties = function (jwt, callback) {
-    var result = {};
-    PartyCollection.find({accountId: jwt.accountId}, function (err, accountParties) {
-        if (err) {
-            result.status = false;
-            result.message = 'Error getting parties';
-            callback(result);
-        } else {
-            Utils.populateNameInUsersColl(accountParties, "createdBy", function (response) {
-                if (response.status) {
-                    result.status = true;
-                    result.message = 'Success';
-                    result.parties = response.documents;
-                    callback(result);
-                } else {
-                    result.message = 'Error getting parties';
-                    callback(result);
-                }
-            });
-        }
-    });
-};*/
 Party.prototype.getAccountParties = function (jwt, params, callback){
     var retObj = {
         status: false,
@@ -141,14 +117,10 @@ Party.prototype.getAccountParties = function (jwt, params, callback){
     if (!params.page) {
         params.page = 1;
 
-    } /*else if (!_.isNumber(Number(pageNumber))) {
-        retObj.messages.push('Invalid page number');
-        return callback(retObj);
-    }*/
-
+    }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         parties: function (partiesCallback) {
             PartyCollection
@@ -308,7 +280,7 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
 }
 
 /*
-* Retrieve trip details based on vehicle number
+* Retrieve trips and expenses details based on vehicle number
 * */
 
 Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callback){
@@ -330,7 +302,6 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
             });
         },
     },function (error, tripsAndExpenses) {
-        //console.log("tripsAndExpenses : ",tripsAndExpenses);
         var totalFreight = 0;
         var totalExpenses = 0;
         if(error){
@@ -341,8 +312,6 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trips = tripsAndExpenses.expenses;
-            //console.log("trips : ",tripsAndExpenses.trips);
-            //console.log("expenses : ",tripsAndExpenses.expenses);
 
             for(var i =0; i < tripsAndExpenses.trips.length; i++) {
                 totalFreight = totalFreight + tripsAndExpenses.trips[i].freightAmount;
@@ -350,11 +319,13 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
             for(var i =0; i < tripsAndExpenses.expenses.length; i++) {
                 totalExpenses = totalExpenses + tripsAndExpenses.expenses[i].cost;
             }
-            //console.log(totalFreight);
-            //console.log(totalExpenses);
             Utils.populateNameInPartyColl(tripsAndExpenses.trips,"partyId",function(partyDocuments){
-                //console.log("partyDocuments :",partyDocuments.documents[0].attrs.partyName);
                 retObj.trips = retObj.trips.concat(partyDocuments.documents);
+                if(retObj.trips){
+                    retObj.trips = retObj.trips.sort(function(x,y){
+                        return x.date < y.date ? 1 : -1;
+                    });
+                }
                 retObj.totalRevenue = {totalFreight : totalFreight,totalExpenses : totalExpenses};
                 callback(retObj);
             });
@@ -363,26 +334,5 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
     });
 }
 
-Party.prototype.findPartyByVehicle =  function(jwt, vehicleId, callback) {
-    PartyCollection.find({"accountId":jwt.accountId, "registrationNo":vehicleId},
-        function (error, party) {
-            //console.log(party);
-            var retObj = {
-                status: false,
-                messages: []
-            };
-            if(error) {
-                retObj.status = false;
-                retObj.messages.push(JSON.stringify(error));
-                callback(retObj)
-            } else {
-                Utils.populateNameInTrucksColl(party,"registrationNo",function(partyDocuments){
-                    retObj.status = true;
-                    retObj.party= partyDocuments.documents;
-                    callback(retObj)
-                });
-            }
-        });
-}
 
 module.exports = new Party();

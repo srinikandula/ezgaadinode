@@ -141,10 +141,8 @@ Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fi
 };
 
 Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, callback) {
-    //console.log("==>",documents, fieldTopopulate);
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    //console.log("==>",ids, fieldTopopulate);
     PartyColl.find({'_id': {$in: ids}}, {"name": 1}, function (err, names) {
         if (err) {
             result.status = false;
@@ -165,7 +163,6 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
                     item.attrs.partyName = party.name;
                 }
             }
-            console.log(documents);
             result.status = true;
             result.message = 'Success';
             result.documents = documents;

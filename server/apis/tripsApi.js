@@ -288,7 +288,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         trips: function (tripsCallback) {
             TripCollection

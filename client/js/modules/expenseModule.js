@@ -110,7 +110,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             page: 1, // show first page
             size: 10,
             sorting: {
-                name: -1
+                createdAt: -1
             }
         }, {
             counts: [],
