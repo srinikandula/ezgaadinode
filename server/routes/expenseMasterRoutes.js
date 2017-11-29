@@ -4,7 +4,7 @@ var AuthRouter = express.Router();
 var ExpenseMaster = require('./../apis/expenseMasterApi');
 
 AuthRouter.post('/', function (req, res) {
-    ExpenseMaster.addExpense(req.jwt, req.body, function (result) {
+    ExpenseMaster.addExpenseType(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
@@ -16,13 +16,13 @@ AuthRouter.get('/', function (req, res) {
 });
 
 AuthRouter.get('/getExpense/:id', function (req, res) {
-    ExpenseMaster.getExpense(req.jwt, req.params.id, function (result) {
+    ExpenseMaster.getExpenseType(req.jwt, req.params.id, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.put('/', function (req, res) {
-    ExpenseMaster.updateExpense(req.jwt, req.body, function (result) {
+    ExpenseMaster.updateExpenseType(req.jwt, req.body, function (result) {
         res.send(result);
     });
 });
