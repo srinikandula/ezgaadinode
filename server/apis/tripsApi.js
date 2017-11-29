@@ -749,8 +749,7 @@ Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
 }
 
 Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
-    console.log(vehicleId);
-    TripCollection.find({"accountId": jwt.accountId, "registrationNo": vehicleId},
+    TripCollection.find({"accountId": ObjectId(jwt.accountId), "registrationNo": vehicleId},
         function (error, trips) {
             //console.log(trips);
             var retObj = {
