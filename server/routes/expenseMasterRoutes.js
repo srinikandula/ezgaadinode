@@ -28,7 +28,7 @@ AuthRouter.put('/', function (req, res) {
 });
 
 AuthRouter.delete('/:id', function (req, res) {
-    ExpenseMaster.deleteExpense(req.jwt, req.params.id, function (result) {
+    ExpenseMaster.deleteExpenseType(req.jwt, req.params.id, function (result) {
         res.send(result);
     });
 });

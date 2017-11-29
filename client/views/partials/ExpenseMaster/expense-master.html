@@ -12,13 +12,13 @@
                     <td data-title="'Name'"  sortable="'expenseName'" class="clickable-item col-sm-2" >{{ expense.expenseName }}</td>
                     <td data-title="'Created By'"  sortable="'agent.attrs.createdByName'" class="clickable-item col-sm-2" >{{ expense.attrs.createdByName }}</td>
                     <td data-title="'Action'" class="col-sm-1">
-
+                        <span ng-if="!expense.isDefault">
                             <a type="button" class="btn" ng-click="goToEditExpenseTypePage(expense._id)">
                                 <span class="glyphicon glyphicon-pencil"></span></a>
 
                             <a type="button" class="btn" ng-click="deleteExpense(expense._id)">
                                 <span class="glyphicon glyphicon-remove"></span></a>
-
+                        </span>
                     </td>
                 </tr>
                 <tr ng-if="!currentPageOfexpenses || currentPageOfexpenses.length === 0">
