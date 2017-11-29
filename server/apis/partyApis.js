@@ -291,8 +291,7 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
     async.parallel({
         trips: function(tripsCallback) {
             Trips.findTripsByVehicle(jwt,vehicleId,function (tripsResults) {
-                console.log("tripsResults :",tripsResults);
-                tripsCallback(tripsResults.error, tripsResults.trips);
+                 tripsCallback(tripsResults.error, tripsResults.trips);
             });
         },
         expenses: function(expensesCallback){

@@ -77,7 +77,7 @@ var truckSchema = new mongoose.Schema({
 
 var tripSchema = new mongoose.Schema({
     date: Date,
-    registrationNo: {type: ObjectId, ref: 'trucks'}, //this will be truck id
+    registrationNo:String, //this will be truck id
     partyId: {type: ObjectId, ref: 'parties'},
     freightAmount: Number, //5000
     tonnage: Number,    //new
