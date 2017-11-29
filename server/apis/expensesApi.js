@@ -108,10 +108,11 @@ Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
             });
         }
     }, function (err, results) {
+        var result = {};
         if (err) {
             result.status = false;
             result.message = 'Error retrieving expenses Costs';
-            callback(retObj);
+            callback(result);
         } else {
             result.status = true;
             result.message = 'Success';
