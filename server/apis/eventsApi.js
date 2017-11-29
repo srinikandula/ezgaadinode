@@ -6,6 +6,7 @@ var Events = function() {};
 var pool  = mysql.createPool(config.mysql);
 var pool_crm  = mysql.createPool(config.mysql_crm);
 var EventData = require('./../apis/eventDataApi');
+var AccountsColl = require('./../models/schemas').AccountsColl;
 
 Events.prototype.getEventData = function(accountId, startDate, endDate, callback) {
     var retObj = {};
@@ -88,7 +89,7 @@ Events.prototype.getUserData = function (callback) {
                 }
                 EventData.createUserData(userData)
             }
-            //retObj.count = retObj.results.length;
+            retObj.count = retObj.results.length;
             callback(retObj);
         }
     });
@@ -117,28 +118,52 @@ Events.prototype.getUserData = function (callback) {
 Events.prototype.getTrucksData = function (callback) {
     var retObj = {
         status: false,
-        messages: []
+        messages: [],
     };
 
-    var trucksDataQuery = "select c.gps_account_id as accountId,t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type";
+    var accountId = null;
+    var driverId = null;
+    var pollutionExpiry = "0000-00-00";// getting error using default value as null
+    var taxDueDate = "0000-00-00";// getting error using default value as null
 
-    pool_crm.query(trucksDataQuery, function(err, results) {
-        if(err) {
-            retObj.status = false;
-            retObj.messages.push('Error fetching data');
-            retObj.messages.push(JSON.stringify(err));
-
-            callback(retObj);
-        } else {
-            if(results.length) {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.results = results;
-                retObj.count = retObj.results.length;
-                callback(retObj);
+    AccountsColl.find({},function(error, accountsData){
+        accountsData.forEach(function (account) {
+            if(account.userName !== "") {
+                var trucksDataQuery = "select t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type where c.gps_account_id='" + account.userName + "'";
+                pool_crm.query(trucksDataQuery, function(err, queryData) {
+                    if(err) {
+                        retObj.status = false;
+                        retObj.messages.push('Error fetching data');
+                        retObj.messages.push(JSON.stringify(err));
+                        callback(retObj);
+                    } else {
+                        if(queryData.length !== 0){
+                            for(var i = 0;i < queryData.length;i++){
+                                queryData[i].fitnessExpiry = convertDate(queryData[i].fitnessExpiry);
+                                queryData[i].permitExpiry = convertDate(queryData[i].permitExpiry);
+                                queryData[i].insuranceExpiry = convertDate(queryData[i].insuranceExpiry);
+                                queryData[i].pollutionExpiry = convertDate(queryData[i].pollutionExpiry);
+                                queryData[i].taxDueDate = convertDate(queryData[i].taxDueDate);
+                                queryData[i].accountId = account._id;
+                                queryData[i].driverId = driverId;
+                                queryData[i].pollutionExpiry = convertDate(pollutionExpiry);
+                                queryData[i].taxDueDate = convertDate(taxDueDate);
+                                EventData.createTruckData(queryData[i]);
+                            }
+                        }
+                    }
+                });
             }
-        }
+        });
     });
+}
+
+function convertDate(olddate) {
+    if(olddate == "0000-00-00"){
+        return new Date();
+    } else {
+        return new Date(olddate);
+    }
 }
 
 module.exports = new Events();
