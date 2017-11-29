@@ -64,13 +64,12 @@ ExpenseMaster.prototype.getAllAccountExpenses = function (jwt, params, callback)
     var limit = params.limit ? parseInt(params.limit) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
     ExpenseMasterColl
-        .find({'accountId': jwt.accountId})
+        .find({$or:[{'accountId': jwt.accountId},{isDefault:true}]})
         .sort(sort)
         .skip(skipNumber)
         .limit(limit)
         .lean()
         .exec(function (err, expenses) {
-            console.log('--->', expenses);
             if(expenses){
                 Utils.populateNameInUsersColl(expenses, "createdBy", function (response) {
                     if (!response.status) {
@@ -141,19 +140,23 @@ ExpenseMaster.prototype.updateExpense = function (jwt, expenseMasterdetails, cal
     });
 };
 
-ExpenseMaster.prototype.deleteExpense = function (jwt, id, callback) {
+ExpenseMaster.prototype.deleteExpenseType = function (jwt, id, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    ExpenseMasterColl.remove({accountId: jwt.accountId, _id: id}, function (err) {
+    ExpenseMasterColl.remove({accountId: jwt.accountId, _id: id}, function (err,result) {
         if (err) {
             retObj.messages.push('Error deleting expense');
             callback(retObj);
-        } else {
+        } else if(result && result.n == 1){
             retObj.status = true;
             retObj.messages.push('Successfully Deleted !!');
+            callback(retObj);
+        }else {
+            retObj.status = false;
+            retObj.messages.push('Error deleting expense');
             callback(retObj);
         }
     });
