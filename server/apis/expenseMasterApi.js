@@ -10,7 +10,7 @@ var Utils = require('./utils');
 var ExpenseMaster = function () {
 };
 
-ExpenseMaster.prototype.addExpense = function (jwt, expenseMasterdetails, callback) {
+ExpenseMaster.prototype.addExpenseType = function (jwt, expenseMasterdetails, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -33,13 +33,14 @@ ExpenseMaster.prototype.addExpense = function (jwt, expenseMasterdetails, callba
                 expenseMasterdetails.updatedBy = jwt.id;
                 expenseMasterdetails.accountId = jwt.accountId;
                 var insertDoc = new ExpenseMasterColl(expenseMasterdetails);
-                insertDoc.save(function (err) {
+                insertDoc.save(function (err, newDoc) {
                     if (err) {
                         retObj.messages.push("Error, try Again");
                         callback(retObj);
                     } else {
                         retObj.status = true;
                         retObj.messages.push("Successfully Added");
+                        retObj.newDoc = newDoc;
                         callback(retObj);
                     }
                 });
@@ -97,7 +98,7 @@ ExpenseMaster.prototype.getAllAccountExpenses = function (jwt, params, callback)
     });*/
 };
 
-ExpenseMaster.prototype.getExpense = function (jwt, id, callback) {
+ExpenseMaster.prototype.getExpenseType = function (jwt, id, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -115,7 +116,7 @@ ExpenseMaster.prototype.getExpense = function (jwt, id, callback) {
     });
 };
 
-ExpenseMaster.prototype.updateExpense = function (jwt, expenseMasterdetails, callback) {
+ExpenseMaster.prototype.updateExpenseType = function (jwt, expenseMasterdetails, callback) {
     var retObj = {
         status: false,
         messages: []

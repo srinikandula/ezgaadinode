@@ -311,7 +311,7 @@ Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
                 });
         },
         expenseTypes: function(expenseTypesCallback){
-            expenseMasterColl.find({"accountId":jwt.accountId}, function(error , expenseTypeResults){
+            expenseMasterColl.find({}, function(error , expenseTypeResults){
                 expenseTypesCallback(error, expenseTypeResults);
             });
         },
@@ -336,56 +336,6 @@ Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
             var truckRegNumbers = _.object(_.map(expensesAndTypes.truckRegNumbers, function(truck) {
                 return [truck._id, truck.registrationNo];
             }));
-            /**
-             * {
-                      "expenseTypes": [
-                        {
-                          "_id": "5a0d7af1ac20f331fa21f717",
-                          "updatedAt": "2017-11-16T11:48:01.885Z",
-                          "createdAt": "2017-11-16T11:48:01.885Z",
-                          "expenseName": "Diesel",
-                          "createdBy": "5a0ab6d1a5708b26b19cc170",
-                          "updatedBy": "5a0ab6d1a5708b26b19cc170",
-                          "accountId": "5a0ab6c9a5708b26b19cc16f",
-                          "__v": 0
-                        },
-                        {
-                          "_id": "5a12e83dc0b585b615aee162",
-                          "updatedAt": "2017-11-20T14:35:41.798Z",
-                          "createdAt": "2017-11-20T14:35:41.798Z",
-                          "expenseName": "Toll",
-                          "createdBy": "5a0ab6d1a5708b26b19cc170",
-                          "updatedBy": "5a0ab6d1a5708b26b19cc170",
-                          "accountId": "5a0ab6c9a5708b26b19cc16f",
-                          "__v": 0
-                        }
-                      ],
-                      "expenses": [
-                        {
-                          "_id": {
-                            "vehicelNumber": "5a0d775eac20f331fa21f716",
-                            "expenseType": "5a0d7af1ac20f331fa21f717"
-                          },
-                          "totalExpenses": 3000
-                        },
-                        {
-                          "_id": {
-                            "vehicelNumber": "5a0d76a1ac20f331fa21f715",
-                            "expenseType": "5a12e83dc0b585b615aee162"
-                          },
-                          "totalExpenses": 300
-                        },
-                        {
-                          "_id": {
-                            "vehicelNumber": "5a0d76a1ac20f331fa21f715",
-                            "expenseType": "5a0d7af1ac20f331fa21f717"
-                          },
-                          "totalExpenses": 2000
-                        }
-                      ]
-                    }
-             * @type {{}}
-             */
             var vehicleExpenses = {};
             for(var i=0; i< expenses.length;i++) {
                 var vehicleId = expenses[i]._id.vehicleNumber;
