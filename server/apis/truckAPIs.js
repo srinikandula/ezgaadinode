@@ -316,7 +316,9 @@ Trucks.prototype.getAllAccountTrucks = function (accountId,callback) {
         status: false,
         messages: []
     };
-    TrucksColl.find({accountId:accountId},{updatedAt:0,createdAt:0},function (err, trucks) {
+    TrucksColl.find({accountId: jwt.accountId})
+        .sort({createdAt: 1})
+        .exec(function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
