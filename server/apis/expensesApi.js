@@ -61,11 +61,6 @@ Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
     if (!params.page) {
         params.page = 1;
     }
-    else if (!_.isNumber(Number(params.page))) {
-        result.status = false;
-        result.message = 'Invalid page number';
-        return callback(result);
-    }
 
     var skipNumber = (params.page - 1) * params.size;
     async.parallel({
@@ -74,7 +69,6 @@ Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
             var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
             expenseColl
                 .find({'accountId': jwt.accountId})
-                //.sort({createdAt: 1})
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
@@ -103,7 +97,7 @@ Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
                 });
         },
         count: function (countCallback) {
-            expenseColl.count(function (err, count) {
+            expenseColl.count({},function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -117,7 +111,7 @@ Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
             result.status = true;
             result.message = 'Success';
             result.count = results.count;
-            result.maintanenceCosts = results.mCosts.createdbyname;
+            result.expenses = results.mCosts.createdbyname;
             callback(result);
         }
     });
@@ -130,8 +124,6 @@ Expenses.prototype.getAllAccountExpenseCosts = function (jwt, callback) {
     };
     expenseColl
         .find({accountId: jwt.accountId})
-        // .sort({createdAt: 1})
-        // .populate('expenseCostId')
         .lean()
         .exec(function (err, mCosts) {
             async.parallel({
