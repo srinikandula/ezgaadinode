@@ -99,6 +99,8 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
     });
 };
 
+
+
 Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fieldTopopulate, fieldsToGet, callback) {
     var result = {};
     var driverIds = _.pluck(truckDocuments, fieldTopopulate);

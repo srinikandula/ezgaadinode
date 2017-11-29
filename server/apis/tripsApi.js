@@ -305,7 +305,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
                             });
                         },
                         driversname: function (driversnameCallback) {
-                            Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
+                            Utils.populateNameInDriversCollmultiple(trips, 'driverId', ['fullName', 'mobile'], function (response) {
                                 driversnameCallback(response.err, response.documents);
                             });
                         },

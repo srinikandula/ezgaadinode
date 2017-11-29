@@ -15,5 +15,12 @@
     "user": "root",
     "password": "098ioplkjbNm",
     "database": "gts"
+  },
+  "mysql_crm": {
+    "connectionLimit": 10,
+    "host": "egcrm.cloudapp.net",
+    "user": "root",
+    "password": "098ioplkjbNm",
+    "database": "easygaadi_crm"
   }
 }

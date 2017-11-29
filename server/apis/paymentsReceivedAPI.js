@@ -308,9 +308,9 @@ PaymentsReceived.prototype.findPendingDueForAccount = function(jwt, callback){
             retObj.messages.push('Success');
             var totalFright = 0;
             var totalPayments = 0;
-            if(populateResults.length > 0){
-                if(populateResults.tripFreightTotal[0]){
-                    totalFright = populateResults.tripFreightTotal[0].totalFreight;
+            if(Object.keys(populateResults).length > 0){
+                if(populateResults.tripFrightTotal[0]){
+                    totalFright = populateResults.tripFrightTotal[0].totalFright;
                 }
                 if(populateResults.paymentsTotal[0]){
                     totalPayments = populateResults.paymentsTotal[0].totalPayments;
