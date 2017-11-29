@@ -363,13 +363,13 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
             var grossExpenses = 0;
             var grossDue = 0;
             for(var i=0;i<partyIds.length;i++) {
-                var party = {"id":partyIds[i]};
+                var party = {"id":partyIds[i], "totalPayment":0,"totalFright":0};
                 var partyInfo = _.find(populateResults.tripFrightTotal, function (total) {
                     if(total._id === party.id) {
                         return total;
                     }
                 });
-                if(partyInfo){
+                if(partyInfo && partyInfo.totalFright){
                     party.totalFright = partyInfo.totalFright;
                 }
                 partyInfo =  _.find(populateResults.paymentsTotal, function (payment) {
@@ -377,7 +377,7 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
                         return payment;
                     }
                 });
-                if(partyInfo){
+                if(partyInfo && partyInfo.totalPayments ){
                     party.totalPayment = partyInfo.totalPayments;
                 }
                 party.totalDue = parseFloat(party.totalFright) - parseFloat(party.totalPayment);
