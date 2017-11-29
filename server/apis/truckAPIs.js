@@ -311,14 +311,13 @@ Trucks.prototype.getUnAssignedTrucks = function (jwt,gId,callback) {
         }
     });
 };
-Trucks.prototype.getAllAccountTrucks = function (accountId,callback) {
+Trucks.prototype.getAllAccountTrucks = function (jwt,callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    TrucksColl.find({accountId: jwt.accountId})
-        .sort({createdAt: 1})
-        .exec(function (err, trucks) {
+    TrucksColl
+        .find({accountId: jwt.accountId}).sort({createdAt: -1}).exec(function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);

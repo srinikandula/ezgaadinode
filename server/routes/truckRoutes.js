@@ -70,13 +70,13 @@ AuthRouter.delete('/:truckId', function (req, res) {
 });
 
 AuthRouter.get('/get/accountTrucks/:pageNumber', function (req, res) {
-    Trucks.getAllAccountTrucks(req.jwt.accountId,function (result) {
+    Trucks.getAllAccountTrucks(req.jwt,function (result) {
         res.json(result);
     });
 });
 
 AuthRouter.get('/', function (req, res) {
-    Trucks.getAllAccountTrucks(req.jwt.accountId,function (result) {
+    Trucks.getAllAccountTrucks(req.jwt,function (result) {
         res.json(result);
     });
 });
