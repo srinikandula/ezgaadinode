@@ -10,12 +10,6 @@ AuthRouter.post('/', function (req, res) {
     });
 });
 
-/*AuthRouter.get('/:pageNumber', function (req, res) {
-    Drivers.getDriverByPageNumber(req.jwt, req.params.pageNumber, function (result) {
-        res.json(result);
-    });
-});*/
-
 AuthRouter.get('/get/:driverId', function (req, res) {
     Drivers.getDriverDetails(req.jwt, req.params.driverId, function (result) {
         res.json(result);

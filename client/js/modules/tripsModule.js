@@ -109,7 +109,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             page: 1, // show first page
             size: 10,
             sorting: {
-                name: -1
+                createdAt: -1
             }
         }, {
             counts: [],

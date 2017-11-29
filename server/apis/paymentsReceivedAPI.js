@@ -101,7 +101,7 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
     async.parallel({
         mCosts: function (mCostsCallback) {
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : {};
+            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
             PaymentsReceivedColl
                 .find({'accountId': jwt.accountId})
                 .sort(sort)

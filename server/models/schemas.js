@@ -59,7 +59,7 @@ var groupSchema = new mongoose.Schema({
 });
 
 var truckSchema = new mongoose.Schema({
-    registrationNo: {type: String, unique: true},
+    registrationNo: {type: String},
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: {type: ObjectId, ref: 'groups'},
     truckType: String,

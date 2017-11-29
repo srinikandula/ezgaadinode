@@ -62,7 +62,7 @@ ExpenseMaster.prototype.getAllAccountExpenses = function (jwt, params, callback)
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.limit ? parseInt(params.limit) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) :{};
+    var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
     ExpenseMasterColl
         .find({'accountId': jwt.accountId})
         .sort(sort)

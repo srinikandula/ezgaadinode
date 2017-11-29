@@ -94,7 +94,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             page: 1, // show first page
             size: 10,
             sorting: {
-                amount: -1
+                createdAt: -1
             }
         }, {
             counts: [],

@@ -79,7 +79,7 @@ app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices'
             size: 10,
             count: 10,
             sorting: {
-                expenseName: -1
+                createdAt: -1
             },
         }, {
             counts: [],

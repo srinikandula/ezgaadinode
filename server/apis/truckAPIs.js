@@ -200,7 +200,7 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
     if(jwt.type === "account"){
         var skipNumber = (params.page - 1) * params.size;
         var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-        var sort = params.sort ? JSON.parse(params.sort) :{};
+        var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
         async.parallel({
             trucks: function (trucksCallback) {
                 TrucksColl
