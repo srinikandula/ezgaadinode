@@ -59,11 +59,10 @@ var groupSchema = new mongoose.Schema({
 });
 
 var truckSchema = new mongoose.Schema({
-    registrationNo: {type: String},
     accountId: {type: ObjectId, ref: 'accounts'},
-    groupId: {type: ObjectId, ref: 'groups'},
-    truckType: String,
+    registrationNo: {type: String, unique: true},
     driverId: String,
+    truckType: String,
     modelAndYear: String,
     tonnage: String,
     fitnessExpiry: Date,
@@ -78,7 +77,7 @@ var truckSchema = new mongoose.Schema({
 
 var tripSchema = new mongoose.Schema({
     date: Date,
-    registrationNo: String,
+    registrationNo: {type: ObjectId, ref: 'trucks'}, //this will be truck id
     partyId: {type: ObjectId, ref: 'parties'},
     freightAmount: Number, //5000
     tonnage: Number,    //new
@@ -87,6 +86,7 @@ var tripSchema = new mongoose.Schema({
     remarks: String,    //new
     tripLane: String,
     tripExpenses: Number,
+    driverId : {type: ObjectId, ref: 'drivers'},
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: {type: ObjectId, ref: 'groups'},
     updatedBy: String,

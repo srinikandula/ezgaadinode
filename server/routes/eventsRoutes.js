@@ -151,6 +151,13 @@ OpenRouter.get('/get/user', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/trucks', function (request, res) {
+    Events.getTrucksData(function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

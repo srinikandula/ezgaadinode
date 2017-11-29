@@ -99,6 +99,8 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
     });
 };
 
+
+
 Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fieldTopopulate, fieldsToGet, callback) {
     var result = {};
     var driverIds = _.pluck(truckDocuments, fieldTopopulate);
@@ -132,7 +134,7 @@ Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fi
                 }
             }
             result.status = true;
-            result.message = 'Error retrieving names';
+            result.message = 'Success';
             result.documents = truckDocuments;
             result.err = err;
             callback(result);
@@ -143,7 +145,7 @@ Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fi
 Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldTopopulate);
-    PartyColl.find({'_id': {$in: ids}}, {"name": 1}, function (err, names) {
+    PartyColl.find({'_id': {$in: ids}}, {"name": 1, "contact": 1}, function (err, names) {
         if (err) {
             result.status = false;
             result.message = 'Error retrieving names';
@@ -161,6 +163,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
                         item.attrs = {};
                     }
                     item.attrs.partyName = party.name;
+                    item.attrs.partyContact = party.contact;
                 }
             }
             result.status = true;

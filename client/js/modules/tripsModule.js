@@ -99,7 +99,6 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trips;
                 $scope.currentPageOfTrips = $scope.trips;
-
             }
         });
     };
@@ -191,7 +190,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
 
     function getTruckIds() {
-        // TrucksService.getAllAccountTrucks(1,function (success) {
         TrucksService.getAllAccountTrucks(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
@@ -214,8 +212,30 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.selectTruckId = function (truck) {
         $scope.trip.registrationNo = truck._id;
     }
+
+    function getDriverIds() {
+        DriverService.getAllDrivers(function (success) {
+            if (success.data.status) {
+                $scope.drivers = success.data.drivers;
+                console.log($scope.drivers);
+                var selectedDriver = _.find($scope.drivers, function (driver) {
+                    return driver._id.toString() === $scope.trip.driverId;
+                });
+                if (selectedDriver) {
+                    $scope.driverId = selectedDriver.driverId;
+                }
+            } else {
+                success.data.messages(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
     $scope.selectTruckDriver = function (driver) {
-        $scope.trip.driver = driver._id;
+        $scope.trip.driverId = driver._id;
     }
 
     $scope.selectTripLane = function (triplane) {
@@ -238,6 +258,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 // console.log('trip', $scope.trip)
                 getTruckIds();
                 getParties();
+                getDriverIds();
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -255,6 +276,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     } else {
         getTruckIds();
         getParties();
+        getDriverIds();
     }
 
     $scope.paymentFlag = false;
