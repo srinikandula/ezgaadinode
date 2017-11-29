@@ -112,10 +112,11 @@ Drivers.prototype.getDrivers= function (jwt, params, callback) {
      if (retObj.messages.length) {
         callback(retObj);
     } else {
-        if (jwt.type = "account") {
-            var skipNumber = (params.page - 1) * params.size;
-            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
+         var skipNumber = (params.page - 1) * params.size;
+         var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+         var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
+
+         if (jwt.type = "account") {
             async.parallel({
                 drivers: function (driversCallback) {
                     DriversColl
@@ -160,9 +161,9 @@ Drivers.prototype.getDrivers= function (jwt, params, callback) {
                 drivers: function (driversCallback) {
                     DriversColl
                         .find({"accountId": jwt.accountId, "groupId": jwt.id})
-                        .sort({createdAt: 1})
+                        .sort(sort)
                         .skip(skipNumber)
-                        .limit(pageLimits.driverPaginationLimit)
+                        .limit(limit)
                         .populate('truckId')
                         .lean()
                         .exec(function (err, drivers) {
@@ -290,26 +291,6 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
     }
 };
 
-
-Drivers.prototype.getAccountDrivers = function (accountId, callback) {
-    var retObj = {
-        status: true,
-        messages: []
-    };
-
-    DriversColl.find({accountId: accountId}, function (err, drivers) {
-        if (err) {
-            retObj.messages.push('Error getting account trucks');
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.drivers = drivers;
-            callback(retObj);
-        }
-    });
-};
-
 Drivers.prototype.deleteDriver = function (driverId, callback) {
     var retObj = {
         status: false,
@@ -333,8 +314,8 @@ Drivers.prototype.deleteDriver = function (driverId, callback) {
             }
         });
     }
-
 };
+
 Drivers.prototype.countDrivers = function (jwt, callback) {
     var result = {};
     DriversColl.count({'accountId':jwt.accountId},function (err, data) {
