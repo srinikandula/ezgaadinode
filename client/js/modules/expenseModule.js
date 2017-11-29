@@ -94,9 +94,9 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
 
         ExpenseService.getExpenses(pageable, function (response) {
             $scope.invalidCount = 0;
-            if (angular.isArray(response.data.maintanenceCosts)) {
+            if (angular.isArray(response.data.expenses)) {
                 $scope.loading = false;
-                $scope.maintanenceCosts = response.data.maintanenceCosts;
+                $scope.maintanenceCosts = response.data.expenses;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.maintanenceCosts;
                 $scope.currentPageOfMaintanence = $scope.maintanenceCosts;
