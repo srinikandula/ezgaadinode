@@ -24,22 +24,6 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
         retObj.messages.push('Mobile number should be of ten digits');
     }
-
-    /*
-    if (!driverInfo.truckId || !Utils.isValidObjectId(driverInfo.truckId)) {
-        console.log('----->', driverInfo.truckId);
-        retObj.messages.push('Invalid truckId');
-    }
-
-
-    if (!driverInfo.licenseValidity) {
-        retObj.messages.push('Invalid license validity date, format should be in YYYY-MM-DD');
-    }
-
-    if (isNaN(Number(driverInfo.salary))) {
-        retObj.messages.push('Invalid salary, should be a number');
-    }*/
-
     if (retObj.messages.length) {
         callback(retObj);
     } else {
@@ -52,7 +36,6 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
             driverInfo.accountId = jwt.accountId;
         }
         driverInfo.mobile = Number(driverInfo.mobile);
-        var today = new Date();
         driverInfo.driverId = "DR" + parseInt((Math.random() * 100000)); // Need to fix this
         delete driverInfo.joiningDate;
 
