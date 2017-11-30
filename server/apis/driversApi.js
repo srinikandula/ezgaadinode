@@ -21,24 +21,9 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     if (!driverInfo.fullName || !_.isString(driverInfo.fullName)) {
         retObj.messages.push('Invalid full name');
     }
-    /*
-    if (!driverInfo.truckId || !Utils.isValidObjectId(driverInfo.truckId)) {
-        console.log('----->', driverInfo.truckId);
-        retObj.messages.push('Invalid truckId');
-    }
-
     if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
         retObj.messages.push('Mobile number should be of ten digits');
     }
-
-    if (!driverInfo.licenseValidity) {
-        retObj.messages.push('Invalid license validity date, format should be in YYYY-MM-DD');
-    }
-
-    if (isNaN(Number(driverInfo.salary))) {
-        retObj.messages.push('Invalid salary, should be a number');
-    }*/
-
     if (retObj.messages.length) {
         callback(retObj);
     } else {
@@ -51,7 +36,6 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
             driverInfo.accountId = jwt.accountId;
         }
         driverInfo.mobile = Number(driverInfo.mobile);
-        var today = new Date();
         driverInfo.driverId = "DR" + parseInt((Math.random() * 100000)); // Need to fix this
         delete driverInfo.joiningDate;
 
@@ -61,7 +45,7 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
             $or: [{"mobile": driverInfo.mobile}, {"fullName": driverInfo.fullName}]
         }, function (err, drivers) {
             if (err) {
-                retObj.messages.push('Error fetching accounts');
+                retObj.messages.push('Error saving driver', err.message);
                 callback(retObj);
             } else if (drivers && drivers.length > 0) {
                 var duplicateFound = _.find(drivers, function (driver) {
@@ -236,6 +220,10 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
 
     if (!driverInfo._id) {
         retObj.messages.push('Invalid driverId');
+    }
+
+    if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
+        retObj.messages.push('Mobile number should be of ten digits');
     }
 
     if (retObj.messages.length) {

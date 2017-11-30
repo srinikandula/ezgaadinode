@@ -364,7 +364,7 @@ Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
                 var resultExpense = {"dieselExpense":0, "tollExpense":0, "mExpense":0, "misc":0};
                 for(e in vehicleExpense.expenses) {
                     var vExpense = vehicleExpense.expenses[e];
-                    //console.log(vExpense);
+
                     if(vExpense["name"] == "Diesel"){
                         resultExpense["dieselExpense"] += vExpense.expenseTotal;
                         totalDieselExpense = totalDieselExpense + resultExpense["dieselExpense"];
