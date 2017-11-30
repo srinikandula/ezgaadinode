@@ -1,0 +1,35 @@
+
+<div class="main-right col-xs-9" ng-controller="dashboardController">
+    <h3>Amount by Parties</h3>
+    <div class="toolbar-button-div pull-right mb-10">
+        &nbsp;
+    </div>
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
+        <tr ng-repeat="amountByParties in parties" style="text-align: center;">
+            <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
+                <a href="#"
+                ng-click="gotoPaymentBypartyId(amountByParties.id, amountByParties.attrs.partyName )"> 
+                  {{amountByParties.attrs.partyName }}</a>
+            </td>
+            <td data-title="'Party Mobile'" sortable="'partyContact'" class="clickable-item col-sm-2">
+                    {{ amountByParties.attrs.partyContact}}
+                </td>
+            <td data-title="'Total Fright'" sortable="'totalFright'" class="clickable-item col-sm-2">
+                {{ amountByParties.totalFright}}
+            </td>
+            <td data-title="'Paid Amount'" sortable="'totalPayment'" class="clickable-item col-sm-2">
+                {{ amountByParties.totalPayment}}
+            </td>
+
+            <td data-title="'Due Amount'" sortable="'totalDue'" class="clickable-item col-sm-2">
+                {{ amountByParties.totalDue}}
+            </td>
+           
+        </tr>
+        <tr ng-if="!parties || parties.length === 0">
+            <td colspan="8">No Records exist.</td>
+        </tr>
+    </table>
+</div>
+</div>
+

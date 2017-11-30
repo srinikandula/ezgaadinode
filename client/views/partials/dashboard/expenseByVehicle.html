@@ -7,21 +7,25 @@
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
         <tr ng-repeat="expensesByVehicle in totalExpensesbyVehicle" style="text-align: center;">
             <td data-title="'Registration No'" sortable="'regNumber'" class="clickable-item col-sm-2">
-                <a ui-sref="">  {{expensesByVehicle.regNumber }}</a>
+                <a href="#"
+                ng-click="gotoExpenseByVehicleId(expensesByVehicle.id)"> 
+                  {{expensesByVehicle.regNumber }}</a>
             </td>
-            <td data-title="'Diesel Expense'" sortable="'dieselExpense'" class="clickable-item col-sm-2">
+            <td data-title="'Diesel'" sortable="'dieselExpense'" class="clickable-item col-sm-2">
                 {{ expensesByVehicle.exps[0].dieselExpense}}
             </td>
-            <td data-title="'M Expense'" sortable="'mExpense'" class="clickable-item col-sm-2">
-                {{ expensesByVehicle.exps[0].mExpense}}
-            </td>
-
-            <td data-title="'Misc Expense'" sortable="'misc'" class="clickable-item col-sm-2">
-                {{ expensesByVehicle.exps[0].misc}}
-            </td>
-            <td data-title="'Toll Expense'" sortable="'tollExpense'" class="clickable-item col-sm-2">
+            <td data-title="'Toll'" sortable="'tollExpense'" class="clickable-item col-sm-2">
                 {{ expensesByVehicle.exps[0].tollExpense}}
             </td>
+
+            <td data-title="'Maintenance'" sortable="'mExpense'" class="clickable-item col-sm-2">
+                {{ expensesByVehicle.exps[0].mExpense}}
+            </td>
+            
+            <td data-title="'Miscellaneous'" sortable="'misc'" class="clickable-item col-sm-2">
+                {{ expensesByVehicle.exps[0].misc}}
+            </td>
+           
         </tr>
         <tr ng-if="expensesByVehicle || expensesByVehicle.length === 0">
             <td colspan="8">No Records exist.</td>

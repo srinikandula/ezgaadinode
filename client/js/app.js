@@ -262,6 +262,32 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'auth',
             vehicleId: null
         }
+    }).state({
+        name: 'expenseByVehicleId',
+        url: '/expenseByVehicleId/:vehicleId',
+        templateUrl: 'views/partials/dashboard/expenseByVehicleId.html',
+        data: {activeTab: 'dashboard'},
+        params: {
+            access: 'auth',
+            vehicleId: null
+        }
+    }).state({
+        name: 'amountByParties',
+        url: '/amountByParties',
+        templateUrl: 'views/partials/dashboard/amountByParties.html',
+        data: {activeTab: 'dashboard'},
+        params: {
+            access: 'auth',
+        }
+    }).state({
+        name: 'amountByPartyId',
+        url: '/amountByPartyId/:partyId',
+        templateUrl: 'views/partials/dashboard/amountByPartyId.html',
+        data: {activeTab: 'dashboard'},
+        params: {
+            access: 'auth',
+            partyId: null
+        }
     });
     $urlRouterProvider.otherwise('/login');
 });

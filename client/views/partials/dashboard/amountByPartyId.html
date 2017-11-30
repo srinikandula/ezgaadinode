@@ -1,0 +1,36 @@
+
+<div class="main-right col-xs-9" ng-controller="paymentsById">
+    <h3>Payments by {{partyName}}</h3>
+    <div class="toolbar-button-div pull-right mb-10">
+        &nbsp;
+    </div>
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
+        <tr ng-repeat="amountListByPartyId in results" style="text-align: center;">
+
+                <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">
+                        {{amountListByPartyId.date | date:'dd-MM-yyyy' }}
+                    </td>
+            <td data-title="'Trip Id'" sortable="'tripId'" class="clickable-item col-sm-2">
+                {{ amountListByPartyId.tripId }}
+            </td>
+            <td data-title="'Registration No'" sortable="'truckName'" class="clickable-item col-sm-2">
+                {{ amountListByPartyId.attrs.truckName }}
+                
+            </td>
+
+            <td data-title="'Freight Amount'" sortable="'freightAmount'" class="clickable-item col-sm-2">
+                {{ amountListByPartyId.freightAmount }}
+            </td>
+            
+            <td data-title="'Paid Amount'" sortable="'amount'" class="clickable-item col-sm-2" >
+                {{ amountListByPartyId.amount}}
+            </td>
+           
+        </tr>
+        <tr ng-if="!results || results.length === 0">
+            <td colspan="8">No Records exist.</td>
+        </tr>
+    </table>
+</div>
+</div>
+

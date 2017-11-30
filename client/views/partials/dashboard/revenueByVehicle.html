@@ -7,8 +7,8 @@
         <tr ng-repeat="revenueListByRegNo in revenueByVehicle" style="text-align: center;">
             <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
                 <a href="#"
-                   ng-click="gotorevenueByVehicleId(revenueListByRegNo.registrationNo)"> {{revenueListByRegNo.attrs.truckName
-                    }}</a>
+                   ng-click="gotorevenueByVehicleId(revenueListByRegNo.registrationNo)"> 
+                   {{revenueListByRegNo.attrs.truckName}}</a>
             </td>
             <td data-title="'Total Freight'" sortable="'totalFreight'" class="clickable-item col-sm-2">
                 {{ revenueListByRegNo.totalFreight}}
