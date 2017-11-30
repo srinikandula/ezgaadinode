@@ -409,7 +409,7 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
         TripCollection.find(query, {
             date: 1,
             registrationNo: 1,
-            driver: 1,
+            driverId: 1,
             bookedFor: 1,
             freightAmount: 1,
             advance: 1,
@@ -430,7 +430,7 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
                         });
                     },
                     driversname: function (driversnameCallback) {
-                        Utils.populateNameInDriversCollmultiple(trips, 'driver', ['fullName', 'mobile'], function (response) {
+                        Utils.populateNameInDriversCollmultiple(trips, 'driverId', ['fullName', 'mobile'], function (response) {
                             driversnameCallback(response.err, response.documents);
                         });
                     },

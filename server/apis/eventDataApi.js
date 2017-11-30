@@ -2,6 +2,7 @@
 var EventDataCollection = require('./../models/schemas').EventDataCollection;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
+var TrucksColl = require('./../models/schemas').TrucksColl;
 var EventData = function () {
 };
 
@@ -120,6 +121,30 @@ EventData.prototype.createUserData = function (userData, callback) {
     });
 
 
+}
+
+EventData.prototype.createTruckData = function (truckData, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var truckDataDoc = new TrucksColl(truckData);
+    truckDataDoc.save(truckData, function (err, newDoc) {
+        if (err) {
+            retObj.messages.push('Error saving Truck Data');
+            if(callback){
+                callback(retObj);
+            }
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.truckData = newDoc;
+            if(callback){
+                callback(retObj);
+            }
+        }
+    });
 }
 
 

@@ -17,10 +17,11 @@
     "database": "gts"
   },
   "mysql_crm": {
-    "connectionLimit": 10,
-    "host": "egcrm.cloudapp.net",
+    "port": 3306,
+    "connectionLimit": 100,
+    "host": "localhost",
     "user": "root",
-    "password": "098ioplkjbNm",
+    "password": "",
     "database": "easygaadi_crm"
   }
 }

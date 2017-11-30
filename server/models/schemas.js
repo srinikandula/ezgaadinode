@@ -59,15 +59,16 @@ var groupSchema = new mongoose.Schema({
 });
 
 var truckSchema = new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
-    registrationNo: {type: String, unique: true},
-    driverId: String,
+    registrationNo: String,
     truckType: String,
     modelAndYear: String,
     tonnage: String,
     fitnessExpiry: Date,
     permitExpiry: Date,
     insuranceExpiry: Date,
+    tracking_available:Number,
+    accountId: {type: ObjectId, ref: 'accounts'},
+    driverId: String,
     pollutionExpiry: Date,
     taxDueDate: Date,
     updatedBy: String,

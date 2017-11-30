@@ -145,7 +145,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.isFirstOpen = true;
     $scope.trip = {
         date: '',
-        driver: '',
+        driverId: '',
         partyId: '',
         registrationNo: '',
         freightAmount: '',
@@ -217,12 +217,13 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         DriverService.getAllDrivers(function (success) {
             if (success.data.status) {
                 $scope.drivers = success.data.drivers;
-                console.log($scope.drivers);
+                //console.log($scope.drivers);
                 var selectedDriver = _.find($scope.drivers, function (driver) {
                     return driver._id.toString() === $scope.trip.driverId;
                 });
+                //console.log('selectedDriver : ',selectedDriver)
                 if (selectedDriver) {
-                    $scope.driverId = selectedDriver.driverId;
+                    $scope.driverId = selectedDriver.fullName;
                 }
             } else {
                 success.data.messages(function (message) {
@@ -299,13 +300,16 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
-        console.log($scope.trip);
+        //console.log($scope.trip);
         params.errors = [];
         if (!params.date) {
-            params.errors.push('Valid Trip Date');
+            params.errors.push('Please Provide Trip Date');
         }
         if (!params.registrationNo) {
-            params.errors.push('Valid Registration Number');
+            params.errors.push('Please Provide Registration Number');
+        }
+        if (!params.driverId) {
+            params.errors.push('Please Select Driver');
         }
 
         if (!params.errors.length) {
