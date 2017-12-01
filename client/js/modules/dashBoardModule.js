@@ -1,4 +1,5 @@
-app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state','paginationService','NgTableParams','TripServices','ExpenseService','PartyService', function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService,PartyService) {
+app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state','paginationService','NgTableParams','TripServices','ExpenseService','PartyService', 'PaymentsService',
+function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService,PartyService,PaymentsService) {
 
  // All Trucks Expirys
 
@@ -131,8 +132,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
     $scope.getRevenueByVehicle();
 
     $scope.gotorevenueByVehicleId = function (vehicleId) {
-        $state.go('revenueByVehicleId', {vehicleId:vehicleId})
-    };
+        $state.go('revenueByVehicleId', {vehicleId:vehicleId});
+       };
 
 // Total Expenses, Expense by Vehicle
 
@@ -152,7 +153,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
     $scope.getTotalExpenses();
 
     $scope.getExpenseByVehicle = function () {
-        ExpenseService.findExpensesbyVehicle(function (success) {
+        ExpenseService.findExpensesbyGroupVehicle(function (success) {
             if (success.data.status) {
                 $scope.totalExpensesbyVehicle = success.data.expenses;
             } else {
@@ -165,16 +166,58 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         });
     };
     $scope.getExpenseByVehicle();
+ 
+
+    $scope.gotoExpenseByVehicleId = function (vehicleId) {
+        $state.go('expenseByVehicleId', {vehicleId:vehicleId})
+    };
+    $scope.gotoPaymentBypartyId = function (partyId, partyName) {
+        $state.go('amountByPartyId', {partyId:partyId, partyName:partyName});
+    };
+
+    /**
+     * Total Payment Receivable by Party, Pending Amount by Party
+     */
+
+    $scope.getTotalAmountReceivable = function () {
+        PaymentsService.getTotalPaymentsReceivable(function (success) {
+            if (success.data.status) {
+                $scope.amounts = success.data.amounts;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+    $scope.getTotalAmountReceivable();
+
+    $scope.getAmountsByparty = function () {
+        PaymentsService.getDuesByParty(function (success) {
+            if (success.data.status) {
+                $scope.parties = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+    $scope.getAmountsByparty();
 
 }]);
 
-app.controller('paymentsById', ['$scope', '$stateParams', 'PartyService', function ($scope, $stateParams, PartyService) {
+app.controller('paymentsById', ['$scope', '$stateParams', 'PartyService', 'ExpenseService','PaymentsService',
+function ($scope, $stateParams, PartyService, ExpenseService,PaymentsService) {
 
       $scope.getRevenueByParty = function () {
         PartyService.getRevenueByPartyId($stateParams.vehicleId, function (success) {
             if (success.data.status) {
                 $scope.revenueByVehicleId = success.data.trips;
-                console.log("===>>>>",$scope.revenueByVehicleId);
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -185,4 +228,46 @@ app.controller('paymentsById', ['$scope', '$stateParams', 'PartyService', functi
         });
     };
     $scope.getRevenueByParty();
+
+    $scope.getexpenseByVehicleId = function () {
+        ExpenseService.findExpensesbyVehicleId($stateParams.vehicleId, function (success) {
+            if (success.data.status) {
+                $scope.expensesByVehicleId = success.data.expenses;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+    $scope.getexpenseByVehicleId();
+    $scope.Expenseamount =0;
+
+    $scope.GetExpense = function(expenseName,ExpenseAMount){
+
+        if((expenseName =='Diesel')||(expenseName == 'Toll') ||(expenseName =='Maintenance')){
+            return 0; 
+        }else{
+            return ExpenseAMount; 
+        }       
+
+    }
+
+
+    $scope.getAmountsBypartyId = function () {
+        PartyService.amountByPartyid($stateParams.partyId, function (success) {
+            if (success.data.status) {
+                $scope.results = success.data.results;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    };
+    $scope.getAmountsBypartyId();
 }]);

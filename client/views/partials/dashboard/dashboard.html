@@ -1,5 +1,5 @@
 
-        <div class="main-right col-xs-9" ng-controller="dashboardController">
+        <div class="main-right col-xs-9" ng-controller="dashboardController" ng-init="loggedInName();">
             <div class="col-xs-12">
                 <div class="col-xs-6">
                 <h3 class="login-heading mt-5">Expired</h3>
@@ -65,46 +65,18 @@
                     <div class="clearfix"></div>
 
                 </div>
-
-               <!-- <div class="col-xs-6">
-                    <h2 class="login-heading">Expired</h2>
-
-                    <div class="col-xs-12 margin-top-40">
-                        <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero">
-                                <a ui-sref="fitnessExpiryTrucks">Fitness Expiry Count</a></label>
-                            <div class="col-xs-12 col-sm-4">
-                                <a ui-sref="fitnessExpiryTrucks"> {{allExpiryCountdata.fitnessExpiryCount}} </a>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="permitExpiryTrucks">Permit Expiry Count</a></label>
-                            <div class="col-xs-12 col-sm-6">
-                                <a ui-sref="permitExpiryTrucks">{{allExpiryCountdata.permitExpiryCount}}</a>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="insuranceExpiryTrucks">Insurance Expiry Count</a></label>
-                            <div class="col-xs-12 col-sm-6">
-                                <a ui-sref="insuranceExpiryTrucks">{{allExpiryCountdata.insuranceExpiryCount}}</a>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="pollutionExpiryTrucks">Pollution Expiry Count</a></label>
-                            <div class="col-xs-12 col-sm-6">
-                                <a ui-sref="pollutionExpiryTrucks">{{allExpiryCountdata.pollutionExpiryCount}}</a>
-                            </div>
-                        </div>
-                        <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="taxExpiryTrucks">Tax Expiry Count</a></label>
-                            <div class="col-xs-12 col-sm-6">
-                                <a ui-sref="taxExpiryTrucks">{{allExpiryCountdata.taxExpiryCount}}</a>
-                            </div>
-                        </div>
+                    <div class="col-xs-6">
+                    <h3 class="login-heading">Total Payment Receivable</h3>
+                    <div class="col-xs-12 mt-10">
+                        <label class="col-sm-6"><a ui-sref="amountByParties">From All Parties</a></label>
+                        <div class="col-sm-6"><a ui-sref="amountByParties">{{amounts[0].total}}</a></div>
                     </div>
+
 
                     <div class="clearfix"></div>
 
-                </div>-->
+                </div>
+             
             </div>
         </div>
+  

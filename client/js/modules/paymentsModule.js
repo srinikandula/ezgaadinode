@@ -32,6 +32,18 @@ app.factory('PaymentsService', function ($http) {
                 params: pageable
             }).then(success, error)
         },
+        getTotalPaymentsReceivable: function (success, error) {
+            $http({
+                url: '/v1/payments/getTotalAmount/',
+                method: "GET",
+            }).then(success, error)
+        },
+        getDuesByParty: function (success, error) {
+            $http({
+                url: '/v1/payments/getDuesByParty/',
+                method: "GET",
+            }).then(success, error)
+        },
         updateRecord: function (object, success, error) {
             $http({
                 url: '/v1/payments/updatePayments',

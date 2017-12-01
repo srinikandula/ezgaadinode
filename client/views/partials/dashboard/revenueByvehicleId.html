@@ -10,17 +10,17 @@
                {{revenueListbyId.date | date:'yyyy-MM-dd'}}
             </td>
             <td data-title="'Trip ID'" sortable="'tripId'" class="clickable-item col-sm-2">
-                {{ revenueListbyId.tripId}}
+                {{!revenueListbyId.tripId == true ? "--":revenueListbyId.tripId}}
             </td>
             <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
-                {{ revenueListbyId.attrs.partyName}}
+                {{!revenueListbyId.attrs.partyName == true ? "--":revenueListbyId.attrs.partyName}}
             </td>
 
             <td data-title="'Frieight Amount'" sortable="'freightAmount'" class="clickable-item col-sm-2">
-                {{ revenueListbyId.freightAmount}}
+                {{ !revenueListbyId.freightAmount == true ? "--":revenueListbyId.freightAmount}}
             </td>
-            <td data-title="'Expenses'" sortable="'freightAmount'" class="clickable-item col-sm-2">
-                {{ revenueListbyId.freightAmount}}
+            <td data-title="'Expenses'" sortable="'cost'" class="clickable-item col-sm-2">
+                {{!revenueListbyId.cost == true ? "--": revenueListbyId.cost}}
             </td>
         </tr>
         <tr ng-if="!revenueByVehicleId || revenueByVehicleId.length === 0">

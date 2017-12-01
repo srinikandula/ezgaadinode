@@ -46,6 +46,12 @@ app.factory('PartyService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        amountByPartyid: function (partyId, success, error) {
+            $http({
+                url: '/v1/party/tripsPayments/'+ partyId,
+                method: "GET"
+            }).then(success, error)
+        },
         count: function (success, error) {
             $http({
                 url: '/v1/party/total/count',

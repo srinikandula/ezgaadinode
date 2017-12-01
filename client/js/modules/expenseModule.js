@@ -51,9 +51,15 @@ app.factory('ExpenseService', function ($http) {
               method:"GET"
           }).then(success, error)
         },
-        findExpensesbyVehicle: function(success, error){
+        findExpensesbyGroupVehicle: function(success, error){
             $http({
                 url: '/v1/expense/groupByVehicle',
+                method:"GET"
+            }).then(success, error)
+        },
+        findExpensesbyVehicleId: function(vehicleId, success, error){
+            $http({
+                url: '/v1/expense/vehicleExpense/' + vehicleId,
                 method:"GET"
             }).then(success, error)
         },
