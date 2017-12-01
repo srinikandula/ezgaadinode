@@ -44,6 +44,7 @@ app.use('/v1/events', Events.OpenRouter);
 app.use('/v1/group', Groups.OpenRouter);
 
 app.use(authMiddleware);
+app.use('/v1/events', Events.AuthRouter);
 
 app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);

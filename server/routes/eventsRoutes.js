@@ -46,6 +46,22 @@ OpenRouter.get('/:accountId', function (request, res) {
 
 });
 
+AuthRouter.get('/latestLocation/:deviceId', function (req, res) {
+    var retObj = {};
+    retObj.messages = [];
+    if(!req.params.deviceId){
+        retObj.messages.push("Missing deviceId in request params");
+    }
+    if(retObj.messages.length > 0) {
+        res.json(retObj);
+    }else {
+        Events.getLatestLocation(req.jwt, req.params.deviceId, function(result) {
+            res.json(result);
+        });
+    }
+
+});
+
 OpenRouter.get('/get/srlogistics', function (request, res) {
     var urlParams = url.parse(request.url, true);
     var startDate  = urlParams.query.startDate;

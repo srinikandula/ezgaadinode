@@ -1,5 +1,7 @@
 var mysql = require('mysql');
 var async = require('async');
+var mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 var config = require('./../config/config');
 var Events = function() {};
@@ -46,6 +48,50 @@ Events.prototype.getEventData = function(accountId, startDate, endDate, callback
                 retObj.count = retObj.results.length;
                 callback(retObj);
             }
+        });
+    } else {
+        callback(retObj);
+    }
+};
+/**
+ * Find the latest GPS location of the device in an account
+ * @param accountId
+ * @param deviceId
+ * @param callback
+ */
+
+Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
+    var retObj = {};
+    retObj.messages = [];
+
+    if(!jwt.accountId) {
+        retObj.status = false;
+        retObj.messages.push('Invalid account Id, please check the authentication token');
+    }
+    if(!deviceId) {
+        retObj.status = false;
+        retObj.messages.push('Invalid deviceId ');
+    }
+    if(retObj.messages.length == 0) {
+        AccountsColl.findOne({"_id":ObjectId(jwt.accountId)}, function (error, account) {
+           if(error){
+               retObj.status = false;
+               retObj.messages.push('Error finding account info' + error.message);
+               callback(retObj);
+           } else {
+               var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + account.userName + "' and deviceID = '"+deviceId+"' order by timestamp limit 1";
+               pool.query(eventDataQuery, function(error, latestLocation) {
+                   if(error){
+                       retObj.status = false;
+                       retObj.messages.push('Error finding GPS location. info:' + error.message);
+                       callback(retObj);
+                   } else {
+                       retObj.results = latestLocation;
+                       retObj.status = true;
+                       callback(retObj);
+                   }
+               });
+           }
         });
     } else {
         callback(retObj);
