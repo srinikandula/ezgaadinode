@@ -1,6 +1,5 @@
-<top-navigation></top-navigation>
-<div class="container-fluid">
-    <div class="col-xs-12" ng-controller="ShowTrackMapCtrl">
+<div class="container-fluid" ng-controller="ShowTrackMapCtrl">
+    <div class="col-xs-9 main-right" >
         <h3>Track Map</h3><br/><br/>
         <div class="row">
             <div class="form-group col-md-12">
@@ -8,7 +7,7 @@
                     <form>
                         <div>
                             <input type="text" ng-model="truckRegNo"
-                                   uib-typeahead="truck for truck in trucks | filter:$viewValue"
+                                   uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue"
                                    class="form-control" typeahead-min-length="1"
                                    typeahead-on-select="selectTruckId($item)"
                                    typeahead-select-on-exact="true" placeholder="Registration Num"
@@ -17,20 +16,20 @@
                                 <i class="glyphicon glyphicon-remove red"></i>
                                 <span class="red"> No Results Found </span>
                             </div>
-                        </div><br/><br/>
+                        </div><br/>
                         <div>
-                            <date-picker id="fromDate" ng-model="fromDate"></date-picker>
-                        </div><br/><br/>
+                            <date-picker id="fromDate" ng-model="fromDate" ban-future="'banFutureDate'"></date-picker>
+                        </div><br/>
                         <div>
-                            <date-picker id="toDate" ng-model="toDate"></date-picker>
-                        </div><br/><br/>
+                            <date-picker id="toDate" ng-model="toDate" ban-future="'banFutureDate'"></date-picker>
+                        </div><br/>
                         <div>
                             <input class="btn btn-primary" type="button" value="Submit">
-                        </div><br/><br/>
+                        </div><br/>
                         <div>
                             <label>Only Stops:</label>
                             <input type="checkbox" id="showOnlyStops" ng-model="showOnlyStops" ng-change="loadMap()">
-                        </div><br/><br/><br/>
+                        </div>
                         <div>
                             <ul class="list-group">
                                 <li class="list-group-item">

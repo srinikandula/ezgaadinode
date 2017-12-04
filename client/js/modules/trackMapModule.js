@@ -14,25 +14,25 @@ app.controller('ShowTrackMapCtrl', ['$scope', '$uibModal','TrackMapServices','Tr
     $scope.eventData = null;
     $scope.showOnlyStops = false;
     $scope.totalSpeed = 0;
-    $scope.trucks = ["AP10V1335","AP11X7832","AP29TB5417","AP29TB5903","AP29U2342","AP29U2533","AP31TH1041","HR55N1311"];
+    // $scope.trucks = ["AP10V1335","AP11X7832","AP29TB5417","AP29TB5903","AP29U2342","AP29U2533","AP31TH1041","HR55N1311"];
 
-    // TrucksService.getGroupTrucks(1, function (success) {
-    //     if (success.data.status) {
-    //         $scope.trucks = success.data.trucks;
-    //         var selectedTruck = _.find( $scope.trucks, function (truck) {
-    //             return truck._id.toString() === $scope.trip.registrationNo;
-    //         });
-    //         if(selectedTruck){
-    //             $scope.truckRegNo = selectedTruck.registrationNo;
-    //         }
-    //     } else {
-    //         success.data.messages(function (message) {
-    //             Notification.error(message);
-    //         });
-    //     }
-    // }, function (error) {
-    //
-    // });
+    TrucksService.getAccountTrucks(1, function (success) {
+        if (success.data.status) {
+            $scope.trucks = success.data.trucks;
+            var selectedTruck = _.find( $scope.trucks, function (truck) {
+                return truck._id.toString() === $scope.registrationNo;
+            });
+            if(selectedTruck){
+                $scope.truckRegNo = selectedTruck.registrationNo;
+            }
+        } else {
+            success.data.messages(function (message) {
+                Notification.error(message);
+            });
+        }
+    }, function (error) {
+
+    });
 
     $scope.loadMap = function(){
         $scope.lat = $scope.eventData[$scope.eventData.length/2].latitude;
@@ -82,8 +82,13 @@ app.controller('ShowTrackMapCtrl', ['$scope', '$uibModal','TrackMapServices','Tr
         TrackMapServices.getEventsData(regNo,function (success) {
             if (success.data.status) {
                 $scope.eventData = success.data.results;
+                if($scope.eventData.length == 0){
+                    Notification.error("No data exists for :" + $scope.registrationNo);
+                    var map = new google.maps.Map(document.getElementById("map"));
 
-                $scope.loadMap();
+                }else{
+                    $scope.loadMap();
+                }
             } else {
                 success.data.messages(function (message) {
                     Notification.error(message);
@@ -95,8 +100,7 @@ app.controller('ShowTrackMapCtrl', ['$scope', '$uibModal','TrackMapServices','Tr
     };
 
     $scope.selectTruckId = function (truck) {
-        $scope.registrationNo = truck;
+        $scope.registrationNo = truck.registrationNo;
         $scope.getData($scope.registrationNo);
     };
-    $scope.getData($scope.registrationNo);
 }]);
