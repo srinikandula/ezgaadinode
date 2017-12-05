@@ -32,9 +32,5 @@
     "chai-http": "^3.0.0",
     "install-peers": "^1.0.2",
     "mocha": "^4.0.1"
-  },
-  "scripts": {
-    "start": "SET NODE_ENV=dev && node server.js",
-    "test": "mocha --timeout 10000"
   }
 }
