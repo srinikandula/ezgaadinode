@@ -60,3 +60,5 @@ app.use('/v1/payments', PaymentsReceived.AuthRouter);
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);
 });
+
+module.exports = app;

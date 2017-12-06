@@ -4,8 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "SET NODE_ENV=dev && node server.js",
+    "test": "mocha --timeout 10000"
   },
   "author": "",
   "license": "ISC",
@@ -26,5 +26,11 @@
     "velocityjs": "^0.10.0",
     "winston": "^3.0.0-rc1",
     "xlsx": "^0.11.9"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "install-peers": "^1.0.2",
+    "mocha": "^4.0.1"
   }
 }
