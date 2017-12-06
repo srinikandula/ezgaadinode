@@ -69,7 +69,8 @@ describe('EasyGaadi', () => {
                     res.body.should.be.a('object');
                     res.body.should.have.property('userName').eql('ramarao');
                     res.body.should.have.property('token');
-                    token = res.body.token;
+                    //token = res.body.token;
+                    return res.body;
                     done();
                 });
         });

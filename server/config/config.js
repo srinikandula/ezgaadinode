@@ -5,7 +5,7 @@ function getUserHome() {
 }
 
 var localConfigPath = getUserHome() + '/easygaadi-config.json';
-var projectConfigPath = __dirname + '/test_config.json';
+var projectConfigPath = __dirname + '/config.json';
 var selectedConfigPath;
 
 if(fs.existsSync(localConfigPath)) {
