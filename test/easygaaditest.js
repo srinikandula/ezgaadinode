@@ -24,7 +24,7 @@ let truckId = "";
 let tripId = "";
 let partyId = "";
 let expensemasterId = "";
-let espenseId = "";
+let expenseId = "";
 let paymentId = "";
 
 chai.use(chaiHttp);
@@ -37,32 +37,30 @@ describe('EasyGaadi', () => {
                 "password": "9908126699",
                 "contactPhone": 9908126699
             });
-            userData.save();
-            accountId = User._id;
-            console.log(accountId);           
+            userData.save();            
             done();
         });
-        Driver.remove({}, (err) => {            
+        //Driver.remove({}, (err) => {            
             
-        });
-        Truck.remove({}, (err) => {            
+        //});
+        // Truck.remove({}, (err) => {            
             
-        });
-        Trip.remove({}, (err) => {            
+        // });
+        // Trip.remove({}, (err) => {            
             
-        });
-        Party.remove({}, (err) => {            
+        // });
+        // Party.remove({}, (err) => {            
             
-        });
-        ExpenseMaster.remove({}, (err) => {            
+        // });
+        // ExpenseMaster.remove({}, (err) => {            
             
-        });
-        Expense.remove({}, (err) => {            
+        // });
+        // Expense.remove({}, (err) => {            
             
-        });
-        Payment.remove({}, (err) => {            
+        // });
+        // Payment.remove({}, (err) => {            
             
-        });
+        // });
     });
     /*
     * Test the /POST route User Login
@@ -132,7 +130,7 @@ describe('EasyGaadi', () => {
                 .post('/v1/drivers')
                 .send(driverData)
                 .set(headerData)
-                .end((err, res) => {
+                .end((err, res) => {                    
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Invalid full name' ]);                                        
@@ -148,9 +146,8 @@ describe('EasyGaadi', () => {
             };
             let driverData = {
                 "fullName": "Kumar",
-                "mobile": "9618489859",                
-            };
-
+                "mobile": 9618489859,                
+            };            
             chai.request(server)
                 .post('/v1/drivers')
                 .send(driverData)
@@ -162,11 +159,11 @@ describe('EasyGaadi', () => {
                     res.body.should.have.property('messages').eql([ 'Success' ]);
                     res.body.driver.should.have.property('fullName');
                     res.body.driver.should.have.property('mobile');                    
-                    driverId = res.body._id;
+                    driverId = res.body.driver._id;                    
                     done();
                 });
         });
-    });
+    }); 
     /*
     * Test the /GET route Retrieving Driver Information
     */
@@ -182,8 +179,7 @@ describe('EasyGaadi', () => {
             chai.request(server)
                 .get('/v1/drivers/account/drivers')                
                 .set(headerData)
-                .end((err, res) => {    
-                    console.log(res.body);                                    
+                .end((err, res) => {                        
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Success' ]);
@@ -192,36 +188,37 @@ describe('EasyGaadi', () => {
                     done();
                 });
         });
-    });    
+    });       
     /*
-    * Test the /POST route Updating Driver Information
+    * Test the /PUT route Updating Driver Information
     */
-    describe('/POST Updating Driver', () => {
+    describe('/PUT Updating Driver', () => {
         /*
-        * Test the /POST route Updating Driver Information Failure
+        * Test the /PUT route Updating Driver Information Failure
         */
         it('It Throws Error', (done) => {            
             let headerData = {
                 "token": token
             };
             let driverData = {
-                "fullname": "Kumar",
-                "mobile": 9618489859,                
+                "id": driverId,
+                "fullName": "Kumar",
+                "mobile": 9618489849,                
             };
 
             chai.request(server)
-                .post('/v1/drivers')
+                .put('/v1/drivers')
                 .send(driverData)
                 .set(headerData)
-                .end((err, res) => {
+                .end((err, res) => {                    
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Invalid full name' ]);
+                    res.body.should.have.property('messages').eql([ 'Invalid driverId' ]);
                     done();
                 });
         });
         /*
-        * Test the /POST route Updating Driver Information Success
+        * Test the /PUT route Updating Driver Information Success
         */
         it('It Should Update Driver', (done) => {            
             let headerData = {
@@ -230,14 +227,13 @@ describe('EasyGaadi', () => {
             let driverData = {
                 "_id": driverId,
                 "fullName": "Kumar1",
-                "mobile": "9618489859",                
-            };
-
+                "mobile": 9618489849,                
+            };            
             chai.request(server)
-                .post('/v1/drivers')
+                .put('/v1/drivers')
                 .send(driverData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                                            
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -247,7 +243,7 @@ describe('EasyGaadi', () => {
                     done();
                 });
         });
-    });    
+    });        
     /*
     * Test the /POST route Adding Truck Information
     */
@@ -285,20 +281,19 @@ describe('EasyGaadi', () => {
             let truckData = {
                 "registrationNo": "AP36AA9876",
                 "truckType": "20 Tyre"
-            };
-
+            };            
             chai.request(server)
                 .post('/v1/trucks')
                 .send(truckData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Truck Added Successfully' ]);
                     res.body.truck.should.have.property('registrationNo');
                     res.body.truck.should.have.property('truckType');                    
-                    truckId = res.body._id;
+                    truckId = res.body.truck._id;
                     done();
                 });
         });
@@ -318,8 +313,7 @@ describe('EasyGaadi', () => {
             chai.request(server)
                 .get('/v1/trucks/groupTrucks')                
                 .set(headerData)
-                .end((err, res) => {    
-                    console.log(res.body);                                    
+                .end((err, res) => {                        
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Success' ]);
@@ -329,11 +323,11 @@ describe('EasyGaadi', () => {
         });
     });    
     /*
-    * Test the /POST route Updating Truck Information
+    * Test the /PUT route Updating Truck Information
     */
     describe('/POST Updating Truck', () => {
         /*
-        * Test the /POST route Updating Truck Information Failure
+        * Test the /PUT route Updating Truck Information Failure
         */
         it('It Throws Error', (done) => {            
             let headerData = {
@@ -356,7 +350,7 @@ describe('EasyGaadi', () => {
                 });
         });
         /*
-        * Test the /POST route Updating Truck Information Success
+        * Test the /PUT route Updating Truck Information Success
         */
         it('It Should Update Truck', (done) => {            
             let headerData = {
@@ -366,154 +360,18 @@ describe('EasyGaadi', () => {
                 "_id": truckId,
                 "registrationNo": "AP36AA9866",
                 "truckType": "20 Tyre"
-            };
-
+            };            
             chai.request(server)
-                .post('/v1/trucks')
+                .put('/v1/trucks')
                 .send(truckData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Truck Added Successfully' ]);
+                    res.body.should.have.property('messages').eql([ 'Truck updated successfully' ]);
                     res.body.truck.should.have.property('registrationNo');
                     res.body.truck.should.have.property('truckType');                    
-                    done();
-                });
-        });
-    });
-    /*
-    * Test the /POST route Adding Trip Information
-    */
-    describe('/POST Adding Trip', () => {
-        /*
-        * Test the /POST route Adding Trip Information Failure
-        */
-        it('It Throws Error', (done) => {            
-            let headerData = {
-                "token": token
-            };
-            let tripData = {
-                "registrationno": "AP36AA9876",
-                "tripType": "20 Tyre"                
-            };
-
-            chai.request(server)
-                .post('/v1/trips')
-                .send(tripData)
-                .set(headerData)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
-                    done();
-                });
-        });
-        /*
-        * Test the /POST route Adding Trip Information Success
-        */
-        it('It Should Add Trip To Trip Schema', (done) => {            
-            let headerData = {
-                "token": token
-            };
-            let tripData = {
-                "registrationNo": "AP36AA9876",
-                "tripType": "20 Tyre"
-            };
-
-            chai.request(server)
-                .post('/v1/trips')
-                .send(tripData)
-                .set(headerData)
-                .end((err, res) => {                    
-                    expect(err).to.be.null;
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Trip Added Successfully' ]);
-                    res.body.trip.should.have.property('registrationNo');
-                    res.body.trip.should.have.property('tripType');                    
-                    tripId = res.body._id;
-                    done();
-                });
-        });
-    });
-    /*
-    * Test the /GET route Retrieving Trip Information
-    */
-    describe('/GET Retrieving Trip', () => {        
-        /*
-        * Test the /GET route Retrieving Trip Information Success
-        */
-        it('It Should Retrive Trip Details From Trip Schema', (done) => {            
-            let headerData = {
-                "token": token
-            };            
-
-            chai.request(server)
-                .get('/v1/trips/groupTrips')                
-                .set(headerData)
-                .end((err, res) => {    
-                    console.log(res.body);                                    
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Success' ]);
-                    res.body.trips.should.have.property([ 'registrationNo' ]);                                        
-                    done();
-                });
-        });
-    });    
-    /*
-    * Test the /POST route Updating Trip Information
-    */
-    describe('/POST Updating Trip', () => {
-        /*
-        * Test the /POST route Updating Trip Information Failure
-        */
-        it('It Throws Error', (done) => {            
-            let headerData = {
-                "token": token
-            };
-            let tripData = {
-                "registrationno": "AP36AA9876",
-                "tripType": "20 Tyre"
-            };
-
-            chai.request(server)
-                .post('/v1/trips')
-                .send(tripData)
-                .set(headerData)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
-                    done();
-                });
-        });
-        /*
-        * Test the /POST route Updating Trip Information Success
-        */
-        it('It Should Update Trip', (done) => {            
-            let headerData = {
-                "token": token
-            };
-            let tripData = {
-                "_id": tripId,
-                "registrationNo": "AP36AA9866",
-                "tripType": "20 Tyre"
-            };
-
-            chai.request(server)
-                .post('/v1/trips')
-                .send(tripData)
-                .set(headerData)
-                .end((err, res) => {                    
-                    expect(err).to.be.null;
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Trip Added Successfully' ]);
-                    res.body.trip.should.have.property('registrationNo');
-                    res.body.trip.should.have.property('tripType');                    
                     done();
                 });
         });
@@ -530,18 +388,28 @@ describe('EasyGaadi', () => {
                 "token": token
             };
             let partyData = {
-                "registrationno": "AP36AA9876",
-                "partyType": "20 Tyre"                
+                "name": "Party2",
+                "contactt": 9874563210,
+                "email": "party2@gmail.com",
+                "city": "WRL",
+                "tripLanes" : [ 
+                    {
+                        "to" : "Hyd",
+                        "from" : "WRL",
+                        "name" : "WRL-HYD",
+                        "index" : 0
+                    }
+                ]
             };
 
             chai.request(server)
-                .post('/v1/partys')
+                .post('/v1/party/addParty')
                 .send(partyData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('message').eql(' Please provide valid contact number for party type');
                     done();
                 });
         });
@@ -553,22 +421,31 @@ describe('EasyGaadi', () => {
                 "token": token
             };
             let partyData = {
-                "registrationNo": "AP36AA9876",
-                "partyType": "20 Tyre"
+                "name": "Party2",
+                "contact": 9874563210,
+                "email": "party2@gmail.com",
+                "city": "WRL",
+                "tripLanes" : [ 
+                    {
+                        "to" : "Hyd",
+                        "from" : "WRL",
+                        "name" : "WRL-HYD",
+                        "index" : 0
+                    }
+                ]
             };
-
             chai.request(server)
-                .post('/v1/partys')
+                .post('/v1/party/addParty')
                 .send(partyData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Party Added Successfully' ]);
-                    res.body.party.should.have.property('registrationNo');
-                    res.body.party.should.have.property('partyType');                    
-                    partyId = res.body._id;
+                    res.body.should.have.property('message').eql('Party Added Successfully');
+                    res.body.party.should.have.property('name');
+                    res.body.party.should.have.property('contact');                    
+                    partyId = res.body.party._id;
                     done();
                 });
         });
@@ -586,47 +463,58 @@ describe('EasyGaadi', () => {
             };            
 
             chai.request(server)
-                .get('/v1/partys/groupPartys')                
+                .get('/v1/party/get/all')                
                 .set(headerData)
-                .end((err, res) => {    
-                    console.log(res.body);                                    
+                .end((err, res) => {                        
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Success' ]);
-                    res.body.partys.should.have.property([ 'registrationNo' ]);                                        
+                    res.body.parties.should.have.property([ 'name' ]);
+                    res.body.parties.should.have.property([ 'contact' ]);                                        
                     done();
                 });
         });
     });    
     /*
-    * Test the /POST route Updating Party Information
+    * Test the /PUT route Updating Party Information
     */
-    describe('/POST Updating Party', () => {
+    describe('/PUT Updating Party', () => {
         /*
-        * Test the /POST route Updating Party Information Failure
+        * Test the /PUT route Updating Party Information Failure
         */
         it('It Throws Error', (done) => {            
             let headerData = {
                 "token": token
             };
             let partyData = {
-                "registrationno": "AP36AA9876",
-                "partyType": "20 Tyre"
+                "_id": partyId,
+                "name": "Party1",
+                "contactt": 9512376408,
+                "email": "party1@gmail.com",
+                "city": "WRL",
+                "tripLanes" : [ 
+                    {
+                        "to" : "Hyd",
+                        "from" : "WRL",
+                        "name" : "WRL-HYD",
+                        "index" : 0
+                    }
+                ]
             };
 
             chai.request(server)
-                .post('/v1/partys')
+                .put('/v1/party/updateParty')
                 .send(partyData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('message').eql('Error while updating party, try Again');
                     done();
                 });
         });
         /*
-        * Test the /POST route Updating Party Information Success
+        * Test the /PUT route Updating Party Information Success
         */
         it('It Should Update Party', (done) => {            
             let headerData = {
@@ -634,25 +522,169 @@ describe('EasyGaadi', () => {
             };
             let partyData = {
                 "_id": partyId,
-                "registrationNo": "AP36AA9866",
-                "partyType": "20 Tyre"
+                "name": "Party1",
+                "contact": 9512376408,
+                "email": "party1@gmail.com",
+                "city": "WRL",
+                "tripLanes" : [ 
+                    {
+                        "to" : "Hyd",
+                        "from" : "WRL",
+                        "name" : "WRL-HYD",
+                        "index" : 0
+                    }
+                ],
+                "updatedBy":""
             };
-
             chai.request(server)
-                .post('/v1/partys')
+                .put('/v1/party/updateParty')
                 .send(partyData)
                 .set(headerData)
-                .end((err, res) => {                    
-                    expect(err).to.be.null;
+                .end((err, res) => {                                                            
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Party Added Successfully' ]);
-                    res.body.party.should.have.property('registrationNo');
-                    res.body.party.should.have.property('partyType');                    
+                    res.body.should.have.property('message').eql('Party updated successfully');
+                    res.body.party.should.have.property('name');
+                    res.body.party.should.have.property('contact');                    
                     done();
                 });
         });
     });
+    /*
+    * Test the /POST route Adding Trip Information
+    */
+    describe('/POST Adding Trip', () => {        
+        /*
+        * Test the /POST route Adding Trip Information Failure
+        */
+        it('It Throws Error', (done) => {            
+            let headerData = {
+                "token": token
+            };
+            let tripData = {
+                "date": "2017-12-04T10:30:00.000Z",
+                "registrationno": truckId,
+                "partyid": partyId,
+                "driverId": driverId,
+                "freightAmount": 1500
+            };
+
+            chai.request(server)
+                .post('/v1/trips/addTrip')
+                .send(tripData)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql([ 'Please select a party' ]);                                        
+                    done();
+                });
+        });
+        /*
+        * Test the /POST route Adding Trip Information Success
+        */
+        it('It Should Add Trip To Trip Schema', (done) => {            
+            let headerData = {
+                "token": token
+            };
+            let tripData = {
+                "date": "2017-12-04T10:30:00.000Z",
+                "registrationNo": truckId,
+                "partyId": partyId,
+                "driverId": driverId,
+                "freightAmount": 1500
+            };
+            chai.request(server)
+                .post('/v1/trips/addTrip')
+                .send(tripData)
+                .set(headerData)
+                .end((err, res) => {                                        
+                    expect(err).to.be.null;
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql([ 'Trip Added Successfully' ]);                                        
+                    tripId = res.body._id;
+                    done();
+                });
+        });
+    });
+    /*
+    * Test the /GET route Retrieving Trip Information
+    */
+    describe('/GET Retrieving Trip', () => {        
+        /*
+        * Test the /GET route Retrieving Trip Information Success
+        */
+        it('It Should Retrive Trip Details From Trip Schema', (done) => {            
+            let headerData = {
+                "token": token
+            };
+
+            chai.request(server)
+                .get('/v1/trips/getAllAccountTrips')                
+                .set(headerData)
+                .end((err, res) => {                        
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql([ 'Success' ]);
+                    res.body.trips.should.have.property([ 'tripId' ]);                                        
+                    done();
+                });
+        });
+    });    
+    /*
+    * Test the /PUT route Updating Trip Information
+    */
+    describe('/PUT Updating Trip', () => {
+        /*
+        * Test the /PUT route Updating Trip Information Failure
+        */
+        it('It Throws Error', (done) => {            
+            let headerData = {
+                "token": token
+            };
+            let tripData = {
+                "_id": tripId,
+                "freightamount": 1300
+            };
+
+            chai.request(server)
+                .put('/v1/trips')
+                .send(tripData)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql([ 'Error, finding trip' ]);                                        
+                    done();
+                });
+        });
+        /*
+        * Test the /PUT route Updating Trip Information Success
+        */
+        it('It Should Update Trip', (done) => {                  
+            let headerData = {
+                "token": token
+            };
+            let tripData = {
+                "_id": tripId,
+                "freightAmount": 1300
+            };
+            chai.request(server)
+                .put('/v1/trips')
+                .send(tripData)
+                .set(headerData)
+                .end((err, res) => {                                        
+                    expect(err).to.be.null;
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql([ 'Trip updated successfully' ]);
+                    res.body.trip.should.have.property('freightAmount');
+                    res.body.trip.should.have.property('tripId');                    
+                    done();
+                });
+        });
+    });    
     /*
     * Test the /POST route Adding Expense Master Information
     */
@@ -665,18 +697,17 @@ describe('EasyGaadi', () => {
                 "token": token
             };
             let expensemasterData = {
-                "registrationno": "AP36AA9876",
-                "expensemasterType": "20 Tyre"                
+                "expensename": "Breaks"
             };
 
             chai.request(server)
-                .post('/v1/expensemasters')
+                .post('/v1/ExpenseMaster')
                 .send(expensemasterData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('messages').eql([ 'Please provide valid expense name' ]);                                        
                     done();
                 });
         });
@@ -688,22 +719,19 @@ describe('EasyGaadi', () => {
                 "token": token
             };
             let expensemasterData = {
-                "registrationNo": "AP36AA9876",
-                "expensemasterType": "20 Tyre"
+                "expenseName": "Breaks"
             };
-
             chai.request(server)
-                .post('/v1/expensemasters')
+                .post('/v1/ExpenseMaster')
                 .send(expensemasterData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Expense Master Added Successfully' ]);
-                    res.body.expensemaster.should.have.property('registrationNo');
-                    res.body.expensemaster.should.have.property('expensemasterType');                    
-                    expensemasterId = res.body._id;
+                    res.body.should.have.property('messages').eql([ 'Successfully Added' ]);
+                    res.body.newDoc.should.have.property('expenseName');                                       
+                    expensemasterId = res.body.newDoc._id;
                     done();
                 });
         });
@@ -721,47 +749,46 @@ describe('EasyGaadi', () => {
             };            
 
             chai.request(server)
-                .get('/v1/expensemasters/groupExpense Masters')                
+                .get('/v1/ExpenseMaster')                
                 .set(headerData)
-                .end((err, res) => {    
-                    console.log(res.body);                                    
+                .end((err, res) => {                        
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Success' ]);
-                    res.body.expensemasters.should.have.property([ 'registrationNo' ]);                                        
+                    res.body.expenses.should.have.property([ 'expenseName' ]);                                        
                     done();
                 });
         });
     });    
     /*
-    * Test the /POST route Updating Expense Master Information
+    * Test the /PUT route Updating Expense Master Information
     */
-    describe('/POST Updating Expense Master', () => {
+    describe('/PUT Updating Expense Master', () => {
         /*
-        * Test the /POST route Updating Expense Master Information Failure
+        * Test the /PUT route Updating Expense Master Information Failure
         */
         it('It Throws Error', (done) => {            
             let headerData = {
                 "token": token
             };
             let expensemasterData = {
-                "registrationno": "AP36AA9876",
-                "expensemasterType": "20 Tyre"
+                "id": expensemasterId,
+                "expensename": "Greese"
             };
 
             chai.request(server)
-                .post('/v1/expensemasters')
+                .put('/v1/ExpenseMaster')
                 .send(expensemasterData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('messages').eql([ 'Error, finding expense' ]);
                     done();
                 });
         });
         /*
-        * Test the /POST route Updating Expense Master Information Success
+        * Test the /PUT route Updating Expense Master Information Success
         */
         it('It Should Update Expense Master', (done) => {            
             let headerData = {
@@ -769,21 +796,17 @@ describe('EasyGaadi', () => {
             };
             let expensemasterData = {
                 "_id": expensemasterId,
-                "registrationNo": "AP36AA9866",
-                "expensemasterType": "20 Tyre"
+                "expenseName": "Grease"
             };
-
             chai.request(server)
-                .post('/v1/expensemasters')
+                .put('/v1/ExpenseMaster')
                 .send(expensemasterData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Expense Master Added Successfully' ]);
-                    res.body.expensemaster.should.have.property('registrationNo');
-                    res.body.expensemaster.should.have.property('expensemasterType');                    
+                    res.body.should.have.property('messages').eql([ 'Expense updated successfully' ]);                    
                     done();
                 });
         });
@@ -800,44 +823,45 @@ describe('EasyGaadi', () => {
                 "token": token
             };
             let expenseData = {
-                "registrationno": "AP36AA9876",
-                "expenseType": "20 Tyre"                
+                "vehiclenumber": truckId,
+                "expenseType": expensemasterId,
+                "date": "2017-12-04T11:12:00.000Z",
+                "cost": 100
             };
 
             chai.request(server)
-                .post('/v1/expenses')
+                .post('/v1/expense/addExpense')
                 .send(expenseData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('message').eql('Please provide valid vehicle number');
                     done();
                 });
         });
         /*
         * Test the /POST route Adding Expense Information Success
         */
-        it('It Should Add Expense To Expense Schema', (done) => {            
+        it('It Should Add Expense To Expense Schema', (done) => {                          
             let headerData = {
                 "token": token
             };
             let expenseData = {
-                "registrationNo": "AP36AA9876",
-                "expenseType": "20 Tyre"
+                "vehicleNumber": truckId,
+                "expenseType": expensemasterId,
+                "date": "2017-12-04T11:12:00.000Z",
+                "cost": 100
             };
-
             chai.request(server)
-                .post('/v1/expenses')
+                .post('/v1/expense/addExpense')
                 .send(expenseData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Expense Added Successfully' ]);
-                    res.body.expense.should.have.property('registrationNo');
-                    res.body.expense.should.have.property('expenseType');                    
+                    res.body.should.have.property('message').eql('expenses Cost Added Successfully');                    
                     expenseId = res.body._id;
                     done();
                 });
@@ -856,47 +880,49 @@ describe('EasyGaadi', () => {
             };            
 
             chai.request(server)
-                .get('/v1/expenses/groupExpenses')                
+                .get('/v1/expense/getAllExpenses')                
                 .set(headerData)
-                .end((err, res) => {    
-                    console.log(res.body);                                    
+                .end((err, res) => {                        
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Success' ]);
-                    res.body.expenses.should.have.property([ 'registrationNo' ]);                                        
+                    res.body.should.have.property('message').eql([ 'Success' ]);
+                    res.body.expenses.should.have.property([ 'cost' ]);                                        
                     done();
                 });
         });
     });    
     /*
-    * Test the /POST route Updating Expense Information
+    * Test the /PUT route Updating Expense Information
     */
-    describe('/POST Updating Expense', () => {
+    describe('/PUT Updating Expense', () => {
         /*
-        * Test the /POST route Updating Expense Information Failure
+        * Test the /PUT route Updating Expense Information Failure
         */
         it('It Throws Error', (done) => {            
             let headerData = {
                 "token": token
             };
             let expenseData = {
-                "registrationno": "AP36AA9876",
-                "expenseType": "20 Tyre"
+                "_id": expenseId,
+                "vehiclenumber": truckId,
+                "expenseType": expensemasterId,
+                "date": "2017-12-04T11:12:00.000Z",
+                "cost": 120
             };
 
             chai.request(server)
-                .post('/v1/expenses')
+                .put('/v1/expense/updateExpense')
                 .send(expenseData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('message').eql([ 'Please provide valid registration number' ]);                                        
                     done();
                 });
         });
         /*
-        * Test the /POST route Updating Expense Information Success
+        * Test the /PUT route Updating Expense Information Success
         */
         it('It Should Update Expense', (done) => {            
             let headerData = {
@@ -904,21 +930,20 @@ describe('EasyGaadi', () => {
             };
             let expenseData = {
                 "_id": expenseId,
-                "registrationNo": "AP36AA9866",
-                "expenseType": "20 Tyre"
+                "vehicleNumber": truckId,
+                "expenseType": expensemasterId,
+                "date": "2017-12-04T11:12:00.000Z",
+                "cost": 120
             };
-
             chai.request(server)
-                .post('/v1/expenses')
+                .put('/v1/expense/updateExpense')
                 .send(expenseData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Expense Added Successfully' ]);
-                    res.body.expense.should.have.property('registrationNo');
-                    res.body.expense.should.have.property('expenseType');                    
+                    res.body.should.have.property('message').eql([ 'expenses Cost updated successfully' ]);                    
                     done();
                 });
         });
@@ -947,7 +972,7 @@ describe('EasyGaadi', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('messages').eql([ 'Please provide Party' ]);                                        
                     done();
                 });
         });
@@ -963,12 +988,11 @@ describe('EasyGaadi', () => {
                 "date": "2017-12-04T11:12:00.000Z",
                 "amount": 120
             };
-
             chai.request(server)
                 .post('/v1/payments/addPayments')
                 .send(paymentData)
                 .set(headerData)
-                .end((err, res) => {                    
+                .end((err, res) => {                                        
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -993,22 +1017,21 @@ describe('EasyGaadi', () => {
             chai.request(server)
                 .get('/v1/payments')                
                 .set(headerData)
-                .end((err, res) => {    
-                    console.log(res.body);                                    
+                .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Success' ]);
-                    res.body.payments.should.have.property([ 'registrationNo' ]);                                        
+                    res.body.payments.should.have.property([ 'amount' ]);                                        
                     done();
                 });
         });
     });    
     /*
-    * Test the /POST route Updating Payment Information
+    * Test the /PUT route Updating Payment Information
     */
-    describe('/POST Updating Payment', () => {
+    describe('/PUT Updating Payment', () => {
         /*
-        * Test the /POST route Updating Payment Information Failure
+        * Test the /PUT route Updating Payment Information Failure
         */
         it('It Throws Error', (done) => {            
             let headerData = {
@@ -1022,18 +1045,18 @@ describe('EasyGaadi', () => {
             }
 
             chai.request(server)
-                .post('/v1/payments/updatePayments')
+                .put('/v1/payments/updatePayments')
                 .send(paymentData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'Please provide valid registration number' ]);                                        
+                    res.body.should.have.property('messages').eql([ 'Error, finding payment' ]);                                        
                     done();
                 });
         });
         /*
-        * Test the /POST route Updating Payment Information Success
+        * Test the /PUT route Updating Payment Information Success
         */
         it('It Should Update Payment', (done) => {            
             let headerData = {
@@ -1044,14 +1067,12 @@ describe('EasyGaadi', () => {
                 "partyId": partyId,
                 "date": "2017-12-04T11:12:00.000Z",
                 "amount": 150
-            }
-
+            }            
             chai.request(server)
-                .post('/v1/payments')
+                .put('/v1/payments/updatePayments')
                 .send(paymentData)
                 .set(headerData)
-                .end((err, res) => {                    
-                    expect(err).to.be.null;
+                .end((err, res) => {                                                            
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql([ 'Payment updated successfully' ]);                   
