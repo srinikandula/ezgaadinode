@@ -5,6 +5,7 @@ var async = require('async');
 const ObjectId = mongoose.Types.ObjectId;
 var expenseColl = require('./../models/schemas').ExpenseCostColl;
 var expenseMasterColl = require('./../models/schemas').expenseMasterColl;
+var expenseMasterApi = require('./expenseMasterApi')
 var trucksCollection = require('./../models/schemas').TrucksColl;
 
 var config = require('./../config/config');
@@ -35,26 +36,48 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.message = "Please provide valid cost";
         callback(result);
     } else {
-
         expenseDetails.createdBy = jwt.id;
         expenseDetails.updatedBy = jwt.id;
         expenseDetails.accountId = jwt.accountId;
-
-        var expenseDoc = new expenseColl(expenseDetails);
-
-        expenseDoc.save(function (err) {
-            if (err) {
-                result.status = false;
-                result.message = "Error while adding expenses Cost, try Again";
-                callback(result);
-            } else {
-                result.status = true;
-                result.message = "expenses Cost Added Successfully";
-                callback(result);
-            }
-        });
+        if(expenseDetails.expenseName) {
+            expenseMasterApi.addExpenseType(jwt,{"expenseName":expenseDetails.expenseName}, function(eTResult){
+                if(eTResult.status){
+                    expenseDetails.expenseType = eTResult.newDoc._id.toString();
+                    var expenseDoc = new expenseColl(expenseDetails);
+                    expenseDoc.save(function (err) {
+                        if (err) {
+                            result.status = false;
+                            result.message = "Error while adding expenses Cost, try Again";
+                            callback(result);
+                        } else {
+                            result.status = true;
+                            result.message = "expenses Cost Added Successfully";
+                            callback(result);
+                        }
+                    });
+                } else {
+                    result.status = false;
+                    result.message = "Error creating new expense type, try Again";
+                }
+            });
+        } else {
+            var expenseDoc = new expenseColl(expenseDetails);
+            expenseDoc.save(function (err) {
+                if (err) {
+                    result.status = false;
+                    result.message = "Error while adding expenses Cost, try Again";
+                    callback(result);
+                } else {
+                    result.status = true;
+                    result.message = "expenses Cost Added Successfully";
+                    callback(result);
+                }
+            });
+        }
     }
 };
+
+
 
 Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
     var result = {};
@@ -187,7 +210,7 @@ Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
         } else if (record) {
             result.status = true;
             result.message = "expenses Record found successfully";
-            result.trip = record;
+            result.expense = record;
             callback(result);
         } else {
             result.status = false;
