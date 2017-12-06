@@ -21,8 +21,15 @@
                 {{ revenueListByRegNo.totalRevenue}}
             </td>
         </tr>
+
         <tr ng-if="!revenueByVehicle || revenueByVehicle.length === 0">
             <td colspan="8">No Records exist.</td>
+        </tr>
+        <tr class="text-center">
+        <td><b>Total</b></td>
+        <td><b>{{totalRevenue.grossFreight}}</b></td>
+        <td><b>{{totalRevenue.grossExpenses}}</b></td>
+        <td><b>{{totalRevenue.grossRevenue}}</b></td>
         </tr>
     </table>
 </div>

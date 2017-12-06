@@ -30,6 +30,14 @@
         <tr ng-if="expensesByVehicle || expensesByVehicle.length === 0">
             <td colspan="8">No Records exist.</td>
         </tr>
+        <tr class="text-center">
+            <td><b>Total</b></td>
+            <td><b>{{totalExpenses.totalDieselExpense}}</b></td>
+            <td><b>{{totalExpenses.totaltollExpense}}</b></td>
+            <td><b>{{totalExpenses.totalmExpense}}</b></td>
+            <td><b>{{totalExpenses.totalmisc}}</b></td>
+
+        </tr>
     </table>
 </div>
 </div>
