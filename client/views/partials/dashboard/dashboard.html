@@ -7,31 +7,31 @@
                     <div class="col-xs-12 mt-10">
                         <div class="form-group col-xs-12">
                             <label class="col-sm-6 col-xs-12 pall-zero">
-                                <a ui-sref="fitnessExpiryTrucks">Fitness Expiry Count</a></label>
+                                <a ui-sref="fitnessExpiryTrucks">Fitness Expiry</a></label>
                             <div class="col-xs-12 col-sm-4">
                                 <a ui-sref="fitnessExpiryTrucks"> {{allExpiryCountdata.fitnessExpiryCount}} </a>
                             </div>
                         </div>
                         <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="permitExpiryTrucks">Permit Expiry Count</a></label>
+                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="permitExpiryTrucks">Permit Expiry </a></label>
                             <div class="col-xs-12 col-sm-6">
                                 <a ui-sref="permitExpiryTrucks">{{allExpiryCountdata.permitExpiryCount}}</a>
                             </div>
                         </div>
                         <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="insuranceExpiryTrucks">Insurance Expiry Count</a></label>
+                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="insuranceExpiryTrucks">Insurance Expiry </a></label>
                             <div class="col-xs-12 col-sm-6">
                                 <a ui-sref="insuranceExpiryTrucks">{{allExpiryCountdata.insuranceExpiryCount}}</a>
                             </div>
                         </div>
                         <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="pollutionExpiryTrucks">Pollution Expiry Count</a></label>
+                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="pollutionExpiryTrucks">Pollution Expiry </a></label>
                             <div class="col-xs-12 col-sm-6">
                                 <a ui-sref="pollutionExpiryTrucks">{{allExpiryCountdata.pollutionExpiryCount}}</a>
                             </div>
                         </div>
                         <div class="form-group col-xs-12">
-                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="taxExpiryTrucks">Tax Expiry Count</a></label>
+                            <label class="col-sm-6 col-xs-12 pall-zero"><a ui-sref="taxExpiryTrucks">Tax Expiry</a></label>
                             <div class="col-xs-12 col-sm-6">
                                 <a ui-sref="taxExpiryTrucks">{{allExpiryCountdata.taxExpiryCount}}</a>
                             </div>
@@ -45,7 +45,7 @@
                     <h3 class="login-heading">Vehicle Revenue</h3>
                      <div class="col-xs-12 mt-10">
                         <label class="col-sm-6"><a ui-sref="revenueByVehicle">From All Vehicles</a></label>
-                        <div class="col-sm-6"><a ui-sref="revenueByVehicle">{{totalRevenue}}</a></div>
+                        <div class="col-sm-6"><a ui-sref="revenueByVehicle">{{totalVehicleRevenue }}</a></div>
                     </div>
 
 
@@ -58,7 +58,7 @@
                     <h3 class="login-heading">Total Expenses</h3>
                     <div class="col-xs-12 mt-10">
                         <label class="col-sm-6"><a ui-sref="expenseByVehicle">From All Vehicles</a></label>
-                        <div class="col-sm-6"><a ui-sref="expenseByVehicle">{{totalExpenses}}</a></div>
+                        <div class="col-sm-6"><a ui-sref="expenseByVehicle">{{totalExpense}}</a></div>
                     </div>
 
 
@@ -69,7 +69,8 @@
                     <h3 class="login-heading">Total Payment Receivable</h3>
                     <div class="col-xs-12 mt-10">
                         <label class="col-sm-6"><a ui-sref="amountByParties">From All Parties</a></label>
-                        <div class="col-sm-6"><a ui-sref="amountByParties">{{amounts[0].total}}</a></div>
+                        <div class="col-sm-6"><a ui-sref="amountByParties">
+                            {{!amounts[0].total == true ? 0 :amounts[0].total}}</a></div>
                     </div>
 
 

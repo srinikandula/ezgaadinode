@@ -29,6 +29,14 @@
         <tr ng-if="!parties || parties.length === 0">
             <td colspan="8">No Records exist.</td>
         </tr>
+        <tr class="text-center">
+            <td colspan="2"><b>Total</b></td>
+            <td><b>{{partiesAmount.grossFreight}}</b></td>
+            <td><b>{{partiesAmount.grossExpenses}}</b></td>
+            <td><b>{{partiesAmount.grossDue}}</b></td>
+
+
+        </tr>
     </table>
 </div>
 </div>

@@ -104,7 +104,7 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
     $scope.getTotalRevenue = function () {
         TripServices.findTotalRevenue(function (success) {
             if (success.data.status) {
-                $scope.totalRevenue = success.data.totalRevenue;
+                $scope.totalVehicleRevenue = success.data.totalRevenue;
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -120,6 +120,7 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         TripServices.findRevenueByVehicle(function (success) {
             if (success.data.status) {
                 $scope.revenueByVehicle = success.data.revenue;
+                $scope.totalRevenue = success.data.grossAmounts;
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -141,7 +142,7 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
     $scope.getTotalExpenses = function () {
         ExpenseService.findTotalExpenses(function (success) {
             if (success.data.status) {
-                $scope.totalExpenses = success.data.totalExpenses;
+                $scope.totalExpense = success.data.totalExpenses;
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -157,6 +158,8 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         ExpenseService.findExpensesbyGroupVehicle(function (success) {
             if (success.data.status) {
                 $scope.totalExpensesbyVehicle = success.data.expenses;
+                $scope.totalExpenses = success.data.totalExpenses;
+
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -186,6 +189,7 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         PaymentsService.getTotalPaymentsReceivable(function (success) {
             if (success.data.status) {
                 $scope.amounts = success.data.amounts;
+              //  console.log("-->", $scope.amounts);
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -201,6 +205,7 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         PaymentsService.getDuesByParty(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
+                $scope.partiesAmount = success.data.grossAmounts;
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -221,6 +226,8 @@ function ($scope, $stateParams, PartyService, ExpenseService,PaymentsService) {
         PartyService.getRevenueByPartyId($stateParams.vehicleId, function (success) {
             if (success.data.status) {
                 $scope.revenueByVehicleId = success.data.trips;
+                $scope.totalRevenueByVehicleId = success.data.totalRevenue;
+
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -236,6 +243,7 @@ function ($scope, $stateParams, PartyService, ExpenseService,PaymentsService) {
         ExpenseService.findExpensesbyVehicleId($stateParams.vehicleId, function (success) {
             if (success.data.status) {
                 $scope.expensesByVehicleId = success.data.expenses;
+                $scope.totalExpenses = success.data.totalExpenses;
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -263,6 +271,7 @@ function ($scope, $stateParams, PartyService, ExpenseService,PaymentsService) {
         PartyService.amountByPartyid($stateParams.partyId, function (success) {
             if (success.data.status) {
                 $scope.results = success.data.results;
+                $scope.amountPaid = success.data.totalPendingPayments;
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
