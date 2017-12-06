@@ -1,6 +1,7 @@
 //During the test the env variable is set to test
 process.env.NODE_ENV = 'test';
-require('./userLoginTest');
+let User = require('./userLoginTest');
+console.log('User : ',User);
 let mongoose = require("mongoose");
 let Driver = require('./../server/models/schemas').DriversColl;
 
