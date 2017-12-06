@@ -125,7 +125,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
     };
 }]);
 
-app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $stateParams, Notification, $state) {
+app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootScope','$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $rootScope, $stateParams, Notification, $state) {
 
     $scope.pageTitle = "Add Party";
 

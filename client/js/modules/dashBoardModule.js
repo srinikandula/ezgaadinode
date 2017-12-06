@@ -1,5 +1,5 @@
-app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state','paginationService','NgTableParams','TripServices','ExpenseService','PartyService', 'PaymentsService',
-function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService,PartyService,PaymentsService) {
+app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state','paginationService','NgTableParams','TripServices','ExpenseService','PartyService', 'PaymentsService','$rootScope',
+function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService,PartyService,PaymentsService, $rootScope) {
 
  // All Trucks Expirys
 
@@ -172,6 +172,7 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         $state.go('expenseByVehicleId', {vehicleId:vehicleId})
     };
     $scope.gotoPaymentBypartyId = function (partyId, partyName) {
+        $rootScope.partyName = partyName;
         $state.go('amountByPartyId', {partyId:partyId, partyName:partyName});
     };
 
