@@ -1,6 +1,6 @@
 
 <div class="main-right col-xs-9" ng-controller="dashboardController">
-    <h3>Expense by Vehicle</h3>
+    <h3>Expenses</h3>
     <div class="toolbar-button-div pull-right mb-10">
         &nbsp;
     </div>
@@ -8,7 +8,7 @@
         <tr ng-repeat="expensesByVehicle in totalExpensesbyVehicle" style="text-align: center;">
             <td data-title="'Registration No'" sortable="'regNumber'" class="clickable-item col-sm-2">
                 <a href="#"
-                ng-click="gotoExpenseByVehicleId(expensesByVehicle.id)"> 
+                ng-click="gotoExpenseByVehicleId(expensesByVehicle.id, expensesByVehicle.regNumber)">
                   {{expensesByVehicle.regNumber }}</a>
             </td>
             <td data-title="'Diesel'" sortable="'dieselExpense'" class="clickable-item col-sm-2">
