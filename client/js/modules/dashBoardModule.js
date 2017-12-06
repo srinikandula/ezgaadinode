@@ -131,7 +131,8 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
     };
     $scope.getRevenueByVehicle();
 
-    $scope.gotorevenueByVehicleId = function (vehicleId) {
+    $scope.gotorevenueByVehicleId = function (vehicleId, truckName) {
+        $rootScope.vehicleNumber = truckName;
         $state.go('revenueByVehicleId', {vehicleId:vehicleId});
        };
 
@@ -168,7 +169,8 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
     $scope.getExpenseByVehicle();
  
 
-    $scope.gotoExpenseByVehicleId = function (vehicleId) {
+    $scope.gotoExpenseByVehicleId = function (vehicleId, regNumber) {
+        $rootScope.vehicleNumber = regNumber;
         $state.go('expenseByVehicleId', {vehicleId:vehicleId})
     };
     $scope.gotoPaymentBypartyId = function (partyId, partyName) {
