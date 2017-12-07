@@ -171,8 +171,8 @@ describe('EasyGaadi', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql(['Success']);
-                    res.body.drivers.should.have.property(['fullName']);
-                    res.body.drivers.should.have.property(['mobile']);
+                    res.body.drivers[0].should.have.property(['fullName']);
+                    res.body.drivers[0].should.have.property(['mobile']);
                     done();
                 });
         });
@@ -305,7 +305,7 @@ describe('EasyGaadi', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql(['Success']);
-                    res.body.trucks.should.have.property(['registrationNo']);
+                    res.body.trucks[0].should.have.property(['registrationNo']);
                     done();
                 });
         });
@@ -457,8 +457,8 @@ describe('EasyGaadi', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql(['Success']);
-                    res.body.parties.should.have.property(['name']);
-                    res.body.parties.should.have.property(['contact']);
+                    res.body.parties[0].should.have.property(['name']);
+                    res.body.parties[0].should.have.property(['contact']);
                     done();
                 });
         });
@@ -615,7 +615,7 @@ describe('EasyGaadi', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql(['Success']);
-                    res.body.trips.should.have.property(['tripId']);
+                    res.body.trips[0].should.have.property(['tripId']);
                     done();
                 });
         });
@@ -742,8 +742,8 @@ describe('EasyGaadi', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Success']);
-                    res.body.expenses.should.have.property(['expenseName']);
+                    res.body.should.have.property('messages').eql([ 'Success' ]);
+                    res.body.expenses[0].should.have.property(['expenseName']);
                     done();
                 });
         });
@@ -873,8 +873,8 @@ describe('EasyGaadi', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('message').eql(['Success']);
-                    res.body.expenses.should.have.property(['cost']);
+                    res.body.should.have.property('message').eql('Success');
+                    res.body.expenses[0].should.have.property(['cost']);
                     done();
                 });
         });
@@ -1009,7 +1009,7 @@ describe('EasyGaadi', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql(['Success']);
-                    res.body.payments.should.have.property(['amount']);
+                    res.body.payments[0].should.have.property(['amount']);
                     done();
                 });
         });
