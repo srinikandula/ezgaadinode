@@ -17,6 +17,37 @@ var Utils = require('./utils');
 var Expenses = function () {
 };
 
+function save(expenseDetails, result, callback) {
+    var expenseDoc = new expenseColl(expenseDetails);
+    expenseDoc.save(function (err) {
+        if (err) {
+            result.status = false;
+            result.message = "Error while adding expenses Cost, try Again";
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = "expenses Cost Added Successfully";
+            callback(result);
+        }
+    });
+}
+
+function saveExpense(expenseDetails, jwt, result, callback) {
+    if (expenseDetails.expenseName) {
+        expenseMasterApi.addExpenseType(jwt, {"expenseName": expenseDetails.expenseName}, function (eTResult) {
+            if (eTResult.status) {
+                expenseDetails.expenseType = eTResult.newDoc._id.toString();
+                save(expenseDetails, result, callback);
+            } else {
+                result.status = false;
+                result.message = "Error creating new expense type, try Again";
+            }
+        });
+    } else {
+        save(expenseDetails, result, callback);
+    }
+}
+
 Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
     var result = {};
     if (!_.isObject(expenseDetails) || _.isEmpty(expenseDetails)) {
@@ -39,44 +70,57 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         expenseDetails.createdBy = jwt.id;
         expenseDetails.updatedBy = jwt.id;
         expenseDetails.accountId = jwt.accountId;
-        if(expenseDetails.expenseName) {
-            expenseMasterApi.addExpenseType(jwt,{"expenseName":expenseDetails.expenseName}, function(eTResult){
-                if(eTResult.status){
-                    expenseDetails.expenseType = eTResult.newDoc._id.toString();
-                    var expenseDoc = new expenseColl(expenseDetails);
-                    expenseDoc.save(function (err) {
-                        if (err) {
-                            result.status = false;
-                            result.message = "Error while adding expenses Cost, try Again";
-                            callback(result);
-                        } else {
-                            result.status = true;
-                            result.message = "expenses Cost Added Successfully";
-                            callback(result);
-                        }
-                    });
-                } else {
-                    result.status = false;
-                    result.message = "Error creating new expense type, try Again";
-                }
-            });
-        } else {
-            var expenseDoc = new expenseColl(expenseDetails);
-            expenseDoc.save(function (err) {
-                if (err) {
-                    result.status = false;
-                    result.message = "Error while adding expenses Cost, try Again";
-                    callback(result);
-                } else {
-                    result.status = true;
-                    result.message = "expenses Cost Added Successfully";
-                    callback(result);
-                }
-            });
-        }
+        saveExpense(expenseDetails, jwt, result, callback);
     }
 };
 
+function updateExpense(expense, jwt, callback) {
+    var result = {};
+    expenseColl.findOneAndUpdate({_id: expense._id},
+        {
+            $set: {
+                "updatedBy": jwt.id,
+                "vehicleNumber": expense.vehicleNumber,
+                "description": expense.description,
+                "expenseType": expense.expenseType,
+                "cost": expense.cost,
+                "date": expense.date
+            }
+        },
+        {new: true},
+        function (err, expenseDoc) {
+            if (err) {
+                result.status = false;
+                result.message = "Error while updating expenses Cost Record, try Again";
+                callback(result);
+            } else if (expenseDoc) {
+                result.status = true;
+                result.expense = expenseDoc;
+                result.message = "expenses Cost updated successfully";
+                callback(result);
+            } else {
+                result.status = false;
+                result.message = "Error, finding expenses Record";
+                callback(result);
+            }
+        });
+}
+
+Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
+    if (expense.expenseName) {
+        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, function (eTResult) {
+            if (eTResult.status) {
+                expense.expenseType = eTResult.newDoc._id.toString();
+                updateExpense(expense, jwt, callback);
+            } else {
+                result.status = false;
+                result.message = "Error creating new expense type, try Again";
+            }
+        });
+    } else {
+        updateExpense(expense, jwt, callback);
+    }
+};
 
 
 Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
@@ -220,36 +264,6 @@ Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
     });
 };
 
-Expenses.prototype.updateExpenseCost = function (jwt, Details, callback) {
-    var result = {};
-    expenseColl.findOneAndUpdate({_id: Details._id},
-        {
-            $set: {
-                "updatedBy": jwt.id,
-                "vehicleNumber": Details.vehicleNumber,
-                "description": Details.description,
-                "expenseType": Details.expenseType,
-                "cost": Details.cost,
-                "date": Details.date
-            }
-        },
-        {new: true},
-        function (err, Details) {
-            if (err) {
-                result.status = false;
-                result.message = "Error while updating expenses Cost Record, try Again";
-                callback(result);
-            } else if (Details) {
-                result.status = true;
-                result.message = "expenses Cost updated successfully";
-                callback(result);
-            } else {
-                result.status = false;
-                result.message = "Error, finding expenses Record";
-                callback(result);
-            }
-        });
-};
 
 Expenses.prototype.deleteExpenseRecord = function (expenseId, callback) {
     var result = {};
