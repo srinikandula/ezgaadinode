@@ -1,11 +1,31 @@
 
-        <div class="main-right col-xs-9" ng-controller="DriversListCtrl">
-            <h3>Drivers</h3>
+        <div class="main-right col-xs-12" ng-controller="DriversListCtrl">
 
-            <div>
+            <div class="col-xs-12 pall-zero mb-10">
+                <div class="col-sm-3 pall-zero"><h3>Driver Details</h3></div>
+                <div class="col-sm-6">
+                    <div class="input-group stylish-input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-addon">
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                    </div>
+                </div>
+                <div class="col-sm-3 pall-zero">
+                    <select class="form-control">
+                        <option value="" selected>All Vehicle</option>
+                        <option ng-repeat="drivers in currentPageOfDrivers ">{{drivers.truckId.registrationNo}}</option>
+                    </select>
+                </div>
+            </div>
+
+
+       <div>
                 <button class="btn btn-blue pull-right mb-10" ng-click="goToEditDriverPage()">Add Driver</button>
             </div>
-            <div >
+            <div class="mt-10">
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="driverParams">
                 <tr ng-repeat="drivers in currentPageOfDrivers" style="text-align: center;">
                     <td data-title="'Driver ID'" sortable="'driverId'" class="clickable-item col-sm-1">
@@ -17,16 +37,16 @@
                     <td data-title="'Mobile'" sortable="'mobile'" class="clickable-item col-sm-1">{{
                         drivers.mobile }}
                     </td>
-                    <td data-title="'Truck Reg No'" sortable="'truckId'" class="clickable-item col-sm-1">{{
+                    <td data-title="'V No'" sortable="'truckId'" class="clickable-item col-sm-1">{{
                         drivers.truckId.registrationNo }}
                     </td>
                     <td data-title="'Salary'" sortable="'salary'" class="clickable-item col-sm-1">{{
                         drivers.salary }}
                     </td>
-                    <td data-title="'License Number'" sortable="'licenseNumber'" class="clickable-item col-sm-2">{{
+                    <td data-title="'License'" sortable="'licenseNumber'" class="clickable-item col-sm-2">{{
                         drivers.licenseNumber }}
                     </td>
-                    <td data-title="'License Validity'" sortable="'licenseValidity'" class="clickable-item col-sm-1">{{
+                    <td data-title="'Validity'" sortable="'licenseValidity'" class="clickable-item col-sm-1">{{
                         drivers.licenseValidity | date:'yyyy-MM-dd'
                         }}
                     </td>

@@ -1,8 +1,27 @@
 
-        <div class="main-right col-xs-9" ng-controller="ShowTripsCtrl">
+        <div class="main-right col-xs-12" ng-controller="ShowTripsCtrl">
 
-            <h3>Trips</h3>
-            <button class="btn btn-blue pull-right mb-10" ng-click="goToEditTripPage()">Add Trips</button>
+            <div class="col-xs-12 pall-zero mb-10">
+                <div class="col-sm-3 pall-zero"><h3>Trips</h3></div>
+                <div class="col-sm-6">
+                    <div class="input-group stylish-input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-addon">
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                    </div>
+                </div>
+                <div class="col-sm-3 pall-zero">
+                    <select class="form-control">
+                        <option value="" selected>All Vehicles</option>
+                        <option ng-repeat="trips in currentPageOfTrips">{{trips.attrs.truckName}}</option>
+                    </select>
+                </div>
+            </div>
+
+            <!--<button class="btn btn-blue pull-right mb-10" ng-click="goToEditTripPage()">Add Trips</button>-->
 
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="tripParams">
                 <tr ng-repeat="trips in currentPageOfTrips" style="text-align: center;">
@@ -18,7 +37,7 @@
                     <td data-title="'Driver'" sortable="'fullName'" class="clickable-item col-sm-2">{{
                         trips.attrs.fullName }}
                     </td>
-                    <td data-title="'Freight Amount'" sortable="'freightAmount'" class="clickable-item col-sm-1">{{
+                    <td data-title="'Freight'" sortable="'freightAmount'" class="clickable-item col-sm-1">{{
                         trips.freightAmount }}
                     </td>
                     <td data-title="'Trip Lane'" sortable="'tripLane'" class="clickable-item col-sm-2">{{

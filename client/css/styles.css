@@ -1,16 +1,61 @@
+
+
+@font-face {
+    font-family: 'Gotham-Medium';
+    src:
+            url('../fonts/Gotham-Medium/Gotham-Medium.eot?#iefix') format('embedded-opentype'),
+            url('../fonts/Gotham-Medium/Gotham-Medium.otf')  format('opentype'),
+            url('../fonts/Gotham-Medium/Gotham-Medium.woff') format('woff'),
+            url('../fonts/Gotham-Medium/Gotham-Medium.ttf')  format('truetype'),
+            url('../fonts/Gotham-Medium/Gotham-Medium.svg#Gotham-Medium') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Gotham-Book';
+    src:
+            url('../fonts/Gotham-Book/Gotham-Book.eot?#iefix') format('embedded-opentype'),
+            url('../fonts/Gotham-Book/Gotham-Book.otf')  format('opentype'),
+            url('../fonts/Gotham-Book/Gotham-Book.woff') format('woff'),
+            url('../fonts/Gotham-Book/Gotham-Book.ttf')  format('truetype'),
+            url('../fonts/Gotham-Book/Gotham-Book.svg#Gotham-Book') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Gotham-Light';
+    src:
+            url('../fonts/Gotham-Light/Gotham-Light.eot?#iefix') format('embedded-opentype'),
+            url('../fonts/Gotham-Light/Gotham-Light.otf')  format('opentype'),
+            url('../fonts/Gotham-Light/Gotham-Light.woff') format('woff'),
+            url('../fonts/Gotham-Light/Gotham-Light.ttf')  format('truetype'),
+            url('../fonts/Gotham-Light/Gotham-Light.svg#Gotham-Light') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
 h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 body{
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: Gotham-Light;
+    font-size: 14px;
+    background-color: #f5f5f5;
+    color: #838993;
 }
 .pall-zero {
-    padding: 0;
+    padding: 0 !important;
 }
 .btn-custom{
     border-radius: 0px!important;
 }
-
+.top-nav{
+    margin: 30px 0;
+}
+.top-nav .navbar-collapse{
+    width: 83.33333%;
+}
 .btn-custom[disabled]{
     cursor: auto;
     -webkit-box-shadow: none;
@@ -19,33 +64,31 @@ body{
 }
 
 .menu-header {
-    background-color: rgba(25, 149, 199, .6);
+    background-color: #1E4495;
     border: 0;
     border-radius: 0;
+    height: 170px;
+    margin-bottom: 0 !important;
+    box-shadow: 5px 5px 5px #888888;
 }
 
 .menu-header .navbar-nav > li {
-    padding: 15px 0;
+    padding: 0px 14px;
 }
 
 .menu-header .navbar-nav > li > a {
-    padding: 8px 15px;
+    padding: 8px 9px;
     background-image: none;
-    font-size: 16px;
-    text-transform: uppercase;
-    border-right: 1px solid rgba(228, 228, 228, .5);
+    font-family: 'Gotham-Book';
+    font-size: 15px;
     background: none;
     color: #fff;
-    font-weight: bold;
     box-shadow: inset 0 0px 0px rgba(0, 0, 0, .075);
 }
-.menu-header .navbar-nav > li > a:hover, .menu-header .navbar-nav > li > a:focus   {
-    color: #d9534f;
-}
-
-.logo {
-    padding: 0;
-    height: 60px;
+.menu-header .navbar-nav > li > a >img {
+    display: block;
+    margin: 0 auto;
+    padding-bottom: 10px;
 }
 
 .login-form {
@@ -56,38 +99,28 @@ body{
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.navbar {
-    margin-bottom: 0 !important;
-}
-
 .left-menu {
-    height: 100%;
-    color: #000;
-    text-align:center;
-    width:90%;
-    margin-left: 15px;
+    text-align: left;
 }
 
 .left-menu-li {
-   margin-bottom: 10px;
+    margin-bottom: 10px;
     font-size: 18px;
 }
 .left-menu-li:hover{
-    background-color: #cccccc;
-
-    border-radius: 5px;
+    color: #000;
 }
 
 .left-menu-anchor {
-    text-align: center;
+    font-family: 'Gotham-Book';
+    text-align: left;
     cursor: pointer;
     text-decoration: none;
-    font-size: 14px;
+    font-size: 15px;
     display: block;
     width:100%;
     padding:8px 15px;
-    border:1px solid #ccc;
-    border-radius: 5px;
+
 }
 
 .left-menu-anchor:hover {
@@ -146,6 +179,11 @@ body{
 }
 .main-right {
     padding: 10px;
+    background-color: #fff;
+    border-radius: 5px;
+}
+.main-right h3{
+    padding: 8px;
 }
 .btn-blue{
     background-color: rgba(25, 149, 199, .6);
@@ -155,7 +193,7 @@ body{
 }
 .btn-blue:hover{
     background-color: #d9534f;
-   border:1px solid #d9534f;
+    border:1px solid #d9534f;
     color: #fff;
 }
 .btn-blue:active, .btn-blue:focus{
@@ -163,21 +201,19 @@ body{
     border:1px solid #d9534f;
 }
 .active {
-    background-color: #d9534f !important;
+
     color: #fff !important;
-    border-radius: 5px;
     text-decoration: none;
 }
-.active a{
-    background-color: #d9534f !important;
-    color: #fff !important;
-    border-radius: 5px;
+.left-menu .active a{
+    background-color: #EDF0F5 !important;
     text-decoration: none;
+    border-radius: 5px;
 }
 .selected{
-    background-color: #d9534f !important;
+    border-bottom: 2px solid #dcd6d6;
     color: #fff !important;
-    border-radius: 5px;
+    text-decoration: none;
 }
 .selected a{
     color: #fff;
@@ -185,13 +221,16 @@ body{
 .mt-5{
     margin-top: 5px;
 }
+.pt-18{
+    padding-top: 18px !important;
+}
 .custom-dropdown-dynamic>ul{
     min-width: 190px!important;
     border-radius: 0!important;
 }
 
 .custom-dropdown-dynamic .dropdown-menu>.active>a, .dropdown-menu>.active>a:focus, .dropdown-menu>.active>a:hover {
-     color: #000;
+    color: #000;
     text-decoration: none;
     background-color: #337ab7;
     outline: 0;
@@ -203,7 +242,9 @@ body{
 .margin-top-40 {
     margin-top: 40px;
 }
-
+.margin-top-10{
+    margin-top: 10px;
+}
 .account-edit {
     display: block;
     margin: 0 auto;
@@ -211,6 +252,7 @@ body{
 }
 .main-right .form-control{
     border-radius: 0px;
+    height: 42px;
 }
 .btn-red{
     background-color:#d9534f;
@@ -222,7 +264,7 @@ body{
     border-color: rgba(25, 149, 199, .6);
 }
 .navbar-default .navbar-nav>.open>a, .navbar-default .navbar-nav>.open>a:focus, .navbar-default .navbar-nav>.open>a:hover{
- background-color: transparent;
+    background-color: transparent;
     color: #d9534f;
 }
 .payment-grid{
@@ -267,14 +309,39 @@ body{
     color: red!important;
 }
 .stylish-input-group .input-group-addon{
-    background: white !important;
+    background: #000 !important;
+    padding: 0 6px !important;
+}
+.stylish-input-group .glyphicon-search{
+    font-size: 25px;
+    color: #fff;
 }
 .stylish-input-group .form-control{
     border-right:0;
     box-shadow:0 0 0;
     border-color:#ccc;
+    height:42px;
 }
 .stylish-input-group button{
     border:0;
     background:transparent;
+}
+.body-section{
+    margin-top: -30px;
+}
+.left-nav{
+    background-color: #fff;
+    border-radius: 5px;
+    padding:0;
+    border: 0;
+}
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover{
+    background-color: transparent;
+    color: #fff;
+}
+.input-group-btn .btn{
+    height:42px;
+}
+.menu-header .navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover{
+    color:#fff;
 }

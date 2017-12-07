@@ -3,8 +3,10 @@ app.directive('leftMenu', function () {
         restrict: 'E',
         template: '<div class="left-menu"> \n' +
         '        <ul class="list-unstyled">\n' +
-        '           <li  ui-sref-active="active" class="left-menu-li">' +
-        '               <a  ui-sref="{{label | lowercase}}" class="left-menu-anchor" >{{label}}</a> \n' +
+        '           <li  ui-sref-active="active" class="left-menu-li"' +
+        '                    ng-class="{selected: activeTab === \'{{label}}\'}">' +
+        '               <a  ui-sref="{{label | lowercase}}" class="left-menu-anchor" >' +
+        '               <img src="images/{{label | lowercase}}.png" width="55" height="40">{{label}}</a> \n' +
         '           </li> \n'+
         '        </ul>\n' +
         '    </div>',

@@ -1,9 +1,27 @@
 
-        <div class="main-right col-xs-9" ng-controller="PaymentsCtrl">
-            <h3>Payments</h3>
-            <div class="toolbar-button-div pull-right mb-10">
-                <button class="btn  btn-blue pull-right" ng-click="goToEditPaymentsPage()">Add Payments</button>
+        <div class="main-right col-xs-12" ng-controller="PaymentsCtrl">
+            <div class="col-xs-12 pall-zero mb-10">
+                <div class="col-sm-3 pall-zero"><h3>Payments</h3></div>
+                <div class="col-sm-6">
+                    <div class="input-group stylish-input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-addon">
+                        <button type="submit">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                    </span>
+                    </div>
+                </div>
+                <div class="col-sm-3 pall-zero">
+                    <select class="form-control">
+                        <option value="" selected>All Vehicles</option>
+                        <option ng-repeat="parties in currentPageOfParties">{{trips.attrs.truckName}}</option>
+                    </select>
+                </div>
             </div>
+            <!--<div class="toolbar-button-div pull-right mb-10">-->
+                <!--<button class="btn  btn-blue pull-right" ng-click="goToEditPaymentsPage()">Add Payments</button>-->
+            <!--</div>-->
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentParams">
                 <tr ng-repeat="payments in currentPageOfPayments" style="text-align: center;">
                     <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">{{ payments.date |

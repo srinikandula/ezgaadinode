@@ -12,7 +12,7 @@ app.factory('PartyService', function ($http, $cookies) {
             $http({
                 url: '/v1/party/get/accountParties',
                 method: "GET",
-                params:pageable
+                params: pageable
             }).then(success, error)
         },
         getAccountParties: function (success, error) {
@@ -42,13 +42,13 @@ app.factory('PartyService', function ($http, $cookies) {
         },
         getRevenueByPartyId: function (vehicleId, success, error) {
             $http({
-                url: '/v1/party/vehiclePayments/'+vehicleId,
+                url: '/v1/party/vehiclePayments/' + vehicleId,
                 method: "GET"
             }).then(success, error)
         },
         amountByPartyid: function (partyId, success, error) {
             $http({
-                url: '/v1/party/tripsPayments/'+ partyId,
+                url: '/v1/party/tripsPayments/' + partyId,
                 method: "GET"
             }).then(success, error)
         },
@@ -61,7 +61,7 @@ app.factory('PartyService', function ($http, $cookies) {
     }
 });
 
-app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state','paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
+app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditPartyPage = function (partyId) {
         $state.go('editParty', {partyId: partyId});
     };
@@ -163,10 +163,10 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             $scope.party.error.push("Please Fill all TripLane Fields");
         }*/
         // else {
-            $scope.party.tripLanes.push({
-                index: length
-            });
-       // }
+        $scope.party.tripLanes.push({
+            index: length
+        });
+        // }
         console.log($scope.party);
     };
 
