@@ -210,7 +210,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         $scope.pagetitle = "Edit expenses";
         ExpenseService.getExpenseRecord($stateParams.expenseId, function (success) {            
             if (success.data.status) {
-                $scope.expenseDetails = success.data.trip;
+                $scope.expenseDetails = success.data.expense;
                 $scope.expenseDetails.date = new Date($scope.expenseDetails.date);
                 getAllExpenses();
                 getTruckIds();

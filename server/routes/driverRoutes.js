@@ -22,13 +22,7 @@ AuthRouter.put('/', function (req, res) {
     });
 });
 
-/*
-AuthRouter.get('/', function (req, res) {
-    Drivers.getAllDrivers(function (result) {
-        res.json(result);
-    });
-});
-*/
+
 
 AuthRouter.get('/account/drivers', function (req, res) {
     Drivers.getDrivers(req.jwt, req.query, function (result) {
