@@ -45,10 +45,10 @@
                 <li><a href="#">Contact us</a></li>
                 <li><a href="#">GPS</a></li>
 
-                <li>
+                <li ng-show="isLoggedInn" >
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{displayName}}<span
                             class="caret"></span></a>
-                    <ul class="dropdown-menu" ng-show="isLoggedin">
+                    <ul class="dropdown-menu" >
                         <li><a href="#"></a></li>
                         <li><a href="#" ng-click="logout()">Logout</a></li>
 
