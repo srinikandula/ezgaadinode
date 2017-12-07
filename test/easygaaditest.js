@@ -161,7 +161,7 @@ describe('EasyGaadi', () => {
         */
         it('It Should Retrive Driver Details From Driver Schema', (done) => {
             let headerData = {
-                "token": token,
+                "token": token
             };
 
             chai.request(server)
