@@ -208,7 +208,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
 
     if ($stateParams.expenseId) {
         $scope.pagetitle = "Edit expenses";
-        ExpenseService.getExpenseRecord($stateParams.expenseId, function (success) {
+        ExpenseService.getExpenseRecord($stateParams.expenseId, function (success) {            
             if (success.data.status) {
                 $scope.expenseDetails = success.data.trip;
                 $scope.expenseDetails.date = new Date($scope.expenseDetails.date);
@@ -256,7 +256,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
                     console.log(err);
                 });
             } else {
-                ExpenseService.addExpense(params, function (success) {
+                ExpenseService.addExpense(params, function (success) {                      
                     if (success.data.status) {
                         params.success = success.data.message;
                         Notification.success({message: success.data.message});
