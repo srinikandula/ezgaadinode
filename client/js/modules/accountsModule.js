@@ -41,7 +41,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
         console.log('editing account '+ accountId);
         $state.go('accountsEdit', {accountId: accountId});
     };
-
+    $scope.filter;
     $scope.count = 0;
     $scope.getCount = function () {
         AccountServices.count(function (success) {
@@ -56,8 +56,8 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
     $scope.getCount();
 
     var loadTableData = function (tableParams) {
-
         var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        pageable.filter = $scope.filter;
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         AccountServices.getAllAccounts(pageable, function (response) {
@@ -65,21 +65,25 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             if (angular.isArray(response.data.accounts)) {
                 $scope.loading = false;
                 $scope.accounts = response.data.accounts;
-                tableParams.total(response.totalElements);
+                tableParams.total(response.data.count);
                 tableParams.data = $scope.accounts;
                 $scope.currentPageOfAccounts = $scope.accounts;
 
             }
         });
     };
-
+    $scope.findAccounts = function(){
+        $scope.accountParams.filter = $scope.filter;
+        loadTableData($scope.accountParams);
+    }
     $scope.init = function () {
         $scope.accountParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
                 name: -1
-            }
+            },
+            filter: $scope.filter
         }, {
             counts: [],
             total: $scope.count,
