@@ -84,14 +84,17 @@ Accounts.prototype.getAccounts = function (jwt, params, callback) {
         params.page = 1;
     }
 
-
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {};
+    var query = {};
+    if(params.filter && params.filter.trim().length > 0){
+        query = {"userName":{$regex: params.filter.trim()}};
+    }
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
-                .find()
+                .find(query)
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
@@ -107,7 +110,7 @@ Accounts.prototype.getAccounts = function (jwt, params, callback) {
                 });
         },
         count: function (countCallback) {
-            AccountsColl.count(function (err, count) {
+            AccountsColl.count(query, function (err, count) {
                 countCallback(err, count);
             });
         }
