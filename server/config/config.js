@@ -7,7 +7,6 @@ function getUserHome() {
 var localConfigPath = getUserHome() + '/easygaadi-config.json';
 var projectConfigPath = __dirname + '/config.json';
 
-
 if(process.env.NODE_ENV === "test") {
     projectConfigPath = __dirname + '/test_config.json';
 }

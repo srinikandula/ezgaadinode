@@ -32,7 +32,7 @@ describe('EasyGaadi', () => {
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.a('object');
+                    res.body.should.be.a('object');                    
                     res.body.should.have.property('messages').eql(['Success']);
                     res.body.expiryCount.should.have.property('fitnessExpiryCount');
                     res.body.expiryCount.should.have.property('permitExpiryCount');
