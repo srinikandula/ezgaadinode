@@ -98,6 +98,23 @@ OpenRouter.get('/get/srlogistics', function (request, res) {
             res.json(result);
         });
     }
+});
+
+
+OpenRouter.get('/get/srlogistics/latestLocations', function (request, res) {
+    var urlParams = url.parse(request.url, true);
+    var startDate  = urlParams.query.startDate;
+    var endDate = urlParams.query.endDate;
+    var retObj = {};
+    retObj.messages = [];
+
+    if(retObj.messages.length > 0) {
+        res.json(retObj);
+    }else {
+        Events.getLatestLocations('s.rlogistics@yahoo.com', function(result) {
+            res.json(result);
+        });
+    }
 
 });
 
