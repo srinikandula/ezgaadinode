@@ -19,9 +19,9 @@
   "mysql_crm": {
     "port": 3306,
     "connectionLimit": 100,
-    "host": "localhost",
+    "host": "egcrm.cloudapp.net",
     "user": "root",
-    "password": "",
+    "password": "098ioplkjbNm",
     "database": "easygaadi_crm"
   }
 }

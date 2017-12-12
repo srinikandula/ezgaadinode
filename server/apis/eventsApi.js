@@ -53,6 +53,54 @@ Events.prototype.getEventData = function(accountId, startDate, endDate, callback
         callback(retObj);
     }
 };
+
+
+
+Events.prototype.getLatestLocations = function(accountId,callback) {
+    var retObj = {};
+    retObj.messages = [];
+
+    if(!accountId) {
+        retObj.status = false;
+        retObj.messages.push('Invalid account Id');
+    }
+
+    if(retObj.messages.length == 0) {
+        var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + accountId + "' GROUP BY deviceID ORDER BY timestamp desc";
+        var eventDataTempQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventDataTemp WHERE accountID='" + accountId + "' GROUP BY deviceID ORDER BY timestamp desc";
+
+        async.parallel({
+            eventData: function(eventDataCallback) {
+                pool.query(eventDataQuery, function(err, eventDataResults) {
+                    eventDataCallback(err, eventDataResults)
+                });
+            },
+            eventDataTemp: function(eventDataTempCallback) {
+                pool.query(eventDataTempQuery, function(err, eventDataTempResults) {
+                    eventDataTempCallback(err, eventDataTempResults)
+                });
+            }
+        }, function(err, results) {
+            if(err) {
+                retObj.status = false;
+                retObj.messages.push('Error fetching data');
+                retObj.messages.push(JSON.stringify(err));
+
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.results = results.eventData.concat(results.eventDataTemp);
+                retObj.count = retObj.results.length;
+                callback(retObj);
+            }
+        });
+    } else {
+        callback(retObj);
+    }
+};
+
+
 /**
  * Find the latest GPS location of the device in an account
  * @param accountId
