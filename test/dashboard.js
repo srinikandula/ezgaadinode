@@ -32,7 +32,7 @@ describe('EasyGaadi', () => {
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
-                    res.body.should.be.a('object');
+                    res.body.should.be.a('object');                    
                     res.body.should.have.property('messages').eql(['Success']);
                     res.body.expiryCount.should.have.property('fitnessExpiryCount');
                     res.body.expiryCount.should.have.property('permitExpiryCount');
@@ -151,6 +151,7 @@ describe('EasyGaadi', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('totalRevenue');
+                    res.body.should.have.property('totalRevenue').eql(0);
                     done();
                 });
         });
@@ -247,7 +248,7 @@ describe('EasyGaadi', () => {
                 });
         });
         /*
-        * Test the /Get route Total Revenue by Individual Vehicle Information Success
+        * Test the /Get route Total Expenses by Individual Vehicle Information Success
         */
         it('Retrieving Total Expenses by Individual Vehicle Information', (done) => {
             let headerData = {

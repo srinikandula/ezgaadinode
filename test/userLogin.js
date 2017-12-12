@@ -15,7 +15,6 @@ let should = chai.should();
 chai.use(chaiHttp);
 //Our parent block
 describe('EasyGaadi', () => {
-    User.collection.drop();
     beforeEach((done) => { //Before each test we empty the database        
         let userData = new User({
             "userName": "ramarao",
