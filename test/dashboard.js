@@ -248,7 +248,7 @@ describe('EasyGaadi', () => {
                 });
         });
         /*
-        * Test the /Get route Total Revenue by Individual Vehicle Information Success
+        * Test the /Get route Total Expenses by Individual Vehicle Information Success
         */
         it('Retrieving Total Expenses by Individual Vehicle Information', (done) => {
             let headerData = {
