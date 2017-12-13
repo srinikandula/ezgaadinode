@@ -193,7 +193,7 @@ describe('TripTest', () => {
                             res.should.have.status(200);
                             res.body.should.be.a('object');
                             res.body.should.have.property('messages').eql(['Trip Added Successfully']);
-                            //tripId = res.body._id; no detailed response means not getting id of inserted trip
+                            tripId = res.body.trips._id;
                             done();
                         });
                 });
@@ -215,9 +215,8 @@ describe('TripTest', () => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    //res.body.should.have.property('messages').eql(['Trip updated successfully']);
-                    res.body.should.have.property('messages').eql(['Error, finding trip']);
-                    //res.body.trip.should.have.property('freightAmount').eql(1300);
+                    res.body.should.have.property('messages').eql(['Trip updated successfully']);
+                    res.body.trip.should.have.property('freightAmount').eql(1300);
                     done();
                 });
         });
@@ -232,8 +231,7 @@ describe('TripTest', () => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    //res.body.should.have.property('messages').eql(['Success']);
-                    res.body.should.have.property('messages').eql(['Invalid trip id']);
+                    res.body.should.have.property('messages').eql(['Success']);
                     done();
                 });
         });

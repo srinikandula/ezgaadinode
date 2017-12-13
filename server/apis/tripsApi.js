@@ -54,13 +54,14 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
         }
         tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
         var tripDoc = new TripCollection(tripDetails);
-        tripDoc.save(function (err) {
+        tripDoc.save(function (err, trip) {
             if (err) {
                 retObj.messages.push("Error while adding trip, try Again");
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push("Trip Added Successfully");
+                retObj.trips = trip;
                 callback(retObj);
             }
         });

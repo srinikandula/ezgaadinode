@@ -19,7 +19,7 @@ var Expenses = function () {
 
 function save(expenseDetails, result, callback) {
     var expenseDoc = new expenseColl(expenseDetails);
-    expenseDoc.save(function (err) {
+    expenseDoc.save(function (err, expense) {
         if (err) {
             result.status = false;
             result.message = "Error while adding expenses Cost, try Again";
@@ -27,6 +27,7 @@ function save(expenseDetails, result, callback) {
         } else {
             result.status = true;
             result.message = "expenses Cost Added Successfully";
+            result.expenses = expense;
             callback(result);
         }
     });
