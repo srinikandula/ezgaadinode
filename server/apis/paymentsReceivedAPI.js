@@ -73,13 +73,14 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
         details.createdBy = jwt.id;
         details.updatedBy = jwt.id;
         var insertDoc = new PaymentsReceivedColl(details);
-        insertDoc.save(function (err) {
+        insertDoc.save(function (err, payment) {
             if (err) {
                 retObj.messages.push("Error, try Again");
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push("Successfully Added");
+                retObj.payments = payment;
                 callback(retObj);
             }
         });
