@@ -335,99 +335,37 @@ Expenses.prototype.findTotalExpenses = function (jwt, callback) {
  * @param jwt
  * @param callback
  */
-Expenses.prototype.findExpensesByVehicles =  function(jwt, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    async.parallel({
-        expenses: function(expensesCallback) {
-            expenseColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
-                { $group: { _id : {"vehicleNumber": "$vehicleNumber","expenseType":"$expenseType" },
-                    totalExpenses : { $sum: "$cost" }} },function (error, expensesResult) {
-                    expensesCallback(error, expensesResult);
-                });
-        },
-        expenseTypes: function(expenseTypesCallback){
-            expenseMasterColl.find({}, function(error , expenseTypeResults){
-                expenseTypesCallback(error, expenseTypeResults);
-            });
-        },
-        truckRegNumbers: function(expenseTypesCallback){
-            trucksCollection.find({"accountId":jwt.accountId},{"registrationNo":1}, function(error , expenseTypeResults){
-                expenseTypesCallback(error, expenseTypeResults);
-            });
-        }
 
-    },function (error, expensesAndTypes) {
-        if(error){
-            retObj.status = true;
-            retObj.messages.push(JSON.stringify(error));
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            var expenses = expensesAndTypes.expenses;
-            //build vehicle expenses map
-            var expenseTypes = _.object(_.map(expensesAndTypes.expenseTypes, function(expenseType) {
-                return [expenseType._id, expenseType.expenseName];
-            }));
-            var truckRegNumbers = _.object(_.map(expensesAndTypes.truckRegNumbers, function(truck) {
-                return [truck._id, truck.registrationNo];
-            }));
-            var vehicleExpenses = {};
-            for(var i=0; i< expenses.length;i++) {
-                var vehicleId = expenses[i]._id.vehicleNumber;
-                if(!vehicleExpenses[vehicleId]) {
-                    vehicleExpenses[vehicleId] = {"id": vehicleId,expenses:{},"regNumber":truckRegNumbers[vehicleId]};
-
-                }
-                var vehicle = vehicleExpenses[vehicleId];
-                if(!vehicle.expenses[expenses[i]._id.expenseType]) {
-                    var expenseTotal = {"expenseTotal":expenses[i].totalExpenses};
-                    expenseTotal["name"] = expenseTypes[expenses[i]._id.expenseType];
-                    vehicle.expenses[expenses[i]._id.expenseType] = expenseTotal;
-                } else {
-                    var expense =  vehicle.expenses[expenses[i]._id.expenseType];
-                    expense["expenseTotal"] += expenses[i].totalExpenses;
-                }
-            }
-            var results =[];
-            var totalDieselExpense = 0;
-            var totaltollExpense = 0;
-            var totalmExpense = 0;
-            var totalmisc = 0;
-            for(id in vehicleExpenses) {
-                var vehicleExpense = vehicleExpenses[id];
-                vehicleExpense.exps = [];
-                var resultExpense = {"dieselExpense":0, "tollExpense":0, "mExpense":0, "misc":0};
-                for(e in vehicleExpense.expenses) {
-                    var vExpense = vehicleExpense.expenses[e];
-
-                    if(vExpense["name"] == "Diesel"){
-                        resultExpense["dieselExpense"] += vExpense.expenseTotal;
-                        totalDieselExpense = totalDieselExpense + resultExpense["dieselExpense"];
-                    } else if(vExpense["name"] == "Toll"){
-                        resultExpense["tollExpense"] += vExpense.expenseTotal;
-                        totaltollExpense = totaltollExpense + resultExpense["tollExpense"];
-                    } else if(vExpense["name"] == "Maintenance"){
-                        resultExpense["mExpense"] += vExpense.expenseTotal;
-                        totalmExpense = totalmExpense + resultExpense["mExpense"];
-                    } else {
-                        resultExpense["misc"] += vExpense.expenseTotal;
-                        totalmisc = totalmisc + resultExpense["misc"];
-                    }
-                }
-                vehicleExpense.exps.push(resultExpense);
-
-                delete vehicleExpense.expenses;
-                results.push(vehicleExpenses[id]);
-            }
-            retObj.expenses = results;
-            retObj.totalExpenses = {totalDieselExpense:totalDieselExpense,totaltollExpense:totaltollExpense,totalmExpense:totalmExpense,totalmisc:totalmisc};
-            callback(retObj);
-        }
-    });
-}
+Expenses.prototype.findExpensesByVehicles =  function(jwt, params, callback) {
+    var condition = {};
+    if(params.fromDate && params.toDate && params.regNumber){
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
+            $gte: new Date(params.fromDate),
+            $lte: new Date(params.toDate),
+        },"vehicleNumber" : params.regNumber}}
+        getExpensesByVehicles(jwt, condition, function(response){
+            callback(response);
+        })
+    } else if(params.fromDate && params.toDate) {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
+            $gte: new Date(params.fromDate),
+            $lte: new Date(params.toDate),
+        }}}
+        getExpensesByVehicles(jwt, condition, function(response){
+            callback(response);
+        })
+    } else if(params.regNumber) {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId)},"vehicleNumber" : params.regNumber}
+        getExpensesByVehicles(jwt, condition, function(response){
+            callback(response);
+        })
+    } else {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId)}}
+        getExpensesByVehicles(jwt, condition, function(response){
+            callback(response);
+        })
+    }
+};
 /**
  * Find expenses for a vehicle
  * @param jwt
@@ -450,7 +388,7 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function(results){
                 result.status = true;
                 result.expenses = results.documents;
-                console.log(result.expenses.length);
+                console.log(result.expenses.length)
                 for(var i = 0; i < result.expenses.length;i++) {
                     if(result.expenses[i].attrs.expenseName === 'Diesel') {
                         totalDieselExpense = totalDieselExpense + result.expenses[i].cost;
@@ -518,5 +456,112 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
         }
     });
 };
+
+function getExpensesByVehicles(jwt, condition, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        expenses: function (expensesCallback) {
+            expenseColl.aggregate(condition,
+                {
+                    $group: {
+                        _id: {"vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType"},
+                        totalExpenses: {$sum: "$cost"}
+                    }
+                }, function (error, expensesResult) {
+                    expensesCallback(error, expensesResult);
+                });
+        },
+        expenseTypes: function (expenseTypesCallback) {
+            expenseMasterColl.find({}, function (error, expenseTypeResults) {
+                expenseTypesCallback(error, expenseTypeResults);
+            });
+        },
+        truckRegNumbers: function (expenseTypesCallback) {
+            trucksCollection.find({"accountId": jwt.accountId}, {"registrationNo": 1}, function (error, expenseTypeResults) {
+                expenseTypesCallback(error, expenseTypeResults);
+            });
+        }
+
+    }, function (error, expensesAndTypes) {
+        if (error) {
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(error));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            var expenses = expensesAndTypes.expenses;
+            //build vehicle expenses map
+            var expenseTypes = _.object(_.map(expensesAndTypes.expenseTypes, function (expenseType) {
+                return [expenseType._id, expenseType.expenseName];
+            }));
+            var truckRegNumbers = _.object(_.map(expensesAndTypes.truckRegNumbers, function (truck) {
+                return [truck._id, truck.registrationNo];
+            }));
+            var vehicleExpenses = {};
+            for (var i = 0; i < expenses.length; i++) {
+                var vehicleId = expenses[i]._id.vehicleNumber;
+                if (!vehicleExpenses[vehicleId]) {
+                    vehicleExpenses[vehicleId] = {
+                        "id": vehicleId,
+                        expenses: {},
+                        "regNumber": truckRegNumbers[vehicleId]
+                    };
+
+                }
+                var vehicle = vehicleExpenses[vehicleId];
+                if (!vehicle.expenses[expenses[i]._id.expenseType]) {
+                    var expenseTotal = {"expenseTotal": expenses[i].totalExpenses};
+                    expenseTotal["name"] = expenseTypes[expenses[i]._id.expenseType];
+                    vehicle.expenses[expenses[i]._id.expenseType] = expenseTotal;
+                } else {
+                    var expense = vehicle.expenses[expenses[i]._id.expenseType];
+                    expense["expenseTotal"] += expenses[i].totalExpenses;
+                }
+            }
+            var results = [];
+            var totalDieselExpense = 0;
+            var totaltollExpense = 0;
+            var totalmExpense = 0;
+            var totalmisc = 0;
+            for (id in vehicleExpenses) {
+                var vehicleExpense = vehicleExpenses[id];
+                vehicleExpense.exps = [];
+                var resultExpense = {"dieselExpense": 0, "tollExpense": 0, "mExpense": 0, "misc": 0};
+                for (e in vehicleExpense.expenses) {
+                    var vExpense = vehicleExpense.expenses[e];
+
+                    if (vExpense["name"] == "Diesel") {
+                        resultExpense["dieselExpense"] += vExpense.expenseTotal;
+                        totalDieselExpense = totalDieselExpense + resultExpense["dieselExpense"];
+                    } else if (vExpense["name"] == "Toll") {
+                        resultExpense["tollExpense"] += vExpense.expenseTotal;
+                        totaltollExpense = totaltollExpense + resultExpense["tollExpense"];
+                    } else if (vExpense["name"] == "Maintenance") {
+                        resultExpense["mExpense"] += vExpense.expenseTotal;
+                        totalmExpense = totalmExpense + resultExpense["mExpense"];
+                    } else {
+                        resultExpense["misc"] += vExpense.expenseTotal;
+                        totalmisc = totalmisc + resultExpense["misc"];
+                    }
+                }
+                vehicleExpense.exps.push(resultExpense);
+
+                delete vehicleExpense.expenses;
+                results.push(vehicleExpenses[id]);
+            }
+            retObj.expenses = results;
+            retObj.totalExpenses = {
+                totalDieselExpense: totalDieselExpense,
+                totaltollExpense: totaltollExpense,
+                totalmExpense: totalmExpense,
+                totalmisc: totalmisc
+            };
+            callback(retObj);
+        }
+    });
+}
 
 module.exports = new Expenses();

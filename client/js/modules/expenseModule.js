@@ -51,10 +51,11 @@ app.factory('ExpenseService', function ($http) {
               method:"GET"
           }).then(success, error)
         },
-        findExpensesbyGroupVehicle: function(success, error){
+        findExpensesbyGroupVehicle: function(params, success, error){
             $http({
                 url: '/v1/expense/groupByVehicle',
-                method:"GET"
+                method:"GET",
+                params: params
             }).then(success, error)
         },
         findExpensesbyVehicleId: function(vehicleId, success, error){
