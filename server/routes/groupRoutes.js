@@ -9,6 +9,25 @@ OpenRouter.post('/login', function (req, res) {
     });
 });
 
+OpenRouter.post('/forgot-password',function(req,res){
+    Groups.forgotPassword(req.body.contactPhone,function(result){
+        res.send(result);
+    })
+})
+
+OpenRouter.post('/verify-otp',function(req,res){
+    Groups.verifyOtp(req.body,function(result){
+        res.send(result);
+    })
+})
+
+
+OpenRouter.post('/reset-password',function(req,res){
+    Groups.resetPasword(req.body,function(result){
+        res.send(result);
+    })
+})
+
 module.exports = {
     OpenRouter: OpenRouter
 };

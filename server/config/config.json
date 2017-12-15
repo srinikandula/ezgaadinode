@@ -23,5 +23,10 @@
     "user": "root",
     "password": "098ioplkjbNm",
     "database": "easygaadi_crm"
+  },
+  "msg91": {
+    "auth_Key": "141290AU0QFzYBzRl58a2beed",
+    "sender_id": "ezgadi",
+    "route": "4"
   }
 }

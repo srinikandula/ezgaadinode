@@ -178,6 +178,13 @@ var paymentsReceived = mongoose.Schema({
     attrs: {}
 },{timestamps: String});
 
+var otpSchema = mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    otp:Number,
+    expaireIn:Number,
+    contactPhone:Number
+},{timestamps: String});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -189,5 +196,6 @@ module.exports = {
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
     paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
-    GroupsColl: mongoose.model('groups', groupSchema, 'groups')
+    GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
+    OtpColl:mongoose.model('otps',otpSchema,'otps')
 };
