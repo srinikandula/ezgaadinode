@@ -154,8 +154,42 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
     };
     $scope.getTotalExpenses();
 
+    $scope.filters={
+        fromDate: "",
+        toDate: "",
+        regNumber: ""
+    }
+    
+    $scope.validateFilters = function () {
+        var params = $scope.filters;
+        params.error = [];
+        /*if (!params.fromDate) {
+            params.error.push('Invalid From Date');
+        }
+        if (!params.toDate) {
+            params.error.push('Invalid To Date');
+        }*/
+        if((!params.fromDate && !params.toDate) && !params.regNumber) {
+            params.error.push('Please Select Dates or Register Number');
+        }
+        if (new Date(params.fromDate) > new Date(params.toDate)) {
+            params.error.push('Invalid Date Selection');
+        }
+        if (!params.error.length) {
+            $scope.getExpenseByVehicle();
+        }
+    }
+
+    $scope.selectTruckId = function (truck) {
+        $scope.regNumber = truck.id;
+    };
+
     $scope.getExpenseByVehicle = function () {
-        ExpenseService.findExpensesbyGroupVehicle(function (success) {
+        ExpenseService.findExpensesbyGroupVehicle({
+            fromDate:$scope.filters.fromDate,
+            toDate: $scope.filters.toDate,
+            regNumber: $scope.regNumber
+        }, function (success) {
             if (success.data.status) {
                 $scope.totalExpensesbyVehicle = success.data.expenses;
                 $scope.totalExpenses = success.data.totalExpenses;

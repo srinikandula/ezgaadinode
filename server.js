@@ -8,7 +8,6 @@ var app = express();
 var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 
-var Reports = require('./server/routes/reportRoutes');
 var Trips = require('./server/routes/tripRoutes');
 var Expense = require('./server/routes/expensesRoutes');
 var Trucks = require('./server/routes/truckRoutes');
@@ -48,7 +47,6 @@ app.use(authMiddleware);
 app.use('/v1/events', Events.AuthRouter);
 
 app.use('/v1/admin', Admin.AuthRouter);
-app.use('/v1/reports', Reports.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
 app.use('/v1/trucks', Trucks.AuthRouter);
 app.use('/v1/party', Party.AuthRouter);

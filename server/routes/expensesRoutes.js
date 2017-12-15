@@ -65,7 +65,7 @@ AuthRouter.get('/total', function (req, res) {
 });
 
 AuthRouter.get('/groupByVehicle', function (req, res) {
-    ExpenseCost.findExpensesByVehicles(req.jwt, function (result) {
+    ExpenseCost.findExpensesByVehicles(req.jwt, req.query, function (result) {
         res.send(result);
     });
 });
