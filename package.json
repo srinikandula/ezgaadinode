@@ -1,0 +1,38 @@
+{
+  "name": "easygaadiold",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "SET NODE_ENV=dev && node server.js",
+    "test": "mocha --timeout 10000"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "async": "^2.5.0",
+    "body-parser": "^1.18.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
+    "log4js": "^2.3.11",
+    "moment": "^2.19.1",
+    "mongoose": "^4.12.4",
+    "morgan": "^1.9.0",
+    "msg91": "0.0.6",
+    "mysql": "^2.15.0",
+    "ng-table": "^3.0.1",
+    "nodemailer": "^4.4.0",
+    "otp-generator": "^1.1.0",
+    "underscore": "^1.8.3",
+    "velocityjs": "^0.10.0",
+    "winston": "^3.0.0-rc1",
+    "xlsx": "^0.11.9"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-http": "^3.0.0",
+    "install-peers": "^1.0.2",
+    "mocha": "^4.0.1"
+  }
+}
