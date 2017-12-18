@@ -145,6 +145,7 @@ var expensesSchema = new mongoose.Schema({
     description:String,
     date: Date,
     cost: Number,
+    mode: String,
     updatedBy: String,
     createdBy: String,
     isDefault: {type: Boolean, default: false},
