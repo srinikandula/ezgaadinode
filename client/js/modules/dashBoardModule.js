@@ -131,11 +131,90 @@ $scope.erpDashBoard();
         if((!params.fromDate || !params.toDate) && !params.regNumber) {
             params.error.push('Please Select Dates or Register Number');
         }
-        if (new Date(params.fromDate) > new Date(params.toDate)) {
-            params.error.push('Invalid Date Selection');
+        $scope.resetTruckName=function(){
+            $scope.regNumber = "";
         }
-        if (!params.error.length) {
-            $scope.getExpenseByVehicle();
+        $scope.getExpenseByVehicle = function () {
+            ExpenseService.findExpensesbyGroupVehicle({
+                fromDate: $scope.filters.fromDate,
+                toDate: $scope.filters.toDate,
+                regNumber: $scope.regNumber
+            }, function (success) {
+                if (success.data.status) {
+                    $scope.totalExpensesbyVehicle = success.data.expenses;
+                    $scope.totalExpenses = success.data.totalExpenses;
+
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            }, function (err) {
+
+            });
+        };
+        $scope.getExpenseByVehicle();
+
+
+        $scope.gotoExpenseByVehicleId = function (vehicleId, regNumber) {
+            $rootScope.vehicleNumber = regNumber;
+            $state.go('expenseByVehicleId', { vehicleId: vehicleId })
+        };
+        $scope.gotoPaymentBypartyId = function (partyId, partyName) {
+            $rootScope.partyName = partyName;
+            $state.go('amountByPartyId', { partyId: partyId, partyName: partyName });
+        };
+
+        /**
+         * Total Payment Receivable by Party, Pending Amount by Party
+         */
+
+        $scope.getTotalAmountReceivable = function () {
+            PaymentsService.getTotalPaymentsReceivable(function (success) {
+                if (success.data.status) {
+                    $scope.amounts = success.data.amounts;
+                    //  console.log("-->", $scope.amounts);
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            }, function (err) {
+
+            });
+        };
+        $scope.getTotalAmountReceivable();
+
+        $scope.getAmountsByparty = function () {
+            PaymentsService.getDuesByParty({
+                fromDate: $scope.filters.fromDate,
+                toDate: $scope.filters.toDate,
+                partyId: $scope.partyId
+            }, function (success) {
+                if (success.data.status) {
+                    $scope.parties = success.data.parties;
+                    $scope.partiesAmount = success.data.grossAmounts;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            }, function (err) {
+
+            });
+        };
+        $scope.getAmountsByparty();
+
+        $scope.getAllParties = function () {
+            PartyService.getParties(null, function (success) {
+                if (success.data.status) {
+                    $scope.partiesList = success.data.parties;
+                } else {
+
+                }
+            }, function (err) {
+
+            });
         }
     }
 

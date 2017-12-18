@@ -29,7 +29,7 @@ let userData = new User({
     "password": "9999999999",
     "contactPhone": 9999999999
 });
-let headerData = {"token": token};
+let headerData = { "token": token };
 
 chai.use(chaiHttp);
 
@@ -52,7 +52,7 @@ describe('DashboardTest', () => {
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
                 token = res.body.token;
-                headerData = {"token": token};
+                headerData = { "token": token };
             });
 
         /*
@@ -586,13 +586,13 @@ describe('DashboardTest', () => {
                         .post('/v1/trips/addTrip')
                         .set(headerData)
                         .send(tripData)
-                        .end((err, res) => {
+                        .end((err, res) => {                            
                             expect(err).to.be.null;
-                            res.body.should.have.property('messages').eql(['Trip Added Successfully']);
-                            chai.request(server)
-                                .get('/v1/trips/find/revenueByVehicle')
+                            res.body.should.have.property('messages').eql(['Trip Added Successfully']);                            
+                            chai.request(server)                            
+                                .get('/v1/trips/find/revenueByVehicle?fromDate=&toDate=&regNumber=')
                                 .set(headerData)
-                                .end((err, res) => {
+                                .end((err, res) => {                                    
                                     expect(err).to.be.null;
                                     res.should.have.status(200);
                                     res.body.should.be.a('object');
@@ -615,6 +615,90 @@ describe('DashboardTest', () => {
                 });
             });
         });
+        /*
+* Test the /Get route Total Revenue by Vehicle Using Date Filter Information Success
+*/
+it('Retrieving Total Revenue by Vehicle Using Date Filter Information', (done) => {
+    var fromDate = new Date(new Date().setDate(new Date().getDate()-6));
+    var toDate = new Date();
+    var regNumber = "";
+    chai.request(server)
+        .get('/v1/trips/find/revenueByVehicle?fromDate='+fromDate+'&toDate='+toDate+'&regNumber='+regNumber)
+        .set(headerData)
+        .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('revenue');
+            expect(res.body.revenue).to.be.a('array');
+            expect(res.body.revenue).to.be.length(1);
+            res.body.revenue[0].should.have.property('attrs');
+            res.body.revenue[0].attrs.should.have.property('truckName');
+            res.body.revenue[0].attrs.should.have.property('truckName').eql('AP36AA9876');
+            res.body.revenue[0].should.have.property('totalFreight');
+            res.body.revenue[0].should.have.property('totalFreight').eql(1500);
+            res.body.revenue[0].should.have.property('totalExpense');
+            res.body.revenue[0].should.have.property('totalExpense').eql(0);
+            res.body.revenue[0].should.have.property('totalRevenue');
+            res.body.revenue[0].should.have.property('totalRevenue').eql(1500);
+            done();
+        });
+});
+/*
+* Test the /Get route Total Revenue by Vehicle Using Vehicle Filter Information Success
+*/
+it('Retrieving Total Revenue by Vehicle Using Vehicle Filter Information', (done) => {
+    var fromDate = "";
+    var toDate = ""
+    var regNumber = truckId;
+    chai.request(server)
+        .get('/v1/trips/find/revenueByVehicle?fromDate='+fromDate+'&toDate='+toDate+'&regNumber='+regNumber)
+        .set(headerData)
+        .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('revenue');
+            expect(res.body.revenue).to.be.a('array');
+            expect(res.body.revenue).to.be.length(1);
+            res.body.revenue[0].should.have.property('attrs');
+            res.body.revenue[0].attrs.should.have.property('truckName');
+            res.body.revenue[0].attrs.should.have.property('truckName').eql('AP36AA9876');
+            res.body.revenue[0].should.have.property('totalFreight');
+            res.body.revenue[0].should.have.property('totalFreight').eql(1500);
+            res.body.revenue[0].should.have.property('totalExpense');
+            res.body.revenue[0].should.have.property('totalExpense').eql(0);
+            res.body.revenue[0].should.have.property('totalRevenue');
+            res.body.revenue[0].should.have.property('totalRevenue').eql(1500);
+            done();
+        });
+});
+/*
+* Test the /Get route Total Revenue by Vehicle Using Date and Vehicle Filter Information Success
+*/
+it('Retrieving Total Revenue by Vehicle Using Date and Vehicle Filter Information', (done) => {
+    var fromDate = new Date(new Date().setDate(new Date().getDate()-6));
+    var toDate = new Date();
+    var regNumber = truckId;
+    chai.request(server)
+        .get('/v1/trips/find/revenueByVehicle?fromDate='+fromDate+'&toDate='+toDate+'&regNumber='+regNumber)
+        .set(headerData)
+        .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('revenue');
+            expect(res.body.revenue).to.be.a('array');
+            expect(res.body.revenue).to.be.length(1);
+            res.body.revenue[0].should.have.property('attrs');
+            res.body.revenue[0].attrs.should.have.property('truckName');
+            res.body.revenue[0].attrs.should.have.property('truckName').eql('AP36AA9876');
+            res.body.revenue[0].should.have.property('totalFreight');
+            res.body.revenue[0].should.have.property('totalFreight').eql(1500);
+            res.body.revenue[0].should.have.property('totalExpense');
+            res.body.revenue[0].should.have.property('totalExpense').eql(0);
+            res.body.revenue[0].should.have.property('totalRevenue');
+            res.body.revenue[0].should.have.property('totalRevenue').eql(1500);
+            done();
+        });
+});
         /*
         * Test the /Get route Total Revenue by Individual Vehicle Information Success
         */
@@ -715,7 +799,7 @@ describe('DashboardTest', () => {
                                     res.body.should.have.property('message').eql('expenses Cost Added Successfully');
                                     expenseId = res.body._id;
                                     chai.request(server)
-                                        .get('/v1/expense/groupByVehicle')
+                                        .get('/v1/expense/groupByVehicle?fromDate=&toDate=&regNumber=')
                                         .set(headerData)
                                         .end((err, res) => {
                                             res.should.have.status(200);
@@ -746,37 +830,109 @@ describe('DashboardTest', () => {
         * Test the /Get route Total Expense for all vehicles Information Success
         */
         it('Retrieving Total Expense for all vehicles Information', (done) => {
-                chai.request(server)
-                    .get('/v1/expense/total')
-                    .set(headerData)
-                    .end((err, res) => {
-                        res.should.have.status(200);
-                        res.body.should.be.a('object');
-                        res.body.should.have.property('totalExpenses');
-                        res.body.should.have.property('totalExpenses').eql(100);
-                        done();
-                    });
+            chai.request(server)
+                .get('/v1/expense/total')
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('totalExpenses');
+                    res.body.should.have.property('totalExpenses').eql(100);
+                    done();
+                });
         });
         /*
         * Test the /Get route Total Expenses by Vehicle Information Success
         */
         it('Retrieving Total Expenses by Vehicle Information', (done) => {
-                chai.request(server)
-                    .get('/v1/expense/groupByVehicle')
-                    .set(headerData)
-                    .end((err, res) => {
-                        res.should.have.status(200);
-                        res.body.should.be.a('object');
-                        res.body.should.have.property('expenses');
-                        expect(res.body.expenses).to.be.a('array');
-                        expect(res.body.expenses).to.be.length(1);
-                        res.body.should.have.property('totalExpenses');
-                        res.body.totalExpenses.should.have.property('totalDieselExpense').eql(100);
-                        res.body.totalExpenses.should.have.property('totaltollExpense').eql(0);
-                        res.body.totalExpenses.should.have.property('totalmExpense').eql(0);
-                        res.body.totalExpenses.should.have.property('totalmisc').eql(0);
-                        done();
-                    });
+            chai.request(server)
+                .get('/v1/expense/groupByVehicle?fromDate=&toDate=&regNumber=')
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('expenses');
+                    expect(res.body.expenses).to.be.a('array');
+                    expect(res.body.expenses).to.be.length(1);
+                    res.body.should.have.property('totalExpenses');
+                    res.body.totalExpenses.should.have.property('totalDieselExpense').eql(100);
+                    res.body.totalExpenses.should.have.property('totaltollExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmisc').eql(0);
+                    done();
+                });
+        });
+        /*
+* Test the /Get route Total Expenses by Vehicle Using Date Filter Information Success
+*/
+        it('Retrieving Total Expenses by Vehicle Using Date Filter Information', (done) => {
+            var fromDate = new Date(new Date().setDate(new Date().getDate()-6));
+            var toDate = new Date();
+            var regNumber = "";
+            chai.request(server)
+                .get('/v1/expense/groupByVehicle?fromDate='+fromDate+'&toDate='+toDate+'&regNumber='+regNumber)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('expenses');
+                    expect(res.body.expenses).to.be.a('array');
+                    expect(res.body.expenses).to.be.length(1);
+                    res.body.should.have.property('totalExpenses');
+                    res.body.totalExpenses.should.have.property('totalDieselExpense').eql(100);
+                    res.body.totalExpenses.should.have.property('totaltollExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmisc').eql(0);
+                    done();
+                });
+        });
+        /*
+        * Test the /Get route Total Expenses by Vehicle Using Vehicle Filter Information Success
+        */
+        it('Retrieving Total Expenses by Vehicle Using Vehicle Filter Information', (done) => {
+            var fromDate = "";
+            var toDate = ""
+            var regNumber = truckId;
+            chai.request(server)
+                .get('/v1/expense/groupByVehicle?fromDate='+fromDate+'&toDate='+toDate+'&regNumber='+regNumber)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('expenses');
+                    expect(res.body.expenses).to.be.a('array');
+                    expect(res.body.expenses).to.be.length(1);
+                    res.body.should.have.property('totalExpenses');
+                    res.body.totalExpenses.should.have.property('totalDieselExpense').eql(100);
+                    res.body.totalExpenses.should.have.property('totaltollExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmisc').eql(0);
+                    done();
+                });
+        });
+        /*
+        * Test the /Get route Total Expenses by Vehicle Using Date and Vehicle Filter Information Success
+        */
+        it('Retrieving Total Expenses by Vehicle Using Date and Vehicle Filter Information', (done) => {
+            var fromDate = new Date(new Date().setDate(new Date().getDate()-6));
+            var toDate = new Date();
+            var regNumber = truckId;
+            chai.request(server)
+                .get('/v1/expense/groupByVehicle?fromDate='+fromDate+'&toDate='+toDate+'&regNumber='+regNumber)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('expenses');
+                    expect(res.body.expenses).to.be.a('array');
+                    expect(res.body.expenses).to.be.length(1);
+                    res.body.should.have.property('totalExpenses');
+                    res.body.totalExpenses.should.have.property('totalDieselExpense').eql(100);
+                    res.body.totalExpenses.should.have.property('totaltollExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmExpense').eql(0);
+                    res.body.totalExpenses.should.have.property('totalmisc').eql(0);
+                    done();
+                });
         });
         /*
         * Test the /Get route Total Expenses by Individual Vehicle Information Success
@@ -825,7 +981,7 @@ describe('DashboardTest', () => {
         */
         it('Retrieving Empty Total Payment by Party Information', (done) => {
             chai.request(server)
-                .get('/v1/payments/getDuesByParty/')
+                .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -867,7 +1023,7 @@ describe('DashboardTest', () => {
                     res.body.should.have.property('messages').eql(['Successfully Added']);
                     paymentId = res.body._id;
                     chai.request(server)
-                        .get('/v1/payments/getDuesByParty/')
+                        .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=')
                         .set(headerData)
                         .end((err, res) => {
                             res.should.have.status(200);
@@ -887,6 +1043,84 @@ describe('DashboardTest', () => {
                         });
                 });
         });
+        /*
+* Test the /Get route Total Expenses by Vehicle Using Date Filter Information Success
+*/
+it('Retrieving Total Expenses by Vehicle Using Date Filter Information', (done) => {
+    var fromDate = new Date(new Date().setDate(new Date().getDate()-6));
+    var toDate = new Date();
+    var partyId1 = "";
+    chai.request(server)
+        .get('/v1/payments/getDuesByParty?fromDate='+fromDate+'&toDate='+toDate+'&partyId='+partyId1)
+        .set(headerData)
+        .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('parties');
+            expect(res.body.parties).to.be.a('array');
+            expect(res.body.parties).to.be.length(1);
+            res.body.parties[0].should.have.property('totalPayment').eql(1200);
+            res.body.parties[0].should.have.property('totalFright').eql(1500);
+            res.body.parties[0].should.have.property('totalDue').eql(300);
+            res.body.should.have.property('grossAmounts');
+            res.body.grossAmounts.should.have.property('grossFreight').eql(1500);
+            res.body.grossAmounts.should.have.property('grossExpenses').eql(1200);
+            res.body.grossAmounts.should.have.property('grossDue').eql(300);
+            done();
+        });
+});
+/*
+* Test the /Get route Total Expenses by Vehicle Using Vehicle Filter Information Success
+*/
+it('Retrieving Total Expenses by Vehicle Using Vehicle Filter Information', (done) => {
+    var fromDate = "";
+    var toDate = ""
+    var partyId1 = partyId;
+    chai.request(server)
+        .get('/v1/payments/getDuesByParty?fromDate='+fromDate+'&toDate='+toDate+'&partyId='+partyId1)
+        .set(headerData)
+        .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('parties');
+            expect(res.body.parties).to.be.a('array');
+            expect(res.body.parties).to.be.length(1);
+            res.body.parties[0].should.have.property('totalPayment').eql(1200);
+            res.body.parties[0].should.have.property('totalFright').eql(1500);
+            res.body.parties[0].should.have.property('totalDue').eql(300);
+            res.body.should.have.property('grossAmounts');
+            res.body.grossAmounts.should.have.property('grossFreight').eql(1500);
+            res.body.grossAmounts.should.have.property('grossExpenses').eql(1200);
+            res.body.grossAmounts.should.have.property('grossDue').eql(300);
+            done();
+        });
+});
+/*
+* Test the /Get route Total Expenses by Vehicle Using Date and Vehicle Filter Information Success
+*/
+it('Retrieving Total Expenses by Vehicle Using Date and Vehicle Filter Information', (done) => {
+    var fromDate = new Date(new Date().setDate(new Date().getDate()-6));
+    var toDate = new Date();
+    var partyId1 = partyId;
+    chai.request(server)
+        .get('/v1/payments/getDuesByParty?fromDate='+fromDate+'&toDate='+toDate+'&partyId='+partyId1)
+        .set(headerData)
+        .end((err, res) => {
+            res.should.have.status(200);
+            res.body.should.be.a('object');
+            res.body.should.have.property('parties');
+            expect(res.body.parties).to.be.a('array');
+            expect(res.body.parties).to.be.length(1);
+            res.body.parties[0].should.have.property('totalPayment').eql(1200);
+            res.body.parties[0].should.have.property('totalFright').eql(1500);
+            res.body.parties[0].should.have.property('totalDue').eql(300);
+            res.body.should.have.property('grossAmounts');
+            res.body.grossAmounts.should.have.property('grossFreight').eql(1500);
+            res.body.grossAmounts.should.have.property('grossExpenses').eql(1200);
+            res.body.grossAmounts.should.have.property('grossDue').eql(300);
+            done();
+        });
+});
         /*
         * Test the /Get route Total Payment by Individual Party Information Success
         */

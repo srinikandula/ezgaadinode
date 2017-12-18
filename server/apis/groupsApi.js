@@ -12,7 +12,6 @@ log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60 }
 var config = require('./../config/config');
 
 var config_msg91 = config.msg91;
-console.log('sds',config);
 var msg91 = require("msg91")(config_msg91.auth_Key, config_msg91.sender_id, config_msg91.route);
 
 var Groups = function () {
@@ -118,6 +117,8 @@ Groups.prototype.forgotPassword = function (contactPhone, callback) {
                     } else if (otpData) {
                         var message = 'Hi, ' + data.userName + ' \n Your one time password for EasyGaadi is : ' + otp;
                         msg91.send(contactPhone, message, function (err, response) {
+                            console.log('err',err);
+                            console.log('response',response);
                             if (err) {
                                 retObj.status = false;
                                 retObj.messages.push("Error finding user");
@@ -167,9 +168,16 @@ Groups.prototype.verifyOtp = function (body, callback) {
                 retObj.messages.push("Error while verifying OTP");
                 callback(retObj);
             } else if (data) {
-                retObj.status = true;
-                retObj.messages.push("OTP verified successfully");
-                callback(retObj);
+                if (data.expaireIn < new Date() - 0) {
+                    retObj.status = false;
+                    retObj.messages.push("OTP Expired");
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push("OTP verified successfully");
+                    callback(retObj);
+                }
+
             } else {
                 retObj.status = false;
                 retObj.messages.push("Please enter valid OTP");
@@ -194,7 +202,7 @@ Groups.prototype.resetPasword = function (body, callback) {
         callback(retObj);
     } else {
         AccountsCollection.findOneAndUpdate(
-            { contactPhone: body.contactPhone },{password: body.password}, function (err, data) {
+            { contactPhone: body.contactPhone }, { password: body.password }, function (err, data) {
                 if (err) {
                     retObj.status = false;
                     retObj.messages.push("Error while reset password");
