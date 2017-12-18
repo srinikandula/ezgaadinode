@@ -7,14 +7,33 @@
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
 =======
 <div class="main-temp col-xs-12">
+<<<<<<< 2cb19da5b05be514df4cc11531025eeb55e7e4be
     <h3>Revenue</h3>
       <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
 >>>>>>> Pull Request:client/views/templates/revenueByVehicle.html
+=======
+    <div class="col-xs-12 pall-zero db-expenses">
+        <div class="col-xs-3"><p>Total Revenue</p></div>
+        <div class="col-xs-9">
+            <ul class="list-inline">
+                <li class="col-xs-3"> <date-picker id="fromDate" ng-model="" class="fromDate"></date-picker></li>
+                <li class="col-xs-3"> <date-picker id="toDate" ng-model="" class="toDate"></date-picker></li>
+                <li class="col-xs-3">
+                    <select>
+                        <option>All Vehicles</option>
+                    </select>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
+>>>>>>> Pull Request
         <tr ng-repeat="revenueListByRegNo in revenueByVehicle" style="text-align: center;">
             <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
                 <a href="#"
                    ng-click="gotorevenueByVehicleId(revenueListByRegNo.registrationNo, revenueListByRegNo.attrs.truckName)">
-                   {{revenueListByRegNo.attrs.truckName}}</a>
+                    {{revenueListByRegNo.attrs.truckName}}</a>
             </td>
             <td data-title="'Total Freight'" sortable="'totalFreight'" class="clickable-item col-sm-2">
                 {{ revenueListByRegNo.totalFreight}}
@@ -32,10 +51,10 @@
             <td colspan="8">No Records exist.</td>
         </tr>
         <tr class="text-center">
-        <td><b>Total</b></td>
-        <td><b>{{totalRevenue.grossFreight}}</b></td>
-        <td><b>{{totalRevenue.grossExpenses}}</b></td>
-        <td><b>{{totalRevenue.grossRevenue}}</b></td>
+            <td><b>Total</b></td>
+            <td><b>{{totalRevenue.grossFreight}}</b></td>
+            <td><b>{{totalRevenue.grossExpenses}}</b></td>
+            <td><b>{{totalRevenue.grossRevenue}}</b></td>
         </tr>
     </table>
 </div>

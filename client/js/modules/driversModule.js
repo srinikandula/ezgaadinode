@@ -52,7 +52,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
     function ($scope, $state, DriverService, Notification, paginationService, NgTableParams) {
 
     $scope.goToEditDriverPage = function (driverId) {
-        $state.go('driversEdit', {driverId: driverId});
+        $state.go('reports', {driverId: driverId, template:'edit-driver'});
     };
 
         $scope.count = 0;
@@ -143,7 +143,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                 $scope.driver = success.data.driver;
                 $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
                 getTruckIds();
-                console.log('driver',$scope.driver);
+                //console.log('driver',$scope.driver);
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(success.data.message)
@@ -214,7 +214,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                 DriverService.updateDriver(params, function (success) {
                     if (success.data.status) {
                         Notification.success({message: "Driver Updated Successfully"});
-                        $state.go('drivers');
+                        $state.go('reports');
                     } else {
                         params.errors = success.data.messages;
                     }

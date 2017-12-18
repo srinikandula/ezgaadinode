@@ -12,17 +12,25 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'open'
         }
     }).state({
-        name: 'about',
-        url: '/about',
-        templateUrl: 'views/partials/about.html',
+        name: 'forgotPassword',
+        url: '/forgotPassword',
+        templateUrl: 'views/partials/forgotPassword.html',
         params: {
             access: 'open'
         }
     }).state({
         name: 'reports',
         url: '/reports',
-        templateUrl: 'views/partials/dashboard/dashboard.html',
+        templateUrl: 'views/partials/reports/dashboard.html',
         data: {activeTab: 'reports'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'profile',
+        url: '/profile',
+        templateUrl: 'views/partials/profile.html',
+        data: {activeTab: 'profile'},
         params: {
             access: 'auth'
         }
@@ -196,97 +204,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'groupMap'},
         params: {
             access: 'auth'
-        }
-    }).state({
-        name: 'fitnessExpiryTrucks',
-        url: '/fitnessExpiryTrucks',
-        templateUrl: 'views/partials/dashboard/fitnessExpiryTrucks.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth'
-        }
-    }).state({
-        name: 'permitExpiryTrucks',
-        url: '/permitExpiryTrucks',
-        templateUrl: 'views/partials/dashboard/permitExpiryTrucks.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth'
-        }
-    }).state({
-        name: 'insuranceExpiryTrucks',
-        url: '/insuranceExpiryTrucks',
-        templateUrl: 'views/partials/dashboard/insuranceExpiryTrucks.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth'
-        }
-    }).state({
-        name: 'revenueByVehicle',
-        url: '/revenueByVehicle',
-        templateUrl: 'views/partials/dashboard/revenueByVehicle.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth'
-        }
-    }).state({
-        name: 'expenseByVehicle',
-        url: '/expenseByVehicle',
-        templateUrl: 'views/partials/dashboard/expenseByVehicle.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth'
-        }
-    }).state({
-        name: 'pollutionExpiryTrucks',
-        url: '/pollutionExpiryTrucks',
-        templateUrl: 'views/partials/dashboard/pollutionExpiryTrucks.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth'
-        }
-    }).state({
-        name: 'taxExpiryTrucks',
-        url: '/taxExpiryTrucks',
-        templateUrl: 'views/partials/dashboard/taxExpiryTrucks.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth'
-        }
-    }).state({
-        name: 'revenueByVehicleId',
-        url: '/revenueByVehicleId/:vehicleId',
-        templateUrl: 'views/partials/dashboard/revenueByvehicleId.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth',
-            vehicleId: null
-        }
-    }).state({
-        name: 'expenseByVehicleId',
-        url: '/expenseByVehicleId/:vehicleId',
-        templateUrl: 'views/partials/dashboard/expenseByVehicleId.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth',
-            vehicleId: null
-        }
-    }).state({
-        name: 'amountByParties',
-        url: '/amountByParties',
-        templateUrl: 'views/partials/dashboard/amountByParties.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth',
-        }
-    }).state({
-        name: 'amountByPartyId',
-        url: '/amountByPartyId/:partyId',
-        templateUrl: 'views/partials/dashboard/amountByPartyId.html',
-        data: {activeTab: 'reports'},
-        params: {
-            access: 'auth',
-            partyId: null
         }
     });
     $urlRouterProvider.otherwise('/login');

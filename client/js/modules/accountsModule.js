@@ -27,6 +27,12 @@ app.factory('AccountServices', function ($http, $cookies) {
                 data: accountInfo
             }).then(success, error)
         },
+        erpDashboard: function (success, error) {
+            $http({
+                url: '/v1/admin/erpDashboard',
+                method: "GET",
+            }).then(success, error)
+        },
         count: function (success, error) {
             $http({
                 url: '/v1/admin/accounts/total/count',

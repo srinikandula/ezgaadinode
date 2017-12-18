@@ -1,0 +1,32 @@
+
+        <div class="main-temp col-xs-12">
+            <h3>Expiry Trucks</h3>
+            <!--<div class="toolbar-button-div pull-right mb-10">-->
+                <!--&nbsp;-->
+            <!--</div>-->
+            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentsParams">
+                <tr ng-repeat="expiryList in expiryTrucks" style="text-align: center;">
+                    <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
+                        {{expiryList.registrationNo }}
+                    </td>
+                    <td data-title="'Fitness Expiry'" sortable="'fitnessExpiry'" class="clickable-item col-sm-2">
+                        {{ expiryList.fitnessExpiry | date:'MM-dd-yyyy'}}
+                    </td>
+                    <td data-title="'Permit Expiry'" sortable="'permitExpiry'" class="clickable-item col-sm-2">
+                        {{ expiryList.permitExpiry | date:'MM-dd-yyyy'}}
+                    </td>
+                    <td data-title="'Tax Expiry'" sortable="'taxExpiry'" class="clickable-item col-sm-2">
+                        {{ expiryList.taxDueDate | date:'MM-dd-yyyy'}}
+                    </td>
+                    <td data-title="'Insurance Expiry'" sortable="'insuranceExpiry'" class="clickable-item col-sm-2">
+                        {{ expiryList.insuranceExpiry | date:'MM-dd-yyyy'}}
+                    </td>
+                    <td data-title="'Pollution Expiry'" sortable="'pollutionExpiry'" class="clickable-item col-sm-2">
+                        {{ expiryList.pollutionExpiry | date:'MM-dd-yyyy'}}
+                    </td>
+                </tr>
+                <tr ng-if="!expiryTrucks || expiryTrucks.length === 0">
+                    <td colspan="8">No Payments Records exist.</td>
+                </tr>
+            </table>
+        </div>

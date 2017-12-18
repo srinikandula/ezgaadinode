@@ -18,7 +18,7 @@
     <link rel="stylesheet" href="js/lib/bundles/ng-table.css">
 </head>
 
-<body ng-app="EasyGaadi">
+<body ng-app="EasyGaadi" ng-cloak>
 
 <left-nav-li name="Accounts" link="drivers"></left-nav-li>
 <span ng-controller="NavCtrl">
@@ -41,7 +41,7 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse col-sm-10" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav col-sm-9">
-                <li ng-class="{selected: activeTab === 'dashboard'}"> <a href="#" ui-sref="dashboard">
+                <li ng-class="{selected: activeTab === 'erp'}"> <a href="#" ui-sref="reports">
                     <img src="images/erp.png"><span>ERP</span></a></li>
                 <li ng-class="{selected: activeTab === 'drivers'}"><a href="#" ui-sref="drivers">
                     <img src="images/gps.png"><span>GPS</span></a></li>
@@ -52,14 +52,15 @@
                 <li><a href="#">  <img src="images/settings.png"><span>Settings</span></a></li>
                 <li><a href="#">  <img src="images/notifications.png"><span>Notifications</span></a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right col-sm-3 margin-top-10" ng-show="isLoggedin">
+            <ul class="nav navbar-nav navbar-right col-sm-3 margin-top-10" ng-show="isLoggedInn" ng-init="loggedTrue()">
+
                 <li class="col-sm-3 pall-zero"><img src="images/user.png"></li>
-                <li class="col-sm-9 pall-zero" >
+                <li class="col-sm-9 pall-zero">
                     <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown">{{displayName}}
                         <span class="caret"></span></a>
-                    <ul class="dropdown-menu" >
+                    <ul class="dropdown-menu">
                         <li><a href="#"></a></li>
-                        <li><a href="#">My Profile</a></li>
+                        <li><a href="#" ui-sref="profile">My Profile</a></li>
                          <li><a href="#">My Groups</a></li>
                          <li><a href="#">Add Group</a></li>
                          <li><a href="#" ng-click="logout()">Logout</a></li>
@@ -74,29 +75,33 @@
 </nav>
     <div class="clearfix"></div>
     <!--<top-navigation ng-if="isLoggedIn()"></top-navigation>-->
-    <div class="body-section">
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-xs-12">
-        <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()" ng-controller="LeftNavCtrl">
-            <left-menu label="Reports"></left-menu>
-            <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>
-            <left-menu label="Trucks"></left-menu>
-            <left-menu label="Drivers"></left-menu>
-            <left-menu label="Parties"></left-menu>
-            <left-menu label="Payments"></left-menu>
-            <left-menu label="Trips"></left-menu>
-            <!--<left-menu label="Expense-Master"></left-menu>-->
-            <left-menu label="Expenses"></left-menu>
+    <div class="body-section hide" ng-controller="LeftNavCtrl">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12" ng-if="!     erp">
+                <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
+                    <left-menu label="Reports" ui-sref="reports"></left-menu>
+                    <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>
+                    <left-menu label="Trucks" ui-sref="trucks"></left-menu>
+                    <left-menu label="Drivers" ui-sref="drivers"></left-menu>
+                    <left-menu label="Parties" ui-sref="parties"></left-menu>
+                    <left-menu label="Payments" ui-sref="payments"></left-menu>
+                    <left-menu label="Trips" ui-sref="trips"></left-menu>
+                    <!--<left-menu label="Expense-Master"></left-menu>-->
+                    <left-menu label="Expenses" ui-sref="expenses"></left-menu>
+                </div>
 
-        </div>
-        <div class="col-sm-10 col-xs-12">
-            <ui-view></ui-view>
+                <!--<div class="col-xs-12 col-sm-10">
+                    <ui-view></ui-view>
+                </div>-->
+            </div>
         </div>
     </div>
-        </div>
 </div>
-    </div>
+    <div>
+                     <ui-view></ui-view>
+                 </div>
+
 
 </span>
 

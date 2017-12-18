@@ -36,8 +36,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('userName', success.data.userName);
                     $cookies.put('editAccounts', success.data.editAccounts);
                     $rootScope.loggedTrue();
-                    $state.go('dashboard');
-
+                    $state.go('reports');
                 } else {
                     params.errors = success.data.messages;
                 }
