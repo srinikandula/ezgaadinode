@@ -159,6 +159,7 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         toDate: "",
         regNumber: ""
     }
+    $scope.regNumber = "";
     
     $scope.validateFilters = function () {
         var params = $scope.filters;
@@ -169,9 +170,10 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         if (!params.toDate) {
             params.error.push('Invalid To Date');
         }*/
-        if((!params.fromDate && !params.toDate) && !params.regNumber) {
+        if((!params.fromDate || !params.toDate) && !params.regNumber) {
             params.error.push('Please Select Dates or Register Number');
         }
+
         if (new Date(params.fromDate) > new Date(params.toDate)) {
             params.error.push('Invalid Date Selection');
         }

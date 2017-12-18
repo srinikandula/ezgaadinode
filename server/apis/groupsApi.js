@@ -67,6 +67,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                             callback(retObj);
                         } else {
                             retObj.status = true;
+                            retObj._id = user._id;
                             retObj.token = token;
                             retObj.userName = userName;
                             retObj.gpsEnabled = user.gpsEnabled;
