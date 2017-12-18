@@ -12,7 +12,7 @@ log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60 }
 var config = require('./../config/config');
 
 var config_msg91 = config.msg91;
-console.log('sds',config);
+
 var msg91 = require("msg91")(config_msg91.auth_Key, config_msg91.sender_id, config_msg91.route);
 
 var Groups = function () {

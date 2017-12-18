@@ -133,7 +133,8 @@ describe('ExpenseTest', () => {
                     "vehicleNumber": truckId,
                     "expenseType": expenseMasterId,
                     "date": new Date(),
-                    "cost": 100
+                    "cost": 100,
+                    "mode": "Cash"
                 };
                 ExpenseCostColl.remove({}, function (error, result) {
                     chai.request(server)
@@ -159,14 +160,14 @@ describe('ExpenseTest', () => {
                 "vehicleNumber": truckId,
                 "expenseType": expenseMasterId,
                 "date": new Date(),
-                "cost": 1300
+                "cost": 1300,
+                "mode": "Credit"
             };
             chai.request(server)
                 .put('/v1/expense/updateExpense')
                 .send(expenseData)
                 .set(headerData)
                 .end((err, res) => {
-                    console.log('res : ',res.body)
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('message').eql('expenses Cost updated successfully');
