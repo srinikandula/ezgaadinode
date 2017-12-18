@@ -66,7 +66,7 @@ AuthRouter.get('/getAccountDue',function(req,res){
 });
 
 AuthRouter.get('/getDuesByParty',function(req,res){
-    PaymentsReceived.getDuesByParty(req.jwt,function(result){
+    PaymentsReceived.getDuesByParty(req.jwt,req.query,function(result){
         res.send(result);
     })
 });
