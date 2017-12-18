@@ -1,5 +1,5 @@
 
-<div class="main-right col-xs-9" ng-controller="dashboardController">
+<div class="main-right col-xs-9" ng-controller="dashboardController" ng-init="getAllTrucks();">
     <h3>Expenses</h3>
     <div class="toolbar-button-div pull-right mb-10">
         &nbsp;
@@ -16,8 +16,9 @@
             </td>
             <td class="col-sm-2">
                 <input type="text" ng-model="filters.regNumber"
-                       uib-typeahead="totalExpensesbyVehicle.regNumber for totalExpensesbyVehicle in totalExpensesbyVehicle | filter:$viewValue"
+                       uib-typeahead="truck.registrationNo for truck in trucksList | filter:$viewValue"
                        class="form-control" typeahead-min-length="1"
+                       ng-change="resetTruckName();"
                        typeahead-on-select="selectTruckId($item)"
                        typeahead-select-on-exact="true" placeholder="Registration Num"
                        typeahead-no-results="noTrucks" autocomplete="false">
@@ -27,7 +28,7 @@
                 </div>
             </td>
             <td class="col-sm-2">
-                <button ng-click="validateFilters()">
+                <button ng-click="validateFilters('expense')">
                     Go</button></td>
             <div>
                 <div class="alert alert-danger" role="alert" ng-show="filters.error.length">

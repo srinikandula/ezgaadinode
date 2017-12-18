@@ -52,10 +52,11 @@ app.factory('TripServices', function ($http) {
               method:"GET"
           }).then(success, error)
         },
-        findRevenueByVehicle:function(success, error){
+        findRevenueByVehicle:function(params,success, error){
             $http({
                 url:'/v1/trips/find/revenueByVehicle',
-                method:"GET"
+                method:"GET",
+                params:params
             }).then(success, error)
         },
         count: function (success, error) {
