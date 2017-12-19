@@ -15,7 +15,6 @@ var EmailService = function () {
 };
 
 EmailService.prototype.sendEmail = function (data, callback) {
-    console.log(data.tripsData);
     var retObj = {
         status: false,
         messages: []

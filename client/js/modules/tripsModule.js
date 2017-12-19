@@ -155,7 +155,10 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         rate: '',   //new...
         remarks: '',    //new
         error: [],
-        success: []
+        success: [],
+        share:false,
+        vechicleNo:"",
+        driverName:""
     };
 
     $scope.cancel = function () {
@@ -212,6 +215,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.selectTruckId = function (truck) {
         $scope.trip.registrationNo = truck._id;
+        $scope.trip.vechicleNo=truck.registrationNo;
     }
 
     function getDriverIds() {
@@ -238,6 +242,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.selectTruckDriver = function (driver) {
         $scope.trip.driverId = driver._id;
+        $scope.trip.driverName=driver.fullName;
+        $scope.trip.driverNumber=driver.mobile;
     }
 
     $scope.selectTripLane = function (triplane) {
