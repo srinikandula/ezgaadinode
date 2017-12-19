@@ -66,8 +66,8 @@ Events.prototype.getLatestLocations = function(accountId,callback) {
     }
 
     if(retObj.messages.length == 0) {
-        var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + accountId + "' GROUP BY deviceID ORDER BY timestamp asc";
-        var eventDataTempQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventDataTemp WHERE accountID='" + accountId + "' GROUP BY deviceID ORDER BY timestamp asc";
+        var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + accountId + "' GROUP BY deviceID ORDER BY timestamp desc";
+        var eventDataTempQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventDataTemp WHERE accountID='" + accountId + "' GROUP BY deviceID ORDER BY timestamp desc";
 
         async.parallel({
             eventData: function(eventDataCallback) {
@@ -127,13 +127,16 @@ Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
                retObj.messages.push('Error finding account info' + error.message);
                callback(retObj);
            } else {
-               var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + account.userName + "' and deviceID = '"+deviceId+"' order by timestamp limit 1";
+               var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + account.userName + "' and deviceID = '"+deviceId+"' order by timestamp desc limit 1";
                pool.query(eventDataQuery, function(error, latestLocation) {
                    if(error){
                        retObj.status = false;
                        retObj.messages.push('Error finding GPS location. info:' + error.message);
                        callback(retObj);
                    } else {
+                       for(var i =0; i< latestLocation.length; i++) {
+                           latestLocation[i].date = new Date(latestLocation[i].datetime*1000);
+                       }
                        retObj.results = latestLocation;
                        retObj.status = true;
                        callback(retObj);
