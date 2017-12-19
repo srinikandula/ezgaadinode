@@ -117,8 +117,6 @@ Groups.prototype.forgotPassword = function (contactPhone, callback) {
                     } else if (otpData) {
                         var message = 'Hi, ' + data.userName + ' \n Your one time password for EasyGaadi is : ' + otp;
                         msg91.send(contactPhone, message, function (err, response) {
-                            console.log('err',err);
-                            console.log('response',response);
                             if (err) {
                                 retObj.status = false;
                                 retObj.messages.push("Error finding user");

@@ -28,5 +28,14 @@
     "auth_Key": "141290AU0QFzYBzRl58a2beed",
     "sender_id": "ezgadi",
     "route": "4"
-  }
+  },
+  "smtp": {
+    "host": "smtp.gmail.com",
+    "port": 465,
+    "secure": true,
+    "auth": {
+        "user": "easygaadinode@gmail.com",
+        "pass": "easygaadi123"
+    }
+}
 }
