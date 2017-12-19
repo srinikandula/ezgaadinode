@@ -32,6 +32,15 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
         result.message += " Please provide valid contact number for party type";
     }
 
+    if(!partyDetails.partyType){
+        result.status = false;
+        result.message += " Please select party type";
+    }
+    if(!partyDetails.isSms && !partyDetails.isEmail){
+        result.status = false;
+        result.message += " Please select notification type";
+    }
+
     if (result.status === false) {
         callback(result);
     } else {
@@ -87,7 +96,10 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 "email": partyDetails.email,
                 "city": partyDetails.city,
                 "tripLanes": partyDetails.tripLanes,
-                "updatedBy": jwt.id
+                "updatedBy": jwt.id,
+                "partyType":partyDetails.partyType,
+                "isSms":partyDetails.isSms,
+                "isEmail":partyDetails.isEmail
             }
         },
         {new: true}, function (err, party) {

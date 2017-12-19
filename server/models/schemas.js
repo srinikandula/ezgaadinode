@@ -106,7 +106,10 @@ var partySchema = new mongoose.Schema({
     tripLanes:[],
     updatedBy: String,
     createdBy: String,
-    attrs: {}
+    attrs: {},
+    partyType:String,
+    isEmail:{type:Boolean,default:false},
+    isSms:{type:Boolean,default:false}
 }, {timestamps: true});
 
 

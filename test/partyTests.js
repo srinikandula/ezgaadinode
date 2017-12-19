@@ -78,7 +78,10 @@ describe('PartyTest', () => {
                         "name": "WRL-HYD",
                         "index": 0
                     }
-                ]
+                ],
+                "partyType":"isSupplier",
+                "isSms":true,
+                "isEmail":true
             };
             chai.request(server)
                 .post('/v1/party/addParty')
@@ -102,6 +105,9 @@ describe('PartyTest', () => {
                             res.body.parties[0].should.have.property('email').eql('party1@gmail.com');
                             res.body.parties[0].should.have.property('city').eql('WRL');
                             res.body.parties[0].should.have.property('tripLanes');
+                            res.body.parties[0].should.have.property('partyType').eql('isSupplier');
+                            res.body.parties[0].should.have.property('isSms').eql(true);
+                            res.body.parties[0].should.have.property('isEmail').eql(true);
                             expect(res.body.parties[0].tripLanes).to.be.a('array');
                             expect(res.body.parties[0].tripLanes).to.be.length(1);
                             res.body.parties[0].tripLanes[0].should.have.property('name').eql('WRL-HYD');
@@ -128,7 +134,10 @@ describe('PartyTest', () => {
                         "name": "WRL-HYD",
                         "index": 0
                     }
-                ]
+                ],
+                "partyType":"isSupplier",
+                "isSms":true,
+                "isEmail":true
             };
             chai.request(server)
                 .put('/v1/party/updateParty')
@@ -144,6 +153,9 @@ describe('PartyTest', () => {
                     res.body.party.should.have.property('email').eql('party2@gmail.com');
                     res.body.party.should.have.property('city').eql('WRL');
                     res.body.party.should.have.property('tripLanes');
+                    res.body.party.should.have.property('partyType').eql('isSupplier');
+                    res.body.party.should.have.property('isSms').eql(true);
+                    res.body.party.should.have.property('isEmail').eql(true);
                     expect(res.body.party.tripLanes).to.be.a('array');
                     expect(res.body.party.tripLanes).to.be.length(1);
                     res.body.party.tripLanes[0].should.have.property('name').eql('WRL-HYD');
