@@ -3,6 +3,45 @@
     <div class="toolbar-button-div pull-right mb-10">
         &nbsp;
     </div>
+    <table class="table table-bordered table-striped table-condensed table-hover">
+        <tr style="text-align: center;">
+            <td class="col-sm-2">
+                <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'">
+                </date-picker>
+            </td>
+            <td class="col-sm-2">
+                <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'">
+                </date-picker>
+            </td>
+            <td class="col-sm-2">
+                <input type="text" ng-model="filters.regNumber"
+                       uib-typeahead="totalExpensesbyVehicle.regNumber for totalExpensesbyVehicle in totalExpensesbyVehicle | filter:$viewValue"
+                       class="form-control" typeahead-min-length="1"
+                       typeahead-on-select="selectTruckId($item)"
+                       typeahead-select-on-exact="true" placeholder="Registration Num"
+                       typeahead-no-results="noTrucks" autocomplete="false">
+                <div ng-show="noTrucks">
+                    <i class="glyphicon glyphicon-remove red"></i>
+                    <span class="red"> No Results Found </span>
+                </div>
+            </td>
+            <td class="col-sm-2">
+                <button ng-click="validateFilters()">
+                    Go</button></td>
+            <div>
+                <div class="alert alert-danger" role="alert" ng-show="filters.error.length">
+                    <ul>
+                        <li ng-repeat="error in filters.error">{{error}}</li>
+                    </ul>
+                </div>
+                <div class="alert alert-success" role="alert" ng-show="filters.success.length">
+                    <ul>
+                        <li ng-repeat="success in filters.success">{{success}}</li>
+                    </ul>
+                </div>
+            </div>
+        </tr>
+    </table>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
         <tr ng-repeat="revenueListByRegNo in revenueByVehicle" style="text-align: center;">
             <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">

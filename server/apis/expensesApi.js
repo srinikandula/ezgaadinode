@@ -67,6 +67,10 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Please provide valid cost";
         callback(result);
+    } else if (!expenseDetails.mode) {
+        result.status = false;
+        result.message = "Please Select Cash or Credit";
+        callback(result);
     } else {
         expenseDetails.createdBy = jwt.id;
         expenseDetails.updatedBy = jwt.id;
@@ -85,6 +89,7 @@ function updateExpense(expense, jwt, callback) {
                 "description": expense.description,
                 "expenseType": expense.expenseType,
                 "cost": expense.cost,
+                "mode": expense.mode,
                 "date": expense.date
             }
         },
@@ -338,33 +343,24 @@ Expenses.prototype.findTotalExpenses = function (jwt, callback) {
 
 Expenses.prototype.findExpensesByVehicles =  function(jwt, params, callback) {
     var condition = {};
-    if(params.fromDate && params.toDate && params.regNumber){
+    if(params.fromDate != '' && params.toDate != '' && params.regNumber != ''){
         condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
             $gte: new Date(params.fromDate),
             $lte: new Date(params.toDate),
         },"vehicleNumber" : params.regNumber}}
-        getExpensesByVehicles(jwt, condition, function(response){
-            callback(response);
-        })
     } else if(params.fromDate && params.toDate) {
         condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
             $gte: new Date(params.fromDate),
             $lte: new Date(params.toDate),
         }}}
-        getExpensesByVehicles(jwt, condition, function(response){
-            callback(response);
-        })
     } else if(params.regNumber) {
-        condition = {$match: {"accountId":ObjectId(jwt.accountId)},"vehicleNumber" : params.regNumber}
-        getExpensesByVehicles(jwt, condition, function(response){
-            callback(response);
-        })
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),"vehicleNumber" : params.regNumber}}
     } else {
         condition = {$match: {"accountId":ObjectId(jwt.accountId)}}
-        getExpensesByVehicles(jwt, condition, function(response){
-            callback(response);
-        })
     }
+    getExpensesByVehicles(jwt, condition, function(response){
+        callback(response);
+    })
 };
 /**
  * Find expenses for a vehicle

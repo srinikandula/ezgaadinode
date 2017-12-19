@@ -17,7 +17,7 @@
     "database": "gts"
   },
   "mysql_crm": {
-    "port": 3306,
+    "port": 6102,
     "connectionLimit": 100,
     "host": "egcrm.cloudapp.net",
     "user": "root",
