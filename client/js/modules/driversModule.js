@@ -51,9 +51,9 @@ app.factory('DriverService', function ($http) {
 app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification','paginationService','NgTableParams',
     function ($scope, $state, DriverService, Notification, paginationService, NgTableParams) {
 
-    $scope.goToEditDriverPage = function (driverId) {
-        $state.go('reports', {driverId: driverId, template:'edit-driver'});
-    };
+        $scope.goToEditDriverPage = function (driverId) {
+            $state.go('driversEdit', {driverId: driverId});
+        };
 
         $scope.count = 0;
         $scope.getCount = function () {
@@ -214,7 +214,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                 DriverService.updateDriver(params, function (success) {
                     if (success.data.status) {
                         Notification.success({message: "Driver Updated Successfully"});
-                        $state.go('reports');
+                        $state.go('drivers');
                     } else {
                         params.errors = success.data.messages;
                     }

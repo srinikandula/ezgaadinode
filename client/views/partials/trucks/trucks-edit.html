@@ -1,100 +1,98 @@
-
-
-        <div class="main-right col-xs-12" ng-controller="AddEditTruckCtrl">
-            <div class="col-xs-12 account-edit">
-                <h2 class="login-heading">{{pageTitle}}</h2>
-                <div class="col-sm-6 col-xs-12 mt-10">
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 col-xs-12 pall-zero">Registration No :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <input type="text" class="form-control" ng-model="truck.registrationNo"
-                                   placeholder="Registration No"/>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Truck Type :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <input type="text" class="form-control" ng-model="truck.truckType"
-                                   placeholder="Truck Type"/>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Tonnage :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <input type="text" class="form-control" ng-model="truck.tonnage"
-                                   placeholder="Tonnage"/>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Modal and Year :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <input type="text" class="form-control" ng-model="truck.modelAndYear"
-                                   placeholder="Modal and Year"/>
-                        </div>
-                    </div>
-
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Driver:</label>
-                        <div class="col-sm-8 col-xs-12">
-                         <!--   Driver Name: {{getDriver}}-->
-                            <input id="city" type="text"  ng-model="driverName"  uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue" class="form-control" typeahead-min-length="1" typeahead-on-select="selectDriverId($item)"  typeahead-select-on-exact="true" autocomplete="false">
-                          <!--  <select id="driver" ng-options="driver._id as driver.fullName for driver in drivers"
-                                    class="form-control" ng-model="truck.driverId" required>
-
-                            </select>-->
-                        </div>
-                    </div>
-
+<div class="main-right col-xs-12" ng-controller="AddEditTruckCtrl">
+    <div class="col-xs-12 account-edit">
+        <h2 class="title-name ">{{pageTitle}}</h2>
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+                    <input type="text" class="form-control custom-form-control" ng-model="truck.registrationNo"
+                           placeholder="Truck Number*"/>
                 </div>
-                <div class="col-sm-6 col-xs-12 mt-10">
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Fitness Expiry :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <date-picker id="fitnessExpiry" ng-model="truck.fitnessExpiry"></date-picker>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Permit Expiry :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <date-picker id="permitExpiry" ng-model="truck.permitExpiry"></date-picker>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Insurance Expiry :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <date-picker id="insuranceExpiry" ng-model="truck.insuranceExpiry"
-                                         class="custom-form-control"></date-picker>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Pollution Expiry :</label>
-                        <div class="col-sm-8 col-xs-12">
-                            <date-picker id="pollutionExpiry" ng-model="truck.pollutionExpiry"></date-picker>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <label class="col-sm-4 pall-zero">Tax Due Date : </label>
-                        <div class="col-sm-8 col-xs-12">
-                            <date-picker id="taxDueDate" ng-model="truck.taxDueDate"></date-picker>
-                        </div>
-                    </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+                    <input type="text" class="form-control custom-form-control" ng-model="truck.truckType"
+                           placeholder="Truck Type*"/>
                 </div>
-                <div class="clearfix"></div>
-
-                <div class="col-sm-4 col-xs-push-4 margin-top-20">
-                    <div class="alert alert-danger" role="alert" ng-show="truck.errors.length">
-                        <!--<strong>{{truck.error}}</strong>-->
-                        <ul>
-                            <li ng-repeat="error in truck.errors">{{error}}</li>
-                        </ul>
-                    </div>
-                    <input type="button" value="Submit" class="btn btn-primary" ng-click="addOrUpdateTruck()"/>
-                    <input type="button" value="Cancel" class="btn btn-red" ng-click="goToTrucksPage()"/>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+                    <input type="text" class="form-control custom-form-control" ng-model="truck.tonnage"
+                           placeholder="Tonnage*"/>
                 </div>
-
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+                    <input type="text" class="form-control custom-form-control" ng-model="truck.modelAndYear"
+                           placeholder="Modal and Year*"/>
+                </div>
             </div>
 
+            <div class="form-group col-xs-12">
+
+                <div class="col-xs-12 pos-relative">
+                    <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                    <!--   Driver Name: {{getDriver}}-->
+                    <input id="city" type="text" ng-model="driverName"
+                           uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue"
+                           class="form-control custom-form-control" typeahead-min-length="1"
+                           typeahead-on-select="selectDriverId($item)" typeahead-select-on-exact="true"
+                           autocomplete="false" placeholder="Assign Driver*">
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+
+                    <date-picker id="fitnessExpiry" ng-model="truck.fitnessExpiry"
+                                 placeholder="'Fitness Due Expiry Date*'"></date-picker>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+                    <date-picker id="permitExpiry" ng-model="truck.permitExpiry"
+                                 placeholder="'Permit Due Expiry Date*'"></date-picker>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+
+                <div class="col-xs-12">
+                    <date-picker id="insuranceExpiry" ng-model="truck.insuranceExpiry"
+                                 placeholder="'Insurance Due Expiry Date*'"></date-picker>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+                    <date-picker id="pollutionExpiry" ng-model="truck.pollutionExpiry"
+                                 placeholder="'Pollution Due Expiry Date*'"></date-picker>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="col-xs-12">
+                    <date-picker id="taxDueDate" ng-model="truck.taxDueDate"
+                                 placeholder="'Tax Due Expiry Date*'"></date-picker>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="col-sm-4 col-xs-push-4 margin-top-20">
+            <div class="alert alert-danger" role="alert" ng-show="truck.errors.length">
+                <!--<strong>{{truck.error}}</strong>-->
+                <ul>
+                    <li ng-repeat="error in truck.errors">{{error}}</li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="col-xs-5 col-xs-push-7 mtb-25">
+                <button type="submit" class="btn can" ng-click="goToTrucksPage()">Cancel</button>
+                <button type="submit" class="btn can  last" ng-click="addOrUpdateTruck()">Submit</button>
+            </div>
+        </div>
+    </div>
 
 
 
-
+</div>

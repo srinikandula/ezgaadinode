@@ -20,7 +20,6 @@
                     </select>
                 </div>
             </div>
-           <button class="btn btn-blue pull-right mb-10" ng-click="goToEditTruckPage()">Add Truck</button>
 
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckParams">
                 <tr ng-repeat="trucks in currentPageOfTrucks" style="text-align: center;">
@@ -68,6 +67,11 @@
                     <td colspan="8">No trucks Records exist.</td>
                 </tr>
             </table>
+            <div class="add-image pull-right">
+                <figure>
+                    <a href="#"  ng-click="goToEditTruckPage()"><img src="images/Add_Truck.png"></a>
+                </figure>
+            </div>
 
         </div>
 

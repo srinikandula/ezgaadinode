@@ -4,14 +4,14 @@ app.directive('datePicker', function () {
         scope: {
             ngModel: "=",
             banFuture: "=",
-            pastPresent: "="
+            pastPresent: "=",
+            placeholder: "=placeholder"
         },
-        template: '<div class="input-group">\n' +
-        '          <input type="text" readonly class="form-control" datepicker-options="options" show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened" ng-required="true"  />\n' +
-        '          <span class="input-group-btn">\n' +
-        '            <button type="button" class="btn btn-default" ng-click="open($event)">' +
-        '<i class="glyphicon glyphicon-calendar"></i></button>\n' +
-        '          </span>\n' +
+        template: '<div class="pos-relative">\n' +
+        '                <span class="date-pick" ng-click="open($event)">' +
+        '                  <img src="images/date-icon.png" width="30" height="24" /> </span>\n' +
+        '          <input type="text"  class="form-control custom-form-control" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true" placeholder="{{placeholder}}"/>\n' +
+
         '        </div>\n',
         require: 'ngModel',
         link: function (scope, element, attributes) {
@@ -30,7 +30,7 @@ app.directive('datePicker', function () {
                     showWeeks: true,
                     maxDate: new Date()
                 }
-            }else if(scope.pastPresent){
+            } else if (scope.pastPresent) {
                 scope.options = {
                     showWeeks: false
                 }
@@ -42,4 +42,5 @@ app.directive('datePicker', function () {
             }
         }
     };
+
 });

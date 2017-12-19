@@ -51,7 +51,6 @@ function ($scope, $uibModal, TrucksService, Notification, $state, paginationServ
         AccountServices.erpDashboard (function (success) {
             if (success.data.status) {
                 $scope.totals = success.data.result;
-                console.log("dsfsadf", $scope.totals);
 
             } else {
                 success.data.messages.forEach(function (message) {
@@ -85,6 +84,7 @@ $scope.erpDashBoard();
             if (success.data.status) {
                 $scope.revenueByVehicleId = success.data.trips;
                 $scope.totalRevenueByVehicleId = success.data.totalRevenue;
+                console.log("---->>", $scope.revenueByVehicleId);
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -111,11 +111,6 @@ $scope.erpDashBoard();
         });
     };
     $scope.getRevenueByVehicle();
-
-    $scope.gotorevenueByVehicleId = function (vehicleId, truckName) {
-        $rootScope.vehicleNumber = truckName;
-        $state.go('revenueByVehicleId', {vehicleId:vehicleId});
-       };
 
 
     $scope.filters={
@@ -169,13 +164,7 @@ $scope.erpDashBoard();
     };
     $scope.getExpenseByVehicle();
 
-    $scope.gotoExpenseByVehicleId = function (vehicleId, regNumber) {
-        $rootScope.vehicleNumber = regNumber;
-        $state.go('expenseByVehicleId', {vehicleId:vehicleId})
-    };
-    $scope.gotoPaymentBypartyId = function (partyId, partyName) {
-        $rootScope.partyName = partyName;
-        $state.go('amountByPartyId', {partyId: partyId, partyName: partyName});
+
 
         $scope.getexpenseByVehicleId = function (id) {
             ExpenseService.findExpensesbyVehicleId(id, function (success) {
@@ -208,44 +197,8 @@ $scope.erpDashBoard();
             });
         };
         $scope.getAmountsByparty();
-    };
 
-    }]);
-app.controller('paymentsById', ['$scope', '$stateParams', 'PartyService', 'ExpenseService','PaymentsService',
-function ($scope, $stateParams, PartyService, ExpenseService,PaymentsService) {
 
-      $scope.getRevenueByParty = function () {
-        PartyService.getRevenueByPartyId($stateParams.vehicleId, function (success) {
-            if (success.data.status) {
-                $scope.revenueByVehicleId = success.data.trips;
-                $scope.totalRevenueByVehicleId = success.data.totalRevenue;
-
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
-            }
-        }, function (err) {
-
-        });
-    };
-    $scope.getRevenueByParty();
-
-    $scope.getexpenseByVehicleId = function () {
-        ExpenseService.findExpensesbyVehicleId($stateParams.vehicleId, function (success) {
-            if (success.data.status) {
-                $scope.expensesByVehicleId = success.data.expenses;
-                $scope.totalExpenses = success.data.totalExpenses;
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
-            }
-        }, function (err) {
-
-        });
-    };
-    $scope.getexpenseByVehicleId();
     $scope.Expenseamount =0;
 
     $scope.GetExpense = function(expenseName,ExpenseAMount){

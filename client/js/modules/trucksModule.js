@@ -121,7 +121,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
 
     $scope.goToEditTruckPage = function (truckId) {
-        $state.go('reports', {truckId: truckId,template:'trucks-edit'});
+        $state.go('trucksEdit', {truckId: truckId});
     };
 
 

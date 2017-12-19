@@ -12,9 +12,10 @@
     <link rel="stylesheet" type="text/css" href="components/angular-ui-grid/ui-grid.min.css">
     <link rel="stylesheet" type="text/css"
           href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
-    <!-- <link href="https://fonts.googleapis.com/css?family=Exo+2" rel="stylesheet"> -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link rel="stylesheet" type="text/css" href="css/slick.css">
+    <link rel="stylesheet" type="text/css" href="css/slick-theme.css">
     <link rel="stylesheet" href="js/lib/bundles/ng-table.css">
 </head>
 
@@ -41,21 +42,21 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse col-sm-10" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav col-sm-9">
-                <li ng-class="{selected: activeTab === 'erp'}"> <a href="#" ui-sref="reports">
+                <li ng-class="{selected: activeTab === 'reports'}"> <a href="#" ui-sref="reports">
                     <img src="images/erp.png"><span>ERP</span></a></li>
-                <li ng-class="{selected: activeTab === 'drivers'}"><a href="#" ui-sref="drivers">
+                <li ng-class="{selected: activeTab === 'gps'}"><a href="#" ui-sref="gps">
                     <img src="images/gps.png"><span>GPS</span></a></li>
-                <li ng-class="{selected: activeTab === 'trucks'}"><a href="#" ui-sref="trucks">
+                <li ng-class="{selected: activeTab === 'gps'}"><a href="#" ui-sref="fuelcard">
                     <img src="images/fuelcard.png"><span>Fuel Card</span></a></li>
                 <li><a href="#">  <img src="images/tollcard.png"><span>Toll Card</span></a></li>
                 <li><a href="#">  <img src="images/load.png"><span>Loads</span></a></li>
                 <li><a href="#">  <img src="images/settings.png"><span>Settings</span></a></li>
                 <li><a href="#">  <img src="images/notifications.png"><span>Notifications</span></a></li>
             </ul>
-            <ul class="nav navbar-nav navbar-right col-sm-3 margin-top-10" ng-show="isLoggedInn" ng-init="loggedTrue()">
+            <ul class="nav navbar-nav pull-right col-sm-3 margin-top-10 user-nav" ng-show="isLoggedInn" ng-init="loggedTrue()">
 
-                <li class="col-sm-3 pall-zero"><img src="images/user.png"></li>
-                <li class="col-sm-9 pall-zero">
+                <li class=""><img src="images/user.png"></li>
+                <li class="">
                     <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown">{{displayName}}
                         <span class="caret"></span></a>
                     <ul class="dropdown-menu">
@@ -75,10 +76,10 @@
 </nav>
     <div class="clearfix"></div>
     <!--<top-navigation ng-if="isLoggedIn()"></top-navigation>-->
-    <div class="body-section hide" ng-controller="LeftNavCtrl">
+    <div class="body-section" ng-controller="LeftNavCtrl" ng-if="activeTab === 'reports'">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12" ng-if="!     erp">
+            <div class="col-xs-12">
                 <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
                     <left-menu label="Reports" ui-sref="reports"></left-menu>
                     <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>
@@ -91,14 +92,14 @@
                     <left-menu label="Expenses" ui-sref="expenses"></left-menu>
                 </div>
 
-                <!--<div class="col-xs-12 col-sm-10">
+                <div class="col-xs-12 col-sm-10">
                     <ui-view></ui-view>
-                </div>-->
+                </div>
             </div>
         </div>
     </div>
 </div>
-    <div>
+    <div ng-if="activeTab != 'reports'">
                      <ui-view></ui-view>
                  </div>
 
@@ -128,6 +129,7 @@
 <script src="js/services/paginationService.js"></script>
 <script src="js/directives/checkList.js"></script>
 <script src="js/lib/bundles/ng-table.js"></script>
+<script src="js/slick.js"></script>
 
 <!--controllers-->
 <script src="js/modules/nav.js"></script>

@@ -1,11 +1,11 @@
 <div class="col-xs-12" ng-controller="LeftNavCtrl">
     <div class="col-xs-12">
         <div class="col-xs-12 profile-page">
-            <div class="col-xs-11 profile-tabs">
+            <div class="col-xs-11 profile-tabs top-block">
             <ul class="list-inline">
-                <li ng-click="myProfile()" ng-class="{'activated':activated==='myProfile'}">My Profile</li>
-                <li ng-click="myGroup()">My Group</li>
-                <li  ng-click="addingGroup()">Add Group</li>
+                <li ng-click="myProfile()"><a href="#"  ng-class="{'activated':activated==='myProfile'}">My Profile</a></li>
+                <li ng-click="myGroup()"><a href="#">My Group</a></li>
+                <li  ng-click="addingGroup()"><a href="#">Add Group</a></li>
             </ul>
 
             <div ng-include="template">

@@ -32,9 +32,6 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', '$cookies', '$rootScope'
     
     $scope.isLoggedin=$cookies.get('token');
 
-    }]).controller('LeftNavCtrl', ['$scope', '$rootScope', '$state', 'Utils', '$cookies', function ($scope, $rootScope, $state, Utils, $cookies) {
-    $scope.isLoggedin = $cookies.get('token');
-
     $scope.templates = {
         'myProfile': 'views/templates/userProfile/myProfile.html',
         'myGroup': 'views/templates/userProfile/myGroup.html',
