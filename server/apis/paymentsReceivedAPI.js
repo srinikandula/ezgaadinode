@@ -330,14 +330,14 @@ PaymentsReceived.prototype.findPendingDueForAccount = function(jwt, callback){
  * @param jwt
  * @param callback
  */
-PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
+function getDuesByParty(jwt,condition,callback){    
     var retObj = {
         status: false,
         messages: []
     };
     async.parallel({
         tripFrightTotal: function (callback) {
-            TripColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+            TripColl.aggregate(condition,
                 { $group: { _id : "$partyId" , totalFright : { $sum: "$freightAmount" }} },
                 function (err, totalFrieght) {
                     callback(err, totalFrieght);
@@ -398,6 +398,29 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
 
         }
     });
+}
+
+PaymentsReceived.prototype.getDuesByParty = function (jwt,params, callback) {
+    var condition = {};
+    if(params.fromDate != '' && params.toDate != '' && params.partyId != ''){
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
+            $gte: new Date(params.fromDate),
+            $lte: new Date(params.toDate),
+        },"partyId" : ObjectId(params.partyId)}}
+    } else if(params.fromDate && params.toDate) {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
+            $gte: new Date(params.fromDate),
+            $lte: new Date(params.toDate),
+        }}}
+
+    } else if(params.partyId) {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),"partyId" : ObjectId(params.partyId)}}
+    } else {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId)}}
+    }
+    getDuesByParty(jwt,condition,function(response){
+        callback(response);
+    })
 };
 
 

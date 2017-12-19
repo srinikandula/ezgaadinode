@@ -52,7 +52,7 @@ AuthRouter.get('/find/revenueByParty', function (req, res) {
 });
 
 AuthRouter.get('/find/revenueByVehicle', function (req, res) {
-    Trips.findRevenueByVehicle(req.jwt, function (result) {
+    Trips.findRevenueByVehicle(req.jwt,req.query, function (result) {        
         res.send(result);
     });
 });

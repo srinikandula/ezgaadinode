@@ -34,6 +34,28 @@
                                        placeholder="City">
                             </div>
                         </div>
+                        <div class="form-group col-xs-12">
+                            <label for="city" class="col-xs-12 col-sm-4 pall-zero">Type</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input ng-model="party.partyType" type="radio" name="partyType" value="isSupplier"  
+                                      >Supplier
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <input ng-model="party.partyType" type="radio" name="partyType" value="isTransporter"  
+                                       >Transporter
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <label for="city" class="col-xs-12 col-sm-4 pall-zero">Notification</label>
+                            <div class="col-xs-6 col-sm-4">
+                                <input ng-model="party.isSms" type="checkbox"  
+                                       >SMS
+                            </div>
+                            <div class="col-xs-6 col-sm-4">
+                                <input ng-model="party.isEmail" type="checkbox"  
+                                       >Email
+                            </div>
+                        </div>
 
                         <!--<div class="form-group col-xs-12">
                             <label for="operatingLane" class="col-xs-12 col-sm-4 pall-zero">Operating Lane</label>
