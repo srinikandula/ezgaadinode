@@ -1,64 +1,67 @@
-
-        <div class="main-temp col-xs-12" ng-controller="ExpenseCtrl">
-            <div class="col-xs-12 pall-zero mb-10">
-                <div class="col-sm-3 pall-zero"><h3>Expenses</h3></div>
-                <div class="col-sm-6">
-                    <div class="input-group stylish-input-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                        <span class="input-group-addon">
+<div class="main-right col-xs-12" ng-controller="ExpenseCtrl">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Expenses</h3></div>
+        <div class="col-xs-8 col-xs-push-1 pall-zero">
+            <div class="col-sm-8">
+                <div class="input-group stylish-input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-addon">
                         <button type="submit">
-                            <span class="glyphicon glyphicon-search"></span>
+                                <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
                     </span>
-                    </div>
-                </div>
-                <div class="col-sm-3 pall-zero">
-                    <select class="form-control">
-                        <option value="" selected>All Vehicle</option>
-                        <option ng-repeat="maintanence in currentPageOfMaintanence ">{{maintanence.attrs.truckName}}</option>
-                    </select>
                 </div>
             </div>
-
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
-                <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
-                    <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-1">{{ maintanence.date |
-                        date:'yyyy-MM-dd'}}
-                    </td>
-                    <td data-title="'Vehicle Number'" sortable="'truckName'" class="clickable-item col-sm-2">{{
-                        maintanence.attrs.truckName}}
-                    </td>
-                    <td data-title="'Expense Type'" sortable="'expenseName'" class="clickable-item col-sm-2">{{
-                        maintanence.attrs.expenseName }}
-                    </td>
-                    <td data-title="'Description'" sortable="'description'" class="clickable-item col-sm-2">{{
-                        maintanence.description
-                        }}
-                    </td>
-                    <td data-title="'Amount'" sortable="'cost'" class="clickable-item col-sm-1">{{
-                        maintanence.cost }}
-                    </td>
-                    <td data-title="'Created By'" sortable="'createdByName'"
-                        class="clickable-item col-sm-2">{{ maintanence.attrs.createdByName }}
-                    </td>
-                    <td data-title="'Action'" class="col-sm-2">
-                        <a href="#" class="btn" ng-click="goToEditExpensePage(maintanence._id)">
-                            <span class="glyphicon glyphicon-pencil"></span></a>
-
-                        <a href="#" class="btn" ng-click="deleteExpenseRecord(maintanence._id)">
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </a>
-                    </td>
-                </tr>
-                <tr ng-if="!currentPageOfMaintanence || currentPageOfMaintanence.length === 0">
-                    <td colspan="8">No Expense Records exist.</td>
-                </tr>
-            </table>
-            <div class="clearfix"></div>
-            <div class="add-image pull-right">
-                <figure>
-                    <a href="#" ng-click="goToEditExpensePage()"><img src="images/Add_Expenses.png"></a>
-                </figure>
+            <div class="col-sm-4 pall-zero pos-relative">
+                <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                <select class="form-control">
+                    <option value="" selected>All Vehicles</option>
+                    <option ng-repeat="maintanence in currentPageOfMaintanence">{{maintanence.attrs.truckName}}</option>
+                </select>
             </div>
         </div>
+    </div>
+
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
+        <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
+            <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-1">{{ maintanence.date |
+                date:'yyyy-MM-dd'}}
+            </td>
+            <td data-title="'Vehicle Number'" sortable="'truckName'" class="clickable-item col-sm-2">{{
+                maintanence.attrs.truckName}}
+            </td>
+            <td data-title="'Expense Type'" sortable="'expenseName'" class="clickable-item col-sm-2">{{
+                maintanence.attrs.expenseName }}
+            </td>
+            <td data-title="'Description'" sortable="'description'" class="clickable-item col-sm-2">{{
+                maintanence.description
+                }}
+            </td>
+            <td data-title="'Amount'" sortable="'cost'" class="clickable-item col-sm-1">{{
+                maintanence.cost }}
+            </td>
+            <td data-title="'Created By'" sortable="'createdByName'"
+                class="clickable-item col-sm-2">{{ maintanence.attrs.createdByName }}
+            </td>
+            <td data-title="'Action'" class="col-sm-2">
+                <a href="#" class="btn" ng-click="goToEditExpensePage(maintanence._id)">
+                    <span class="glyphicon glyphicon-pencil"></span></a>
+
+                <a href="#" class="btn" ng-click="deleteExpenseRecord(maintanence._id)">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfMaintanence || currentPageOfMaintanence.length === 0">
+            <td colspan="8">No Expense Records exist.</td>
+        </tr>
+    </table>
+    <div class="clearfix"></div>
+    <div class="add-image pull-right">
+        <figure>
+            <a href="#" ng-click="goToEditExpensePage()"><img src="images/Add_Expenses.png" alt="Add Expenses"
+                                                              title="Add Expenses"></a>
+        </figure>
+    </div>
+</div>
 

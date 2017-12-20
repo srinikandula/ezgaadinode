@@ -34,10 +34,26 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             access: 'auth'
         }
     }).state({
-        name: 'profile',
-        url: '/profile',
-        templateUrl: 'views/partials/profile.html',
-        data: {activeTab: 'profile'},
+        name: 'myProfile',
+        url: '/myProfile',
+        templateUrl: 'views/partials/userProfile/myProfile.html',
+        data: {activeTab: 'myProfile'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'myGroup',
+        url: '/myGroup',
+        templateUrl: 'views/partials/userProfile/myGroup.html',
+        data: {activeTab: 'myGroup'},
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'addGroup',
+        url: '/addGroup',
+        templateUrl: 'views/partials/userProfile/addingGroup.html',
+        data: {activeTab: 'addGroup'},
         params: {
             access: 'auth'
         }

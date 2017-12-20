@@ -1,18 +1,54 @@
 
 <div class="main-temp col-xs-12 mt-20">
-      <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
     <div class="col-xs-12 pall-zero db-expenses">
-        <div class="col-xs-3"><p>Total Revenue</p></div>
-        <div class="col-xs-9">
-            <ul class="list-inline">
-                <li class="col-xs-3"> <date-picker id="fromDate" ng-model="fromDate" class="fromDate"></date-picker></li>
-                <li class="col-xs-3"> <date-picker id="toDate" ng-model="toDate" class="toDate"></date-picker></li>
-                <li class="col-xs-3">
-                    <select>
-                        <option>All Vehicles</option>
-                    </select>
+        <div class="col-xs-3 pall-zero"><p>Total Revenue</p></div>
+        <div class="col-xs-9 pall-zero">
+            <ul class="list-inline report-expense">
+                <li class="filterFromDate">
+                    <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'" class="'textfield'">
+                    </date-picker>
+                </li>
+                <li class="filterToDate">
+                    <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'" class="'textfield'"></date-picker>
+                </li>
+                <li class="col-xs-3 pall-zero pos-relative">
+                    <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                    <input type="text" ng-model="filters.regNumber"
+                           uib-typeahead="totalExpensesbyVehicle.regNumber for totalExpensesbyVehicle in totalExpensesbyVehicle | filter:$viewValue"
+                           class="form-control textfield" typeahead-min-length="1"
+                           typeahead-on-select="selectTruckId($item)"
+                           typeahead-select-on-exact="true" placeholder="Registration Num"
+                           typeahead-no-results="noTrucks" autocomplete="false">
+                    <div ng-show="noTrucks">
+                        <i class="glyphicon glyphicon-remove red"></i>
+                        <span class="red"> No Results Found </span>
+                    </div>
+                </li>
+                <li class="col-xs-1">
+                    <button ng-click="validateFilters()" type="button" class="btn go">Go</button>
                 </li>
             </ul>
+            <ul class="list-inline mailDownload">
+                <li>
+                    <button type="button" class="btn mailImage"><img src="images/Reports_Mail.png"></button>
+                </li>
+
+                <li>
+                    <button type="button" class="btn mailImage"><img src="images/Reports_Download.png"></button>
+                </li>
+            </ul>
+        </div>
+        <div>
+            <div class="alert alert-danger" role="alert" ng-show="filters.error.length">
+                <ul>
+                    <li ng-repeat="error in filters.error">{{error}}</li>
+                </ul>
+            </div>
+            <div class="alert alert-success" role="alert" ng-show="filters.success.length">
+                <ul>
+                    <li ng-repeat="success in filters.success">{{success}}</li>
+                </ul>
+            </div>
         </div>
     </div>
 

@@ -5,12 +5,13 @@ app.directive('datePicker', function () {
             ngModel: "=",
             banFuture: "=",
             pastPresent: "=",
-            placeholder: "=placeholder"
+            placeholder: "=placeholder",
+            class:"=class"
         },
         template: '<div class="pos-relative">\n' +
         '                <span class="date-pick" ng-click="open($event)">' +
         '                  <img src="images/date-icon.png" width="30" height="24" /> </span>\n' +
-        '          <input type="text"  class="form-control custom-form-control" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true" placeholder="{{placeholder}}"/>\n' +
+        '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true" placeholder="{{placeholder}}"/>\n' +
 
         '        </div>\n',
         require: 'ngModel',
@@ -27,7 +28,7 @@ app.directive('datePicker', function () {
             };
             if (scope.banFuture) {
                 scope.options = {
-                    showWeeks: true,
+                    showWeeks: false,
                     maxDate: new Date()
                 }
             } else if (scope.pastPresent) {

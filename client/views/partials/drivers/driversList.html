@@ -2,21 +2,24 @@
 
     <div class="col-xs-12 pall-zero mb-10">
         <div class="col-sm-3 pall-zero"><h3>Driver Details</h3></div>
-        <div class="col-sm-6">
-            <div class="input-group stylish-input-group">
-                <input type="text" class="form-control" placeholder="Search">
-                <span class="input-group-addon">
+        <div class="col-xs-8 col-xs-push-1 pall-zero">
+            <div class="col-sm-8">
+                <div class="input-group stylish-input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-addon">
                         <button type="submit">
-                            <span class="glyphicon glyphicon-search"></span>
+                           <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
                     </span>
+                </div>
             </div>
-        </div>
-        <div class="col-sm-3 pall-zero">
+        <div class="col-sm-4 pall-zero pos-relative">
+            <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
             <select class="form-control">
                 <option value="" selected>All Vehicle</option>
                 <option ng-repeat="drivers in currentPageOfDrivers ">{{drivers.truckId.registrationNo}}</option>
             </select>
+        </div>
         </div>
     </div>
 
@@ -67,7 +70,7 @@
     <div class="clearfix"></div>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ng-click="goToEditDriverPage()"><img src="images/Add_Driver.png"></a>
+            <a href="#" ng-click="goToEditDriverPage()"><img src="images/Add_Driver.png" alt="Add Driver" title="Add Driver"></a>
         </figure>
     </div>
 </div>

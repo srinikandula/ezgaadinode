@@ -6,7 +6,7 @@
                 <div class="form-group col-xs-12">
                     <div class="col-xs-12">
                         <date-picker id="date" ban-future="'banFutureDate'" ng-model="paymentsDetails.date"
-                                     placeholder="'Date*'"></date-picker>
+                                     placeholder="'Date*'" class="'custom-form-control'"></date-picker>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
@@ -28,7 +28,7 @@
                 <div class="form-group col-xs-12">
                     <div class="col-xs-12">
                         <input ng-model="paymentsDetails.amount" type="number" class="form-control custom-form-control"
-                               id="amount" placeholder="Amount">
+                               id="amount" placeholder="Amount" >
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
                 </div>
             </div>
             <div class="col-xs-12">
-                <div class="col-xs-5 col-xs-push-7 mtb-25">
+                <div class="col-xs-4 mtb-25 sub-can">
                     <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
                     <button type="submit" class="btn can last" ng-click="AddorUpdatePayments()">Submit</button>
 

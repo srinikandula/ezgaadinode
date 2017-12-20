@@ -32,7 +32,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', '$cookies', '$rootScope'
     
     $scope.isLoggedin=$cookies.get('token');
 
-    $scope.templates = {
+   /* $scope.templates = {
         'myProfile': 'views/templates/userProfile/myProfile.html',
         'myGroup': 'views/templates/userProfile/myGroup.html',
         'addingGroup': 'views/templates/userProfile/addingGroup.html',
@@ -46,10 +46,12 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', '$cookies', '$rootScope'
     }
     $scope.myGroup= function () {
         $scope.template = $scope.templates.myGroup;
+        $scope.activated = 'myGroup';
     }
     $scope.addingGroup= function () {
         $scope.template = $scope.templates.addingGroup;
-    }
+        $scope.activated = 'addingGroup';
+    }*/
 
 }]).controller('LeftNavCtrl', ['$scope', '$rootScope', '$state', 'Utils', '$cookies', '$stateParams', function ($scope, $rootScope, $state, Utils, $cookies, $stateParams) {
 
