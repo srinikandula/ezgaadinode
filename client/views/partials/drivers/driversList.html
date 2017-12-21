@@ -1,54 +1,76 @@
+<div class="main-right col-xs-12" ng-controller="DriversListCtrl">
 
-        <div class="main-right col-xs-9" ng-controller="DriversListCtrl">
-            <h3>Drivers</h3>
-
-            <div>
-                <button class="btn btn-blue pull-right mb-10" ng-click="goToEditDriverPage()">Add Driver</button>
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Driver Details</h3></div>
+        <div class="col-xs-8 col-xs-push-1 pall-zero">
+            <div class="col-sm-8">
+                <div class="input-group stylish-input-group">
+                    <input type="text" class="form-control" placeholder="Search">
+                    <span class="input-group-addon">
+                        <button type="submit">
+                           <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                </div>
             </div>
-            <div >
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="driverParams">
-                <tr ng-repeat="drivers in currentPageOfDrivers" style="text-align: center;">
-                    <td data-title="'Driver ID'" sortable="'driverId'" class="clickable-item col-sm-1">
-                        {{drivers.driverId}}
-                    </td>
-                    <td data-title="'Name'" sortable="'fullName'" class="clickable-item col-sm-1">{{
-                        drivers.fullName}}
-                    </td>
-                    <td data-title="'Mobile'" sortable="'mobile'" class="clickable-item col-sm-1">{{
-                        drivers.mobile }}
-                    </td>
-                    <td data-title="'Truck Reg No'" sortable="'truckId'" class="clickable-item col-sm-1">{{
-                        drivers.truckId.registrationNo }}
-                    </td>
-                    <td data-title="'Salary'" sortable="'salary'" class="clickable-item col-sm-1">{{
-                        drivers.salary }}
-                    </td>
-                    <td data-title="'License Number'" sortable="'licenseNumber'" class="clickable-item col-sm-2">{{
-                        drivers.licenseNumber }}
-                    </td>
-                    <td data-title="'License Validity'" sortable="'licenseValidity'" class="clickable-item col-sm-1">{{
-                        drivers.licenseValidity | date:'yyyy-MM-dd'
-                        }}
-                    </td>
-                                     <td data-title="'Created By'" sortable="'createdByName'"
-                        class="clickable-item col-sm-1">{{ drivers.attrs.createdByName }}
-                    </td>
-                    <td data-title="'Action'" class="col-sm-2">
-                        <a href="#" class="btn" ng-click="goToEditDriverPage(drivers._id)">
-                            <span class="glyphicon glyphicon-pencil"></span></a>
-
-                        <a href="#" class="btn" ng-click="deleteDriver(drivers._id)">
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </a>
-                    </td>
-                </tr>
-                <tr ng-if="!currentPageOfDrivers || currentPageOfDrivers.length === 0">
-                    <td colspan="8">No drivers Records exist.</td>
-                </tr>
-            </table>
-            </div>
-            <div class="clearfix"></div>
-
+        <div class="col-sm-4 pall-zero pos-relative">
+            <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+            <select class="form-control">
+                <option value="" selected>All Vehicle</option>
+                <option ng-repeat="drivers in currentPageOfDrivers ">{{drivers.truckId.registrationNo}}</option>
+            </select>
         </div>
+        </div>
+    </div>
+
+
+    <div class="mt-10">
+        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
+               ng-table="driverParams">
+            <tr ng-repeat="drivers in currentPageOfDrivers" style="text-align: center;">
+                <td data-title="'Driver ID'" sortable="'driverId'" class="clickable-item col-sm-1">
+                    {{drivers.driverId}}
+                </td>
+                <td data-title="'Name'" sortable="'fullName'" class="clickable-item col-sm-1">{{
+                    drivers.fullName}}
+                </td>
+                <td data-title="'Mobile'" sortable="'mobile'" class="clickable-item col-sm-1">{{
+                    drivers.mobile }}
+                </td>
+                <td data-title="'V No'" sortable="'truckId'" class="clickable-item col-sm-1">{{
+                    drivers.truckId.registrationNo }}
+                </td>
+                <td data-title="'Salary'" sortable="'salary'" class="clickable-item col-sm-1">{{
+                    drivers.salary }}
+                </td>
+                <td data-title="'License'" sortable="'licenseNumber'" class="clickable-item col-sm-2">{{
+                    drivers.licenseNumber }}
+                </td>
+                <td data-title="'Validity'" sortable="'licenseValidity'" class="clickable-item col-sm-1">{{
+                    drivers.licenseValidity | date:'yyyy-MM-dd'
+                    }}
+                </td>
+                <td data-title="'Created By'" sortable="'createdByName'"
+                    class="clickable-item col-sm-1">{{ drivers.attrs.createdByName }}
+                </td>
+                <td data-title="'Action'" class="col-sm-2">
+                    <a href="#" class="btn" ng-click="goToEditDriverPage(drivers._id)">
+                        <span class="glyphicon glyphicon-pencil"></span></a>
+
+                    <a href="#" class="btn" ng-click="deleteDriver(drivers._id)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfDrivers || currentPageOfDrivers.length === 0">
+                <td colspan="8">No drivers Records exist.</td>
+            </tr>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div class="add-image pull-right">
+        <figure>
+            <a href="#" ng-click="goToEditDriverPage()"><img src="images/Add_Driver.png" alt="Add Driver" title="Add Driver"></a>
+        </figure>
     </div>
 </div>

@@ -1,39 +1,65 @@
-
-        <div class="main-right col-xs-9"  ng-controller="PartyListController">
-            <h3>Party</h3>
-            <button class="btn btn-blue pull-right mb-10" ng-click="goToEditPartyPage()">Add Party</button>
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
-                <tr ng-repeat="parties in currentPageOfParties" style="text-align: center;">
-
-                    <td data-title="'Party Name'" sortable="'name'" class="clickable-item col-sm-2">{{
-                        parties.name}}
-                    </td>
-                    <td data-title="'Contact'" sortable="'contact'" class="clickable-item col-sm-2">{{
-                        parties.contact }}
-                    </td>
-                    <td data-title="'Email'" sortable="'email'" class="clickable-item col-sm-2">{{
-                        parties.email }}
-                    </td>
-                    <td data-title="'City'" sortable="'city'" class="clickable-item col-sm-2">{{
-                        parties.city }}
-                    </td>
-                    <td data-title="'Triplanes'" sortable="'tripLanes'" class="clickable-item col-sm-1">{{
-                        parties.tripLanes.length }}
-                    </td>
-
-                    <td data-title="'Created By'" sortable="'createdByName'"
-                        class="clickable-item col-sm-1">{{ parties.attrs.createdByName }}
-                    </td>
-                    <td data-title="'Action'" class="col-sm-2">
-                        <a href="#" class="btn" ng-click="goToEditPartyPage(parties._id)">
-                            <span class="glyphicon glyphicon-pencil"></span></a>
-                        <a href="#" class="btn" ng-click="deleteParty(parties._id)">
-                            <span class="glyphicon glyphicon-remove"></span></a>
-                    </td>
-                </tr>
-                <tr ng-if="!currentPageOfParties || currentPageOfParties.length === 0">
-                    <td colspan="8"> Party Records not found.</td>
-                </tr>
-            </table>
-
+<div class="main-right col-xs-12" ng-controller="PartyListController">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Parties</h3></div>
+        <div class="col-xs-8 col-xs-push-1 pall-zero">
+        <div class="col-sm-8">
+            <div class="input-group stylish-input-group">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-addon">
+                        <button type="submit">
+                              <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </span>
+            </div>
         </div>
+        <div class="col-sm-4 pall-zero pos-relative">
+            <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+            <select class="form-control">
+                <option value="" selected>All Vehicles</option>
+                <option ng-repeat="parties in currentPageOfParties">{{parties.name}}</option>
+            </select>
+        </div>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
+        <tr ng-repeat="parties in currentPageOfParties" style="text-align: center;">
+
+            <td data-title="'Party Name'" sortable="'name'" class="clickable-item col-sm-2">{{
+                parties.name}}
+            </td>
+            <td data-title="'Contact'" sortable="'contact'" class="clickable-item col-sm-2">{{
+                parties.contact }}
+            </td>
+            <td data-title="'Email'" sortable="'email'" class="clickable-item col-sm-2">{{
+                parties.email }}
+            </td>
+            <td data-title="'City'" sortable="'city'" class="clickable-item col-sm-2">{{
+                parties.city }}
+            </td>
+            <td data-title="'Triplanes'" sortable="'tripLanes'" class="clickable-item col-sm-1">{{
+                parties.tripLanes.length }}
+            </td>
+
+            <td data-title="'Created By'" sortable="'createdByName'"
+                class="clickable-item col-sm-1">{{ parties.attrs.createdByName }}
+            </td>
+            <td data-title="'Action'" class="col-sm-2">
+                <a href="#" class="btn" ng-click="goToEditPartyPage(parties._id)">
+                    <span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" class="btn" ng-click="deleteParty(parties._id)">
+                    <span class="glyphicon glyphicon-remove"></span></a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfParties || currentPageOfParties.length === 0">
+            <td colspan="8"> Party Records not found.</td>
+        </tr>
+    </table>
+
+    <div class="add-image pull-right">
+        <figure>
+            <a href="#" ng-click="goToEditPartyPage()"><img src="images/Add_Parties.png" alt="Add Party" title="Add Party"></a>
+        </figure>
+    </div>
+
+</div>

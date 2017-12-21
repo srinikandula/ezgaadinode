@@ -72,6 +72,12 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        findExpiryTrucks: function (success, error) {
+            $http({
+                url: '/v1/trucks/findExpiryTrucks',
+                method: "GET"
+            }).then(success, error)
+        },
         fitnessExpiryTrucks: function (success, error) {
             $http({
                 url: '/v1/trucks/fitnessExpiryTrucks',
@@ -111,7 +117,9 @@ app.factory('TrucksService', function ($http, $cookies) {
     }
 });
 
-app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state','paginationService','NgTableParams', function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams) {
+app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state','paginationService','NgTableParams','$rootScope', function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams,$rootScope) {
+
+
     $scope.goToEditTruckPage = function (truckId) {
         $state.go('trucksEdit', {truckId: truckId});
     };

@@ -14,7 +14,11 @@ AuthRouter.get('/groupTrucks', function (req, res) {
         res.json(result);
     });
 });
-
+AuthRouter.get('/findExpiryTrucks', function (req, res) {
+    Trucks.findExpiryTrucks(req.jwt, function (result) {
+        res.json(result);
+    });
+});
 AuthRouter.get('/findExpiryCount', function (req, res) {
     Trucks.findExpiryCount(req.jwt, function (result) {
         res.send(result);
