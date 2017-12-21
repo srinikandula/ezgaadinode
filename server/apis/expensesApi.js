@@ -337,6 +337,7 @@ Expenses.prototype.findTotalExpenses = function (jwt, callback) {
  */
 
 Expenses.prototype.findExpensesByVehicles =  function(jwt, params, callback) {
+    console.log('params',params);
     var condition = {};
     if(params.fromDate != '' && params.toDate != '' && params.regNumber != ''){
         condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
@@ -449,6 +450,7 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
 };
 
 function getExpensesByVehicles(jwt, condition, callback) {    
+    console.log('condition',condition);
     var retObj = {
         status: false,
         messages: []

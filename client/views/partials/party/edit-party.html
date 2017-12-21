@@ -36,6 +36,51 @@
                                placeholder="City*">
                     </div>
                 </div>
+                <div class="form-group col-xs-12">
+
+                    <div class="col-xs-12 trip-share">
+                        <ul class="list-inline">
+                            <li class="radio">
+                                <label>
+                                    <input ng-model="party.partyType" type="radio" name="partyType" value="isTransporter">
+                                    <span class="cr"><i class="rad-icon fa fa-circle"></i></i></span>
+                                    Transporter
+                                </label>
+                            </li>
+                            <li class="radio">
+                                <label>
+                                    <input  ng-model="party.partyType" type="radio" name="partyType" value="isSupplier">
+                                    <span class="cr"><i class="rad-icon fa fa-circle"></i></span>
+                                    Supplier
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
+
+                </div>
+                <div class="col-xs-12 pall-zero">
+                    <div class="form-group erp-gps">
+                        <div class="erp">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox"  ng-model="party.isSms"><span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                    SMS Notification
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="gps">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="party.isEmail"><span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                    Email Notification
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
 
             </div>
             <div class="toolbar-button-div pull-right mb-10">
@@ -114,7 +159,3 @@
         </table>
     </div>
 </div>
-
-
-
-

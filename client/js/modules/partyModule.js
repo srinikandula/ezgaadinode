@@ -211,7 +211,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('party');
+                        $state.go('parties');
                         Notification.success({message: "Party Updated Successfully"});
                     } else {
                         params.error = success.data.message;
@@ -223,7 +223,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 PartyService.addParty($scope.party, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('party');
+                        $state.go('parties');
                         Notification.success({message: "Party Added Successfully"});
                     } else {
                         params.error = success.data.message;
@@ -234,7 +234,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         }
     };
     $scope.cancel = function () {
-        $state.go('party');
+        $state.go('parties');
     }
 }]);
 
