@@ -161,6 +161,11 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         $state.go('expenses');
     };
 
+    $scope.addExpenseTypeField = false;
+    $scope.addExpenseType = function () {
+        $scope.addExpenseTypeField = true;
+    }
+
     function getAllExpenses(params) {
         ExpenseMasterServices.getExpenses(params, function (success) {
             if (success.data.status) {

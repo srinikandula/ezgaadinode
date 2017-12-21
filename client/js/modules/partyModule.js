@@ -125,7 +125,13 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
     };
 }]);
 
-app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootScope','$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $rootScope, $stateParams, Notification, $state) {
+app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootScope', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $rootScope, $stateParams, Notification, $state) {
+
+    $scope.showAddTripLane = false;
+
+    $scope.addTripLane = function () {
+        $scope.showAddTripLane = true;
+    };
 
     $scope.pageTitle = "Add Party";
 
@@ -138,9 +144,6 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         contact: '',
         email: '',
         city: '',
-        tripLanes: [{
-            index: 0
-        }],
         error: [],
         success: []
 
@@ -155,25 +158,13 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             }
         }, function (err) {
         });
+    };
+    $scope.cancel = function () {
+        console.log("Welcome to Cancel");
+        $state.go('parties');
+
     }
 
-    $scope.addTripLane = function () {
-        var length = $scope.party.tripLanes.length;
-        /*if (!$scope.party.tripLanes[length - 1].name || !$scope.party.tripLanes[length - 1].from || !$scope.party.tripLanes[length - 1].to) {
-            $scope.party.error.push("Please Fill all TripLane Fields");
-        }*/
-        // else {
-        $scope.party.tripLanes.push({
-            index: length
-        });
-        // }
-        console.log($scope.party);
-    };
-
-    $scope.deleteTripLane = function (index) {
-        $scope.party.tripLanes.splice(index, 1);
-
-    };
 
 
     $scope.addOrUpdateParty = function () {
@@ -193,16 +184,14 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.city) {
             params.error.push('Invalid city');
         }
-        if (!params.tripLanes[0].name) {
-            params.error.push('Please provide TripLane Name');
-        }
+
 
         if (!params.error.length) {
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('party');
+                        $state.go('parties');
                         Notification.success({message: "Party Updated Successfully"});
                     } else {
                         params.error = success.data.message;
@@ -214,7 +203,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 PartyService.addParty($scope.party, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        $state.go('party');
+                        $state.go('parties');
                         Notification.success({message: "Party Added Successfully"});
                     } else {
                         params.error = success.data.message;
@@ -224,8 +213,6 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             }
         }
     };
-    $scope.cancel = function () {
-        $state.go('party');
-    }
+
 }]);
 

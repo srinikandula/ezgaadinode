@@ -192,7 +192,8 @@ body {
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
 }
-.textfield{
+
+.textfield {
     box-shadow: none;
     border-radius: 0 !important;
     padding: 6px 10px !important;
@@ -200,18 +201,22 @@ body {
     background: transparent !important;
     border-right: 0;
 }
-.trucksfield{
-    border:1px solid #ccc !important;
+
+.trucksfield {
+    border: 1px solid #ccc !important;
 }
-.report-expense li:nth-last-child(2){
+
+.report-expense li:nth-last-child(2) {
     border-right: 1px solid #ccc;
 }
-.report-expense{
+
+.report-expense {
     display: block;
     margin: 0;
     padding: 0;
 }
-.go{
+
+.go {
     display: block;
     background: #1d232f;
     height: 40px;
@@ -223,12 +228,18 @@ body {
     border-radius: 0;
     font-weight: bold;
 }
-.mailImage{
+
+.go:focus, .go:hover {
+    color: #fff !important;
+}
+
+.mailImage {
     background-color: #ececec;
     padding: 6px !important;
 
 }
-.mailDownload{
+
+.mailDownload {
     display: block;
     padding: 0;
     margin: 0;
@@ -632,6 +643,7 @@ body {
     color: #fff !important;
     text-decoration: none;
 }
+
 .activeProfileTab {
     background-color: #000;
     color: #fff !important;
@@ -806,7 +818,8 @@ body {
     border: transparent 1px solid;
     text-decoration: none;
 }
-.top-block ul li a:focus{
+
+.top-block ul li a:focus {
     text-decoration: none;
 }
 
@@ -874,10 +887,12 @@ body {
     color: #fff;
     border-color: #9d9d9d;
 }
-.sub-can{
+
+.sub-can {
     float: right;
     margin-right: 15px;
 }
+
 .add-group {
     background-color: #e93a14 !important;
     color: #fff !important;
@@ -913,8 +928,10 @@ body {
     top: 8px;
 
 }
-.checkbox, .radio{
+
+.checkbox, .radio {
     margin-bottom: 0 !important;
+    margin-top: 10px !important;
 }
 
 .checkbox label:after,
@@ -931,6 +948,17 @@ body {
     border-radius: 8px;
     width: 35px;
     height: 30px;
+    float: left;
+    margin-right: .5em;
+}
+
+.checkbox .ntfns {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    border-radius: 5px;
+    width: 20px;
+    height: 20px;
     float: left;
     margin-right: .5em;
 }
@@ -956,25 +984,33 @@ body {
     color: #000;
 }
 
+.ntfns-icon:before {
+    content: "\f00c" !important;
+    font-size: 13px;
+    color: #000;
+}
+
 .rad-icon:before {
     content: "\f111" !important;
     font-size: 16px;
-    color: #e93a14 ;
+    color: #e93a14;
 }
 
-.checkbox .cr .cr-icon{
+.checkbox .cr .cr-icon {
     position: absolute;
     font-size: .8em;
     line-height: 0;
     top: 50%;
     left: 20%;
 }
-.radio .cr .rad-icon{
+
+.radio .cr .rad-icon {
     position: absolute;
     line-height: 0;
     top: 48%;
     left: 10%;
 }
+
 .radio .cr .rad-icon {
     margin-left: 0.04em;
 }
@@ -1005,92 +1041,116 @@ body {
 .trip-share label {
     padding-left: 0 !important;
 }
-.db-expenses{
+
+.db-expenses {
     display: block;
     margin: 10px auto;
 }
-.db-expenses p{
+
+.db-expenses p {
     line-height: 40px;
     font-size: 16px;
     font-family: Gotham-Book;
 }
-.filterFromDate, .filterToDate{
+
+.filterFromDate, .filterToDate {
     width: 20%;
     float: left;
     padding: 0 !important;
 }
-select{
+
+select {
     -webkit-appearance: none;
 }
-.reset-pass{
+
+.reset-pass {
     display: block;
 }
-.reset-pass h3{
+
+.reset-pass h3 {
     font-size: 18px;
     font-weight: bold;
     padding: 0 15px 0;
 }
-.edit-profile{
+
+.edit-profile {
     position: absolute;
     right: 0;
     top: 0;
 }
-.erp-gps{
+
+.erp-gps {
     display: inline-block;
     padding: 0;
     margin: 0;
 }
-.erp-gps label{
+
+.sms-email {
+    padding-left: 10px;
+    display: inline-block;
+}
+
+.erp-gps label {
     line-height: 30px;
 }
-.erp{
+
+.erp, .sms {
     display: inline-block;
     padding: 0;
     margin: 0;
 }
-.gps{
+
+.gps, .email {
     display: inline-block;
     padding: 0;
     margin: 0;
 }
+
+.pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
+    background-color: #000 !important;
+    border-color: #000 !important;
+}
+
+.pagination > li > a, .pagination > li > span {
+    color: #000 ;
+}
+
 /*------------------Input Label Styling-----------*/
 
-
-.styling-input-list{
+.styling-input-list {
     position: relative;
     z-index: 10;
 }
-.focus-effect-for-input{
+
+.focus-effect-for-input {
     position: absolute;
     top: 13px;
-    left: 0px;
-    color:#989898;
+    left: 15px;
+    color: #989898;
     font-size: 15px;
-    font-weight:lighter;
+    font-weight: lighter;
     z-index: -1;
 }
 
-.custom-form-control{
+.custom-form-control {
     background-color: transparent !important;
     z-index: 10 !important;
 }
 
-.custom-form-control:not([disabled]):focus~.focus-effect-for-input{
+.custom-form-control:not([disabled]):focus ~ .focus-effect-for-input {
     /*whsOnd:not([disabled]):focus~.AxOyFc*/
     transform: scale(.9) translateY(-20px);
 
-    left:0;
+    left: 0;
     transition: all 0.5s ease-in-out;
     -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
     -moz-transition: all 0.5s ease-in-out; /** Firefox **/
     -o-transition: all 0.5s ease-in-out; /** Opera **/
 }
 
-
-
-.ng-not-empty+.focus-effect-for-input{
+.ng-not-empty + .focus-effect-for-input {
     transform: scale(.9) translateY(-20px);
-    left:0;
+    left: 0;
     transition: all 0.5s ease-in-out;
     -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
     -moz-transition: all 0.5s ease-in-out; /** Firefox **/
@@ -1099,8 +1159,8 @@ select{
 
 /*sign-up input css*/
 
-.top_sign .focus-effect-for-input{
-    color:#467371;
+.top_sign .focus-effect-for-input {
+    color: #467371;
 }
 
 /*------------------Input Label Styling end-----------*/

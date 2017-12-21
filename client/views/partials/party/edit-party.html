@@ -4,25 +4,19 @@
         <form class="mt-10">
             <div class="col-xs-12 col-sm-6">
                 <div class="form-group col-xs-12">
-
                     <div class="col-xs-12">
                         <input ng-model="party.name" type="text" class="form-control custom-form-control" id="accountId"
                                placeholder="Party Name*">
                     </div>
                 </div>
-
                 <div class="form-group col-xs-12">
-
                     <div class="col-xs-12">
                         <input ng-model="party.contact" type="number" class="form-control custom-form-control"
                                id="contactPhone"
                                placeholder="Contact Phone*">
                     </div>
-
                 </div>
-
                 <div class="form-group col-xs-12">
-
                     <div class="col-xs-12">
                         <input ng-model="party.email" type="email" class="form-control custom-form-control"
                                id="contactEmail"
@@ -30,40 +24,99 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-
                     <div class="col-xs-12">
                         <input ng-model="party.city" type="text" class="form-control custom-form-control" id="city"
                                placeholder="City*">
                     </div>
                 </div>
-
-            </div>
-            <div class="toolbar-button-div pull-right mb-10">
-                <button class="btn btn-blue add-trip-lane" ng-click="addTripLane()">Add Trip Lanes</button>
-            </div>
-            <div class="col-xs-12 col-xs-6">
-                <form class="mt-10">
-                    <div class="col-xs-12 form-group" ng-repeat="tripLane in party.tripLanes track by $index">
-
-                        <div class="mb-0 ">
-                            <div class="col-sm-4 col-xs-12 pl4-pr0">
-                                <input ng-model="tripLane.name" type="text" class="form-control" id="name"
-                                       placeholder="Trip Lane Name">
+                <div class="col-xs-12">
+                    <div class="col-xs-12 trip-share">
+                        <ul class="col-xs-12 pall-zero">
+                            <li class="radio col-xs-6 pall-zero">
+                                <label>
+                                    <input type="radio" name="radio">
+                                    <span class="cr"><i class="rad-icon fa fa-circle"></i></i></span>
+                                    Transporter
+                                </label>
+                            </li>
+                            <li class="radio col-xs-6">
+                                <label>
+                                    <input type="radio" name="radio">
+                                    <span class="cr"><i class="rad-icon fa fa-circle"></i></span>
+                                    Supplier
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-xs-12 pall-zero">
+                    <div class="form-group sms-email col-xs-12">
+                        <div class="sms col-xs-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="">
+                                    <span class="cr ntfns"><i class="cr-icon ntfns-icon fa fa-check"></i></span>
+                                    SMS Notification
+                                </label>
                             </div>
-                            <div class="col-xs-12 col-sm-4 pl4-pr0">
-                                <input ng-model="tripLane.from" type="text" class="form-control" id="from"
-                                       placeholder="From">
-                            </div>
-                            <div class="col-sm-3 col-xs-12 pl4-pr0">
-                                <input ng-model="tripLane.to" type="text" class="form-control" id="to"
-                                       placeholder="To">
-                            </div>
-                            <div class="col-sm-1 col-xs-12">
-                                <button class="btn btn-custom btn-default" ng-click="deleteTripLane($index);">
-                                    <i class="fa fa-minus-circle" aria-hidden="true"></i></button>
-                            </div>
-                            <div class="clearfix"></div>
                         </div>
+
+                        <div class="email col-xs-6">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" value="">
+                                    <span class="cr ntfns"><i class="cr-icon ntfns-icon fa fa-check"></i></span>
+                                    Email Notification
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+            <!--<div class="toolbar-button-div pull-right mb-10">-->
+            <!--<button class="btn btn-blue add-trip-lane" >Add Trip Lanes</button>-->
+            <!--</div>-->
+            <div class="col-xs-12 col-xs-6">
+                <div class="form-group col-xs-12">
+                    <div class="col-xs-12 pos-relative">
+                        <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                        <select class="form-control custom-form-control">
+                            <option>Select Trip Lane</option>
+                            <option>Select One</option>
+                            <option>Select One</option>
+                        </select>
+                        <div class="pull-right">
+                            <button class="btn add-group mt-20" ng-click="addTripLane()">Add Trip Lane</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <form class="mt-10 add-trip-lane" >
+                    <div ng-show="showAddTripLane">
+                        <div class="form-group col-xs-12">
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control custom-form-control" ng-model="tripLane.from"
+                                       id="from" placeholder="From">
+                            </div>
+                            <div class="col-xs-6">
+                                <input type="text" class="form-control custom-form-control" ng-model="tripLane.to"
+                                       id="to" placeholder="To">
+                            </div>
+                        </div>
+                        <div class="form-group col-xs-12">
+                            <div class="col-xs-12">
+                            <input ng-model="tripLane.name" type="text" class="form-control custom-form-control"
+                                   id="name" placeholder="Trip Lane Name">
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-xs-12">
+                            <button class="btn add-group pull-right">Add</button>
+                            </div>
+                        </div>
+
                     </div>
 
                 </form>
@@ -82,36 +135,14 @@
                         <li ng-repeat="success in party.success">{{success}}</li>
                     </ul>
                 </div>
-                <div class="mt-30">
+            </div>
+            <div class="col-xs-12">
+                <div class="col-xs-4 mtb-25 sub-can">
                     <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
                     <button type="submit" class="btn can last" ng-click="addOrUpdateParty()">Submit</button>
                 </div>
             </div>
         </form>
-    </div>
-    <div class="col-xs-12">
-        <table class="table table-bordered table-striped table-condensed table-hover hide" ng-table="tripLanesParams">
-            <tr ng-repeat="trip in currentPageOfTrips" style="text-align: center;">
-                <td data-title="'Name'" sortable="'name'" class="clickable-item col-sm-2">{{ trip.name }}</td>
-                <td data-title="'From'" sortable="'from'" class="clickable-item col-sm-3">{{ trip.from }}</td>
-                <td data-title="'To'" sortable="'to'" class="clickable-item col-sm-3">{{ trip.to }}</td>
-
-                <td data-title="'Created By'" sortable="'agent.attrs.createdByName'"
-                    class="clickable-item col-sm-2">{{ trip.attrs.createdByName }}
-                </td>
-                <td data-title="'Action'" class="col-sm-2">
-                    <a href="#" class="btn" ng-click="goToEditTripLanePage(trip._id)">
-                        <span class="glyphicon glyphicon-pencil"></span></a>
-
-                    <a href="#" class="btn" ng-click="deleteTripLane(trip._id)">
-                        <span class="glyphicon glyphicon-remove"></span>
-                    </a>
-                </td>
-            </tr>
-            <tr ng-if="!currentPageOfTrips || currentPageOfTrips.length === 0">
-                <td colspan="8">No trips exist.</td>
-            </tr>
-        </table>
     </div>
 </div>
 

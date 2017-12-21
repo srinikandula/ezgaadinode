@@ -73,8 +73,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'open',
             accountId: null
-        },
-        controller: 'AddEditPartyCtrl'
+        }
     })
         .state({
             name: 'groups',
