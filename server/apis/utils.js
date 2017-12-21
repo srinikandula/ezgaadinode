@@ -67,7 +67,6 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
     var result = {};
     if(documents === null) documents=[];
     var ids = _.pluck(documents, fieldTopopulate);
-    console.log('ids : ',ids);
 //  UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
 //  GroupsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
     AccountsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
@@ -160,7 +159,6 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
                 var party = _.find(names, function (users) {
                     if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
-                //console.log(party);
                 if (party) {
                     if (!item.attrs) {
                         item.attrs = {};

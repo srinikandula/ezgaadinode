@@ -73,6 +73,7 @@ var truckSchema = new mongoose.Schema({
     taxDueDate: Date,
     updatedBy: String,
     createdBy: String,
+    status: Number,
     attrs: {}
 }, {timestamps: true});
 

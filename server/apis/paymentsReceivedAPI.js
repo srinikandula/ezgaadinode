@@ -88,7 +88,6 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
 };
 
 PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
-    //console.log(params);
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -111,7 +110,6 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
                 //.populate('paymentsCostId')
                 .lean()
                 .exec(function (err, mCosts) {
-                    //console.log(mCosts);
                     if (mCosts) {
                         async.parallel({
                             createdbyname: function (createdbyCallback) {
@@ -132,12 +130,10 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
         },
         count: function (countCallback) {
             PaymentsReceivedColl.count({'accountId': jwt.accountId},function (err, count) {
-                //console.log(count);
                 countCallback(err, count);
             });
         }
     }, function (err, results) {
-        //console.log(results);
         if (err) {
             result.status = false;
             result.message = 'Error retrieving Payments Costs';
@@ -155,7 +151,6 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
 PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
     var result = {};
     PaymentsReceivedColl.findOne({_id: paymentsId, accountId: jwt.accountId}, function (err, paymentsReceived) {
-        //console.log(paymentsReceived);
         if (err) {
             result.status = false;
             result.message = "Error while finding Payments, try Again";

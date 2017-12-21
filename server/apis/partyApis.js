@@ -296,7 +296,6 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
         },
         expenses: function(expensesCallback){
             ExpenseCostColl.findVehicleExpenses(jwt,vehicleId, function(expensesResults){
-                //console.log("expensesResults :",expensesResults);
                 expensesCallback(expensesResults.error, expensesResults.expenses);
             });
         },

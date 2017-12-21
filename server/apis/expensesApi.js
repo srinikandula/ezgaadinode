@@ -384,7 +384,6 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function(results){
                 result.status = true;
                 result.expenses = results.documents;
-                console.log(result.expenses.length)
                 for(var i = 0; i < result.expenses.length;i++) {
                     if(result.expenses[i].attrs.expenseName === 'Diesel') {
                         totalDieselExpense = totalDieselExpense + result.expenses[i].cost;
@@ -411,7 +410,6 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
         messages: []
     };
     expenseColl.find({accountId: jwt.accountId, vehicleNumber:vehicleId}, function (err, expenses) {
-        //console.log(expenses);
         if (err) {
             retObj.messages.push('Error getting Expenses');
             callback(retObj);
@@ -428,7 +426,6 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
                     })
                 }
             }, function (populateErr, populateResults) {
-                //console.log("populateResults : ",populateResults);
                 if (err) {
                     retObj.status = false;
                     retObj.messages.push('Error retrieving data');
