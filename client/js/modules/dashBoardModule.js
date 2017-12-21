@@ -123,12 +123,6 @@ $scope.erpDashBoard();
     $scope.validateFilters = function () {
         var params = $scope.filters;
         params.error = [];
-        /*if (!params.fromDate) {
-            params.error.push('Invalid From Date');
-        }
-        if (!params.toDate) {
-            params.error.push('Invalid To Date');
-        }*/
         if((!params.fromDate || !params.toDate) && !params.regNumber) {
             params.error.push('Please Select Dates or Register Number');
         }
