@@ -111,6 +111,22 @@ body {
     padding: 0 !important;
 }
 
+.profile-nav li {
+    border-bottom: 1px solid #ccc;
+}
+
+.profile-nav ul li a {
+    font-size: 14px;
+    padding: 6px 12px;
+}
+
+.user-nav .dropdown-menu {
+    left: -75px;
+    top: 55px;
+    border-top-left-radius: 5px !important;
+    border-top-right-radius: 5px !important;
+}
+
 .top-nav .navbar-collapse {
     width: 83.33333%;
 }
@@ -149,10 +165,6 @@ body {
     display: block;
     margin: 0 auto;
     padding-bottom: 10px;
-}
-
-.dropdown-menu > li > a {
-    font-size: 15px;
 }
 
 .login-page {
@@ -251,16 +263,25 @@ body {
     font-size: 15px;
 }
 
+.remember label {
+    padding-left: 0 !important;
+}
+
+.remember .checkbox {
+    margin: 0 !important;
+}
+
 .forgot {
     float: right;
 }
 
 .forgot a {
     color: #000;
+    text-decoration: none;
 }
 
 .sign-in {
-    margin-top: 25px;
+    margin: 20px auto;
 }
 
 .sign-in-btn {
@@ -270,7 +291,7 @@ body {
     border-radius: 0;
     float: right;
     font-weight: bold;
-    width: 20%;
+    width: 30%;
     height: 40px;
 }
 
@@ -470,7 +491,7 @@ body {
 }
 
 .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
-    padding: 0px 5px !important;
+    padding: 5px !important;
     vertical-align: middle;
     text-align: left;
 }
@@ -642,6 +663,11 @@ body {
     background-color: #000;
     color: #fff !important;
     text-decoration: none;
+    font-weight: bold;
+}
+
+.activated a {
+    color: #fff !important;
 }
 
 .activeProfileTab {
@@ -910,7 +936,12 @@ body {
     font-family: Gotham-Medium;
     color: #838993;
     padding: 25px;
+}
 
+.db-title {
+    font-size: 16px;
+    margin: 15px auto;
+    font-family: Gotham-Medium;
 }
 
 .bg-arrow {
@@ -1063,8 +1094,30 @@ select {
     -webkit-appearance: none;
 }
 
+.fg-pass {
+    font-size: 20px;
+    font-weight: bold;
+    color: #000;
+}
+
 .reset-pass {
     display: block;
+}
+
+.resend-otp {
+    margin: 10px auto;
+}
+
+.fa-check-square {
+    color: #E83B13;
+}
+
+.resend-otp a {
+    font-size: 14px;
+    font-family: Gotham-Book;
+    margin: 10px auto;
+    color: #000 !important;
+    text-decoration: none;
 }
 
 .reset-pass h3 {
@@ -1106,13 +1159,17 @@ select {
     margin: 0;
 }
 
+.exp-trucks li a:hover {
+    color: #1E4495 !important;
+}
+
 .pagination > .active > a, .pagination > .active > a:focus, .pagination > .active > a:hover, .pagination > .active > span, .pagination > .active > span:focus, .pagination > .active > span:hover {
     background-color: #000 !important;
     border-color: #000 !important;
 }
 
 .pagination > li > a, .pagination > li > span {
-    color: #000 ;
+    color: #000;
 }
 
 /*------------------Input Label Styling-----------*/
