@@ -95,21 +95,22 @@ Trucks.prototype.assignTrucks=function(jwt,groupId,truckIds,callback){
         status: false,
         messages: []
     };
-      TrucksColl.update({_id:{$in:truckIds}}, {$set:{groupId:groupId}},{multi: true},function(err,truck){
-         // console.log(err);
-          if(err){
-              retObj.messages.push("Error While updating Details");
-              callback(retObj);
-          }else if(truck){
-              retObj.status=true;
-              retObj.messages.push("Truck Has successfully Assigned");
-              retObj.truck=truck;
-              callback(retObj);
-          }else{
-              retObj.messages.push("No Truck Found For the Given Registration ID");
-              callback(retObj);
-          }
-      });
+    TrucksColl.update({_id: {$in: truckIds}}, {$set: {groupId: groupId}}, {multi: true}, function (err, truck) {
+        // console.log(err);
+        if (err) {
+            retObj.messages.push("Error While updating Details");
+            callback(retObj);
+        } else if (truck) {
+            retObj.status = true;
+            retObj.messages.push("Truck Has successfully Assigned");
+            retObj.truck = truck;
+            callback(retObj);
+        } else {
+            retObj.messages.push("No Truck Found For the Given Registration ID");
+            callback(retObj);
+        }
+    });
+
 };
 
 Trucks.prototype.unAssignTrucks=function(jwt,truckIds,callback){
@@ -373,43 +374,150 @@ Trucks.prototype.findExpiryCount = function (jwt,callback) {
         messages: []
     };
 
-    // var todaysDate = new Date().toISOString();
-    // var dateplus30 = todaysDate.setDate(todaysDate.getDate() + 30);
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate()+30));
-    //console.log(dateplus30);
+
     async.parallel({
         fitnessExpiryCount: function (fitnessExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,fitnessExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 fitnessExpiryCallback(err, expiryCount);
             });
         },permitExpiryCount: function (permitExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,permitExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 permitExpiryCallback(err, expiryCount);
             });
         },insuranceExpiryCount: function (insuranceExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,insuranceExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 insuranceExpiryCallback(err, expiryCount);
             });
         },pollutionExpiryCount: function (pollutionExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,pollutionExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 pollutionExpiryCallback(err, expiryCount);
             });
         },taxExpiryCount: function (taxExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,taxDueDate:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 taxExpiryCallback(err, expiryCount);
             });
         }
     },function (populateErr, populateResults) {
-        //console.log(populateErr,populateResults);
         retObj.status = true;
         retObj.messages.push('Success');
         retObj.expiryCount = populateResults;
+        callback(retObj);
+    });
+
+};
+
+Trucks.prototype.findExpiryTrucks = function (jwt, callback) {
+    console.log('accountId', jwt.accountId)
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var registrationNo = "";
+    var fitnessExpiry = "--";
+    var permitExpiry = "--";
+    var insuranceExpiry = "--";
+    var pollutionExpiry = "--";
+    var taxDueDate = "--";
+    var data = [];
+    // var todaysDate = new Date().toISOString();
+    // var dateplus30 = todaysDate.setDate(todaysDate.getDate() + 30);
+    var today = new Date();
+    var dateplus30 = new Date(today.setDate(today.getDate() + 30));
+    //console.log(dateplus30);
+    /*async.parallel({
+        fitnessExpiry: function (fitnessExpiryCallback) {
+            TrucksColl.find({accountId: jwt.accountId,fitnessExpiry:{$lte:dateplus30}},{fitnessExpiry:1},function (err, trucks) {
+                console.log(trucks);
+                fitnessExpiryCallback(err, trucks);
+            });
+        },permitExpiry: function (permitExpiryCallback) {
+            TrucksColl.find({accountId: jwt.accountId,permitExpiry:{$lte:dateplus30}},function (err, trucks) {
+                //console.log(expiryCount);
+                permitExpiryCallback(err, trucks);
+            });
+        },insuranceExpiry: function (insuranceExpiryCallback) {
+            TrucksColl.find({accountId: jwt.accountId,insuranceExpiry:{$lte:dateplus30}},function (err, trucks) {
+                //console.log(expiryCount);
+                insuranceExpiryCallback(err, trucks);
+            });
+        },pollutionExpiry: function (pollutionExpiryCallback) {
+            TrucksColl.find({accountId: jwt.accountId,pollutionExpiry:{$lte:dateplus30}},function (err, trucks) {
+                //console.log(expiryCount);
+                pollutionExpiryCallback(err, trucks);
+            });
+        },taxExpiry: function (taxExpiryCallback) {
+            TrucksColl.find({accountId: jwt.accountId,taxDueDate:{$lte:dateplus30}},function (err, trucks) {
+                //console.log(expiryCount);
+                taxExpiryCallback(err, trucks);
+            });
+        }
+    },function (populateErr, populateResults) {*/
+    //console.log(populateErr,populateResults);
+
+    // TrucksColl.find({accountId: jwt.accountId, $or:[{fitnessExpiry:{$lte:dateplus30}},{permitExpiry:{$lte:dateplus30}},{insuranceExpiry:{$lte:dateplus30}},{pollutionExpiry:{$lte:dateplus30}},{taxDueDate:{$lte:dateplus30}}]}, function (populateErr, populateResults) {
+    TrucksColl.aggregate([{
+        $match: {
+            accountId: mongoose.Types.ObjectId(jwt.accountId),
+            $or: [{fitnessExpiry: {$lte: dateplus30}},
+                {permitExpiry: {$lte: dateplus30}},
+                {insuranceExpiry: {$lte: dateplus30}},
+                {pollutionExpiry: {$lte: dateplus30}},
+                {taxDueDate: {$lte: dateplus30}},
+                {fitnessExpiry: 1}]
+        }
+    },
+        {
+            $project: {
+                registrationNo: 1,
+                fitnessExpiry: 1, isfitnessExpiry: {$lte: ['$fitnessExpiry', dateplus30]},
+                permitExpiry: 1, ispermitExpiry: {$lte: ['$permitExpiry', dateplus30]},
+                insuranceExpiry: 1, isinsuranceExpiry: {$lte: ['$insuranceExpiry', dateplus30]},
+                pollutionExpiry: 1, ispollutionExpiry: {$lte: ['$pollutionExpiry', dateplus30]},
+                taxDueDate: 1, istaxDueDate: {$lte: ['$taxDueDate', dateplus30]}
+            }
+        }
+    ], function (populateErr, populateResults) {
+
+        for (var i = 0; i < populateResults.length; i++) {
+            if (populateResults[i].isfitnessExpiry === true) {
+                fitnessExpiry = populateResults[i].fitnessExpiry;
+            } else {
+                fitnessExpiry = "--";
+            }
+            if (populateResults[i].ispermitExpiry === true) {
+                permitExpiry = populateResults[i].permitExpiry;
+            } else {
+                permitExpiry = "--";
+            }
+            if (populateResults[i].isinsuranceExpiry === true) {
+                insuranceExpiry = populateResults[i].insuranceExpiry;
+            } else {
+                insuranceExpiry = "--";
+            }
+            if (populateResults[i].ispollutionExpiry === true) {
+                pollutionExpiry = populateResults[i].pollutionExpiry;
+            } else {
+                pollutionExpiry = "--";
+            }
+            if (populateResults[i].istaxDueDate === true) {
+                taxDueDate = populateResults[i].taxDueDate;
+            } else {
+                taxDueDate = "--";
+            }
+            data.push({
+                registrationNo: populateResults[i].registrationNo,
+                fitnessExpiry: fitnessExpiry,
+                permitExpiry: permitExpiry,
+                insuranceExpiry: insuranceExpiry,
+                pollutionExpiry: pollutionExpiry,
+                taxDueDate: taxDueDate
+            });
+        }
+        retObj.status = true;
+        retObj.messages.push('Success');
+        retObj.expiryTrucks = data;
         callback(retObj);
     });
 

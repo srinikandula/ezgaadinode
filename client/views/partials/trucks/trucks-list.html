@@ -1,20 +1,41 @@
 
-        <div class="main-right col-xs-9" ng-controller="TrucksController">
+        <div class="main-right col-xs-12" ng-controller="TrucksController">
 
-            <h3>Trucks</h3>
-            <button class="btn btn-blue pull-right mb-10" ng-click="goToEditTruckPage()">Add Truck</button>
+            <div class="col-xs-12 pall-zero mb-10">
+                <div class="col-sm-3 pall-zero"><h3>Trucks</h3></div>
+                <div class="col-xs-8 col-xs-push-1 pall-zero">
+                <div class="col-sm-8">
+                    <div class="input-group stylish-input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-addon">
+                        <button type="submit">
+                           <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                    </div>
+                </div>
+                <div class="col-sm-4 pall-zero pos-relative">
+                    <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                    <select class="form-control">
+                        <option value="" selected>All Vehicles</option>
+                        <option ng-repeat="trucks in currentPageOfTrucks">{{trucks.registrationNo}}</option>
+                    </select>
+                </div>
+                </div>
+            </div>
+
 
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckParams">
                 <tr ng-repeat="trucks in currentPageOfTrucks" style="text-align: center;">
                     <td data-title="'Reg No'" sortable="'registrationNo'" class="clickable-item col-sm-1">
                         {{trucks.registrationNo}}
                     </td>
-                    <td data-title="'TruckType'" sortable="'truckType'" class="clickable-item col-sm-1">{{
-                        trucks.truckType}}
-                    </td>
-                    <td data-title="'Tonnage'" sortable="'tonnage'" class="clickable-item col-sm-1">{{
-                        trucks.tonnage }}
-                    </td>
+                    <!--<td data-title="'TruckType'" sortable="'truckType'" class="clickable-item col-sm-1">{{-->
+                        <!--trucks.truckType}}-->
+                    <!--</td>-->
+                    <!--<td data-title="'Tonnage'" sortable="'tonnage'" class="clickable-item col-sm-1">{{-->
+                        <!--trucks.tonnage }}-->
+                    <!--</td>-->
                     <td data-title="'Permit'" sortable="'permitExpiry'" class="clickable-item col-sm-1">{{
                         trucks.permitExpiry | date:'yyyy-MM-dd'
                         }}
@@ -37,7 +58,7 @@
                     <td data-title="'Created By'" sortable="'createdByName'"
                         class="clickable-item col-sm-1">{{ trucks.attrs.createdByName }}
                     </td>
-                    <td data-title="'Action'" class="col-sm-2">
+                    <td data-title="'Action'" class="col-sm-1">
                         <a href="#" class="btn" ng-click="goToEditTruckPage(trucks._id)">
                             <span class="glyphicon glyphicon-pencil"></span></a>
 
@@ -50,6 +71,11 @@
                     <td colspan="8">No trucks Records exist.</td>
                 </tr>
             </table>
+            <div class="add-image pull-right">
+                <figure>
+                    <a href="#"  ng-click="goToEditTruckPage()"><img src="images/Add_Truck.png" alt="Add Truck" title="Add Truck"></a>
+                </figure>
+            </div>
 
         </div>
 

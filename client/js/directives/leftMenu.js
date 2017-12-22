@@ -4,7 +4,8 @@ app.directive('leftMenu', function () {
         template: '<div class="left-menu"> \n' +
         '        <ul class="list-unstyled">\n' +
         '           <li  ui-sref-active="active" class="left-menu-li">' +
-        '               <a  ui-sref="{{label | lowercase}}" class="left-menu-anchor" >{{label}}</a> \n' +
+        '               <a  ui-sref="{{label | lowercase}}" class="left-menu-anchor" >' +
+        '               <img src="images/{{label | lowercase}}.png" width="55" height="40">{{label}}</a> \n' +
         '           </li> \n'+
         '        </ul>\n' +
         '    </div>',

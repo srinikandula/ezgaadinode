@@ -7,10 +7,10 @@ app.directive('topNavigation', function () {
         '            <div class="col-sm-push-2 col-sm-10">\n' +
         '                <div class="body-nav">\n' +
         '                    <ul class="list-inline">\n' +
-        '                        <li ng-class="{selected: activeTab === \'dashboard\'}" ui-sref="dashboard">                                                          <a href="#" >FMS</a></li>\n' +
+        '                        <li ng-class="{selected: activeTab === \'dashboard\'}" ui-sref="dashboard">                                <a href="#" >FMS</a></li>\n' +
         '                        <li><a href="#">GPS Listing</a></li>\n' +
-        '                        <li ng-class="{selected: activeTab === \'groupMap\'}" ui-sref="groupMap">                                                            <a href="#">Group Map</a></li>\n' +
-        '                            <li ng-class="{selected: activeTab === \'trackMap\'}" ui-sref="trackMap">                                                        <a href="#">Track Map</a></li>\n' +
+        '                        <li ng-class="{selected: activeTab === \'groupMap\'}" ui-sref="groupMap">                                  <a href="#">Group Map</a></li>\n' +
+        '                            <li ng-class="{selected: activeTab === \'trackMap\'}" ui-sref="trackMap">                                     <a href="#">Track Map</a></li>\n' +
         '                        <li><a href="#">Create Group</a></li>\n' +
         '                        <li><a href="#">Trips</a></li>\n' +
         '                        <li><a href="#">Reports</a></li>\n' +

@@ -1,9 +1,6 @@
 
-<div class="main-right col-xs-9" ng-controller="paymentsById">
+<div class="main-temp col-xs-12 mt-20">
     <h3>Payments - {{partyName}}</h3>
-    <div class="toolbar-button-div pull-right mb-10">
-        &nbsp;
-    </div>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
         <tr ng-repeat="amountListByPartyId in results" style="text-align: center;">
 
@@ -38,5 +35,5 @@
         </tr>
     </table>
 </div>
-</div>
+
 
