@@ -75,6 +75,13 @@ AuthRouter.get('/vehicleExpense/:vehicleId', function (req, res) {
         res.send(result);
     });
 });
+
+AuthRouter.get('/shareExpensesDetailsViaEmail',function(req,res){
+    ExpenseCost.shareExpensesDetailsViaEmail(req.jwt,req.query, function (result) {
+        res.send(result);
+    });
+})
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

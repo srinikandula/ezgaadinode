@@ -10,6 +10,8 @@ var TripCollection = require('./../models/schemas').TripCollection;
 var ExpenseCostColl = require('./../models/schemas').ExpenseCostColl;
 var PartyCollection = require('./../models/schemas').PartyCollection;
 var NotificationColl = require('./../models/schemas').NotificationColl;
+var TrucksColl = require('./../models/schemas').TrucksColl;
+var DriversColl = require('./../models/schemas').DriversColl;
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -36,6 +38,171 @@ function addTripDetailsToNotification(data, callback) {
             callback(retObj);
         }
     });
+}
+
+function shareTripDetails(tripDetails, trip, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    PartyCollection.findOne({ _id: tripDetails.partyId }, function (err, partyData) {
+        if (err) {
+            retObj.messages.push("Error while share details, try Again");
+            callback(retObj);
+        } else if (partyData) {
+            TrucksColl.findOne({ _id: tripDetails.registrationNo }, function (err, truckData) {
+                if (err) {
+                    retObj.messages.push("Error while share details, try Again");
+                    callback(retObj);
+                } else if (truckData) {
+                    DriversColl.findOne({ _id: tripDetails.driverId }, function (err, driverData) {
+                        if (err) {
+                            retObj.messages.push("Error while share details, try Again");
+                            callback(retObj);
+                        } else if (driverData) {
+                            var notificationParams = {
+                                accountId: tripDetails.accountId,
+                                notificationType: 0,
+                                content: "Party Name: " + partyData.name + "," +
+                                    "Date : " + new Date(tripDetails.date).toLocaleDateString() + "," +
+                                    "Vehicle No:" + truckData.registrationNo + "," +
+                                    "Driver Name:" + driverData.fullName + "," +
+                                    "Driver Number:" + driverData.mobile + "," +
+                                    "Trip Lane:" + tripDetails.tripLane + "," +
+                                    "Tonnage :" + tripDetails.tonnage + "," +
+                                    "Rate:" + tripDetails.rate + "," +
+                                    "Amount:" + tripDetails.freightAmount,
+                                status: true,
+                                tripId: trip._id,
+                                message: "success"
+                            }
+                            if (partyData.isSms) {
+
+                                var smsParams = {
+                                    contact: partyData.contact,
+                                    message: "Hi " + partyData.name + ",\n" +
+                                        "Date : " + new Date(tripDetails.date).toLocaleString() + ",\n" +
+                                        "Vehicle No:" + truckData.registrationNo + ",\n" +
+                                        "Driver Name:" + driverData.fullName + ",\n" +
+                                        "Driver Number:" + driverData.mobile + ",\n" +
+                                        "Trip Lane:" + tripDetails.tripLane + ",\n" +
+                                        "Tonnage :" + tripDetails.tonnage + ",\n" +
+                                        "Rate:" + tripDetails.rate + ",\n" +
+                                        "Amount:" + tripDetails.freightAmount
+                                }
+                                SmsService.sendSMS(smsParams, function (smsResponse) {
+                                    if (smsResponse.status) {
+                                        if (partyData.isEmail) {
+                                            notificationType = 2;
+                                            var emailparams = {
+                                                templateName: 'addTripDetails',
+                                                subject: "Easygaadi Trip Details",
+                                                to: partyData.email,
+                                                data: {
+                                                    "date": new Date(tripDetails.date).toLocaleDateString(),
+                                                    "name": partyData.name,
+                                                    "vehicleNo": truckData.registrationNo,
+                                                    "driverName": driverData.fullName,
+                                                    "driverNumber": driverData.mobile,
+                                                    "tripLane": tripDetails.tripLane,
+                                                    "Tonnage": tripDetails.tonnage,
+                                                    "Rate": tripDetails.rate,
+                                                    "Amount": tripDetails.freightAmount
+                                                }//dataToEmail.tripsReport
+                                            };
+                                            emailService.sendEmail(emailparams, function (emailResponse) {
+
+                                                if (emailResponse.status) {
+                                                    notificationParams.notificationType = 2;
+                                                    notificationParams.status = true;
+                                                    notificationParams.message = "success";
+                                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                                        notificationResponse.trips = trip;
+                                                        callback(notificationResponse);
+                                                    })
+                                                } else {
+                                                    notificationParams.notificationType = 2;
+                                                    notificationParams.status = false;
+                                                    notificationParams.message = "SMS sent,but email failed";
+                                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                                        notificationResponse.trips = trip;
+                                                        callback(notificationResponse);
+                                                    })
+                                                }
+
+                                            })
+                                        } else {
+                                            notificationParams.notificationType = 0;
+                                            notificationParams.status = true;
+                                            notificationParams.message = "success";
+                                            addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                                notificationResponse.trips = trip;
+                                                callback(notificationResponse);
+                                            })
+                                        }
+                                    } else {
+                                        notificationParams.notificationType = 0;
+                                        notificationParams.status = false;
+                                        notificationParams.message = "SMS failed";
+                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                            notificationResponse.trips = trip;
+                                            callback(notificationResponse);
+                                        })
+                                    }
+                                })
+                            } else if (partyData.isEmail) {
+                                var emailparams = {
+                                    templateName: 'addTripDetails',
+                                    subject: "Easygaadi Trip Details",
+                                    to: partyData.email,
+                                    data: {
+                                        "date": new Date(tripDetails.date).toLocaleDateString(),
+                                        "name": partyData.name,
+                                        "vehicleNo": truckData.registrationNo,
+                                        "driverName": driverData.fullName,
+                                        "driverNumber": driverData.mobile,
+                                        "tripLane": tripDetails.tripLane,
+                                        "Tonnage": tripDetails.tonnage,
+                                        "Rate": tripDetails.rate,
+                                        "Amount": tripDetails.freightAmount
+                                    }//dataToEmail.tripsReport
+                                };
+                                emailService.sendEmail(emailparams, function (emailResponse) {
+                                    if (emailResponse.status) {
+                                        notificationParams.notificationType = 1;
+                                        notificationParams.status = true;
+                                        notificationParams.message = "success";
+                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                            notificationResponse.trips = trip;
+                                            callback(notificationResponse);
+                                        })
+                                    } else {
+                                        notificationParams.notificationType = 1;
+                                        notificationParams.status = false;
+                                        notificationParams.message = "email failed";
+                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                            notificationResponse.trips = trip;
+                                            callback(notificationResponse);
+                                        })
+                                    }
+                                })
+                            }
+
+                        } else {
+                            retObj.messages.push("Error while share details, try Again");
+                            callback(retObj);
+                        }
+                    })
+                } else {
+                    retObj.messages.push("Error while share details, try Again");
+                    callback(retObj);
+                }
+            })
+        } else {
+            retObj.messages.push("Error while share details, try Again");
+            callback(retObj);
+        }
+    })
 }
 
 Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
@@ -82,144 +249,10 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
                 callback(retObj);
             } else {
                 if (tripDetails.share) {
-                    
-                    PartyCollection.findOne({ _id: tripDetails.partyId }, function (err, partyData) {
-                        if (err) {
-                            retObj.messages.push("Error while share details, try Again");
-                            callback(retObj);
-                        } else if (partyData) {
-                            var notificationParams = {
-                                accountId: tripDetails.accountId,
-                                notificationType: 0,
-                                content: "Party Name: " + partyData.name + "," +
-                                    "Date : " + new Date(tripDetails.date) + "," +
-                                    "Vehicle No:" + tripDetails.vechicleNo + "," +
-                                    "Driver Name:" + tripDetails.driverName + "," +
-                                    "Driver Number:" + tripDetails.driverNumber + "," +
-                                    "Trip Lane:" + tripDetails.tripLane + "," +
-                                    "Tonnage :" + tripDetails.tonnage + "," +
-                                    "Rate:" + tripDetails.rate + "," +
-                                    "Amount:" + tripDetails.freightAmount,
-                                status: true,
-                                tripId: trip._id,
-                                message:"success"
-                            }
-                            if (partyData.isSms) {
-
-                                var smsParams = {
-                                    contact: partyData.contact,
-                                    message: "Hi " + partyData.name + ",\n" +
-                                        "Date : " + new Date(tripDetails.date) + ",\n" +
-                                        "Vehicle No:" + tripDetails.vechicleNo + ",\n" +
-                                        "Driver Name:" + tripDetails.driverName + ",\n" +
-                                        "Driver Number:" + tripDetails.driverNumber + ",\n" +
-                                        "Trip Lane:" + tripDetails.tripLane + ",\n" +
-                                        "Tonnage :" + tripDetails.tonnage + ",\n" +
-                                        "Rate:" + tripDetails.rate + ",\n" +
-                                        "Amount:" + tripDetails.freightAmount
-                                }
-                                SmsService.sendSMS(smsParams, function (smsResponse) {
-                                    if (smsResponse.status) {
-                                        if (partyData.isEmail) {
-                                            notificationType = 2;
-                                            var emailparams = {
-                                                templateName: 'addTripDetails',
-                                                subject: "Easygaadi Trip Details",
-                                                to: partyData.email,
-                                                data: {
-                                                    "date": new Date(tripDetails.date),
-                                                    "name": partyData.name,
-                                                    "vehicleNo": tripDetails.vechicleNo,
-                                                    "driverName": tripDetails.driverName,
-                                                    "driverNumber": tripDetails.driverNumber,
-                                                    "tripLane": tripDetails.tripLane,
-                                                    "Tonnage": tripDetails.tonnage,
-                                                    "Rate": tripDetails.rate,
-                                                    "Amount": tripDetails.freightAmount
-                                                }//dataToEmail.tripsReport
-                                            };
-                                            emailService.sendEmail(emailparams, function (emailResponse) {
-                                               
-                                                if (emailResponse.status) {
-                                                    notificationParams.notificationType=2;
-                                                    notificationParams.status=true;
-                                                    notificationParams.message="success";
-                                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                                        notificationResponse.trips = trip;
-                                                        callback(notificationResponse);
-                                                    })
-                                                } else {
-                                                    notificationParams.notificationType=2;
-                                                    notificationParams.status=false;
-                                                    notificationParams.message="SMS sent,but email failed";
-                                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                                        notificationResponse.trips = trip;
-                                                        callback(notificationResponse);
-                                                    })
-                                                }
-
-                                            })
-                                        } else {
-                                            notificationParams.notificationType=0;
-                                            notificationParams.status=true;
-                                            notificationParams.message="success";
-                                            addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                                notificationResponse.trips = trip;
-                                                callback(notificationResponse);
-                                            })
-                                        }
-                                    } else {
-                                        notificationParams.notificationType=0;
-                                        notificationParams.status=false;
-                                        notificationParams.message="SMS failed";
-                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                            notificationResponse.trips = trip;
-                                            callback(notificationResponse);
-                                        })
-                                    }
-                                })
-                            } else if (partyData.isEmail) {
-                                var emailparams = {
-                                    templateName: 'addTripDetails',
-                                    subject: "Easygaadi Trip Details",
-                                    to: partyData.email,
-                                    data: {
-                                        "date": new Date(tripDetails.date),
-                                        "name": partyData.name,
-                                        "vehicleNo": tripDetails.vechicleNo,
-                                        "driverName": tripDetails.driverName,
-                                        "driverNumber": tripDetails.driverNumber,
-                                        "tripLane": tripDetails.tripLane,
-                                        "Tonnage": tripDetails.tonnage,
-                                        "Rate": tripDetails.rate,
-                                        "Amount": tripDetails.freightAmount
-                                    }//dataToEmail.tripsReport
-                                };
-                                emailService.sendEmail(emailparams, function (emailResponse) {
-                                    if (emailResponse.status) {
-                                        notificationParams.notificationType=1;
-                                        notificationParams.status=true;
-                                        notificationParams.message="success";
-                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                            notificationResponse.trips = trip;
-                                            callback(notificationResponse);
-                                        })
-                                    } else {
-                                        notificationParams.notificationType=1;
-                                        notificationParams.status=false;
-                                        notificationParams.message="email failed";
-                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                            notificationResponse.trips = trip;
-                                            callback(notificationResponse);
-                                        })
-                                    }
-                                })
-                            }
-                        } else {
-                            retObj.messages.push("Error while share details, try Again");
-                            callback(retObj);
-                        }
+                    shareTripDetails(tripDetails, trip, function (shareResponse) {
+                        callback(shareResponse);
                     })
+
                 } else {
                     retObj.status = true;
                     retObj.messages.push("Trip Added Successfully");
@@ -291,10 +324,24 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
                 retObj.messages.push("Error while updating Trip, try Again");
                 callback(retObj);
             } else if (trip) {
-                retObj.status = true;
-                retObj.messages.push("Trip updated successfully");
-                retObj.trip = trip;
-                callback(retObj);
+                if (tripDetails.share) {
+                    shareTripDetails(tripDetails, trip, function (shareResponse) {
+                        if (shareResponse.status) {
+                            retObj.status = true;
+                            retObj.messages.push("Trip updated successfully");
+                            retObj.trip = trip;
+                            callback(retObj);
+                        } else {
+                            shareResponse.trip = trip;
+                            callback(shareResponse);
+                        }
+                    })
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push("Trip updated successfully");
+                    retObj.trip = trip;
+                    callback(retObj);
+                }
             } else {
                 retObj.messages.push("Error, finding trip");
                 callback(retObj);
@@ -971,4 +1018,42 @@ Trips.prototype.countTrips = function (jwt, callback) {
         }
     })
 };
+
+Trips.prototype.shareRevenueDetailsByVechicleViaEmail = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.status = false;
+        retObj.messages.push('Please enter valid email');
+        callback(retObj);
+    }else{
+        Trips.prototype.findRevenueByVehicle(jwt, params, function (revenueResponse) {
+            if (revenueResponse.status) {
+                var emailparams = {
+                    templateName: 'shareRevenueDetailsByVechicle',
+                    subject: "Easygaadi Revenue Details",
+                    to: params.email,
+                    data: {
+                        revenue: revenueResponse.revenue,
+                        grossAmounts: revenueResponse.grossAmounts
+                    }
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push('Revenue details share successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            } else {
+                callback(revenueResponse);
+            }
+        })
+    }
+    
+}
 module.exports = new Trips();

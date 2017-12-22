@@ -63,6 +63,13 @@ app.factory('PaymentsService', function ($http) {
                 url: '/v1/payments/countPayments',
                 method: "GET"
             }).then(success, error)
+        },
+        sharePaymentsDetailsByPartyViaEmail:function(params,success,error){
+            $http({
+                url:'/v1/payments/sharePaymentsDetailsByPartyViaEmail',
+                method:"GET",
+                params:params
+            }).then(success,error);
         }
     }
 });

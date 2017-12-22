@@ -64,6 +64,13 @@ app.factory('TripServices', function ($http) {
                 url: '/v1/trips/total/count',
                 method: "GET"
             }).then(success, error)
+        },
+        shareRevenueDetailsByVechicleViaEmail:function(params,success,error){
+            $http({
+                url:'/v1/trips/shareRevenueDetailsByVechicleViaEmail',
+                method:"GET",
+                params:params
+            }).then(success,error);
         }
 
     }

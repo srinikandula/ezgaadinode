@@ -10,8 +10,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             toDate: "",
             regNumber: ""
         }
-        $scope.partyId="";
-        $scope.regNumber ="";
+        $scope.partyId = "";
+        $scope.regNumber = "";
 
         $scope.template = $scope.templates[0];
         $scope.activated = '0';
@@ -47,7 +47,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             $scope.getAmountsBypartyId(id);
             $scope.template = $scope.templates[5];
             $scope.activated = '4';
-            
+
         }
         $scope.getTruckExpirs = function () {
             $scope.template = $scope.templates[6];
@@ -103,7 +103,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         };
         $scope.getRevenueByVehicle = function () {
-            console.log('revenue',{
+            console.log('revenue', {
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
                 regNumber: $scope.regNumber
@@ -128,8 +128,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         };
 
-        $scope.getAllTrucks=function(){
-            TrucksService.getAllTrucks(null,function(success){
+        $scope.getAllTrucks = function () {
+            TrucksService.getAllTrucks(null, function (success) {
                 if (success.data.status) {
                     $scope.trucksList = success.data.trucks;
                 } else {
@@ -137,7 +137,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                         Notification.error({ message: message });
                     });
                 }
-            },function(error){
+            }, function (error) {
 
             })
         }
@@ -169,94 +169,94 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         }
         $scope.selectTruckId = function (truck) {
             $scope.regNumber = truck._id;
-            console.log('trvfsh',$scope.regNumber)
+            console.log('trvfsh', $scope.regNumber)
         };
         $scope.selectPartyId = function (party) {
             $scope.partyId = party._id;
         };
-        $scope.resetPartyName=function(){
-            $scope.partyId ="";
+        $scope.resetPartyName = function () {
+            $scope.partyId = "";
         }
-        
-        $scope.resetTruckName=function(){
+
+        $scope.resetTruckName = function () {
             $scope.regNumber = "";
         }
-            $scope.getExpenseByVehicle = function () {
-                console.log('expenses',{
-                    fromDate: $scope.filters.fromDate,
-                    toDate: $scope.filters.toDate,
-                    regNumber: $scope.regNumber
-                });
-                ExpenseService.findExpensesbyGroupVehicle({
-                    fromDate: $scope.filters.fromDate,
-                    toDate: $scope.filters.toDate,
-                    regNumber: $scope.regNumber
-                }, function (success) {
-                    if (success.data.status) {
-                        $scope.totalExpensesbyVehicle = success.data.expenses;
-                        $scope.totalExpenses = success.data.totalExpenses;
+        $scope.getExpenseByVehicle = function () {
+            console.log('expenses', {
+                fromDate: $scope.filters.fromDate,
+                toDate: $scope.filters.toDate,
+                regNumber: $scope.regNumber
+            });
+            ExpenseService.findExpensesbyGroupVehicle({
+                fromDate: $scope.filters.fromDate,
+                toDate: $scope.filters.toDate,
+                regNumber: $scope.regNumber
+            }, function (success) {
+                if (success.data.status) {
+                    $scope.totalExpensesbyVehicle = success.data.expenses;
+                    $scope.totalExpenses = success.data.totalExpenses;
 
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
-                        });
-                    }
-                }, function (err) {
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            }, function (err) {
 
-                });
-            };
-           
-
+            });
+        };
 
 
-            $scope.getTotalAmountReceivable = function () {
-                PaymentsService.getTotalPaymentsReceivable(function (success) {
-                    if (success.data.status) {
-                        $scope.amounts = success.data.amounts;
-                        //  console.log("-->", $scope.amounts);
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
-                        });
-                    }
-                }, function (err) {
 
-                });
-            };
-            $scope.getTotalAmountReceivable();
 
-            $scope.getAmountsByparty = function () {
-                PaymentsService.getDuesByParty({
-                    fromDate: $scope.filters.fromDate,
-                    toDate: $scope.filters.toDate,
-                    partyId: $scope.partyId
-                }, function (success) {
-                    if (success.data.status) {
-                        $scope.parties = success.data.parties;
-                        $scope.partiesAmount = success.data.grossAmounts;
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
-                        });
-                    }
-                }, function (err) {
+        $scope.getTotalAmountReceivable = function () {
+            PaymentsService.getTotalPaymentsReceivable(function (success) {
+                if (success.data.status) {
+                    $scope.amounts = success.data.amounts;
+                    //  console.log("-->", $scope.amounts);
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            }, function (err) {
 
-                });
-            };
-            $scope.getAmountsByparty();
+            });
+        };
+        $scope.getTotalAmountReceivable();
 
-            $scope.getAllParties = function () {
-                PartyService.getParties(null, function (success) {
-                    if (success.data.status) {
-                        $scope.partiesList = success.data.parties;
-                    } else {
+        $scope.getAmountsByparty = function () {
+            PaymentsService.getDuesByParty({
+                fromDate: $scope.filters.fromDate,
+                toDate: $scope.filters.toDate,
+                partyId: $scope.partyId
+            }, function (success) {
+                if (success.data.status) {
+                    $scope.parties = success.data.parties;
+                    $scope.partiesAmount = success.data.grossAmounts;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            }, function (err) {
 
-                    }
-                }, function (err) {
+            });
+        };
+        $scope.getAmountsByparty();
 
-                });
-            }
-      
+        $scope.getAllParties = function () {
+            PartyService.getParties(null, function (success) {
+                if (success.data.status) {
+                    $scope.partiesList = success.data.parties;
+                } else {
+
+                }
+            }, function (err) {
+
+            });
+        }
+
         $scope.getAmountsBypartyWithFilters = function () {
             var params = $scope.filters;
             params.error = [];
@@ -272,7 +272,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 $scope.getAmountsByparty();
             }
         }
-        
+
 
 
 
@@ -298,7 +298,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
                 partyId: $scope.partyId
-            },function (success) {
+            }, function (success) {
                 if (success.data.status) {
                     $scope.parties = success.data.parties;
                     $scope.partiesAmount = success.data.grossAmounts;
@@ -340,5 +340,114 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         };
 
+        $scope.shareRevenueDetailsByVechicleViaEmail = function () {
+            swal({
+                title: 'Share revenue data using email',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                    return new Promise((resolve) => {
+                        TripServices.shareRevenueDetailsByVechicleViaEmail({
+                            fromDate: $scope.filters.fromDate,
+                            toDate: $scope.filters.toDate,
+                            regNumber: $scope.regNumber,
+                            email:email
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
+                                success.data.messages.forEach(function (message) {
+                                    swal.showValidationError(message);
+                                });
+                            }
+                        }, function (error) {
+                        })
+                    })
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.value) {
+                    swal({
+                        type: 'success',
+                        html: 'Revenue details sent successfully'
+                    })
+                }
+            })
+        }
+
+        $scope.sharePaymentsDetailsByPartyViaEmail=function(){
+            swal({
+                title: 'Share revenue data using email',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                    return new Promise((resolve) => {
+                        PaymentsService.sharePaymentsDetailsByPartyViaEmail({
+                            fromDate: $scope.filters.fromDate,
+                            toDate: $scope.filters.toDate,
+                            partyId: $scope.partyId,
+                            email:email
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
+                                success.data.messages.forEach(function (message) {
+                                    swal.showValidationError(message);
+                                });
+                            }
+                        }, function (error) {
+                        })
+                    })
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.value) {
+                    swal({
+                        type: 'success',
+                        html: 'Payments details sent successfully'
+                    })
+                }
+            })
+        }
+        $scope.shareExpensesDetailsViaEmail=function(){
+            swal({
+                title: 'Share expense data',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                    return new Promise((resolve) => {
+                        ExpenseService.shareExpensesDetailsViaEmail({
+                            fromDate: $scope.filters.fromDate,
+                            toDate: $scope.filters.toDate,
+                            regNumber: $scope.regNumber,
+                            email:email
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
+                                success.data.messages.forEach(function (message) {
+                                    swal.showValidationError(message);
+                                });
+                            }
+                        }, function (error) {
+                        })
+                    })
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.value) {
+                    swal({
+                        type: 'success',
+                        html: 'Expense details sent successfully'
+                    })
+                }
+            })
+        }
     }]);
 

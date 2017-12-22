@@ -10,6 +10,7 @@ var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
 var Utils = require('./utils');
+var emailService=require('./mailerApi');
 
 var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
@@ -418,5 +419,42 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt,params, callback) {
     })
 };
 
+PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.status = false;
+        retObj.messages.push('Please enter valid email');
+        callback(retObj);
+    }else{
+        PaymentsReceived.prototype.getDuesByParty(jwt, params, function (revenueResponse) {
+            if (revenueResponse.status) {
+                var emailparams = {
+                    templateName: 'sharesPaymentsDetailsByParty',
+                    subject: "Easygaadi Payments Details",
+                    to: params.email,
+                    data: {
+                        parties: revenueResponse.parties,
+                        grossAmounts: revenueResponse.grossAmounts
+                    }
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push('Payments details share successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            } else {
+                callback(revenueResponse);
+            }
+        })
+    }
+    
+}
 
 module.exports = new PaymentsReceived();
