@@ -1,7 +1,6 @@
 app.factory('PartyService', function ($http, $cookies) {
     return {
         addParty: function (partyDetails, success, error) {
-            console.log(partyDetails);
             $http({
                 url: '/v1/party/addParty',
                 method: "POST",
@@ -213,6 +212,8 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             }
         }
     };
-
+    $scope.cancel = function () {
+        $state.go('parties');
+    }
 }]);
 

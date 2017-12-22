@@ -225,8 +225,9 @@ Events.prototype.getTrucksData = function (callback) {
 
     AccountsColl.find({},function(error, accountsData){
         accountsData.forEach(function (account) {
-            if(account.userName !== "") {
-                var trucksDataQuery = "select t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type where c.gps_account_id='" + account.userName + "'";
+            console.log('userName : ',account.userName+' --> '+account._id);
+            //if(account.userName !== "") {
+                var trucksDataQuery = "select t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type where c.gps_account_id='" + account.userName + "'";
                 pool_crm.query(trucksDataQuery, function(err, queryData) {
                     if(err) {
                         retObj.status = false;
@@ -250,7 +251,7 @@ Events.prototype.getTrucksData = function (callback) {
                         }
                     }
                 });
-            }
+            //}
         });
     });
 }

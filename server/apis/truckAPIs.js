@@ -110,6 +110,7 @@ Trucks.prototype.assignTrucks=function(jwt,groupId,truckIds,callback){
             callback(retObj);
         }
     });
+
 };
 
 Trucks.prototype.unAssignTrucks=function(jwt,truckIds,callback){
@@ -373,40 +374,32 @@ Trucks.prototype.findExpiryCount = function (jwt,callback) {
         messages: []
     };
 
-    // var todaysDate = new Date().toISOString();
-    // var dateplus30 = todaysDate.setDate(todaysDate.getDate() + 30);
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate()+30));
-    //console.log(dateplus30);
+
     async.parallel({
         fitnessExpiryCount: function (fitnessExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,fitnessExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 fitnessExpiryCallback(err, expiryCount);
             });
         },permitExpiryCount: function (permitExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,permitExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 permitExpiryCallback(err, expiryCount);
             });
         },insuranceExpiryCount: function (insuranceExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,insuranceExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 insuranceExpiryCallback(err, expiryCount);
             });
         },pollutionExpiryCount: function (pollutionExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,pollutionExpiry:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 pollutionExpiryCallback(err, expiryCount);
             });
         },taxExpiryCount: function (taxExpiryCallback) {
             TrucksColl.count({accountId: jwt.accountId,taxDueDate:{$lte:dateplus30}},function (err, expiryCount) {
-                //console.log(expiryCount);
                 taxExpiryCallback(err, expiryCount);
             });
         }
     },function (populateErr, populateResults) {
-        //console.log(populateErr,populateResults);
         retObj.status = true;
         retObj.messages.push('Success');
         retObj.expiryCount = populateResults;
