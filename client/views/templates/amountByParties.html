@@ -1,7 +1,7 @@
 
-<div class="main-temp col-xs-12 mt-20">
+<div class="main-temp col-xs-12 mt-20" ng-init="getAmountsByparty();getAllParties();">
     <div class="col-xs-12 pall-zero db-expenses">
-        <div class="col-xs-3 pall-zero"><p>Total Expenses</p></div>
+        <div class="col-xs-3 pall-zero"><p>Total Receivables</p></div>
         <div class="col-xs-9 pall-zero">
             <ul class="list-inline report-expense">
                 <li class="filterFromDate">
@@ -13,19 +13,22 @@
                 </li>
                 <li class="col-xs-3 pall-zero pos-relative">
                     <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                    <input type="text" ng-model="filters.regNumber"
-                           uib-typeahead="totalExpensesbyVehicle.regNumber for totalExpensesbyVehicle in totalExpensesbyVehicle | filter:$viewValue"
+                    
+
+                           <input type="text" ng-model="filters.partyName" 
+                           uib-typeahead="party.name for party in partiesList | filter:$viewValue"
                            class="form-control textfield" typeahead-min-length="1"
-                           typeahead-on-select="selectTruckId($item)"
-                           typeahead-select-on-exact="true" placeholder="Registration Num"
-                           typeahead-no-results="noTrucks" autocomplete="false">
+                           typeahead-on-select="selectPartyId($item)"
+                           ng-change="resetPartyName();"
+                           typeahead-select-on-exact="true" placeholder="Party Name"
+                           typeahead-no-results="noParty" autocomplete="false">
                     <div ng-show="noTrucks">
                         <i class="glyphicon glyphicon-remove red"></i>
                         <span class="red"> No Results Found </span>
                     </div>
                 </li>
                 <li class="col-xs-1">
-                    <button ng-click="validateFilters()" type="button" class="btn go">Go</button>
+                    <button ng-click="getAmountsBypartyWithFilters()" type="button" class="btn go">Go</button>
                 </li>
             </ul>
             <ul class="list-inline mailDownload">

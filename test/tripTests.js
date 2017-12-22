@@ -93,8 +93,8 @@ describe('TripTest', () => {
             */
             let partyData = {
                 "name": "Party1",
-                "contact": 9999999999,
-                "email": "party1@gmail.com",
+                "contact": 7382042321,
+                "email": "naresh.d@mtwlabs.com",
                 "city": "WRL",
                 "tripLanes": [
                     {
@@ -103,7 +103,10 @@ describe('TripTest', () => {
                         "name": "WRL-HYD",
                         "index": 0
                     }
-                ]
+                ],
+                "isSms":true,
+                "isEmail":false,
+                "partyType":"isSupplier"
             };
 
             async.parallel({
@@ -166,7 +169,7 @@ describe('TripTest', () => {
                                 res.body.party.should.have.property('name');
                                 res.body.party.should.have.property('name').eql('Party1');
                                 res.body.party.should.have.property('contact');
-                                res.body.party.should.have.property('contact').eql(9999999999);
+                                res.body.party.should.have.property('contact').eql(7382042321);
                                 partyId = res.body.party._id;
                                 partyCallback(error, partyId);
                             });
@@ -181,7 +184,8 @@ describe('TripTest', () => {
                     "registrationNo": truckId,
                     "partyId": partyId,
                     "driverId": driverId,
-                    "freightAmount": 1500
+                    "freightAmount": 1500,
+                    "share":true
                 };
                 TripCollection.remove({}, function (error, result) {
                     chai.request(server)
@@ -189,6 +193,7 @@ describe('TripTest', () => {
                         .send(tripData)
                         .set(headerData)
                         .end((err, res) => {
+                            console.log('reee====>',res.body);
                             expect(err).to.be.null;
                             res.should.have.status(200);
                             res.body.should.be.a('object');

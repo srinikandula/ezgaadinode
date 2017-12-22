@@ -73,6 +73,7 @@ var truckSchema = new mongoose.Schema({
     taxDueDate: Date,
     updatedBy: String,
     createdBy: String,
+    status: Number,
     attrs: {}
 }, {timestamps: true});
 
@@ -93,7 +94,8 @@ var tripSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     paymentHistory: [],
-    attrs: {}
+    attrs: {},
+    share:{type:Boolean,default:false}
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
@@ -106,7 +108,10 @@ var partySchema = new mongoose.Schema({
     tripLanes:[],
     updatedBy: String,
     createdBy: String,
-    attrs: {}
+    attrs: {},
+    partyType:String,
+    isEmail:{type:Boolean,default:false},
+    isSms:{type:Boolean,default:false}
 }, {timestamps: true});
 
 
@@ -145,6 +150,7 @@ var expensesSchema = new mongoose.Schema({
     description:String,
     date: Date,
     cost: Number,
+    mode: String,
     updatedBy: String,
     createdBy: String,
     isDefault: {type: Boolean, default: false},
@@ -185,6 +191,15 @@ var otpSchema = mongoose.Schema({
     contactPhone:Number
 },{timestamps: String});
 
+var notificationsSchema=mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    notificationType:Number,// 0 -SMS, 1-EMAIL, 2-BOTH
+    content:String,
+    status:{type:Boolean,default:false},
+    tripId:{type: ObjectId, ref: 'trips'},
+    message:String
+},{timestamps: String})
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -197,5 +212,6 @@ module.exports = {
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
     paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
     GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
-    OtpColl:mongoose.model('otps',otpSchema,'otps')
+    OtpColl:mongoose.model('otps',otpSchema,'otps'),
+    NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications')
 };

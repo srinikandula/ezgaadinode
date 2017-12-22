@@ -8,13 +8,35 @@ const ObjectId = mongoose.Types.ObjectId;
 
 var TripCollection = require('./../models/schemas').TripCollection;
 var ExpenseCostColl = require('./../models/schemas').ExpenseCostColl;
-var config = require('./../config/config');
+var PartyCollection = require('./../models/schemas').PartyCollection;
+var NotificationColl = require('./../models/schemas').NotificationColl;
+
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
 var emailService = require('./mailerApi');
+var SmsService = require('./smsApi');
 
 var Trips = function () {
 };
+
+function addTripDetailsToNotification(data, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var notification = new NotificationColl(data);
+    notification.save(function (err, notiData) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Trip Added Successfully");
+            callback(retObj);
+        }
+    });
+}
 
 Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     var retObj = {
@@ -59,10 +81,151 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
                 retObj.messages.push("Error while adding trip, try Again");
                 callback(retObj);
             } else {
-                retObj.status = true;
-                retObj.messages.push("Trip Added Successfully");
-                retObj.trips = trip;
-                callback(retObj);
+                if (tripDetails.share) {
+                    
+                    PartyCollection.findOne({ _id: tripDetails.partyId }, function (err, partyData) {
+                        if (err) {
+                            retObj.messages.push("Error while share details, try Again");
+                            callback(retObj);
+                        } else if (partyData) {
+                            var notificationParams = {
+                                accountId: tripDetails.accountId,
+                                notificationType: 0,
+                                content: "Party Name: " + partyData.name + "," +
+                                    "Date : " + new Date(tripDetails.date) + "," +
+                                    "Vehicle No:" + tripDetails.vechicleNo + "," +
+                                    "Driver Name:" + tripDetails.driverName + "," +
+                                    "Driver Number:" + tripDetails.driverNumber + "," +
+                                    "Trip Lane:" + tripDetails.tripLane + "," +
+                                    "Tonnage :" + tripDetails.tonnage + "," +
+                                    "Rate:" + tripDetails.rate + "," +
+                                    "Amount:" + tripDetails.freightAmount,
+                                status: true,
+                                tripId: trip._id,
+                                message:"success"
+                            }
+                            if (partyData.isSms) {
+
+                                var smsParams = {
+                                    contact: partyData.contact,
+                                    message: "Hi " + partyData.name + ",\n" +
+                                        "Date : " + new Date(tripDetails.date) + ",\n" +
+                                        "Vehicle No:" + tripDetails.vechicleNo + ",\n" +
+                                        "Driver Name:" + tripDetails.driverName + ",\n" +
+                                        "Driver Number:" + tripDetails.driverNumber + ",\n" +
+                                        "Trip Lane:" + tripDetails.tripLane + ",\n" +
+                                        "Tonnage :" + tripDetails.tonnage + ",\n" +
+                                        "Rate:" + tripDetails.rate + ",\n" +
+                                        "Amount:" + tripDetails.freightAmount
+                                }
+                                SmsService.sendSMS(smsParams, function (smsResponse) {
+                                    if (smsResponse.status) {
+                                        if (partyData.isEmail) {
+                                            notificationType = 2;
+                                            var emailparams = {
+                                                templateName: 'addTripDetails',
+                                                subject: "Easygaadi Trip Details",
+                                                to: partyData.email,
+                                                data: {
+                                                    "date": new Date(tripDetails.date),
+                                                    "name": partyData.name,
+                                                    "vehicleNo": tripDetails.vechicleNo,
+                                                    "driverName": tripDetails.driverName,
+                                                    "driverNumber": tripDetails.driverNumber,
+                                                    "tripLane": tripDetails.tripLane,
+                                                    "Tonnage": tripDetails.tonnage,
+                                                    "Rate": tripDetails.rate,
+                                                    "Amount": tripDetails.freightAmount
+                                                }//dataToEmail.tripsReport
+                                            };
+                                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                               
+                                                if (emailResponse.status) {
+                                                    notificationParams.notificationType=2;
+                                                    notificationParams.status=true;
+                                                    notificationParams.message="success";
+                                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                                        notificationResponse.trips = trip;
+                                                        callback(notificationResponse);
+                                                    })
+                                                } else {
+                                                    notificationParams.notificationType=2;
+                                                    notificationParams.status=false;
+                                                    notificationParams.message="SMS sent,but email failed";
+                                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                                        notificationResponse.trips = trip;
+                                                        callback(notificationResponse);
+                                                    })
+                                                }
+
+                                            })
+                                        } else {
+                                            notificationParams.notificationType=0;
+                                            notificationParams.status=true;
+                                            notificationParams.message="success";
+                                            addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                                notificationResponse.trips = trip;
+                                                callback(notificationResponse);
+                                            })
+                                        }
+                                    } else {
+                                        notificationParams.notificationType=0;
+                                        notificationParams.status=false;
+                                        notificationParams.message="SMS failed";
+                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                            notificationResponse.trips = trip;
+                                            callback(notificationResponse);
+                                        })
+                                    }
+                                })
+                            } else if (partyData.isEmail) {
+                                var emailparams = {
+                                    templateName: 'addTripDetails',
+                                    subject: "Easygaadi Trip Details",
+                                    to: partyData.email,
+                                    data: {
+                                        "date": new Date(tripDetails.date),
+                                        "name": partyData.name,
+                                        "vehicleNo": tripDetails.vechicleNo,
+                                        "driverName": tripDetails.driverName,
+                                        "driverNumber": tripDetails.driverNumber,
+                                        "tripLane": tripDetails.tripLane,
+                                        "Tonnage": tripDetails.tonnage,
+                                        "Rate": tripDetails.rate,
+                                        "Amount": tripDetails.freightAmount
+                                    }//dataToEmail.tripsReport
+                                };
+                                emailService.sendEmail(emailparams, function (emailResponse) {
+                                    if (emailResponse.status) {
+                                        notificationParams.notificationType=1;
+                                        notificationParams.status=true;
+                                        notificationParams.message="success";
+                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                            notificationResponse.trips = trip;
+                                            callback(notificationResponse);
+                                        })
+                                    } else {
+                                        notificationParams.notificationType=1;
+                                        notificationParams.status=false;
+                                        notificationParams.message="email failed";
+                                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                            notificationResponse.trips = trip;
+                                            callback(notificationResponse);
+                                        })
+                                    }
+                                })
+                            }
+                        } else {
+                            retObj.messages.push("Error while share details, try Again");
+                            callback(retObj);
+                        }
+                    })
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push("Trip Added Successfully");
+                    retObj.trips = trip;
+                    callback(retObj);
+                }
             }
         });
     }
@@ -74,7 +237,7 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
         messages: []
     };
 
-    TripCollection.findOne({_id: tripId, accountId: jwt.accountId}, function (err, trip) {
+    TripCollection.findOne({ _id: tripId, accountId: jwt.accountId }, function (err, trip) {
         if (err) {
             retObj.messages.push("Error while finding trip, try Again");
             callback(retObj);
@@ -121,9 +284,9 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
 
     tripDetails = Utils.removeEmptyFields(tripDetails);
 
-    TripCollection.findOneAndUpdate({_id: tripDetails._id},
-        {$set: tripDetails},
-        {new: true}, function (err, trip) {
+    TripCollection.findOneAndUpdate({ _id: tripDetails._id },
+        { $set: tripDetails },
+        { new: true }, function (err, trip) {
             if (err) {
                 retObj.messages.push("Error while updating Trip, try Again");
                 callback(retObj);
@@ -166,7 +329,7 @@ Trips.prototype.getAll = function (jwt, params, callback) {
             async.parallel({
                 trips: function (tripsCallback) {
                     TripCollection
-                        .find({'accountId': jwt.accountId})
+                        .find({ 'accountId': jwt.accountId })
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)
@@ -223,7 +386,7 @@ Trips.prototype.getAll = function (jwt, params, callback) {
             async.parallel({
                 trips: function (tripsCallback) {
                     TripCollection
-                        .find({'accountId': jwt.accountId, 'groupId': jwt.id})
+                        .find({ 'accountId': jwt.accountId, 'groupId': jwt.id })
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)
@@ -289,11 +452,11 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
     async.parallel({
         trips: function (tripsCallback) {
             TripCollection
-                .find({'accountId': jwt.accountId})
+                .find({ 'accountId': jwt.accountId })
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
@@ -359,12 +522,12 @@ Trips.prototype.deleteTrip = function (tripId, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        TripCollection.find({_id: tripId}, function (err) {
+        TripCollection.find({ _id: tripId }, function (err) {
             if (err) {
                 retObj.messages.push('No Trips Found');
                 callback(retObj);
             } else {
-                TripCollection.remove({_id: tripId}, function (err) {
+                TripCollection.remove({ _id: tripId }, function (err) {
                     if (err) {
                         retObj.messages.push('Error deleting trip');
                         callback(retObj);
@@ -400,7 +563,7 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        var query = {date: {$gte: filter.fromDate, $lte: filter.toDate}};
+        var query = { date: { $gte: filter.fromDate, $lte: filter.toDate } };
         if (filter.registrationNo) {
             query.registrationNo = filter.registrationNo;
         }
@@ -507,7 +670,7 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
                 if (dataToEmail.tripsReport[i].trip.payments.freightAmount) payment['Freight Amount'] = dataToEmail.tripsReport[i].trip.payments.freightAmount;
                 if (dataToEmail.tripsReport[i].trip.payments.advance) payment['Advance'] = dataToEmail.tripsReport[i].trip.payments.advance;
                 if (dataToEmail.tripsReport[i].trip.payments.balance) payment['Balance'] = dataToEmail.tripsReport[i].trip.payments.balance;
-                dataSimplifiedForEmail.push({trip: trip, payment: payment});
+                dataSimplifiedForEmail.push({ trip: trip, payment: payment });
             }
             var params = {
                 templateName: 'tripReport',
@@ -530,23 +693,20 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now
-            TripCollection.aggregate([{$match: {"accountId": ObjectId(jwt.accountId)}},
-                {$group: {_id: null, totalFreight: {$sum: "$freightAmount"}}}],
+            TripCollection.aggregate([{ $match: { "accountId": ObjectId(jwt.accountId) } },
+            { $group: { _id: null, totalFreight: { $sum: "$freightAmount" } } }],
                 function (err, totalFreight) {
-                    //console.log(totalFreight);
                     callback(err, totalFreight);
                 });
         },
         expensesTotal: function (callback) {
-            ExpenseCostColl.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
-                {$group: {_id: null, totalExpenses: {$sum: "$cost"}}},
+            ExpenseCostColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
+                { $group: { _id: null, totalExpenses: { $sum: "$cost" } } },
                 function (err, totalExpenses) {
-                    //console.log(totalExpenses);
                     callback(err, totalExpenses);
                 });
         }
     }, function (populateErr, populateResults) {
-        //console.log(populateResults.tripFreightTotal[0].totalFreight);
         var retObj = {
             status: false,
             messages: []
@@ -559,14 +719,14 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             retObj.status = true;
             var totalFright = 0;
             var totalExpenses = 0;
-            if(populateResults){
-                if(populateResults.tripFreightTotal[0]){
+            if (populateResults) {
+                if (populateResults.tripFreightTotal[0]) {
                     totalFright = populateResults.tripFreightTotal[0].totalFreight;
                 }
-                if(populateResults.expensesTotal[0]){
+                if (populateResults.expensesTotal[0]) {
                     totalExpenses = populateResults.expensesTotal[0].totalExpenses;
                 }
-                retObj.totalRevenue = totalFright- totalExpenses;
+                retObj.totalRevenue = totalFright - totalExpenses;
             } else {
                 retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             }
@@ -599,8 +759,8 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
  * @param callback
  */
 Trips.prototype.findRevenueByParty = function (jwt, callback) {
-    TripCollection.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
-        {$group: {_id: "$partyId", totalFreight: {$sum: "$freightAmount"}}},
+    TripCollection.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
+        { $group: { _id: "$partyId", totalFreight: { $sum: "$freightAmount" } } },
         function (error, revenue) {
             var retObj = {
                 status: false,
@@ -612,7 +772,6 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
                 callback(retObj);
             } else {
                 Utils.populateNameInPartyColl(revenue, '_id', function (response) {
-                    //console.log(response);
                     retObj.status = true;
                     retObj.revenue = response.documents;
                     callback(retObj);
@@ -624,86 +783,37 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
 /**
  * Find revenue by Vehicle
  * @param jwt
+ * @param params
  * @param callback
  */
-Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
-    async.parallel({
-        tripFreightTotal: function (callback) {
-            TripCollection.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
-                {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
-                function (err, totalFreight) {
-                    //console.log(totalFreight);
-                    callback(err, totalFreight);
-                });
-        },
-        expensesTotal: function (callback) {
-            ExpenseCostColl.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
-                {$group: {_id: "$vehicleNumber", totalExpenses: {$sum: "$cost"}}},
-                function (err, totalExpenses) {
-                    //console.log(totalExpenses);
-                    callback(err, totalExpenses);
-                });
-        }
-    }, function (populateErr, populateResults) {
-        var retObj = {
-            status: false,
-            messages: []
-        };
-        if (populateErr) {
-            retObj.status = true;
-            retObj.messages.push(JSON.stringify(populateErr));
-            callback(retObj);
-        } else {
-            //console.log(populateResults);
-            var vehicleIds = _.pluck(populateResults.tripFreightTotal, "_id");
-            //console.log(vehicleIds);
-            var vehicles = [];
-            var grossFreight = 0;
-            var grossExpenses = 0;
-            var grossRevenue = 0;
-            for (var i = 0; i < vehicleIds.length; i++) {
-                var vehicle = {"registrationNo": vehicleIds[i]};
-                //console.log(vehicle);
-                var vehicleInfo = _.find(populateResults.tripFreightTotal, function (freight) {
-                    if (freight._id === vehicle.registrationNo) {
-                        return freight;
-                    }
-                });
-                if (vehicleInfo) {
-                    vehicle.totalFreight = vehicleInfo.totalFreight;
-                    //console.log(vehicle.totalFreight);
-                } else {
-                    vehicle.totalFreight = 0;
-                }
-                vehicleInfo = _.find(populateResults.expensesTotal, function (expense) {
-                    if (expense._id === vehicle.registrationNo) {
-                        return expense;
-                    }
-                });
-                if (vehicleInfo) {
-                    vehicle.totalExpense = vehicleInfo.totalExpenses;
-                    //console.log(vehicle.totalExpense);
-                } else {
-                    vehicle.totalExpense = 0;
-                }
 
-                vehicle.totalRevenue = parseFloat(vehicle.totalFreight) - parseFloat(vehicle.totalExpense);
-
-                grossFreight = grossFreight + vehicle.totalFreight;
-                grossExpenses = grossExpenses + vehicle.totalExpense;
-                grossRevenue = grossRevenue + vehicle.totalRevenue;
-
-                vehicles.push(vehicle);
+Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
+    var condition = {};
+    if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
+        condition = {
+            $match: {
+                "accountId": ObjectId(jwt.accountId), date: {
+                    $gte: new Date(params.fromDate),
+                    $lte: new Date(params.toDate),
+                }, "registrationNo": params.regNumber
             }
-
-            Utils.populateNameInTrucksColl(vehicles, 'registrationNo', function (result) {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.revenue = result.documents;
-                retObj.grossAmounts = {grossFreight:grossFreight,grossExpenses:grossExpenses,grossRevenue:grossRevenue}
-                callback(retObj);
-            })
         }
+    } else if (params.fromDate && params.toDate) {
+        condition = {
+            $match: {
+                "accountId": ObjectId(jwt.accountId), date: {
+                    $gte: new Date(params.fromDate),
+                    $lte: new Date(params.toDate),
+                }
+            }
+        }
+    } else if (params.regNumber) {
+        condition = { $match: { "accountId": ObjectId(jwt.accountId), "registrationNo": params.regNumber } }
+    } else {
+        condition = { $match: { "accountId": ObjectId(jwt.accountId) } }
+    }
+    getRevenueByVehicle(jwt, condition, function (response) {
+        callback(response);
     });
     /*TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
         { $group: { _id : "$partyId" , totalFreight : { $sum: "$freightAmount" }} },
@@ -727,10 +837,86 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
         });*/
 }
 
+function getRevenueByVehicle(jwt, condition, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        tripFreightTotal: function (callback) {
+            TripCollection.aggregate(condition,
+                { $group: { _id: "$registrationNo", totalFreight: { $sum: "$freightAmount" } } },
+                function (err, totalFreight) {
+                    callback(err, totalFreight);
+                });
+        },
+        expensesTotal: function (callback) {
+            ExpenseCostColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
+                { $group: { _id: "$vehicleNumber", totalExpenses: { $sum: "$cost" } } },
+                function (err, totalExpenses) {
+                    callback(err, totalExpenses);
+                });
+        }
+    }, function (populateErr, populateResults) {
+        var retObj = {
+            status: false,
+            messages: []
+        };
+        if (populateErr) {
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(populateErr));
+            callback(retObj);
+        } else {
+            var vehicleIds = _.pluck(populateResults.tripFreightTotal, "_id");
+            var vehicles = [];
+            var grossFreight = 0;
+            var grossExpenses = 0;
+            var grossRevenue = 0;
+            for (var i = 0; i < vehicleIds.length; i++) {
+                var vehicle = {"registrationNo": vehicleIds[i]};
+                var vehicleInfo = _.find(populateResults.tripFreightTotal, function (freight) {
+                    if (freight._id === vehicle.registrationNo) {
+                        return freight;
+                    }
+                });
+                if (vehicleInfo) {
+                    vehicle.totalFreight = vehicleInfo.totalFreight;
+                } else {
+                    vehicle.totalFreight = 0;
+                }
+                vehicleInfo = _.find(populateResults.expensesTotal, function (expense) {
+                    if (expense._id === vehicle.registrationNo) {
+                        return expense;
+                    }
+                });
+                if (vehicleInfo) {
+                    vehicle.totalExpense = vehicleInfo.totalExpenses;
+                } else {
+                    vehicle.totalExpense = 0;
+                }
+
+                vehicle.totalRevenue = parseFloat(vehicle.totalFreight) - parseFloat(vehicle.totalExpense);
+
+                grossFreight = grossFreight + vehicle.totalFreight;
+                grossExpenses = grossExpenses + vehicle.totalExpense;
+                grossRevenue = grossRevenue + vehicle.totalRevenue;
+
+                vehicles.push(vehicle);
+            }
+
+            Utils.populateNameInTrucksColl(vehicles, 'registrationNo', function (result) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.revenue = result.documents;
+                retObj.grossAmounts = { grossFreight: grossFreight, grossExpenses: grossExpenses, grossRevenue: grossRevenue }
+                callback(retObj);
+            })
+        }
+    });
+}
 Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
-    TripCollection.find({"accountId": jwt.accountId, "partyId": partyId},
+    TripCollection.find({ "accountId": jwt.accountId, "partyId": partyId },
         function (error, trips) {
-            //console.log(trips);
             var retObj = {
                 status: false,
                 messages: []
@@ -750,9 +936,8 @@ Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
 }
 
 Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
-    TripCollection.find({"accountId": ObjectId(jwt.accountId), "registrationNo": vehicleId},
+    TripCollection.find({ "accountId": ObjectId(jwt.accountId), "registrationNo": vehicleId },
         function (error, trips) {
-            //console.log(trips);
             var retObj = {
                 status: false,
                 messages: []
@@ -773,7 +958,7 @@ Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
 
 Trips.prototype.countTrips = function (jwt, callback) {
     var result = {};
-    TripCollection.count({'accountId': jwt.accountId}, function (err, data) {
+    TripCollection.count({ 'accountId': jwt.accountId }, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';

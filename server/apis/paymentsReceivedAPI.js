@@ -88,7 +88,6 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
 };
 
 PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
-    //console.log(params);
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -111,7 +110,6 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
                 //.populate('paymentsCostId')
                 .lean()
                 .exec(function (err, mCosts) {
-                    //console.log(mCosts);
                     if (mCosts) {
                         async.parallel({
                             createdbyname: function (createdbyCallback) {
@@ -132,12 +130,10 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
         },
         count: function (countCallback) {
             PaymentsReceivedColl.count({'accountId': jwt.accountId},function (err, count) {
-                //console.log(count);
                 countCallback(err, count);
             });
         }
     }, function (err, results) {
-        //console.log(results);
         if (err) {
             result.status = false;
             result.message = 'Error retrieving Payments Costs';
@@ -155,7 +151,6 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
 PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
     var result = {};
     PaymentsReceivedColl.findOne({_id: paymentsId, accountId: jwt.accountId}, function (err, paymentsReceived) {
-        //console.log(paymentsReceived);
         if (err) {
             result.status = false;
             result.message = "Error while finding Payments, try Again";
@@ -330,14 +325,14 @@ PaymentsReceived.prototype.findPendingDueForAccount = function(jwt, callback){
  * @param jwt
  * @param callback
  */
-PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
+function getDuesByParty(jwt,condition,callback){    
     var retObj = {
         status: false,
         messages: []
     };
     async.parallel({
         tripFrightTotal: function (callback) {
-            TripColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
+            TripColl.aggregate(condition,
                 { $group: { _id : "$partyId" , totalFright : { $sum: "$freightAmount" }} },
                 function (err, totalFrieght) {
                     callback(err, totalFrieght);
@@ -398,6 +393,29 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, callback) {
 
         }
     });
+}
+
+PaymentsReceived.prototype.getDuesByParty = function (jwt,params, callback) {
+    var condition = {};
+    if(params.fromDate != '' && params.toDate != '' && params.partyId != ''){
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
+            $gte: new Date(params.fromDate),
+            $lte: new Date(params.toDate),
+        },"partyId" : ObjectId(params.partyId)}}
+    } else if(params.fromDate && params.toDate) {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
+            $gte: new Date(params.fromDate),
+            $lte: new Date(params.toDate),
+        }}}
+
+    } else if(params.partyId) {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId),"partyId" : ObjectId(params.partyId)}}
+    } else {
+        condition = {$match: {"accountId":ObjectId(jwt.accountId)}}
+    }
+    getDuesByParty(jwt,condition,function(response){
+        callback(response);
+    })
 };
 
 

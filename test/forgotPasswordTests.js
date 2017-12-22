@@ -52,7 +52,7 @@ describe('Forgot Password Test', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql(['OTP sent successfully']);
-                    otp = res.body.otp;
+                    otp = res.body.otp;                    
                     done();
                 });
         });
@@ -75,7 +75,7 @@ describe('Forgot Password Test', () => {
         * Test the /POST route Sending OTP Information Success
         */
         it('Retrieving Sending OTP Information Success', (done) => {
-            let contactPhone = {"contactPhone":7382042321,otp:otp}
+            let contactPhone = {"contactPhone":7382042321,otp:otp,}
             chai.request(server)
                 .post('/v1/group/verify-otp')
                 .send(contactPhone)

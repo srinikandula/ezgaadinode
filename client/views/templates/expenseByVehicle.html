@@ -1,4 +1,4 @@
-<div class="main-temp col-xs-12 mt-20">
+<div class="main-temp col-xs-12 mt-20" ng-init="getExpenseByVehicle()">
 
 
     <div class="col-xs-12 pall-zero db-expenses">
@@ -15,7 +15,7 @@
                 <li class="col-xs-3 pall-zero pos-relative">
                     <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
                     <input type="text" ng-model="filters.regNumber"
-                           uib-typeahead="totalExpensesbyVehicle.regNumber for totalExpensesbyVehicle in totalExpensesbyVehicle | filter:$viewValue"
+                           uib-typeahead="truck.registrationNo for truck in trucksList | filter:$viewValue"
                            class="form-control textfield" typeahead-min-length="1"
                            typeahead-on-select="selectTruckId($item)"
                            typeahead-select-on-exact="true" placeholder="Registration Num"
@@ -26,7 +26,7 @@
                     </div>
                 </li>
                 <li class="col-xs-1">
-                    <button ng-click="validateFilters()" type="button" class="btn go">Go</button>
+                    <button ng-click="validateFilters('expense')" type="button" class="btn go">Go</button>
                 </li>
             </ul>
             <ul class="list-inline mailDownload">

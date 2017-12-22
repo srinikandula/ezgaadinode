@@ -35,13 +35,14 @@ app.factory('PaymentsService', function ($http) {
         getTotalPaymentsReceivable: function (success, error) {
             $http({
                 url: '/v1/payments/getTotalAmount/',
-                method: "GET",
+                method: "GET"
             }).then(success, error)
         },
-        getDuesByParty: function (success, error) {
+        getDuesByParty: function (params,success, error) {
             $http({
                 url: '/v1/payments/getDuesByParty/',
                 method: "GET",
+                params:params
             }).then(success, error)
         },
         updateRecord: function (object, success, error) {
