@@ -133,7 +133,13 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
 }]);
 
 app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$stateParams', '$state', 'Notification', 'TripServices', 'TrucksService', 'PartyService', function ($scope, PaymentsService, $stateParams, $state, Notification, TripServices, TrucksService, PartyService) {
-    // console.log('-->', $stateParams, $stateParams.paymentsId, !!$stateParams.paymentsId);
+
+    $scope.paymentRefNumber = false;
+
+    $scope.refNum = function () {
+            $scope.paymentRefNumber = true;
+    };
+
     $scope.pagetitle = "Add Payments";
     $scope.dateCallback = "past";
 
@@ -142,6 +148,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         partyId: '',
         description: '',
         amount: '',
+        paymentType:'',
         error: [],
         success: []
     };
@@ -204,8 +211,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         PartyService.getAccountParties(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
-                console.log($scope.parties);
-                var selectedParty = _.find( $scope.parties, function (party) {
+               var selectedParty = _.find( $scope.parties, function (party) {
                     return party._id.toString() === $scope.paymentsDetails.partyId;
                 });
                 if(selectedParty){

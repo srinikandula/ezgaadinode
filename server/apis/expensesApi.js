@@ -67,6 +67,10 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Please provide valid cost";
         callback(result);
+    } else if (!expenseDetails.mode) {
+        result.status = false;
+        result.message = "Please Select Cash or Credit";
+        callback(result);
     } else {
         expenseDetails.createdBy = jwt.id;
         expenseDetails.updatedBy = jwt.id;
@@ -85,6 +89,7 @@ function updateExpense(expense, jwt, callback) {
                 "description": expense.description,
                 "expenseType": expense.expenseType,
                 "cost": expense.cost,
+                "mode": expense.mode,
                 "date": expense.date
             }
         },
@@ -407,7 +412,6 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
         messages: []
     };
     expenseColl.find({ accountId: jwt.accountId, vehicleNumber: vehicleId }, function (err, expenses) {
-        //console.log(expenses);
         if (err) {
             retObj.messages.push('Error getting Expenses');
             callback(retObj);
@@ -424,7 +428,6 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
                     })
                 }
             }, function (populateErr, populateResults) {
-                //console.log("populateResults : ",populateResults);
                 if (err) {
                     retObj.status = false;
                     retObj.messages.push('Error retrieving data');

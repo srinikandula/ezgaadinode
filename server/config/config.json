@@ -11,17 +11,16 @@
   "port": 3000,
   "mysql": {
     "connectionLimit": 10,
-    "host": "eggps.cloudapp.net",
+    "host": "localhost",
     "user": "root",
-    "password": "098ioplkjbNm",
+    "password": "",
     "database": "gts"
   },
   "mysql_crm": {
-    "port": 3306,
     "connectionLimit": 100,
-    "host": "egcrm.cloudapp.net",
+    "host": "localhost",
     "user": "root",
-    "password": "098ioplkjbNm",
+    "password": "",
     "database": "easygaadi_crm"
   },
   "msg91": {

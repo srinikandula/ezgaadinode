@@ -102,8 +102,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
             });
         };
-
-
         $scope.getRevenueByVehicle = function () {
             console.log('revenue',{
                 fromDate: $scope.filters.fromDate,
@@ -179,6 +177,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.resetPartyName=function(){
             $scope.partyId ="";
         }
+        
         $scope.resetTruckName=function(){
             $scope.regNumber = "";
         }

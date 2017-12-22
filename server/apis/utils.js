@@ -6,6 +6,7 @@ var nodeMailer = require('nodemailer');
 var ObjectId = mongoose.Types.ObjectId;
 var config = require('./../config/config');
 var UsersColl = require('./../models/schemas').UsersColl;
+var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
 var DriversColl = require('./../models/schemas').DriversColl;
 var PartyColl = require('./../models/schemas').PartyCollection;
@@ -67,7 +68,8 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
     if(documents === null) documents=[];
     var ids = _.pluck(documents, fieldTopopulate);
 //  UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
-    GroupsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
+//  GroupsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
+    AccountsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
         if (err) {
             result.status = false;
             result.message = 'Error retrieving users';
@@ -157,7 +159,6 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
                 var party = _.find(names, function (users) {
                     if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
-                //console.log(party);
                 if (party) {
                     if (!item.attrs) {
                         item.attrs = {};

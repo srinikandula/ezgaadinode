@@ -161,6 +161,11 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         $state.go('expenses');
     };
 
+    $scope.addExpenseTypeField = false;
+    $scope.addExpenseType = function () {
+        $scope.addExpenseTypeField = true;
+    }
+
     function getAllExpenses(params) {
         ExpenseMasterServices.getExpenses(params, function (success) {
             if (success.data.status) {
@@ -241,6 +246,9 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         }
         if (!_.isNumber(params.cost)) {
             params.error.push('Invalid cost');
+        }
+        if (!params.mode) {
+            params.error.push('Please Select Cash or Credit');
         }
         if (!params.error.length) {
             if ($stateParams.expenseId) {
