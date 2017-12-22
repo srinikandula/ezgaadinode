@@ -73,6 +73,7 @@ var truckSchema = new mongoose.Schema({
     taxDueDate: Date,
     updatedBy: String,
     createdBy: String,
+    status: Number,
     attrs: {}
 }, {timestamps: true});
 
@@ -145,6 +146,7 @@ var expensesSchema = new mongoose.Schema({
     description:String,
     date: Date,
     cost: Number,
+    mode: String,
     updatedBy: String,
     createdBy: String,
     isDefault: {type: Boolean, default: false},

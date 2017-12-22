@@ -533,7 +533,6 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             TripCollection.aggregate([{$match: {"accountId": ObjectId(jwt.accountId)}},
                 {$group: {_id: null, totalFreight: {$sum: "$freightAmount"}}}],
                 function (err, totalFreight) {
-                    //console.log(totalFreight);
                     callback(err, totalFreight);
                 });
         },
@@ -541,12 +540,10 @@ Trips.prototype.findTotalRevenue = function (jwt, callback) {
             ExpenseCostColl.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
                 {$group: {_id: null, totalExpenses: {$sum: "$cost"}}},
                 function (err, totalExpenses) {
-                    //console.log(totalExpenses);
                     callback(err, totalExpenses);
                 });
         }
     }, function (populateErr, populateResults) {
-        //console.log(populateResults.tripFreightTotal[0].totalFreight);
         var retObj = {
             status: false,
             messages: []
@@ -612,7 +609,6 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
                 callback(retObj);
             } else {
                 Utils.populateNameInPartyColl(revenue, '_id', function (response) {
-                    //console.log(response);
                     retObj.status = true;
                     retObj.revenue = response.documents;
                     callback(retObj);
@@ -632,7 +628,6 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
             TripCollection.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
                 {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
                 function (err, totalFreight) {
-                    //console.log(totalFreight);
                     callback(err, totalFreight);
                 });
         },
@@ -640,7 +635,6 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
             ExpenseCostColl.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
                 {$group: {_id: "$vehicleNumber", totalExpenses: {$sum: "$cost"}}},
                 function (err, totalExpenses) {
-                    //console.log(totalExpenses);
                     callback(err, totalExpenses);
                 });
         }
@@ -654,16 +648,13 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
             retObj.messages.push(JSON.stringify(populateErr));
             callback(retObj);
         } else {
-            //console.log(populateResults);
             var vehicleIds = _.pluck(populateResults.tripFreightTotal, "_id");
-            //console.log(vehicleIds);
             var vehicles = [];
             var grossFreight = 0;
             var grossExpenses = 0;
             var grossRevenue = 0;
             for (var i = 0; i < vehicleIds.length; i++) {
                 var vehicle = {"registrationNo": vehicleIds[i]};
-                //console.log(vehicle);
                 var vehicleInfo = _.find(populateResults.tripFreightTotal, function (freight) {
                     if (freight._id === vehicle.registrationNo) {
                         return freight;
@@ -671,7 +662,6 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
                 });
                 if (vehicleInfo) {
                     vehicle.totalFreight = vehicleInfo.totalFreight;
-                    //console.log(vehicle.totalFreight);
                 } else {
                     vehicle.totalFreight = 0;
                 }
@@ -682,7 +672,6 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
                 });
                 if (vehicleInfo) {
                     vehicle.totalExpense = vehicleInfo.totalExpenses;
-                    //console.log(vehicle.totalExpense);
                 } else {
                     vehicle.totalExpense = 0;
                 }
@@ -718,7 +707,6 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
                 callback(retObj);
             } else {
                 Utils.populateNameInPartyColl(revenue, '_id', function (response) {
-                    //console.log(response);
                     retObj.status = true;
                     retObj.revenue = response.documents;
                     callback(retObj);
@@ -730,7 +718,6 @@ Trips.prototype.findRevenueByVehicle = function (jwt, callback) {
 Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
     TripCollection.find({"accountId": jwt.accountId, "partyId": partyId},
         function (error, trips) {
-            //console.log(trips);
             var retObj = {
                 status: false,
                 messages: []
@@ -752,7 +739,6 @@ Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
 Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
     TripCollection.find({"accountId": ObjectId(jwt.accountId), "registrationNo": vehicleId},
         function (error, trips) {
-            //console.log(trips);
             var retObj = {
                 status: false,
                 messages: []

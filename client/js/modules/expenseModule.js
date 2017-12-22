@@ -242,6 +242,9 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         if (!_.isNumber(params.cost)) {
             params.error.push('Invalid cost');
         }
+        if (!params.mode) {
+            params.error.push('Please Select Cash or Credit');
+        }
         if (!params.error.length) {
             if ($stateParams.expenseId) {
                 ExpenseService.updateRecord(params, function (success) {
