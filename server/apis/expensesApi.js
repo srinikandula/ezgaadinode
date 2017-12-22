@@ -35,7 +35,7 @@ function save(expenseDetails, result, callback) {
 
 function saveExpense(expenseDetails, jwt, result, callback) {
     if (expenseDetails.expenseName) {
-        expenseMasterApi.addExpenseType(jwt, {"expenseName": expenseDetails.expenseName}, function (eTResult) {
+        expenseMasterApi.addExpenseType(jwt, { "expenseName": expenseDetails.expenseName }, function (eTResult) {
             if (eTResult.status) {
                 expenseDetails.expenseType = eTResult.newDoc._id.toString();
                 save(expenseDetails, result, callback);
@@ -81,7 +81,7 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
 
 function updateExpense(expense, jwt, callback) {
     var result = {};
-    expenseColl.findOneAndUpdate({_id: expense._id},
+    expenseColl.findOneAndUpdate({ _id: expense._id },
         {
             $set: {
                 "updatedBy": jwt.id,
@@ -93,7 +93,7 @@ function updateExpense(expense, jwt, callback) {
                 "date": expense.date
             }
         },
-        {new: true},
+        { new: true },
         function (err, expenseDoc) {
             if (err) {
                 result.status = false;
@@ -114,7 +114,7 @@ function updateExpense(expense, jwt, callback) {
 
 Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
     if (expense.expenseName) {
-        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, function (eTResult) {
+        expenseMasterApi.addExpenseType(jwt, { "expenseName": expense.expenseName }, function (eTResult) {
             if (eTResult.status) {
                 expense.expenseType = eTResult.newDoc._id.toString();
                 updateExpense(expense, jwt, callback);
@@ -129,7 +129,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
 };
 
 
-Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
+Expenses.prototype.getExpenseCosts = function (jwt, params, callback) {
     var result = {};
     if (!params.page) {
         params.page = 1;
@@ -138,10 +138,10 @@ Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     async.parallel({
         mCosts: function (mCostsCallback) {
-            var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
+            var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
             expenseColl
-                .find({'accountId': jwt.accountId})
+                .find({ 'accountId': jwt.accountId })
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
@@ -170,7 +170,7 @@ Expenses.prototype.getExpenseCosts = function (jwt,params, callback) {
                 });
         },
         count: function (countCallback) {
-            expenseColl.count({},function (err, count) {
+            expenseColl.count({}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -196,7 +196,7 @@ Expenses.prototype.getAllAccountExpenseCosts = function (jwt, callback) {
         messages: []
     };
     expenseColl
-        .find({accountId: jwt.accountId})
+        .find({ accountId: jwt.accountId })
         .lean()
         .exec(function (err, mCosts) {
             async.parallel({
@@ -252,7 +252,7 @@ Expenses.prototype.getAll = function (jwt, req, callback) {
 
 Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
     var result = {};
-    expenseColl.findOne({_id: expenseId}, function (err, record) {
+    expenseColl.findOne({ _id: expenseId }, function (err, record) {
         if (err) {
             result.status = false;
             result.message = "Error while finding expenses Record, try Again";
@@ -273,7 +273,7 @@ Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
 
 Expenses.prototype.deleteExpenseRecord = function (expenseId, callback) {
     var result = {};
-    expenseColl.remove({_id: expenseId}, function (err, returnValue) {
+    expenseColl.remove({ _id: expenseId }, function (err, returnValue) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting expenses Record';
@@ -291,7 +291,7 @@ Expenses.prototype.deleteExpenseRecord = function (expenseId, callback) {
 };
 Expenses.prototype.countExpense = function (jwt, callback) {
     var result = {};
-    expenseColl.count({'accountId':jwt.accountId},function (err, data) {
+    expenseColl.count({ 'accountId': jwt.accountId }, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -311,22 +311,22 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  * @param callback
  */
 Expenses.prototype.findTotalExpenses = function (jwt, callback) {
-    expenseColl.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
-        { $group: { _id : null , totalExpenses : { $sum: "$cost" }} },
+    expenseColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
+        { $group: { _id: null, totalExpenses: { $sum: "$cost" } } },
         function (error, result) {
             var retObj = {
                 status: false,
                 messages: []
             };
-            if(error) {
+            if (error) {
                 retObj.status = false;
                 retObj.messages.push(JSON.stringify(error));
             } else {
                 retObj.status = true;
-                if(result.length > 0){
-                    retObj.totalExpenses= result[0].totalExpenses;
-                } else{
-                    retObj.totalExpenses= 0;
+                if (result.length > 0) {
+                    retObj.totalExpenses = result[0].totalExpenses;
+                } else {
+                    retObj.totalExpenses = 0;
                 }
 
             }
@@ -342,6 +342,7 @@ Expenses.prototype.findTotalExpenses = function (jwt, callback) {
  */
 
 Expenses.prototype.findExpensesByVehicles =  function(jwt, params, callback) {
+    console.log('params',params);
     var condition = {};
     if(params.fromDate != '' && params.toDate != '' && params.regNumber != ''){
         condition = {$match: {"accountId":ObjectId(jwt.accountId),date: {
@@ -375,27 +376,28 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
     var totaltollExpense = 0;
     var totalmExpense = 0;
     var totalmisc = 0;
-    expenseColl.find({'accountId':jwt.accountId,"vehicleNumber":vehicleId },function (err, expenses) {
+    expenseColl.find({ 'accountId': jwt.accountId, "vehicleNumber": vehicleId }, function (err, expenses) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
             callback(result);
         } else {
-            Utils.populateNameInExpenseColl(expenses, 'expenseType', function(results){
+            Utils.populateNameInExpenseColl(expenses, 'expenseType', function (results) {
                 result.status = true;
                 result.expenses = results.documents;
-                for(var i = 0; i < result.expenses.length;i++) {
-                    if(result.expenses[i].attrs.expenseName === 'Diesel') {
+                console.log(result.expenses.length)
+                for (var i = 0; i < result.expenses.length; i++) {
+                    if (result.expenses[i].attrs.expenseName === 'Diesel') {
                         totalDieselExpense = totalDieselExpense + result.expenses[i].cost;
-                    } else if(result.expenses[i].attrs.expenseName === 'Toll') {
+                    } else if (result.expenses[i].attrs.expenseName === 'Toll') {
                         totaltollExpense = totaltollExpense + result.expenses[i].cost;
-                    } else if(result.expenses[i].attrs.expenseName === 'Maintenance') {
+                    } else if (result.expenses[i].attrs.expenseName === 'Maintenance') {
                         totalmExpense = totalmExpense + result.expenses[i].cost;
                     } else {
                         totalmisc = totalmisc + result.expenses[i].cost;
                     }
                 }
-                result.totalExpenses = {totalDieselExpense:totalDieselExpense,totaltollExpense:totaltollExpense,totalmExpense:totalmExpense,totalmisc:totalmisc};
+                result.totalExpenses = { totalDieselExpense: totalDieselExpense, totaltollExpense: totaltollExpense, totalmExpense: totalmExpense, totalmisc: totalmisc };
                 callback(result);
             });
         }
@@ -409,7 +411,7 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
         status: false,
         messages: []
     };
-    expenseColl.find({accountId: jwt.accountId, vehicleNumber:vehicleId}, function (err, expenses) {
+    expenseColl.find({ accountId: jwt.accountId, vehicleNumber: vehicleId }, function (err, expenses) {
         if (err) {
             retObj.messages.push('Error getting Expenses');
             callback(retObj);
@@ -450,7 +452,8 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
     });
 };
 
-function getExpensesByVehicles(jwt, condition, callback) {
+function getExpensesByVehicles(jwt, condition, callback) {    
+    console.log('condition',condition);
     var retObj = {
         status: false,
         messages: []
@@ -460,8 +463,8 @@ function getExpensesByVehicles(jwt, condition, callback) {
             expenseColl.aggregate(condition,
                 {
                     $group: {
-                        _id: {"vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType"},
-                        totalExpenses: {$sum: "$cost"}
+                        _id: { "vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType" },
+                        totalExpenses: { $sum: "$cost" }
                     }
                 }, function (error, expensesResult) {
                     expensesCallback(error, expensesResult);
@@ -473,7 +476,7 @@ function getExpensesByVehicles(jwt, condition, callback) {
             });
         },
         truckRegNumbers: function (expenseTypesCallback) {
-            trucksCollection.find({"accountId": jwt.accountId}, {"registrationNo": 1}, function (error, expenseTypeResults) {
+            trucksCollection.find({ "accountId": jwt.accountId }, { "registrationNo": 1 }, function (error, expenseTypeResults) {
                 expenseTypesCallback(error, expenseTypeResults);
             });
         }
@@ -506,7 +509,7 @@ function getExpensesByVehicles(jwt, condition, callback) {
                 }
                 var vehicle = vehicleExpenses[vehicleId];
                 if (!vehicle.expenses[expenses[i]._id.expenseType]) {
-                    var expenseTotal = {"expenseTotal": expenses[i].totalExpenses};
+                    var expenseTotal = { "expenseTotal": expenses[i].totalExpenses };
                     expenseTotal["name"] = expenseTypes[expenses[i]._id.expenseType];
                     vehicle.expenses[expenses[i]._id.expenseType] = expenseTotal;
                 } else {
@@ -522,7 +525,7 @@ function getExpensesByVehicles(jwt, condition, callback) {
             for (id in vehicleExpenses) {
                 var vehicleExpense = vehicleExpenses[id];
                 vehicleExpense.exps = [];
-                var resultExpense = {"dieselExpense": 0, "tollExpense": 0, "mExpense": 0, "misc": 0};
+                var resultExpense = { "dieselExpense": 0, "tollExpense": 0, "mExpense": 0, "misc": 0 };
                 for (e in vehicleExpense.expenses) {
                     var vExpense = vehicleExpense.expenses[e];
 

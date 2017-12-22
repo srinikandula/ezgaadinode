@@ -143,6 +143,12 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         contact: '',
         email: '',
         city: '',
+        tripLanes: [{
+            index: 0
+        }],
+        partyType:"",
+        isEmail:false,
+        isSms:false,
         error: [],
         success: []
 
@@ -183,7 +189,15 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.city) {
             params.error.push('Invalid city');
         }
-
+        if (!params.tripLanes[0].name) {
+            params.error.push('Please provide TripLane Name');
+        }
+        if(!params.partyType){
+            params.error.push('Please select party type');
+        }
+        if(!params.isSms && !params.isEmail){
+            params.error.push('Please select notification type');
+        }
 
         if (!params.error.length) {
             if (params._id) {
