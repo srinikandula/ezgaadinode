@@ -28,11 +28,28 @@
                 <div class="form-group col-xs-12">
                     <div class="col-xs-12">
                         <input ng-model="paymentsDetails.amount" type="number" class="form-control custom-form-control"
-                               id="amount" placeholder="Amount" >
+                               id="amount" placeholder="Amount">
                     </div>
                 </div>
             </div>
             <div class="col-xs-12 col-sm-6">
+                <div class="form-group col-xs-12">
+                    <div class="col-xs-12">
+                        <select class="form-control custom-form-control" ng-model="paymentsDetails.paymentType">
+                            <option>Payment Type *</option>
+                            <option>NEFT</option>
+                            <option>Cheque</option>
+                            <option>Cash</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12"
+                     ng-show="paymentsDetails.paymentType == 'NEFT' || paymentsDetails.paymentType == 'Cheque'">
+                    <div class="col-xs-12">
+                        <input type="text" class="form-control" placeholder="Reference Number for Cheque/NEFT"/>
+                    </div>
+                </div>
+
                 <div class="form-group col-xs-12">
                     <div class="col-xs-12">
                         <textarea ng-model="paymentsDetails.description" type="textarea"
