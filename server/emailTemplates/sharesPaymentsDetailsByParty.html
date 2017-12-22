@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+
+<body>
+    <div>
+        <table border="1">
+            <tr>
+                <td>Party Name</td>
+                <td>Party Mobile</td>
+                <td>Total Fright</td>
+                <td>Paid Amount</td>
+                <td>Due Amount</td>
+                <td></td>
+            </tr>
+            #foreach($record in $emailData.parties)
+            <tr>
+                <td>$record.attrs.partyName</td>
+                <td>$record.attrs.partyContact</td>
+                <td>$record.totalFright</td>
+                <td>$record.totalPayment</td>
+                <td>$record.totalDue</td>
+                
+            </tr>
+            #end
+            <tr>
+                <td colspan="2"><b>Total</b></td>
+                <td><b>$emailData.grossAmounts.grossFreight</b></td>
+                <td><b>$emailData.grossAmounts.grossExpenses</b></td>
+                <td><b>$emailData.grossAmounts.grossDue</b></td>
+            </tr>
+
+        </table>
+    </div>
+</body>
+
+</html>

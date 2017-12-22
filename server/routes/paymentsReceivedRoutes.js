@@ -71,6 +71,12 @@ AuthRouter.get('/getDuesByParty',function(req,res){
     })
 });
 
+AuthRouter.get('/sharePaymentsDetailsByPartyViaEmail',function(req,res){
+    PaymentsReceived.sharePaymentsDetailsByPartyViaEmail(req.jwt,req.query,function(result){
+        res.send(result);
+    })
+})
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

@@ -69,6 +69,13 @@ app.factory('ExpenseService', function ($http) {
                 url: '/v1/expense/total/count',
                 method: "GET"
             }).then(success, error)
+        },
+        shareExpensesDetailsViaEmail:function(params,success,error){
+            $http({
+                url:'/v1/expense/shareExpensesDetailsViaEmail',
+                method:"GET",
+                params:params
+            }).then(success,error);
         }
     }
 });

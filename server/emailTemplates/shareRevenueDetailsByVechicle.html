@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+
+<body>
+    <div>
+        <table border="1">
+            <tr>
+                <td>Registration No</td>
+                <td>Total Freight</td>
+                <td>Total Expense</td>
+                <td>Total Revenue</td>
+               
+            </tr>
+            #foreach($record in $emailData.revenue)
+            <tr>
+                <td>$record.attrs.truckName</td>
+                <td>$record.totalFreight</td>
+                <td>$record.totalExpense</td>
+                <td>$record.totalRevenue</td>
+                
+            </tr>
+            #end
+            <tr>
+                <td ><b>Total</b></td>
+                <td><b>$emailData.grossAmounts.grossFreight</b></td>
+                <td><b>$emailData.grossAmounts.grossExpenses</b></td>
+                <td><b>$emailData.grossAmounts.grossRevenue</b></td>
+            </tr>
+
+        </table>
+    </div>
+</body>
+
+</html>

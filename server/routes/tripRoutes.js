@@ -24,6 +24,11 @@ AuthRouter.put('/', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/shareRevenueDetailsByVechicleViaEmail',function(req,res){
+    Trips.shareRevenueDetailsByVechicleViaEmail(req.jwt,req.query, function (result) {        
+        res.send(result);
+    });
+});
 AuthRouter.get('/:tripId', function (req, res) {
     Trips.findTrip(req.jwt,req.params.tripId, function (result) {
         res.send(result);
@@ -80,6 +85,7 @@ AuthRouter.get('/total/count',function(req,res){
         res.send(result);
     });
 });
+
 
 module.exports = {
     OpenRouter: OpenRouter,

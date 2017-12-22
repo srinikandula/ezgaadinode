@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+
+<body>
+    <div>
+        <table border="1">
+            <tr>
+                <td>Registration No</td>
+                <td>Diesel</td>
+                <td>Toll</td>
+                <td>Maintenance</td>
+                <td>Miscellaneous</td>
+               
+            </tr>
+            #foreach($record in $emailData.expenses)
+            <tr>
+                <td>$record.regNumber</td>
+                <td>$record.exps[0].dieselExpense</td>
+                <td>$record.exps[0].tollExpense</td>
+                <td>$record.exps[0].mExpense</td>
+                <td>$record.exps[0].misc</td>
+                
+            </tr>
+            #end
+            <tr>
+                <td ><b>Total</b></td>
+                <td><b>$emailData.totalExpenses.totalDieselExpense</b></td>
+                <td><b>$emailData.totalExpenses.totaltollExpense</b></td>
+                <td><b>$emailData.totalExpenses.totalmExpense</b></td>
+                <td><b>$emailData.totalExpenses.totalmisc</b></td>
+                
+            </tr>
+
+        </table>
+    </div>
+</body>
+
+</html>

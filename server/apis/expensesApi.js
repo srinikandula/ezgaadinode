@@ -11,7 +11,7 @@ var trucksCollection = require('./../models/schemas').TrucksColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
-
+var emailService=require('./mailerApi');
 var Utils = require('./utils');
 
 var Expenses = function () {
@@ -560,4 +560,41 @@ function getExpensesByVehicles(jwt, condition, callback) {
     });
 }
 
+Expenses.prototype.shareExpensesDetailsViaEmail=function(jwt,params,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.status = false;
+        retObj.messages.push('Please enter valid email');
+        callback(retObj);
+    }else{
+        Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
+            if (expensesResponse.status) {
+                var emailparams = {
+                    templateName: 'shareExpenseDetailsByVechicle',
+                    subject: "Easygaadi Expense Details",
+                    to: params.email,
+                    data: {
+                        expenses: expensesResponse.expenses,
+                        totalExpenses: expensesResponse.totalExpenses
+                    }
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push('Expenses details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            } else {
+                callback(revenueResponse);
+            }
+        })
+    }
+    
+}
 module.exports = new Expenses();
