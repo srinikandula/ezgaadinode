@@ -24,13 +24,26 @@ AuthRouter.put('/', function (req, res) {
         res.send(result);
     });
 });
-AuthRouter.get('/shareRevenueDetailsByVechicleViaEmail',function(req,res){
-    Trips.shareRevenueDetailsByVechicleViaEmail(req.jwt,req.query, function (result) {        
+AuthRouter.get('/shareRevenueDetailsByVechicleViaEmail', function (req, res) {
+    Trips.shareRevenueDetailsByVechicleViaEmail(req.jwt, req.query, function (result) {
         res.send(result);
     });
 });
+AuthRouter.get('/downloadRevenueDetailsByVechicle', function (req, res) {
+
+    Trips.downloadRevenueDetailsByVechicle(req.jwt,req.query, function (result) {
+        if(result.status){
+            res.xls('revenue'+new Date().toLocaleDateString()+'.xlsx', result.data);
+        }else{
+            res.send(result);
+        }       
+        
+    });
+   
+
+});
 AuthRouter.get('/:tripId', function (req, res) {
-    Trips.findTrip(req.jwt,req.params.tripId, function (result) {
+    Trips.findTrip(req.jwt, req.params.tripId, function (result) {
         res.send(result);
     });
 });
@@ -57,20 +70,20 @@ AuthRouter.get('/find/revenueByParty', function (req, res) {
 });
 
 AuthRouter.get('/find/revenueByVehicle', function (req, res) {
-    Trips.findRevenueByVehicle(req.jwt,req.query, function (result) {        
+    Trips.findRevenueByVehicle(req.jwt, req.query, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/find/tripsByParty/:partyId', function (req, res) {
-    Trips.findTripsByParty(req.jwt,req.params.partyId, function (result) {
+    Trips.findTripsByParty(req.jwt, req.params.partyId, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/find/tripsByVehicle/:VehicleId', function (req, res) {
     console.log(req.params);
-    Trips.findTripsByVehicle(req.jwt,req.params.VehicleId, function (result) {
+    Trips.findTripsByVehicle(req.jwt, req.params.VehicleId, function (result) {
         res.send(result);
     });
 });
@@ -80,8 +93,8 @@ AuthRouter.put('/sendEmail', function (req, res) {
         res.send(result);
     })
 });
-AuthRouter.get('/total/count',function(req,res){
-    Trips.countTrips(req.jwt,function(result){
+AuthRouter.get('/total/count', function (req, res) {
+    Trips.countTrips(req.jwt, function (result) {
         res.send(result);
     });
 });

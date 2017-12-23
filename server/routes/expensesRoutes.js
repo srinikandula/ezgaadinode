@@ -81,6 +81,15 @@ AuthRouter.get('/shareExpensesDetailsViaEmail',function(req,res){
         res.send(result);
     });
 })
+AuthRouter.get('/downloadExpenseDetailsByVechicle',function(req,res){
+    ExpenseCost.downloadExpenseDetailsByVechicle(req.jwt,req.query, function (result) {
+        if(result.status){
+            res.xls('expense'+new Date().toLocaleDateString()+'.xlsx', result.data);
+        }else{
+            res.send(result);
+        }   
+    });
+})
 
 module.exports = {
     OpenRouter: OpenRouter,

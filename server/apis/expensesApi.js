@@ -597,4 +597,42 @@ Expenses.prototype.shareExpensesDetailsViaEmail=function(jwt,params,callback){
     }
     
 }
+
+Expenses.prototype.downloadExpenseDetailsByVechicle=function(jwt,params,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+  
+        Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
+            if (expensesResponse.status) {
+                var output = [];
+                for (var i = 0; i < expensesResponse.expenses.length; i++) {
+                    output.push({
+                        Registration_No: expensesResponse.expenses[i].regNumber,
+                        Diesel: expensesResponse.expenses[i].exps[0].dieselExpense,
+                        Toll:expensesResponse.expenses[i].exps[0].tollExpense,
+                        Maintenance: expensesResponse.expenses[i].exps[0].mExpense,
+                        Miscellaneous:expensesResponse.expenses[i].exps[0].misc
+                    })
+                    if (i === paymentsResponse.parties.length - 1) {
+                        retObj.status = true;
+                        output.push({
+                            Registration_No: 'Total',
+                            Diesel: expensesResponse.totalExpenses.totalDieselExpense,
+                            Toll:expensesResponse.totalExpenses.totaltollExpense,
+                            Maintenance: expensesResponse.totalExpenses.totalmExpense,
+                            Miscellaneous:expensesResponse.totalExpenses.totalmisc
+                        })
+                        retObj.data = output;
+                        callback(retObj);
+                    }
+                }
+            } else {
+                callback(revenueResponse);
+            }
+        })
+    
+    
+}
 module.exports = new Expenses();

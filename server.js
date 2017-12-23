@@ -19,7 +19,7 @@ var Events = require('./server/routes/eventsRoutes');
 var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
 var Groups = require('./server/routes/groupRoutes');
-
+var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
@@ -44,6 +44,7 @@ app.use('/v1/events', Events.OpenRouter);
 app.use('/v1/group', Groups.OpenRouter);
 
 app.use(authMiddleware);
+app.use(json2xls.middleware);
 app.use('/v1/events', Events.AuthRouter);
 
 app.use('/v1/admin', Admin.AuthRouter);

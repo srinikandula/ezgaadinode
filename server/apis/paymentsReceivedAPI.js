@@ -455,6 +455,46 @@ PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, 
         })
     }
     
+};
+
+
+PaymentsReceived.prototype.downloadPaymentDetailsByParty = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    
+        PaymentsReceived.prototype.getDuesByParty(jwt, params, function (paymentsResponse) {
+            if (paymentsResponse.status) {
+               
+                var output = [];
+                for (var i = 0; i < paymentsResponse.parties.length; i++) {
+                    output.push({
+                        Party_Name: paymentsResponse.parties[i].attrs.partyName,
+                        Party_Mobile: paymentsResponse.parties[i].attrs.partyContact,
+                        Total_Fright: paymentsResponse.parties[i].totalFright,
+                        Paid_Amount: paymentsResponse.parties[i].totalPayment,
+                        Due_Amount:paymentsResponse.parties[i].totalDue
+                    })
+                    if (i === paymentsResponse.parties.length - 1) {
+                        retObj.status = true;
+                        output.push({
+                            Party_Name: 'Total',
+                            Party_Mobile:'',
+                            Total_Fright: paymentsResponse.grossAmounts.grossFreight,
+                            Paid_Amount: paymentsResponse.grossAmounts.grossExpenses,
+                            Due_Amount: paymentsResponse.grossAmounts.grossDue
+                        })
+                        retObj.data = output;
+                        callback(retObj);
+                    }
+                }
+            } else {
+                callback(paymentsResponse);
+            }
+        })
+    
+    
 }
 
 module.exports = new PaymentsReceived();

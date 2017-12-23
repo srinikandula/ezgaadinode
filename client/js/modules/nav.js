@@ -21,7 +21,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', '$cookies', '$rootScope'
 
     $rootScope.loggedTrue = function () {
         if ($cookies.get('token')) {
-            $scope.isLoggedInn = true;
+            $scope.isLoggedInn = true;            
         }
         else {
             $scope.isLoggedInn = false;

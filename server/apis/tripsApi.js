@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
+var json2xls = require('json2xls');
 
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -920,7 +921,7 @@ function getRevenueByVehicle(jwt, condition, callback) {
             var grossExpenses = 0;
             var grossRevenue = 0;
             for (var i = 0; i < vehicleIds.length; i++) {
-                var vehicle = {"registrationNo": vehicleIds[i]};
+                var vehicle = { "registrationNo": vehicleIds[i] };
                 var vehicleInfo = _.find(populateResults.tripFreightTotal, function (freight) {
                     if (freight._id === vehicle.registrationNo) {
                         return freight;
@@ -1024,11 +1025,11 @@ Trips.prototype.shareRevenueDetailsByVechicleViaEmail = function (jwt, params, c
         status: false,
         messages: []
     };
-    if(!params.email || !Utils.isEmail(params.email)){
+    if (!params.email || !Utils.isEmail(params.email)) {
         retObj.status = false;
         retObj.messages.push('Please enter valid email');
         callback(retObj);
-    }else{
+    } else {
         Trips.prototype.findRevenueByVehicle(jwt, params, function (revenueResponse) {
             if (revenueResponse.status) {
                 var emailparams = {
@@ -1054,6 +1055,42 @@ Trips.prototype.shareRevenueDetailsByVechicleViaEmail = function (jwt, params, c
             }
         })
     }
-    
+
+}
+
+Trips.prototype.downloadRevenueDetailsByVechicle = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    Trips.prototype.findRevenueByVehicle(jwt, params, function (revenueResponse) {
+        if (revenueResponse.status) {
+            var output = [];
+            for (var i = 0; i < revenueResponse.revenue.length; i++) {
+                output.push({
+                    RegistrationNo: revenueResponse.revenue[i].attrs.truckName,
+                    Total_Freight: revenueResponse.revenue[i].totalFreight,
+                    Total_Expense: revenueResponse.revenue[i].totalExpense,
+                    Total_Revenue: revenueResponse.revenue[i].totalRevenue
+                })
+                if (i === revenueResponse.revenue.length - 1) {
+                    retObj.status = true;
+                    output.push({
+                        RegistrationNo: 'Total',
+                        Total_Freight: revenueResponse.grossAmounts.grossFreight,
+                        Total_Expense: revenueResponse.grossAmounts.grossExpenses,
+                        Total_Revenue: revenueResponse.grossAmounts.grossRevenue
+                    })
+                    retObj.data = output;
+                    callback(retObj);
+                }
+            }
+
+        } else {
+            callback(revenueResponse);
+        }
+    })
+
+
 }
 module.exports = new Trips();
