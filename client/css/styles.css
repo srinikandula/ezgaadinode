@@ -202,6 +202,17 @@ body {
     bottom: 15%;
     border-radius: 5px;
 }
+.forgot-password {
+    max-width: 480px;
+    padding: 30px;
+    margin: 0 auto;
+    background-color: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    position: absolute;
+    right: 8%;
+    bottom: 30%;
+    border-radius: 5px;
+}
 
 .custom-form-control {
     border: 0 !important;

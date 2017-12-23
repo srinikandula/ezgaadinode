@@ -22,8 +22,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'forgotPassword',
         url: '/forgotPassword',
         templateUrl: 'views/partials/forgotPassword.html',
+        data: {activeTab: 'null'},
         params: {
-            access: 'open'
+            access: 'null'
         }
     }).state({
         name: 'reports',
@@ -286,8 +287,6 @@ app.config(function (NotificationProvider, $httpProvider) {
 
 app.run(function ($transitions, $rootScope) {
     $transitions.onSuccess({to: '*'}, function (to) {
-
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
-
     });
 });
