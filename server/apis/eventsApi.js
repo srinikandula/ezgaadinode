@@ -193,7 +193,7 @@ Events.prototype.getUserData = function (callback) {
     });
 }
 
-Events.prototype.getAccountData = function (callback) {
+/*Events.prototype.getAccountData = function (callback) {
     var retObj = {
         status: false,
         messages: []
@@ -249,7 +249,7 @@ Events.prototype.getGroupData = function (callback) {
             callback(retObj);
         }
     });
-}
+}*/
 
 Events.prototype.getTrucksData = function (callback) {
     var retObj = {

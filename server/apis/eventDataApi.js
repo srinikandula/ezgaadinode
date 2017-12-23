@@ -123,7 +123,7 @@ EventData.prototype.createUserData = function (userData, callback) {
 
 }
 
-EventData.prototype.createAccountData = function (accountData, callback) {
+/*EventData.prototype.createAccountData = function (accountData, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -185,7 +185,7 @@ EventData.prototype.createGroupData = function (groupData, callback) {
         }
 
     });
-}
+}*/
 
 EventData.prototype.createTruckData = function (truckData, callback) {
     var retObj = {
