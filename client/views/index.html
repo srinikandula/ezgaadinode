@@ -19,7 +19,10 @@
 </head>
 
 <body ng-app="EasyGaadi" ng-cloak>
-
+        <div class="loader" ng-show="reqloading">
+            <img src="images/Spinner.svg">
+        </div>
+  
 <left-nav-li name="Accounts" link="drivers"></left-nav-li>
 <span ng-controller="NavCtrl">
 
