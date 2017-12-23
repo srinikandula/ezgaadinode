@@ -1,4 +1,4 @@
-app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$cookies','$rootScope', function ($scope, Utils, CommonServices, $state, $cookies, $rootScope) {
+app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$cookies','$rootScope', 'GroupServices', function ($scope, Utils, CommonServices, $state, $cookies, $rootScope, GroupServices) {
     if (Utils.isLoggedIn()) {
         $state.go('reports');
     }
@@ -28,8 +28,6 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
         }
         if(!params.errors.length) {
             CommonServices.login($scope.loginParams, function (success) {
-                console.log('==>',$scope.loginParams);
-                console.log(success.data);
                 if (success.data.status) {
                     $cookies.put('token', success.data.token);
                     $cookies.put('role', success.data.role);
@@ -37,6 +35,27 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('editAccounts', success.data.editAccounts);
                     $rootScope.loggedTrue();
                     $state.go('reports');
+                } else {
+                    params.errors = success.data.messages;
+                }
+            }, function (error) {
+            });
+        }
+    };
+
+     $scope.otpFiled= false;
+    $scope.forgotPassword= function () {
+        var params = $scope.loginParams;
+        params.errors = [];
+
+        if (!params.contactPhone) {
+            params.errors.push('Invalid Contact Number');
+        }
+        if(!params.errors.length) {
+            GroupServices.forgotPassword($scope.loginParams, function (success) {
+                if (success.data.status) {
+                    params.success = success.data.messages;
+                    $scope.otpFiled= true;
                 } else {
                     params.errors = success.data.messages;
                 }

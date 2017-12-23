@@ -22,8 +22,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'forgotPassword',
         url: '/forgotPassword',
         templateUrl: 'views/partials/forgotPassword.html',
+        data: {activeTab: 'null'},
         params: {
-            access: 'open'
+            access: 'null'
         }
     }).state({
         name: 'reports',
@@ -220,10 +221,37 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             paymentsId: null
         }
     }).state({
+        name: 'gpsReports',
+        url: '/gps/gpsReports',
+        templateUrl: 'views/partials/gps/gpsReports.html',
+        data: {activeTab: 'gpsReports'},
+        params: {
+            access: 'open',
+            paymentsId: null
+        }
+    }).state({
+        name: 'mapView',
+        url: '/gps/mapView',
+        templateUrl: 'views/partials/gps/mapView.html',
+        data: {activeTab: 'gpsReports'},
+        params: {
+            access: 'open',
+            paymentsId: null
+        }
+    }).state({
+        name: 'listView',
+        url: '/gps/listView',
+        templateUrl: 'views/partials/gps/listView.html',
+        data: {activeTab: 'gpsReports'},
+        params: {
+            access: 'open',
+            paymentsId: null
+        }
+    }).state({
         name: 'groupMap',
         url: '/groupMap',
         templateUrl: 'views/partials/groupMap.html',
-        data: {activeTab: 'groupMap'},
+        data: {activeTab: 'gpsReports'},
         params: {
             access: 'auth'
         }
@@ -259,8 +287,6 @@ app.config(function (NotificationProvider, $httpProvider) {
 
 app.run(function ($transitions, $rootScope) {
     $transitions.onSuccess({to: '*'}, function (to) {
-
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
-
     });
 });

@@ -43,7 +43,7 @@
             <ul class="nav navbar-nav col-sm-9">
                 <li ng-class="{selected: activeTab === 'reports'}"> <a href="#" ui-sref="reports">
                     <img src="images/erp.png"><span>ERP</span></a></li>
-                <li ng-class="{selected: activeTab === 'gps'}"><a href="#" ui-sref="gps">
+                <li ng-class="{selected: activeTab === 'gpsReports'}"><a href="#" ui-sref="gpsReports">
                     <img src="images/gps.png"><span>GPS</span></a></li>
                 <li ng-class="{selected: activeTab === 'gps'}"><a href="#" ui-sref="fuelcard">
                     <img src="images/fuelcard.png"><span>Fuel Card</span></a></li>
@@ -98,7 +98,7 @@
         </div>
     </div>
 </div>
-    <div ng-if="activeTab != 'reports'">
+    <div ng-if="activeTab != 'reports'" style="height: 100%;">
                      <ui-view></ui-view>
                  </div>
 

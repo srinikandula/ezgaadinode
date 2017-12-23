@@ -27,6 +27,13 @@ app.factory('GroupServices', function ($http) {
                 data: groupData
             }).then(success, error)
         },
+        forgotPassword: function (data, success, error) {
+            $http({
+                url: '/v1/group/forgot-password',
+                method: "POST",
+                data: data
+            }).then(success, error)
+        },
         count: function (success, error) {
             $http({
                 url: '/v1/group/total/count',
