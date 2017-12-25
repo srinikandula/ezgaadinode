@@ -27,7 +27,7 @@ AuthRouter.get('/accounts/:accountId', function (req, res) {
     });
 });
 
-AuthRouter.post('/accounts/update', function (req, res) {
+AuthRouter.put('/accounts/update', function (req, res) {
     Accounts.updateAccount(req.jwt, req.body, function (result) {
         res.json(result);
     });
@@ -40,6 +40,12 @@ AuthRouter.get('/accounts/total/count',function(req,res){
 
 AuthRouter.get('/erpDashboard', function (req, res) {
     Accounts.erpDashBoardContent(req.jwt, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/userProfile', function (req, res) {
+    Accounts.userProfile(req.jwt, function (result) {
         res.json(result);
     });
 });

@@ -123,6 +123,70 @@ EventData.prototype.createUserData = function (userData, callback) {
 
 }
 
+/*EventData.prototype.createAccountData = function (accountData, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var accountDoc = new AccountsColl(accountData);
+    AccountsColl.find({"userName":accountData.userName} , function(error, accountFound){
+        if(!accountFound || accountFound.length === 0){
+            accountDoc.save(accountData, function (err, newDoc) {
+
+                if (err) {
+                    logger.info(JSON.stringify(err));
+                    retObj.messages.push('Error saving Account Data');
+                    if(callback){
+                        callback(retObj);
+                    }
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.userData = newDoc;
+                    if(callback){
+                        callback(retObj);
+                    }
+                }
+            });
+        } else{
+            logger.info("ignoring to save account data" + accountData);
+        }
+
+    });
+}
+
+EventData.prototype.createGroupData = function (groupData, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var groupDoc = new GroupsColl(groupData);
+    GroupsColl.find({"accountId":accountData.accountId} , function(error, groupFound){
+        if(!groupFound || groupFound.length === 0){
+            groupDoc.save(groupData, function (err, newDoc) {
+
+                if (err) {
+                    logger.info(JSON.stringify(err));
+                    retObj.messages.push('Error saving Group Data');
+                    if(callback){
+                        callback(retObj);
+                    }
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.userData = newDoc;
+                    if(callback){
+                        callback(retObj);
+                    }
+                }
+            });
+        } else{
+            logger.info("ignoring to save group data" + groupData);
+        }
+
+    });
+}*/
+
 EventData.prototype.createTruckData = function (truckData, callback) {
     var retObj = {
         status: false,

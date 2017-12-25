@@ -25,6 +25,7 @@
     "mysql": "^2.15.0",
     "ng-table": "^3.0.1",
     "nodemailer": "^4.4.0",
+    "nodemon": "^1.14.1",
     "otp-generator": "^1.1.0",
     "underscore": "^1.8.3",
     "velocityjs": "^0.10.0",
