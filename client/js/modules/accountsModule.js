@@ -23,7 +23,7 @@ app.factory('AccountServices', function ($http, $cookies) {
         updateAccount: function (accountInfo, success, error) {
             $http({
                 url: '/v1/admin/accounts/update',
-                method: "POST",
+                method: "PUT",
                 data: accountInfo
             }).then(success, error)
         },
@@ -38,13 +38,18 @@ app.factory('AccountServices', function ($http, $cookies) {
                 url: '/v1/admin/accounts/total/count',
                 method: "GET"
             }).then(success, error)
+        },
+        userProfile: function (success, error) {
+            $http({
+                url: '/v1/admin/userProfile',
+                method: "GET"
+            }).then(success, error)
         }
     }
 });
 
 app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', 'paginationService','NgTableParams', function ($scope, $uibModal, AccountServices, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditAccountPage = function (accountId) {
-        console.log('editing account '+ accountId);
         $state.go('accountsEdit', {accountId: accountId});
     };
     $scope.filter;
@@ -105,9 +110,13 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     $scope.pagetitle = "Add Account";
 
     $scope.account = {
-        userName: '',
-        password: '',
-        contactPhone: '',
+        profile: {userName: '',
+            password: '',
+            contactPhone: '',
+            email: '',},
+        oldPassword: '',
+        newPassword: '',
+        confirmPassword: '',
         erpEnabled: '',
         gpsEnabled: '',
         isActive: true,
@@ -119,6 +128,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         $scope.pagetitle = "Update Account";
         AccountServices.getAccount($stateParams.accountId, function (success) {
             if (success.data.status) {
+                $scope.
                 $scope.account = success.data.account;
             } else {
                 success.data.messages.forEach(function (message) {
@@ -129,25 +139,46 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         })
     }
 
+    $scope.userProfilee = function () {
+        AccountServices.userProfile(function (success) {
+            if (success.data.status) {
+                $scope.account = success.data.result;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+
+        });
+    }
+
     $scope.addOrUpdateAccount = function () {
         var params = $scope.account;
         params.errors = [];
         params.success = [];
 
-        if (!params._id && !params.userName) {
+        if (!params.profile.userName) {
             params.errors.push('Invalid User Name');
         }
 
-        if (!params._id && !params.password) {
-            params.errors.push('Invalid Password');
-        }
-
-        if (!params._id && !params.contactPhone) {
+        if (!params.profile.contactPhone) {
             params.errors.push('Invalid Mobile Number');
         }
 
+        if (!params.profile.email) {
+            params.errors.push('Invalid Email');
+        }
+        if(params.oldPassword) {
+            if (!params.newPassword) {
+                params.errors.push('Please Provide New Password');
+            }
+            if (params.confirmPassword !== params.newPassword) {
+                params.errors.push('Passwords Not Matched');
+            }
+        }
         if (!params.errors.length) {
-            if (params._id) {
+            if (params.profile._id) {
                 // If _id update the account
                 AccountServices.updateAccount(params, function (success) {
                     if (success.data.status) {

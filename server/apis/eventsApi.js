@@ -10,6 +10,7 @@ var pool_crm  = mysql.createPool(config.mysql_crm);
 var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 
+
 Events.prototype.getEventData = function(accountId, startDate, endDate, callback) {
     var retObj = {};
     retObj.messages = [];
@@ -190,27 +191,65 @@ Events.prototype.getUserData = function (callback) {
             callback(retObj);
         }
     });
+}
 
-    /*var userDataQuery = "select accountId,contactPhone,password from DeviceGroup";
-
-    pool.query(userDataQuery, function(err, results) {
+/*Events.prototype.getAccountData = function (callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var accountDataQuery = "select accountId as userName,contactPhone,password from Account";
+    pool.query(accountDataQuery, function(err, results) {
         if(err) {
             retObj.status = false;
             retObj.messages.push('Error fetching data');
             retObj.messages.push(JSON.stringify(err));
-
             callback(retObj);
         } else {
-            if(results.length) {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.results = results;
-                retObj.count = retObj.results.length;
-                callback(retObj);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.results = results;
+            for(var i = 0; i < retObj.results.length; i++) {
+                var AccountData = retObj.results[i];
+                if(!AccountData.contactPhone || AccountData.contactPhone.trim().length == 0 || isNaN(AccountData.contactPhone)){
+                    delete AccountData.contactPhone;
+                }
+                EventData.createAccountData(AccountData)
             }
+            retObj.count = retObj.results.length;
+            callback(retObj);
         }
-    });*/
+    });
 }
+
+Events.prototype.getGroupData = function (callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var groupDataQuery = "select groupId as userName,contactPhone,password from DeviceGroup";
+    pool.query(groupDataQuery, function(err, results) {
+        if(err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.results = results;
+            for(var i = 0; i < retObj.results.length; i++) {
+                var GroupData = retObj.results[i];
+                if(!GroupData.contactPhone || GroupData.contactPhone.trim().length == 0 || isNaN(GroupData.contactPhone)){
+                    delete GroupData.contactPhone;
+                }
+                EventData.createGroupData(GroupData)
+            }
+            retObj.count = retObj.results.length;
+            callback(retObj);
+        }
+    });
+}*/
 
 Events.prototype.getTrucksData = function (callback) {
     var retObj = {
@@ -218,7 +257,7 @@ Events.prototype.getTrucksData = function (callback) {
         messages: [],
     };
 
-    var accountId = null;
+    var groupId = null;
     var driverId = null;
     var pollutionExpiry = "0000-00-00";// getting error using default value as null
     var taxDueDate = "0000-00-00";// getting error using default value as null

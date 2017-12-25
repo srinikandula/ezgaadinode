@@ -1,5 +1,5 @@
 
-app.controller('NavCtrl', ['$scope', '$state', 'Utils', '$cookies', '$rootScope', function ($scope, $state, Utils, $cookies, $rootScope) {
+app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$cookies', '$rootScope', function ($scope, $state, Utils, AccountServices, $cookies, $rootScope) {
     $scope.logout = function () {
         Utils.logout();
         $cookies.remove('token');
@@ -31,6 +31,14 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', '$cookies', '$rootScope'
     $rootScope.loggedTrue();
     
     $scope.isLoggedin=$cookies.get('token');
+
+    $scope.loginParams = {
+        userName: '',
+        password: '',
+        contactPhone: '',
+        email: '',
+        errors: []
+    };
 
    /* $scope.templates = {
         'myProfile': 'views/templates/userProfile/myProfile.html',

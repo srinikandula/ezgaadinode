@@ -7,6 +7,7 @@ const ObjectId = mongoose.Types.ObjectId;
 var pageLimits = require('./../config/pagination');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
+
 var Trips = require('./tripsApi');
 var Expenses = require('./expensesApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
@@ -178,35 +179,57 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
 };
 
 Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
+    console.log('accountInfo : ',accountInfo)
     var retObj = {
         status: false,
         messages: []
     };
-
-    if (!Utils.isValidObjectId(accountInfo._id)) {
+    if (!Utils.isValidObjectId(accountInfo.profile._id)) {
         retObj.messages.push('Invalid account Id');
     }
 
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        accountInfo.updatedBy = jwtObj.id;
-        ///accountInfo = Utils.removeEmptyFields(accountInfo);
-        AccountsColl.findOneAndUpdate({_id: accountInfo._id}, {$set: accountInfo}, function (err, oldAcc) {
-            if (err) {
-                retObj.messages.push('Error updating the account');
-                callback(retObj);
-            } else if (oldAcc) {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                callback(retObj);
-            } else {
-                retObj.messages.push('Account doesn\'t exist');
-                callback(retObj);
-            }
-        });
+        if(accountInfo.oldPassword) {
+            AccountsColl.findOne({_id: accountInfo.profile._id,password: accountInfo.oldPassword}, function (err, oldAcc) {
+                if (err) {
+                    retObj.messages.push('Please Try Again');
+                    callback(retObj);
+                } else if (oldAcc) {
+                    accountInfo.profile.password=accountInfo.newPassword;
+                    updateAccounts(jwtObj, accountInfo, callback)
+                } else {
+                    retObj.messages.push('Invalid Password');
+                    callback(retObj);
+                }
+            });
+        } else {
+            updateAccounts(jwtObj, accountInfo, callback)
+        }
     }
 };
+
+function updateAccounts (jwtObj, accountInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    accountInfo.updatedBy = jwtObj.id;
+    AccountsColl.findOneAndUpdate({_id: accountInfo.profile._id}, {$set: accountInfo.profile}, function (err, oldAcc) {
+        if (err) {
+            retObj.messages.push('Error updating the account');
+            callback(retObj);
+        } else if (oldAcc) {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            callback(retObj);
+        } else {
+            retObj.messages.push('Account doesn\'t exist');
+            callback(retObj);
+        }
+    });
+}
 
 Accounts.prototype.erpDashBoardContent = function(jwt, callback){
     var retObj = {
@@ -246,6 +269,7 @@ Accounts.prototype.erpDashBoardContent = function(jwt, callback){
         }
     });
 }
+
 Accounts.prototype.countAccounts = function (jwt, callback) {
     var result = {};
     AccountsColl.count(function (err, data) {
@@ -261,5 +285,56 @@ Accounts.prototype.countAccounts = function (jwt, callback) {
         }
     })
 };
+
+Accounts.prototype.countAccountGroups = function (jwt, callback) {
+    var result = {};
+    AccountsColl.count({"accountId": ObjectId(jwt.accountId),"type":"group"},function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
+
+Accounts.prototype.userProfile = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    async.parallel({
+        profile: function(profileCallback) {
+            Accounts.prototype.getAccountDetails(jwt.id,function (response) {
+                profileCallback(response.error, response.account);
+            });
+        },
+        accountGroupsCount:function(accountGroupCountCallback) {
+            Accounts.prototype.countAccountGroups(jwt,function (response) {
+                accountGroupCountCallback(response.error, response.count);
+            });
+        },
+        accountTrucksCount:function(accountTrucksCountCallback) {
+            Trucks.countTrucks(jwt,function (response) {
+                accountTrucksCountCallback(response.error, response.count);
+            });
+        },
+    },function (error, userProfileContent) {
+        if(error){
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(error));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.result = userProfileContent;
+            callback(retObj);
+        }
+    });
+}
 
 module.exports = new Accounts();
