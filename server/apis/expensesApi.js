@@ -34,7 +34,7 @@ function save(expenseDetails, result, callback) {
 }
 
 function saveExpense(expenseDetails, jwt, result, callback) {
-    if (expenseDetails.expenseName) {
+    if (expenseDetails.expenseType==='others' && expenseDetails.expenseName) {
         expenseMasterApi.addExpenseType(jwt, { "expenseName": expenseDetails.expenseName }, function (eTResult) {
             if (eTResult.status) {
                 expenseDetails.expenseType = eTResult.newDoc._id.toString();
@@ -62,6 +62,10 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
     } else if (!expenseDetails.expenseType || !_.isString(expenseDetails.expenseType)) {
         result.status = false;
         result.message = "Please provide Expense Type";
+        callback(result);
+    } else if (expenseDetails.expenseType==='others' && !expenseDetails.expenseName) {
+        result.status = false;
+        result.message = "Enter other expenseType";
         callback(result);
     } else if (!expenseDetails.cost || _.isNaN(expenseDetails.cost)) {
         result.status = false;
@@ -113,7 +117,7 @@ function updateExpense(expense, jwt, callback) {
 }
 
 Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
-    if (expense.expenseName) {
+    if (expense.expenseType==='others' && expense.expenseName) {
         expenseMasterApi.addExpenseType(jwt, { "expenseName": expense.expenseName }, function (eTResult) {
             if (eTResult.status) {
                 expense.expenseType = eTResult.newDoc._id.toString();

@@ -156,6 +156,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         description: '',
         amount: '',
         paymentType:'',
+        paymentRefNo:'',
         error: [],
         success: []
     };
@@ -268,6 +269,12 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
             params.error.push('Invalid Party Id');
         } if (!(params.amount)) {
             params.error.push('Invalid Amount');
+        }
+        if(!params.paymentType){
+            params.error.push('Select payment type');
+        }
+        if((params.paymentType==='NEFT' || params.paymentType==='Cheque') && !params.paymentRefNo){
+            params.error.push('Enter payment reference number');
         }
         if (!params.error.length) {
             if ($stateParams.paymentsId) {

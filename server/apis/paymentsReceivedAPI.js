@@ -67,6 +67,12 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
     if (!details.amount) {
         retObj.messages.push("Please provide amount");
     }
+    if(!details.paymentType){
+        retObj.messages.push('Select payment type');
+    }
+    if((details.paymentType==='NEFT' || details.paymentType==='Cheque') && !details.paymentRefNo){
+        retObj.messages.push('Enter payment reference number');
+    }
     if (retObj.messages.length) {
         callback(retObj);
     } else {

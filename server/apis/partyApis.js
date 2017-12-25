@@ -32,7 +32,7 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
         result.message += " Please provide valid contact number for party type";
     }
 
-    if(!partyDetails.partyType){
+    if(!partyDetails.isTransporter && !partyDetails.isSupplier){
         result.status = false;
         result.message += " Please select party type";
     }
@@ -97,7 +97,8 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 "city": partyDetails.city,
                 "tripLanes": partyDetails.tripLanes,
                 "updatedBy": jwt.id,
-                "partyType":partyDetails.partyType,
+                "isSupplier":partyDetails.isSupplier,
+                "isTransporter":partyDetails.isTransporter,
                 "isSms":partyDetails.isSms,
                 "isEmail":partyDetails.isEmail
             }

@@ -23,7 +23,7 @@ app.factory('TrucksService', function ($http, $cookies) {
             $http({
                 url: '/v1/trucks/groupTrucks/',
                 method: "GET",
-                params:pagebale
+                params: pagebale
             }).then(success, error)
         },
         getUnAssignedTrucks: function (groupId, success, error) {
@@ -61,10 +61,10 @@ app.factory('TrucksService', function ($http, $cookies) {
         },
         unAssignTrucks: function (unAssignTrucks, success, error) {
             $http({
-                url:'/v1/trucks/unassign-trucks',
-                method:"POST",
-                data:unAssignTrucks
-            }).then(success,error);
+                url: '/v1/trucks/unassign-trucks',
+                method: "POST",
+                data: unAssignTrucks
+            }).then(success, error);
         },
         findExpiryCount: function (success, error) {
             $http({
@@ -117,11 +117,11 @@ app.factory('TrucksService', function ($http, $cookies) {
     }
 });
 
-app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state','paginationService','NgTableParams','$rootScope', function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams,$rootScope) {
+app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', '$rootScope', function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, $rootScope) {
 
 
     $scope.goToEditTruckPage = function (truckId) {
-        $state.go('trucksEdit', {truckId: truckId});
+        $state.go('trucksEdit', { truckId: truckId });
     };
 
 
@@ -132,15 +132,15 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 $scope.count = success.data.count;
                 $scope.init();
             } else {
-                Notification.error({message: success.data.message});
+                Notification.error({ message: success.data.message });
             }
         });
     };
     $scope.getCount();
 
-     var loadTableData = function (tableParams) {
+    var loadTableData = function (tableParams) {
 
-        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting() };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
@@ -164,12 +164,12 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 createdAt: -1
             }
         }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
-                loadTableData(params);
-            }
-        });
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    loadTableData(params);
+                }
+            });
     };
 
     $scope.deleteTruck = function (truckId) {
@@ -186,7 +186,18 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
         });
     }
+    $scope.searchByTruckName = function () {
 
+        if ($scope.truckName) {
+            TrucksService.searchByTruckName($scope.truckName,function(success){
+     
+            },function(error){
+
+            });
+        } else {
+
+        }
+    }
 
 }]);
 
@@ -212,16 +223,48 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         taxDueDate: '',
         errors: []
     };
+    $scope.driverName = "";
 
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
 
+
+
+    function initializeTruck() {
+        if ($stateParams.truckId) {
+
+            TrucksService.getTruck($stateParams.truckId, function (success) {
+                if (success.data.status) {
+                    $scope.truck = success.data.truck;
+                    $scope.truck.fitnessExpiry = new Date($scope.truck.fitnessExpiry);
+                    $scope.truck.insuranceExpiry = new Date($scope.truck.insuranceExpiry);
+                    $scope.truck.permitExpiry = new Date($scope.truck.permitExpiry);
+                    $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
+                    $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
+                    var selectedDriver = _.find($scope.drivers, function (driver) {
+                        return driver._id.toString() === $scope.truck.driverId;
+                    });
+                    if (selectedDriver) {
+                        $scope.driverName = selectedDriver.fullName;
+
+                    }
+
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (err) {
+            })
+        }
+    }
     function getAccountDrivers() {
         DriverService.getAllDrivers(function (success) {
             if (success.data.status) {
                 $scope.drivers = success.data.drivers;
+                initializeTruck();
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+                    Notification.error({ message: message });
                 });
             }
         }, function (err) {
@@ -230,32 +273,6 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     }
 
     getAccountDrivers();
-
-
-    if ($stateParams.truckId) {
-        TrucksService.getTruck($stateParams.truckId, function (success) {
-            if (success.data.status) {
-                $scope.truck = success.data.truck;
-                $scope.truck.fitnessExpiry = new Date($scope.truck.fitnessExpiry);
-                $scope.truck.insuranceExpiry = new Date($scope.truck.insuranceExpiry);
-                $scope.truck.permitExpiry = new Date($scope.truck.permitExpiry);
-                $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
-                $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
-                var selectedDriver = _.find($scope.drivers, function (driver) {
-                    return driver._id.toString() === $scope.truck.driverId;
-                });
-                if (selectedDriver) {
-                    $scope.driverName = selectedDriver.fullName;
-                }
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        }, function (err) {
-        })
-    }
-
     $scope.addOrUpdateTruck = function () {
         var params = $scope.truck;
         params.errors = [];
@@ -291,7 +308,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {
                         $state.go('trucks');
-                        Notification.success({message: "Truck Added Successfully"});
+                        Notification.success({ message: "Truck Added Successfully" });
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -301,7 +318,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                 TrucksService.updateTruck(params, function (success) {
                     if (success.data.status) {
                         $state.go('trucks');
-                        Notification.success({message: "Truck Updated Successfully"});
+                        Notification.success({ message: "Truck Updated Successfully" });
                     } else {
                         params.errors = success.data.messages;
                     }

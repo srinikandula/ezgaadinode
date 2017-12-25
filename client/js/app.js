@@ -278,14 +278,11 @@ app.config(function (NotificationProvider, $httpProvider) {
                 return config;
             },
             'response': function(config) {
-                console.log('responsese')
-                
                 $rootScope.reqloading=false;
                  return config;
              },
             'responseError': function (response) {
                 if ([400, 401, 402, 403].indexOf(response.status) > -1) {
-                    console.log('-----', response.status);
                     $cookies.remove('token');
                     $location.path('/login');
                     return $q.reject(response);

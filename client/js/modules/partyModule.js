@@ -146,7 +146,8 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         tripLanes: [{
             index: 0
         }],
-        partyType:"",
+        isTransporter:false,
+        isSupplier:false,
         isEmail:false,
         isSms:false,
         error: [],
@@ -158,6 +159,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         PartyService.getParty($stateParams.partyId, function (success) {
             if (success.data.status) {
                 $scope.party = success.data.party;
+                
             } else {
                 Notification.error(success.data.message)
             }
@@ -170,7 +172,28 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
 
     }
 
+    $scope.addTripLane = function () {
+        $scope.party.error=[];
+        var length = $scope.party.tripLanes.length;
+        if (!$scope.party.tripLanes[length - 1].name || !$scope.party.tripLanes[length - 1].from || !$scope.party.tripLanes[length - 1].to) {
+            $scope.party.error.push("Please Fill all TripLane Fields");
+        }
+         else {
+            $scope.party.tripLanes.push({
+                index: length
+            });
+        }
+        console.log($scope.party);
+    };
 
+    $scope.deleteTripLane = function (index) {
+        if($scope.party.tripLanes.length>1){
+        $scope.party.tripLanes.splice(index, 1);
+        }else{
+            $scope.party.error.push("Please add at least one trip lane");
+        }
+
+    };
 
     $scope.addOrUpdateParty = function () {
         var params = $scope.party;
@@ -192,7 +215,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.tripLanes[0].name) {
             params.error.push('Please provide TripLane Name');
         }
-        if(!params.partyType){
+        if(!params.isSupplier && !params.isTransporter){
             params.error.push('Please select party type');
         }
         if(!params.isSms && !params.isEmail){

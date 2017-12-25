@@ -160,6 +160,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         description: '',
         date: '',
         cost: '',
+        expenseName:'',
         error: [],
         success: []
     };
@@ -247,6 +248,9 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         }
         if (!params.expenseType) {
             params.error.push('Invalid expenseType');
+        }
+        if (params.expenseType==='others' && !params.expenseName) {
+            params.error.push('Enter other expenseType');
         }
         if (!params.date) {
             params.error.push('Invalid date');
