@@ -31,7 +31,6 @@
 
                 <div class="col-xs-12 pos-relative">
                     <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                    <!--   Driver Name: {{getDriver}}-->
                     <input id="city" type="text" ng-model="driverName"
                            uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue"
                            class="form-control custom-form-control" typeahead-min-length="1"

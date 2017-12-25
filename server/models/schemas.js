@@ -111,7 +111,8 @@ var partySchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     attrs: {},
-    partyType:String,
+    isTransporter:{type:Boolean,default:false},
+    isSupplier:{type:Boolean,default:false},
     isEmail:{type:Boolean,default:false},
     isSms:{type:Boolean,default:false}
 }, {timestamps: true});
@@ -183,6 +184,8 @@ var paymentsReceived = mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     date: Date,
+    paymentType:String,
+    paymentRefNo:String,
     attrs: {}
 },{timestamps: String});
 

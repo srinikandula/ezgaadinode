@@ -34,7 +34,7 @@ function save(expenseDetails, result, callback) {
 }
 
 function saveExpense(expenseDetails, jwt, result, callback) {
-    if (expenseDetails.expenseName) {
+    if (expenseDetails.expenseType==='others' && expenseDetails.expenseName) {
         expenseMasterApi.addExpenseType(jwt, { "expenseName": expenseDetails.expenseName }, function (eTResult) {
             if (eTResult.status) {
                 expenseDetails.expenseType = eTResult.newDoc._id.toString();
@@ -62,6 +62,10 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
     } else if (!expenseDetails.expenseType || !_.isString(expenseDetails.expenseType)) {
         result.status = false;
         result.message = "Please provide Expense Type";
+        callback(result);
+    } else if (expenseDetails.expenseType==='others' && !expenseDetails.expenseName) {
+        result.status = false;
+        result.message = "Enter other expenseType";
         callback(result);
     } else if (!expenseDetails.cost || _.isNaN(expenseDetails.cost)) {
         result.status = false;
@@ -113,7 +117,7 @@ function updateExpense(expense, jwt, callback) {
 }
 
 Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
-    if (expense.expenseName) {
+    if (expense.expenseType==='others' && expense.expenseName) {
         expenseMasterApi.addExpenseType(jwt, { "expenseName": expense.expenseName }, function (eTResult) {
             if (eTResult.status) {
                 expense.expenseType = eTResult.newDoc._id.toString();
@@ -595,6 +599,44 @@ Expenses.prototype.shareExpensesDetailsViaEmail=function(jwt,params,callback){
             }
         })
     }
+    
+}
+
+Expenses.prototype.downloadExpenseDetailsByVechicle=function(jwt,params,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+  
+        Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
+            if (expensesResponse.status) {
+                var output = [];
+                for (var i = 0; i < expensesResponse.expenses.length; i++) {
+                    output.push({
+                        Registration_No: expensesResponse.expenses[i].regNumber,
+                        Diesel: expensesResponse.expenses[i].exps[0].dieselExpense,
+                        Toll:expensesResponse.expenses[i].exps[0].tollExpense,
+                        Maintenance: expensesResponse.expenses[i].exps[0].mExpense,
+                        Miscellaneous:expensesResponse.expenses[i].exps[0].misc
+                    })
+                    if (i === paymentsResponse.parties.length - 1) {
+                        retObj.status = true;
+                        output.push({
+                            Registration_No: 'Total',
+                            Diesel: expensesResponse.totalExpenses.totalDieselExpense,
+                            Toll:expensesResponse.totalExpenses.totaltollExpense,
+                            Maintenance: expensesResponse.totalExpenses.totalmExpense,
+                            Miscellaneous:expensesResponse.totalExpenses.totalmisc
+                        })
+                        retObj.data = output;
+                        callback(retObj);
+                    }
+                }
+            } else {
+                callback(revenueResponse);
+            }
+        })
+    
     
 }
 module.exports = new Expenses();

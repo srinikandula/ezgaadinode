@@ -510,5 +510,15 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             })
         }
+
+        $scope.downloadRevenueDetailsByVechicle = function () {
+            window.open('/v1/trips/downloadRevenueDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber);
+        }
+        $scope.downloadExpenseDetailsByVechicle = function () {
+            window.open('/v1/expense/downloadExpenseDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber);
+        }
+        $scope.downloadPaymentDetailsByParty = function () {
+            window.open('/v1/payments/downloadPaymentDetailsByParty?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&partyId=' + $scope.partyId);
+        }
     }]);
 
