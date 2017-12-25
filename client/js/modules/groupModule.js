@@ -34,6 +34,13 @@ app.factory('GroupServices', function ($http) {
                 data: data
             }).then(success, error)
         },
+        verifyOtp: function (data, success, error) {
+            $http({
+                url: '/v1/group/verify-otp',
+                method: "POST",
+                data: data
+            }).then(success, error)
+        },
         count: function (success, error) {
             $http({
                 url: '/v1/group/total/count',

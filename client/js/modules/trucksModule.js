@@ -149,6 +149,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             if (angular.isArray(response.data.trucks)) {
                 $scope.loading = false;
                 $scope.trucks = response.data.trucks;
+                console.log('====>>>', $scope.trucks);
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trucks;
                 $scope.currentPageOfTrucks = $scope.trucks;

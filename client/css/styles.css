@@ -519,6 +519,7 @@ body {
     padding: 5px !important;
     vertical-align: middle;
     text-align: left;
+    color: #000;
 }
 
 /*.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{*/
@@ -1648,7 +1649,6 @@ select {
 .custom-form-control:not([disabled]):focus ~ .focus-effect-for-input {
     /*whsOnd:not([disabled]):focus~.AxOyFc*/
     transform: scale(.9) translateY(-20px);
-
     left: 0;
     transition: all 0.5s ease-in-out;
     -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
@@ -1658,7 +1658,9 @@ select {
 
 .ng-not-empty + .focus-effect-for-input {
     transform: scale(.9) translateY(-20px);
-    left: 0;
+    left: 10px;
+    top: 8px;
+    color: #1E4495;
     transition: all 0.5s ease-in-out;
     -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
     -moz-transition: all 0.5s ease-in-out; /** Firefox **/
