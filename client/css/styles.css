@@ -862,7 +862,21 @@ body {
     color: #909194;
     font-weight: 500;
 }
-
+.dropdown-menu-form{
+    padding: 10px !important;
+}
+.dropdown-menu-form label{
+    line-height: 26px;
+}
+.dropdown-menu-form > li > a{
+    display: block !important;
+    padding: 0 !important;
+    border: none !important;
+}
+.dropdown-menu-form > li > a:hover{
+    background: transparent !important;
+    color: #000 !important;
+}
 .top-block ul li a:hover {
     background: #000;
     color: #fff;
@@ -1074,6 +1088,9 @@ body {
 .checkbox label input[type="checkbox"],
 .radio label input[type="radio"] {
     display: none;
+}
+.checkboxInput{
+    display: block !important;
 }
 
 .checkbox label input[type="checkbox"] + .cr > .cr-icon,
@@ -1801,3 +1818,4 @@ select {
     top:42%;
     left: 42%;
 }
+
