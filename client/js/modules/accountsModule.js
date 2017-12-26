@@ -323,7 +323,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                 // _id doesn\'t exist => create account
                 AccountServices.addAccount(params, function (success) {
                     if (success.data.status) {
-                        params.success = success.data.messages;
+                        params.success = success.data;
                         $state.go('accounts');
                       Notification.success({message: "Account Added Successfully"});
                     } else {
