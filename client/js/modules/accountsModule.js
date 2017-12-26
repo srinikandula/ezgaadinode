@@ -175,7 +175,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
     };
     $scope.findAccountGroup = function(){
         $scope.accountGroupParams.filter = $scope.accountGroupFilter;
-        loadTableData($scope.accountGroupParams);
+        loadAccountGroupTableData($scope.accountGroupParams);
     }
 
     $scope.initAccountGroup = function () {
