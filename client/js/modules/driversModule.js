@@ -70,7 +70,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
 
         var loadTableData = function (tableParams) {
 
-            var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+            var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),driverName:tableParams.driverName};
             $scope.loading = true;
             // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
             DriverService.getDrivers(pageable, function (response) {
@@ -85,7 +85,19 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
                 }
             });
         };
+    $scope.getAllDrivers=function(){
+        DriverService.getAllDrivers(function(success){
+            if (success.data.status) {
+                $scope.driversList = success.data.drivers;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        },function(error){
 
+        })
+    }
     $scope.init = function () {
         $scope.driverParams = new NgTableParams({
             page: 1, // show first page
@@ -98,6 +110,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
+                $scope.getAllDrivers();
             }
         });
     };
@@ -114,6 +127,24 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             }
         })
     };
+
+    $scope.searchByDriverName=function(driverName){
+        $scope.driverParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                console.log('driverName',driverName);
+                params.driverName=driverName;
+                loadTableData(params);
+            }
+        });
+    }
 
     // $scope.getDrivers();
 }]);

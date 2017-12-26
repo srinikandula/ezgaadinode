@@ -139,7 +139,7 @@ Groups.prototype.forgotPassword = function (contactPhone, callback) {
 
             } else {
                 retObj.status = false;
-                retObj.messages = "Phone number not found";
+                retObj.messages.push("Phone number not found");
                 callback(retObj);
             }
 

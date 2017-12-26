@@ -74,7 +74,7 @@ app.factory('PaymentsService', function ($http) {
     }
 });
 
-app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification','NgTableParams','paginationService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService) {
+app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification','NgTableParams','paginationService','PartyService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService,PartyService) {
     $scope.goToEditPaymentsPage = function (paymentsId) {
         $state.go('paymentsEdit', {paymentsId: paymentsId});
     };
@@ -92,7 +92,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
     var pageable;
 
     var loadTableData = function (tableParams) {
-        pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),partyName:tableParams.partyName};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         PaymentsService.getPayments(pageable, function (response) {
@@ -107,7 +107,19 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             }
         });
     };
+    $scope.getAllParties = function () {
+        PartyService.getParties(null, function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (err) {
 
+        });
+    }
 
     $scope.init = function () {
         $scope.paymentParams = new NgTableParams({
@@ -121,6 +133,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
+                $scope.getAllParties();
             }
         });
     };
@@ -135,6 +148,23 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             }
         })
     };
+
+    $scope.searchByPartyName = function (partyName) {
+        $scope.paymentParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    params.partyName = partyName;
+                    loadTableData(params);
+                }
+            });
+    }
 
 
 }]);
@@ -293,9 +323,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                 });
             } else {
                 PaymentsService.addPayments(params, function (success) {
-                    //console.log(params);
-                    //console.log(success);
-                    //console.log(success.data.status);
+                   
                     if (success.data.status) {
                         params.success = success.data.message;
                         Notification.success({message: success.data.messages[0]});
