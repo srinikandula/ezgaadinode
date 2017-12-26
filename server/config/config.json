@@ -10,7 +10,7 @@
   },
   "port": 2100,
   "mysql": {
-    "connectionLimit": 10,
+    "connectionLimit": 100,
     "host": "localhost",
     "user": "root",
     "password": "",
