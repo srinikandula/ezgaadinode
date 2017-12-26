@@ -4,22 +4,22 @@
         <div class="col-xs-8 col-xs-push-1 pall-zero">
             <div class="col-sm-8">
                 <div class="input-group stylish-input-group">
-                    <input type="text" class="form-control" placeholder="Search">
+                    <input type="text" class="form-control" ng-model="truckNumber1"  placeholder="Search">
                     <span class="input-group-addon">
-                        <button type="submit">
-                                <i class="fa fa-search sear" aria-hidden="true"></i>
-                        </button>
-                    </span>
+                    <button type="button" ng-click="searchByVechicleNumber(truckNumber1);">
+                            <i class="fa fa-search sear" aria-hidden="true"></i>
+                    </button>
+                </span>
                 </div>
             </div>
             <div class="col-sm-4 pall-zero pos-relative">
                 <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                <select class="form-control">
+                <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
                     <option value="" selected>All Vehicles</option>
-                    <option ng-repeat="maintanence in currentPageOfMaintanence">{{maintanence.attrs.truckName}}</option>
+                    <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
                 </select>
             </div>
-        </div>
+            </div>
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
         <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">

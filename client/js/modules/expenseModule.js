@@ -80,8 +80,9 @@ app.factory('ExpenseService', function ($http) {
     }
 });
 
-app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService) {
-    $scope.goToEditExpensePage = function (expenseId) {
+
+app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService','TrucksService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService,TrucksService) {
+     $scope.goToEditExpensePage = function (expenseId) {
         $state.go('expensesEdit', {expenseId: expenseId});
     };
 
@@ -102,7 +103,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
 
     var loadTableData = function (tableParams) {
 
-        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),truckNumber:tableParams.truckNumber};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
@@ -118,7 +119,19 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
 
         });
     };
+    $scope.getAllTrucks = function () {
+        TrucksService.getAllTrucks(null, function (success) {
+            if (success.data.status) {
+                $scope.trucksList = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (error) {
 
+        })
+    }
     $scope.init = function () {
         $scope.expenseParams = new NgTableParams({
             page: 1, // show first page
@@ -131,6 +144,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
+                $scope.getAllTrucks();
             }
         });
     };
@@ -165,7 +179,23 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                     }
                 })
             }
-            ;
+        })
+    };
+
+    $scope.searchByVechicleNumber=function(truckNumber){
+        $scope.expenseParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.truckNumber=truckNumber;
+                loadTableData(params);
+            }
         });
     }
 }]);

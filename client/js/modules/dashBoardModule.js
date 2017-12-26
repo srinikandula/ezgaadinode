@@ -313,7 +313,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 if (success.data.status) {
                     $scope.partiesList = success.data.parties;
                 } else {
-
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
                 }
             }, function (err) {
 
