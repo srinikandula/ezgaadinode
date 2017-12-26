@@ -187,6 +187,15 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
         retObj.messages.push('Invalid account Id');
     }
 
+    if (accountInfo.oldPassword) {
+        if (!accountInfo.newPassword) {
+            retObj.messages.push('Please Provide New Password');
+        }
+        if (accountInfo.confirmPassword !== accountInfo.newPassword) {
+            retObj.messages.push('Passwords Not Matched');
+        }
+    }
+
     if (retObj.messages.length) {
         callback(retObj);
     } else {
@@ -336,45 +345,46 @@ Accounts.prototype.userProfile = function (jwt, callback) {
     });
 }
 
-Accounts.prototype.addAccountGroup = function (jwtObj, accountInfo, callback) {
+Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    if (!accountInfo.userName) {
+    if (!accountGroupInfo.userName) {
         retObj.messages.push('Invalid User Name');
     }
 
-    if (!accountInfo.password) {
+    if (!accountGroupInfo.password) {
         retObj.messages.push('Invalid password');
     }
 
-    if (!accountInfo.contactPhone) {
+    if (!accountGroupInfo.contactPhone) {
         retObj.messages.push('Invalid Mobile Number');
     }
 
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
+        AccountsColl.findOne({userName: accountGroupInfo.userName}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error fetching account');
                 callback(retObj);
             } else if (account) {
-                retObj.messages.push('Account with same userName already exists');
+                retObj.messages.push('Account Group with same userName already exists');
                 callback(retObj);
             } else {
-                accountInfo.createdBy = jwtObj.id;
-                accountInfo.accountId = jwtObj.id;
-                (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
+                accountGroupInfo.createdBy = jwtObj.id;
+                accountGroupInfo.accountId = jwtObj.id;
+                (new AccountsColl(accountGroupInfo)).save(function (err, savedAcc) {
                     if (err) {
                         retObj.messages.push('Error saving account');
                         callback(retObj);
                     } else {
-                        accountInfo.accountId = savedAcc._id;
+                        accountGroupInfo.accountId = savedAcc._id;
                         retObj.status = true;
                         retObj.messages.push('Success');
+                        retObj.accountGroup=savedAcc;
                         callback(retObj);
                     }
                 });
