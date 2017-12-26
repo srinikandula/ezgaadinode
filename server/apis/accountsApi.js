@@ -179,7 +179,6 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
 };
 
 Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
-    console.log('accountInfo : ',accountInfo)
     var retObj = {
         status: false,
         messages: []
@@ -336,5 +335,131 @@ Accounts.prototype.userProfile = function (jwt, callback) {
         }
     });
 }
+
+Accounts.prototype.addAccountGroup = function (jwtObj, accountInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (!accountInfo.userName) {
+        retObj.messages.push('Invalid User Name');
+    }
+
+    if (!accountInfo.password) {
+        retObj.messages.push('Invalid password');
+    }
+
+    if (!accountInfo.contactPhone) {
+        retObj.messages.push('Invalid Mobile Number');
+    }
+
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
+            if (err) {
+                retObj.messages.push('Error fetching account');
+                callback(retObj);
+            } else if (account) {
+                retObj.messages.push('Account with same userName already exists');
+                callback(retObj);
+            } else {
+                accountInfo.createdBy = jwtObj.id;
+                accountInfo.accountId = jwtObj.id;
+                (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
+                    if (err) {
+                        retObj.messages.push('Error saving account');
+                        callback(retObj);
+                    } else {
+                        accountInfo.accountId = savedAcc._id;
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        callback(retObj);
+                    }
+                });
+            }
+        });
+    }
+};
+
+Accounts.prototype.getAllAccountGroup = function (jwt,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    AccountsColl.find({"type":"group","accountId":jwt.id}).populate('accountId').exec(function (err, accountGroup) {
+        if (err) {
+            retObj.messages.push('Error retrieving accounts group');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.accountGroup = accountGroup;
+            callback(retObj);
+        }
+    });
+};
+
+Accounts.prototype.getAccountGroup = function (accountGroupId, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (!Utils.isValidObjectId(accountGroupId)) {
+        retObj.messages.push('Invalid accountGroupId');
+    }
+
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        AccountsColl.findOne({"_id": ObjectId(accountGroupId)}).lean().exec(function (err, accountGroup) {
+            if (err) {
+                retObj.messages.push('Error retrieving account');
+                callback(retObj);
+            } else if (accountGroup) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                accountGroup.confirmPassword=accountGroup.password;
+                retObj.accountGroup = accountGroup;
+                callback(retObj);
+            } else {
+                retObj.messages.push('Account with Id doesn\'t exist');
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Accounts.prototype.updateAccountGroup = function (jwtObj, accountGroupInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!Utils.isValidObjectId(accountGroupInfo._id)) {
+        retObj.messages.push('Invalid account Group Id');
+    }
+
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        accountGroupInfo.updatedBy = jwtObj.id;
+        AccountsColl.findOneAndUpdate({_id: accountGroupInfo._id}, {$set: accountGroupInfo}, function (err, oldAcc) {
+            if (err) {
+                retObj.messages.push('Error updating the account group');
+                callback(retObj);
+            } else if (oldAcc) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                callback(retObj);
+            } else {
+                retObj.messages.push('Account Group doesn\'t exist');
+                callback(retObj);
+            }
+        });
+    }
+};
 
 module.exports = new Accounts();
