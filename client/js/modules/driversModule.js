@@ -103,17 +103,37 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
     };
 
     $scope.deleteDriver = function (driverId) {
-        DriverService.deleteDriver(driverId, function (success) {
-            if (success) {
-                Notification.error({message: 'Successfully deleted driver'});
-                $scope.getCount();
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                DriverService.deleteDriver(driverId, function (success) {
+                    if (success) {
+                        swal(
+                            'Deleted!',
+                            'Driver deleted successfully.',
+                            'success'
+                        );
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal(
+                                'Deleted!',
+                                message,
+                                'error'
+                            );
+                        });
+                    }
                 });
-            }
-        })
-    };
+            };
+        });
+    }
 
     // $scope.getDrivers();
 }]);

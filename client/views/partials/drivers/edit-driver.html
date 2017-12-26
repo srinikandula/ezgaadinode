@@ -5,17 +5,20 @@
             <div class="col-xs-6 col-xs-12 mt-10">
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 styling-input-list">
                         <input ng-model="driver.fullName" type="text" class="form-control custom-form-control"
-                               id="fullName" placeholder="Full Name*">
+                               id="fullName">
+                        <label class="focus-effect-for-input" aria-hidden="true">Full Name*</label>
+
                     </div>
                 </div>
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 styling-input-list">
                         <input ng-model="driver.mobile" type="number" class="form-control custom-form-control"
-                               id="mobile"
-                               placeholder="Contact Number*">
+                               id="mobile">
+                        <label class="focus-effect-for-input" aria-hidden="true">Contact Number*</label>
+
                     </div>
                 </div>
 
@@ -25,18 +28,23 @@
                         <input type="text" ng-model="truckRegNo"
                                uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue"
                                class="form-control custom-form-control" typeahead-min-length="1"
-                               typeahead-on-select="selectTruckId($item)" typeahead-select-on-exact="true"
-                               typeahead-select-on-blur="true" autocomplete="false" id="truckId"
-                               placeholder="Select Truck*">
-
+                               typeahead-no-results="noTrucks" typeahead-on-select="selectTruckId($item)"
+                               typeahead-select-on-exact="true" typeahead-select-on-blur="true" autocomplete="false"
+                               id="truckId" placeholder="Select Truck*">
+                        <div ng-show="noTrucks">
+                            <i class="glyphicon glyphicon-remove red"></i>
+                            <span class="red"> No Results Found </span>
+                        </div>
                     </div>
+
                 </div>
                 <div class="form-group col-xs-12">
 
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 styling-input-list">
                         <input ng-model="driver.licenseNumber" type="text" class="form-control custom-form-control"
-                               id="licenseNumber"
-                               placeholder="License Number*">
+                               id="licenseNumber">
+                        <label class="focus-effect-for-input" aria-hidden="true">License Number*</label>
+
                     </div>
                 </div>
             </div>
@@ -50,10 +58,11 @@
                 </div>
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 styling-input-list">
                         <input ng-model="driver.salary" type="number" class="form-control custom-form-control"
-                               id="salary"
-                               placeholder="Salary">
+                               id="salary">
+                        <label class="focus-effect-for-input" aria-hidden="true">Salary</label>
+
                     </div>
                 </div>
 
@@ -64,7 +73,7 @@
                             <label>
                                 <input type="checkbox" ng-model="driver.isActive">
                                 <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-                               Driver Status
+                                Driver Status
                             </label>
                         </div>
                     </div>
@@ -81,12 +90,12 @@
                 </div>
             </div>
 
-                <div class="col-xs-12">
-                    <div class="col-xs-4 mtb-25 sub-can">
-                        <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
-                        <button type="submit" class="btn can  last" ng-click="addOrSaveDriver()">Submit</button>
-                    </div>
+            <div class="col-xs-12">
+                <div class="col-xs-4 mtb-25 sub-can">
+                    <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+                    <button type="submit" class="btn can  last" ng-click="addOrSaveDriver()">Submit</button>
                 </div>
+            </div>
 
         </form>
     </div>

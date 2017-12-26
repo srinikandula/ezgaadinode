@@ -183,8 +183,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                 AccountServices.updateAccount(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.messages;
-                        $state.go('accounts');
-                       Notification.success({message: "Account Updated Successfully"});
+                        Notification.success({message: "Account Updated Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -196,7 +195,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                 AccountServices.addAccount(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.messages;
-                        $state.go('accounts');
                       Notification.success({message: "Account Added Successfully"});
                     } else {
                         params.errors = success.data.messages;

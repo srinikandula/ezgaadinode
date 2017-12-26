@@ -8,7 +8,7 @@ app.directive('datePicker', function () {
             placeholder: "=placeholder",
             class: "=class"
         },
-        template: '<div class="pos-relative styling-input-list">\n' +
+        template: '<div class="pos-relative">\n' +
         '                <span class="date-pick" ng-click="open($event)">' +
         '                  <img src="images/date-icon.png" width="30" height="24" /> </span>\n' +
         '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true"/>\n' +
