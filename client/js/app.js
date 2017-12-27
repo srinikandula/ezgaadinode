@@ -56,7 +56,8 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/userProfile/addingGroup.html',
         data: {activeTab: 'addGroup'},
         params: {
-            access: 'auth'
+            access: 'auth',
+            accountGroupId: null
         }
     }).state({
         name: 'accounts',
