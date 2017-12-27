@@ -2,6 +2,10 @@
 .pall-zero {
     padding: 0 !important;
 }
+.tl{
+    text-align:left !important;
+    padding-left: 15px !important;
+}
 .mar-rgt-space{
     margin: 0 !important;
 }
@@ -862,7 +866,13 @@ body {
     color: #909194;
     font-weight: 500;
 }
-.dropdown-menu-form{
+
+.assign-trucks {
+    height: 140px;
+    overflow-y: scroll;
+    top: 44px;
+}
+/*.dropdown-menu-form{
     padding: 10px !important;
 }
 .dropdown-menu-form label{
@@ -876,7 +886,7 @@ body {
 .dropdown-menu-form > li > a:hover{
     background: transparent !important;
     color: #000 !important;
-}
+}*/
 .top-block ul li a:hover {
     background: #000;
     color: #fff;

@@ -63,7 +63,7 @@ AuthRouter.get('/countAccountGroups',function(req,res){
 });
 
 AuthRouter.get('/getAllAccountGroup', function (req, res) {
-    Accounts.getAllAccountGroup(req.jwt,function (result) {
+    Accounts.getAllAccountGroup(req.jwt,req.query,function (result) {
         res.json(result);
     });
 });

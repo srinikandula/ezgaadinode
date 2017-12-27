@@ -168,6 +168,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
                 $scope.accountGroup = response.data.accountGroup;
                 tableParams.total(response.data.count);
                 tableParams.data = $scope.accountGroup;
+                console.log('list : ',$scope.accountGroup);
                 $scope.currentPageOfAccountGroup = $scope.accountGroup;
 
             }
@@ -336,13 +337,24 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         }
 
     };
-
+    $scope.truckId2=[];
     function getTruckIds() {
         TrucksService.getAllTrucks(1, function (success) {
             if (success.data.status) {
-                angular.forEach(success.data.trucks, function (value, index) {
-                    $scope.trucks.push({ id: value._id, label: value.registrationNo });
-                });
+                $scope.trucks = success.data.trucks
+                if($scope.group.truckId.length>0){
+                    for(var i=0;i<$scope.trucks.length;i++){
+                        for(var j=0;j<$scope.group.truckId.length;j++){
+                            if($scope.trucks[i]._id===$scope.group.truckId[j]){
+                                $scope.truckId2.push(true);
+                            }else{
+                                $scope.truckId2.push(false);
+                            }
+                        }
+
+
+                    }
+                }
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(success.data.message);
@@ -351,6 +363,15 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         }, function (error) {
             Notification.error(error);
         });
+    }
+
+    $scope.truckSelected = function (status,truckId) {
+        if(status) {
+            $scope.group.truckId.push(truckId);
+        } else {
+            var index = $scope.group.truckId.indexOf(truckId);
+            $scope.group.truckId.splice(index,1);
+        }
     }
 
     $scope.addOrUpdateAccountGroup = function () {

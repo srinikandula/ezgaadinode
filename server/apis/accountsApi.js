@@ -393,20 +393,48 @@ Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callbac
     }
 };
 
-Accounts.prototype.getAllAccountGroup = function (jwt,callback) {
+Accounts.prototype.getAllAccountGroup = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    AccountsColl.find({"type":"group","accountId":jwt.id}).populate('accountId').exec(function (err, accountGroup) {
+    if (!params.page) {
+        params.page = 1;
+    }
+
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var query = {"type":"group","accountId":jwt.id};
+
+    async.parallel({
+        accountGroup: function (accountGroupCallback) {
+            AccountsColl
+                .find(query)
+                .populate("accountId")
+                .sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                .lean()
+                .exec(function (err, accounts) {
+                    accountGroupCallback(err, accounts);
+                });
+        },
+        count: function (countCallback) {
+            AccountsColl.count(query, function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
         if (err) {
-            retObj.messages.push('Error retrieving accounts group');
+            retObj.messages.push('Error retrieving accounts');
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.accountGroup = accountGroup;
+            retObj.count = results.count;
+            retObj.accountGroup = results.accountGroup;
             callback(retObj);
         }
     });
