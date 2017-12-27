@@ -19,7 +19,7 @@ let userData = new User({
     "password": "9999999999",
     "contactPhone": 9999999999
 });
-let headerData = {"token": token};
+let headerData = { "token": token };
 
 chai.use(chaiHttp);
 
@@ -41,7 +41,7 @@ describe('PaymentTest', () => {
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
                 token = res.body.token;
-                headerData = {"token": token};
+                headerData = { "token": token };
             });
         /*
         * Test the /GET route Retrieving Empty Payment Information Success
@@ -80,7 +80,10 @@ describe('PaymentTest', () => {
                         "name": "WRL-HYD",
                         "index": 0
                     }
-                ]
+                ],
+                "isEmail": true,
+                "isSupplier": true,
+                "isTransporter": true
             };
             PartyCollection.remove({}, function (error, result) {
                 chai.request(server)
@@ -97,7 +100,9 @@ describe('PaymentTest', () => {
                         let paymentData = {
                             "partyId": partyId,
                             "date": new Date(),
-                            "amount": 120
+                            "amount": 120,
+                            "paymentType": "NEFT",
+                            "paymentRefNo": "abcd123456",
                         };
                         paymentsReceivedColl.remove({}, function (error, result) {
                             chai.request(server)
@@ -111,16 +116,16 @@ describe('PaymentTest', () => {
                                     res.body.should.have.property('messages').eql(['Successfully Added']);
                                     paymentId = res.body.payments._id;
                                     chai.request(server)
-                                        .get('/v1/payments')
+                                        .get('/v1/payments/getPayments')
                                         .set(headerData)
                                         .end((err, res) => {
                                             res.should.have.status(200);
                                             res.body.should.be.a('object');
-                                            res.body.should.have.property('messages').eql(['Success']);
-                                            expect(res.body.payments).to.be.a('array');
-                                            expect(res.body.payments).to.be.length(1);
-                                            res.body.payments[0].should.have.property('partyId').eql(partyId);
-                                            res.body.payments[0].should.have.property('amount').eql(120);
+                                            res.body.should.have.property('message').eql('Success');
+                                            expect(res.body.paymentsCosts).to.be.a('array');
+                                            expect(res.body.paymentsCosts).to.be.length(1);
+                                            res.body.paymentsCosts[0].should.have.property('partyId').eql(partyId);
+                                            res.body.paymentsCosts[0].should.have.property('amount').eql(120);
                                             done();
                                         });
                                 });
@@ -128,6 +133,43 @@ describe('PaymentTest', () => {
                     });
             });
         });
+        /*
+       * Test the /GET route Retrieving Payment Information by Party Name Success
+       */
+        it('Retrieving Payment Information by Party Name Success', (done) => {
+            var partyName="Party1";
+            chai.request(server)
+                .get('/v1/payments/getPayments?partyName='+partyName)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message').eql('Success');
+                    expect(res.body.paymentsCosts).to.be.a('array');
+                    expect(res.body.paymentsCosts).to.be.length(1);
+                    res.body.paymentsCosts[0].should.have.property('partyId').eql(partyId);
+                    res.body.paymentsCosts[0].should.have.property('amount').eql(120);
+                    done();
+                });
+        });
+         /*
+       * Test the /GET route Retrieving Payment Information by Party Name Failure Information
+       */
+      it('Retrieving Payment Information by Party Name Failure Information', (done) => {
+        var partyName="Party1sdcss";
+        chai.request(server)
+            .get('/v1/payments/getPayments?partyName='+partyName)
+            .set(headerData)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message').eql('Success');
+                expect(res.body.paymentsCosts).to.be.a('array');
+                expect(res.body.paymentsCosts).to.be.length(0);
+               
+                done();
+            });
+    });
         /*
         * Test the /PUT route Updating Payment Information Success
         */
@@ -155,13 +197,13 @@ describe('PaymentTest', () => {
         */
         it('Deleting Payment Information', (done) => {
             chai.request(server)
-                .delete('/v1/payments/'+paymentId)
+                .delete('/v1/payments/' + paymentId)
                 .set(headerData)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql([ 'payment successfully Deleted' ]);
+                    res.body.should.have.property('messages').eql(['payment successfully Deleted']);
                     done();
                 });
         });

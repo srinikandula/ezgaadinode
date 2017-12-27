@@ -73,7 +73,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -82,14 +82,13 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         };
         $scope.erpDashBoard();
 
-
         $scope.getTruckExpires = function () {
-            TrucksService.findExpiryTrucks(function (success) {
+            TrucksService.findExpiryTrucks({ regNumber: $scope.regNumber }, function (success) {
                 if (success.data.status) {
                     $scope.expiryTrucks = success.data.expiryTrucks;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -105,7 +104,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.totalRevenueByVehicleId = success.data.totalRevenue;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -125,7 +124,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -139,7 +138,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.trucksList = success.data.trucks;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (error) {
@@ -196,7 +195,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -211,7 +210,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     //  console.log("-->", $scope.amounts);
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -231,7 +230,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -264,7 +263,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -279,7 +278,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.amounts = success.data.amounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -299,7 +298,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -313,7 +312,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 if (success.data.status) {
                     $scope.partiesList = success.data.parties;
                 } else {
-
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
                 }
             }, function (err) {
 
@@ -345,7 +346,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.totalExpenses = success.data.totalExpenses;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -365,7 +366,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -393,7 +394,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.amountPaid = success.data.totalPendingPayments;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -510,7 +511,40 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             })
         }
-
+        $scope.shareExpairedDetailsViaEmail = function () {
+            swal({
+                title: 'Share expairy data',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                    return new Promise((resolve) => {
+                        TrucksService.shareExpiredDetailsViaEmail({
+                            regNumber: $scope.regNumber,
+                            email: email
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
+                                success.data.messages.forEach(function (message) {
+                                    swal.showValidationError(message);
+                                });
+                            }
+                        }, function (error) {
+                        })
+                    })
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.value) {
+                    swal({
+                        type: 'success',
+                        html: 'Expairy details sent successfully'
+                    })
+                }
+            })
+        }
         $scope.downloadRevenueDetailsByVechicle = function () {
             window.open('/v1/trips/downloadRevenueDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber);
         }
@@ -519,6 +553,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         }
         $scope.downloadPaymentDetailsByParty = function () {
             window.open('/v1/payments/downloadPaymentDetailsByParty?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&partyId=' + $scope.partyId);
+        }
+        $scope.downloadExpairyDetailsByTruck = function () {
+            window.open('/v1/trucks/downloadExpiryDetailsByTruck?regNumber=' + $scope.regNumber);
         }
     }]);
 

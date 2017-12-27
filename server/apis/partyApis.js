@@ -126,10 +126,15 @@ Party.prototype.getAccountParties = function (jwt, params, callback){
         status: false,
         messages: []
     };
-
+    var condition={};
     if (!params.page) {
         params.page = 1;
 
+    }
+    if(!params.partyName){
+        condition={accountId: jwt.accountId}
+    }else{
+        condition={accountId: jwt.accountId,name:{ $regex: '.*' + params.partyName + '.*' } }
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
@@ -137,7 +142,7 @@ Party.prototype.getAccountParties = function (jwt, params, callback){
     async.parallel({
         parties: function (partiesCallback) {
             PartyCollection
-                .find({accountId: jwt.accountId})
+                .find(condition)
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)

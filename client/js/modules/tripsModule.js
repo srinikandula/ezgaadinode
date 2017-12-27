@@ -77,7 +77,7 @@ app.factory('TripServices', function ($http) {
     }
 });
 
-app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams) {
+app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams','TrucksService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams,TrucksService) {
     $scope.goToEditTripPage = function (tripId) {
         $state.go('tripsEdit', {tripId: tripId});
     };
@@ -97,7 +97,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
     var loadTableData = function (tableParams) {
 
-        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),truckNumber:tableParams.truckNumber};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         TripServices.getAllAccountTrips(pageable, function (response) {
@@ -111,7 +111,19 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             }
         });
     };
+    $scope.getAllTrucks = function () {
+        TrucksService.getAllTrucks(null, function (success) {
+            if (success.data.status) {
+                $scope.trucksList = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (error) {
 
+        })
+    }
     $scope.init = function () {
         $scope.tripParams = new NgTableParams({
             page: 1, // show first page
@@ -124,6 +136,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
+                $scope.getAllTrucks();
             }
         });
     };
@@ -141,7 +154,22 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             }
         })
     };
-
+    $scope.searchByVechicleNumber=function(truckNumber){
+        $scope.tripParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.truckNumber=truckNumber;
+                loadTableData(params);
+            }
+        });
+    }
 
 }]);
 

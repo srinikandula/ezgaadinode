@@ -17,7 +17,7 @@ let userData = new User({
     "password": "9999999999",
     "contactPhone": 9999999999
 });
-let headerData = {"token": token};
+let headerData = { "token": token };
 
 chai.use(chaiHttp);
 
@@ -39,7 +39,7 @@ describe('DriverTest', () => {
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
                 token = res.body.token;
-                headerData = {"token": token};
+                headerData = { "token": token };
             });
         /*
         * Test the /GET route Retrieving Empty Driver Information Success
@@ -95,6 +95,49 @@ describe('DriverTest', () => {
                 });
         });
         /*
+       * Test the /GET route Retrieving Driver Information by Driver Name Information Success
+       */
+        it('Retrieving Driver Information by Driver Name Information Success', (done) => {
+
+            var driverName = "Driver";
+
+            chai.request(server)
+                .get('/v1/drivers/account/drivers?driverName='+driverName)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql(['Success']);
+                    expect(res.body.drivers).to.be.a('array');
+                    expect(res.body.drivers).to.be.length(1);
+                    res.body.drivers[0].should.have.property('fullName').eql('Driver1');
+                    res.body.drivers[0].should.have.property('mobile').eql(9999999999);
+                    done();
+                });
+
+        });
+        /*
+       * Test the /GET route Retrieving Driver Information by Driver Name Information Failure
+       */
+      it('Retrieving Driver Information by Driver Name Information Failure', (done) => {
+        
+                    var driverName = "Driver12";
+        
+                    chai.request(server)
+                        .get('/v1/drivers/account/drivers?driverName='+driverName)
+                        .set(headerData)
+                        .end((err, res) => {
+                            res.should.have.status(200);
+                            res.body.should.be.a('object');
+                            res.body.should.have.property('messages').eql(['Success']);
+                            expect(res.body.drivers).to.be.a('array');
+                            expect(res.body.drivers).to.be.length(0);
+                            
+                            done();
+                        });
+        
+                });
+        /*
         * Test the /PUT route Updating Driver Information Success
         */
         it('Updating Driver Information', (done) => {
@@ -122,7 +165,7 @@ describe('DriverTest', () => {
         */
         it('Deleting Driver Information', (done) => {
             chai.request(server)
-                .delete('/v1/drivers/'+driverId)
+                .delete('/v1/drivers/' + driverId)
                 .set(headerData)
                 .end((err, res) => {
                     expect(err).to.be.null;
