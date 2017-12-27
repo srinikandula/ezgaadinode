@@ -72,10 +72,11 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        findExpiryTrucks: function (success, error) {
+        findExpiryTrucks: function (params,success, error) {
             $http({
                 url: '/v1/trucks/findExpiryTrucks',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         fitnessExpiryTrucks: function (success, error) {
@@ -121,6 +122,13 @@ app.factory('TrucksService', function ($http, $cookies) {
                 params:{
                     truckName:truckName
                 }
+            }).then(success,error);
+        },
+        shareExpairedDetailsViaEmail:function(params,success,error){
+            $http({
+                url:'/v1/trucks/shareExpiredDetailsViaEmail',
+                method:"GET",
+                params:params
             }).then(success,error);
         }
     }
