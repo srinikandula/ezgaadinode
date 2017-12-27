@@ -11,6 +11,7 @@ var TrucksColl = require('./../models/schemas').TrucksColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
+var emailService=require('./mailerApi');
 
 
 var Trucks = function () {
@@ -194,17 +195,17 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
         status: false,
         messages: []
     };
-    var condition={};
+    var condition = {};
     if (!params.page) {
         params.page = 1;
     }
-    
+
 
     if (jwt.type === "account") {
-        if(!params.truckName){
-            condition={ accountId: jwt.accountId }
-        }else{
-            condition={ accountId: jwt.accountId,registrationNo: { $regex: '.*' + params.truckName + '.*' } }
+        if (!params.truckName) {
+            condition = { accountId: jwt.accountId }
+        } else {
+            condition = { accountId: jwt.accountId, registrationNo: { $regex: '.*' + params.truckName + '.*' } }
         }
         var skipNumber = (params.page - 1) * params.size;
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
@@ -253,10 +254,10 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
         });
     }
     else {
-        if(!params.truckName){
-            condition={ accountId: jwt.accountId , groupId: jwt.id }
-        }else{
-            condition={ accountId: jwt.accountId, groupId: jwt.id ,registrationNo: { $regex: '.*' + params.truckName + '.*' } }
+        if (!params.truckName) {
+            condition = { accountId: jwt.accountId, groupId: jwt.id }
+        } else {
+            condition = { accountId: jwt.accountId, groupId: jwt.id, registrationNo: { $regex: '.*' + params.truckName + '.*' } }
         }
         async.parallel({
             trucks: function (trucksCallback) {
@@ -421,8 +422,7 @@ Trucks.prototype.findExpiryCount = function (jwt, callback) {
 
 };
 
-Trucks.prototype.findExpiryTrucks = function (jwt, callback) {
-    console.log('accountId', jwt.accountId)
+Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -438,6 +438,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, callback) {
     // var dateplus30 = todaysDate.setDate(todaysDate.getDate() + 30);
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate() + 30));
+    var condition = {};
     //console.log(dateplus30);
     /*async.parallel({
         fitnessExpiry: function (fitnessExpiryCallback) {
@@ -470,8 +471,8 @@ Trucks.prototype.findExpiryTrucks = function (jwt, callback) {
     //console.log(populateErr,populateResults);
 
     // TrucksColl.find({accountId: jwt.accountId, $or:[{fitnessExpiry:{$lte:dateplus30}},{permitExpiry:{$lte:dateplus30}},{insuranceExpiry:{$lte:dateplus30}},{pollutionExpiry:{$lte:dateplus30}},{taxDueDate:{$lte:dateplus30}}]}, function (populateErr, populateResults) {
-    TrucksColl.aggregate([{
-        $match: {
+    if (!params.regNumber) {
+        condition = {
             accountId: mongoose.Types.ObjectId(jwt.accountId),
             $or: [{ fitnessExpiry: { $lte: dateplus30 } },
             { permitExpiry: { $lte: dateplus30 } },
@@ -480,6 +481,21 @@ Trucks.prototype.findExpiryTrucks = function (jwt, callback) {
             { taxDueDate: { $lte: dateplus30 } },
             { fitnessExpiry: 1 }]
         }
+    } else {
+
+        condition = {
+            accountId: mongoose.Types.ObjectId(jwt.accountId),
+            _id: mongoose.Types.ObjectId(params.regNumber),
+            $or: [{ fitnessExpiry: { $lte: dateplus30 } },
+            { permitExpiry: { $lte: dateplus30 } },
+            { insuranceExpiry: { $lte: dateplus30 } },
+            { pollutionExpiry: { $lte: dateplus30 } },
+            { taxDueDate: { $lte: dateplus30 } },
+            { fitnessExpiry: 1 }]
+        }
+    }
+    TrucksColl.aggregate([{
+        $match: condition
     },
     {
         $project: {
@@ -662,6 +678,94 @@ Trucks.prototype.countTrucks = function (jwt, callback) {
     })
 };
 
+function dateToStringFormat(date){
+    if(date instanceof Date){
+        return date.toLocaleDateString();
+    }else{
+        return '--';
+    }
+}
+
+Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
+        if (expairResponse.status) {
+            var output = [];
+            for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
+                output.push({
+                    Registration_No:expairResponse.expiryTrucks[i].registrationNo,
+                    Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry) ,
+                    Permit_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].permitExpiry),
+                    Tax_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].taxDueDate),
+                    Insurance_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].insuranceExpiry),
+                    Pollution_Expiry:dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
+                })
+                if (i === expairResponse.expiryTrucks.length - 1) {
+                    retObj.status = true;
+                    retObj.data = output;
+                    callback(retObj);
+                }
+            }
+        } else {
+            callback(expairResponse);
+        }
+    })
 
 
+}
+
+
+Trucks.prototype.shareExpiredDetailsViaEmail=function(jwt,params,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!params.email || !Helpers.isEmail(params.email)) {
+        retObj.status = false;
+        retObj.messages.push('Please enter valid email');
+        callback(retObj);
+    } else {
+        Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
+            if (expairResponse.status) {
+                var output = [];
+                for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
+                    output.push({
+                        Registration_No:expairResponse.expiryTrucks[i].registrationNo,
+                        Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry) ,
+                        Permit_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].permitExpiry),
+                        Tax_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].taxDueDate),
+                        Insurance_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].insuranceExpiry),
+                        Pollution_Expiry:dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
+                    })
+                    if (i === expairResponse.expiryTrucks.length - 1) {
+                        var emailparams = {
+                            templateName: 'sharesExpairyDetailsByTruck',
+                            subject: "Easygaadi Expairy Details",
+                            to: params.email,
+                            data: {
+                                expiryTrucks: output
+                            }
+                        };
+                        emailService.sendEmail(emailparams, function (emailResponse) {
+                            if (emailResponse.status) {
+                                retObj.status = true;
+                                retObj.messages.push('Expiry details shared successfully');
+                                callback(retObj);
+                            } else {
+                                callback(emailResponse);
+                            }
+                        });
+                    }
+                }
+                
+            } else {
+                callback(expairResponse);
+            }
+        })
+    }
+}
 module.exports = new Trucks();

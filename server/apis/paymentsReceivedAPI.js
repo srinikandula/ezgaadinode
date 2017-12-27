@@ -55,6 +55,7 @@ PaymentsReceived.prototype.getTotalAmount = function (accId, callback) {
 };
 
 PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
+    console.log('details',details);
     var retObj = {
         status: false,
         messages: []
@@ -77,12 +78,14 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
+        details.date=new Date(details.date);
         details.accountId = jwt.accountId;
         details.createdBy = jwt.id;
         details.updatedBy = jwt.id;
         var insertDoc = new PaymentsReceivedColl(details);
         insertDoc.save(function (err, payment) {
             if (err) {
+                console.log('err',err);
                 retObj.messages.push("Error, try Again");
                 callback(retObj);
             } else {

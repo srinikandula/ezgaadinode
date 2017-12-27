@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+
+<body>
+    <div>
+        <table border="1">
+            <tr> 
+                <td>Registration No</td>
+                <td>Fitness Expiry</td>
+                <td>Permit Expir</td>
+                <td>Tax Expiry</td>
+                <td>Insurance Expiry</td>
+                <td>Pollution Expiry</td>
+            </tr>
+            #foreach($record in $emailData.expiryTrucks)
+            <tr>
+                <td>$record.Registration_No</td>
+                <td>$record.Fitness_Expiry</td>
+                <td>$record.Permit_Expiry</td>
+                <td>$record.Tax_Expiry</td>
+                <td>$record.Insurance_Expiry</td>
+                <td>$record.Pollution_Expiry</td>
+                
+            </tr>
+            #end
+           
+
+        </table>
+    </div>
+</body>
+
+</html>

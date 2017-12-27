@@ -152,6 +152,39 @@ describe('ExpenseTest', () => {
             });
         });
         /*
+        * Test the /GET route Retrieving  Expense Information Success
+        */
+        it('Retrieving  Expense Information', (done) => {
+            chai.request(server)
+            .get('/v1/expense/getAllExpenses')
+            .set(headerData)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message').eql('Success');
+                expect(res.body.expenses).to.be.a('array');
+                expect(res.body.expenses).to.be.length(1);
+                done();
+            });
+        });
+        /*
+        * Test the /GET route Retrieving  Expense by truck Number Information Success
+        */
+        it('Retrieving  Expense Information', (done) => {
+            var truckNumber="AP36AA9876";
+            chai.request(server)
+            .get('/v1/expense/getAllExpenses?truckNumber='+truckNumber)
+            .set(headerData)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message').eql('Success');
+                expect(res.body.expenses).to.be.a('array');
+                expect(res.body.expenses).to.be.length(1);
+                done();
+            });
+        });
+        /*
         * Test the /PUT route Updating Expense Information Success
         */
         it('Updating Expense Information', (done) => {

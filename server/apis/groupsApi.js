@@ -125,7 +125,6 @@ Groups.prototype.forgotPassword = function (contactPhone, callback) {
                             } else {
                                 retObj.status = true;
                                 retObj.messages.push("OTP sent successfully");
-                                retObj.otp = otp;
                                 callback(retObj);
                             }
                         });
@@ -172,9 +171,45 @@ Groups.prototype.verifyOtp = function (body, callback) {
                     retObj.messages.push("OTP Expired");
                     callback(retObj);
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push("OTP verified successfully");
-                    callback(retObj);
+                    AccountsCollection.findOne({ contactPhone: body.contactPhone }, function (err, userData) {
+                        if (err) {
+                            retObj.status = false;
+                            retObj.messages.push("Error while verifying OTP");
+                            callback(retObj);
+                        } else if (userData) {
+                            var message = 'Hi, ' + userData.userName + ' \n Your password for EasyGaadi is : ' + userData.password;
+                            msg91.send(body.contactPhone, message, function (err, response) {
+                                if (err) {
+                                    retObj.status = false;
+                                    retObj.messages.push("Error finding user");
+                                    callback(retObj);
+                                } else {
+                                    OtpColl.findOneAndRemove({ contactPhone: body.contactPhone }, function (err, otpData) {
+                                        if (err) {
+                                            retObj.status = false;
+                                            retObj.messages.push("Error while reset password");
+                                            callback(retObj);
+                                        } else if (otpData) {
+                                            retObj.status = true;
+                                            retObj.messages.push("OTP verified successfully,Password sent to phone");
+                                            callback(retObj);
+                                        } else {
+                                            retObj.status = false;
+                                            retObj.messages.push("Error while reset password");
+                                            callback(retObj);
+                                        }
+                                    })
+                                }
+                            });
+
+                        } else {
+                            retObj.status = false;
+                            retObj.messages.push("Error while verifying OTP");
+                            callback(retObj);
+                        }
+                    })
+
+
                 }
 
             } else {

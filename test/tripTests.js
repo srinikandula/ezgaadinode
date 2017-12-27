@@ -104,9 +104,10 @@ describe('TripTest', () => {
                         "index": 0
                     }
                 ],
-                "isSms":true,
-                "isEmail":false,
-                "partyType":"isSupplier"
+                "isSms":false,
+                "isEmail":true,
+                "isSupplier" : true,
+                "isTransporter" : true,
             };
 
             async.parallel({
@@ -122,7 +123,6 @@ describe('TripTest', () => {
                                 res.body.should.be.a('object');
                                 res.body.should.have.property('messages').eql(['Truck Added Successfully']);
                                 res.body.should.have.property('truck');
-                                res.body.truck.should.have.property('registrationNo');
                                 res.body.truck.should.have.property('registrationNo').eql('AP36AA9876');
                                 res.body.truck.should.have.property('truckType');
                                 res.body.truck.should.have.property('truckType').eql('20 Tyre');
@@ -185,7 +185,11 @@ describe('TripTest', () => {
                     "partyId": partyId,
                     "driverId": driverId,
                     "freightAmount": 1500,
-                    "share":true
+                    "share":true,
+                    "attrs" : {
+                        "createdByName" : userData.userName,
+                        "truckName" : truckData.registrationNo
+                    }
                 };
                 TripCollection.remove({}, function (error, result) {
                     chai.request(server)
@@ -193,7 +197,6 @@ describe('TripTest', () => {
                         .send(tripData)
                         .set(headerData)
                         .end((err, res) => {
-                            console.log('reee====>',res.body);
                             expect(err).to.be.null;
                             res.should.have.status(200);
                             res.body.should.be.a('object');
@@ -203,7 +206,43 @@ describe('TripTest', () => {
                         });
                 });
             });
-        });
+        }).timeout(5000);
+       
+ /*
+       * Test the /GET route Retrieving Trip Information  Success
+       */
+      it('Retrieving Trip Information  Success', (done) => {
+        chai.request(server)
+            .get('/v1/trips/getAllAccountTrips')
+            .set(headerData)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('messages').eql(['Success']);
+                res.body.should.have.property('count').eql(1);
+                expect(res.body.trips).to.be.a('array');
+                expect(res.body.trips).to.be.length(1);
+                done();
+            });
+    });
+    /*
+       * Test the /GET route Retrieving Trip Information by vechicle number  Information Success
+       */
+      it('Retrieving Trip Information by vechicle number Information Success', (done) => {
+        var truckNumber="AP36AA9876";
+        chai.request(server)
+            .get('/v1/trips/getAllAccountTrips?truckNumber='+truckNumber)
+            .set(headerData)
+            .end((err, res) => {
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('messages').eql(['Success']);
+                res.body.should.have.property('count').eql(1);
+                expect(res.body.trips).to.be.a('array');
+                expect(res.body.trips).to.be.length(1);
+                done();
+            });
+    }).timeout(5000);
         /*
         * Test the /PUT route Updating Trip Information Success
         */
@@ -224,7 +263,7 @@ describe('TripTest', () => {
                     res.body.trip.should.have.property('freightAmount').eql(1300);
                     done();
                 });
-        });
+        }).timeout(5000);
         /*
         * Test the /PUT route Deleting Trip Information Success
         */
@@ -239,6 +278,6 @@ describe('TripTest', () => {
                     res.body.should.have.property('messages').eql(['Success']);
                     done();
                 });
-        });
+        }).timeout(5000);
     });
 });
