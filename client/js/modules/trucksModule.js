@@ -124,7 +124,7 @@ app.factory('TrucksService', function ($http, $cookies) {
                 }
             }).then(success,error);
         },
-        shareExpairedDetailsViaEmail:function(params,success,error){
+        shareExpiredDetailsViaEmail:function(params,success,error){
             $http({
                 url:'/v1/trucks/shareExpiredDetailsViaEmail',
                 method:"GET",

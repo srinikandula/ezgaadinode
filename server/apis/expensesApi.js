@@ -7,6 +7,7 @@ var expenseColl = require('./../models/schemas').ExpenseCostColl;
 var expenseMasterColl = require('./../models/schemas').expenseMasterColl;
 var expenseMasterApi = require('./expenseMasterApi')
 var trucksCollection = require('./../models/schemas').TrucksColl;
+var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 
 var config = require('./../config/config');
 var Helpers = require('./utils');
@@ -388,6 +389,9 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
                 }, "vehicleNumber": params.regNumber
             }
         }
+        getExpensesByVehicles(jwt, condition, function (response) {
+            callback(response);
+        })
     } else if (params.fromDate && params.toDate) {
         condition = {
             $match: {
@@ -397,14 +401,35 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
                 }
             }
         }
+        getExpensesByVehicles(jwt, condition, function (response) {
+            callback(response);
+        })
     } else if (params.regNumber) {
         condition = { $match: { "accountId": ObjectId(jwt.accountId), "vehicleNumber": params.regNumber } }
+        getExpensesByVehicles(jwt, condition, function (response) {
+            callback(response);
+        })
     } else {
-        condition = { $match: { "accountId": ObjectId(jwt.accountId) } }
+        ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else if (erpSettings) {
+
+                condition = { $match: Utils.getErpSettings(erpSettings.expense, erpSettings.accountId) }
+                getExpensesByVehicles(jwt, condition, function (response) {
+                    callback(response);
+                })
+            } else {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            }
+        });
+        
     }
-    getExpensesByVehicles(jwt, condition, function (response) {
-        callback(response);
-    })
+    
 };
 /**
  * Find expenses for a vehicle
