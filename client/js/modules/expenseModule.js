@@ -183,6 +183,8 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         expenseType: '',
         description: '',
         partyId: '',
+        totalAmount:'',
+        paidAmount:'',
         date: '',
         cost: '',
         mode:'',
@@ -306,11 +308,17 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         if (!params.date) {
             params.error.push('Invalid date');
         }
-        if (!_.isNumber(params.cost)) {
-            params.error.push('Invalid cost');
-        }
         if (!params.mode) {
             params.error.push('Please Select Cash or Credit');
+        }
+        if (!_.isNumber(params.cost)&& params.mode === 'Cash') {
+            params.error.push('Invalid cost');
+        }
+        if (!params.totalAmount && params.mode === 'Credit') {
+            params.error.push('Please Enter Total Expesne Amount');
+        }
+        if (!params.paidAmount && params.mode === 'Credit') {
+            params.error.push('Please enter Paid Amount');
         }
         if (!params.error.length) {
             if ($stateParams.expenseId) {
@@ -321,7 +329,6 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                     } else {
                         params.error = success.data.message;
                     }
-                    $state.go('expenses');
 
                 }, function (err) {
                 });

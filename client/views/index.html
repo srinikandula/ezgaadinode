@@ -51,7 +51,7 @@
                     <img src="images/fuelcard.png"><span>Fuel Card</span></a></li>
                 <li><a href="#">  <img src="images/tollcard.png"><span>Toll Card</span></a></li>
                 <li><a href="#">  <img src="images/load.png"><span>Loads</span></a></li>
-                <li><a href="#">  <img src="images/settings.png"><span>Settings</span></a></li>
+                <li ng-class="{selected: activeTab === 'settings'}"><a href="#" ui-sref="gpsSettings"><img src="images/settings.png"><span>Settings</span></a></li>
                 <li><a href="#">  <img src="images/notifications.png"><span>Notifications</span></a></li>
             </ul>
             <ul class="nav navbar-nav pull-right margin-top-10 user-nav" ng-show="isLoggedInn" ng-init="loggedTrue()">
@@ -146,6 +146,7 @@
 <script src="js/modules/trackMapModule.js"></script>
 <script src="js/modules/groupMap.js"></script>
 <script src="js/modules/dashBoardModule.js"></script>
+<script src="js/modules/settingsModule.js"></script>
 
 </body>
 </html>
