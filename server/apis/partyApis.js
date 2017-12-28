@@ -32,7 +32,7 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
         result.message += " Please provide valid contact number for party type";
     }
 
-    if(!partyDetails.isTransporter && !partyDetails.isSupplier){
+    if(!partyDetails.partyType ){
         result.status = false;
         result.message += " Please select party type";
     }
@@ -97,8 +97,7 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 "city": partyDetails.city,
                 "tripLanes": partyDetails.tripLanes,
                 "updatedBy": jwt.id,
-                "isSupplier":partyDetails.isSupplier,
-                "isTransporter":partyDetails.isTransporter,
+                "partyType":partyDetails.partyType,
                 "isSms":partyDetails.isSms,
                 "isEmail":partyDetails.isEmail
             }
@@ -182,6 +181,58 @@ Party.prototype.getAllParties = function (callback) {
     };
 
     PartyCollection.find({}, function (err, parties) {
+        if (err) {
+            retObj.message.push('Error getting parties');
+            callback(retObj);
+        } else {
+            Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
+                if (response.status) {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.parties = response.documents;
+                    console.log("All PArties", retObj.parties);
+                    callback(retObj);
+                } else {
+                    retObj.messages.push('Error getting parties');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    PartyCollection.find({partyType:'Supplier', accountId: jwt.accountId}, function (err, parties) {
+        if (err) {
+            retObj.message.push('Error getting parties');
+            callback(retObj);
+        } else {
+            Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
+                if (response.status) {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.parties = response.documents;
+                    callback(retObj);
+                } else {
+                    retObj.messages.push('Error getting parties');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    PartyCollection.find({partyType:'Transporter', accountId: jwt.accountId}, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             callback(retObj);

@@ -94,6 +94,7 @@ function updateExpense(expense, jwt, callback) {
                 "expenseType": expense.expenseType,
                 "cost": expense.cost,
                 "mode": expense.mode,
+                "partyId": expense.partyId,
                 "date": expense.date
             }
         },

@@ -36,23 +36,23 @@
                 <div class="col-xs-12 pall-zero">
                     <div class="form-group sms-email col-xs-12">
                         <div class="sms col-xs-6">
-                            <div class="checkbox">
+                            <div class="radio">
                                 <label>
-                                    <input type="checkbox" ng-model="party.isTransporter">
-                                    <span class="cr ntfns">
-                                            <i class="cr-icon ntfns-icon fa fa-check"></i>
-                                        </span>
+                                    <input type="radio" ng-model="party.partyType" name="radio" value="Transporter">
+                                    <span class="cr">
+                                        <i class="rad-icon fa fa-circle"></i>
+                                    </span>
                                     Transporter
                                 </label>
                             </div>
                         </div>
                         <div class="email col-xs-6">
-                            <div class="checkbox">
+                            <div class="radio">
                                 <label>
-                                    <input type="checkbox" ng-model="party.isSupplier">
-                                    <span class="cr ntfns">
-                                            <i class="cr-icon ntfns-icon fa fa-check"></i>
-                                        </span>
+                                    <input type="radio" ng-model="party.partyType" name="radio" value="Supplier">
+                                    <span class="cr">
+                                        <i class="rad-icon fa fa-circle"></i>
+                                    </span>
                                     Supplier
                                 </label>
                             </div>
