@@ -13,6 +13,8 @@ var PartyCollection = require('./../models/schemas').PartyCollection;
 var NotificationColl = require('./../models/schemas').NotificationColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DriversColl = require('./../models/schemas').DriversColl;
+var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -493,7 +495,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
         status: false,
         messages: []
     };
-    var condition={};
+    var condition = {};
     if (!params.page) {
         params.page = 1;
     }
@@ -504,7 +506,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
     if (!params.truckNumber) {
         condition = { 'accountId': jwt.accountId };
     } else {
-        condition = { 'accountId': jwt.accountId,'attrs.truckName':{ $regex: '.*' + params.truckNumber + '.*' } }
+        condition = { 'accountId': jwt.accountId, 'attrs.truckName': { $regex: '.*' + params.truckNumber + '.*' } }
     }
     async.parallel({
         trips: function (tripsCallback) {
@@ -743,18 +745,18 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
  * Find the Total fright from the trips in the account
  */
 
-Trips.prototype.findTotalRevenue = function (jwt, callback) {
+Trips.prototype.findTotalRevenue = function (erpSettingsCondition, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now
-            TripCollection.aggregate([{ $match: { "accountId": ObjectId(jwt.accountId) } },
+            TripCollection.aggregate([{ $match: erpSettingsCondition },
             { $group: { _id: null, totalFreight: { $sum: "$freightAmount" } } }],
                 function (err, totalFreight) {
                     callback(err, totalFreight);
                 });
         },
         expensesTotal: function (callback) {
-            ExpenseCostColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
+            ExpenseCostColl.aggregate({ $match: erpSettingsCondition },
                 { $group: { _id: null, totalExpenses: { $sum: "$cost" } } },
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
@@ -843,6 +845,11 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
 
 Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
     var condition = {};
+    if (!params.page) {
+        params.page = 1;
+    }
+
+   
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {
             $match: {
@@ -852,6 +859,9 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
                 }, "registrationNo": params.regNumber
             }
         }
+        getRevenueByVehicle(jwt, condition, function (response) {
+            callback(response);
+        });
     } else if (params.fromDate && params.toDate) {
         condition = {
             $match: {
@@ -861,34 +871,34 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
                 }
             }
         }
+        getRevenueByVehicle(jwt, condition, function (response) {
+            callback(response);
+        });
     } else if (params.regNumber) {
         condition = { $match: { "accountId": ObjectId(jwt.accountId), "registrationNo": params.regNumber } }
+        getRevenueByVehicle(jwt, condition, function (response) {
+            callback(response);
+        });
     } else {
-        condition = { $match: { "accountId": ObjectId(jwt.accountId) } }
-    }
-    getRevenueByVehicle(jwt, condition, function (response) {
-        callback(response);
-    });
-    /*TripCollection.aggregate({ $match: {"accountId":ObjectId(jwt.accountId)}},
-        { $group: { _id : "$partyId" , totalFreight : { $sum: "$freightAmount" }} },
-        function (error, revenue) {
-            var retObj = {
-                status: false,
-                messages: []
-            };
-            if(error) {
+        ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+            if (err) {
                 retObj.status = false;
-                retObj.messages.push(JSON.stringify(error));
+                retObj.messages.push("Please try again");
                 callback(retObj);
-            } else {
-                Utils.populateNameInPartyColl(revenue, '_id', function (response) {
-                    //console.log(response);
-                    retObj.status = true;
-                    retObj.revenue = response.documents;
-                    callback(retObj);
+            } else if (erpSettings) {
+
+                condition = { $match: Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId) }
+                getRevenueByVehicle(jwt, condition, function (response) {
+                    callback(response);
                 });
+            } else {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                callback(retObj);
             }
-        });*/
+        });
+    }
+   
 }
 
 function getRevenueByVehicle(jwt, condition, callback) {
@@ -896,6 +906,7 @@ function getRevenueByVehicle(jwt, condition, callback) {
         status: false,
         messages: []
     };
+    
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
@@ -905,7 +916,7 @@ function getRevenueByVehicle(jwt, condition, callback) {
                 });
         },
         expensesTotal: function (callback) {
-            ExpenseCostColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
+            ExpenseCostColl.aggregate(condition,
                 { $group: { _id: "$vehicleNumber", totalExpenses: { $sum: "$cost" } } },
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);

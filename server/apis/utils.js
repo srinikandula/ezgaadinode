@@ -374,4 +374,71 @@ Utils.prototype.populateNameInTripsColl = function (documents, fieldTopopulate, 
     });
 };
 
+Utils.prototype.getErpSettings = function (erp, accountId) {
+    var condition = {};
+    var today=new Date();
+    
+    if (erp.filterType === "day") {
+        condition=  {
+            "accountId": accountId,
+             date: {
+                $gte: today.setHours(0,0,0,0)
+               
+            }
+        }
+    } else if (erp.filterType === "week") {
+        condition=  {
+            "accountId": accountId,
+             date: {
+                $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
+                $lte:today
+            }
+        }
+    } else if (erp.filterType === "month") {
+        condition=  {
+            "accountId": accountId,
+             date: {
+                $gte:  new Date(new Date().setDate(new Date().getDate() - 30)),
+                $lte: today
+            }
+        }
+    } else if (erp.filterType === "year") {
+        condition=  {
+            "accountId": accountId,
+             date: {
+                $gte:  new Date(new Date().setDate(new Date().getDate() - 365)),
+                $lte: today
+            }
+        }
+    } else if (erp.filterType === "custom") {
+        condition=  {
+            "accountId": accountId,
+             date: {
+                $gte: erp.fromDate,
+                $lte:erp.toDate
+            }
+        }
+    }
+    return condition;
+}
+
+Utils.prototype.getErpSettingsForTruckExpiry = function (erp) {
+    var condition = {};
+    var today=new Date();
+    
+    if (erp.filterType === "day") {
+        condition= today.setHours(0,0,0,0);
+    } else if (erp.filterType === "week") {
+        condition=new Date(new Date().setDate(new Date().getDate()+ 7))
+    } else if (erp.filterType === "month") {
+        condition= new Date(new Date().setDate(new Date().getDate() + 30))
+    } else if (erp.filterType === "year") {
+        condition=  new Date(new Date().setDate(new Date().getDate()+ 365))
+       
+    } else if (erp.filterType === "custom") {
+        condition= erp.fromDate 
+    }
+    return condition;
+}
+
 module.exports = new Utils();

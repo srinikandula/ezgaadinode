@@ -7,6 +7,7 @@ var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
 var AccountsCollection = require('./../models/schemas').AccountsColl;
 var OtpColl = require('./../models/schemas').OtpColl;
+var ErpSettingsColl=require('./../models/schemas').ErpSettingsColl;
 
 log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60 });
 var config = require('./../config/config');
@@ -65,15 +66,44 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                             retObj.messages.push('Please try again');
                             callback(retObj);
                         } else {
-                            retObj.status = true;
-                            retObj._id = user._id;
-                            retObj.token = token;
-                            retObj.userName = userName;
-                            retObj.gpsEnabled = user.gpsEnabled;
-                            retObj.erpEnabled = user.erpEnabled;
-                            retObj.loadEnabled = user.loadEnabled;
-                            retObj.editAccounts = user.editAccounts;
-                            callback(retObj);
+                            ErpSettingsColl.findOne({accountId:user._id},function(err,settingsData){
+                                if(err){
+                                    retObj.messages.push('Please try again');
+                                    callback(retObj);
+                                }else if(settingsData){
+                                    retObj.status = true;
+                                    retObj._id = user._id;
+                                    retObj.token = token;
+                                    retObj.userName = userName;
+                                    retObj.gpsEnabled = user.gpsEnabled;
+                                    retObj.erpEnabled = user.erpEnabled;
+                                    retObj.loadEnabled = user.loadEnabled;
+                                    retObj.editAccounts = user.editAccounts;
+                                    callback(retObj);
+                                }else{
+                                    var erpSettings=new ErpSettingsColl({accountId:user._id});
+                                    erpSettings.save(function(err,saveSettings){
+                                        if(err){
+                                            retObj.messages.push('Please try again');
+                                            callback(retObj);
+                                        }else if(saveSettings){
+                                            retObj.status = true;
+                                            retObj._id = user._id;
+                                            retObj.token = token;
+                                            retObj.userName = userName;
+                                            retObj.gpsEnabled = user.gpsEnabled;
+                                            retObj.erpEnabled = user.erpEnabled;
+                                            retObj.loadEnabled = user.loadEnabled;
+                                            retObj.editAccounts = user.editAccounts;
+                                            callback(retObj);
+                                        }else{
+                                            retObj.messages.push('Please try again');
+                                            callback(retObj);
+                                        }
+                                    })
+                                }
+                            })
+                           
                         }
                     });
 
