@@ -15,35 +15,36 @@
                 </div>
             </div>
             <div class="form-group col-xs-12">
-                <div class="col-xs-12">
-                    <input type="text" class="form-control custom-form-control" ng-model="truck.tonnage"
-                           placeholder="Tonnage*"/>
+                <div class="col-xs-12 styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="truck.tonnage"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Tonnage</label>
                 </div>
             </div>
             <div class="form-group col-xs-12">
-                <div class="col-xs-12">
-                    <input type="text" class="form-control custom-form-control" ng-model="truck.modelAndYear"
-                           placeholder="Modal and Year*"/>
+                <div class="col-xs-12 styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="truck.modelAndYear"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Modal and Year</label>
                 </div>
             </div>
 
-            <div class="form-group col-xs-12">
-
-                <div class="col-xs-12 pos-relative">
-                    <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+            <div class="form-group col-xs-12 ">
+                <div class="col-xs-12">
                     <input id="city" type="text" ng-model="driverName"
                            uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue"
                            class="form-control custom-form-control" typeahead-min-length="1"
-                           typeahead-on-select="selectDriverId($item)" typeahead-select-on-exact="true"
-                           autocomplete="false" placeholder="Assign Driver*">
+                           typeahead-on-select="selectDriverId($item)" typeahead-select-on-exact="true"                                                 typeahead-no-results="noDriver" autocomplete="false" placeholder="Assign Driver">
+                        <div ng-show="noDriver">
+                            <i class="glyphicon glyphicon-remove red"></i>
+                            <span class="red"> No Results Found </span>
+                        </div>
                 </div>
+
             </div>
 
         </div>
         <div class="col-sm-6 col-xs-12 mt-10">
             <div class="form-group col-xs-12">
                 <div class="col-xs-12">
-
                     <date-picker id="fitnessExpiry" ng-model="truck.fitnessExpiry"
                                  placeholder="'Fitness Due Expiry Date*'" class="'custom-form-control'"></date-picker>
                 </div>

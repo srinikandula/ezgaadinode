@@ -45,23 +45,23 @@ app.factory('ExpenseService', function ($http) {
                 method: "DELETE"
             }).then(success, error)
         },
-        findTotalExpenses: function(success, error){
-          $http({
-              url: '/v1/expense/total',
-              method:"GET"
-          }).then(success, error)
+        findTotalExpenses: function (success, error) {
+            $http({
+                url: '/v1/expense/total',
+                method: "GET"
+            }).then(success, error)
         },
-        findExpensesbyGroupVehicle: function(params, success, error){
+        findExpensesbyGroupVehicle: function (params, success, error) {
             $http({
                 url: '/v1/expense/groupByVehicle',
-                method:"GET",
+                method: "GET",
                 params: params
             }).then(success, error)
         },
-        findExpensesbyVehicleId: function(vehicleId, success, error){
+        findExpensesbyVehicleId: function (vehicleId, success, error) {
             $http({
                 url: '/v1/expense/vehicleExpense/' + vehicleId,
-                method:"GET"
+                method: "GET"
             }).then(success, error)
         },
         count: function (success, error) {
@@ -70,18 +70,18 @@ app.factory('ExpenseService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        shareExpensesDetailsViaEmail:function(params,success,error){
+        shareExpensesDetailsViaEmail: function (params, success, error) {
             $http({
-                url:'/v1/expense/shareExpensesDetailsViaEmail',
-                method:"GET",
-                params:params
-            }).then(success,error);
+                url: '/v1/expense/shareExpensesDetailsViaEmail',
+                method: "GET",
+                params: params
+            }).then(success, error);
         }
     }
 });
 
 app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService) {
-     $scope.goToEditExpensePage = function (expenseId) {
+    $scope.goToEditExpensePage = function (expenseId) {
         $state.go('expensesEdit', {expenseId: expenseId});
     };
 
@@ -136,23 +136,46 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
     };
 
     $scope.deleteExpenseRecord = function (id) {
-        ExpenseService.deleteRecord(id, function (success) {
-            if (success.data.status) {
-                $scope.getCount();
-                Notification.success({message: "Successfully Deleted"});
-            } else {
-                Notification.error({message: success.data.message});
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                ExpenseService.deleteRecord(id, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            'Expenses deleted successfully.',
+                            'success'
+                        );
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal(
+                                'Deleted!',
+                                message,
+                                'error'
+                            );
+                        });
+                    }
+                })
             }
-        })
-    };
+            ;
+        });
+    }
 }]);
 
 app.controller('expenseEditController', ['$scope', 'ExpenseService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
     $scope.pagetitle = "Add Expenses";
     $scope.dateCallback = "past";
 
-    $scope.trucks=[];
-    $scope.expenses=[];
+    $scope.trucks = [];
+    $scope.expenses = [];
 
     $scope.expenseDetails = {
         vehicleNumber: '',
@@ -160,7 +183,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         description: '',
         date: '',
         cost: '',
-        expenseName:'',
+        expenseName: '',
         error: [],
         success: []
     };
@@ -222,7 +245,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
 
     if ($stateParams.expenseId) {
         $scope.pagetitle = "Edit expenses";
-        ExpenseService.getExpenseRecord($stateParams.expenseId, function (success) {            
+        ExpenseService.getExpenseRecord($stateParams.expenseId, function (success) {
             if (success.data.status) {
                 $scope.expenseDetails = success.data.expense;
                 $scope.expenseDetails.date = new Date($scope.expenseDetails.date);
@@ -249,7 +272,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         if (!params.expenseType) {
             params.error.push('Invalid expenseType');
         }
-        if (params.expenseType==='others' && !params.expenseName) {
+        if (params.expenseType === 'others' && !params.expenseName) {
             params.error.push('Enter other expenseType');
         }
         if (!params.date) {
@@ -276,7 +299,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
                     console.log(err);
                 });
             } else {
-                ExpenseService.addExpense(params, function (success) {                      
+                ExpenseService.addExpense(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
                         Notification.success({message: success.data.message});

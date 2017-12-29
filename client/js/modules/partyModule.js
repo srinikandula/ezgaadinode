@@ -111,17 +111,40 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
     $scope.getCount();
 
     $scope.deleteParty = function (partyId) {
-        PartyService.deleteParty(partyId, function (success) {
-            if (success.data.status) {
-                $scope.getCount();
-                Notification.error({message: "Successfully Deleted"});
-            } else {
-                Notification.error(success.data.message)
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                PartyService.deleteParty(partyId, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            'Party deleted successfully.',
+                            'success'
+                        );
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal(
+                                'Deleted!',
+                                message,
+                                'error'
+                            );
+                        });
+                    }
+                }, function (err) {
+
+                });
             }
-        }, function (err) {
-            console.log('error deleting party');
+            ;
         });
-    };
+    }
 }]);
 
 app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootScope', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $rootScope, $stateParams, Notification, $state) {
@@ -146,10 +169,10 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         tripLanes: [{
             index: 0
         }],
-        isTransporter:false,
-        isSupplier:false,
-        isEmail:false,
-        isSms:false,
+        isTransporter: false,
+        isSupplier: false,
+        isEmail: false,
+        isSms: false,
         error: [],
         success: []
 
@@ -159,26 +182,26 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         PartyService.getParty($stateParams.partyId, function (success) {
             if (success.data.status) {
                 $scope.party = success.data.party;
-                
+
             } else {
                 Notification.error(success.data.message)
             }
         }, function (err) {
         });
-    };
+    }
+    ;
     $scope.cancel = function () {
-        console.log("Welcome to Cancel");
         $state.go('parties');
 
     }
 
     $scope.addTripLane = function () {
-        $scope.party.error=[];
+        $scope.party.error = [];
         var length = $scope.party.tripLanes.length;
         if (!$scope.party.tripLanes[length - 1].name || !$scope.party.tripLanes[length - 1].from || !$scope.party.tripLanes[length - 1].to) {
             $scope.party.error.push("Please Fill all TripLane Fields");
         }
-         else {
+        else {
             $scope.party.tripLanes.push({
                 index: length
             });
@@ -187,9 +210,9 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
     };
 
     $scope.deleteTripLane = function (index) {
-        if($scope.party.tripLanes.length>1){
-        $scope.party.tripLanes.splice(index, 1);
-        }else{
+        if ($scope.party.tripLanes.length > 1) {
+            $scope.party.tripLanes.splice(index, 1);
+        } else {
             $scope.party.error.push("Please add at least one trip lane");
         }
 
@@ -215,10 +238,10 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.tripLanes[0].name) {
             params.error.push('Please provide TripLane Name');
         }
-        if(!params.isSupplier && !params.isTransporter){
+        if (!params.isSupplier && !params.isTransporter) {
             params.error.push('Please select party type');
         }
-        if(!params.isSms && !params.isEmail){
+        if (!params.isSms && !params.isEmail) {
             params.error.push('Please select notification type');
         }
 

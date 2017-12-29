@@ -9,8 +9,7 @@
     <link rel="stylesheet" type="text/css" href="components/bootstrap/dist/css/bootstrap.min.css">
     <link href="components/angular-bootstrap/ui-bootstrap-csp.css" type="text/css">
     <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css"
-          href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
+    <link rel="stylesheet" type="text/css" href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
     <link rel="stylesheet" type="text/css" href="css/slick.css">
     <link rel="stylesheet" type="text/css" href="css/slick-theme.css">
@@ -22,7 +21,7 @@
         <div class="loader" ng-show="reqloading">
             <img src="images/Spinner.svg">
         </div>
-  
+
 <left-nav-li name="Accounts" link="drivers"></left-nav-li>
 <span ng-controller="NavCtrl">
 
@@ -83,7 +82,7 @@
             <div class="col-xs-12">
                 <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
                     <left-menu label="Reports" ui-sref="reports"></left-menu>
-                    <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>
+                   <!-- <left-menu label="Accounts" ng-if="canEditAccounts()"></left-menu>-->
                     <left-menu label="Trucks" ui-sref="trucks"></left-menu>
                     <left-menu label="Drivers" ui-sref="drivers"></left-menu>
                     <left-menu label="Parties" ui-sref="parties"></left-menu>
@@ -92,8 +91,6 @@
                     <!--<left-menu label="Expense-Master"></left-menu>-->
                     <left-menu label="Expenses" ui-sref="expenses"></left-menu> <div class="clearfix"></div>
              </div>
-
-
                 <div class="col-xs-12 col-sm-10">
                     <ui-view></ui-view>
                 </div>
@@ -149,5 +146,6 @@
 <script src="js/modules/trackMapModule.js"></script>
 <script src="js/modules/groupMap.js"></script>
 <script src="js/modules/dashBoardModule.js"></script>
+
 </body>
 </html>

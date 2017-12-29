@@ -176,7 +176,7 @@ var expenseMaster = new mongoose.Schema({
     attrs: {}
 },{timestamps: String});
 
-var paymentsReceived = mongoose.Schema({
+var payments = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     partyId: {type: ObjectId, ref: 'parties'},
     description: String,
@@ -215,7 +215,7 @@ module.exports = {
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
-    paymentsReceivedColl: mongoose.model('paymentsReceived', paymentsReceived, 'paymentsReceived'),
+    paymentsReceivedColl: mongoose.model('payments', payments, 'payments'),
     GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
     OtpColl:mongoose.model('otps',otpSchema,'otps'),
     NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications')

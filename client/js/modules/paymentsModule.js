@@ -38,11 +38,11 @@ app.factory('PaymentsService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getDuesByParty: function (params,success, error) {
+        getDuesByParty: function (params, success, error) {
             $http({
                 url: '/v1/payments/getDuesByParty/',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
         updateRecord: function (object, success, error) {
@@ -64,21 +64,22 @@ app.factory('PaymentsService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        sharePaymentsDetailsByPartyViaEmail:function(params,success,error){
+        sharePaymentsDetailsByPartyViaEmail: function (params, success, error) {
             $http({
-                url:'/v1/payments/sharePaymentsDetailsByPartyViaEmail',
-                method:"GET",
-                params:params
-            }).then(success,error);
+                url: '/v1/payments/sharePaymentsDetailsByPartyViaEmail',
+                method: "GET",
+                params: params
+            }).then(success, error);
         }
     }
 });
 
-app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification','NgTableParams','paginationService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService) {
+app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService) {
     $scope.goToEditPaymentsPage = function (paymentsId) {
         $state.go('paymentsEdit', {paymentsId: paymentsId});
     };
     $scope.count = 0;
+    $scope.getCount = function () {
     PaymentsService.count(function (success) {
         if (success.data.status) {
             $scope.count = success.data.count;
@@ -88,6 +89,8 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             Notification.error({message: success.data.message});
         }
     });
+    };
+    $scope.getCount();
 
     var pageable;
 
@@ -126,17 +129,40 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
     };
 
     $scope.deletePaymentsRecord = function (id) {
-        PaymentsService.deletePaymentsRecord(id, function (success) {
-            if (success.data.status) {
-                $scope.init();
-                Notification.error({message: "Successfully Deleted"});
-            } else {
-                Notification.error({message: success.data.message});
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                PaymentsService.deletePaymentsRecord(id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                'Party deleted successfully.',
+                                'success'
+                            );
+                            $scope.getCount();
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                swal(
+                                    'Deleted!',
+                                    message,
+                                    'error'
+                                );
+                            });
+                        }
+
+                    ;
+                });
+
             }
-        })
-    };
-
-
+        });
+    }
 }]);
 
 app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$stateParams', '$state', 'Notification', 'TripServices', 'TrucksService', 'PartyService', function ($scope, PaymentsService, $stateParams, $state, Notification, TripServices, TrucksService, PartyService) {
@@ -144,7 +170,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
     $scope.paymentRefNumber = false;
 
     $scope.refNum = function () {
-            $scope.paymentRefNumber = true;
+        $scope.paymentRefNumber = true;
     };
 
     $scope.pagetitle = "Add Payments";
@@ -155,8 +181,8 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         partyId: '',
         description: '',
         amount: '',
-        paymentType:'',
-        paymentRefNo:'',
+        paymentType: '',
+        paymentRefNo: '',
         error: [],
         success: []
     };
@@ -219,10 +245,10 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         PartyService.getAccountParties(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
-               var selectedParty = _.find( $scope.parties, function (party) {
+                var selectedParty = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.paymentsDetails.partyId;
                 });
-                if(selectedParty){
+                if (selectedParty) {
                     $scope.partyName = selectedParty.name;
                 }
             } else {
@@ -265,15 +291,17 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
         if (!params.date) {
             params.error.push('InValid Date');
-        } if (!params.partyId) {
+        }
+        if (!params.partyId) {
             params.error.push('Invalid Party Id');
-        } if (!(params.amount)) {
+        }
+        if (!(params.amount)) {
             params.error.push('Invalid Amount');
         }
-        if(!params.paymentType){
+        if (!params.paymentType) {
             params.error.push('Select payment type');
         }
-        if((params.paymentType==='NEFT' || params.paymentType==='Cheque') && !params.paymentRefNo){
+        if ((params.paymentType === 'NEFT' || params.paymentType === 'Cheque') && !params.paymentRefNo) {
             params.error.push('Enter payment reference number');
         }
         if (!params.error.length) {

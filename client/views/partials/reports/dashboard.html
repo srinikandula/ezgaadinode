@@ -10,7 +10,8 @@
                 <h3 ng-class="{'h3activated':activated==='0'}">Revenue</h3>
                 <p>From All Vehicles</p>
                 <small ng-class="{'costactivated':activated==='0'}"><i class="fa fa-inr"></i>
-                    {{totals.totalRevenue}}</small>
+                    {{totals.totalRevenue}}
+                </small>
             </div>
         </div>
     </div>
@@ -26,37 +27,44 @@
             <div class="reports-text">
                 <h3 ng-class="{'h3activated':activated==='2'}">Expenses</h3>
                 <p>From All Vehicles</p>
-                <small ng-class="{'costactivated':activated==='2'}"><i class="fa fa-inr"></i> {{totals.expensesTotal}}</small>
+                <small ng-class="{'costactivated':activated==='2'}"><i class="fa fa-inr"></i> {{totals.expensesTotal}}
+                </small>
             </div>
         </div>
     </div>
 
     <div class="col-sm-3 col-xs-12">
-        <div class="reports-panel paymets" ng-click="paymentsReceivable()" ng-class="{'activated':activated==='4'}">
+        <div class="reports-panel payments" ng-click="paymentsReceivable()" ng-class="{'activated':activated==='4'}">
+
+            <div class="reports-image">
+                <figure>
+                    <img src="images/payments.png">
+                </figure>
+            </div>
+            <div class="reports-text">
+                <h3 ng-class="{'h3activated':activated==='4'}">Payments</h3>
+                <p>From All Parties</p>
+                <!--<small ng-class="{'costactivated':activated==='4'}">-->
+                <!--</small>-->
+            </div>
             <div class="col-xs-12 pall-zero">
-                <div class="reports-image">
-                    <figure>
-                        <img src="images/payments.png">
-                    </figure>
-                </div>
-                <div class="reports-text">
-                    <h3 ng-class="{'h3activated':activated==='4'}">Payments</h3>
-                    <p>From All Parties</p>
-                    <small ng-class="{'costactivated':activated==='4'}">
-                        <i class="fa fa-inr"></i> {{!totals.pendingDue == true ? 0 :totals.pendingDue}}</small>
-                </div>
+                <ul class="list-inline">
+                    <li class="payble">
+                        <span class="payable">Payable</span><br>
+                        <small ng-class="{'costactivated':activated==='4'}"><i class="fa fa-inr"></i>
+                            {{!totals.pendingDue == true ? 0 :totals.pendingDue}}
+                        </small>
+                    </li>
+                    <li class="payble">
+                        <span class="receivable">Receivable</span> <br>
+                        <small ng-class="{'costactivated':activated==='4'}"><i class="fa fa-inr"></i>{{!amounts[0].total
+                            == true ? 0 :amounts[0].total}}
+                        </small>
+                    </li>
+
+                </ul>
             </div>
 
-            <!--<ul class="col-xs-12 list-inline">
-               &lt;!&ndash; <li class="payble">
-                    <span class="payable">Payable</span><br><a href="#">10000</a>
-                </li>&ndash;&gt;
-                <li class="payble">
-                    <span class="receivable">Receivable</span> <br>
-                    <a href="#">{{!amounts[0].total == true ? 0 :amounts[0].total}}</a>
-                </li>
-
-            </ul>-->
 
         </div>
     </div>
@@ -94,10 +102,6 @@
         </div>
     </div>
 
-    <div class="col-xs-12" ng-include="template">
-    </div>
-
-
-
+    <div class="col-xs-12" ng-include="template"></div>
 </div>
   

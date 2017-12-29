@@ -580,6 +580,7 @@ Trips.prototype.deleteTrip = function (tripId, callback) {
                         retObj.messages.push('Error deleting trip');
                         callback(retObj);
                     } else {
+                        retObj.status = true;
                         retObj.messages.push('Success');
                         callback(retObj);
                     }

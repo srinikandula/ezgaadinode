@@ -7,7 +7,7 @@ app.factory('TripServices', function ($http) {
                 data: trip
             }).then(success, error)
         },
-        getAllTrips: function ( success, error) {
+        getAllTrips: function (success, error) {
             $http({
                 url: '/v1/trips/getAllTrips/',
                 method: "GET",
@@ -46,17 +46,17 @@ app.factory('TripServices', function ($http) {
                 params: pageable
             }).then(success, error)
         },
-        findTotalRevenue:function(success, error){
-          $http({
-              url:'/v1/trips/find/totalRevenue',
-              method:"GET"
-          }).then(success, error)
-        },
-        findRevenueByVehicle:function(params,success, error){
+        findTotalRevenue: function (success, error) {
             $http({
-                url:'/v1/trips/find/revenueByVehicle',
-                method:"GET",
-                params:params
+                url: '/v1/trips/find/totalRevenue',
+                method: "GET"
+            }).then(success, error)
+        },
+        findRevenueByVehicle: function (params, success, error) {
+            $http({
+                url: '/v1/trips/find/revenueByVehicle',
+                method: "GET",
+                params: params
             }).then(success, error)
         },
         count: function (success, error) {
@@ -65,14 +65,14 @@ app.factory('TripServices', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        shareRevenueDetailsByVechicleViaEmail:function(params,success,error){
+        shareRevenueDetailsByVechicleViaEmail: function (params, success, error) {
             $http({
-                url:'/v1/trips/shareRevenueDetailsByVechicleViaEmail',
-                method:"GET",
-                params:params
-            }).then(success,error);
+                url: '/v1/trips/shareRevenueDetailsByVechicleViaEmail',
+                method: "GET",
+                params: params
+            }).then(success, error);
         }
-       
+
 
     }
 });
@@ -83,7 +83,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     };
 
     $scope.count = 0;
-    $scope.getCount = function () {
+    $scope.getCount = function () {0
         TripServices.count(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
@@ -130,18 +130,38 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
 
     $scope.deleteTrip = function (tripId) {
-        TripServices.deleteTrip(tripId, function (success) {
-            if (success) {
-                $scope.getCount();
-                Notification.success({message: "Trip deleted successfully"});
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        })
-    };
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                TripServices.deleteTrip(tripId, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                'Trip deleted successfully 123.',
+                                'success'
+                            );
+                            $scope.getCount();
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                swal(
+                                    'Deleted!',
+                                    message,
+                                    'error'
+                                );
+                            });
+                        }
 
+                });
+            };
+        });
+    }
 
 }]);
 
@@ -164,9 +184,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         remarks: '',    //new
         error: [],
         success: [],
-        share:false,
-        vechicleNo:"",
-        driverName:""
+        share: false,
+        vechicleNo: "",
+        driverName: ""
     };
 
     $scope.cancel = function () {
@@ -223,7 +243,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.selectTruckId = function (truck) {
         $scope.trip.registrationNo = truck._id;
-        $scope.trip.vechicleNo=truck.registrationNo;
+        $scope.trip.vechicleNo = truck.registrationNo;
     }
 
     function getDriverIds() {
@@ -250,8 +270,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.selectTruckDriver = function (driver) {
         $scope.trip.driverId = driver._id;
-        $scope.trip.driverName=driver.fullName;
-        $scope.trip.driverNumber=driver.mobile;
+        $scope.trip.driverName = driver.fullName;
+        $scope.trip.driverNumber = driver.mobile;
     }
 
     $scope.selectTripLane = function (triplane) {

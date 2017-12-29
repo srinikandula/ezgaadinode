@@ -10,7 +10,6 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-
                     <div class="col-xs-12 pos-relative">
                         <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
                         <input type="text" ng-model="partyName"
@@ -19,6 +18,7 @@
                                typeahead-on-select="selectPartyId($item)"
                                typeahead-select-on-exact="true"
                                typeahead-no-results="noParty" autocomplete="false" placeholder="Party Name*">
+
                         <div ng-show="noParties">
                             <i class="glyphicon glyphicon-remove red"></i>
                             <span class="red"> No Results Found </span>
@@ -26,9 +26,11 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 styling-input-list">
                         <input ng-model="paymentsDetails.amount" type="number" class="form-control custom-form-control"
-                               id="amount" placeholder="Amount">
+                               id="amount">
+                        <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
+
                     </div>
                 </div>
             </div>
@@ -47,14 +49,17 @@
                      ng-show="paymentsDetails.paymentType == 'NEFT' || paymentsDetails.paymentType == 'Cheque'">
                     <div class="col-xs-12">
                         <input type="text" class="form-control" ng-model="paymentsDetails.paymentRefNo" placeholder="Reference Number for Cheque/NEFT"/>
+
                     </div>
                 </div>
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12">
+                    <div class="col-xs-12 styling-input-list">
                         <textarea ng-model="paymentsDetails.description" type="textarea"
                                   class="form-control custom-form-control"
-                                  id="description" placeholder="Remarks"></textarea>
+                                  id="description"></textarea>
+                        <label class="focus-effect-for-input" aria-hidden="true">Remarks</label>
+
                     </div>
                 </div>
 

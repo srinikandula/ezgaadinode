@@ -149,6 +149,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             if (angular.isArray(response.data.trucks)) {
                 $scope.loading = false;
                 $scope.trucks = response.data.trucks;
+                console.log('====>>>', $scope.trucks);
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trucks;
                 $scope.currentPageOfTrucks = $scope.trucks;
@@ -173,18 +174,39 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     };
 
     $scope.deleteTruck = function (truckId) {
-        TrucksService.deleteTruck(truckId, function (success) {
-            if (success.data.status) {
-                Notification.error('Truck deleted successfully');
-                $scope.getCount();
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message)
+
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                TrucksService.deleteTruck(truckId, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            'Truck deleted successfully.',
+                            'success'
+                        );
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal(
+                                'Deleted!',
+                                message,
+                                'error'
+                            );
+                        });
+                    }
+                }, function (err) {
+
                 });
             }
-        }, function (err) {
-
-        });
+        })
     }
     $scope.searchByTruckName = function () {
 

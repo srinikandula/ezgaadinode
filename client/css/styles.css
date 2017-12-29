@@ -519,6 +519,7 @@ body {
     padding: 5px !important;
     vertical-align: middle;
     text-align: left;
+    color: #000;
 }
 
 /*.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{*/
@@ -526,9 +527,9 @@ body {
 /*}*/
 
 .ng-table th.sortable {
-    padding: 6px !important;
+    padding: 3px !important;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 15px;
     color: #000;
     text-align: left;
 }
@@ -642,14 +643,16 @@ body {
     padding-bottom: 8px;
 }
 
-.reports-text small {
+.reports-text small, .payble small {
     font-size: 16px;
     color: #1E4495;
     font-weight: bold;
 }
 
 .payble {
-    /*border: 1px solid #ccc;*/
+    border: 1px solid #ccc;
+    padding: 0 !important;
+    border-radius: 5px;
 }
 
 .reports-panel ul {
@@ -659,12 +662,17 @@ body {
     display: block;
     margin: 0 auto;
 }
-
-.paymets ul li {
-    /*width: 48%;*/
-    width: 75%;
-    text-align: center;
+.payments{
     display: block;
+    text-align: center;
+}
+.payments ul{
+    margin-top: 15px !important;
+}
+.payments ul li {
+    width: 48%;
+    text-align: center;
+
     margin: 0 auto;
 }
 
@@ -1148,7 +1156,7 @@ select {
 .reset-pass h3 {
     font-size: 18px;
     font-weight: bold;
-    padding: 0 15px 0;
+    padding: 15px 0 15px 15px;;
 }
 
 .edit-profile {
@@ -1217,8 +1225,8 @@ select {
 
 .lisk-block ul li {
     display: inline-block;
-    width: 9%;
-     margin: 0 0% 0 0;
+    width: 11%;
+    /* margin: 0 0% 0 0; */
     float: left;
 }
 
@@ -1281,7 +1289,7 @@ select {
 }
 
 .lisk-block ul li.sea-wid {
-    width: 35%;
+    width: 30%;
 }
 
 .search-box {
@@ -1362,7 +1370,7 @@ select {
     width: 100px;
 }
 
-.lisk-block ul li.map-wid, .lisk-block ul li.map-wid {/* width: 11%; */margin: 0 8px 0 0;}
+.lisk-block ul li.map-wid, .lisk-block ul li.map-wid {width: 9%;/* margin: 0 0px 0 0; */}
 
 .activeView {
     background-color: #e83b13;
@@ -1627,7 +1635,12 @@ select {
 
 .styling-input-list {
     position: relative;
-    z-index: 10;
+    z-index: 0;
+}
+.styleing-date{
+    position:relative;
+    z-index: 0;
+
 }
 
 .focus-effect-for-input {
@@ -1637,7 +1650,7 @@ select {
     color: #989898;
     font-size: 15px;
     font-weight: lighter;
-    z-index: -1;
+
 }
 
 .custom-form-control {
@@ -1648,7 +1661,6 @@ select {
 .custom-form-control:not([disabled]):focus ~ .focus-effect-for-input {
     /*whsOnd:not([disabled]):focus~.AxOyFc*/
     transform: scale(.9) translateY(-20px);
-
     left: 0;
     transition: all 0.5s ease-in-out;
     -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
@@ -1658,7 +1670,9 @@ select {
 
 .ng-not-empty + .focus-effect-for-input {
     transform: scale(.9) translateY(-20px);
-    left: 0;
+    left: 10px;
+    top: 8px;
+    color: #1E4495;
     transition: all 0.5s ease-in-out;
     -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
     -moz-transition: all 0.5s ease-in-out; /** Firefox **/
@@ -1786,13 +1800,13 @@ select {
 .loader{
     padding: 10px;
     border-radius: 4px;
-   height: 100%;
-   width: 100%;
-   background-color: rgba(0, 0, 0, 0.48);
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.48);
     margin-bottom: 10px;
     position: fixed;
-    z-index: 999; 
-    margin: 0 auto;   
+    z-index: 999;
+    margin: 0 auto;
     display: block;
 
 }

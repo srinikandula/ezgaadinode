@@ -43,7 +43,7 @@
                 maintanence.mode }}
             </td>
             <td data-title="'Created By'" sortable="'createdByName'"
-                class="clickable-item col-sm-2">{{ maintanence.attrs.createdByName }}
+                class="clickable-item col-sm-1">{{ maintanence.attrs.createdByName }}
             </td>
             <td data-title="'Action'" class="col-sm-2">
                 <a href="#" class="btn" ng-click="goToEditExpensePage(maintanence._id)">
@@ -60,8 +60,8 @@
     <div class="clearfix"></div>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ng-click="goToEditExpensePage()"><img src="images/Add_Expenses.png" alt="Add Expenses"
-                                                              title="Add Expenses"></a>
+            <a href="#" ng-click="goToEditExpensePage()">
+                <img src="images/Add_Expenses.png" alt="Add Expenses"  title="Add Expenses"></a>
         </figure>
     </div>
 </div>

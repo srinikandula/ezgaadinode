@@ -6,13 +6,13 @@ app.directive('datePicker', function () {
             banFuture: "=",
             pastPresent: "=",
             placeholder: "=placeholder",
-            class:"=class"
+            class: "=class"
         },
         template: '<div class="pos-relative">\n' +
         '                <span class="date-pick" ng-click="open($event)">' +
         '                  <img src="images/date-icon.png" width="30" height="24" /> </span>\n' +
-        '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true" placeholder="{{placeholder}}"/>\n' +
-
+        '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true"/>\n' +
+        '<label class="focus-effect-for-input" aria-hidden="true">{{placeholder}}</label> \n' +
         '        </div>\n',
         require: 'ngModel',
         link: function (scope, element, attributes) {
