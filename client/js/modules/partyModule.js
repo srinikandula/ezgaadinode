@@ -20,6 +20,18 @@ app.factory('PartyService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        getAllPartiesByTransporter: function (success, error) {
+            $http({
+                url: '/v1/party/getAllPartiesByTransporter',
+                method: "GET"
+            }).then(success, error)
+        },
+        getAllPartiesBySupplier: function (success, error) {
+            $http({
+                url: '/v1/party/getAllPartiesBySupplier',
+                method: "GET"
+            }).then(success, error)
+        },
         getParty: function (partyId, success, error) {
             $http({
                 url: '/v1/party/' + partyId,
@@ -169,8 +181,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         tripLanes: [{
             index: 0
         }],
-        isTransporter: false,
-        isSupplier: false,
+        partyType: '',
         isEmail: false,
         isSms: false,
         error: [],
@@ -238,7 +249,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.tripLanes[0].name) {
             params.error.push('Please provide TripLane Name');
         }
-        if (!params.isSupplier && !params.isTransporter) {
+        if (!params.partyType) {
             params.error.push('Please select party type');
         }
         if (!params.isSms && !params.isEmail) {

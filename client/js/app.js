@@ -230,6 +230,22 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
             paymentsId: null
         }
     }).state({
+        name: 'gpsSettings',
+        url: '/gpsSettings',
+        templateUrl: 'views/partials/settings/gpsSettings.html',
+        data: {activeTab: 'settings'},
+        params: {
+            access: 'open',
+             }
+    }).state({
+        name: 'reportsSettings',
+        url: '/reportsSettings',
+        templateUrl: 'views/partials/settings/reportsSettings.html',
+        data: {activeTab: 'settings'},
+        params: {
+            access: 'open',
+        }
+    }).state({
         name: 'mapView',
         url: '/gps/mapView',
         templateUrl: 'views/partials/gps/mapView.html',

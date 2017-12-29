@@ -1,0 +1,227 @@
+<div class="col-xs-12" ng-controller="ERPsettingsCntrl">
+    <div class="col-xs-12">
+        <div class="col-xs-12 profile-page">
+            <div class="col-xs-9 profile-tabs">
+                <div class="top-block">
+                    <ul class="list-inline">
+                        <li><a href="#" ui-sref="gpsSettings">GPS</a></li>
+                        <li><a href="#" ui-sref="reportsSettings" class="activeProfileTab">Reports</a></li>
+                    </ul>
+                </div>
+                <div class="clearfix"></div>
+                <div class="col-xs-12 col-sm-6 pall-zero">
+                    <div class="settings">
+                        <h3>Revenue</h3>
+                        <ul class="list-inline">
+                            <li><a href="#"></a>
+                                <p>Day</p></li>
+                            <li><a href="#"></a>
+                                <p>Week</p></li>
+                            <li><a href="#"></a>
+                                <p>Month</p></li>
+                            <li><a href="#"></a>
+                                <p>Year</p></li>
+                            <li><a href="#" ng-click="erpSettings.custom = 'custom'"></a>
+                                <p>Custom</p></li>
+                        </ul>
+                    </div>
+
+                    <div class="clearfix"></div>
+                    <div class="mt-25" ng-show="erpSettings.custom == 'custom'">
+                        <ul class="list-inline">
+                            <li class="report-date">
+                                <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                                             class="'settingsTextfield'">
+                                </date-picker>
+                            </li>
+                            <li class="report-date">
+                                <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'"
+                                             class="'settingsTextfield'"></date-picker>
+                            </li>
+
+                            <li class="set-btn">
+                                <input type="button" class="btn go" value="Set">
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="settings">
+                        <h3>Payment</h3>
+                        <ul class="list-inline">
+                            <li><a href="#"></a>
+                                <p>Day</p></li>
+                            <li><a href="#"></a>
+                                <p>Week</p></li>
+                            <li><a href="#"></a>
+                                <p>Month</p></li>
+                            <li><a href="#"></a>
+                                <p>Year</p></li>
+                            <li ng-model="settings.custom"><a href="#"></a>
+                                <p>Custom</p></li>
+                        </ul>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="mt-25" ng-show="settings.custom == 'Custom'">
+                        <ul class="list-inline">
+                            <li class="report-date">
+                                <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                                             class="'settingsTextfield'">
+                                </date-picker>
+                            </li>
+                            <li class="report-date">
+                                <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'"
+                                             class="'settingsTextfield'"></date-picker>
+                            </li>
+
+                            <li class="set-btn">
+                                <input type="button" class="btn go" value="Set">
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="settings">
+                        <h3>Expenses</h3>
+                        <ul class="list-inline">
+                            <li><a href="#"></a>
+                                <p>Day</p></li>
+                            <li><a href="#"></a>
+                                <p>Week</p></li>
+                            <li><a href="#"></a>
+                                <p>Month</p></li>
+                            <li><a href="#"></a>
+                                <p>Year</p></li>
+                            <li><a href="#"></a>
+                                <p>Custom</p></li>
+                        </ul>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="mt-25" ng-if="Custom">
+                        <ul class="list-inline">
+                            <li class="report-date">
+                                <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                                             class="'settingsTextfield'">
+                                </date-picker>
+                            </li>
+                            <li class="report-date">
+                                <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'"
+                                             class="'settingsTextfield'"></date-picker>
+                            </li>
+
+                            <li class="set-btn">
+                                <input type="button" class="btn go" value="Set">
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+                <div class="col-xs-12 col-sm-6 pall-zero">
+                    <div class="settings">
+                        <h3>Revenue</h3>
+                        <ul class="list-inline">
+                            <li><a href="#"></a>
+                                <p>Day</p></li>
+                            <li><a href="#"></a>
+                                <p>Week</p></li>
+                            <li><a href="#"></a>
+                                <p>Month</p></li>
+                            <li><a href="#"></a>
+                                <p>Year</p></li>
+                            <li><a href="#"></a>
+                                <p>Custom</p></li>
+                        </ul>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="mt-25" ng-if="Custom">
+                        <ul class="list-inline">
+                            <li class="report-date">
+                                <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                                             class="'settingsTextfield'">
+                                </date-picker>
+                            </li>
+                            <li class="report-date">
+                                <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'"
+                                             class="'settingsTextfield'"></date-picker>
+                            </li>
+
+                            <li class="set-btn">
+                                <input type="button" class="btn go" value="Set">
+                            </li>
+                        </ul>
+
+                    </div>
+
+                    <div class="settings">
+                        <h3>Payment</h3>
+                        <ul class="list-inline">
+                            <li><a href="#"></a>
+                                <p>Day</p></li>
+                            <li><a href="#"></a>
+                                <p>Week</p></li>
+                            <li><a href="#"></a>
+                                <p>Month</p></li>
+                            <li><a href="#"></a>
+                                <p>Year</p></li>
+                            <li><a href="#"></a>
+                                <p>Custom</p></li>
+                        </ul>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="mt-25" ng-if="Custom">
+                        <ul class="list-inline">
+                            <li class="report-date">
+                                <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                                             class="'settingsTextfield'">
+                                </date-picker>
+                            </li>
+                            <li class="report-date">
+                                <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'"
+                                             class="'settingsTextfield'"></date-picker>
+                            </li>
+
+                            <li class="set-btn">
+                                <input type="button" class="btn go" value="Set">
+                            </li>
+                        </ul>
+
+                    </div>
+                    <div class="settings">
+                        <h3>Expenses</h3>
+                        <ul class="list-inline">
+                            <li><a href="#"></a>
+                                <p>Day</p></li>
+                            <li><a href="#"></a>
+                                <p>Week</p></li>
+                            <li><a href="#"></a>
+                                <p>Month</p></li>
+                            <li><a href="#"></a>
+                                <p>Year</p></li>
+                            <li><a href="#"></a>
+                                <p>Custom</p></li>
+                        </ul>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="mt-25" ng-if="Custom">
+                        <ul class="list-inline">
+                            <li class="report-date">
+                                <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                                             class="'settingsTextfield'">
+                                </date-picker>
+                            </li>
+                            <li class="report-date">
+                                <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'"
+                                             class="'settingsTextfield'"></date-picker>
+                            </li>
+
+                            <li class="set-btn">
+                                <input type="button" class="btn go" value="Set">
+                            </li>
+                        </ul>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

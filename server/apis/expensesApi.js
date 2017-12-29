@@ -67,9 +67,17 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Enter other expenseType";
         callback(result);
-    } else if (!expenseDetails.cost || _.isNaN(expenseDetails.cost)) {
+    } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.cost || _.isNaN(expenseDetails.cost))) {
         result.status = false;
         result.message = "Please provide valid cost";
+        callback(result);
+    } else if (expenseDetails.mode === 'Credit' && (!expenseDetails.totalAmount || _.isNaN(expenseDetails.totalAmount))) {
+        result.status = false;
+        result.message = "Please enter Total Expense Amount";
+        callback(result);
+    } else if (expenseDetails.mode === 'Credit' && (!expenseDetails.paidAmount || _.isNaN(expenseDetails.paidAmount))) {
+        result.status = false;
+        result.message = "Please enter Paid Amount";
         callback(result);
     } else if (!expenseDetails.mode) {
         result.status = false;
@@ -94,6 +102,9 @@ function updateExpense(expense, jwt, callback) {
                 "expenseType": expense.expenseType,
                 "cost": expense.cost,
                 "mode": expense.mode,
+                "partyId": expense.partyId,
+                "totaAmount": expense.totalAmount,
+                "paidAmount": expense.paidAmount,
                 "date": expense.date
             }
         },

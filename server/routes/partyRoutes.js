@@ -10,6 +10,19 @@ AuthRouter.post('/addParty', function (req, res) {
     });
 });
 
+AuthRouter.get('/getAllPartiesBySupplier', function (req, res) {
+    Party.getAllPartiesBySupplier(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/getAllPartiesByTransporter', function (req, res) {
+    Party.getAllPartiesByTransporter(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
+
 AuthRouter.get('/:partyId', function (req, res) {
     Party.findParty(req.jwt, req.params.partyId, function (result) {
         res.send(result);
@@ -59,6 +72,10 @@ AuthRouter.get('/vehiclePayments/:vehicleId', function (req, res) {
         res.send(result);
     });
 });
+
+
+
+
 
 
 module.exports = {

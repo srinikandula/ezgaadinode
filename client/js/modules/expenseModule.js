@@ -170,19 +170,24 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
     }
 }]);
 
-app.controller('expenseEditController', ['$scope', 'ExpenseService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
+app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService,PartyService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
     $scope.pagetitle = "Add Expenses";
     $scope.dateCallback = "past";
 
     $scope.trucks = [];
     $scope.expenses = [];
+    $scope.parties = [];
 
     $scope.expenseDetails = {
         vehicleNumber: '',
         expenseType: '',
         description: '',
+        partyId: '',
+        totalAmount:'',
+        paidAmount:'',
         date: '',
         cost: '',
+        mode:'',
         expenseName: '',
         error: [],
         success: []
@@ -195,6 +200,29 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
     $scope.addExpenseTypeField = false;
     $scope.addExpenseType = function () {
         $scope.addExpenseTypeField = true;
+    }
+
+
+    function getPartiesbySupplier () {
+        PartyService.getAllPartiesBySupplier (function (success) {
+            if(success.data.status){
+                $scope.partyBySupplier = success.data.parties;
+                var selectedParty = _.find($scope.partyBySupplier, function (party) {
+                    return party._id.toString() === $scope.expenseDetails.partyId;
+                });
+                if (selectedParty) {
+                    $scope.partyName = selectedParty.name;
+                }
+            }else {
+                Notification.error(success.data.message);
+            }
+        })
+    }
+
+
+    $scope.selectPartyId = function (party) {
+        $scope.expenseDetails.partyId = party._id;
+
     }
 
     function getAllExpenses(params) {
@@ -251,6 +279,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
                 $scope.expenseDetails.date = new Date($scope.expenseDetails.date);
                 getAllExpenses();
                 getTruckIds();
+                getPartiesbySupplier();
             } else {
                 Notification.error(success.data.message)
             }
@@ -259,6 +288,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
     } else {
         getAllExpenses();
         getTruckIds();
+        getPartiesbySupplier();
     }
 
     $scope.AddorUpdateExpense = function () {
@@ -278,11 +308,17 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
         if (!params.date) {
             params.error.push('Invalid date');
         }
-        if (!_.isNumber(params.cost)) {
-            params.error.push('Invalid cost');
-        }
         if (!params.mode) {
             params.error.push('Please Select Cash or Credit');
+        }
+        if (!_.isNumber(params.cost)&& params.mode === 'Cash') {
+            params.error.push('Invalid cost');
+        }
+        if (!params.totalAmount && params.mode === 'Credit') {
+            params.error.push('Please Enter Total Expesne Amount');
+        }
+        if (!params.paidAmount && params.mode === 'Credit') {
+            params.error.push('Please enter Paid Amount');
         }
         if (!params.error.length) {
             if ($stateParams.expenseId) {
@@ -293,10 +329,8 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService', '$statePara
                     } else {
                         params.error = success.data.message;
                     }
-                    $state.go('expenses');
 
                 }, function (err) {
-                    console.log(err);
                 });
             } else {
                 ExpenseService.addExpense(params, function (success) {

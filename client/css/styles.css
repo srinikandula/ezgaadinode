@@ -707,6 +707,7 @@ body {
     background-color: #000;
     color: #fff !important;
     text-decoration: none;
+    font-weight: bold !important;
 }
 
 .h3activated {
@@ -876,6 +877,7 @@ body {
     color: #fff;
     border: transparent 1px solid;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .top-block ul li a:focus {
@@ -1631,6 +1633,68 @@ select {
 }
 
 /*-------------GPS CSS Ends Here------------------*/
+
+/*------------Settingd Page  Starts Here----------------------*/
+.settings{
+    display: block;
+    margin: 10px 0 0 0;
+}
+.settings h3{
+    font-size: 15px;
+    font-weight: bold;
+    padding: 10px 0;
+    color: #000;
+}
+.settings ul{
+    display: inline-block;
+    padding: 0;
+    margin: 0;
+}
+.settings ul li{
+    padding-left:5px;
+    padding-right: 0;
+    text-align: center;
+}
+.settings ul li a{
+    background-image: url(../images/Reports_Calendar.png);
+    width: 65px;
+    height: 50px;
+    display: block;
+}
+.settings ul li a:focus{
+    background-image: url(../images/Reports_Calendar_Selected.png);
+    width: 65px;
+    height: 50px;
+    display: block;
+}
+.settings ul li a img{
+    border: 1px solid #ccc;
+    padding: 4px 8px;
+    border-radius: 5px;
+}
+.settings ul li p{
+    margin: 6px 0 0px;
+}
+.report-date{
+    width:35%;
+    float:left;
+    padding:0;
+}
+.set-btn{
+    width:20%;
+}
+.settingsTextfield{
+    box-shadow: none;
+    border-radius: 0 !important;
+    padding: 6px 10px !important;
+    height: 40px;
+    background: transparent !important;
+}
+.set-btn .go{
+    width: 66px !important;
+}
+
+/*------------Settingd Page ends Here----------------------*/
 /*------------------Input Label Styling-----------*/
 
 .styling-input-list {
