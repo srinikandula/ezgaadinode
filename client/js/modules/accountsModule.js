@@ -78,6 +78,13 @@ app.factory('AccountServices', function ($http, $cookies) {
                 data: accountGroupInfo
             }).then(success, error)
         },
+        uploadUserProfilePic:function (data,success,error) {
+            $http({
+                url: '/v1/admin/uploadUserProfilePic',
+                method: "POST",
+                data: data
+            }).then(success, error)
+        }
     }
 });
 
@@ -168,7 +175,6 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
                 $scope.accountGroup = response.data.accountGroup;
                 tableParams.total(response.data.count);
                 tableParams.data = $scope.accountGroup;
-                console.log('list : ',$scope.accountGroup);
                 $scope.currentPageOfAccountGroup = $scope.accountGroup;
 
             }
@@ -198,7 +204,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 
 }]);
 
-app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServices', 'TrucksService', '$stateParams', 'Notification', function ($scope, Utils, $state, AccountServices, TrucksService, $stateParams, Notification) {
+app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServices', 'TrucksService', '$stateParams', 'Notification','$uibModal', function ($scope, Utils, $state, AccountServices, TrucksService, $stateParams, Notification, $uibModal) {
     $scope.pagetitle = "Add Account";
 
     $scope.account = {
@@ -313,6 +319,8 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                     if (success.data.status) {
                         params.success = success.data.messages;
                         Notification.success({message: "Account Updated Successfully"});
+                        $state.go('myProfile');
+                       Notification.success({message: "Account Updated Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -323,8 +331,8 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                 // _id doesn\'t exist => create account
                 AccountServices.addAccount(params, function (success) {
                     if (success.data.status) {
-                        params.success = success.data.messages;
-                        $state.go('accounts');
+                        params.success = success.data;
+                        $state.go('myProfile');
                       Notification.success({message: "Account Added Successfully"});
                     } else {
                         params.errors = success.data.messages;
@@ -448,5 +456,82 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     $scope.cancel = function () {
         $state.go('accounts');
     }
+    $scope.changeProfilePic = function () {
+        var modalInstance = $uibModal.open({
+            animation: false,
+            templateUrl: 'pop-up-modal.html',
+            controller: 'userProfilePicCtrl',
+            size: 'lg',
+            windowClass:'profilePopup',
+            resolve: {
+                modelType: function () {
+                    return { data: "", model: 'changeProfilePic' };
+                }
+            }
+        });
+        modalInstance.result.then(function (selectedItem) {
+            if (selectedItem.status) {
+                swal({
+                    type: 'success',
+                    title: 'Successfully Uploaded',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+                $state.go('myProfile', {}, { reload: true });
+
+            } else {
+                swal({
+                    type: 'error',
+                    title: 'Error While Uploading',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        }, function () {
+        });
+    }
+}]);
+app.controller('userProfilePicCtrl', ['$scope', '$uibModalInstance', 'AccountServices', '$cookies', '$rootScope', '$state', 'modelType', 'Upload', '$sce', function ($scope, $uibModalInstance, AccountServices, $cookies, $rootScope, $state, modelType, Upload, $sce) {
+
+
+    $scope.myImage = '';
+    $scope.myCroppedImage = '';
+
+
+
+    $scope.closeModal = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+    $scope.uploadFile = function (file) {
+        if (file) {
+            var imageReader = new FileReader();
+            imageReader.onload = function (image) {
+                $scope.$apply(function ($scope) {
+                    $scope.myImage = image.target.result;
+
+                    console.log($scope.myImage)
+                });
+            };
+            imageReader.readAsDataURL(file);
+        }
+    };
+    $scope.template = 'views/partials/userProfile/userProfilePicModal.html';
+
+
+    $scope.submitProfilePicture = function (img) {
+        AccountServices.uploadUserProfilePic({ image: img }, function (success) {
+            if (success.data.status) {
+                $cookies.put('profilePic', success.data.profilePic);
+                $rootScope.profilePic=success.data.profilePic;
+                $uibModalInstance.close({ status: true, message: success.data.message });
+            } else {
+                swal(success.data.message, 'Error', 'warning');
+            }
+        }, function (err) {
+        });
+    };
+
+
+
 }]);
 

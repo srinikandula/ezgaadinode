@@ -2,13 +2,16 @@
 .pall-zero {
     padding: 0 !important;
 }
-.tl{
-    text-align:left !important;
+
+.tl {
+    text-align: left !important;
     padding-left: 15px !important;
 }
-.mar-rgt-space{
+
+.mar-rgt-space {
     margin: 0 !important;
 }
+
 .mb-10 {
     margin-bottom: 10px;
 }
@@ -32,6 +35,7 @@
 .mt-20 {
     margin-top: 20px;
 }
+
 .mt-25 {
     margin-top: 20px;
 }
@@ -206,6 +210,7 @@ body {
     bottom: 15%;
     border-radius: 5px;
 }
+
 .forgot-password {
     max-width: 480px;
     padding: 30px;
@@ -881,6 +886,7 @@ body {
     overflow-y: scroll;
     top: 44px;
 }
+
 /*.dropdown-menu-form{
     padding: 10px !important;
 }
@@ -1109,7 +1115,8 @@ body {
 .radio label input[type="radio"] {
     display: none;
 }
-.checkboxInput{
+
+.checkboxInput {
     display: block !important;
 }
 
@@ -1192,6 +1199,7 @@ select {
     position: absolute;
     right: 0;
     top: 0;
+    cursor: pointer;
 }
 
 .erp-gps {
@@ -1255,7 +1263,7 @@ select {
 .lisk-block ul li {
     display: inline-block;
     width: 11%;
-    /* margin: 0 0% 0 0; */
+    margin: 0 0% 0 0;
     float: left;
 }
 
@@ -1888,7 +1896,7 @@ select {
 
 }
 
-.loader{
+.loader {
     padding: 10px;
     border-radius: 4px;
     height: 100%;
@@ -1901,9 +1909,79 @@ select {
     display: block;
 
 }
-.loader img{
+
+.loader img {
     position: relative;
-    top:42%;
+    top: 42%;
     left: 42%;
 }
 
+/* Profile Image*/
+.profilePopup {
+    display: block !important;
+    float: none;
+    margin: 0 auto;
+    width: 55%;
+}
+
+.btn-file input[type=file] {
+    position: absolute;
+    top: 0;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: white;
+    cursor: inherit;
+    display: block;
+}
+
+.btn-image {
+    background-color: #00acdb;
+    color: #fff !important;
+    height: 35px;
+    line-height: 22px;
+    margin: 0;
+}
+
+.img-upload {
+    display: block;
+    float: none;
+    margin: 0 auto;
+}
+
+.img-upload .go {
+    width: 100% !important;
+    line-height: 25px;
+}
+
+.btn .img-btn {
+    width: 100%;
+    background-color: #00acdb;
+    color: #fff !important;
+    margin: 12px 0;
+}
+
+.img-crop {
+    width: 100%;
+    height: 100%;
+    display: block;
+    position: relative;
+    overflow: hidden;
+}
+
+.cropArea {
+    background: #E4E4E4;
+    overflow: hidden;
+    height: 300px;
+}
+
+.cropped-image {
+    height: auto;
+    width: 70%;
+    padding: 30px;
+}
+
+.profile-pic {
+    border-radius: 50%;
+}

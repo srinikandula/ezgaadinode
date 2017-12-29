@@ -34,6 +34,7 @@ var accountSchema = new mongoose.Schema({
     contactName: String,
     location: String,
     truckId: [],
+    profilePic: String,
     updatedBy: String,
     createdBy: String,
     isActive: {type: Boolean, default:true},

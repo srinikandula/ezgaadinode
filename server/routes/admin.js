@@ -80,6 +80,12 @@ AuthRouter.put('/updateAccountGroup', function (req, res) {
     });
 });
 
+AuthRouter.post('/uploadUserProfilePic', function (req, res) {
+    Accounts.uploadUserProfilePic(req.jwt.accountId, req.body, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

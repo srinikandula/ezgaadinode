@@ -66,7 +66,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
     $scope.canEditAccounts = function () {
         return $cookies.get('editAccounts') == "true";
     };
-    $scope.templates = ['/views/templates/dashboard.html']
+ /*   $scope.templates = ['/views/templates/dashboard.html']*/
 
     $scope.erpReports = function () {
         $scope.template = $scope.templates[0];

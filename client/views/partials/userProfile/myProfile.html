@@ -1,113 +1,134 @@
-<div class="col-xs-12" ng-controller="LeftNavCtrl">
+<div class="col-xs-12">
     <div class="col-xs-12">
         <div class="col-xs-12 profile-page">
-            <div class="col-xs-11 profile-tabs top-block">
-                <ul class="list-inline">
-                    <li><a href="#" class="activeProfileTab" ui-sref="myProfile">My Profile</a></li>
-                    <li><a href="#" ui-sref="myGroup">My Group</a></li>
-                    <li><a href="#" ui-sref="addGroup">Add Group</a></li>
-                </ul>
+            <div class="col-xs-11 profile-tabs">
+                <div class="top-block">
+                    <ul class="list-inline">
+                        <li><a href="#" class="activeProfileTab" ui-sref="myProfile">My Profile</a></li>
+                        <li><a href="#" ui-sref="myGroup">My Group</a></li>
+                        <li><a href="#" ui-sref="addGroup">Add Group</a></li>
+                    </ul>
+                </div>
 
                 <div class="user-form col-xs-12 mt-30" ng-controller="AddEditAccountCtrl" ng-init="userProfilee()">
                     <div class="col-sm-2 col-xs-12 user-pic pos-relative">
                         <figure>
-                            <img src="images/user.png" height="140" width="150">
+                            <img src="images/profile-pics/{{profilePic}}" height="140" width="150" class="profile-pic">
                         </figure>
-                        <span class="edit-profile"><img src="images/Edit_Profile.png"> </span>
+                        <span class="edit-profile" ng-click="changeProfilePic()"><img
+                                src="images/Edit_Profile.png"> </span>
                     </div>
 
                     <div class="profile-right col-sm-10">
                         <div class="col-sm-6">
                             <div class="form-group form-group-custom">
                                 <div class="col-xs-12 styling-input-list">
-                                    <input type="text" name="userName" id="userName" readonly ng-model="account.profile.userName"  class="form-control custom-form-control"/>
-                                    <label class="focus-effect-for-input" aria-hidden="true">User Name</label>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-
-                            <div class="form-group form-group-custom">
-                                <div class="col-xs-12 styling-input-list">
-                                    <input type="text" name="mobile" id="mobile" ng-model="account.profile.contactPhone" class="form-control custom-form-control"/>
-                                    <label class="focus-effect-for-input" aria-hidden="true">Mobile</label>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="form-group form-group-custom">
-                                <div class="col-xs-12 styling-input-list">
-                                    <input type="text" name="email" id="email" ng-model="account.profile.email"
+                                    <input type="text" name="userName" id="userName" readonly
+                                           ng-model="account.profile.userName"
                                            class="form-control custom-form-control"/>
-                                    <label class="focus-effect-for-input" aria-hidden="true">Email</label>
+                                    <label class="focus-effect-for-input" aria-hidden="true">User Name</label>
+                                    <div class="clearfix"></div>
                                 </div>
-                                <div class="clearfix"></div>
+
+                                <div class="form-group form-group-custom">
+                                    <div class="col-xs-12 styling-input-list">
+                                        <input type="text" name="mobile" id="mobile"
+                                               ng-model="account.profile.contactPhone"
+                                               class="form-control custom-form-control"/>
+                                        <label class="focus-effect-for-input" aria-hidden="true">Mobile</label>
+                                        <div class="clearfix"></div>
+                                    </div>
+                                </div>
+                                <div class="form-group form-group-custom">
+                                    <div class="col-xs-12 styling-input-list">
+                                        <input type="text" name="email" id="email" placeholder="Email"
+                                               ng-model="account.profile.email"
+                                               class="form-control custom-form-control"/>
+                                        <label class="focus-effect-for-input" aria-hidden="true">Email</label>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="form-group form-group-custom">
                                 <div class="col-xs-12 styling-input-list">
-                                    <input type="text" name="totalGroups" id="totalGroups" readonly ng-model="account.accountGroupsCount" class="form-control custom-form-control"/>
+                                    <input type="text" name="totalGroups" id="totalGroups" readonly
+                                           ng-model="account.accountGroupsCount"
+                                           class="form-control custom-form-control"/>
                                     <label class="focus-effect-for-input" aria-hidden="true">Total Groups</label>
+                                    <div class="clearfix"></div>
                                 </div>
-                                <div class="clearfix"></div>
                             </div>
                             <div class="form-group form-group-custom">
                                 <div class="col-xs-12 styling-input-list">
-                                    <input type="text" name="totalVehicles" id="totalVehicles" readonly ng-model="account.accountTrucksCount" class="form-control custom-form-control"/>
-                                    <label class="focus-effect-for-input" aria-hidden="true">Total Vehicles</label>
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
-                        <div class="col-xs-12 reset-pass">
-                            <h3>Reset Password</h3>
-                            <div class="col-xs-12 col-sm-6 pall-zero">
-                                <div class="form-group form-group-custom">
-                                    <div class="col-xs-12 styling-input-list">
-                                        <input type="password" name="password" id="oldpassword" ng-model="account.oldPassword" class="form-control custom-form-control"/>
-                                        <label class="focus-effect-for-input" aria-hidden="true">Old Password</label>
-                                    </div>
+                                    <input type="text" name="totalVehicles" id="totalVehicles" readonly
+                                           ng-model="account.accountTrucksCount"
+                                           class="form-control custom-form-control"/>
+                                    <label class="focus-effect-for-input" aria-hidden="true">Total
+                                        Vehicles</label>
                                     <div class="clearfix"></div>
                                 </div>
                             </div>
-                            <div class="col-xs-12 pall-zero">
+                            <div class="clearfix"></div>
+                            <div class="col-xs-12 reset-pass">
+                                <h3>Reset Password</h3>
                                 <div class="col-xs-12 col-sm-6 pall-zero">
                                     <div class="form-group form-group-custom">
                                         <div class="col-xs-12 styling-input-list">
-                                            <input type="password" name="retypePassword" id="Password" ng-model="account.newPassword" class="form-control custom-form-control"/>
-                                            <label class="focus-effect-for-input" aria-hidden="true">New Password</label>
+                                            <input type="password" name="password" id="oldpassword"
+                                                   ng-model="account.oldPassword"
+                                                   class="form-control custom-form-control"/>
+                                            <label class="focus-effect-for-input" aria-hidden="true">Old
+                                                Password</label>
+                                            <div class="clearfix"></div>
                                         </div>
-                                        <div class="clearfix"></div>
+                                    </div>
+                                    <div class="col-xs-12 pall-zero">
+                                        <div class="col-xs-12 col-sm-6 pall-zero">
+                                            <div class="form-group form-group-custom">
+                                                <div class="col-xs-12 styling-input-list">
+                                                    <input type="password" name="retypePassword" id="Password"
+                                                           ng-model="account.newPassword"
+                                                           class="form-control custom-form-control"/>
+                                                    <label class="focus-effect-for-input" aria-hidden="true">New
+                                                        Password</label>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-6 pall-zero">
+                                                <div class="form-group form-group-custom">
+                                                    <div class="col-xs-12 styling-input-list">
+                                                        <input type="password" name="retypePassword"
+                                                               id="retypePassword"
+                                                               ng-model="account.confirmPassword"
+                                                               class="form-control custom-form-control"/>
+                                                        <label class="focus-effect-for-input"
+                                                               aria-hidden="true">Confirm Password</label>
+                                                        <div class="clearfix"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-4 col-xs-push-4">
+                                                <div class="alert alert-danger" role="alert"
+                                                     ng-show="account.errors.length">
+                                                    <ul>
+                                                        <li ng-repeat="error in account.errors">{{error}}</li>
+                                                    </ul>
+                                                    <div class="clearfix"></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-12 sign-in">
+                                                <button type="submit" class="sign-in-btn btn-primary btn"
+                                                        ng-click="addOrUpdateAccount()">Submit
+                                                </button>
+                                            </div>
+                                        </div>
+
+
                                     </div>
                                 </div>
-                                <div class="col-xs-12 col-sm-6 pall-zero">
-                                    <div class="form-group form-group-custom">
-                                        <div class="col-xs-12 styling-input-list">
-                                            <input type="password" name="retypePassword" id="retypePassword" ng-model="account.confirmPassword" class="form-control custom-form-control"/>
-                                            <label class="focus-effect-for-input" aria-hidden="true">Confirm Password</label>
-                                        </div>
-                                        <div class="clearfix"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-xs-4 col-xs-push-4">
-                                <div class="alert alert-danger" role="alert" ng-show="account.errors.length">
-                                    <ul>
-                                        <li ng-repeat="error in account.errors">{{error}}</li>
-                                    </ul>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 sign-in">
-                                <button type="submit" class="sign-in-btn btn-primary btn" ng-click="addOrUpdateAccount()">Submit</button>
                             </div>
                         </div>
-
-
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-

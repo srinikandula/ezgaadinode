@@ -1,5 +1,6 @@
 var async = require('async');
 var _ = require('underscore');
+var fs = require('fs');
 
 var Utils = require('./utils');
 var mongoose = require('mongoose');
@@ -339,6 +340,7 @@ Accounts.prototype.userProfile = function (jwt, callback) {
             callback(retObj);
         } else {
             retObj.status = true;
+            retObj.messages.push('User Profile Found');
             retObj.result = userProfileContent;
             callback(retObj);
         }
@@ -499,5 +501,47 @@ Accounts.prototype.updateAccountGroup = function (jwtObj, accountGroupInfo, call
         });
     }
 };
+
+Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
+    var retObj = {};
+    if (!accountId || !ObjectId.isValid(accountId)) {
+        retObj.status = false;
+        retObj.message = "Please try again later";
+        callback(retObj);
+    } else if (!body.image) {
+        retObj.status = false;
+        retObj.message = "Invalid Image";
+        callback(retObj);
+    } else {
+        var base64Data = body.image.replace(/^data:image\/png;base64,/, "");
+        fs.writeFile('./client/images/profile-pics/' + accountId + '.jpg', base64Data, 'base64', function (err) {
+            if (err) {
+                retObj.status = false;
+                retObj.message = "Please upload valid image";
+                callback(retObj);
+            } else {
+                AccountsColl.findOneAndUpdate({ _id: accountId }, {
+                    profilePic: accountId + '.jpg'
+                }, function (err, data) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.message = "Please try again";
+                        callback(retObj);
+                    } else if (data) {
+                        retObj.status = true;
+                        retObj.message = "Image uploaded successfully";
+                        retObj.profilePic = accountId + '.jpg'
+                        callback(retObj);
+                    } else {
+                        retObj.status = false;
+                        retObj.message = "Please try again latter";
+                        callback(retObj);
+                    }
+                })
+            }
+        });
+
+    }
+}
 
 module.exports = new Accounts();
