@@ -7,6 +7,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             '/views/templates/expiryTrucks.html','/views/templates/paybleByParty.html',
         '/views/templates/paybleByPartyId.html'];
 
+
         $scope.initializeparams = function (tableType) {
             var pageable = {};
             $scope.loading = true;
@@ -100,6 +101,17 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             $scope.activated = '2';
             $scope.initializeparams();
         }
+        $scope.paymentsPayble = function () {
+            $scope.template = $scope.templates[7];
+            $scope.activated = '4';
+            $scope.initializeparams();
+        }
+        $scope.gotoPaymentsPaybleByPartyID = function (id, name) {
+            $scope.partyName = name;
+            $scope.template = $scope.templates[8];
+            $scope.activated = '4';
+            $scope.initializeparams();
+        }
         $scope.paymentsReceivable = function () {
             $scope.template = $scope.templates[4];
             $scope.activated = '4';
@@ -121,6 +133,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     }
                 });
         }
+
         $scope.gotoPaymentBypartyId = function (id, name) {
             $scope.partyName = name;
             $scope.getAmountsBypartyId(id);
@@ -361,21 +374,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         };
 
-        $scope.getTotalAmountReceivable = function () {
-            PaymentsService.getTotalPaymentsReceivable(function (success) {
-                if (success.data.status) {
-                    $scope.amounts = success.data.amounts;
-                    //  console.log("-->", $scope.amounts);
-                } else {
-                    success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
-                    });
-                }
-            }, function (err) {
 
-            });
-        };
-        $scope.getTotalAmountReceivable();
 
         $scope.getAmountsByparty = function () {
             PaymentsService.getDuesByParty({

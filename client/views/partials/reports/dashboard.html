@@ -49,16 +49,16 @@
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
-                    <li class="payble" ng-click="paybleByParty()">
+                    <li class="payble" ng-click="paybleByParty()" ng-class="{'liactivated':activated==='4'}">
                         <span class="payable">Payable</span><br>
-                        <small ng-class="{'costactivated':activated==='4'}"><i class="fa fa-inr"></i>
+                        <small><i class="fa fa-inr"></i>
                             {{totals.paybleAmount || 0}}
                         </small>
                     </li>
-                    <li class="payble" ng-click="paymentsReceivable()">
+                    <li class="payble" ng-click="paymentsReceivable()" ng-class="{'liactivated':activated==='4'}">
                         <span class="receivable">Receivable</span> <br>
-                        <small ng-class="{'costactivated':activated==='4'}"><i class="fa fa-inr"></i>
-                            {{totals.pendingDue || 0}}
+                        <small ><i class="fa fa-inr"></i>
+                            {{!totals.pendingDue == true ? 0 :totals.pendingDue}}
                         </small>
                     </li>
 

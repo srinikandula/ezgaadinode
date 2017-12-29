@@ -92,13 +92,6 @@
                 </div>
                     <div class="form-group col-xs-12">
                         <div class="col-xs-12 styling-input-list">
-                        <input type="number" class="form-control custom-form-control" ng-model="expenseDetails.totalAmount"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Total Amount*</label>
-
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-12">
-                        <div class="col-xs-12 styling-input-list">
                             <input type="number" class="form-control custom-form-control" ng-model="expenseDetails.paidAmount"/>
                             <label class="focus-effect-for-input" aria-hidden="true">Paid Amount*</label>
 
@@ -107,7 +100,7 @@
                 </div>
 
 
-                <div class="form-group col-xs-12" ng-show="expenseDetails.mode == 'Cash'">
+                <div class="form-group col-xs-12">
                     <div class="col-xs-12 styling-input-list">
                         <input type="number" class="form-control custom-form-control" ng-model="expenseDetails.totalAmount"/>
                         <label class="focus-effect-for-input" aria-hidden="true">Total Amount*</label>

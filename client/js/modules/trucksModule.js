@@ -138,10 +138,20 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
 
     $scope.goToEditTruckPage = function (truckId) {
-        $state.go('trucksEdit', { truckId: truckId });
+        $state.go('trucksEdit', {truckId: truckId});
     };
 
+    $scope.getBackGroundColor = function (date) {
+        var expDate = new Date(date);
+        if (expDate < new Date()) {
+            return "expired";
+        } else if (new Date() > new Date(expDate.setDate(expDate.getDate() - 15))) {
+            return "expirewithin15days";
+        } else {
+            return "";
+        }
 
+    }
     $scope.count = 0;
     $scope.getCount = function () {
         TrucksService.count(function (success) {
@@ -149,7 +159,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 $scope.count = success.data.count;
                 $scope.init();
             } else {
-                Notification.error({ message: success.data.message });
+                Notification.error({message: success.data.message});
             }
         });
     };
@@ -203,6 +213,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                     $scope.getAllTrucks();
                 }
             });
+
     };
 
     $scope.deleteTruck = function (truckId) {
@@ -248,14 +259,15 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 createdAt: -1
             }
         }, {
-                counts: [],
-                total: $scope.count,
-                getData: function (params) {
-                    params.truckName=truckName;
-                    loadTableData(params);
-                }
-            });            
-    }
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.truckName = truckName;
+                loadTableData(params);
+            }
+        });
+    };
+
 
 }]);
 
@@ -286,7 +298,6 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
 
 
-
     function initializeTruck() {
         if ($stateParams.truckId) {
 
@@ -315,6 +326,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
             })
         }
     }
+
     function getAccountDrivers() {
         DriverService.getAllDrivers(function (success) {
             if (success.data.status) {
@@ -322,7 +334,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                 initializeTruck();
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
         }, function (err) {
@@ -366,7 +378,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {
                         $state.go('trucks');
-                        Notification.success({ message: "Truck Added Successfully" });
+                        Notification.success({message: "Truck Added Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -376,7 +388,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                 TrucksService.updateTruck(params, function (success) {
                     if (success.data.status) {
                         $state.go('trucks');
-                        Notification.success({ message: "Truck Updated Successfully" });
+                        Notification.success({message: "Truck Updated Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }

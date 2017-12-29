@@ -85,6 +85,7 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.message = "Please enter Total Expense Amount";
         callback(result);
     } else if (expenseDetails.mode === 'Credit' && _.isNaN(expenseDetails.paidAmount)) {
+
         result.status = false;
         result.message = "Invalid Paid Amount";
         callback(result);
@@ -110,6 +111,7 @@ function updateExpense(expense, jwt, callback) {
                 "partyId": expense.partyId,
                 "totalAmount": expense.totalAmount,
                 "paidAmount": expense.paidAmount,
+
                 "date": expense.date
             }
         },

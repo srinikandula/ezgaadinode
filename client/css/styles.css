@@ -722,7 +722,10 @@ body {
 .h3activated {
     color: #fff !important;
 }
-
+.liactivated{
+    background-color: #fff;
+    color: #000;
+}
 .costactivated {
     color: #fff !important;
 }
