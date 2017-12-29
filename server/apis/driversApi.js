@@ -85,11 +85,12 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
 };
 
 Drivers.prototype.getDrivers= function (jwt, params, callback) {
+    console.log('driverNamre',params.driverName);
     var retObj = {
         status: false,
         messages: []
     };
-
+    var condition={};
     if (!params.page) {
         params.page = 1;
     }
@@ -101,10 +102,15 @@ Drivers.prototype.getDrivers= function (jwt, params, callback) {
          var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
 
          if (jwt.type = "account") {
+            if(!params.driverName){
+                condition={ accountId: jwt.accountId }
+            }else{
+                condition={ accountId: jwt.accountId,fullName: { $regex: '.*' + params.driverName + '.*' } }
+            }
             async.parallel({
                 drivers: function (driversCallback) {
                     DriversColl
-                        .find({"accountId": jwt.accountId})
+                        .find(condition)
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)
@@ -141,10 +147,15 @@ Drivers.prototype.getDrivers= function (jwt, params, callback) {
         }
         else {
             var skipNumber = (params.page - 1) * params.size;
+            if(!params.driverName){
+                condition={"accountId": jwt.accountId, "groupId": jwt.id}
+            }else{
+                condition={"accountId": jwt.accountId, "groupId": jwt.id,fullName: { $regex: '.*' + params.driverName + '.*' }}
+            }
             async.parallel({
                 drivers: function (driversCallback) {
                     DriversColl
-                        .find({"accountId": jwt.accountId, "groupId": jwt.id})
+                        .find(condition)
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)

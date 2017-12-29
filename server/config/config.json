@@ -8,7 +8,7 @@
   "mongo": {
     "url": "mongodb://localhost/easygaadi"
   },
-  "port": 2100,
+  "port": 3000,
   "mysql": {
     "connectionLimit": 100,
     "host": "localhost",

@@ -114,6 +114,54 @@ describe('TruckTest', () => {
                         });
                 });
         });
+         /*
+        * Test the /GET route Retrieving Truck Information with Truck Name Information Success
+        */
+        it('Retrieving Truck Information with Truck Name Information Success', (done) => {
+            var truckName="AP36AA9876"
+           chai.request(server)
+           .get('/v1/trucks/groupTrucks?truckName='+truckName)
+           .set(headerData)
+           .end((err, res) => {
+               res.should.have.status(200);
+               res.body.should.be.a('object');
+               res.body.should.have.property('messages').eql(['Success']);
+               expect(res.body.trucks).to.be.a('array');
+               expect(res.body.trucks).to.be.length(1);
+               res.body.trucks[0].should.have.property('registrationNo').eql('AP36AA9876');
+               res.body.trucks[0].should.have.property('truckType').eql('20 Tyre');
+               res.body.trucks[0].should.have.property('fitnessExpiry').eql(fitnessExpiry);
+               res.body.trucks[0].should.have.property('permitExpiry').eql(permitExpiry);
+               res.body.trucks[0].should.have.property('insuranceExpiry').eql(insuranceExpiry);
+               res.body.trucks[0].should.have.property('pollutionExpiry').eql(pollutionExpiry);
+               res.body.trucks[0].should.have.property('taxDueDate').eql(taxDueDate);
+               done();
+           });
+       });
+        /*
+        * Test the /GET route Retrieving Truck Information with Truck Name Information Failure
+        */
+        it('Retrieving Truck Information with Truck Name Information Failure', (done) => {
+            var truckName="AP36AA9876"
+           chai.request(server)
+           .get('/v1/trucks/groupTrucks?truckName='+truckName)
+           .set(headerData)
+           .end((err, res) => {
+               res.should.have.status(200);
+               res.body.should.be.a('object');
+               res.body.should.have.property('messages').eql(['Success']);
+               expect(res.body.trucks).to.be.a('array');
+               expect(res.body.trucks).to.be.length(1);
+               res.body.trucks[0].should.have.property('registrationNo').eql('AP36AA9876');
+               res.body.trucks[0].should.have.property('truckType').eql('20 Tyre');
+               res.body.trucks[0].should.have.property('fitnessExpiry').eql(fitnessExpiry);
+               res.body.trucks[0].should.have.property('permitExpiry').eql(permitExpiry);
+               res.body.trucks[0].should.have.property('insuranceExpiry').eql(insuranceExpiry);
+               res.body.trucks[0].should.have.property('pollutionExpiry').eql(pollutionExpiry);
+               res.body.trucks[0].should.have.property('taxDueDate').eql(taxDueDate);
+               done();
+           });
+       });
         /*
         * Test the /PUT route Updating Truck Information Success
         */
@@ -158,5 +206,6 @@ describe('TruckTest', () => {
                     done();
                 });
         });
+        
     });
 });

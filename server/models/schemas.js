@@ -212,6 +212,40 @@ var notificationsSchema=mongoose.Schema({
     message:String
 },{timestamps: String})
 
+var erpSettingsSchema=mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    revenue:{
+        filterType:{type:String,default:"month"},
+        fromDate:{type:Date},
+        toDate:{type:Date}
+    },
+    payment:{
+        filterType:{type:String,default:"month"},
+        fromDate:{type:Date},
+        toDate:{type:Date}
+    },
+    expense:{
+        filterType:{type:String,default:"month"},
+        fromDate:{type:Date},
+        toDate:{type:Date}
+    },
+    expiry:{
+        filterType:{type:String,default:"month"},
+        fromDate:{type:Date},
+        toDate:{type:Date}
+    },
+    tollCard:{
+        filterType:{type:String,default:"month"},
+        fromDate:{type:Date},
+        toDate:{type:Date}
+    },
+    fuelCard:{
+        filterType:{type:String,default:"month"},
+        fromDate:{type:Date},
+        toDate:{type:Date}
+    }
+},{timestamps: String})
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -225,5 +259,6 @@ module.exports = {
     paymentsReceivedColl: mongoose.model('payments', payments, 'payments'),
     GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
     OtpColl:mongoose.model('otps',otpSchema,'otps'),
-    NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications')
+    NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications'),
+    ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings')
 };

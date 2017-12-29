@@ -72,10 +72,11 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        findExpiryTrucks: function (success, error) {
+        findExpiryTrucks: function (params,success, error) {
             $http({
                 url: '/v1/trucks/findExpiryTrucks',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         fitnessExpiryTrucks: function (success, error) {
@@ -113,6 +114,22 @@ app.factory('TrucksService', function ($http, $cookies) {
                 url: '/v1/trucks/total/count',
                 method: "GET"
             }).then(success, error)
+        },
+        searchByTruckName:function(truckName,success,error){
+            $http({
+                url:'/v1/trucks/searchByTruckName',
+                method:"GET",
+                params:{
+                    truckName:truckName
+                }
+            }).then(success,error);
+        },
+        shareExpiredDetailsViaEmail:function(params,success,error){
+            $http({
+                url:'/v1/trucks/shareExpiredDetailsViaEmail',
+                method:"GET",
+                params:params
+            }).then(success,error);
         }
     }
 });
@@ -140,7 +157,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
     var loadTableData = function (tableParams) {
 
-        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting() };
+        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),truckName:tableParams.truckName};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
@@ -157,6 +174,20 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             }
         });
     };
+    $scope.getAllTrucks = function () {
+        TrucksService.getAllTrucks(null, function (success) {
+            if (success.data.status) {
+                $scope.trucksList = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (error) {
+
+        })
+    }
+
     $scope.init = function () {
         $scope.truckParams = new NgTableParams({
             page: 1, // show first page
@@ -169,6 +200,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 total: $scope.count,
                 getData: function (params) {
                     loadTableData(params);
+                    $scope.getAllTrucks();
                 }
             });
     };
@@ -208,17 +240,21 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             }
         })
     }
-    $scope.searchByTruckName = function () {
-
-        if ($scope.truckName) {
-            TrucksService.searchByTruckName($scope.truckName,function(success){
-     
-            },function(error){
-
-            });
-        } else {
-
-        }
+    $scope.searchByTruckName = function (truckName) {
+        $scope.truckParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    params.truckName=truckName;
+                    loadTableData(params);
+                }
+            });            
     }
 
 }]);

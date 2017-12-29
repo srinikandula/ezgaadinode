@@ -3,24 +3,24 @@
             <div class="col-xs-12 pall-zero mb-10">
                 <div class="col-sm-3 pall-zero"><h3>Payments</h3></div>
                 <div class="col-xs-8 col-xs-push-1 pall-zero">
-                <div class="col-sm-8">
-                    <div class="input-group stylish-input-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                        <span class="input-group-addon">
-                        <button type="submit">
-                               <i class="fa fa-search sear" aria-hidden="true"></i>
-                        </button>
-                    </span>
+                    <div class="col-sm-8">
+                        <div class="input-group stylish-input-group">
+                            <input type="text"  ng-model="partyName1"class="form-control" placeholder="Search">
+                            <span class="input-group-addon">
+                                    <button type="button" ng-click="searchByPartyName(partyName1);">
+                                          <i class="fa fa-search sear" aria-hidden="true"></i>
+                                    </button>
+                                </span>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-4 pall-zero pos-relative">
-                    <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                    <select class="form-control">
-                        <option value="" selected>Party Name</option>
-                        <option ng-repeat="payments in currentPageOfPayments">{{payments.attrs.partyName}}</option>
-                    </select>
-                </div>
-                </div>
+                    <div class="col-sm-4 pall-zero pos-relative">
+                        <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                        <select class="form-control" ng-model="partyName" ng-change="searchByPartyName(partyName);">
+                            <option value="" selected>All Parties</option>
+                            <option ng-repeat="parties in partiesList">{{parties.name}}</option>
+                        </select>
+                    </div>
+                    </div>
             </div>
             <!--<div class="toolbar-button-div pull-right mb-10">-->
                 <!--<button class="btn  btn-blue pull-right" ng-click="goToEditPaymentsPage()">Add Payments</button>-->

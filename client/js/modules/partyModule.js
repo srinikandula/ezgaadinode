@@ -74,7 +74,7 @@ app.factory('PartyService', function ($http, $cookies) {
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditPartyPage = function (partyId) {
-        $state.go('editParty', {partyId: partyId});
+        $state.go('editParty', { partyId: partyId });
     };
 
     $scope.count = 0;
@@ -84,14 +84,14 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 $scope.count = success.data.count;
                 $scope.init();
             } else {
-                Notification.error({message: success.data.message});
+                Notification.error({ message: success.data.message });
             }
         });
     };
 
 
     var loadTableData = function (tableParams) {
-        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(), partyName: tableParams.partyName };
         $scope.loading = true;
         PartyService.getParties(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -104,7 +104,19 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             }
         });
     };
+    $scope.getAllParties = function () {
+        PartyService.getParties(null, function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (err) {
 
+        });
+    }
     $scope.init = function () {
         $scope.partyParams = new NgTableParams({
             page: 1, // show first page
@@ -113,12 +125,13 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 createdAt: -1
             }
         }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
-                loadTableData(params);
-            }
-        });
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    loadTableData(params);
+                    $scope.getAllParties();
+                }
+            });
     };
     $scope.getCount();
 
@@ -154,9 +167,26 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
 
                 });
             }
-            ;
         });
+       
+    };
+    $scope.searchByPartyName = function (partyName) {
+        $scope.partyParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    params.partyName = partyName;
+                    loadTableData(params);
+                }
+            });
     }
+    
 }]);
 
 app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootScope', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $rootScope, $stateParams, Notification, $state) {
@@ -262,7 +292,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('parties');
-                        Notification.success({message: "Party Updated Successfully"});
+                        Notification.success({ message: "Party Updated Successfully" });
                     } else {
                         params.error = success.data.message;
                     }
@@ -274,7 +304,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('parties');
-                        Notification.success({message: "Party Added Successfully"});
+                        Notification.success({ message: "Party Added Successfully" });
                     } else {
                         params.error = success.data.message;
                     }

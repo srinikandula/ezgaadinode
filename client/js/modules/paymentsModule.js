@@ -74,28 +74,28 @@ app.factory('PaymentsService', function ($http) {
     }
 });
 
-app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService) {
+app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService) {
     $scope.goToEditPaymentsPage = function (paymentsId) {
-        $state.go('paymentsEdit', {paymentsId: paymentsId});
+        $state.go('paymentsEdit', { paymentsId: paymentsId });
     };
     $scope.count = 0;
     $scope.getCount = function () {
-    PaymentsService.count(function (success) {
-        if (success.data.status) {
-            $scope.count = success.data.count;
-            $scope.init();
+        PaymentsService.count(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.init();
 
-        } else {
-            Notification.error({message: success.data.message});
-        }
-    });
+            } else {
+                Notification.error({ message: success.data.message });
+            }
+        });
     };
     $scope.getCount();
 
     var pageable;
 
     var loadTableData = function (tableParams) {
-        pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+        pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(), partyName: tableParams.partyName };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         PaymentsService.getPayments(pageable, function (response) {
@@ -110,7 +110,19 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             }
         });
     };
+    $scope.getAllParties = function () {
+        PartyService.getParties(null, function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (err) {
 
+        });
+    }
 
     $scope.init = function () {
         $scope.paymentParams = new NgTableParams({
@@ -120,12 +132,13 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
                 createdAt: -1
             }
         }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
-                loadTableData(params);
-            }
-        });
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    loadTableData(params);
+                    $scope.getAllParties();
+                }
+            });
     };
 
     $scope.deletePaymentsRecord = function (id) {
@@ -140,29 +153,50 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
         }).then((result) => {
             if (result.value) {
                 PaymentsService.deletePaymentsRecord(id, function (success) {
-                        if (success.data.status) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            'Party deleted successfully.',
+                            'success'
+                        );
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
                             swal(
                                 'Deleted!',
-                                'Party deleted successfully.',
-                                'success'
+                                message,
+                                'error'
                             );
-                            $scope.getCount();
-                        } else {
-                            success.data.messages.forEach(function (message) {
-                                swal(
-                                    'Deleted!',
-                                    message,
-                                    'error'
-                                );
-                            });
-                        }
+                        });
+                    }
 
                     ;
                 });
 
-            }
+            };
         });
+    };
+
+    $scope.searchByPartyName = function (partyName) {
+        $scope.paymentParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    params.partyName = partyName;
+                    loadTableData(params);
+                }
+            });
     }
+
+
+
+        
 }]);
 
 app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$stateParams', '$state', 'Notification', 'TripServices', 'TrucksService', 'PartyService', function ($scope, PaymentsService, $stateParams, $state, Notification, TripServices, TrucksService, PartyService) {
@@ -191,55 +225,6 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         $state.go('payments');
     };
 
-    /*function getTripIds() {
-        TripServices.getAllAccountTrips(function (success) {
-            if (success.data.status) {
-                $scope.trips = success.data.trips;
-                var selectedTrip = _.find( $scope.trips, function (trip) {
-                    return trip._id.toString() === $scope.paymentsDetails.tripId;
-                });
-                if(selectedTrip){
-                    $scope.tripName = selectedTrip.tripId;
-                }
-            } else {
-                Notification.error(success.data.message);
-            }
-        }, function (error) {
-
-        });
-    }
-
-    getTripIds();
-
-
-    $scope.selectTripId = function (trip) {
-        $scope.paymentsDetails.tripId = trip._id;
-    }*/
-
-
-    /*function getTruckIds() {
-        TrucksService.getAllAccountTrucks(function (success) {
-            if (success.data.status) {
-                $scope.trucks = success.data.trucks;
-                var selectedTruck = _.find( $scope.trucks, function (truck) {
-                    return truck._id.toString() === $scope.paymentsDetails.truckId;
-                });
-                if(selectedTruck){
-                    $scope.truckRegNo = selectedTruck.registrationNo;
-                }
-            } else {
-                Notification.error(success.data.message);
-            }
-        }, function (error) {
-
-        });
-    }
-
-    getTruckIds();
-
-    $scope.selectTruckId = function (truck) {
-        $scope.paymentsDetails.truckId = truck._id;
-    }*/
 
     function getPartyIds() {
         PartyService.getAccountParties(function (success) {
@@ -309,7 +294,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                 PaymentsService.updateRecord(params, function (success) {
                     if (success.data.status) {
                         // params.success = success.data.message[0];
-                        Notification.success({message: success.data.messages[0]});
+                        Notification.success({ message: success.data.messages[0] });
                         $state.go('payments');
                     } else {
                         params.error = success.data.message;
@@ -321,12 +306,10 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                 });
             } else {
                 PaymentsService.addPayments(params, function (success) {
-                    //console.log(params);
-                    //console.log(success);
-                    //console.log(success.data.status);
+
                     if (success.data.status) {
                         params.success = success.data.message;
-                        Notification.success({message: success.data.messages[0]});
+                        Notification.success({ message: success.data.messages[0] });
                         $state.go('payments');
                     } else {
                         params.error = success.data.message;

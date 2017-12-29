@@ -6,38 +6,90 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             '/views/templates/amountByParties.html', '/views/templates/amountByPartyId.html',
             '/views/templates/expiryTrucks.html'];
 
-        $scope.initializeparams = function () {
+        $scope.initializeparams = function (tableType) {
+            var pageable = {};
+            $scope.loading = true;
             $scope.filters = {
                 fromDate: "",
                 toDate: "",
                 regNumber: "",
-                error: []
+                error: [],
+
             }
             $scope.partyId = "";
             $scope.regNumber = "";
-
         }
-
         $scope.template = $scope.templates[0];
         $scope.activated = '0';
         $scope.initializeparams();
+        $scope.revenueParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    $scope.filters.page = params.page();
+                    $scope.filters.size = params.count();
+                    $scope.filters.sort = params.sorting();
+                    $scope.getRevenueByVehicle();
+                }
+            });
+
+
 
         $scope.vehicleRevenue = function () {
-            $scope.initializeparams();
             $scope.template = $scope.templates[0];
             $scope.activated = '0';
+            $scope.initializeparams();
+            $scope.revenueParams = new NgTableParams({
+                page: 1, // show first page
+                size: 10,
+                sorting: {
+                    createdAt: -1
+                }
+            }, {
+                    counts: [],
+                    total: $scope.count,
+                    getData: function (params) {
+                        $scope.filters.page = params.page();
+                        $scope.filters.size = params.count();
+                        $scope.filters.sort = params.sorting();
+                        $scope.getRevenueByVehicle();
+                    }
+                });
+
         }
 
         $scope.gotorevenueByVehicleId = function (id, vehilceId) {
             $scope.vehicleNumber = vehilceId;
             $scope.getRevenueByParty(id);
             $scope.template = $scope.templates[1];
-            $scope.initializeparams();
+             $scope.initializeparams();
         };
         $scope.vehicleExpenses = function () {
             $scope.template = $scope.templates[2];
             $scope.activated = '2';
             $scope.initializeparams();
+            $scope.expenseParams = new NgTableParams({
+                page: 1, // show first page
+                size: 10,
+                sorting: {
+                    createdAt: -1
+                }
+            }, {
+                    counts: [],
+                    total: $scope.count,
+                    getData: function (params) {
+                        $scope.filters.page = params.page();
+                        $scope.filters.size = params.count();
+                        $scope.filters.sort = params.sorting();
+                        $scope.getExpenseByVehicle();
+                    }
+                });
         }
 
         $scope.gotoExpenseByVehicleId = function (id, vehicleId) {
@@ -63,7 +115,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             $scope.template = $scope.templates[6];
             $scope.getTruckExpires();
             $scope.activated = '6';
-            $scope.initializeparams();
+            //$scope.initializeparams();
+            $scope.initializeparams('expiry');
         }
 
         $scope.erpDashBoard = function () {
@@ -73,7 +126,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -82,14 +135,13 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         };
         $scope.erpDashBoard();
 
-
         $scope.getTruckExpires = function () {
-            TrucksService.findExpiryTrucks(function (success) {
+            TrucksService.findExpiryTrucks({ regNumber: $scope.regNumber }, function (success) {
                 if (success.data.status) {
                     $scope.expiryTrucks = success.data.expiryTrucks;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -105,7 +157,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.totalRevenueByVehicleId = success.data.totalRevenue;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -116,7 +168,10 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             TripServices.findRevenueByVehicle({
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
-                regNumber: $scope.regNumber
+                regNumber: $scope.regNumber,
+                page: $scope.filters.page,
+                sort: $scope.filters.sort,
+                size: $scope.filters.size
             }, function (success) {
                 if (success.data.status) {
                     $scope.revenueByVehicle = success.data.revenue;
@@ -125,7 +180,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -139,7 +194,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.trucksList = success.data.trucks;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (error) {
@@ -188,7 +243,10 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             ExpenseService.findExpensesbyGroupVehicle({
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
-                regNumber: $scope.regNumber
+                regNumber: $scope.regNumber,
+                page: $scope.filters.page,
+                sort: $scope.filters.sort,
+                size: $scope.filters.size
             }, function (success) {
                 if (success.data.status) {
                     $scope.totalExpensesbyVehicle = success.data.expenses;
@@ -196,7 +254,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -211,7 +269,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     //  console.log("-->", $scope.amounts);
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -231,7 +289,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -252,7 +310,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         }
 
-        $scope.getExpenseByVehicle = function () {
+      /*   $scope.getExpenseByVehicle = function () {
             ExpenseService.findExpensesbyGroupVehicle({
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
@@ -264,13 +322,13 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
 
             });
-        };
+        }; */
 
 
         $scope.getTotalAmountReceivable = function () {
@@ -279,7 +337,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.amounts = success.data.amounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -299,7 +357,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -313,7 +371,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 if (success.data.status) {
                     $scope.partiesList = success.data.parties;
                 } else {
-
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
                 }
             }, function (err) {
 
@@ -345,7 +405,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.totalExpenses = success.data.totalExpenses;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -365,7 +425,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -393,7 +453,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.amountPaid = success.data.totalPendingPayments;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({ message: message });
                     });
                 }
             }, function (err) {
@@ -510,7 +570,40 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             })
         }
-
+        $scope.shareExpairedDetailsViaEmail = function () {
+            swal({
+                title: 'Share expairy data',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                    return new Promise((resolve) => {
+                        TrucksService.shareExpiredDetailsViaEmail({
+                            regNumber: $scope.regNumber,
+                            email: email
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
+                                success.data.messages.forEach(function (message) {
+                                    swal.showValidationError(message);
+                                });
+                            }
+                        }, function (error) {
+                        })
+                    })
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.value) {
+                    swal({
+                        type: 'success',
+                        html: 'Expairy details sent successfully'
+                    })
+                }
+            })
+        }
         $scope.downloadRevenueDetailsByVechicle = function () {
             window.open('/v1/trips/downloadRevenueDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber);
         }
@@ -519,6 +612,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         }
         $scope.downloadPaymentDetailsByParty = function () {
             window.open('/v1/payments/downloadPaymentDetailsByParty?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&partyId=' + $scope.partyId);
+        }
+        $scope.downloadExpairyDetailsByTruck = function () {
+            window.open('/v1/trucks/downloadExpiryDetailsByTruck?regNumber=' + $scope.regNumber);
         }
     }]);
 
