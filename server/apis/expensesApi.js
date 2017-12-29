@@ -400,7 +400,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
                 }, "vehicleNumber": params.regNumber
             }
         }
-        getExpensesByVehicles(jwt, condition, function (response) {
+        getExpensesByVehicles(jwt, condition,params, function (response) {
             callback(response);
         })
     } else if (params.fromDate && params.toDate) {
@@ -412,12 +412,12 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
                 }
             }
         }
-        getExpensesByVehicles(jwt, condition, function (response) {
+        getExpensesByVehicles(jwt, condition,params, function (response) {
             callback(response);
         })
     } else if (params.regNumber) {
         condition = { $match: { "accountId": ObjectId(jwt.accountId), "vehicleNumber": params.regNumber } }
-        getExpensesByVehicles(jwt, condition, function (response) {
+        getExpensesByVehicles(jwt, condition,params, function (response) {
             callback(response);
         })
     } else {
@@ -429,7 +429,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
             } else if (erpSettings) {
 
                 condition = { $match: Utils.getErpSettings(erpSettings.expense, erpSettings.accountId) }
-                getExpensesByVehicles(jwt, condition, function (response) {
+                getExpensesByVehicles(jwt, condition,params, function (response) {
                     callback(response);
                 })
             } else {
@@ -531,12 +531,18 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
     });
 };
 
-function getExpensesByVehicles(jwt, condition, callback) {
-    console.log('condition', condition);
+function getExpensesByVehicles(jwt, condition,params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
+    if (!params.page) {
+        params.page = 1;
+    }
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
+   
     async.parallel({
         expenses: function (expensesCallback) {
             expenseColl.aggregate(condition,
@@ -545,7 +551,11 @@ function getExpensesByVehicles(jwt, condition, callback) {
                         _id: { "vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType" },
                         totalExpenses: { $sum: "$cost" }
                     }
-                }, function (error, expensesResult) {
+                   
+                },
+                { "$sort": sort },
+                { "$skip" : skipNumber },
+                { "$limit":limit }, function (error, expensesResult) {
                     expensesCallback(error, expensesResult);
                 });
         },

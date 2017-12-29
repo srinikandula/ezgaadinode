@@ -845,11 +845,6 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
 
 Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
     var condition = {};
-    if (!params.page) {
-        params.page = 1;
-    }
-
-   
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {
             $match: {
@@ -859,7 +854,7 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
                 }, "registrationNo": params.regNumber
             }
         }
-        getRevenueByVehicle(jwt, condition, function (response) {
+        getRevenueByVehicle(jwt, condition, params, function (response) {
             callback(response);
         });
     } else if (params.fromDate && params.toDate) {
@@ -871,12 +866,12 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
                 }
             }
         }
-        getRevenueByVehicle(jwt, condition, function (response) {
+        getRevenueByVehicle(jwt, condition, params, function (response) {
             callback(response);
         });
     } else if (params.regNumber) {
         condition = { $match: { "accountId": ObjectId(jwt.accountId), "registrationNo": params.regNumber } }
-        getRevenueByVehicle(jwt, condition, function (response) {
+        getRevenueByVehicle(jwt, condition, params, function (response) {
             callback(response);
         });
     } else {
@@ -888,7 +883,7 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
             } else if (erpSettings) {
 
                 condition = { $match: Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId) }
-                getRevenueByVehicle(jwt, condition, function (response) {
+                getRevenueByVehicle(jwt, condition, params, function (response) {
                     callback(response);
                 });
             } else {
@@ -898,19 +893,27 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
             }
         });
     }
-   
+
 }
 
-function getRevenueByVehicle(jwt, condition, callback) {
+function getRevenueByVehicle(jwt, condition, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    
+    if (!params.page) {
+        params.page = 1;
+    }
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
                 { $group: { _id: "$registrationNo", totalFreight: { $sum: "$freightAmount" } } },
+                { "$sort": sort },
+                { "$skip" : skipNumber },
+                { "$limit":limit },
                 function (err, totalFreight) {
                     callback(err, totalFreight);
                 });
@@ -918,6 +921,9 @@ function getRevenueByVehicle(jwt, condition, callback) {
         expensesTotal: function (callback) {
             ExpenseCostColl.aggregate(condition,
                 { $group: { _id: "$vehicleNumber", totalExpenses: { $sum: "$cost" } } },
+                { "$sort": sort },
+                { "$skip" : skipNumber },
+                { "$limit":limit },
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
                 });
