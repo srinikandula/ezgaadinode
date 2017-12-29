@@ -1,34 +1,35 @@
-<div class="col-xs-12" ng-controller="AddEditAccountCtrl">
+<div class="col-xs-12" ng-controller="LeftNavCtrl">
     <div class="col-xs-12">
         <div class="col-xs-12 profile-page">
-            <div class="col-xs-11 profile-tabs top-block">
+            <div class="col-xs-11 profile-tabs">
+                <div class="top-block">
                 <ul class="list-inline">
                     <li><a href="#" ui-sref="myProfile">My Profile</a></li>
                     <li><a href="#" ui-sref="myGroup" class="activeProfileTab">My Group</a></li>
                     <li><a href="#" ui-sref="addGroup">Add Group</a></li>
                 </ul>
-
-                <div class="main-right col-xs-12">
-                    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="groupParams">
-                        <tr ng-repeat="groups in currentPageOfGroups" style="text-align: center;">
+                </div>
+                <div class="main-right col-xs-12" ng-controller="ShowAccountsCtrl">
+                    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="accountGroupParams">
+                        <tr ng-repeat="groups in currentPageOfAccountGroup" style="text-align: center;">
 
                             <td data-title="'User Name'" sortable="'userName'" class="clickable-item col-sm-2">{{
                                 groups.userName}}
                             </td>
-                            <td data-title="'Group Name'" sortable="'name'" class="clickable-item col-sm-2">{{
-                                groups.name }}
+                            <td data-title="'Group Name'" sortable="'groupName'" class="clickable-item col-sm-2">{{
+                                groups.groupName }}
                             </td>
 
-                            <td data-title="'Created By'" sortable="'createdByName'"
-                                class="clickable-item col-sm-1">{{ groups.attrs.createdByName }}
+                            <td data-title="'Created By'" sortable="'accountId.userName'"
+                                class="clickable-item col-sm-1">{{ groups.accountId.userName }}
                             </td>
                             <td data-title="'Action'" class="col-sm-2">
-                                <a href="#" class="btn" ng-click="goToEditGroupPage(groups._id)">
+                                <a href="#" class="btn" ng-click="goToEditAccountGroupPage(groups._id)">
                                     <span class="glyphicon glyphicon-pencil"></span></a>
                             </td>
                         </tr>
-                        <tr ng-if="!currentPageOfGroups || currentPageOfGroups.length === 0">
-                            <td colspan="8">No account Records exist.</td>
+                        <tr ng-if="!currentPageOfAccountGroup || currentPageOfAccountGroup.length === 0">
+                            <td colspan="8">No Records exist.</td>
                         </tr>
                     </table>
                     <button class="btn add-group pull-right mb-10" ui-sref="addGroup">Add Group</button>

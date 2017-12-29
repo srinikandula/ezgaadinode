@@ -50,6 +50,42 @@ AuthRouter.get('/userProfile', function (req, res) {
     });
 });
 
+AuthRouter.post('/addAccountGroup', function (req, res) {
+    Accounts.addAccountGroup(req.jwt, req.body, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/countAccountGroups',function(req,res){
+    Accounts.countAccountGroups(req.jwt,function(result){
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/getAllAccountGroup', function (req, res) {
+    Accounts.getAllAccountGroup(req.jwt,req.query,function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getAccountGroup/:accountGroupId', function (req, res) {
+    Accounts.getAccountGroup(req.params.accountGroupId, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.put('/updateAccountGroup', function (req, res) {
+    Accounts.updateAccountGroup(req.jwt, req.body, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.post('/uploadUserProfilePic', function (req, res) {
+    Accounts.uploadUserProfilePic(req.jwt.accountId, req.body, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

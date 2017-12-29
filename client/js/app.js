@@ -1,4 +1,4 @@
-var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification']);
+var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification', 'ngImgCrop', 'ngFileUpload']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -56,7 +56,8 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/userProfile/addingGroup.html',
         data: {activeTab: 'addGroup'},
         params: {
-            access: 'auth'
+            access: 'auth',
+            accountGroupId: null
         }
     }).state({
         name: 'accounts',
@@ -308,7 +309,8 @@ app.config(function (NotificationProvider, $httpProvider) {
     });
 });
 
-app.run(function ($transitions, $rootScope) {
+app.run(function ($transitions, $rootScope, $cookies) {
+    $rootScope.profilePic = $cookies.get('profilePic');
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
     });

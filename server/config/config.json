@@ -8,9 +8,9 @@
   "mongo": {
     "url": "mongodb://localhost/easygaadi"
   },
-  "port": 2000,
+  "port": 2100,
   "mysql": {
-    "connectionLimit": 10,
+    "connectionLimit": 100,
     "host": "localhost",
     "user": "root",
     "password": "",
@@ -36,5 +36,6 @@
         "user": "easygaadinode@gmail.com",
         "pass": "easygaadi123"
     }
-}
+},
+  "bodyParserLimit": "50mb"
 }

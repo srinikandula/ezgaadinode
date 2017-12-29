@@ -177,10 +177,24 @@ OpenRouter.get('/get/trackEvents/:vehicleNumber', function (request, res) {
     });
 });
 
-OpenRouter.get('/get/user', function (request, res) {
+/*OpenRouter.get('/get/user', function (request, res) {
     Events.getUserData(function(results){
         //console.log(results);
         res.json(results);
+    });
+});*/
+
+OpenRouter.get('/get/accounts', function (request, res) {
+    Events.getAccountData(function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/accountGroups', function (request, res) {
+    Events.getAccountGroupData(function(results){
+        //console.log(results);
+        //res.json(results);
     });
 });
 

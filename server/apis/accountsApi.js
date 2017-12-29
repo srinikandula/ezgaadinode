@@ -1,5 +1,6 @@
 var async = require('async');
 var _ = require('underscore');
+var fs = require('fs');
 
 var Utils = require('./utils');
 var mongoose = require('mongoose');
@@ -179,13 +180,21 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
 };
 
 Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
-    console.log('accountInfo : ',accountInfo)
     var retObj = {
         status: false,
         messages: []
     };
     if (!Utils.isValidObjectId(accountInfo.profile._id)) {
         retObj.messages.push('Invalid account Id');
+    }
+
+    if (accountInfo.oldPassword) {
+        if (!accountInfo.newPassword) {
+            retObj.messages.push('Please Provide New Password');
+        }
+        if (accountInfo.confirmPassword !== accountInfo.newPassword) {
+            retObj.messages.push('Passwords Not Matched');
+        }
     }
 
     if (retObj.messages.length) {
@@ -331,10 +340,208 @@ Accounts.prototype.userProfile = function (jwt, callback) {
             callback(retObj);
         } else {
             retObj.status = true;
+            retObj.messages.push('User Profile Found');
             retObj.result = userProfileContent;
             callback(retObj);
         }
     });
+}
+
+Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (!accountGroupInfo.userName) {
+        retObj.messages.push('Invalid User Name');
+    }
+
+    if (!accountGroupInfo.password) {
+        retObj.messages.push('Invalid password');
+    }
+
+    if (!accountGroupInfo.contactPhone) {
+        retObj.messages.push('Invalid Mobile Number');
+    }
+
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        AccountsColl.findOne({userName: accountGroupInfo.userName}, function (err, account) {
+            if (err) {
+                retObj.messages.push('Error fetching account');
+                callback(retObj);
+            } else if (account) {
+                retObj.messages.push('Account Group with same userName already exists');
+                callback(retObj);
+            } else {
+                accountGroupInfo.createdBy = jwtObj.id;
+                accountGroupInfo.accountId = jwtObj.id;
+                (new AccountsColl(accountGroupInfo)).save(function (err, savedAcc) {
+                    if (err) {
+                        retObj.messages.push('Error saving account');
+                        callback(retObj);
+                    } else {
+                        accountGroupInfo.accountId = savedAcc._id;
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.accountGroup=savedAcc;
+                        callback(retObj);
+                    }
+                });
+            }
+        });
+    }
+};
+
+Accounts.prototype.getAllAccountGroup = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (!params.page) {
+        params.page = 1;
+    }
+
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var query = {"type":"group","accountId":jwt.id};
+
+    async.parallel({
+        accountGroup: function (accountGroupCallback) {
+            AccountsColl
+                .find(query)
+                .populate("accountId")
+                .sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                .lean()
+                .exec(function (err, accounts) {
+                    accountGroupCallback(err, accounts);
+                });
+        },
+        count: function (countCallback) {
+            AccountsColl.count(query, function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            retObj.messages.push('Error retrieving accounts');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = results.count;
+            retObj.accountGroup = results.accountGroup;
+            callback(retObj);
+        }
+    });
+};
+
+Accounts.prototype.getAccountGroup = function (accountGroupId, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (!Utils.isValidObjectId(accountGroupId)) {
+        retObj.messages.push('Invalid accountGroupId');
+    }
+
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        AccountsColl.findOne({"_id": ObjectId(accountGroupId)}).lean().exec(function (err, accountGroup) {
+            if (err) {
+                retObj.messages.push('Error retrieving account');
+                callback(retObj);
+            } else if (accountGroup) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                accountGroup.confirmPassword=accountGroup.password;
+                retObj.accountGroup = accountGroup;
+                callback(retObj);
+            } else {
+                retObj.messages.push('Account with Id doesn\'t exist');
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Accounts.prototype.updateAccountGroup = function (jwtObj, accountGroupInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!Utils.isValidObjectId(accountGroupInfo._id)) {
+        retObj.messages.push('Invalid account Group Id');
+    }
+
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        accountGroupInfo.updatedBy = jwtObj.id;
+        AccountsColl.findOneAndUpdate({_id: accountGroupInfo._id}, {$set: accountGroupInfo}, function (err, oldAcc) {
+            if (err) {
+                retObj.messages.push('Error updating the account group');
+                callback(retObj);
+            } else if (oldAcc) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                callback(retObj);
+            } else {
+                retObj.messages.push('Account Group doesn\'t exist');
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
+    var retObj = {};
+    if (!accountId || !ObjectId.isValid(accountId)) {
+        retObj.status = false;
+        retObj.message = "Please try again later";
+        callback(retObj);
+    } else if (!body.image) {
+        retObj.status = false;
+        retObj.message = "Invalid Image";
+        callback(retObj);
+    } else {
+        var base64Data = body.image.replace(/^data:image\/png;base64,/, "");
+        fs.writeFile('./client/images/profile-pics/' + accountId + '.jpg', base64Data, 'base64', function (err) {
+            if (err) {
+                retObj.status = false;
+                retObj.message = "Please upload valid image";
+                callback(retObj);
+            } else {
+                AccountsColl.findOneAndUpdate({ _id: accountId }, {
+                    profilePic: accountId + '.jpg'
+                }, function (err, data) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.message = "Please try again";
+                        callback(retObj);
+                    } else if (data) {
+                        retObj.status = true;
+                        retObj.message = "Image uploaded successfully";
+                        retObj.profilePic = accountId + '.jpg'
+                        callback(retObj);
+                    } else {
+                        retObj.status = false;
+                        retObj.message = "Please try again latter";
+                        callback(retObj);
+                    }
+                })
+            }
+        });
+
+    }
 }
 
 module.exports = new Accounts();

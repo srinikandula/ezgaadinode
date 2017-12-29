@@ -150,7 +150,7 @@ Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
     }
 };
 
-Events.prototype.getUserData = function (callback) {
+/*Events.prototype.getUserData = function (callback) {
     var retObj = {
         status: false,
         messages: []
@@ -191,14 +191,14 @@ Events.prototype.getUserData = function (callback) {
             callback(retObj);
         }
     });
-}
+}*/
 
-/*Events.prototype.getAccountData = function (callback) {
+Events.prototype.getAccountData = function (callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var accountDataQuery = "select accountId as userName,contactPhone,password from Account";
+    var accountDataQuery = "select accountId as userName,contactPhone,password,contactEmail as email from Account";
     pool.query(accountDataQuery, function(err, results) {
         if(err) {
             retObj.status = false;
@@ -222,34 +222,42 @@ Events.prototype.getUserData = function (callback) {
     });
 }
 
-Events.prototype.getGroupData = function (callback) {
+Events.prototype.getAccountGroupData = function (callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var groupDataQuery = "select groupId as userName,contactPhone,password from DeviceGroup";
-    pool.query(groupDataQuery, function(err, results) {
-        if(err) {
-            retObj.status = false;
-            retObj.messages.push('Error fetching data');
-            retObj.messages.push(JSON.stringify(err));
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.results = results;
-            for(var i = 0; i < retObj.results.length; i++) {
-                var GroupData = retObj.results[i];
-                if(!GroupData.contactPhone || GroupData.contactPhone.trim().length == 0 || isNaN(GroupData.contactPhone)){
-                    delete GroupData.contactPhone;
-                }
-                EventData.createGroupData(GroupData)
+    AccountsColl.find({},function(error, accountsData) {
+        accountsData.forEach(function (account) {
+            if(account.userName) {
+                var accountGroupDataQuery = "select accountId as userName,contactPhone,password from DeviceGroup where accountId='" + account.userName + "'";
+                pool.query(accountGroupDataQuery, function (err, results) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.messages.push('Error fetching data');
+                        retObj.messages.push(JSON.stringify(err));
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.results = results;
+                        for (var i = 0; i < retObj.results.length; i++) {
+                            var accountGroupData = retObj.results[i];
+                            accountGroupData.accountId = account._id;
+                            accountGroupData.type = 'group';
+                            if (!accountGroupData.contactPhone || accountGroupData.contactPhone.trim().length == 0 || isNaN(accountGroupData.contactPhone)) {
+                                delete accountGroupData.contactPhone;
+                            }
+                            EventData.createAccountGroupData(accountGroupData)
+                        }
+                        retObj.count = retObj.results.length;
+                        callback(retObj);
+                    }
+                });
             }
-            retObj.count = retObj.results.length;
-            callback(retObj);
-        }
+        });
     });
-}*/
+}
 
 Events.prototype.getTrucksData = function (callback) {
     var retObj = {
@@ -264,7 +272,6 @@ Events.prototype.getTrucksData = function (callback) {
 
     AccountsColl.find({},function(error, accountsData){
         accountsData.forEach(function (account) {
-            console.log('userName : ',account.userName+' --> '+account._id);
             //if(account.userName !== "") {
                 var trucksDataQuery = "select t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type where c.gps_account_id='" + account.userName + "'";
                 pool_crm.query(trucksDataQuery, function(err, queryData) {
