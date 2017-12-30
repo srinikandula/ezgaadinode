@@ -152,14 +152,13 @@ var driverSchema = new mongoose.Schema({
 });
 var expensesSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    vehicleNumber: String,
-    expenseType: String,
+    vehicleNumber: {type: ObjectId, ref: 'trucks'},
+    expenseType: {type: ObjectId, ref: 'expenseMaster'},
     partyId:{type: ObjectId, ref: 'parties'},
     description:String,
     date: Date,
-    cost: Number,
-    totalAmount: Number,
-    paidAmount: Number,
+    totalAmount: {type: Number, default: 0},
+    paidAmount: {type: Number, default: 0},
     mode: String,
     updatedBy: String,
     createdBy: String,
