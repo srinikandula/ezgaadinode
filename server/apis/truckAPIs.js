@@ -13,7 +13,7 @@ var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
-var emailService=require('./mailerApi');
+var emailService = require('./mailerApi');
 
 
 var Trucks = function () {
@@ -437,15 +437,22 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
     var taxDueDate = "--";
     var data = [];
     var condition = {};
-    var dateplus30="";
+    var dateplus30 = "";
     ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
         if (err) {
             retObj.status = false;
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (erpSettings) {
+            if (!params.page) {
+                params.page = 1;
+            }
+            var skipNumber = (params.page - 1) * params.size;
+            var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) : {};
 
-            dateplus30 =Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry)
+
+            dateplus30 = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry)
             if (!params.regNumber) {
                 condition = {
                     accountId: mongoose.Types.ObjectId(jwt.accountId),
@@ -457,7 +464,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                     { fitnessExpiry: 1 }]
                 }
             } else {
-        
+
                 condition = {
                     accountId: mongoose.Types.ObjectId(jwt.accountId),
                     _id: mongoose.Types.ObjectId(params.regNumber),
@@ -481,50 +488,52 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                     pollutionExpiry: 1, ispollutionExpiry: { $lte: ['$pollutionExpiry', dateplus30] },
                     taxDueDate: 1, istaxDueDate: { $lte: ['$taxDueDate', dateplus30] }
                 }
-            }
+            }, { "$sort": sort },
+            { "$skip": skipNumber },
+            { "$limit": limit },
             ], function (populateErr, populateResults) {
-        
-                for (var i = 0; i < populateResults.length; i++) {
-                    if (populateResults[i].isfitnessExpiry === true) {
-                        fitnessExpiry = populateResults[i].fitnessExpiry;
-                    } else {
-                        fitnessExpiry = "--";
+
+                    for (var i = 0; i < populateResults.length; i++) {
+                        if (populateResults[i].isfitnessExpiry === true) {
+                            fitnessExpiry = populateResults[i].fitnessExpiry;
+                        } else {
+                            fitnessExpiry = "--";
+                        }
+                        if (populateResults[i].ispermitExpiry === true) {
+                            permitExpiry = populateResults[i].permitExpiry;
+                        } else {
+                            permitExpiry = "--";
+                        }
+                        if (populateResults[i].isinsuranceExpiry === true) {
+                            insuranceExpiry = populateResults[i].insuranceExpiry;
+                        } else {
+                            insuranceExpiry = "--";
+                        }
+                        if (populateResults[i].ispollutionExpiry === true) {
+                            pollutionExpiry = populateResults[i].pollutionExpiry;
+                        } else {
+                            pollutionExpiry = "--";
+                        }
+                        if (populateResults[i].istaxDueDate === true) {
+                            taxDueDate = populateResults[i].taxDueDate;
+                        } else {
+                            taxDueDate = "--";
+                        }
+                        data.push({
+                            registrationNo: populateResults[i].registrationNo,
+                            fitnessExpiry: fitnessExpiry,
+                            permitExpiry: permitExpiry,
+                            insuranceExpiry: insuranceExpiry,
+                            pollutionExpiry: pollutionExpiry,
+                            taxDueDate: taxDueDate
+                        });
                     }
-                    if (populateResults[i].ispermitExpiry === true) {
-                        permitExpiry = populateResults[i].permitExpiry;
-                    } else {
-                        permitExpiry = "--";
-                    }
-                    if (populateResults[i].isinsuranceExpiry === true) {
-                        insuranceExpiry = populateResults[i].insuranceExpiry;
-                    } else {
-                        insuranceExpiry = "--";
-                    }
-                    if (populateResults[i].ispollutionExpiry === true) {
-                        pollutionExpiry = populateResults[i].pollutionExpiry;
-                    } else {
-                        pollutionExpiry = "--";
-                    }
-                    if (populateResults[i].istaxDueDate === true) {
-                        taxDueDate = populateResults[i].taxDueDate;
-                    } else {
-                        taxDueDate = "--";
-                    }
-                    data.push({
-                        registrationNo: populateResults[i].registrationNo,
-                        fitnessExpiry: fitnessExpiry,
-                        permitExpiry: permitExpiry,
-                        insuranceExpiry: insuranceExpiry,
-                        pollutionExpiry: pollutionExpiry,
-                        taxDueDate: taxDueDate
-                    });
-                }
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.expiryTrucks = data;
-                callback(retObj);
-            });
-        
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.expiryTrucks = data;
+                    callback(retObj);
+                });
+
         } else {
             retObj.status = false;
             retObj.messages.push("Please try again");
@@ -533,7 +542,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
     });
     /* var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate() + 30)); */
-   
+
 };
 
 Trucks.prototype.fitnessExpiryTrucks = function (jwt, callback) {
@@ -662,10 +671,10 @@ Trucks.prototype.countTrucks = function (jwt, callback) {
     })
 };
 
-function dateToStringFormat(date){
-    if(date instanceof Date){
+function dateToStringFormat(date) {
+    if (date instanceof Date) {
         return date.toLocaleDateString();
-    }else{
+    } else {
         return '--';
     }
 }
@@ -681,12 +690,12 @@ Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params, callback)
             var output = [];
             for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
                 output.push({
-                    Registration_No:expairResponse.expiryTrucks[i].registrationNo,
-                    Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry) ,
+                    Registration_No: expairResponse.expiryTrucks[i].registrationNo,
+                    Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry),
                     Permit_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].permitExpiry),
                     Tax_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].taxDueDate),
                     Insurance_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].insuranceExpiry),
-                    Pollution_Expiry:dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
+                    Pollution_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
                 })
                 if (i === expairResponse.expiryTrucks.length - 1) {
                     retObj.status = true;
@@ -703,7 +712,7 @@ Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params, callback)
 }
 
 
-Trucks.prototype.shareExpiredDetailsViaEmail=function(jwt,params,callback){
+Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -718,12 +727,12 @@ Trucks.prototype.shareExpiredDetailsViaEmail=function(jwt,params,callback){
                 var output = [];
                 for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
                     output.push({
-                        Registration_No:expairResponse.expiryTrucks[i].registrationNo,
-                        Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry) ,
+                        Registration_No: expairResponse.expiryTrucks[i].registrationNo,
+                        Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry),
                         Permit_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].permitExpiry),
                         Tax_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].taxDueDate),
                         Insurance_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].insuranceExpiry),
-                        Pollution_Expiry:dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
+                        Pollution_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
                     })
                     if (i === expairResponse.expiryTrucks.length - 1) {
                         var emailparams = {
@@ -745,7 +754,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail=function(jwt,params,callback){
                         });
                     }
                 }
-                
+
             } else {
                 callback(expairResponse);
             }

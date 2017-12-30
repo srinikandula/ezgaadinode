@@ -144,7 +144,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
     }
 };
 
-function getExpenseCosts(condition,jwt, params, callback) {
+function getExpenseCosts(condition, jwt, params, callback) {
     var result = {};
     var skipNumber = (params.page - 1) * params.size;
     async.parallel({
@@ -206,25 +206,25 @@ Expenses.prototype.getExpenseCosts = function (jwt, params, callback) {
         params.page = 1;
     }
     var condition = {};
-   
+
     if (!params.truckNumber) {
         condition = { 'accountId': jwt.accountId };
-        getExpenseCosts(condition,jwt,params,function(response){
+        getExpenseCosts(condition, jwt, params, function (response) {
             callback(response);
         })
     } else {
-        
-        trucksCollection.findOne({registrationNo: { $regex: '.*' + params.truckNumber + '.*' }},function(err,truckData){
-            if(err){
+
+        trucksCollection.findOne({ registrationNo: { $regex: '.*' + params.truckNumber + '.*' } }, function (err, truckData) {
+            if (err) {
                 result.status = false;
                 result.message = 'Error retrieving expenses Costs';
                 callback(result);
-            }else if(truckData){
-                condition = { 'accountId': jwt.accountId, 'vehicleNumber':truckData._id}
-                getExpenseCosts(condition,jwt,params,function(response){
+            } else if (truckData) {
+                condition = { 'accountId': jwt.accountId, 'vehicleNumber': truckData._id }
+                getExpenseCosts(condition, jwt, params, function (response) {
                     callback(response);
                 })
-            }else{
+            } else {
                 result.status = true;
                 result.message = 'Success';
                 result.count = 0;
@@ -232,7 +232,7 @@ Expenses.prototype.getExpenseCosts = function (jwt, params, callback) {
                 callback(result);
             }
         })
-        
+
     }
 
 };
@@ -400,7 +400,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
                 }, "vehicleNumber": params.regNumber
             }
         }
-        getExpensesByVehicles(jwt, condition,params, function (response) {
+        getExpensesByVehicles(jwt, condition, params, function (response) {
             callback(response);
         })
     } else if (params.fromDate && params.toDate) {
@@ -412,12 +412,12 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
                 }
             }
         }
-        getExpensesByVehicles(jwt, condition,params, function (response) {
+        getExpensesByVehicles(jwt, condition, params, function (response) {
             callback(response);
         })
     } else if (params.regNumber) {
         condition = { $match: { "accountId": ObjectId(jwt.accountId), "vehicleNumber": params.regNumber } }
-        getExpensesByVehicles(jwt, condition,params, function (response) {
+        getExpensesByVehicles(jwt, condition, params, function (response) {
             callback(response);
         })
     } else {
@@ -429,7 +429,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
             } else if (erpSettings) {
 
                 condition = { $match: Utils.getErpSettings(erpSettings.expense, erpSettings.accountId) }
-                getExpensesByVehicles(jwt, condition,params, function (response) {
+                getExpensesByVehicles(jwt, condition, params, function (response) {
                     callback(response);
                 })
             } else {
@@ -438,9 +438,9 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
                 callback(retObj);
             }
         });
-        
+
     }
-    
+
 };
 /**
  * Find expenses for a vehicle
@@ -531,7 +531,7 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
     });
 };
 
-function getExpensesByVehicles(jwt, condition,params, callback) {
+function getExpensesByVehicles(jwt, condition, params, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -542,7 +542,7 @@ function getExpensesByVehicles(jwt, condition,params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {};
-   
+
     async.parallel({
         expenses: function (expensesCallback) {
             expenseColl.aggregate(condition,
@@ -551,11 +551,11 @@ function getExpensesByVehicles(jwt, condition,params, callback) {
                         _id: { "vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType" },
                         totalExpenses: { $sum: "$cost" }
                     }
-                   
+
                 },
                 { "$sort": sort },
-                { "$skip" : skipNumber },
-                { "$limit":limit }, function (error, expensesResult) {
+                { "$skip": skipNumber },
+                { "$limit": limit }, function (error, expensesResult) {
                     expensesCallback(error, expensesResult);
                 });
         },
@@ -722,6 +722,225 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params, cal
         }
     })
 
+
+}
+
+Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    condition.mode = "Credit";
+    expenseColl.aggregate({ $match: condition },
+        {
+            $group: {
+                _id: null,
+                totalAmount: { $sum: "$totalAmount" },
+                paidAmount: { $sum: "$paidAmount" }
+            }
+        },
+        function (err, expense) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push('Error');
+                callback(retObj);
+            } else {
+
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.paybleCount = expense[0].totalAmount - expense[0].paidAmount;
+                callback(retObj);
+            }
+
+        });
+
+};
+function getPaybleAmountByParty(condition, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!params.page) {
+        params.page = 1;
+    }
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {};
+    condition.mode = "Credit";
+    console.log('condition', condition);
+    expenseColl.aggregate({ $match: condition },
+        {
+            "$lookup": {
+                "from": "parties",
+                "localField": "partyId",
+                "foreignField": "_id",
+                "as": "partyId"
+            }
+        }, { "$unwind": "$partyId" }, {
+            $group: {
+                _id: "$partyId",
+                totalAmount: { $sum: "$totalAmount" },
+                paidAmount: { $sum: "$paidAmount" },
+                payableAmount: { $sum: { $subtract: ["$totalAmount", "$paidAmount"] } }
+            }
+        }, { "$sort": sort },
+        { "$skip": skipNumber },
+        { "$limit": limit },
+
+        function (err, payble) {
+            console.log(err);
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push('Error');
+                callback(retObj);
+            } else if(payble.length>0) {
+                var gross = {
+                    totalAmount: 0,
+                    paidAmount: 0,
+                    payableAmount: 0
+                };
+                for (var i = 0; i < payble.length; i++) {
+                    gross.totalAmount+=payble[i].totalAmount;
+                    gross.paidAmount+=payble[i].paidAmount;
+                    gross.payableAmount+=payble[i].payableAmount;
+                    if(i===payble.length-1){
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.paybleAmounts = payble;
+                        retObj.gross=gross
+                        callback(retObj);
+                    }
+                }
+                
+            }else{
+                retObj.status = false;
+                retObj.messages.push('No Expense found');
+                callback(retObj);
+            }
+
+        });
+}
+Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
+
+    var condition = {};
+    if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
+        condition = {
+            "accountId": ObjectId(jwt.accountId), date: {
+                $gte: new Date(params.fromDate),
+                $lte: new Date(params.toDate),
+            }, "registrationNo": params.regNumber
+        }
+        getPaybleAmountByParty(jwt, condition, params, function (response) {
+            callback(response);
+        });
+    } else if (params.fromDate && params.toDate) {
+        condition = {
+            "accountId": ObjectId(jwt.accountId), date: {
+                $gte: new Date(params.fromDate),
+                $lte: new Date(params.toDate),
+            }
+        }
+        getPaybleAmountByParty(condition, params, function (response) {
+            callback(response);
+        });
+    } else if (params.regNumber) {
+        condition = { "accountId": ObjectId(jwt.accountId), "registrationNo": params.regNumber }
+        getPaybleAmountByParty(condition, params, function (response) {
+            callback(response);
+        });
+    } else {
+        ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else if (erpSettings) {
+
+                condition = Utils.getErpSettings(erpSettings.expense, erpSettings.accountId)
+                getPaybleAmountByParty(condition, params, function (response) {
+                    callback(response);
+                });
+            } else {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            }
+        });
+    }
+
+};
+
+Expenses.prototype.downloadPaybleDetailsByParty=function(jwt,params,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    Expenses.prototype.getPaybleAmountByParty(jwt, params, function (payableResponse) {
+        if (payableResponse.status) {
+            var output = [];
+            for (var i = 0; i < payableResponse.paybleAmounts.length; i++) {
+                output.push({
+                    Party_Name: payableResponse.paybleAmounts[i]._id.name,
+                    Mobile: payableResponse.paybleAmounts[i]._id.contact,
+                    Total_Amount: payableResponse.paybleAmounts[i].totalAmount,
+                    Paid_Amount: payableResponse.paybleAmounts[i].paidAmount,
+                    Payale_Amount: payableResponse.paybleAmounts[i].payableAmount
+                })
+                if (i === payableResponse.paybleAmounts.length - 1) {
+                    retObj.status = true;
+                    output.push({
+                        Party_Name: 'Total',
+                        Mobile: '',
+                        Total_Amount:payableResponse.gross.totalAmount,
+                        Paid_Amount:payableResponse.gross.paidAmount,
+                        Payale_Amount: payableResponse.gross.payableAmount
+                    })
+                    retObj.data = output;
+                    callback(retObj);
+                }
+            }
+        } else {
+            callback(revenueResponse);
+        }
+    })
+
+}
+Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!params.email || !Utils.isEmail(params.email)) {
+        retObj.status = false;
+        retObj.messages.push('Please enter valid email');
+        callback(retObj);
+    } else {
+        Expenses.prototype.getPaybleAmountByParty(jwt, params, function (payableResponse) {
+            if (payableResponse.status) {
+                var emailparams = {
+                    templateName: 'sharePayableDetailsByParty',
+                    subject: "Easygaadi Payable Details",
+                    to: params.email,
+                    data: {
+                        paybleAmounts: payableResponse.paybleAmounts,
+                        gross: payableResponse.gross
+                    }
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push('Payable details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            } else {
+                callback(revenueResponse);
+            }
+        })
+    }
 
 }
 module.exports = new Expenses();

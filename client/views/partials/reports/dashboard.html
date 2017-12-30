@@ -34,7 +34,7 @@
     </div>
 
     <div class="col-sm-3 col-xs-12">
-        <div class="reports-panel payments" ng-click="paymentsReceivable()" ng-class="{'activated':activated==='4'}">
+        <div class="reports-panel payments"  ng-class="{'activated':activated==='4'}">
 
             <div class="reports-image">
                 <figure>
@@ -49,16 +49,16 @@
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
-                    <li class="payble">
+                    <li class="payble" ng-click="paybleByParty()">
                         <span class="payable">Payable</span><br>
                         <small ng-class="{'costactivated':activated==='4'}"><i class="fa fa-inr"></i>
-                            {{!totals.pendingDue == true ? 0 :totals.pendingDue}}
+                            {{totals.paybleAmount || 0}}
                         </small>
                     </li>
-                    <li class="payble">
+                    <li class="payble" ng-click="paymentsReceivable()">
                         <span class="receivable">Receivable</span> <br>
-                        <small ng-class="{'costactivated':activated==='4'}"><i class="fa fa-inr"></i>{{!amounts[0].total
-                            == true ? 0 :amounts[0].total}}
+                        <small ng-class="{'costactivated':activated==='4'}"><i class="fa fa-inr"></i>
+                            {{totals.pendingDue || 0}}
                         </small>
                     </li>
 
