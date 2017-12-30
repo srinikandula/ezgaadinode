@@ -11,7 +11,7 @@ app.factory('AccountServices', function ($http, $cookies) {
             $http({
                 url: '/v1/admin/accounts/fetch/',
                 method: "GET",
-                params:pageable
+                params: pageable
             }).then(success, error)
         },
         getAccount: function (accountId, success, error) {
@@ -62,7 +62,7 @@ app.factory('AccountServices', function ($http, $cookies) {
             $http({
                 url: '/v1/admin/getAllAccountGroup',
                 method: "GET",
-                params:pageable
+                params: pageable
             }).then(success, error)
         },
         getAccountGroup: function (accountGroupId, success, error) {
@@ -78,17 +78,30 @@ app.factory('AccountServices', function ($http, $cookies) {
                 data: accountGroupInfo
             }).then(success, error)
         },
-        uploadUserProfilePic:function (data,success,error) {
+        uploadUserProfilePic: function (data, success, error) {
             $http({
                 url: '/v1/admin/uploadUserProfilePic',
                 method: "POST",
                 data: data
             }).then(success, error)
+        },
+        getErpSettings: function (success, error) {
+            $http({
+                url: '/v1/admin/getErpSettings',
+                method: "GET"
+            }).then(success, error)
+        },
+        updateErpSettings: function (params, success, error) {
+            $http({
+                url: '/v1/admin/updateErpSettings',
+                method: "PUT",
+                data: params
+            }).then(success, error)
         }
     }
 });
 
-app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', 'paginationService','NgTableParams', function ($scope, $uibModal, AccountServices, Notification, $state, paginationService, NgTableParams) {
+app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, AccountServices, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditAccountPage = function (accountId) {
         $state.go('accountsEdit', {accountId: accountId});
     };
@@ -98,7 +111,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
         AccountServices.count(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                    $scope.init();
+                $scope.init();
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -123,7 +136,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             }
         });
     };
-    $scope.findAccounts = function(){
+    $scope.findAccounts = function () {
         $scope.accountParams.filter = $scope.filter;
         loadTableData($scope.accountParams);
     }
@@ -180,7 +193,7 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
             }
         });
     };
-    $scope.findAccountGroup = function(){
+    $scope.findAccountGroup = function () {
         $scope.accountGroupParams.filter = $scope.accountGroupFilter;
         loadAccountGroupTableData($scope.accountGroupParams);
     }
@@ -204,14 +217,16 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 
 }]);
 
-app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServices', 'TrucksService', '$stateParams', 'Notification','$uibModal', function ($scope, Utils, $state, AccountServices, TrucksService, $stateParams, Notification, $uibModal) {
+app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServices', 'TrucksService', '$stateParams', 'Notification', '$uibModal', function ($scope, Utils, $state, AccountServices, TrucksService, $stateParams, Notification, $uibModal) {
     $scope.pagetitle = "Add Account";
 
     $scope.account = {
-        profile: {userName: '',
+        profile: {
+            userName: '',
             password: '',
             contactPhone: '',
-            email: '',},
+            email: '',
+        },
         oldPassword: '',
         newPassword: '',
         confirmPassword: '',
@@ -243,7 +258,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
 
     $scope.dropdownSetting = {
         scrollable: true,
-        scrollableHeight : '200px',
+        scrollableHeight: '200px',
     }
 
     if ($stateParams.accountId) {
@@ -258,7 +273,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             }
         }, function (err) {
         })
-    } else if($stateParams.accountGroupId){
+    } else if ($stateParams.accountGroupId) {
         AccountServices.getAccountGroup($stateParams.accountGroupId, function (success) {
             if (success.data.status) {
                 $scope.group = success.data.accountGroup;
@@ -269,7 +284,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             }
         }, function (err) {
         })
-            getTruckIds();
+        getTruckIds();
     } else {
         getTruckIds();
     }
@@ -304,7 +319,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         if (!params.profile.email) {
             params.errors.push('Invalid Email');
         }
-        if(params.oldPassword) {
+        if (params.oldPassword) {
             if (!params.newPassword) {
                 params.errors.push('Please Provide New Password');
             }
@@ -320,7 +335,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                         params.success = success.data.messages;
                         Notification.success({message: "Account Updated Successfully"});
                         $state.go('myProfile');
-                       Notification.success({message: "Account Updated Successfully"});
+                        Notification.success({message: "Account Updated Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -333,7 +348,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                     if (success.data.status) {
                         params.success = success.data;
                         $state.go('myProfile');
-                      Notification.success({message: "Account Added Successfully"});
+                        Notification.success({message: "Account Added Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -344,17 +359,18 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         }
 
     };
-    $scope.truckId2=[];
+    $scope.truckId2 = [];
+
     function getTruckIds() {
         TrucksService.getAllTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks
-                if($scope.group.truckId.length>0){
-                    for(var i=0;i<$scope.trucks.length;i++){
-                        for(var j=0;j<$scope.group.truckId.length;j++){
-                            if($scope.trucks[i]._id===$scope.group.truckId[j]){
+                if ($scope.group.truckId.length > 0) {
+                    for (var i = 0; i < $scope.trucks.length; i++) {
+                        for (var j = 0; j < $scope.group.truckId.length; j++) {
+                            if ($scope.trucks[i]._id === $scope.group.truckId[j]) {
                                 $scope.truckId2.push(true);
-                            }else{
+                            } else {
                                 $scope.truckId2.push(false);
                             }
                         }
@@ -372,12 +388,12 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         });
     }
 
-    $scope.truckSelected = function (status,truckId) {
-        if(status) {
+    $scope.truckSelected = function (status, truckId) {
+        if (status) {
             $scope.group.truckId.push(truckId);
         } else {
             var index = $scope.group.truckId.indexOf(truckId);
-            $scope.group.truckId.splice(index,1);
+            $scope.group.truckId.splice(index, 1);
         }
     }
 
@@ -417,7 +433,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         if (!params.truckId.length) {
             params.errors.push('Please Select Atleast One Vehicle');
         }
-        if(!params.erpEnabled && !params.gpsEnabled) {
+        if (!params.erpEnabled && !params.gpsEnabled) {
             params.errors.push('Please Select Either ERP or GPS');
         }
         if (!params.errors.length) {
@@ -462,10 +478,10 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             templateUrl: 'pop-up-modal.html',
             controller: 'userProfilePicCtrl',
             size: 'lg',
-            windowClass:'profilePopup',
+            windowClass: 'profilePopup',
             resolve: {
                 modelType: function () {
-                    return { data: "", model: 'changeProfilePic' };
+                    return {data: "", model: 'changeProfilePic'};
                 }
             }
         });
@@ -477,7 +493,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                     showConfirmButton: false,
                     timer: 1500
                 });
-                $state.go('myProfile', {}, { reload: true });
+                $state.go('myProfile', {}, {reload: true});
 
             } else {
                 swal({
@@ -496,7 +512,6 @@ app.controller('userProfilePicCtrl', ['$scope', '$uibModalInstance', 'AccountSer
 
     $scope.myImage = '';
     $scope.myCroppedImage = '';
-
 
 
     $scope.closeModal = function () {
@@ -519,19 +534,192 @@ app.controller('userProfilePicCtrl', ['$scope', '$uibModalInstance', 'AccountSer
 
 
     $scope.submitProfilePicture = function (img) {
-        AccountServices.uploadUserProfilePic({ image: img }, function (success) {
+        AccountServices.uploadUserProfilePic({image: img}, function (success) {
             if (success.data.status) {
                 $cookies.put('profilePic', success.data.profilePic);
-                $rootScope.profilePic=success.data.profilePic;
-                $uibModalInstance.close({ status: true, message: success.data.message });
+                $rootScope.profilePic = success.data.profilePic;
+                $uibModalInstance.close({status: true, message: success.data.message});
             } else {
                 swal(success.data.message, 'Error', 'warning');
             }
         }, function (err) {
         });
     };
+}]);
 
+app.controller('ERPSettingsCtrl', ['$scope', 'AccountServices', 'Notification', '$state', '$stateParams', function ($scope, AccountServices, Notification, $state, $stateParams) {
 
+    $scope.settings = {
+        revenue: {
+            filterType: '',
+            fromDate: '',
+            toDate: ''
+        },
+        payment: {
+            filterType: '',
+            fromDate: '',
+            toDate: ''
+        },
+        expense: {
+            filterType: '',
+            fromDate: '',
+            toDate: ''
+        },
+        expiry: {
+            filterType: '',
+            fromDate: '',
+            toDate: ''
+        },
+        tollCard: {
+            filterType: '',
+            fromDate: '',
+            toDate: ''
+        },
+        fuelCard: {
+            filterType: '',
+            fromDate: '',
+            toDate: ''
+        },
+        success: [],
+        errors: []
+    }
 
+    $scope.init = function () {
+        AccountServices.getErpSettings(function (success) {
+            if (success.data.status) {
+                $scope.settings = success.data.erpSettings;
+                if($scope.settings.revenue.filterType === 'custom') {
+                    $scope.settings.revenue.fromDate=new Date($scope.settings.revenue.fromDate);
+                    $scope.settings.revenue.toDate=new Date($scope.settings.revenue.toDate);
+                }
+                if($scope.settings.payment.filterType === 'custom') {
+                    $scope.settings.payment.fromDate=new Date($scope.settings.payment.fromDate);
+                    $scope.settings.payment.toDate=new Date($scope.settings.payment.toDate);
+                }
+                if($scope.settings.expense.filterType === 'custom') {
+                    $scope.settings.expense.fromDate=new Date($scope.settings.expense.fromDate);
+                    $scope.settings.expense.toDate=new Date($scope.settings.expense.toDate);
+                }
+                if($scope.settings.tollCard.filterType === 'custom') {
+                    $scope.settings.tollCard.fromDate=new Date($scope.settings.tollCard.fromDate);
+                    $scope.settings.tollCard.toDate=new Date($scope.settings.tollCard.toDate);
+                }
+                if($scope.settings.fuelCard.filterType === 'custom') {
+                    $scope.settings.fuelCard.fromDate=new Date($scope.settings.fuelCard.fromDate);
+                    $scope.settings.fuelCard.toDate=new Date($scope.settings.fuelCard.toDate);
+                }
+                if($scope.settings.expiry.filterType === 'custom') {
+                    $scope.settings.expiry.fromDate=new Date($scope.settings.expiry.fromDate);
+                    $scope.settings.expiry.toDate=new Date($scope.settings.expiry.toDate);
+                }
+                //console.log('getErpSettings',$scope.settings)
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (err) {
+        })
+    }
+
+    $scope.init();
+
+    $scope.updateCustomDate = function (filterType) {
+        var params = $scope.settings;
+        params.errors = [];
+        params.success = [];
+
+        if(filterType === 'revenue') {
+            $scope.settings.revenue.fromDate=new Date();
+            $scope.settings.revenue.toDate=new Date();
+        } else if(filterType === 'payment') {
+            $scope.settings.payment.fromDate=new Date();
+            $scope.settings.payment.toDate=new Date();
+        } else if(filterType === 'expense') {
+            $scope.settings.expense.fromDate=new Date();
+            $scope.settings.expense.toDate=new Date();
+        } else if(filterType === 'tollCard') {
+            $scope.settings.tollCard.fromDate=new Date();
+            $scope.settings.tollCard.toDate=new Date();
+        } else if(filterType === 'fuelCard') {
+            $scope.settings.fuelCard.fromDate=new Date();
+            $scope.settings.fuelCard.toDate=new Date();
+        } else if(filterType === 'expiry') {
+            $scope.settings.expiry.fromDate=new Date();
+            $scope.settings.expiry.toDate=new Date();
+        }
+    }
+
+    $scope.editSettings = function (filterType) {
+        var params = $scope.settings;
+        params.errors = [];
+        params.success = [];
+
+        if(filterType === 'revenue') {
+            if(!params.revenue.fromDate || !params.revenue.toDate) {
+                Notification.error({message: "Please Provide From and To Dates"});
+            } else if(params.revenue.fromDate > params.revenue.toDate) {
+                Notification.error({message: "Invalid Date Selection"});
+            } else {
+                $scope.updateSettings(params);
+            }
+        } else if(filterType === 'payment') {
+            if(!params.payment.fromDate || !params.payment.toDate) {
+                Notification.error({message: "Please Provide From and To Dates"});
+            } else if(params.payment.fromDate > params.payment.toDate) {
+                Notification.error({message: "Invalid Date Selection"});
+            } else {
+                $scope.updateSettings(params);
+            }
+        } else if(filterType === 'expense') {
+            if(!params.expense.fromDate || !params.expense.toDate) {
+                Notification.error({message: "Please Provide From and To Dates"});
+            } else if(params.expense.fromDate > params.expense.toDate) {
+                Notification.error({message: "Invalid Date Selection"});
+            } else {
+                $scope.updateSettings(params);
+            }
+        } else if(filterType === 'tollCard') {
+            if(!params.tollCard.fromDate || !params.tollCard.toDate) {
+                Notification.error({message: "Please Provide From and To Dates"});
+            } else if(params.tollCard.fromDate > params.tollCard.toDate) {
+                Notification.error({message: "Invalid Date Selection"});
+            } else {
+                $scope.updateSettings(params);
+            }
+        } else if(filterType === 'fuelCard') {
+            if(!params.fuelCard.fromDate || !params.fuelCard.toDate) {
+                Notification.error({message: "Please Provide From and To Dates"});
+            } else if(params.fuelCard.fromDate > params.fuelCard.toDate) {
+                Notification.error({message: "Invalid Date Selection"});
+            } else {
+                $scope.updateSettings(params);
+            }
+        } else if(filterType === 'expiry') {
+            if(!params.expiry.fromDate || !params.expiry.toDate) {
+                Notification.error({message: "Please Provide From and To Dates"});
+            } else if(params.expiry.fromDate > params.expiry.toDate) {
+                Notification.error({message: "Invalid Date Selection"});
+            } else {
+                $scope.updateSettings(params);
+            }
+        } else {
+            $scope.updateSettings(params);
+        }
+    }
+
+    $scope.updateSettings = function (params) {
+        AccountServices.updateErpSettings(params, function (success) {
+            if (success.data.status) {
+                params.success = success.data.messages;
+                $scope.init();
+                Notification.success({message: "Settings Updated Successfully"});
+            } else {
+                params.errors = success.data.messages;
+            }
+        }, function (err) {
+
+        });
+    }
 }]);
 

@@ -86,6 +86,18 @@ AuthRouter.post('/uploadUserProfilePic', function (req, res) {
     });
 });
 
+AuthRouter.get('/getErpSettings', function (req, res) {
+    Accounts.getErpSettings(req.jwt, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.put('/updateErpSettings', function (req, res) {
+    Accounts.updateErpSettings(req.body, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

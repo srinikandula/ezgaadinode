@@ -39,7 +39,7 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({ userName: accountInfo.userName }, function (err, account) {
+        AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error fetching account');
                 callback(retObj);
@@ -92,7 +92,7 @@ Accounts.prototype.getAccounts = function (jwt, params, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {};
     var query = {};
     if (params.filter && params.filter.trim().length > 0) {
-        query = { "userName": { $regex: params.filter.trim() } };
+        query = {"userName": {$regex: params.filter.trim()}};
     }
     async.parallel({
         accounts: function (accountsCallback) {
@@ -137,7 +137,7 @@ Accounts.prototype.getAllAccounts = function (callback) {
         messages: []
     };
 
-    AccountsColl.find({}, { name: 1 }, function (err, accounts) {
+    AccountsColl.find({}, {name: 1}, function (err, accounts) {
         if (err) {
             retObj.messages.push('Error retrieving accounts');
             callback(retObj);
@@ -163,7 +163,7 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({ "_id": ObjectId(accountId) }, function (err, account) {
+        AccountsColl.findOne({"_id": ObjectId(accountId)}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error retrieving account');
                 callback(retObj);
@@ -202,7 +202,10 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
         callback(retObj);
     } else {
         if (accountInfo.oldPassword) {
-            AccountsColl.findOne({ _id: accountInfo.profile._id, password: accountInfo.oldPassword }, function (err, oldAcc) {
+            AccountsColl.findOne({
+                _id: accountInfo.profile._id,
+                password: accountInfo.oldPassword
+            }, function (err, oldAcc) {
                 if (err) {
                     retObj.messages.push('Please Try Again');
                     callback(retObj);
@@ -226,7 +229,7 @@ function updateAccounts(jwtObj, accountInfo, callback) {
         messages: []
     };
     accountInfo.updatedBy = jwtObj.id;
-    AccountsColl.findOneAndUpdate({ _id: accountInfo.profile._id }, { $set: accountInfo.profile }, function (err, oldAcc) {
+    AccountsColl.findOneAndUpdate({_id: accountInfo.profile._id}, {$set: accountInfo.profile}, function (err, oldAcc) {
         if (err) {
             retObj.messages.push('Error updating the account');
             callback(retObj);
@@ -247,32 +250,32 @@ Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
         messages: []
     };
     var condition = {};
-    ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+    ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
         if (err) {
             retObj.status = false;
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (erpSettings) {
-            
+
             async.parallel({
                 expensesTotal: function (expensesTotalCallback) {
-                    Expenses.findTotalExpenses(Utils.getErpSettings(erpSettings.expense,erpSettings.accountId), function (response) {
+                    Expenses.findTotalExpenses(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId), function (response) {
                         expensesTotalCallback(response.error, response.totalExpenses);
                     });
                 },
                 totalRevenue: function (totalRevenueCallback) {
-                    Trips.findTotalRevenue(Utils.getErpSettings(erpSettings.revenue,erpSettings.accountId), function (response) {
-                        
+                    Trips.findTotalRevenue(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId), function (response) {
+
                         totalRevenueCallback(response.error, response.totalRevenue);
                     });
                 },
                 pendingDue: function (pendingDueCallback) {
-                    PaymentsReceived.findPendingDueForAccount(Utils.getErpSettings(erpSettings.payment,erpSettings.accountId), function (response) {
+                    PaymentsReceived.findPendingDueForAccount(Utils.getErpSettings(erpSettings.payment, erpSettings.accountId), function (response) {
                         pendingDueCallback(response.error, response.pendingDue);
                     });
                 },
                 expiring: function (expiringCallback) {
-                    Trucks.findExpiryCount(Utils.getErpSettings(erpSettings.expiry,erpSettings.accountId), function (response) {
+                    Trucks.findExpiryCount(Utils.getErpSettings(erpSettings.expiry, erpSettings.accountId), function (response) {
                         expiringCallback(response.error, response.expiryCount);
                     });
                 },
@@ -313,7 +316,7 @@ Accounts.prototype.countAccounts = function (jwt, callback) {
 
 Accounts.prototype.countAccountGroups = function (jwt, callback) {
     var result = {};
-    AccountsColl.count({ "accountId": ObjectId(jwt.accountId), "type": "group" }, function (err, data) {
+    AccountsColl.count({"accountId": ObjectId(jwt.accountId), "type": "group"}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -402,7 +405,7 @@ Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callbac
                         accountGroupInfo.accountId = savedAcc._id;
                         retObj.status = true;
                         retObj.messages.push('Success');
-                        retObj.accountGroup=savedAcc;
+                        retObj.accountGroup = savedAcc;
                         callback(retObj);
                     }
                 });
@@ -424,7 +427,7 @@ Accounts.prototype.getAllAccountGroup = function (jwt, params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {};
-    var query = {"type":"group","accountId":jwt.id};
+    var query = {"type": "group", "accountId": jwt.id};
 
     async.parallel({
         accountGroup: function (accountGroupCallback) {
@@ -478,7 +481,7 @@ Accounts.prototype.getAccountGroup = function (accountGroupId, callback) {
             } else if (accountGroup) {
                 retObj.status = true;
                 retObj.messages.push('Success');
-                accountGroup.confirmPassword=accountGroup.password;
+                accountGroup.confirmPassword = accountGroup.password;
                 retObj.accountGroup = accountGroup;
                 callback(retObj);
             } else {
@@ -536,7 +539,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
                 retObj.message = "Please upload valid image";
                 callback(retObj);
             } else {
-                AccountsColl.findOneAndUpdate({ _id: accountId }, {
+                AccountsColl.findOneAndUpdate({_id: accountId}, {
                     profilePic: accountId + '.jpg'
                 }, function (err, data) {
                     if (err) {
@@ -559,5 +562,68 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
 
     }
 }
+
+Accounts.prototype.getErpSettings = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (!Utils.isValidObjectId(jwt.accountId)) {
+        retObj.messages.push('Invalid accountId');
+    }
+
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        ErpSettingsColl.findOne({"accountId": ObjectId(jwt.accountId)}, function (err, erpSettings) {
+            if (err) {
+                retObj.messages.push('Error retrieving Settings');
+                callback(retObj);
+            } else if (erpSettings) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.erpSettings = erpSettings;
+                callback(retObj);
+            } else {
+                retObj.messages.push('Account with Id doesn\'t exist');
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Accounts.prototype.updateErpSettings = function (params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    ErpSettingsColl.findOne({_id: params._id}, function (err, oldAcc) {
+        if (err) {
+            retObj.messages.push('Please Try Again');
+            callback(retObj);
+        } else if (oldAcc) {
+            params.updatedBy = params._id;
+            ErpSettingsColl.findOneAndUpdate({_id: params._id}, {$set: params}, function (err, oldAcc) {
+                if (err) {
+                    retObj.messages.push('Error in updating the settings');
+                    callback(retObj);
+                } else if (oldAcc) {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    callback(retObj);
+                } else {
+                    retObj.messages.push('Account doesn\'t exist');
+                    callback(retObj);
+                }
+            });
+        } else {
+            retObj.messages.push('Invalid Account Id');
+            callback(retObj);
+        }
+    });
+
+};
 
 module.exports = new Accounts();

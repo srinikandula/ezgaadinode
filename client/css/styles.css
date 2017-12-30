@@ -1686,26 +1686,9 @@ select {
     margin: 0;
 }
 .settings ul li{
-    padding-left:5px;
+    padding-left:0;
     padding-right: 0;
     text-align: center;
-}
-.settings ul li a{
-    background-image: url(../images/Reports_Calendar.png);
-    width: 65px;
-    height: 50px;
-    display: block;
-}
-.settings ul li a:focus{
-    background-image: url(../images/Reports_Calendar_Selected.png);
-    width: 65px;
-    height: 50px;
-    display: block;
-}
-.settings ul li a img{
-    border: 1px solid #ccc;
-    padding: 4px 8px;
-    border-radius: 5px;
 }
 .settings ul li p{
     margin: 6px 0 0px;
@@ -1727,6 +1710,34 @@ select {
 }
 .set-btn .go{
     width: 66px !important;
+}
+.expired{
+    background: #e83b13;
+    padding: 5px;
+    border-radius: 16px;
+    color: #fff;
+    font-weight: bold;
+}
+.expirewithin15days{
+    background: #d8af52;
+    padding: 5px;
+    border-radius: 16px;
+    color: #fff;
+    font-weight: bold;
+}
+label > input{ /* HIDE RADIO */
+    visibility: hidden; /* Makes input not-clickable */
+    position: absolute; /* Remove input from document flow */
+}
+label > input + img{ /* IMAGE STYLES */
+    cursor:pointer;
+
+}
+.settings ul li a label{
+    margin-bottom: 0;
+}
+label > input:checked + img{ /* (RADIO CHECKED) IMAGE STYLES */
+    background-image: url(../images/Reports_Calendar_Selected.png);
 }
 
 /*------------Settingd Page ends Here----------------------*/
