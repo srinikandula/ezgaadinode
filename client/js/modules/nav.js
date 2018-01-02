@@ -40,26 +40,6 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         errors: []
     };
 
-   /* $scope.templates = {
-        'myProfile': 'views/templates/userProfile/myProfile.html',
-        'myGroup': 'views/templates/userProfile/myGroup.html',
-        'addingGroup': 'views/templates/userProfile/addingGroup.html',
-    }
-    $scope.template = $scope.templates.myProfile;
-    $scope.activated = 'myProfile';
-
-    $scope.myProfile= function () {
-        $scope.template = $scope.templates.myProfile;
-        $scope.activated = 'myProfile';
-    }
-    $scope.myGroup= function () {
-        $scope.template = $scope.templates.myGroup;
-        $scope.activated = 'myGroup';
-    }
-    $scope.addingGroup= function () {
-        $scope.template = $scope.templates.addingGroup;
-        $scope.activated = 'addingGroup';
-    }*/
 
 }]).controller('LeftNavCtrl', ['$scope', '$rootScope', '$state', 'Utils', '$cookies', '$stateParams', function ($scope, $rootScope, $state, Utils, $cookies, $stateParams) {
 
@@ -72,5 +52,4 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         $scope.template = $scope.templates[0];
         $scope.activated = 0;
     };
-
 }]);

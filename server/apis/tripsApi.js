@@ -844,6 +844,10 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
  */
 
 Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
     var condition = {};
     var retObj = {
         status: false,

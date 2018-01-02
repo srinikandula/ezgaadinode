@@ -396,6 +396,11 @@ Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback)
  */
 
 Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     var condition = {};
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {

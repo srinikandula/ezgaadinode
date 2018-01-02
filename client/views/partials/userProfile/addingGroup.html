@@ -1,16 +1,16 @@
-<div class="col-xs-12" ng-controller="LeftNavCtrl">
-    <div class="col-xs-12">
+<div class="col-xs-12">
         <div class="col-xs-12 profile-page">
-            <div class="col-xs-11 profile-tabs">
+
+            <div class="col-xs-11 profile-tabs pall-zero">
                 <div class="top-block">
-                <ul class="list-inline">
-                    <li><a href="#" ui-sref="myProfile">My Profile</a></li>
-                    <li><a href="#" ui-sref="myGroup">My Group</a></li>
-                    <li><a href="#" ui-sref="addGroup" class="activeProfileTab">Add Group</a></li>
-                </ul>
+                    <ul class="list-inline">
+                        <li><a href="#" ui-sref="myProfile">My Profile</a></li>
+                        <li><a href="#" ui-sref="myGroup">My Group</a></li>
+                        <li><a href="#" ui-sref="addGroup" class="activeProfileTab">Add Group</a></li>
+                    </ul>
                 </div>
-            </div>
-                <div class="user-form col-xs-12 mt-30" ng-controller="AddEditAccountCtrl">
+
+                <div class="user-form col-xs-12 mt-30 pall-zero" ng-controller="AddEditAccountCtrl">
                     <div class="col-xs-12 pall-zero">
                         <div class="col-sm-4 col-xs-12">
                             <div class="form-group styling-input-list">
@@ -28,15 +28,18 @@
                         </div>
                         <div class="col-sm-4 col-xs-12">
                             <div class="form-group styling-input-list">
-                                <input type="text" class="form-control custom-form-control" ng-model="group.confirmPassword"/>
+                                <input type="text" class="form-control custom-form-control"
+                                       ng-model="group.confirmPassword"/>
                                 <label class="focus-effect-for-input" aria-hidden="true">Confirm Password</label>
                             </div>
                             <div class="form-group styling-input-list">
-                                <input type="text" class="form-control custom-form-control" ng-model="group.contactName"/>
+                                <input type="text" class="form-control custom-form-control"
+                                       ng-model="group.contactName"/>
                                 <label class="focus-effect-for-input" aria-hidden="true">Contact Name</label>
                             </div>
                             <div class="form-group styling-input-list">
-                                <input type="number" class="form-control custom-form-control" ng-model="group.contactPhone"/>
+                                <input type="number" class="form-control custom-form-control"
+                                       ng-model="group.contactPhone"/>
                                 <label class="focus-effect-for-input" aria-hidden="true">Mobile</label>
                             </div>
                         </div>
@@ -48,13 +51,20 @@
 
                             <div class="form-group">
                                 <div class="dropdown pall-zero">
-                                    <button class="tl btn dropdown-toggle custom-form-control col-xs-12" type="button" data-toggle="dropdown">Select Truck
+                                    <button class="tl btn dropdown-toggle custom-form-control col-xs-12" type="button"
+                                            data-toggle="dropdown">Select Truck
                                         <span class="caret"></span></button>
                                     <ul class="dropdown-menu assign-trucks list-inline col-xs-12">
-                                        <li ng-repeat="truck in trucks" class="col-xs-5" ng-show="$index<trucks.length/2">
-                                            <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]" ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}</li>
-                                        <li ng-repeat="truck in trucks" class="col-xs-5" ng-show="$index>trucks.length/2">
-                                            <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]" ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}</li>
+                                        <li ng-repeat="truck in trucks" class="col-xs-5"
+                                            ng-show="$index<trucks.length/2">
+                                            <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]"
+                                                   ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}
+                                        </li>
+                                        <li ng-repeat="truck in trucks" class="col-xs-5"
+                                            ng-show="$index>trucks.length/2">
+                                            <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]"
+                                                   ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -67,7 +77,8 @@
                             <div class="erp">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="" ng-model="group.erpEnabled"><span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                        <input type="checkbox" value="" ng-model="group.erpEnabled"><span class="cr"><i
+                                            class="cr-icon fa fa-check"></i></span>
                                         ERP
                                     </label>
                                 </div>
@@ -76,7 +87,8 @@
                             <div class="gps">
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" value="" ng-model="group.gpsEnabled"><span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                        <input type="checkbox" value="" ng-model="group.gpsEnabled"><span class="cr"><i
+                                            class="cr-icon fa fa-check"></i></span>
                                         GPS
                                     </label>
                                 </div>
@@ -94,12 +106,12 @@
                     </div>
                     <div class="col-xs-12">
                         <div class="col-xs-4 mtb-25 sub-can">
-                            <button type="submit" class="btn can" ng-click="cancel()" >Cancel</button>
-                            <button type="submit" class="btn can last" ng-click="addOrUpdateAccountGroup()">Submit</button>
+                            <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+                            <button type="submit" class="btn can last" ng-click="addOrUpdateAccountGroup()">Submit
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 </div>
