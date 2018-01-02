@@ -54,7 +54,7 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
     var result = {};
     if (!_.isObject(expenseDetails) || _.isEmpty(expenseDetails)) {
         result.status = false;
-        result.message = "Please fill all the required expense cost details";
+        result.message = "Please fill all the required expense details";
         callback(result);
     } else if (!expenseDetails.vehicleNumber || !_.isString(expenseDetails.vehicleNumber)) {
         result.status = false;
@@ -68,9 +68,9 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Enter other expenseType";
         callback(result);
-    } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.cost || _.isNaN(expenseDetails.cost))) {
+    } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.totalAmount || _.isNaN(expenseDetails.totalAmount))) {
         result.status = false;
-        result.message = "Please provide valid cost";
+        result.message = "Please provide Total Expense Amount";
         callback(result);
     } else if (expenseDetails.mode === 'Credit' && (!expenseDetails.totalAmount || _.isNaN(expenseDetails.totalAmount))) {
         result.status = false;
@@ -389,7 +389,6 @@ Expenses.prototype.findTotalExpenses = function (jwt, callback) {
  */
 
 Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
-    console.log('params', params);
     var condition = {};
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {
@@ -464,7 +463,7 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function (results) {
                 result.status = true;
                 result.expenses = results.documents;
-                console.log(result.expenses.length)
+
                 for (var i = 0; i < result.expenses.length; i++) {
                     if (result.expenses[i].attrs.expenseName === 'Diesel') {
                         totalDieselExpense = totalDieselExpense + result.expenses[i].cost;

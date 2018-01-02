@@ -212,11 +212,10 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         vehicleNumber: '',
         expenseType: '',
         description: '',
-        partyId: '',
+        partyId: undefined,
         totalAmount:'',
         paidAmount:'',
         date: '',
-        cost: '',
         mode:'',
         expenseName: '',
         error: [],
@@ -341,14 +340,22 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         if (!params.mode) {
             params.error.push('Please Select Cash or Credit');
         }
-        if (!_.isNumber(params.cost)&& params.mode === 'Cash') {
-            params.error.push('Invalid cost');
+        if (!_.isNumber(params.totalAmount)&& params.mode === 'Cash') {
+            params.error.push('Invalid Total Expense Amount');
+        }
+        if (!params.partyId && params.mode === 'Credit') {
+            params.error.push('Please Select party');
         }
         if (!params.totalAmount && params.mode === 'Credit') {
-            params.error.push('Please Enter Total Expesne Amount');
+            params.error.push('Please Enter Total Expense Amount');
         }
         if (!params.paidAmount && params.mode === 'Credit') {
             params.error.push('Please enter Paid Amount');
+        }
+        if(params.mode === 'Credit') {
+            if (params.paidAmount > params.totalAmount) {
+                params.error.push('Paid Amount Should be less than total Amount');
+            }
         }
         if (!params.error.length) {
             if ($stateParams.expenseId) {
