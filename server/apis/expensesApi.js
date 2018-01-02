@@ -744,7 +744,6 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
                 retObj.messages.push('Error');
                 callback(retObj);
             } else if(expense.length>0){
-
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.paybleCount = expense[0].totalAmount - expense[0].paidAmount;
