@@ -61,7 +61,7 @@
         <tr ng-repeat="party in paybleList" style="text-align: center;">
             <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
                 <a href="#"
-                ng-click="gotoPaymentBypartyId(amountByParties.id, amountByParties.attrs.partyName )"> 
+                ng-click="gotoPayableBypartyId(party._id._id, party._id.name )"> 
                   {{party._id.name}}</a>
             </td>
             <td data-title="'Party Mobile'" sortable="'partyContact'" class="clickable-item col-sm-2">
@@ -84,9 +84,9 @@
         </tr>
         <tr class="text-center">
             <td colspan="2"><b>Total</b></td>
-            <td><b>{{grossAmounts.totalAmount}}</b></td>
-            <td><b>{{grossAmounts.paidAmount}}</b></td>
-            <td><b>{{grossAmounts.payableAmount}}</b></td>
+            <td><b>{{gross.totalAmount}}</b></td>
+            <td><b>{{gross.paidAmount}}</b></td>
+            <td><b>{{gross.payableAmount}}</b></td>
 
 
         </tr>

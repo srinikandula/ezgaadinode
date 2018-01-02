@@ -4,7 +4,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.templates = ['/views/templates/revenueByVehicle.html', '/views/templates/revenueByvehicleId.html',
             '/views/templates/expenseByVehicle.html', '/views/templates/expenseByVehicleId.html',
             '/views/templates/amountByParties.html', '/views/templates/amountByPartyId.html',
-            '/views/templates/expiryTrucks.html','/views/templates/paybleByParty.html'];
+            '/views/templates/expiryTrucks.html','/views/templates/paybleByParty.html',
+        '/views/templates/paybleByPartyId.html'];
 
         $scope.initializeparams = function (tableType) {
             var pageable = {};
@@ -148,13 +149,15 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     }
                 });
         }
-        $scope.gotoPaybleBypartyId = function (id, name) {
+        $scope.gotoPayableBypartyId = function (id, name) {
+            console.log('cisahcb')
             $scope.partyName = name;
-            $scope.getAmountsBypartyId(id);
-            $scope.template = $scope.templates[5];
+            $scope.getPaybleAmountByPartyId(id);
+            $scope.template = $scope.templates[8];
             $scope.activated = '4';
-            $scope.initializeparams();
+          /*   $scope.initializeparams(); */
         }
+       
         $scope.getTruckExpirs = function () {
             $scope.template = $scope.templates[6];
            
@@ -262,7 +265,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             }, function (success) {
                 if (success.data.status) {
                     $scope.paybleList = success.data.paybleAmounts;
-                    $scope.grossAmounts = success.data.gross;
+                    $scope.gross = success.data.gross;
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error({ message: message });
@@ -548,7 +551,21 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
             });
         };
+        $scope.getPaybleAmountByPartyId=function(id){
+            ExpenseService.getPaybleAmountByPartyId(id,function(success){
+                console.log('dtata',success);
+                if (success.data.status) {
+                    $scope.payableAmounts = success.data.partyData;
+                    $scope.grossAmounts=success.data.grossAmounts;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            },function(error){
 
+            })
+        }
         $scope.shareRevenueDetailsByVechicleViaEmail = function () {
             swal({
                 title: 'Share revenue data using email',

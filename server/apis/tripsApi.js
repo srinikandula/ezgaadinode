@@ -845,6 +845,10 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
 
 Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
     var condition = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {
             $match: {
