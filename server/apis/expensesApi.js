@@ -743,11 +743,16 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
                 retObj.status = false;
                 retObj.messages.push('Error');
                 callback(retObj);
-            } else {
+            } else if(expense.length>0){
 
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.paybleCount = expense[0].totalAmount - expense[0].paidAmount;
+                callback(retObj);
+            }else{
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.paybleCount = 0;
                 callback(retObj);
             }
 
@@ -766,7 +771,7 @@ function getPaybleAmountByParty(condition, params, callback) {
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {};
     condition.mode = "Credit";
-    console.log('condition', condition);
+    console.log('condition123', condition);
     expenseColl.aggregate({ $match: condition },
         {
             "$lookup": {
@@ -787,7 +792,6 @@ function getPaybleAmountByParty(condition, params, callback) {
         { "$limit": limit },
 
         function (err, payble) {
-            console.log(err);
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');
@@ -822,12 +826,12 @@ function getPaybleAmountByParty(condition, params, callback) {
 Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
 
     var condition = {};
-    if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
+    if (params.fromDate != '' && params.toDate != '' && params.partyId != '') {
         condition = {
             "accountId": ObjectId(jwt.accountId), date: {
                 $gte: new Date(params.fromDate),
                 $lte: new Date(params.toDate),
-            }, "registrationNo": params.regNumber
+            }, "partyId": ObjectId(params.partyId)
         }
         getPaybleAmountByParty(jwt, condition, params, function (response) {
             callback(response);
@@ -842,8 +846,8 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
         getPaybleAmountByParty(condition, params, function (response) {
             callback(response);
         });
-    } else if (params.regNumber) {
-        condition = { "accountId": ObjectId(jwt.accountId), "registrationNo": params.regNumber }
+    } else if (params.partyId) {
+        condition = { "accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId) }
         getPaybleAmountByParty(condition, params, function (response) {
             callback(response);
         });

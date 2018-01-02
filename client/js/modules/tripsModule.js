@@ -71,6 +71,12 @@ app.factory('TripServices', function ($http) {
                 method: "GET",
                 params: params
             }).then(success, error);
+        },
+        getPartiesByTrips:function(success,error){
+            $http({
+                url: '/v1/trips/getPartiesByTrips',
+                method: "GET"
+            }).then(success, error);
         }
 
 
@@ -157,7 +163,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                         if (success.data.status) {
                             swal(
                                 'Deleted!',
-                                'Trip deleted successfully 123.',
+                                'Trip deleted successfully.',
                                 'success'
                             );
                             $scope.getCount();

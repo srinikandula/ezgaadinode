@@ -255,7 +255,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             ExpenseService.getPaybleAmountByParty({
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
-                regNumber: $scope.regNumber,
+                partyId: $scope.partyId,
                 page: $scope.filters.page,
                 sort: $scope.filters.sort,
                 size: $scope.filters.size
@@ -271,6 +271,17 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             }, function (err) {
 
             });
+            PartyService.getAllPartiesBySupplier(function(success){
+                if(success.data.status){
+                    $scope.suppliersList=success.data.parties;
+                }else{
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            },function(error){
+
+            })
         };
 
         $scope.getAllTrucks = function () {
@@ -666,6 +677,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 preConfirm: (email) => {
                     return new Promise((resolve) => {
                         TrucksService.shareExpiredDetailsViaEmail({
+                            fromDate: $scope.filters.fromDate,
+                            toDate: $scope.filters.toDate,
                             regNumber: $scope.regNumber,
                             email: email,
                             page: $scope.filters.page,
@@ -703,7 +716,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 preConfirm: (email) => {
                     return new Promise((resolve) => {
                         ExpenseService.sharePayableDetailsViaEmail({
-                            regNumber: $scope.regNumber,
+                            fromDate: $scope.filters.fromDate,
+                            toDate: $scope.filters.toDate,
+                            partyId: $scope.partyId,
                             email: email,
                             page: $scope.filters.page,
                             sort: $scope.filters.sort,
@@ -743,7 +758,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             window.open('/v1/trucks/downloadExpiryDetailsByTruck?regNumber=' + $scope.regNumber+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
         }
         $scope.downloadPaybleDetailsByParty = function () {
-            window.open('/v1/expense/downloadPaybleDetailsByParty?regNumber=' + $scope.regNumber+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
+            window.open('/v1/expense/downloadPaybleDetailsByParty?partyId=' + $scope.partyId+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
         }
     }]);
 
