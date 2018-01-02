@@ -112,6 +112,12 @@ AuthRouter.get('/sharePayableDetailsViaEmail',function(req,res){
     });
 })
 
+AuthRouter.get('/getPaybleAmountByPartyId',function(req,res){
+    ExpenseCost.getPaybleAmountByPartyId(req.jwt,req.query, function (result) {
+        res.send(result);
+    });
+})
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
