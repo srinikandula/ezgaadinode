@@ -43,58 +43,67 @@ describe('ERPSettingsTests', () => {
                 headerData = {"token": token};
             });
         /*
-        * Test the /Get Retrieving User Profile Information Success
+        * Test the /Get Retrieving User Default Settings Information Success
         */
-        it('Retrieving User Profile Information', (done) => {
+        it('Retrieving User Default Settings Information', (done) => {
             chai.request(server)
-                .get('/v1/admin/accounts/'+accountId)
+                .get('/v1/admin/getErpSettings/')
                 .set(headerData)
                 .end((err, res) => {
-                    expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Success']);
-                    res.body.account.should.be.a('object');
-                    res.body.account.should.have.property('userName').eql('ramarao');
-                    res.body.account.should.have.property('type').eql('account');
-                    done();
-                });
-        });
+                    res.body.result.revenue.should.have.property('filterType').eql('month');
+                    res.body.result.payment.should.have.property('filterType').eql('month');
+                    res.body.result.expense.should.have.property('filterType').eql('month');
+                    res.body.result.tollCard.should.have.property('filterType').eql('month');
+                    res.body.result.fuelCard.should.have.property('filterType').eql('month');
+                    res.body.result.expiry.should.have.property('filterType').eql('month');
 
-        /*
-        * Test the /Get Retrieving User Profile with Groups and Trucks Count Information Success
-        */
-        it('Retrieving User Profile with Groups and Trucks Count Information', (done) => {
-            chai.request(server)
-                .get('/v1/admin/userProfile/')
-                .set(headerData)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.result.profile.should.be.a('object');
-                    res.body.result.profile.should.have.property('userName').eql('ramarao');
-                    res.body.result.profile.should.have.property('type').eql('account');
-                    res.body.result.should.have.property('accountGroupsCount').eql(0);
-                    res.body.result.should.have.property('accountTrucksCount').eql(0);
                     done();
                 });
         });
         /*
-        * Test the /PUT Updating User Profile without Password Information Success
+        * Test the /PUT Updating User Default Settings with filter type day Information Success
         */
-        it('Updating User Profile without Password Information', (done) => {
-            let userProfileData = {
-                profile: {
-                    "_id":accountId,
-                    "userName": 'ramarao',
-                    "contactPhone": 9999999998,
-                    "email": 'ramarao@in.com'}
+        it('Updating User Default Settings with filter type day Information', (done) => {
+            let userSettings = {
+                settings: {
+                    revenue: {
+                        filterType: 'day',
+                        fromDate: new Date(),
+                        toDate: new Date()
+                    },
+                    payment: {
+                        filterType: 'day',
+                        fromDate: new Date(),
+                        toDate: new Date()
+                    },
+                    expense: {
+                        filterType: 'day',
+                        fromDate: new Date(),
+                        toDate: new Date()
+                    },
+                    tollCard: {
+                        filterType: 'day',
+                        fromDate: new Date(),
+                        toDate: new Date()
+                    },
+                    fuelCard: {
+                        filterType: 'day',
+                        fromDate: new Date(),
+                        toDate: new Date()
+                    },
+                    expiry: {
+                        filterType: 'day',
+                        fromDate: new Date(),
+                        toDate: new Date()
+                    }
+                }
             }
             chai.request(server)
-                .put('/v1/admin/accounts/update')
+                .put('/v1/admin/updateErpSettings')
                 .set(headerData)
-                .send(userProfileData)
+                .send(userSettings)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
@@ -104,102 +113,197 @@ describe('ERPSettingsTests', () => {
                 });
         });
         /*
-        * Test the /PUT Updating User Profile with Old Password Information Success
+        * Test the /PUT Updating User Default Settings with filter type week Information Success
         */
-        it('Updating User Profile with Old Password Information', (done) => {
-            let userProfileData = {
-                profile: {
-                    "_id":accountId,
-                    "userName": 'ramarao',
-                    "password": '',
-                    "contactPhone": 9999999998,
-                    "email": 'ramarao@in.com'},
-                "oldPassword": 'aesfaw'
+        it('Updating User Default Settings with filter type week Information', (done) => {
+            let userSettings = {
+                settings: {
+                    revenue: {
+                        filterType: 'week',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    payment: {
+                        filterType: 'week',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    expense: {
+                        filterType: 'week',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    tollCard: {
+                        filterType: 'week',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    fuelCard: {
+                        filterType: 'week',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    expiry: {
+                        filterType: 'week',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    }
+                }
             }
             chai.request(server)
-                .put('/v1/admin/accounts/update')
+                .put('/v1/admin/updateErpSettings')
                 .set(headerData)
-                .send(userProfileData)
+                .send(userSettings)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Please Provide New Password']);
+                    res.body.should.have.property('messages').eql(['Success']);
                     done();
                 });
         });
         /*
-        * Test the /PUT Updating User Profile without Confirm Password Information Success
+        * Test the /PUT Updating User Default Settings with filter type month Information Success
         */
-        it('Updating User Profile without Confirm Password Information', (done) => {
-            let userProfileData = {
-                profile: {
-                    "_id":accountId,
-                    "userName": 'ramarao',
-                    "password": '',
-                    "contactPhone": 9999999998,
-                    "email": 'ramarao@in.com'},
-                "oldPassword": 'aesfaw',
-                "newPassword": '123'
+        it('Updating User Default Settings with filter type month Information', (done) => {
+            let userSettings = {
+                settings: {
+                    revenue: {
+                        filterType: 'month',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -30)),
+                        toDate: new Date()
+                    },
+                    payment: {
+                        filterType: 'month',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -30)),
+                        toDate: new Date()
+                    },
+                    expense: {
+                        filterType: 'month',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -30)),
+                        toDate: new Date()
+                    },
+                    tollCard: {
+                        filterType: 'month',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -30)),
+                        toDate: new Date()
+                    },
+                    fuelCard: {
+                        filterType: 'month',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -30)),
+                        toDate: new Date()
+                    },
+                    expiry: {
+                        filterType: 'month',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -30)),
+                        toDate: new Date()
+                    }
+                }
             }
             chai.request(server)
-                .put('/v1/admin/accounts/update')
+                .put('/v1/admin/updateErpSettings')
                 .set(headerData)
-                .send(userProfileData)
+                .send(userSettings)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Passwords Not Matched']);
+                    res.body.should.have.property('messages').eql(['Success']);
                     done();
                 });
         });
         /*
-        * Test the /PUT Updating User Profile with Wrong Password Information Success
+        * Test the /PUT Updating User Default Settings with filter type year Information Success
         */
-        it('Updating User Profile with Wrong Password Information', (done) => {
-            let userProfileData = {
-                profile: {
-                    "_id":accountId,
-                    "userName": 'ramarao',
-                    "password": '',
-                    "contactPhone": 9999999998,
-                    "email": 'ramarao@in.com'},
-                "oldPassword": 'aesfaw',
-                "newPassword": '123',
-                "confirmPassword": '123'
+        it('Updating User Default Settings with filter type year Information', (done) => {
+            let userSettings = {
+                settings: {
+                    revenue: {
+                        filterType: 'year',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -365)),
+                        toDate: new Date()
+                    },
+                    payment: {
+                        filterType: 'year',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -365)),
+                        toDate: new Date()
+                    },
+                    expense: {
+                        filterType: 'year',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -365)),
+                        toDate: new Date()
+                    },
+                    tollCard: {
+                        filterType: 'year',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -365)),
+                        toDate: new Date()
+                    },
+                    fuelCard: {
+                        filterType: 'year',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -365)),
+                        toDate: new Date()
+                    },
+                    expiry: {
+                        filterType: 'year',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -365)),
+                        toDate: new Date()
+                    }
+                }
             }
             chai.request(server)
-                .put('/v1/admin/accounts/update')
+                .put('/v1/admin/updateErpSettings')
                 .set(headerData)
-                .send(userProfileData)
+                .send(userSettings)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Invalid Password']);
+                    res.body.should.have.property('messages').eql(['Success']);
                     done();
                 });
         });
         /*
-        * Test the /PUT Updating User Profile Information Success
+        * Test the /PUT Updating User Default Settings with filter type custom Information Success
         */
-        it('Updating User Profile Information', (done) => {
-            let userProfileData = {
-                profile: {
-                    "_id":accountId,
-                    "userName": 'ramarao',
-                    "password": '',
-                    "contactPhone": 9999999998,
-                    "email": 'ramarao@in.com'},
-                "oldPassword": '9999999999',
-                "newPassword": '123',
-                "confirmPassword": '123'
+        it('Updating User Default Settings with filter type custom Information', (done) => {
+            let userSettings = {
+                settings: {
+                    revenue: {
+                        filterType: 'custom',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    payment: {
+                        filterType: 'custom',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    expense: {
+                        filterType: 'custom',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    tollCard: {
+                        filterType: 'custom',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    fuelCard: {
+                        filterType: 'custom',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    },
+                    expiry: {
+                        filterType: 'custom',
+                        fromDate: new Date(new Date().setDate(new Date().getDate() -7)),
+                        toDate: new Date()
+                    }
+                }
             }
             chai.request(server)
-                .put('/v1/admin/accounts/update')
+                .put('/v1/admin/updateErpSettings')
                 .set(headerData)
-                .send(userProfileData)
+                .send(userSettings)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     res.should.have.status(200);

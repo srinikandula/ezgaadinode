@@ -228,7 +228,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         description: '',
         partyId: undefined,
         totalAmount:'',
-        paidAmount:'',
+        paidAmount:0,
         date: '',
         mode:'',
         expenseName: '',
@@ -363,8 +363,8 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         if (!params.totalAmount && params.mode === 'Credit') {
             params.error.push('Please Enter Total Expense Amount');
         }
-        if (!params.paidAmount && params.mode === 'Credit') {
-            params.error.push('Please enter Paid Amount');
+        if (!_.isNumber(params.paidAmount) && params.mode === 'Credit') {
+            params.error.push('Invalid Paid Amount');
         }
         if(params.mode === 'Credit') {
             if (params.paidAmount > params.totalAmount) {

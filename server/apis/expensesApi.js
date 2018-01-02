@@ -68,6 +68,14 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Enter other expenseType";
         callback(result);
+    } else if (!expenseDetails.mode) {
+        result.status = false;
+        result.message = "Please Select Cash or Credit";
+        callback(result);
+    } else if (!expenseDetails.partyId && expenseDetails.mode === 'Credit') {
+        result.status = false;
+        result.message = "Please Select Party";
+        callback(result);
     } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.totalAmount || _.isNaN(expenseDetails.totalAmount))) {
         result.status = false;
         result.message = "Please provide Total Expense Amount";
@@ -76,13 +84,9 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Please enter Total Expense Amount";
         callback(result);
-    } else if (expenseDetails.mode === 'Credit' && (!expenseDetails.paidAmount || _.isNaN(expenseDetails.paidAmount))) {
+    } else if (expenseDetails.mode === 'Credit' && _.isNaN(expenseDetails.paidAmount)) {
         result.status = false;
-        result.message = "Please enter Paid Amount";
-        callback(result);
-    } else if (!expenseDetails.mode) {
-        result.status = false;
-        result.message = "Please Select Cash or Credit";
+        result.message = "Invalid Paid Amount";
         callback(result);
     } else {
         expenseDetails.createdBy = jwt.id;
@@ -770,7 +774,6 @@ function getPaybleAmountByParty(condition, params, callback) {
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {};
     condition.mode = "Credit";
-    console.log('condition123', condition);
     expenseColl.aggregate({ $match: condition },
         {
             "$lookup": {
@@ -791,6 +794,7 @@ function getPaybleAmountByParty(condition, params, callback) {
         { "$limit": limit },
 
         function (err, payble) {
+        console.log('err',err)
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');
