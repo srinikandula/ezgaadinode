@@ -912,8 +912,8 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
             TripCollection.aggregate(condition,
                 { $group: { _id: "$registrationNo", totalFreight: { $sum: "$freightAmount" } } },
                 { "$sort": sort },
-                { "$skip" : skipNumber },
-                { "$limit":limit },
+                { "$skip": skipNumber },
+                { "$limit": limit },
                 function (err, totalFreight) {
                     callback(err, totalFreight);
                 });
@@ -922,8 +922,8 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
             ExpenseCostColl.aggregate(condition,
                 { $group: { _id: "$vehicleNumber", totalExpenses: { $sum: "$cost" } } },
                 { "$sort": sort },
-                { "$skip" : skipNumber },
-                { "$limit":limit },
+                { "$skip": skipNumber },
+                { "$limit": limit },
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
                 });
@@ -1114,6 +1114,51 @@ Trips.prototype.downloadRevenueDetailsByVechicle = function (jwt, params, callba
         }
     })
 
+
+}
+
+
+Trips.prototype.getPartiesByTrips = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (!jwt.accountId || !ObjectId.isValid(jwt.accountId)) {
+        retObj.status = false;
+        retObj.messages.push("Invalid Login");
+        callback(retObj);
+    } else {
+        TripCollection.distinct('partyId', { accountId: jwt.accountId }, function (err, partyIds) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else if (partyIds.length > 0) {
+                PartyCollection.find({ _id: { $in: partyIds } },{name:1,contact:1}, function (err, partyList) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.messages.push("Please try again");
+                        callback(retObj);
+                    } else if (partyList.length > 0) {
+                        retObj.status = true;
+                        retObj.partyList = partyList;
+                        retObj.messages.push("success");
+                        callback(retObj);
+                    } else {
+                        retObj.status = false;
+                        retObj.messages.push("No parties found");
+                        callback(retObj);
+                    }
+                })
+
+            } else {
+                retObj.status = false;
+                retObj.messages.push("No parties found");
+                callback(retObj);
+            }
+        })
+    }
 
 }
 module.exports = new Trips();

@@ -42,6 +42,11 @@ AuthRouter.get('/downloadRevenueDetailsByVechicle', function (req, res) {
    
 
 });
+AuthRouter.get('/getPartiesByTrips',function(req,res){
+    Trips.getPartiesByTrips(req.jwt,function(result){
+        res.send(result);
+    })
+})
 AuthRouter.get('/:tripId', function (req, res) {
     Trips.findTrip(req.jwt, req.params.tripId, function (result) {
         res.send(result);
@@ -98,6 +103,7 @@ AuthRouter.get('/total/count', function (req, res) {
         res.send(result);
     });
 });
+
 
 
 module.exports = {

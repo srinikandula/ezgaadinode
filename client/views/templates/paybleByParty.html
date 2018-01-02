@@ -16,7 +16,7 @@
                     
 
                            <input type="text" ng-model="filters.partyName" 
-                           uib-typeahead="party.name for party in partiesList | filter:$viewValue"
+                           uib-typeahead="party.name for party in suppliersList | filter:$viewValue"
                            class="form-control textfield" typeahead-min-length="1"
                            typeahead-on-select="selectPartyId($item)"
                            ng-change="resetPartyName();"

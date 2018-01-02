@@ -200,7 +200,6 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
 }]);
 
 app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$stateParams', '$state', 'Notification', 'TripServices', 'TrucksService', 'PartyService', function ($scope, PaymentsService, $stateParams, $state, Notification, TripServices, TrucksService, PartyService) {
-
     $scope.paymentRefNumber = false;
 
     $scope.refNum = function () {
@@ -224,30 +223,33 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
     $scope.cancel = function () {
         $state.go('payments');
     };
-
+    
 
     function getPartyIds() {
-        PartyService.getAccountParties(function (success) {
+        TripServices.getPartiesByTrips(function (success) {
             if (success.data.status) {
-                $scope.parties = success.data.parties;
-                var selectedParty = _.find($scope.parties, function (party) {
+                $scope.parties = success.data.partyList;
+                /* var selectedParty = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.paymentsDetails.partyId;
-                });
-                if (selectedParty) {
+                }); */
+               /*  if (selectedParty) {
                     $scope.partyName = selectedParty.name;
-                }
+                } */
             } else {
-                Notification.error(success.data.message);
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+               
             }
         }, function (error) {
 
         });
     }
-
     getPartyIds();
 
     $scope.selectPartyId = function (party) {
         $scope.paymentsDetails.partyId = party._id;
+        console.log('$scope.paymentsDetails.partyId',$scope.paymentsDetails.partyId);
     }
 
     if ($stateParams.paymentsId) {
