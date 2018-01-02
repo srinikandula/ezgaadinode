@@ -359,7 +359,7 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  */
 Expenses.prototype.findTotalExpenses = function (jwt, callback) {
     expenseColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
-        { $group: { _id: null, totalExpenses: { $sum: "$cost" } } },
+        { $group: { _id: null, totalExpenses: { $sum: "$totalAmount" } } },
         function (error, result) {
             var retObj = {
                 status: false,
@@ -466,13 +466,13 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
 
                 for (var i = 0; i < result.expenses.length; i++) {
                     if (result.expenses[i].attrs.expenseName === 'Diesel') {
-                        totalDieselExpense = totalDieselExpense + result.expenses[i].cost;
+                        totalDieselExpense = totalDieselExpense + result.expenses[i].totalAmount;
                     } else if (result.expenses[i].attrs.expenseName === 'Toll') {
-                        totaltollExpense = totaltollExpense + result.expenses[i].cost;
+                        totaltollExpense = totaltollExpense + result.expenses[i].totalAmount;
                     } else if (result.expenses[i].attrs.expenseName === 'Maintenance') {
-                        totalmExpense = totalmExpense + result.expenses[i].cost;
+                        totalmExpense = totalmExpense + result.expenses[i].totalAmount;
                     } else {
-                        totalmisc = totalmisc + result.expenses[i].cost;
+                        totalmisc = totalmisc + result.expenses[i].totalAmount;
                     }
                 }
                 result.totalExpenses = { totalDieselExpense: totalDieselExpense, totaltollExpense: totaltollExpense, totalmExpense: totalmExpense, totalmisc: totalmisc };
@@ -548,7 +548,7 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
                 {
                     $group: {
                         _id: { "vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType" },
-                        totalExpenses: { $sum: "$cost" }
+                        totalExpenses: { $sum: "$totalAmount" }
                     }
 
                 },
