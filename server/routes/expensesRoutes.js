@@ -91,6 +91,27 @@ AuthRouter.get('/downloadExpenseDetailsByVechicle',function(req,res){
     });
 })
 
+AuthRouter.get('/downloadPaybleDetailsByParty',function(req,res){
+    ExpenseCost.downloadPaybleDetailsByParty(req.jwt,req.query, function (result) {
+        if(result.status){
+            res.xls('payble'+new Date().toLocaleDateString()+'.xlsx', result.data);
+        }else{
+            res.send(result);
+        }   
+    });
+})
+AuthRouter.get('/getPaybleAmountByParty',function(req,res){
+    ExpenseCost.getPaybleAmountByParty(req.jwt,req.query,function(result){
+        res.send(result);
+    })
+})
+
+AuthRouter.get('/sharePayableDetailsViaEmail',function(req,res){
+    ExpenseCost.sharePayableDetailsViaEmail(req.jwt,req.query, function (result) {
+        res.send(result);
+    });
+})
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

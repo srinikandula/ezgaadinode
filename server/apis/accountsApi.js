@@ -279,6 +279,11 @@ Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
                         expiringCallback(response.error, response.expiryCount);
                     });
                 },
+                paybleAmount:function(paybleCallback){
+                    Expenses.findPaybleAmountForAccount(Utils.getErpSettings(erpSettings.expense,erpSettings.accountId), function (response) {
+                        paybleCallback(response.error, response.paybleCount);
+                    });
+                }
             }, function (error, dashboardContent) {
                 if (error) {
                     retObj.status = true;
