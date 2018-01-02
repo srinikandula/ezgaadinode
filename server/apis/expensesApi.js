@@ -104,7 +104,7 @@ function updateExpense(expense, jwt, callback) {
                 "cost": expense.cost,
                 "mode": expense.mode,
                 "partyId": expense.partyId,
-                "totaAmount": expense.totalAmount,
+                "totalAmount": expense.totalAmount,
                 "paidAmount": expense.paidAmount,
                 "date": expense.date
             }
