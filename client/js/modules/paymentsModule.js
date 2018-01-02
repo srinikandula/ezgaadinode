@@ -229,12 +229,12 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         TripServices.getPartiesByTrips(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.partyList;
-                /* var selectedParty = _.find($scope.parties, function (party) {
+                var selectedParty = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.paymentsDetails.partyId;
-                }); */
-               /*  if (selectedParty) {
+                });
+                if (selectedParty) {
                     $scope.partyName = selectedParty.name;
-                } */
+                }
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -249,7 +249,6 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
     $scope.selectPartyId = function (party) {
         $scope.paymentsDetails.partyId = party._id;
-        console.log('$scope.paymentsDetails.partyId',$scope.paymentsDetails.partyId);
     }
 
     if ($stateParams.paymentsId) {

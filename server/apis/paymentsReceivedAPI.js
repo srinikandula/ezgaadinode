@@ -434,6 +434,10 @@ function getDuesByParty(jwt, condition, callback) {
 
 PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
     var condition = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
     if (params.fromDate != '' && params.toDate != '' && params.partyId != '') {
         condition = {
             $match: {
