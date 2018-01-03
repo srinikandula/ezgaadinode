@@ -68,6 +68,14 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Enter other expenseType";
         callback(result);
+    } else if (!expenseDetails.mode) {
+        result.status = false;
+        result.message = "Please Select Cash or Credit";
+        callback(result);
+    } else if (!expenseDetails.partyId && expenseDetails.mode === 'Credit') {
+        result.status = false;
+        result.message = "Please Select Party";
+        callback(result);
     } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.totalAmount || _.isNaN(expenseDetails.totalAmount))) {
         result.status = false;
         result.message = "Please provide Total Expense Amount";
@@ -76,13 +84,9 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Please enter Total Expense Amount";
         callback(result);
-    } else if (expenseDetails.mode === 'Credit' && (!expenseDetails.paidAmount || _.isNaN(expenseDetails.paidAmount))) {
+    } else if (expenseDetails.mode === 'Credit' && _.isNaN(expenseDetails.paidAmount)) {
         result.status = false;
-        result.message = "Please enter Paid Amount";
-        callback(result);
-    } else if (!expenseDetails.mode) {
-        result.status = false;
-        result.message = "Please Select Cash or Credit";
+        result.message = "Invalid Paid Amount";
         callback(result);
     } else {
         expenseDetails.createdBy = jwt.id;
@@ -104,7 +108,7 @@ function updateExpense(expense, jwt, callback) {
                 "cost": expense.cost,
                 "mode": expense.mode,
                 "partyId": expense.partyId,
-                "totaAmount": expense.totalAmount,
+                "totalAmount": expense.totalAmount,
                 "paidAmount": expense.paidAmount,
                 "date": expense.date
             }
@@ -359,7 +363,7 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  */
 Expenses.prototype.findTotalExpenses = function (jwt, callback) {
     expenseColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
-        { $group: { _id: null, totalExpenses: { $sum: "$cost" } } },
+        { $group: { _id: null, totalExpenses: { $sum: "$totalAmount" } } },
         function (error, result) {
             var retObj = {
                 status: false,
@@ -466,13 +470,13 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
 
                 for (var i = 0; i < result.expenses.length; i++) {
                     if (result.expenses[i].attrs.expenseName === 'Diesel') {
-                        totalDieselExpense = totalDieselExpense + result.expenses[i].cost;
+                        totalDieselExpense = totalDieselExpense + result.expenses[i].totalAmount;
                     } else if (result.expenses[i].attrs.expenseName === 'Toll') {
-                        totaltollExpense = totaltollExpense + result.expenses[i].cost;
+                        totaltollExpense = totaltollExpense + result.expenses[i].totalAmount;
                     } else if (result.expenses[i].attrs.expenseName === 'Maintenance') {
-                        totalmExpense = totalmExpense + result.expenses[i].cost;
+                        totalmExpense = totalmExpense + result.expenses[i].totalAmount;
                     } else {
-                        totalmisc = totalmisc + result.expenses[i].cost;
+                        totalmisc = totalmisc + result.expenses[i].totalAmount;
                     }
                 }
                 result.totalExpenses = { totalDieselExpense: totalDieselExpense, totaltollExpense: totaltollExpense, totalmExpense: totalmExpense, totalmisc: totalmisc };
@@ -548,7 +552,7 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
                 {
                     $group: {
                         _id: { "vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType" },
-                        totalExpenses: { $sum: "$cost" }
+                        totalExpenses: { $sum: "$totalAmount" }
                     }
 
                 },
@@ -744,7 +748,6 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
                 retObj.messages.push('Error');
                 callback(retObj);
             } else if(expense.length>0){
-
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.paybleCount = expense[0].totalAmount - expense[0].paidAmount;
@@ -771,7 +774,6 @@ function getPaybleAmountByParty(condition, params, callback) {
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {};
     condition.mode = "Credit";
-    console.log('condition123', condition);
     expenseColl.aggregate({ $match: condition },
         {
             "$lookup": {
@@ -792,6 +794,7 @@ function getPaybleAmountByParty(condition, params, callback) {
         { "$limit": limit },
 
         function (err, payble) {
+        console.log('err',err)
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');

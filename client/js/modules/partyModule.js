@@ -276,14 +276,26 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.city) {
             params.error.push('Invalid city');
         }
-        if (!params.tripLanes[0].name) {
-            params.error.push('Please provide TripLane Name');
-        }
         if (!params.partyType) {
             params.error.push('Please select party type');
         }
-        if (!params.isSms && !params.isEmail) {
-            params.error.push('Please select notification type');
+        if (params.partyType === 'Transporter') {
+            if (!params.isSms && !params.isEmail) {
+                params.error.push('Please select notification type');
+            }
+            for(var i = 0;i < params.tripLanes.length;i++) {
+                if (!params.tripLanes[i].name) {
+                    params.error.push('Please provide TripLane Name');
+                }
+
+                if (!params.tripLanes[i].from) {
+                    params.error.push('Please provide From Name');
+                }
+
+                if (!params.tripLanes[i].to) {
+                    params.error.push('Please provide To Name');
+                }
+            }
         }
 
         if (!params.error.length) {

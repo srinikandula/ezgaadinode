@@ -17,29 +17,34 @@ var Party = function () {
 };
 
 Party.prototype.addParty = function (jwt, partyDetails, callback) {
-    var result = {message: '', status: true};
+
+    var result = {message: [], status: true};
 
     if (!_.isObject(partyDetails) || _.isEmpty(partyDetails)) {
         result.status = false;
-        result.message += " Please fill all the required details for party";
+        result.message.push(" Please fill all the required details for party");
     }
     if (!partyDetails.name || !_.isString(partyDetails.name)) {
         result.status = false;
-        result.message += " Please provide valid party name";
+        result.message.push(" Please provide valid party name");
     }
     if (!Utils.isValidPhoneNumber(partyDetails.contact)) {
         result.status = false;
-        result.message += " Please provide valid contact number for party type";
+        result.message.push(" Please provide valid contact number for party type");
     }
 
     if(!partyDetails.partyType ){
         result.status = false;
-        result.message += " Please select party type";
+        result.message.push(" Please select party type");
     }
-    if(!partyDetails.isSms && !partyDetails.isEmail){
-        result.status = false;
-        result.message += " Please select notification type";
+
+    if(partyDetails.partyType === 'Transporter'){
+        if(!partyDetails.isSms && !partyDetails.isEmail){
+            result.status = false;
+            result.message.push(" Please select notification type");
+        }
     }
+
 
     if (result.status === false) {
         callback(result);
@@ -51,12 +56,12 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
         partyDoc.save(function (err, party) {
             if (err) {
                 result.status = false;
-                result.message = "Error while adding party, try Again";
+                result.message.push("Error while adding party, try Again");
                 result.error = err;
                 callback(result);
             } else {
                 result.status = true;
-                result.message = "Party Added Successfully";
+                result.message.push("Party Added Successfully");
                 result.party = party;
                 callback(result);
             }
@@ -87,7 +92,7 @@ Party.prototype.findParty = function (jwt, partyId, callback) {
 
 
 Party.prototype.updateParty = function (jwt, partyDetails, callback) {
-    var result = {};
+    var result = {messages:[]};
     PartyCollection.findOneAndUpdate({_id: partyDetails._id, accountId: jwt.accountId},
         {
             $set: {
@@ -105,16 +110,16 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
         {new: true}, function (err, party) {
             if (err) {
                 result.status = false;
-                result.message = "Error while updating party, try Again";
+                result.messages.push("Error while updating party, try Again");
                 callback(result);
             } else if (party) {
                 result.status = true;
-                result.message = "Party updated successfully";
+                result.messages.push("Party updated successfully");
                 result.party = party;
                 callback(result);
             } else {
                 result.status = false;
-                result.message = "Error, finding party";
+                result.messages.push("Error, finding party");
                 callback(result);
             }
         });

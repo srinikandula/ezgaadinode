@@ -7,19 +7,19 @@
                 {{listOfExpensesByVehicleId.date | date:'dd-MM-yyyy' }}
             </td>
             <td data-title="'Diesel'" sortable="'dieselExpense'" class="clickable-item col-sm-2">
-                {{ listOfExpensesByVehicleId.attrs.expenseName == 'Diesel' ? listOfExpensesByVehicleId.cost : "0" }}
+                {{ listOfExpensesByVehicleId.attrs.expenseName == 'Diesel' ? listOfExpensesByVehicleId.totalAmount : "0" }}
             </td>
             <td data-title="'Toll'" sortable="'tollExpense'" class="clickable-item col-sm-2">
-                {{ listOfExpensesByVehicleId.attrs.expenseName == 'Toll' ? listOfExpensesByVehicleId.cost : "0" }}
+                {{ listOfExpensesByVehicleId.attrs.expenseName == 'Toll' ? listOfExpensesByVehicleId.totalAmount : "0" }}
                 
             </td>
 
             <td data-title="'Maintenance'" sortable="'mExpense'" class="clickable-item col-sm-2">
-                {{ listOfExpensesByVehicleId.attrs.expenseName == 'Maintenance' ? listOfExpensesByVehicleId.cost : "0" }}
+                {{ listOfExpensesByVehicleId.attrs.expenseName == 'Maintenance' ? listOfExpensesByVehicleId.totalAmount : "0" }}
             </td>
             
             <td data-title="'Miscellaneous'" sortable="'misc'" class="clickable-item col-sm-2" >
-               <a href="#" ng-click="GetExpense(sravan)"></a>{{GetExpense(listOfExpensesByVehicleId.attrs.expenseName,listOfExpensesByVehicleId.cost)}}</a>
+               <a href="#" ng-click="GetExpense(sravan)"></a>{{GetExpense(listOfExpensesByVehicleId.attrs.expenseName,listOfExpensesByVehicleId.totalAmount)}}</a>
             </td>
            
         </tr>
