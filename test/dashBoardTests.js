@@ -58,24 +58,29 @@ describe('DashboardTest', () => {
             });
 
         /*
-        * Test the /Get route Trucks Expiry Count Information Success
+        * Test the /Get route Retrieving empty Dashboard Information Success
         */
-        it('Retrieving empty Dashboard Data', (done) => {
+        it('Retrieving empty Dashboard Information', (done) => {
 
             TrucksColl.remove({}, function (error, result) {
                 chai.request(server)
-                    .get('/v1/trucks/findExpiryCount')
+                    .get('/v1/admin/erpDashboard')
                     .set(headerData)
                     .end((err, res) => {
                         //expect(err).to.be.null;
                         res.should.have.status(200);
                         res.body.should.be.a('object');
-                        res.body.should.have.property('messages').eql(['Success']);
-                        res.body.expiryCount.should.have.property('fitnessExpiryCount').eql(0);
-                        res.body.expiryCount.should.have.property('permitExpiryCount').eql(0);
-                        res.body.expiryCount.should.have.property('insuranceExpiryCount').eql(0);
-                        res.body.expiryCount.should.have.property('pollutionExpiryCount').eql(0);
-                        res.body.expiryCount.should.have.property('taxExpiryCount').eql(0);
+                        res.body.result.should.be.a('object');
+                        res.body.result.should.have.property('expensesTotal').eql(0);
+                        res.body.result.should.have.property('totalRevenue').eql(0);
+                        res.body.result.should.have.property('paybleAmount').eql(0);
+                        res.body.result.should.have.property('pendingDue').eql(0);
+                        res.body.expiring.should.be.a('object');
+                        res.body.expiring.should.have.property('pollutionExpiryCount').eql(0);
+                        res.body.expiring.should.have.property('insuranceExpiryCount').eql(0);
+                        res.body.expiring.should.have.property('taxExpiryCount').eql(0);
+                        res.body.expiring.should.have.property('fitnessExpiryCount').eql(0);
+                        res.body.expiring.should.have.property('permitExpiryCount').eql(0);
                         done();
                     });
             });
