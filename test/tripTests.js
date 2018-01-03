@@ -35,6 +35,7 @@ describe('TripTest', () => {
         userData.save(function (err, account) {
 
         });
+        it('Retrieving Login Information', (done) => {
         chai.request(server)
             .post('/v1/group/login')
             .send(userData)
@@ -46,7 +47,9 @@ describe('TripTest', () => {
                 res.body.should.have.property('token');
                 token = res.body.token;
                 headerData = {"token": token};
+                done();
             });
+        });
         /*
         * Test the /GET route Retrieving Empty Trip Information Success
         */
@@ -108,6 +111,7 @@ describe('TripTest', () => {
                 "isEmail":true,
                 "isSupplier" : true,
                 "isTransporter" : true,
+                "partyType":'Transporter'
             };
 
             async.parallel({
@@ -164,7 +168,7 @@ describe('TripTest', () => {
                                 expect(err).to.be.null;
                                 res.should.have.status(200);
                                 res.body.should.be.a('object');
-                                res.body.should.have.property('message').eql('Party Added Successfully');
+                                res.body.should.have.property('message').eql([ 'Party Added Successfully' ]);
                                 res.body.should.have.property('party');
                                 res.body.party.should.have.property('name');
                                 res.body.party.should.have.property('name').eql('Party1');
@@ -183,7 +187,7 @@ describe('TripTest', () => {
                     "date": new Date(),
                     "registrationNo": truckId,
                     "partyId": partyId,
-                    "driverId": driverId,
+                   "driverId": driverId,
                     "freightAmount": 1500,
                     "share":true,
                     "attrs" : {

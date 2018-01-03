@@ -18,7 +18,7 @@ var Party = function () {
 
 Party.prototype.addParty = function (jwt, partyDetails, callback) {
 
-    var result = {message: [], status: true};
+    var result = { message: [], status: true };
 
     if (!_.isObject(partyDetails) || _.isEmpty(partyDetails)) {
         result.status = false;
@@ -33,45 +33,68 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
         result.message.push(" Please provide valid contact number for party type");
     }
 
-    if(!partyDetails.partyType ){
+    if (!partyDetails.partyType) {
         result.status = false;
         result.message.push(" Please select party type");
     }
 
-    if(partyDetails.partyType === 'Transporter'){
-        if(!partyDetails.isSms && !partyDetails.isEmail){
+    if (partyDetails.partyType === 'Transporter') {
+        if (!partyDetails.isSms && !partyDetails.isEmail) {
             result.status = false;
             result.message.push(" Please select notification type");
+        }
+        if (partyDetails.tripLanes.length > 0) {
+            for (var i = 0; i < partyDetails.tripLanes.length; i++) {
+                if (!partyDetails.tripLanes[i].name) {
+                    result.status = false;
+                    result.message.push('Please provide TripLane Name');
+                }
+
+                if (!partyDetails.tripLanes[i].from) {
+                    result.status = false;
+                    result.message.push('Please provide From Name');
+                }
+
+                if (!partyDetails.tripLanes[i].to) {
+                    result.status = false;
+                    result.message.push('Please provide To Name');
+                }
+            }
+        } else {
+            result.status = false;
+            result.message.push('Please add triplane');
         }
     }
 
 
-    if (result.status === false) {
-        callback(result);
-    } else {
-        partyDetails.createdBy = jwt.id;
-        partyDetails.updatedBy = jwt.id;
-        partyDetails.accountId = jwt.accountId;
-        var partyDoc = new PartyCollection(partyDetails);
-        partyDoc.save(function (err, party) {
-            if (err) {
-                result.status = false;
-                result.message.push("Error while adding party, try Again");
-                result.error = err;
-                callback(result);
-            } else {
-                result.status = true;
-                result.message.push("Party Added Successfully");
-                result.party = party;
-                callback(result);
-            }
-        });
-    }
+
+
+if (result.status === false) {
+    callback(result);
+} else {
+    partyDetails.createdBy = jwt.id;
+    partyDetails.updatedBy = jwt.id;
+    partyDetails.accountId = jwt.accountId;
+    var partyDoc = new PartyCollection(partyDetails);
+    partyDoc.save(function (err, party) {
+        if (err) {
+            result.status = false;
+            result.message.push("Error while adding party, try Again");
+            result.error = err;
+            callback(result);
+        } else {
+            result.status = true;
+            result.message.push("Party Added Successfully");
+            result.party = party;
+            callback(result);
+        }
+    });
+}
 };
 
 Party.prototype.findParty = function (jwt, partyId, callback) {
     var result = {};
-    PartyCollection.findOne({_id: partyId, accountId: jwt.accountId}, function (err, party) {
+    PartyCollection.findOne({ _id: partyId, accountId: jwt.accountId }, function (err, party) {
         if (err) {
             result.status = false;
             result.message = "Error while finding party, try Again";
@@ -92,8 +115,8 @@ Party.prototype.findParty = function (jwt, partyId, callback) {
 
 
 Party.prototype.updateParty = function (jwt, partyDetails, callback) {
-    var result = {messages:[]};
-    PartyCollection.findOneAndUpdate({_id: partyDetails._id, accountId: jwt.accountId},
+    var result = { messages: [] };
+    PartyCollection.findOneAndUpdate({ _id: partyDetails._id, accountId: jwt.accountId },
         {
             $set: {
                 "name": partyDetails.name,
@@ -102,12 +125,12 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 "city": partyDetails.city,
                 "tripLanes": partyDetails.tripLanes,
                 "updatedBy": jwt.id,
-                "partyType":partyDetails.partyType,
-                "isSms":partyDetails.isSms,
-                "isEmail":partyDetails.isEmail
+                "partyType": partyDetails.partyType,
+                "isSms": partyDetails.isSms,
+                "isEmail": partyDetails.isEmail
             }
         },
-        {new: true}, function (err, party) {
+        { new: true }, function (err, party) {
             if (err) {
                 result.status = false;
                 result.messages.push("Error while updating party, try Again");
@@ -125,24 +148,24 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
         });
 };
 
-Party.prototype.getAccountParties = function (jwt, params, callback){
+Party.prototype.getAccountParties = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var condition={};
+    var condition = {};
     if (!params.page) {
         params.page = 1;
 
     }
-    if(!params.partyName){
-        condition={accountId: jwt.accountId}
-    }else{
-        condition={accountId: jwt.accountId,name:{ $regex: '.*' + params.partyName + '.*' } }
+    if (!params.partyName) {
+        condition = { accountId: jwt.accountId }
+    } else {
+        condition = { accountId: jwt.accountId, name: { $regex: '.*' + params.partyName + '.*' } }
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
     async.parallel({
         parties: function (partiesCallback) {
             PartyCollection
@@ -155,7 +178,7 @@ Party.prototype.getAccountParties = function (jwt, params, callback){
                     async.parallel({
                         createdbyname: function (createdbyCallback) {
                             Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
-                                createdbyCallback(response.err,response.documents);
+                                createdbyCallback(response.err, response.documents);
                             });
                         }
                         // rolesname:
@@ -165,7 +188,7 @@ Party.prototype.getAccountParties = function (jwt, params, callback){
                 });
         },
         count: function (countCallback) {
-            PartyCollection.count({accountId: jwt.accountId},function (err, count) {
+            PartyCollection.count({ accountId: jwt.accountId }, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -216,7 +239,7 @@ Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
         messages: []
     };
 
-    PartyCollection.find({partyType:'Supplier', accountId: jwt.accountId}, function (err, parties) {
+    PartyCollection.find({ partyType: 'Supplier', accountId: jwt.accountId }, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             callback(retObj);
@@ -242,7 +265,7 @@ Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
         messages: []
     };
 
-    PartyCollection.find({partyType:'Transporter', accountId: jwt.accountId}, function (err, parties) {
+    PartyCollection.find({ partyType: 'Transporter', accountId: jwt.accountId }, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             callback(retObj);
@@ -264,7 +287,7 @@ Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
 
 Party.prototype.deleteParty = function (jwt, partyId, callback) {
     var result = {};
-    var query = {_id: partyId};
+    var query = { _id: partyId };
     //if the use is not admin
     //query['accountId'] = jwt.accountId;
     PartyCollection.remove(query, function (err, retValue) {
@@ -285,7 +308,7 @@ Party.prototype.deleteParty = function (jwt, partyId, callback) {
 };
 Party.prototype.countParty = function (jwt, callback) {
     var result = {};
-    PartyCollection.count({'accountId':jwt.accountId},function (err, data) {
+    PartyCollection.count({ 'accountId': jwt.accountId }, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -304,7 +327,7 @@ Party.prototype.countParty = function (jwt, callback) {
  * @param partyId
  * @param callback
  */
-Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
+Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -312,18 +335,18 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
     var totalFreight = 0;
     var totalPaid = 0;
     async.parallel({
-        trips: function(tripsCallback) {
-            Trips.findTripsByParty(jwt,partyId,function (tripsResults) {
+        trips: function (tripsCallback) {
+            Trips.findTripsByParty(jwt, partyId, function (tripsResults) {
                 tripsCallback(tripsResults.error, tripsResults.trips);
             });
         },
-        payments: function(paymentsCallback){
-            PaymentsReceived.findPartyPayments(jwt,partyId, function(partyResults){
+        payments: function (paymentsCallback) {
+            PaymentsReceived.findPartyPayments(jwt, partyId, function (partyResults) {
                 paymentsCallback(partyResults.error, partyResults.payments);
             });
         }
-    },function (error, tripsAndPayments) {
-        if(error){
+    }, function (error, tripsAndPayments) {
+        if (error) {
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
             callback(retObj);
@@ -331,20 +354,20 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.results = tripsAndPayments.payments;
-            if(tripsAndPayments.trips){
+            if (tripsAndPayments.trips) {
                 retObj.results = retObj.results.concat(tripsAndPayments.trips);
-               for(var i = 0;i < retObj.results.length;i++){
-                    if(retObj.results[i].freightAmount) {
+                for (var i = 0; i < retObj.results.length; i++) {
+                    if (retObj.results[i].freightAmount) {
                         totalFreight = totalFreight + retObj.results[i].freightAmount;
                     }
-                    if(retObj.results[i].amount) {
+                    if (retObj.results[i].amount) {
                         totalPaid = totalPaid + retObj.results[i].amount;
                     }
                 }
-                retObj.totalPendingPayments = {totalFreight:totalFreight,totalPaid:totalPaid}
+                retObj.totalPendingPayments = { totalFreight: totalFreight, totalPaid: totalPaid }
             }
-            if(retObj.results){
-                retObj.results = retObj.results.sort(function(x,y){
+            if (retObj.results) {
+                retObj.results = retObj.results.sort(function (x, y) {
                     return x.date > y.date ? 1 : -1;
                 });
             }
@@ -357,26 +380,26 @@ Party.prototype.findTripsAndPaymentsForParty = function(jwt, partyId, callback){
 * Retrieve trips and expenses details based on vehicle number
 * */
 
-Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callback){
+Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     async.parallel({
-        trips: function(tripsCallback) {
-            Trips.findTripsByVehicle(jwt,vehicleId,function (tripsResults) {
-                 tripsCallback(tripsResults.error, tripsResults.trips);
+        trips: function (tripsCallback) {
+            Trips.findTripsByVehicle(jwt, vehicleId, function (tripsResults) {
+                tripsCallback(tripsResults.error, tripsResults.trips);
             });
         },
-        expenses: function(expensesCallback){
-            ExpenseCostColl.findVehicleExpenses(jwt,vehicleId, function(expensesResults){
+        expenses: function (expensesCallback) {
+            ExpenseCostColl.findVehicleExpenses(jwt, vehicleId, function (expensesResults) {
                 expensesCallback(expensesResults.error, expensesResults.expenses);
             });
         },
-    },function (error, tripsAndExpenses) {
+    }, function (error, tripsAndExpenses) {
         var totalFreight = 0;
         var totalExpenses = 0;
-        if(error){
+        if (error) {
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
             callback(retObj);
@@ -385,20 +408,20 @@ Party.prototype.findTripsAndPaymentsForVehicle = function(jwt, vehicleId, callba
             retObj.messages.push('Success');
             retObj.trips = tripsAndExpenses.expenses;
 
-            for(var i =0; i < tripsAndExpenses.trips.length; i++) {
+            for (var i = 0; i < tripsAndExpenses.trips.length; i++) {
                 totalFreight = totalFreight + tripsAndExpenses.trips[i].freightAmount;
             }
-            for(var i =0; i < tripsAndExpenses.expenses.length; i++) {
+            for (var i = 0; i < tripsAndExpenses.expenses.length; i++) {
                 totalExpenses = totalExpenses + tripsAndExpenses.expenses[i].cost;
             }
-            Utils.populateNameInPartyColl(tripsAndExpenses.trips,"partyId",function(partyDocuments){
+            Utils.populateNameInPartyColl(tripsAndExpenses.trips, "partyId", function (partyDocuments) {
                 retObj.trips = retObj.trips.concat(partyDocuments.documents);
-                if(retObj.trips){
-                    retObj.trips = retObj.trips.sort(function(x,y){
+                if (retObj.trips) {
+                    retObj.trips = retObj.trips.sort(function (x, y) {
                         return x.date < y.date ? 1 : -1;
                     });
                 }
-                retObj.totalRevenue = {totalFreight : totalFreight,totalExpenses : totalExpenses};
+                retObj.totalRevenue = { totalFreight: totalFreight, totalExpenses: totalExpenses };
                 callback(retObj);
             });
 

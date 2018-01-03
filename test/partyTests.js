@@ -29,6 +29,7 @@ describe('PartyTest', () => {
         userData.save(function (err, account) {
 
         });
+        it('Retrieving Login Information', (done) => {
         chai.request(server)
             .post('/v1/group/login')
             .send(userData)
@@ -40,7 +41,9 @@ describe('PartyTest', () => {
                 res.body.should.have.property('token');
                 token = res.body.token;
                 headerData = { "token": token };
+                done();
             });
+        });
         /*
         * Test the /GET route Retrieving Empty Party Information Success
         */
@@ -79,9 +82,8 @@ describe('PartyTest', () => {
                         "index": 0
                     }
                 ],
-                "isSupplier": true,
-                "isTransporter": true,
-                "isSms": true,
+                "partyType":'Transporter',
+                "isSms": false,
                 "isEmail": true
             };
             chai.request(server)
@@ -90,7 +92,7 @@ describe('PartyTest', () => {
                 .send(partyData)
                 .end((err, res) => {
                     expect(err).to.be.null;
-                    res.body.should.have.property('message').eql('Party Added Successfully');
+                    res.body.should.have.property('message').eql([ 'Party Added Successfully' ]);
                     partyId = res.body.party._id;
                     chai.request(server)
                         .get('/v1/party/get/accountParties')
@@ -106,9 +108,8 @@ describe('PartyTest', () => {
                             res.body.parties[0].should.have.property('email').eql('party1@gmail.com');
                             res.body.parties[0].should.have.property('city').eql('WRL');
                             res.body.parties[0].should.have.property('tripLanes');
-                            res.body.parties[0].should.have.property('isSupplier').eql(true);
-                            res.body.parties[0].should.have.property('isTransporter').eql(true);
-                            res.body.parties[0].should.have.property('isSms').eql(true);
+                            res.body.parties[0].should.have.property('partyType').eql('Transporter');
+                            res.body.parties[0].should.have.property('isSms').eql(false);
                             res.body.parties[0].should.have.property('isEmail').eql(true);
                             expect(res.body.parties[0].tripLanes).to.be.a('array');
                             expect(res.body.parties[0].tripLanes).to.be.length(1);
@@ -138,9 +139,8 @@ describe('PartyTest', () => {
                     res.body.parties[0].should.have.property('email').eql('party1@gmail.com');
                     res.body.parties[0].should.have.property('city').eql('WRL');
                     res.body.parties[0].should.have.property('tripLanes');
-                    res.body.parties[0].should.have.property('isSupplier').eql(true);
-                    res.body.parties[0].should.have.property('isTransporter').eql(true);
-                    res.body.parties[0].should.have.property('isSms').eql(true);
+                    res.body.parties[0].should.have.property('partyType').eql('Transporter');
+                    res.body.parties[0].should.have.property('isSms').eql(false);
                     res.body.parties[0].should.have.property('isEmail').eql(true);
                     expect(res.body.parties[0].tripLanes).to.be.a('array');
                     expect(res.body.parties[0].tripLanes).to.be.length(1);
@@ -185,9 +185,8 @@ describe('PartyTest', () => {
                         "index": 0
                     }
                 ],
-                "isSupplier": true,
-                "isTransporter": true,
-                "isSms": true,
+               "partyType":"Transporter",
+                "isSms": false,
                 "isEmail": true
             };
             chai.request(server)
@@ -198,15 +197,14 @@ describe('PartyTest', () => {
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('message').eql('Party updated successfully');
+                    res.body.should.have.property('messages').eql([ 'Party updated successfully' ]);
                     res.body.party.should.have.property('name').eql('Party2');
                     res.body.party.should.have.property('contact').eql(9874563210);
                     res.body.party.should.have.property('email').eql('party2@gmail.com');
                     res.body.party.should.have.property('city').eql('WRL');
                     res.body.party.should.have.property('tripLanes');
-                    res.body.party.should.have.property('isSupplier').eql(true);
-                    res.body.party.should.have.property('isTransporter').eql(true);
-                    res.body.party.should.have.property('isSms').eql(true);
+                    res.body.party.should.have.property('partyType').eql('Transporter');
+                    res.body.party.should.have.property('isSms').eql(false);
                     res.body.party.should.have.property('isEmail').eql(true);
                     expect(res.body.party.tripLanes).to.be.a('array');
                     expect(res.body.party.tripLanes).to.be.length(1);

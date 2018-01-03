@@ -34,6 +34,7 @@ describe('TruckTest', () => {
         userData.save(function (err, account) {
 
         });
+        it('Retrieving Login Information', (done) => {
         chai.request(server)
             .post('/v1/group/login')
             .send(userData)
@@ -45,7 +46,9 @@ describe('TruckTest', () => {
                 res.body.should.have.property('token');
                 token = res.body.token;
                 headerData = {"token": token};
+                done();
             });
+        });
         /*
         * Test the /GET route Retrieving Empty Truck Information Success
         */
@@ -73,7 +76,7 @@ describe('TruckTest', () => {
             */
             let today = new Date();
             let truckData = {
-                "registrationNo": "AP36AA9876",
+                 "registrationNo": "AP36AA9876",
                 "truckType": "20 Tyre",
                 "fitnessExpiry": today,
                 "permitExpiry": today,

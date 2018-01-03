@@ -29,6 +29,10 @@ describe('DriverTest', () => {
         userData.save(function (err, account) {
 
         });
+           /*
+        * Test the /GET route Retrieving Login Information
+        */
+        it('Retrieving Login Information', (done) => {
         chai.request(server)
             .post('/v1/group/login')
             .send(userData)
@@ -40,7 +44,9 @@ describe('DriverTest', () => {
                 res.body.should.have.property('token');
                 token = res.body.token;
                 headerData = { "token": token };
+                done();
             });
+        });
         /*
         * Test the /GET route Retrieving Empty Driver Information Success
         */
