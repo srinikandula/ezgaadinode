@@ -105,7 +105,7 @@ function updateExpense(expense, jwt, callback) {
                 "vehicleNumber": expense.vehicleNumber,
                 "description": expense.description,
                 "expenseType": expense.expenseType,
-                "cost": expense.cost,
+                "cost": expense.totaAmount,
                 "mode": expense.mode,
                 "partyId": expense.partyId,
                 "totalAmount": expense.totalAmount,
@@ -361,8 +361,9 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  * @param jwt
  * @param callback
  */
-Expenses.prototype.findTotalExpenses = function (jwt, callback) {
-    expenseColl.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
+
+Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback) {
+    expenseColl.aggregate({ $match: erpSettingsCondition },
         { $group: { _id: null, totalExpenses: { $sum: "$totalAmount" } } },
         function (error, result) {
             var retObj = {
@@ -747,12 +748,12 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
                 retObj.status = false;
                 retObj.messages.push('Error');
                 callback(retObj);
-            } else if(expense.length>0){
+            } else if (expense.length > 0) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.paybleCount = expense[0].totalAmount - expense[0].paidAmount;
                 callback(retObj);
-            }else{
+            } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.paybleCount = 0;
@@ -799,26 +800,26 @@ function getPaybleAmountByParty(condition, params, callback) {
                 retObj.status = false;
                 retObj.messages.push('Error');
                 callback(retObj);
-            } else if(payble.length>0) {
+            } else if (payble.length > 0) {
                 var gross = {
                     totalAmount: 0,
                     paidAmount: 0,
                     payableAmount: 0
                 };
                 for (var i = 0; i < payble.length; i++) {
-                    gross.totalAmount+=payble[i].totalAmount;
-                    gross.paidAmount+=payble[i].paidAmount;
-                    gross.payableAmount+=payble[i].payableAmount;
-                    if(i===payble.length-1){
+                    gross.totalAmount += payble[i].totalAmount;
+                    gross.paidAmount += payble[i].paidAmount;
+                    gross.payableAmount += payble[i].payableAmount;
+                    if (i === payble.length - 1) {
                         retObj.status = true;
                         retObj.messages.push('Success');
                         retObj.paybleAmounts = payble;
-                        retObj.gross=gross
+                        retObj.gross = gross
                         callback(retObj);
                     }
                 }
-                
-            }else{
+
+            } else {
                 retObj.status = false;
                 retObj.messages.push('No Expense found');
                 callback(retObj);
@@ -876,7 +877,7 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
 
 };
 
-Expenses.prototype.downloadPaybleDetailsByParty=function(jwt,params,callback){
+Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -898,8 +899,8 @@ Expenses.prototype.downloadPaybleDetailsByParty=function(jwt,params,callback){
                     output.push({
                         Party_Name: 'Total',
                         Mobile: '',
-                        Total_Amount:payableResponse.gross.totalAmount,
-                        Paid_Amount:payableResponse.gross.paidAmount,
+                        Total_Amount: payableResponse.gross.totalAmount,
+                        Paid_Amount: payableResponse.gross.paidAmount,
                         Payale_Amount: payableResponse.gross.payableAmount
                     })
                     retObj.data = output;
@@ -948,5 +949,55 @@ Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params, callback
         })
     }
 
+};
+
+Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        message: []
+    }
+    if (!jwt.accountId || !ObjectId.isValid(jwt.accountId)) {
+        retObj.status = false;
+        retObj.message.push("Invalid login");
+        callback(retObj);
+    } else if (!params.partyId || !ObjectId.isValid(params.partyId)) {
+        retObj.status = false;
+        retObj.message.push("Please select valid party");
+        callback(retObj);
+    } else {
+        expenseColl.find({ accountId: jwt.accountId, partyId: params.partyId }).populate('partyId').populate('expenseType').lean().exec(function (err, partyData) {
+            if (err) {
+                retObj.status = false;
+                retObj.message.push("Please try again");
+                callback(retObj);
+            } else if (partyData.length > 0) {
+                retObj.status = true;
+                retObj.message.push("success");
+                retObj.grossAmounts={
+                    totalAmount:0,
+                    paidAmount:0,
+                    payableAmount:0
+
+                }
+                for(var i=0;i<partyData.length>0;i++){
+                    partyData[i].payableAmount=partyData[i].totalAmount-(partyData[i].paidAmount || 0);
+
+                    retObj.grossAmounts.totalAmount+=partyData[i].totalAmount;
+                    retObj.grossAmounts.paidAmount+=partyData[i].paidAmount;
+                    retObj.grossAmounts.payableAmount+=partyData[i].payableAmount;
+                    if(i===partyData.length-1){
+
+                        retObj.partyData=partyData;
+                        callback(retObj);
+                    }
+                }
+                
+            } else {
+                retObj.status = false;
+                retObj.message.push("No Expenses found");
+                callback(retObj);
+            }
+        })
+    }
 }
 module.exports = new Expenses();

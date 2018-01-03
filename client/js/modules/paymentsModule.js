@@ -232,7 +232,8 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                  var selectedParty = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.paymentsDetails.partyId;
                 });
-                 if (selectedParty) {
+                
+                if (selectedParty) {
                     $scope.partyName = selectedParty.name;
                 }
             } else {
@@ -249,7 +250,6 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
 
     $scope.selectPartyId = function (party) {
         $scope.paymentsDetails.partyId = party._id;
-        console.log('$scope.paymentsDetails.partyId',$scope.paymentsDetails.partyId);
     }
 
     if ($stateParams.paymentsId) {
