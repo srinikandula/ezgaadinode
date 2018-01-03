@@ -310,8 +310,9 @@ app.config(function (NotificationProvider, $httpProvider) {
 });
 
 app.run(function ($transitions, $rootScope, $cookies) {
-    $rootScope.profilePic = $cookies.get('profilePic');
+   
     $transitions.onSuccess({to: '*'}, function (to) {
+        $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
     });
 });
