@@ -12,6 +12,7 @@ var should = chai.should();
 let expect = chai.expect;
 let token = null;
 let accountId = null;
+let erpSettingsId = null;
 let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
@@ -29,19 +30,28 @@ describe('ERPSettingsTests', () => {
         userData.save(function (err, account) {
 
         });
-        chai.request(server)
-            .post('/v1/group/login')
-            .send(userData)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                res.body.should.have.property('userName').eql('ramarao');
-                res.body.should.have.property('token');
-                token = res.body.token;
-                accountId = res.body._id;
-                headerData = {"token": token};
-            });
+        it('Retrieving Login Information', (done) => {
+            let userData = {
+                "userName": "ramarao",
+                "password": "9999999999",
+                "contactPhone": 9999999999,
+                "type": "account"
+            };
+            chai.request(server)
+                .post('/v1/group/login')
+                .send(userData)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('userName').eql('ramarao');
+                    res.body.should.have.property('token');
+                    token = res.body.token;
+                    accountId = res.body._id;
+                    headerData = {"token": token};
+                    done();
+                });
+        });
         /*
         * Test the /Get Retrieving User Default Settings Information Success
         */
@@ -52,13 +62,14 @@ describe('ERPSettingsTests', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.result.revenue.should.have.property('filterType').eql('month');
-                    res.body.result.payment.should.have.property('filterType').eql('month');
-                    res.body.result.expense.should.have.property('filterType').eql('month');
-                    res.body.result.tollCard.should.have.property('filterType').eql('month');
-                    res.body.result.fuelCard.should.have.property('filterType').eql('month');
-                    res.body.result.expiry.should.have.property('filterType').eql('month');
-
+                    res.body.should.have.property('messages').eql(['Success']);
+                    res.body.erpSettings.revenue.should.have.property('filterType').eql('month');
+                    res.body.erpSettings.payment.should.have.property('filterType').eql('month');
+                    res.body.erpSettings.expense.should.have.property('filterType').eql('month');
+                    res.body.erpSettings.tollCard.should.have.property('filterType').eql('month');
+                    res.body.erpSettings.fuelCard.should.have.property('filterType').eql('month');
+                    res.body.erpSettings.expiry.should.have.property('filterType').eql('month');
+                    erpSettingsId = res.body.erpSettings._id;
                     done();
                 });
         });
@@ -67,6 +78,7 @@ describe('ERPSettingsTests', () => {
         */
         it('Updating User Default Settings with filter type day Information', (done) => {
             let userSettings = {
+                "_id":erpSettingsId,
                 settings: {
                     revenue: {
                         filterType: 'day',
@@ -117,6 +129,7 @@ describe('ERPSettingsTests', () => {
         */
         it('Updating User Default Settings with filter type week Information', (done) => {
             let userSettings = {
+                "_id":erpSettingsId,
                 settings: {
                     revenue: {
                         filterType: 'week',
@@ -167,6 +180,7 @@ describe('ERPSettingsTests', () => {
         */
         it('Updating User Default Settings with filter type month Information', (done) => {
             let userSettings = {
+                "_id":erpSettingsId,
                 settings: {
                     revenue: {
                         filterType: 'month',
@@ -217,6 +231,7 @@ describe('ERPSettingsTests', () => {
         */
         it('Updating User Default Settings with filter type year Information', (done) => {
             let userSettings = {
+                "_id":erpSettingsId,
                 settings: {
                     revenue: {
                         filterType: 'year',
@@ -267,6 +282,7 @@ describe('ERPSettingsTests', () => {
         */
         it('Updating User Default Settings with filter type custom Information', (done) => {
             let userSettings = {
+                "_id":erpSettingsId,
                 settings: {
                     revenue: {
                         filterType: 'custom',

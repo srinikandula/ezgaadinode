@@ -29,19 +29,28 @@ describe('UserProfileTests', () => {
         userData.save(function (err, account) {
 
         });
-        chai.request(server)
-            .post('/v1/group/login')
-            .send(userData)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                res.body.should.have.property('userName').eql('ramarao');
-                res.body.should.have.property('token');
-                token = res.body.token;
-                accountId = res.body._id;
-                headerData = {"token": token};
-            });
+        it('Retrieving Login Information', (done) => {
+            let userData = {
+                "userName": "ramarao",
+                "password": "9999999999",
+                "contactPhone": 9999999999,
+                "type":"account"
+            };
+            chai.request(server)
+                .post('/v1/group/login')
+                .send(userData)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('userName').eql('ramarao');
+                    res.body.should.have.property('token');
+                    token = res.body.token;
+                    accountId = res.body._id;
+                    headerData = {"token": token};
+                    done();
+                });
+        });
         /*
         * Test the /Get Retrieving User Profile Information Success
         */
@@ -60,26 +69,6 @@ describe('UserProfileTests', () => {
                     done();
                 });
         });
-
-        /*
-        * Test the /Get Retrieving User Profile Information Success
-        */
-        it('Retrieving User Profile Information', (done) => {
-            chai.request(server)
-                .get('/v1/admin/accounts/'+accountId)
-                .set(headerData)
-                .end((err, res) => {
-                    expect(err).to.be.null;
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Success']);
-                    res.body.account.should.be.a('object');
-                    res.body.account.should.have.property('userName').eql('ramarao');
-                    res.body.account.should.have.property('type').eql('account');
-                    done();
-                });
-        });
-
         /*
         * Test the /Get Retrieving User Profile with Groups and Trucks Count Information Success
         */

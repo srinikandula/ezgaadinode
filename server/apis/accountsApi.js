@@ -89,7 +89,7 @@ Accounts.prototype.getAccounts = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
     var query = {};
     if (params.filter && params.filter.trim().length > 0) {
         query = {"userName": {$regex: params.filter.trim()}};
@@ -431,7 +431,7 @@ Accounts.prototype.getAllAccountGroup = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
     var query = {"type": "group", "accountId": jwt.id};
 
     async.parallel({
