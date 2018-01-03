@@ -363,7 +363,6 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  * @param jwt
  * @param callback
  */
-
 Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback) {
     expenseColl.aggregate({ $match: erpSettingsCondition },
         { $group: { _id: null, totalExpenses: { $sum: "$totalAmount" } } },

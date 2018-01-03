@@ -713,6 +713,12 @@ body {
 .activated a {
     color: #fff !important;
 }
+.activated h3 {
+    color: #fff !important;
+}
+.activated small {
+    color: #fff !important;
+}
 
 .activeProfileTab {
     background-color: #000;
@@ -729,7 +735,13 @@ body {
     background-color: #fff;
     color: #000;
 }
-
+.activeLi{
+    background-color: #fff !important;
+    color: #000 !important;
+}
+.activeLi small{
+    color: #000 !important;
+}
 .costactivated {
     color: #fff !important;
 }

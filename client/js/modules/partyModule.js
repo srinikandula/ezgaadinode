@@ -73,6 +73,7 @@ app.factory('PartyService', function ($http, $cookies) {
 });
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
+
     $scope.goToEditPartyPage = function (partyId) {
         $state.go('editParty', { partyId: partyId });
     };
@@ -229,12 +230,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             }
         }, function (err) {
         });
-    }
-    ;
-    $scope.cancel = function () {
-        $state.go('parties');
-
-    }
+    };
 
     $scope.addTripLane = function () {
         $scope.party.error = [];
@@ -247,7 +243,6 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 index: length
             });
         }
-        console.log($scope.party);
     };
 
     $scope.deleteTripLane = function (index) {
