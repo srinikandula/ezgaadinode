@@ -116,7 +116,6 @@ describe('AccountGroupTests', () => {
                             .set(headerData)
                             .send(accountGroupData)
                             .end((err, res) => {
-                                console.log('iohfvusdv',res.body);
                                 expect(err).to.be.null;
                                 res.body.should.have.property('messages').eql(['Success']);
                                 res.body.accountGroup.should.have.property('userName').eql('gps');
