@@ -99,7 +99,6 @@ Trucks.prototype.assignTrucks = function (jwt, groupId, truckIds, callback) {
         messages: []
     };
     TrucksColl.update({ _id: { $in: truckIds } }, { $set: { groupId: groupId } }, { multi: true }, function (err, truck) {
-        // console.log(err);
         if (err) {
             retObj.messages.push("Error While updating Details");
             callback(retObj);
@@ -445,10 +444,10 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
             if (!params.page) {
                 params.page = 1;
             }
+
             var skipNumber = (params.page - 1) * params.size;
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : {};
-
+            var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
 
             dateplus30 = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry)
             if (!params.regNumber) {
@@ -723,34 +722,40 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params, callback) 
         Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
             if (expairResponse.status) {
                 var output = [];
-                for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
-                    output.push({
-                        Registration_No: expairResponse.expiryTrucks[i].registrationNo,
-                        Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry),
-                        Permit_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].permitExpiry),
-                        Tax_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].taxDueDate),
-                        Insurance_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].insuranceExpiry),
-                        Pollution_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
-                    })
-                    if (i === expairResponse.expiryTrucks.length - 1) {
-                        var emailparams = {
-                            templateName: 'sharesExpairyDetailsByTruck',
-                            subject: "Easygaadi Expairy Details",
-                            to: params.email,
-                            data: {
-                                expiryTrucks: output
-                            }
-                        };
-                        emailService.sendEmail(emailparams, function (emailResponse) {
-                            if (emailResponse.status) {
-                                retObj.status = true;
-                                retObj.messages.push('Expiry details shared successfully');
-                                callback(retObj);
-                            } else {
-                                callback(emailResponse);
-                            }
-                        });
+                if(expairResponse.expiryTrucks.length) {
+                    for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
+                        output.push({
+                            Registration_No: expairResponse.expiryTrucks[i].registrationNo,
+                            Fitness_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].fitnessExpiry),
+                            Permit_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].permitExpiry),
+                            Tax_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].taxDueDate),
+                            Insurance_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].insuranceExpiry),
+                            Pollution_Expiry: dateToStringFormat(expairResponse.expiryTrucks[i].pollutionExpiry)
+                        })
+                        if (i === expairResponse.expiryTrucks.length - 1) {
+                            var emailparams = {
+                                templateName: 'sharesExpairyDetailsByTruck',
+                                subject: "Easygaadi Expairy Details",
+                                to: params.email,
+                                data: {
+                                    expiryTrucks: output
+                                }
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push('Expiry details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
+                }else{
+                    retObj.status = false;
+                    retObj.messages.push('No records found');
+                    callback(retObj);
                 }
 
             } else {
