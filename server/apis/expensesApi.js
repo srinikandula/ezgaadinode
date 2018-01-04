@@ -85,6 +85,7 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.message = "Please enter Total Expense Amount";
         callback(result);
     } else if (expenseDetails.mode === 'Credit' && _.isNaN(expenseDetails.paidAmount)) {
+
         result.status = false;
         result.message = "Invalid Paid Amount";
         callback(result);
@@ -110,6 +111,7 @@ function updateExpense(expense, jwt, callback) {
                 "partyId": expense.partyId,
                 "totalAmount": expense.totalAmount,
                 "paidAmount": expense.paidAmount,
+
                 "date": expense.date
             }
         },
@@ -361,7 +363,6 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  * @param jwt
  * @param callback
  */
-
 Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback) {
     expenseColl.aggregate({ $match: erpSettingsCondition },
         { $group: { _id: null, totalExpenses: { $sum: "$totalAmount" } } },
@@ -394,6 +395,11 @@ Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback)
  */
 
 Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
     var condition = {};
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {

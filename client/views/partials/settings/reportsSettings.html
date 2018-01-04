@@ -14,35 +14,45 @@
                         <h3>Revenue</h3>
                         <ul class="list-inline">
                             <li>
-                                <label >
-                                    <input type="radio" value="day" name="revenue" ng-model="settings.revenue.filterType" ng-click="editSettings()"/>
+                                <label>
+                                    <input type="radio" value="day" name="revenue"
+                                           ng-model="settings.revenue.filterType" ng-click="editSettings()"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Day</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="week" name="revenue" ng-model="settings.revenue.filterType" ng-click="editSettings()"/>
+                                    <input type="radio" value="week" name="revenue"
+                                           ng-model="settings.revenue.filterType" ng-click="editSettings()"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Week</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="month" name="revenue" ng-model="settings.revenue.filterType" ng-click="editSettings()"/>
+                                    <input type="radio" value="month" name="revenue"
+                                           ng-model="settings.revenue.filterType" ng-click="editSettings()"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Month</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="year" name="revenue" ng-model="settings.revenue.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="year" name="revenue"
+                                           ng-model="settings.revenue.filterType" ng-click="editSettings('')"/>
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Year</p></li>
                             <li>
                                 <label>
-                                    <input type="radio" value="custom" name="revenue" ng-model="settings.revenue.filterType" ng-click="updateCustomDate('revenue');"/>
+                                    <input type="radio" value="custom" name="revenue"
+                                           ng-model="settings.revenue.filterType"
+                                           ng-click="updateCustomDate('revenue');"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Custom</p>
@@ -54,7 +64,8 @@
                     <div class="mt-25" ng-show="settings.revenue.filterType == 'custom'">
                         <ul class="list-inline">
                             <li class="report-date">
-                                <date-picker id="revenue.fromDate" ng-model="settings.revenue.fromDate" past-present="'pastPresentDate'"
+                                <date-picker id="revenue.fromDate" ng-model="settings.revenue.fromDate"
+                                             past-present="'pastPresentDate'"
                                              class="'settingsTextfield'">
                                 </date-picker>
                             </li>
@@ -75,34 +86,45 @@
                         <ul class="list-inline">
                             <li>
                                 <label>
-                                    <input type="radio" value="day" name="payment" ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="day" name="payment"
+                                           ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Day</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="week" name="payment" ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="week" name="payment"
+                                           ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Week</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="month" name="payment" ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="month" name="payment"
+                                           ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Month</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="year" name="payment" ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="year" name="payment"
+                                           ng-model="settings.payment.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Year</p></li>
                             <li>
                                 <label>
-                                    <input type="radio" value="custom" name="payment" ng-model="settings.payment.filterType" ng-click="updateCustomDate('payment');"/>
+                                    <input type="radio" value="custom" name="payment"
+                                           ng-model="settings.payment.filterType"
+                                           ng-click="updateCustomDate('payment');"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Custom</p>
@@ -133,34 +155,45 @@
                         <ul class="list-inline">
                             <li>
                                 <label>
-                                    <input type="radio" value="day" name="expense" ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="day" name="expense"
+                                           ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Day</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="week" name="expense" ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="week" name="expense"
+                                           ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Week</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="month" name="expense" ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="month" name="expense"
+                                           ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Month</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="year" name="expense" ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="year" name="expense"
+                                           ng-model="settings.expense.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Year</p></li>
                             <li>
                                 <label>
-                                    <input type="radio" value="custom" name="expense" ng-model="settings.expense.filterType" ng-click="updateCustomDate('expense');"/>
+                                    <input type="radio" value="custom" name="expense"
+                                           ng-model="settings.expense.filterType"
+                                           ng-click="updateCustomDate('expense');"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Custom</p>
@@ -193,34 +226,44 @@
                         <ul class="list-inline">
                             <li>
                                 <label>
-                                    <input type="radio" value="day" name="tollCard" ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="day" name="tollCard"
+                                           ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Day</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="week" name="tollCard" ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="week" name="tollCard"
+                                           ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Week</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="month" name="tollCard" ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="month" name="tollCard"
+                                           ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Month</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="year" name="tollCard" ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="year" name="tollCard"
+                                           ng-model="settings.tollCard.filterType" ng-click="editSettings('')"/>
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Year</p></li>
                             <li>
                                 <label>
-                                    <input type="radio" value="custom" name="tollCard" ng-model="settings.tollCard.filterType" ng-click="updateCustomDate('tollCard');"/>
+                                    <input type="radio" value="custom" name="tollCard"
+                                           ng-model="settings.tollCard.filterType"
+                                           ng-click="updateCustomDate('tollCard');"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Custom</p>
@@ -252,34 +295,44 @@
                         <ul class="list-inline">
                             <li>
                                 <label>
-                                    <input type="radio" value="day" name="fuelCard" ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="day" name="fuelCard"
+                                           ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Day</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="week" name="fuelCard" ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="week" name="fuelCard"
+                                           ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Week</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="month" name="fuelCard" ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="month" name="fuelCard"
+                                           ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Month</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="year" name="fuelCard" ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="year" name="fuelCard"
+                                           ng-model="settings.fuelCard.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Year</p></li>
                             <li>
                                 <label>
-                                    <input type="radio" value="custom" name="fuelCard" ng-model="settings.fuelCard.filterType" ng-click="updateCustomDate('fuelCard');"/>
+                                    <input type="radio" value="custom" name="fuelCard"
+                                           ng-model="settings.fuelCard.filterType"
+                                           ng-click="updateCustomDate('fuelCard');"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Custom</p>
@@ -310,34 +363,45 @@
                         <ul class="list-inline">
                             <li>
                                 <label>
-                                    <input type="radio" value="day" name="expiry" ng-model="settings.expiry.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="day" name="expiry" ng-model="settings.expiry.filterType"
+                                           ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Day</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="week" name="expiry" ng-model="settings.expiry.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="week" name="expiry" ng-model="settings.expiry.filterType"
+                                           ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Week</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="month" name="expiry" ng-model="settings.expiry.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="month" name="expiry"
+                                           ng-model="settings.expiry.filterType" ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Month</p>
                             </li>
                             <li>
                                 <label>
-                                    <input type="radio" value="year" name="expiry" ng-model="settings.expiry.filterType" ng-click="editSettings('')"/>
+                                    <input type="radio" value="year" name="expiry" ng-model="settings.expiry.filterType"
+                                           ng-click="editSettings('')"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Year</p></li>
                             <li>
                                 <label>
-                                    <input type="radio" value="custom" name="expiry" ng-model="settings.expiry.filterType" ng-click="updateCustomDate('expiry');"/>
+                                    <input type="radio" value="custom" name="expiry"
+                                           ng-model="settings.expiry.filterType"
+                                           ng-click="updateCustomDate('expiry');"/>
+
                                     <img src="images/Reports_Calendar.png"/>
                                 </label>
                                 <p>Custom</p>

@@ -1,11 +1,11 @@
-app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'PaymentsService', '$rootScope', 'AccountServices',
-    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, PaymentsService, $rootScope, AccountServices) {
+app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'PaymentsService', 'AccountServices', '$stateParams',
+    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, PaymentsService, AccountServices, $stateParams) {
 
-        $scope.templates = ['/views/templates/revenueByVehicle.html', '/views/templates/revenueByvehicleId.html',
-            '/views/templates/expenseByVehicle.html', '/views/templates/expenseByVehicleId.html',
-            '/views/templates/amountByParties.html', '/views/templates/amountByPartyId.html',
-            '/views/templates/expiryTrucks.html','/views/templates/paybleByParty.html',
-        '/views/templates/paybleByPartyId.html'];
+        $scope.vehicleId = $stateParams.vehicleId;
+        $scope.id = $stateParams.id;
+
+        $scope.partyName = $stateParams.partyName;
+        $scope.partyId = $stateParams.partyId;
 
         $scope.initializeparams = function (tableType) {
             var pageable = {};
@@ -20,8 +20,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             $scope.partyId = "";
             $scope.regNumber = "";
         }
-        $scope.template = $scope.templates[0];
-        $scope.activated = '0';
+        // $scope.template = $scope.templates[0];
+        // $scope.activated = '0';
         $scope.initializeparams();
         $scope.revenueParams = new NgTableParams({
             page: 1, // show first page
@@ -30,6 +30,26 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 createdAt: -1
             }
         }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                $scope.filters.page = params.page();
+                $scope.filters.size = params.count();
+                $scope.filters.sort = params.sorting();
+                $scope.getRevenueByVehicle();
+            }
+        });
+
+
+        $scope.vehicleRevenue = function () {
+            $scope.initializeparams();
+            $scope.revenueParams = new NgTableParams({
+                page: 1, // show first page
+                size: 10,
+                sorting: {
+                    createdAt: -1
+                }
+            }, {
                 counts: [],
                 total: $scope.count,
                 getData: function (params) {
@@ -40,40 +60,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             });
 
-
-
-        $scope.vehicleRevenue = function () {
-            $scope.template = $scope.templates[0];
-            $scope.activated = '0';
-            $scope.initializeparams();
-            $scope.revenueParams = new NgTableParams({
-                page: 1, // show first page
-                size: 10,
-                sorting: {
-                    createdAt: -1
-                }
-            }, {
-                    counts: [],
-                    total: $scope.count,
-                    getData: function (params) {
-                        $scope.filters.page = params.page();
-                        $scope.filters.size = params.count();
-                        $scope.filters.sort = params.sorting();
-                        $scope.getRevenueByVehicle();
-                    }
-                });
-
         }
 
-        $scope.gotorevenueByVehicleId = function (id, vehilceId) {
-            $scope.vehicleNumber = vehilceId;
-            $scope.getRevenueByParty(id);
-            $scope.template = $scope.templates[1];
-             $scope.initializeparams();
-        };
         $scope.vehicleExpenses = function () {
-            $scope.template = $scope.templates[2];
-            $scope.activated = '2';
             $scope.initializeparams();
             $scope.expenseParams = new NgTableParams({
                 page: 1, // show first page
@@ -82,27 +71,20 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     createdAt: -1
                 }
             }, {
-                    counts: [],
-                    total: $scope.count,
-                    getData: function (params) {
-                        $scope.filters.page = params.page();
-                        $scope.filters.size = params.count();
-                        $scope.filters.sort = params.sorting();
-                        $scope.getExpenseByVehicle();
-                    }
-                });
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    $scope.filters.page = params.page();
+                    $scope.filters.size = params.count();
+                    $scope.filters.sort = params.sorting();
+                    $scope.getExpenseByVehicle();
+                }
+            });
         }
+        $scope.vehicleExpenses();
 
-        $scope.gotoExpenseByVehicleId = function (id, vehicleId) {
-            $scope.vehicleNumber = vehicleId;
-            $scope.getexpenseByVehicleId(id);
-            $scope.template = $scope.templates[3];
-            $scope.activated = '2';
-            $scope.initializeparams();
-        }
+
         $scope.paymentsReceivable = function () {
-            $scope.template = $scope.templates[4];
-            $scope.activated = '4';
             $scope.initializeparams();
             $scope.expiryParams = new NgTableParams({
                 page: 1, // show first page
@@ -111,26 +93,18 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     createdAt: -1
                 }
             }, {
-                    counts: [],
-                    total: $scope.count,
-                    getData: function (params) {
-                        $scope.filters.page = params.page();
-                        $scope.filters.size = params.count();
-                        $scope.filters.sort = params.sorting();
-                        //$scope.getTruckExpires();
-                    }
-                });
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    $scope.filters.page = params.page();
+                    $scope.filters.size = params.count();
+                    $scope.filters.sort = params.sorting();
+                    $scope.getTotalAmountReceivable();
+                }
+            });
         }
-        $scope.gotoPaymentBypartyId = function (id, name) {
-            $scope.partyName = name;
-            $scope.getAmountsBypartyId(id);
-            $scope.template = $scope.templates[5];
-            $scope.activated = '4';
-            $scope.initializeparams();
-        }
+
         $scope.paybleByParty = function () {
-            $scope.template = $scope.templates[7];
-            $scope.activated = '4';
             $scope.initializeparams();
             $scope.paybleParams = new NgTableParams({
                 page: 1, // show first page
@@ -139,29 +113,24 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     createdAt: -1
                 }
             }, {
-                    counts: [],
-                    total: $scope.count,
-                    getData: function (params) {
-                        $scope.filters.page = params.page();
-                        $scope.filters.size = params.count();
-                        $scope.filters.sort = params.sorting();
-                        $scope.getPaybleByParty();
-                    }
-                });
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    $scope.filters.page = params.page();
+                    $scope.filters.size = params.count();
+                    $scope.filters.sort = params.sorting();
+                    $scope.getPaybleByParty();
+                }
+            });
         }
         $scope.gotoPayableBypartyId = function (id, name) {
             console.log('cisahcb')
             $scope.partyName = name;
-            $scope.getPaybleAmountByPartyId(id);
-            $scope.template = $scope.templates[8];
-            $scope.activated = '4';
-          /*   $scope.initializeparams(); */
+            $scope.getAmountsBypartyId(id);
+            $scope.initializeparams();
         }
        
         $scope.getTruckExpirs = function () {
-            $scope.template = $scope.templates[6];
-           
-            $scope.activated = '6';
             $scope.initializeparams();
             $scope.expiryParams = new NgTableParams({
                 page: 1, // show first page
@@ -170,17 +139,17 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     createdAt: -1
                 }
             }, {
-                    counts: [],
-                    total: $scope.count,
-                    getData: function (params) {
-                        $scope.filters.page = params.page();
-                        $scope.filters.size = params.count();
-                        $scope.filters.sort = params.sorting();
-                        $scope.getTruckExpires();
-                    }
-                });
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    $scope.filters.page = params.page();
+                    $scope.filters.size = params.count();
+                    $scope.filters.sort = params.sorting();
+                    $scope.getTruckExpires();
+                }
+            });
         }
-
+        $scope.getTruckExpirs();
         $scope.erpDashBoard = function () {
             AccountServices.erpDashboard(function (success) {
                 if (success.data.status) {
@@ -188,7 +157,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -198,17 +167,17 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.erpDashBoard();
 
         $scope.getTruckExpires = function () {
-            TrucksService.findExpiryTrucks({ 
+            TrucksService.findExpiryTrucks({
                 regNumber: $scope.regNumber,
                 page: $scope.filters.page,
                 sort: $scope.filters.sort,
                 size: $scope.filters.size
-             }, function (success) {
+            }, function (success) {
                 if (success.data.status) {
                     $scope.expiryTrucks = success.data.expiryTrucks;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -217,14 +186,14 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         };
 
 
-        $scope.getRevenueByParty = function (id) {
-            PartyService.getRevenueByPartyId(id, function (success) {
+        $scope.getRevenueByParty = function () {
+            PartyService.getRevenueByPartyId($stateParams.id, function (success) {
                 if (success.data.status) {
                     $scope.revenueByVehicleId = success.data.trips;
                     $scope.totalRevenueByVehicleId = success.data.totalRevenue;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -238,22 +207,24 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 regNumber: $scope.regNumber,
                 page: $scope.filters.page,
                 sort: $scope.filters.sort,
-                size: $scope.filters.size
+                size: $scope.filters.size,
             }, function (success) {
                 if (success.data.status) {
                     $scope.revenueByVehicle = success.data.revenue;
+                   // console.log("",$scope.revenueByVehicle);
                     $scope.totalRevenue = success.data.grossAmounts;
 
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
 
             });
         };
+
         $scope.getPaybleByParty = function () {
             ExpenseService.getPaybleAmountByParty({
                 fromDate: $scope.filters.fromDate,
@@ -268,21 +239,21 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.gross = success.data.gross;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
 
             });
-            PartyService.getAllPartiesBySupplier(function(success){
-                if(success.data.status){
-                    $scope.suppliersList=success.data.parties;
-                }else{
+            PartyService.getAllPartiesBySupplier(function (success) {
+                if (success.data.status) {
+                    $scope.suppliersList = success.data.parties;
+                } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
-            },function(error){
+            }, function (error) {
 
             })
         };
@@ -293,7 +264,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.trucksList = success.data.trucks;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (error) {
@@ -304,12 +275,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
         $scope.validateFilters = function (paramType) {
             var params = $scope.filters;
-            /*if (!params.fromDate) {
-                params.error.push('Invalid From Date');
-            }
-            if (!params.toDate) {
-                params.error.push('Invalid To Date');
-            }*/
             if ((!params.fromDate || !params.toDate) && !params.regNumber) {
                 params.error.push('Please Select Dates or Register Number');
             }
@@ -353,7 +318,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -361,21 +326,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         };
 
-        $scope.getTotalAmountReceivable = function () {
-            PaymentsService.getTotalPaymentsReceivable(function (success) {
-                if (success.data.status) {
-                    $scope.amounts = success.data.amounts;
-                    //  console.log("-->", $scope.amounts);
-                } else {
-                    success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
-                    });
-                }
-            }, function (err) {
-
-            });
-        };
-        $scope.getTotalAmountReceivable();
 
         $scope.getAmountsByparty = function () {
             PaymentsService.getDuesByParty({
@@ -388,7 +338,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -414,7 +364,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.amounts = success.data.amounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -434,7 +384,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -449,7 +399,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesList = success.data.parties;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -489,15 +439,13 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             }
         }
 
-        $scope.getexpenseByVehicleId = function (id) {
-            ExpenseService.findExpensesbyVehicleId(id, function (success) {
+        $scope.getexpenseByVehicleId = function () {
+            ExpenseService.findExpensesbyVehicleId($stateParams.id, function (success) {
                 if (success.data.status) {
                     $scope.expensesByVehicleId = success.data.expenses;
                     $scope.totalExpenses = success.data.totalExpenses;
                 } else {
-                    success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
-                    });
+                        Notification.error(success.data.message);
                 }
             }, function (err) {
 
@@ -516,7 +464,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -537,14 +485,14 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             }
 
         }
-        $scope.getAmountsBypartyId = function (id) {
-            PartyService.amountByPartyid(id, function (success) {
+        $scope.getAmountsBypartyId = function () {
+            PartyService.amountByPartyid($stateParams.partyId, function (success) {
                 if (success.data.status) {
                     $scope.results = success.data.results;
                     $scope.amountPaid = success.data.totalPendingPayments;
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
             }, function (err) {
@@ -763,19 +711,19 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             })
         }
         $scope.downloadRevenueDetailsByVechicle = function () {
-            window.open('/v1/trips/downloadRevenueDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
+            window.open('/v1/trips/downloadRevenueDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
         }
         $scope.downloadExpenseDetailsByVechicle = function () {
-            window.open('/v1/expense/downloadExpenseDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
+            window.open('/v1/expense/downloadExpenseDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
         }
         $scope.downloadPaymentDetailsByParty = function () {
-            window.open('/v1/payments/downloadPaymentDetailsByParty?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&partyId=' + $scope.partyId+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
+            window.open('/v1/payments/downloadPaymentDetailsByParty?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&partyId=' + $scope.partyId + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
         }
         $scope.downloadExpairyDetailsByTruck = function () {
-            window.open('/v1/trucks/downloadExpiryDetailsByTruck?regNumber=' + $scope.regNumber+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
+            window.open('/v1/trucks/downloadExpiryDetailsByTruck?regNumber=' + $scope.regNumber + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
         }
         $scope.downloadPaybleDetailsByParty = function () {
-            window.open('/v1/expense/downloadPaybleDetailsByParty?partyId=' + $scope.partyId+'&page='+$scope.filters.page+'&sort='+JSON.stringify($scope.filters.sort)+'&size='+$scope.filters.size);
+            window.open('/v1/expense/downloadPaybleDetailsByParty?partyId=' + $scope.partyId + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
         }
     }]);
 

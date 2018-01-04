@@ -201,8 +201,6 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
     if (!params.page) {
         params.page = 1;
     }
-
-
     if (jwt.type === "account") {
         if (!params.truckName) {
             condition = { accountId: jwt.accountId }

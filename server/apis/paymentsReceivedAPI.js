@@ -433,6 +433,10 @@ function getDuesByParty(jwt, condition, callback) {
 }
 
 PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
     var condition = {};
     var retObj = {
         status: false,

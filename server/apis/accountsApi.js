@@ -292,6 +292,7 @@ Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
                 } else {
                     retObj.status = true;
                     retObj.result = dashboardContent;
+                    console.log("Dash Board ", retObj.result);
                     callback(retObj);
                 }
             });
