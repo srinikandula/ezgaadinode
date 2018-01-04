@@ -43,6 +43,7 @@ function saveExpense(expenseDetails, jwt, result, callback) {
             } else {
                 result.status = false;
                 result.message = "Error creating new expense type, try Again";
+                callback(result);
             }
         });
     } else {
@@ -395,6 +396,10 @@ Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback)
 
 Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
     var condition = {};
+    var retObj = {
+        status: false,
+        messages: []
+    }
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {
             $match: {
@@ -545,7 +550,7 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
 
     async.parallel({
         expenses: function (expensesCallback) {
@@ -684,7 +689,7 @@ Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params, callbac
                     }
                 });
             } else {
-                callback(revenueResponse);
+                callback(expensesResponse);
             }
         })
     }
@@ -722,7 +727,7 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params, cal
                 }
             }
         } else {
-            callback(revenueResponse);
+            callback(expensesResponse);
         }
     })
 
@@ -773,7 +778,7 @@ function getPaybleAmountByParty(condition, params, callback) {
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {};
+    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
     condition.mode = "Credit";
     expenseColl.aggregate({ $match: condition },
         {
@@ -795,7 +800,6 @@ function getPaybleAmountByParty(condition, params, callback) {
         { "$limit": limit },
 
         function (err, payble) {
-        console.log('err',err)
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');
@@ -828,8 +832,11 @@ function getPaybleAmountByParty(condition, params, callback) {
         });
 }
 Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
-
     var condition = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
     if (params.fromDate != '' && params.toDate != '' && params.partyId != '') {
         condition = {
             "accountId": ObjectId(jwt.accountId), date: {
@@ -837,7 +844,7 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
                 $lte: new Date(params.toDate),
             }, "partyId": ObjectId(params.partyId)
         }
-        getPaybleAmountByParty(jwt, condition, params, function (response) {
+        getPaybleAmountByParty(condition, params, function (response) {
             callback(response);
         });
     } else if (params.fromDate && params.toDate) {
@@ -908,7 +915,7 @@ Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params, callbac
                 }
             }
         } else {
-            callback(revenueResponse);
+            callback(payableResponse);
         }
     })
 
@@ -944,7 +951,7 @@ Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params, callback
                     }
                 });
             } else {
-                callback(revenueResponse);
+                callback(payableResponse);
             }
         })
     }
