@@ -116,8 +116,12 @@ describe('AccountGroupTests', () => {
                             .set(headerData)
                             .send(accountGroupData)
                             .end((err, res) => {
+                                console.log('iohfvusdv',res.body);
                                 expect(err).to.be.null;
                                 res.body.should.have.property('messages').eql(['Success']);
+                                res.body.accountGroup.should.have.property('userName').eql('gps');
+                                res.body.accountGroup.should.have.property('contactPhone').eql(9874563210);
+                                done();
                             });
                     });
             });
@@ -126,16 +130,16 @@ describe('AccountGroupTests', () => {
         * Test the /GET route Retrieving Account Group Information Success
         */
         it('Retrieving Account Group Information', (done) => {
-                chai.request(server)
-                    .get('/v1/admin/getAllAccountGroup')
-                    .set(headerData)
-                    .end((err, res) => {
-                        res.should.have.status(200);
-                        res.body.should.be.a('object');
-                        res.body.should.have.property('messages').eql(['Success']);
-                        accountGroupId = res.body.accountGroup[0]._id;
-                        done();
-                    });
+            chai.request(server)
+                .get('/v1/admin/getAllAccountGroup')
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql(['Success']);
+                    accountGroupId = res.body.accountGroup[0]._id;
+                    done();
+                });
         });
         /*
         * Test the /POST route Adding Account Group with same credentials Information Success
@@ -185,6 +189,7 @@ describe('AccountGroupTests', () => {
                             .send(accountGroupData)
                             .end((err, res) => {
                                 res.body.should.have.property('messages').eql(['Account Group with same userName already exists']);
+                                done();
                             });
                     });
             });

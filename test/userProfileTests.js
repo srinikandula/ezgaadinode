@@ -26,20 +26,19 @@ describe('UserProfileTests', () => {
     * Test the /GET route Getting User Profile Information
     */
     describe('/GET UserProfile', () => {
+        User.remove({},function (err, result){
+
+        })
         userData.save(function (err, account) {
 
         });
         it('Retrieving Login Information', (done) => {
-            let userData = {
-                "userName": "ramarao",
-                "password": "9999999999",
-                "contactPhone": 9999999999,
-                "type":"account"
-            };
+
             chai.request(server)
                 .post('/v1/group/login')
                 .send(userData)
                 .end((err, res) => {
+                    console.log('user',res.body)
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -59,6 +58,7 @@ describe('UserProfileTests', () => {
                 .get('/v1/admin/accounts/'+accountId)
                 .set(headerData)
                 .end((err, res) => {
+                    console.log('body---',res.body)
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
