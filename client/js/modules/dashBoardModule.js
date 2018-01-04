@@ -124,7 +124,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         }
         $scope.gotoPayableBypartyId = function (id, name) {
-            console.log('cisahcb')
             $scope.partyName = name;
             $scope.getAmountsBypartyId(id);
             $scope.initializeparams();
@@ -501,7 +500,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         };
         $scope.getPaybleAmountByPartyId=function(id){
             ExpenseService.getPaybleAmountByPartyId(id,function(success){
-                console.log('dtata',success);
                 if (success.data.status) {
                     $scope.payableAmounts = success.data.partyData;
                     $scope.grossAmounts=success.data.grossAmounts;

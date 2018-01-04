@@ -661,7 +661,6 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
                 totalmExpense: totalmExpense,
                 totalmisc: totalmisc
             };
-            console.log('sdfgjh64ydh')
             callback(retObj);
         }
     });
@@ -677,9 +676,7 @@ Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params, callbac
         retObj.messages.push('Please enter valid email');
         callback(retObj);
     } else {
-        console.log('11111111111111111111111111111',params);
         Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
-            console.log('dofvphixdfvi difvjio dfjvio djf',expensesResponse)
             if (expensesResponse.status) {
                 var emailparams = {
                     templateName: 'shareExpenseDetailsByVechicle',

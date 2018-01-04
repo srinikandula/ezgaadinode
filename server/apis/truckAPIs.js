@@ -99,7 +99,6 @@ Trucks.prototype.assignTrucks = function (jwt, groupId, truckIds, callback) {
         messages: []
     };
     TrucksColl.update({ _id: { $in: truckIds } }, { $set: { groupId: groupId } }, { multi: true }, function (err, truck) {
-        // console.log(err);
         if (err) {
             retObj.messages.push("Error While updating Details");
             callback(retObj);
@@ -449,7 +448,6 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
             var skipNumber = (params.page - 1) * params.size;
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
             var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
-            console.log('sort',JSON.parse(params.sort));
 
             dateplus30 = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry)
             if (!params.regNumber) {

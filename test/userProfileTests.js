@@ -27,18 +27,12 @@ describe('UserProfileTests', () => {
     */
     describe('/GET UserProfile', () => {
         User.remove({},function (err, result){
-            
         })
         userData.save(function (err, account) {
 
         });
         it('Retrieving Login Information', (done) => {
-            let userData = {
-                "userName": "ramarao",
-                "password": "9999999999",
-                "contactPhone": 9999999999,
-                "type":"account"
-            };
+
             chai.request(server)
                 .post('/v1/group/login')
                 .send(userData)

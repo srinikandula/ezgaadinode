@@ -456,7 +456,7 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "";
             chai.request(server)
-                .get("/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -474,7 +474,7 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -492,7 +492,7 @@ describe('DashboardTest', () => {
             var regNumber = truckId;
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -510,7 +510,7 @@ describe('DashboardTest', () => {
             var regNumber = truckId;
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -548,6 +548,7 @@ describe('DashboardTest', () => {
             * Test the /POST route Adding Expense based on expense master as other Information Success
             */
             ExpenseCostColl.remove({}, function (error, result) {
+                expenseMasterColl.remove({}, function (error, result) {
                 let expenseData = {
                     "vehicleNumber": truckId,
                     "expenseType": "others",
@@ -557,11 +558,13 @@ describe('DashboardTest', () => {
                     "totalAmount": 100,
                     "mode": "Cash"
                 };
+
                 chai.request(server)
                     .post('/v1/expense/addExpense')
                     .send(expenseData)
                     .set(headerData)
                     .end((err, res) => {
+
                         expect(err).to.be.null;
                         res.should.have.status(200);
                         res.body.should.be.a('object');
@@ -571,7 +574,6 @@ describe('DashboardTest', () => {
                             .get('/v1/expense/groupByVehicle?fromDate=&regNumber=&toDate=&page=1&size=10&sort={"createdAt":-1}')
                             .set(headerData)
                             .end((err, res) => {
-                            console.log('groupByVehicle================================',res.body)
                                 res.should.have.status(200);
                                 res.body.should.be.a('object');
                                 res.body.should.have.property('expenses');
@@ -592,6 +594,7 @@ describe('DashboardTest', () => {
                                 done();
                             });
                     });
+            });
             });
         });
         /*
@@ -738,7 +741,7 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/expense/shareExpensesDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/expense/shareExpensesDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -756,7 +759,7 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "";
             chai.request(server)
-                .get("/v1/expense/shareExpensesDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/expense/shareExpensesDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -774,7 +777,7 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/expense/shareExpensesDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/expense/shareExpensesDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -792,7 +795,7 @@ describe('DashboardTest', () => {
             var regNumber = truckId;
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/expense/shareExpensesDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/expense/shareExpensesDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -810,7 +813,7 @@ describe('DashboardTest', () => {
             var regNumber = truckId;
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/expense/shareExpensesDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/expense/shareExpensesDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -848,47 +851,50 @@ describe('DashboardTest', () => {
             * Test the /POST route Adding Expense based on expense master as other Information Success
             */
             ExpenseCostColl.remove({}, function (error, result) {
-                let expenseData = {
-                    "vehicleNumber": truckId,
-                    "expenseType": "others",
-                    "expenseName": "Toll",
-                    "date": new Date(),
-                    "paidAmount": 0,
-                    "totalAmount": 100,
-                    "mode": "Credit",
-                    "partyId":partyId,
-                };
-                chai.request(server)
-                    .post('/v1/expense/addExpense')
-                    .send(expenseData)
-                    .set(headerData)
-                    .end((err, res) => {
-                        expect(err).to.be.null;
-                        res.should.have.status(200);
-                        res.body.should.be.a('object');
-                        res.body.should.have.property('message').eql('expenses Cost Added Successfully');
-                        expenseId = res.body._id;
-                        chai.request(server)
-                            .get('/v1/expense/getPaybleAmountByParty?fromDate=&page=1&partyId=&size=10&sort={"createdAt":-1}&toDate=')
-                            .set(headerData)
-                            .end((err, res) => {
-                                res.should.have.status(200);
-                                res.body.should.be.a('object');
-                                res.body.should.have.property('messages').eql(['Success']);
-                                res.body.should.have.property('payableAmounts');
-                                expect(res.body.payableAmounts).to.be.a('array');
-                                expect(res.body.payableAmounts).to.be.length(1);
-                                res.body.payableAmounts.should.have.property('name').eql('Party2');
-                                res.body.payableAmounts.should.have.property('contact').eql(9874563210);
-                                res.body.payableAmounts.should.have.property('totalAmount').eql(500);
-                                res.body.payableAmounts.should.have.property('payableAmount').eql(0);
-                                res.body.should.have.property('gross');
-                                res.body.payableAmounts.should.have.property('totalAmount').eql(500);
-                                res.body.payableAmounts.should.have.property('paidAmount').eql(0);
-                                res.body.payableAmounts.should.have.property('payableAmount').eql(500);
-                                done();
-                            });
-                    });
+                expenseMasterColl.remove({}, function (error, result) {
+                    let expenseData = {
+                        "vehicleNumber": truckId,
+                        "expenseType": "others",
+                        "expenseName": "Toll",
+                        "date": new Date(),
+                        "paidAmount": 0,
+                        "totalAmount": 100,
+                        "mode": "Credit",
+                        "partyId": partyId,
+                    };
+                    chai.request(server)
+                        .post('/v1/expense/addExpense')
+                        .send(expenseData)
+                        .set(headerData)
+                        .end((err, res) => {
+                            expect(err).to.be.null;
+                            res.should.have.status(200);
+                            res.body.should.be.a('object');
+                            res.body.should.have.property('message').eql('expenses Cost Added Successfully');
+                            expenseId = res.body._id;
+                            chai.request(server)
+                                .get('/v1/expense/getPaybleAmountByParty?fromDate=&page=1&partyId=&size=10&sort={"createdAt":-1}&toDate=')
+                                .set(headerData)
+                                .end((err, res) => {
+                                    res.should.have.status(200);
+                                    res.body.should.be.a('object');
+                                    res.body.should.have.property('messages').eql(['Success']);
+                                    res.body.should.have.property('paybleAmounts');
+                                    expect(res.body.paybleAmounts).to.be.a('array');
+                                    expect(res.body.paybleAmounts).to.be.length(1);
+                                    res.body.paybleAmounts[0]._id.should.have.property('name').eql('Party2');
+                                    res.body.paybleAmounts[0]._id.should.have.property('contact').eql(9999999999);
+                                    res.body.paybleAmounts[0].should.have.property('totalAmount').eql(100);
+                                    res.body.paybleAmounts[0].should.have.property('paidAmount').eql(0);
+                                    res.body.paybleAmounts[0].should.have.property('payableAmount').eql(100);
+                                    res.body.should.have.property('gross');
+                                    res.body.gross.should.have.property('totalAmount').eql(100);
+                                    res.body.gross.should.have.property('paidAmount').eql(0);
+                                    res.body.gross.should.have.property('payableAmount').eql(100);
+                                    done();
+                                });
+                        });
+                });
             });
         });
         /*
@@ -932,7 +938,6 @@ describe('DashboardTest', () => {
                                     .get('/v1/expense/getPaybleAmountByParty?fromDate=&page=1&partyId=&size=10&sort={"createdAt":-1}&toDate=')
                                     .set(headerData)
                                     .end((err, res) => {
-                                    console.log('sdgdsfgsdfgdfgtry',res.body);
                                         res.should.have.status(200);
                                         res.body.should.be.a('object');
                                         res.body.should.have.property('messages').eql(['Success']);
@@ -1349,7 +1354,7 @@ describe('DashboardTest', () => {
             var partyId = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1367,7 +1372,7 @@ describe('DashboardTest', () => {
             var partyId = "";
             var email = "";
             chai.request(server)
-                .get("/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1385,7 +1390,7 @@ describe('DashboardTest', () => {
             var partyId = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1402,7 +1407,7 @@ describe('DashboardTest', () => {
             var toDate = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1419,7 +1424,7 @@ describe('DashboardTest', () => {
             var toDate = new Date();
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/payments/sharePaymentsDetailsByPartyViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1528,12 +1533,12 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/trucks/shareExpiredDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/trucks/shareExpiredDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Expiry details share successfully']);
+                    res.body.should.have.property('messages').eql(['Expiry details shared successfully']);
                     done();
                 });
         }).timeout(5000);
@@ -1546,7 +1551,7 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "";
             chai.request(server)
-                .get("/v1/trucks/shareExpiredDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/trucks/shareExpiredDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1564,12 +1569,12 @@ describe('DashboardTest', () => {
             var regNumber = truckId;
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/trucks/shareExpiredDetailsViaEmail?email=" + email + "&fromDate=" + fromDate + "&partyId=" + partyId + "&toDate=" + toDate + "&page=1&size=10&sort={'createdAt':-1}")
+                .get('/v1/trucks/shareExpiredDetailsViaEmail?email=' + email + '&fromDate=' + fromDate + '&partyId=' + partyId + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Expiry details share successfully']);
+                    res.body.should.have.property('messages').eql(['Expiry details shared successfully']);
                     done();
                 });
         }).timeout(5000);
