@@ -167,7 +167,7 @@
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paybleParams">
                 <tr ng-repeat="party in paybleList" style="text-align: center;">
                     <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
-                        <a href="#">
+                        <a href="#" ui-sref="payableByPartyName({partyId:party._id._id, name:party._id.name})">
                             {{party._id.name}}</a>
                     </td>
                     <td data-title="'Party Mobile'" sortable="'partyContact'" class="clickable-item col-sm-2">

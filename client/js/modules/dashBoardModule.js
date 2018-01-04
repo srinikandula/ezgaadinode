@@ -4,7 +4,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.vehicleId = $stateParams.vehicleId;
         $scope.id = $stateParams.id;
 
-        $scope.partyName = $stateParams.partyName;
+        $scope.partyName = $stateParams.name;
         $scope.partyId = $stateParams.partyId;
 
         $scope.initializeparams = function (tableType) {
@@ -123,13 +123,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             });
         }
-        $scope.gotoPayableBypartyId = function (id, name) {
-            $scope.partyName = name;
-            $scope.getAmountsBypartyId(id);
-            $scope.initializeparams();
-        }
-       
-        $scope.getTruckExpirs = function () {
+
+
+          $scope.getTruckExpirs = function () {
             $scope.initializeparams();
             $scope.expiryParams = new NgTableParams({
                 page: 1, // show first page
@@ -498,8 +494,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
             });
         };
-        $scope.getPaybleAmountByPartyId=function(id){
-            ExpenseService.getPaybleAmountByPartyId(id,function(success){
+
+        $scope.getPaybleAmountByPartyId=function(){
+            ExpenseService.getPaybleAmountByPartyId($stateParams.partyId,function(success){
                 if (success.data.status) {
                     $scope.payableAmounts = success.data.partyData;
                     $scope.grossAmounts=success.data.grossAmounts;
