@@ -31,6 +31,7 @@ describe('PaymentTest', () => {
         userData.save(function (err, account) {
 
         });
+        it('Retrieving Login Information', (done) => {
         chai.request(server)
             .post('/v1/group/login')
             .send(userData)
@@ -42,7 +43,9 @@ describe('PaymentTest', () => {
                 res.body.should.have.property('token');
                 token = res.body.token;
                 headerData = { "token": token };
+                done();
             });
+        });
         /*
         * Test the /GET route Retrieving Empty Payment Information Success
         */
@@ -62,9 +65,9 @@ describe('PaymentTest', () => {
             });
         });
         /*
-        * Test the /GET route Retrieving Payment Information by Adding Payment Success
+        * Test the /GET route Retrieving Payment with payment type NEFT Information by Adding Payment Success
         */
-        it('Retrieving Payment Information', (done) => {
+        it('Retrieving Payment with payment type NEFT Information', (done) => {
             /*
             * Test the /POST route Adding Party Information Success
             */
@@ -82,8 +85,7 @@ describe('PaymentTest', () => {
                     }
                 ],
                 "isEmail": true,
-                "isSupplier": true,
-                "isTransporter": true
+                "partyType":'Transporter'
             };
             PartyCollection.remove({}, function (error, result) {
                 chai.request(server)
@@ -92,10 +94,10 @@ describe('PaymentTest', () => {
                     .send(partyData)
                     .end((err, res) => {
                         expect(err).to.be.null;
-                        res.body.should.have.property('message').eql('Party Added Successfully');
+                        res.body.should.have.property('message').eql([ 'Party Added Successfully' ]);
                         partyId = res.body.party._id;
                         /*
-                        * Test the /POST route Adding Payment Information Success
+                        * Test the /POST route Adding Payment with Payment Type NEFT Information Success
                         */
                         let paymentData = {
                             "partyId": partyId,
@@ -130,6 +132,151 @@ describe('PaymentTest', () => {
                                         });
                                 });
                         });
+                        
+                    });
+            });
+        });
+         /*
+        * Test the /GET route Retrieving Payment with payment type Cheque Information by Adding Payment Success
+        */
+        it('Retrieving Payment with payment type Cheque Information', (done) => {
+            /*
+            * Test the /POST route Adding Party Information Success
+            */
+            let partyData2 = {
+                "name": "Party1",
+                "contact": 9874563210,
+                "email": "party1@gmail.com",
+                "city": "WRL",
+                "tripLanes": [
+                    {
+                        "to": "Hyd",
+                        "from": "WRL",
+                        "name": "WRL-HYD",
+                        "index": 0
+                    }
+                ],
+                "isEmail": true,
+                "partyType":'Transporter'
+            };
+            PartyCollection.remove({}, function (error, result) {
+                chai.request(server)
+                    .post('/v1/party/addParty')
+                    .set(headerData)
+                    .send(partyData2)
+                    .end((err, res) => {
+                        expect(err).to.be.null;
+                        res.body.should.have.property('message').eql([ 'Party Added Successfully' ]);
+                        partyId = res.body.party._id;
+                        /*
+                        * Test the /POST route Adding Payment with Payment Type NEFT Information Success
+                        */
+                        let paymentData2 = {
+                            "partyId": partyId,
+                            "date": new Date(),
+                            "amount": 120,
+                            "paymentType": "Check",
+                            "paymentRefNo": "abcd123456",
+                        };
+                        paymentsReceivedColl.remove({}, function (error, result) {
+                            chai.request(server)
+                                .post('/v1/payments/addPayments')
+                                .send(paymentData2)
+                                .set(headerData)
+                                .end((err, res) => {
+                                    expect(err).to.be.null;
+                                    res.should.have.status(200);
+                                    res.body.should.be.a('object');
+                                    res.body.should.have.property('messages').eql(['Successfully Added']);
+                                    paymentId = res.body.payments._id;
+                                    chai.request(server)
+                                        .get('/v1/payments/getPayments')
+                                        .set(headerData)
+                                        .end((err, res) => {
+                                            res.should.have.status(200);
+                                            res.body.should.be.a('object');
+                                            res.body.should.have.property('message').eql('Success');
+                                            expect(res.body.paymentsCosts).to.be.a('array');
+                                            expect(res.body.paymentsCosts).to.be.length(1);
+                                            res.body.paymentsCosts[0].should.have.property('partyId').eql(partyId);
+                                            res.body.paymentsCosts[0].should.have.property('amount').eql(120);
+                                            done();
+                                        });
+                                });
+                        });
+                        
+                    });
+            });
+        });
+            /*
+        * Test the /GET route Retrieving Payment with payment type Cash Information by Adding Payment Success
+        */
+        it('Retrieving Payment with payment type Cash Information', (done) => {
+            /*
+            * Test the /POST route Adding Party Information Success
+            */
+            let partyData3 = {
+                "name": "Party1",
+                "contact": 9874563210,
+                "email": "party1@gmail.com",
+                "city": "WRL",
+                "tripLanes": [
+                    {
+                        "to": "Hyd",
+                        "from": "WRL",
+                        "name": "WRL-HYD",
+                        "index": 0
+                    }
+                ],
+                "isEmail": true,
+                "partyType":'Transporter'
+            };
+            PartyCollection.remove({}, function (error, result) {
+                chai.request(server)
+                    .post('/v1/party/addParty')
+                    .set(headerData)
+                    .send(partyData3)
+                    .end((err, res) => {
+                        expect(err).to.be.null;
+                        res.body.should.have.property('message').eql([ 'Party Added Successfully' ]);
+                        partyId = res.body.party._id;
+                        /*
+                        * Test the /POST route Adding Payment with Payment Type NEFT Information Success
+                        */
+                        let paymentData3 = {
+                            "partyId": partyId,
+                            "date": new Date(),
+                           "amount": 120,
+                            "paymentType": "Cash",
+                            "paymentRefNo": "abcd123456",
+                        };
+                        paymentsReceivedColl.remove({}, function (error, result) {
+                            chai.request(server)
+                                .post('/v1/payments/addPayments')
+                                .send(paymentData3)
+                                .set(headerData)
+                                .end((err, res) => {
+                                    expect(err).to.be.null;
+                                    res.should.have.status(200);
+                                    res.body.should.be.a('object');
+                                    res.body.should.have.property('messages').eql(['Successfully Added']);
+                                    paymentId = res.body.payments._id;
+                                    chai.request(server)
+                                        .get('/v1/payments/getPayments')
+                                        .set(headerData)
+                                        .end((err, res) => {
+                                            res.should.have.status(200);
+                                            res.body.should.be.a('object');
+                                            res.body.should.have.property('message').eql('Success');
+                                            expect(res.body.paymentsCosts).to.be.a('array');
+                                            expect(res.body.paymentsCosts).to.be.length(1);
+                                            res.body.paymentsCosts[0].should.have.property('partyId').eql(partyId);
+                                            res.body.paymentsCosts[0].should.have.property('amount').eql(120);
+                                            done();
+                                        });
+                                });
+                        });
+                        
                     });
             });
         });

@@ -19,8 +19,9 @@ var Expenses = function () {
 };
 
 function save(expenseDetails, result, callback) {
-    var expenseDoc = new expenseColl(expenseDetails);
+      var expenseDoc = new expenseColl(expenseDetails);
     expenseDoc.save(function (err, expense) {
+        console.log('===========>',err);
         if (err) {
             result.status = false;
             result.message = "Error while adding expenses Cost, try Again";
@@ -42,7 +43,8 @@ function saveExpense(expenseDetails, jwt, result, callback) {
                 save(expenseDetails, result, callback);
             } else {
                 result.status = false;
-                result.message = "Error creating new expense type, try Again";
+                result.message = "Expense already exists or Error creating new expense type";
+                callback(result);
             }
         });
     } else {
@@ -143,6 +145,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
             } else {
                 result.status = false;
                 result.message = "Error creating new expense type, try Again";
+                callback(result);
             }
         });
     } else {
@@ -801,7 +804,6 @@ function getPaybleAmountByParty(condition, params, callback) {
         { "$limit": limit },
 
         function (err, payble) {
-        console.log('err',err)
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');
@@ -843,7 +845,7 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
                 $lte: new Date(params.toDate),
             }, "partyId": ObjectId(params.partyId)
         }
-        getPaybleAmountByParty(jwt, condition, params, function (response) {
+        getPaybleAmountByParty(condition, params, function (response) {
             callback(response);
         });
     } else if (params.fromDate && params.toDate) {

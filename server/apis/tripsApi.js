@@ -227,6 +227,12 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     if (!tripDetails.partyId) {
         retObj.messages.push("Please select a party");
     }
+    if (!tripDetails.driverId) {
+        retObj.messages.push("Please select a driver");
+    }
+    if (!tripDetails.registrationNo) {
+        retObj.messages.push("Please select a vechile");
+    }
 
     if (!_.isNumber(tripDetails.freightAmount)) {
         retObj.messages.push("Please add Freight Amount");

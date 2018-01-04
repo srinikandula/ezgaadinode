@@ -21,7 +21,7 @@ let userData = new User({
     "password": "9999999999",
     "contactPhone": 9999999999
 });
-let headerData = {"token": token};
+let headerData = { "token": token };
 
 chai.use(chaiHttp);
 
@@ -33,18 +33,21 @@ describe('ExpenseTest', () => {
         userData.save(function (err, account) {
 
         });
-        chai.request(server)
-            .post('/v1/group/login')
-            .send(userData)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                res.body.should.have.property('userName').eql('ramarao');
-                res.body.should.have.property('token');
-                token = res.body.token;
-                headerData = {"token": token};
-            });
+        it('Retrieving Login Information', (done) => {
+            chai.request(server)
+                .post('/v1/group/login')
+                .send(userData)
+                .end((err, res) => {
+                    expect(err).to.be.null;
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('userName').eql('ramarao');
+                    res.body.should.have.property('token');
+                    token = res.body.token;
+                    headerData = { "token": token };
+                    done();
+                });
+        });
         /*
         * Test the /GET route Retrieving Empty Expense Information Success
         */
@@ -82,107 +85,90 @@ describe('ExpenseTest', () => {
             /*
             * Before Adding Expense to Vehicle need to add Expense Master Information to schema
             */
-            let expenseMasterData = {
-                "expenseName": "Diesel"
-            };
 
-            async.parallel({
-                truckId: function (truckCallback) {
-                    TrucksColl.remove({}, function (error, result) {
-                        chai.request(server)
-                            .post('/v1/trucks')
-                            .send(truckData)
-                            .set(headerData)
-                            .end((err, res) => {
-                                expect(err).to.be.null;
-                                res.should.have.status(200);
-                                res.body.should.be.a('object');
-                                res.body.should.have.property('messages').eql(['Truck Added Successfully']);
-                                res.body.should.have.property('truck');
-                                res.body.truck.should.have.property('registrationNo');
-                                res.body.truck.should.have.property('registrationNo').eql('AP36AA9876');
-                                res.body.truck.should.have.property('truckType');
-                                res.body.truck.should.have.property('truckType').eql('20 Tyre');
-                                truckId = res.body.truck._id;
-                                truckCallback(error, truckId);
-                            });
-                    });
-                },
 
-                expenseMasterId: function (expenseMasterCallback) {
-                    expenseMasterColl.remove({}, function (error, result) {
-                        chai.request(server)
-                            .post('/v1/expenseMaster')
-                            .send(expenseMasterData)
-                            .set(headerData)
-                            .end((err, res) => {
-                                expect(err).to.be.null;
-                                res.should.have.status(200);
-                                res.body.should.be.a('object');
-                                res.body.should.have.property('messages').eql(['Successfully Added']);
-                                expenseMasterId = res.body.newDoc._id;
-                                expenseMasterCallback(error, expenseMasterId);
+            TrucksColl.remove({}, function (error, result) {
+                chai.request(server)
+                    .post('/v1/trucks')
+                    .send(truckData)
+                    .set(headerData)
+                    .end((err, res) => {
+                        expect(err).to.be.null;
+                        res.should.have.status(200);
+                        res.body.should.be.a('object');
+                        res.body.should.have.property('messages').eql(['Truck Added Successfully']);
+                        res.body.should.have.property('truck');
+                        res.body.truck.should.have.property('registrationNo');
+                        res.body.truck.should.have.property('registrationNo').eql('AP36AA9876');
+                        res.body.truck.should.have.property('truckType');
+                        res.body.truck.should.have.property('truckType').eql('20 Tyre');
+                        truckId = res.body.truck._id;
+                        /*
+        * Adding Expense Information to schema
+        */
+                        expenseMasterColl.remove({}, function (error, res) {
+                            ExpenseCostColl.remove({}, function (error, result) {
+                                let expenseData = {
+                                    "vehicleNumber": truckId,
+                                    "expenseType": "others",
+                                    "expenseName": "Toll",
+                                    "date": new Date(),
+                                    "paidAmount": 0,
+                                    "totalAmount": 100,
+                                    "mode": "Cash"
+                                };
+
+                                chai.request(server)
+                                    .post('/v1/expense/addExpense')
+                                    .send(expenseData)
+                                    .set(headerData)
+                                    .end((err, res) => {
+                                        res.should.have.status(200);
+                                        res.body.should.be.a('object');
+                                        res.body.should.have.property('message').eql('expenses Cost Added Successfully');
+                                        expenseId = res.body.expenses._id;
+                                        done();
+                                    });
                             });
+
+                        })
                     });
-                },
-            }, function (err, results) {
-                /*
-                * Adding Expense Information to schema
-                */
-                let expenseData = {
-                    "vehicleNumber": truckId,
-                    "expenseType": expenseMasterId,
-                    "date": new Date(),
-                    "cost": 100,
-                    "mode": "Cash"
-                };
-                ExpenseCostColl.remove({}, function (error, result) {
-                    chai.request(server)
-                        .post('/v1/expense/addExpense')
-                        .send(expenseData)
-                        .set(headerData)
-                        .end((err, res) => {
-                            res.should.have.status(200);
-                            res.body.should.be.a('object');
-                            res.body.should.have.property('message').eql('expenses Cost Added Successfully');
-                            expenseId = res.body.expenses._id;
-                            done();
-                        });
-                });
             });
+
         });
         /*
         * Test the /GET route Retrieving  Expense Information Success
         */
         it('Retrieving  Expense Information', (done) => {
             chai.request(server)
-            .get('/v1/expense/getAllExpenses')
-            .set(headerData)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                res.body.should.have.property('message').eql('Success');
-                expect(res.body.expenses).to.be.a('array');
-                expect(res.body.expenses).to.be.length(1);
-                done();
-            });
+                .get('/v1/expense/getAllExpenses')
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message').eql('Success');
+                    expect(res.body.expenses).to.be.a('array');
+                    expect(res.body.expenses).to.be.length(1);
+                    expenseMasterId = res.body.expenses[0].expenseType;
+                    done();
+                });
         });
         /*
         * Test the /GET route Retrieving  Expense by truck Number Information Success
         */
         it('Retrieving  Expense Information', (done) => {
-            var truckNumber="AP36AA9876";
+            var truckNumber = "AP36AA9876";
             chai.request(server)
-            .get('/v1/expense/getAllExpenses?truckNumber='+truckNumber)
-            .set(headerData)
-            .end((err, res) => {
-                res.should.have.status(200);
-                res.body.should.be.a('object');
-                res.body.should.have.property('message').eql('Success');
-                expect(res.body.expenses).to.be.a('array');
-                expect(res.body.expenses).to.be.length(1);
-                done();
-            });
+                .get('/v1/expense/getAllExpenses?truckNumber=' + truckNumber)
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('message').eql('Success');
+                    expect(res.body.expenses).to.be.a('array');
+                    expect(res.body.expenses).to.be.length(1);
+                    done();
+                });
         });
         /*
         * Test the /PUT route Updating Expense Information Success
@@ -193,7 +179,8 @@ describe('ExpenseTest', () => {
                 "vehicleNumber": truckId,
                 "expenseType": expenseMasterId,
                 "date": new Date(),
-                "cost": 1300,
+                "totalAmount": 1300,
+                "paidAmount": 0,
                 "mode": "Credit"
             };
             chai.request(server)
@@ -204,23 +191,51 @@ describe('ExpenseTest', () => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('message').eql('expenses Cost updated successfully');
-                    res.body.expense.should.have.property('cost').eql(1300);
+                    res.body.expense.should.have.property('totalAmount').eql(1300);
                     done();
                 });
         });
-        /*
-        * Test the /PUT route Deleting Expense Information Success
-        */
-        it('Deleting Expense Information', (done) => {
+        /**
+         * Adding Expense with mode cash Information to schema
+         */
+        it('Adding Expense with mode cash Information', (done) => {
+            let expenseData = {
+                "vehicleNumber": truckId,
+                "expenseType": expenseMasterId,
+                "date": new Date(),
+                "totalAmount": 1300,
+                "paidAmount": 0,
+                "mode": "Cash"
+            };
+
             chai.request(server)
-                .delete('/v1/expense/'+expenseId)
+                .post('/v1/expense/addExpense')
+                .send(expenseData)
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('message').eql('Success');
+                    res.body.should.have.property('message').eql('expenses Cost Added Successfully');
+                    expenseId = res.body.expenses._id;
                     done();
                 });
         });
+ 
+
+    /*
+    * Test the /PUT route Deleting Expense Information Success
+    */
+    it('Deleting Expense Information', (done) => {
+        chai.request(server)
+            .delete('/v1/expense/' + expenseId)
+            .set(headerData)
+            .end((err, res) => {
+                console.log('deleting', res.body)
+                res.should.have.status(200);
+                res.body.should.be.a('object');
+                res.body.should.have.property('message').eql('Success');
+                done();
+            });
     });
+});
 });
