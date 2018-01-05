@@ -19,9 +19,9 @@ var Expenses = function () {
 };
 
 function save(expenseDetails, result, callback) {
-      var expenseDoc = new expenseColl(expenseDetails);
+    var expenseDoc = new expenseColl(expenseDetails);
     expenseDoc.save(function (err, expense) {
-        console.log('===========>',err);
+
         if (err) {
             result.status = false;
             result.message = "Error while adding expenses Cost, try Again";
@@ -37,7 +37,7 @@ function save(expenseDetails, result, callback) {
 
 function saveExpense(expenseDetails, jwt, result, callback) {
     if (expenseDetails.expenseType === 'others' && expenseDetails.expenseName) {
-        expenseMasterApi.addExpenseType(jwt, { "expenseName": expenseDetails.expenseName }, function (eTResult) {
+        expenseMasterApi.addExpenseType(jwt, {"expenseName": expenseDetails.expenseName}, function (eTResult) {
             if (eTResult.status) {
                 expenseDetails.expenseType = eTResult.newDoc._id.toString();
                 save(expenseDetails, result, callback);
@@ -78,7 +78,7 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
         result.status = false;
         result.message = "Please Select Party";
         callback(result);
-    } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.totalAmount || _.isNaN(expenseDetails.totalAmount))) {
+    } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.cost || _.isNaN(expenseDetails.cost))) {
         result.status = false;
         result.message = "Please provide Total Expense Amount";
         callback(result);
@@ -101,23 +101,22 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
 
 function updateExpense(expense, jwt, callback) {
     var result = {};
-    expenseColl.findOneAndUpdate({ _id: expense._id },
+    expenseColl.findOneAndUpdate({_id: expense._id},
         {
             $set: {
                 "updatedBy": jwt.id,
                 "vehicleNumber": expense.vehicleNumber,
                 "description": expense.description,
                 "expenseType": expense.expenseType,
-                "cost": expense.totaAmount,
+                "cost": expense.cost,
                 "mode": expense.mode,
                 "partyId": expense.partyId,
                 "totalAmount": expense.totalAmount,
                 "paidAmount": expense.paidAmount,
-
                 "date": expense.date
             }
         },
-        { new: true },
+        {new: true},
         function (err, expenseDoc) {
             if (err) {
                 result.status = false;
@@ -138,7 +137,7 @@ function updateExpense(expense, jwt, callback) {
 
 Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
     if (expense.expenseType === 'others' && expense.expenseName) {
-        expenseMasterApi.addExpenseType(jwt, { "expenseName": expense.expenseName }, function (eTResult) {
+        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, function (eTResult) {
             if (eTResult.status) {
                 expense.expenseType = eTResult.newDoc._id.toString();
                 updateExpense(expense, jwt, callback);
@@ -159,7 +158,7 @@ function getExpenseCosts(condition, jwt, params, callback) {
     async.parallel({
         mCosts: function (mCostsCallback) {
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
             expenseColl
                 .find(condition)
                 .sort(sort)
@@ -204,11 +203,32 @@ function getExpenseCosts(condition, jwt, params, callback) {
             result.status = true;
             result.message = 'Success';
             result.count = results.count;
-            result.expenses = results.mCosts.createdbyname;
-            callback(result);
+            var i=0;
+            async.map(results.mCosts.createdbyname,function (expense,expCall) {
+
+                if(expense.mode==='Cash'){
+                    results.mCosts.createdbyname[i].totalAmount=expense.cost;
+                }
+                i++;
+                expCall(null);
+            },function (err) {
+                if(err){
+                    result.status = false;
+                    result.message = 'Error retrieving expenses Costs';
+                    callback(result);
+                }else{
+                    result.expenses = results.mCosts.createdbyname;
+                    callback(result);
+
+                }
+            })
+            /*for(var i=0;i<results.mCosts.createdbyname.length;i++){
+
+            }*/
         }
     });
 }
+
 Expenses.prototype.getExpenseCosts = function (jwt, params, callback) {
     var result = {};
     if (!params.page) {
@@ -217,19 +237,19 @@ Expenses.prototype.getExpenseCosts = function (jwt, params, callback) {
     var condition = {};
 
     if (!params.truckNumber) {
-        condition = { 'accountId': jwt.accountId };
+        condition = {'accountId': jwt.accountId};
         getExpenseCosts(condition, jwt, params, function (response) {
             callback(response);
         })
     } else {
 
-        trucksCollection.findOne({ registrationNo: { $regex: '.*' + params.truckNumber + '.*' } }, function (err, truckData) {
+        trucksCollection.findOne({registrationNo: {$regex: '.*' + params.truckNumber + '.*'}}, function (err, truckData) {
             if (err) {
                 result.status = false;
                 result.message = 'Error retrieving expenses Costs';
                 callback(result);
             } else if (truckData) {
-                condition = { 'accountId': jwt.accountId, 'vehicleNumber': truckData._id }
+                condition = {'accountId': jwt.accountId, 'vehicleNumber': truckData._id}
                 getExpenseCosts(condition, jwt, params, function (response) {
                     callback(response);
                 })
@@ -252,7 +272,7 @@ Expenses.prototype.getAllAccountExpenseCosts = function (jwt, callback) {
         messages: []
     };
     expenseColl
-        .find({ accountId: jwt.accountId })
+        .find({accountId: jwt.accountId})
         .lean()
         .exec(function (err, mCosts) {
             async.parallel({
@@ -308,7 +328,7 @@ Expenses.prototype.getAll = function (jwt, req, callback) {
 
 Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
     var result = {};
-    expenseColl.findOne({ _id: expenseId }, function (err, record) {
+    expenseColl.findOne({_id: expenseId}, function (err, record) {
         if (err) {
             result.status = false;
             result.message = "Error while finding expenses Record, try Again";
@@ -329,7 +349,7 @@ Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
 
 Expenses.prototype.deleteExpenseRecord = function (expenseId, callback) {
     var result = {};
-    expenseColl.remove({ _id: expenseId }, function (err, returnValue) {
+    expenseColl.remove({_id: expenseId}, function (err, returnValue) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting expenses Record';
@@ -347,7 +367,7 @@ Expenses.prototype.deleteExpenseRecord = function (expenseId, callback) {
 };
 Expenses.prototype.countExpense = function (jwt, callback) {
     var result = {};
-    expenseColl.count({ 'accountId': jwt.accountId }, function (err, data) {
+    expenseColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -367,8 +387,9 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  * @param callback
  */
 Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback) {
-    expenseColl.aggregate({ $match: erpSettingsCondition },
-        { $group: { _id: null, totalExpenses: { $sum: "$totalAmount" } } },
+   // erpSettingsCondition.mode='Cash';
+    expenseColl.aggregate({$match: erpSettingsCondition},
+        {$group: {_id: null, totalCash: {$sum: "$cost"}, totalCredit: {$sum: "$totalAmount"}}},
         function (error, result) {
             var retObj = {
                 status: false,
@@ -380,7 +401,8 @@ Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback)
             } else {
                 retObj.status = true;
                 if (result.length > 0) {
-                    retObj.totalExpenses = result[0].totalExpenses;
+                    console.log(result[0].totalCash,result[0].totalCredit)
+                    retObj.totalExpenses = result[0].totalCash+result[0].totalCredit;
                 } else {
                     retObj.totalExpenses = 0;
                 }
@@ -398,11 +420,6 @@ Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback)
  */
 
 Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-
     var condition = {};
     var retObj = {
         status: false,
@@ -433,19 +450,19 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params, callback) {
             callback(response);
         })
     } else if (params.regNumber) {
-        condition = { $match: { "accountId": ObjectId(jwt.accountId), "vehicleNumber": params.regNumber } }
+        condition = {$match: {"accountId": ObjectId(jwt.accountId), "vehicleNumber": params.regNumber}}
         getExpensesByVehicles(jwt, condition, params, function (response) {
             callback(response);
         })
     } else {
-        ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+        ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);
             } else if (erpSettings) {
 
-                condition = { $match: Utils.getErpSettings(erpSettings.expense, erpSettings.accountId) }
+                condition = {$match: Utils.getErpSettings(erpSettings.expense, erpSettings.accountId)}
                 getExpensesByVehicles(jwt, condition, params, function (response) {
                     callback(response);
                 })
@@ -472,7 +489,7 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
     var totaltollExpense = 0;
     var totalmExpense = 0;
     var totalmisc = 0;
-    expenseColl.find({ 'accountId': jwt.accountId, "vehicleNumber": vehicleId }, function (err, expenses) {
+    expenseColl.find({'accountId': jwt.accountId, "vehicleNumber": vehicleId}, function (err, expenses) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -481,19 +498,26 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function (results) {
                 result.status = true;
                 result.expenses = results.documents;
-
                 for (var i = 0; i < result.expenses.length; i++) {
-                    if (result.expenses[i].attrs.expenseName === 'Diesel') {
+                    if(result.expenses[i].mode==='Cash'){
+                        result.expenses[i].totalAmount=result.expenses[i].cost;
+                    }
+                    if (result.expenses[i].attrs.expenseName.toLowerCase() === 'diesel') {
                         totalDieselExpense = totalDieselExpense + result.expenses[i].totalAmount;
-                    } else if (result.expenses[i].attrs.expenseName === 'Toll') {
+                    } else if (result.expenses[i].attrs.expenseName.toLowerCase() === 'toll') {
                         totaltollExpense = totaltollExpense + result.expenses[i].totalAmount;
-                    } else if (result.expenses[i].attrs.expenseName === 'Maintenance') {
+                    } else if (result.expenses[i].attrs.expenseName.toLowerCase() === 'maintenance') {
                         totalmExpense = totalmExpense + result.expenses[i].totalAmount;
                     } else {
                         totalmisc = totalmisc + result.expenses[i].totalAmount;
                     }
                 }
-                result.totalExpenses = { totalDieselExpense: totalDieselExpense, totaltollExpense: totaltollExpense, totalmExpense: totalmExpense, totalmisc: totalmisc };
+                result.totalExpenses = {
+                    totalDieselExpense: totalDieselExpense,
+                    totaltollExpense: totaltollExpense,
+                    totalmExpense: totalmExpense,
+                    totalmisc: totalmisc
+                };
                 callback(result);
             });
         }
@@ -507,7 +531,7 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
         status: false,
         messages: []
     };
-    expenseColl.find({ accountId: jwt.accountId, vehicleNumber: vehicleId }, function (err, expenses) {
+    expenseColl.find({accountId: jwt.accountId, vehicleNumber: vehicleId}, function (err, expenses) {
         if (err) {
             retObj.messages.push('Error getting Expenses');
             callback(retObj);
@@ -558,21 +582,22 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
     async.parallel({
         expenses: function (expensesCallback) {
             expenseColl.aggregate(condition,
                 {
                     $group: {
-                        _id: { "vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType" },
-                        totalExpenses: { $sum: "$totalAmount" }
+                        _id: {"vehicleNumber": "$vehicleNumber", "expenseType": "$expenseType"},
+                        totalCash: {$sum: "$cost"},
+                        totalCredit: {$sum: "$totalAmount"}
                     }
 
                 },
-                { "$sort": sort },
-                { "$skip": skipNumber },
-                { "$limit": limit }, function (error, expensesResult) {
+                {"$sort": sort},
+                {"$skip": skipNumber},
+                {"$limit": limit}, function (error, expensesResult) {
                     expensesCallback(error, expensesResult);
                 });
         },
@@ -582,7 +607,7 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
             });
         },
         truckRegNumbers: function (expenseTypesCallback) {
-            trucksCollection.find({ "accountId": jwt.accountId }, { "registrationNo": 1 }, function (error, expenseTypeResults) {
+            trucksCollection.find({"accountId": jwt.accountId}, {"registrationNo": 1}, function (error, expenseTypeResults) {
                 expenseTypesCallback(error, expenseTypeResults);
             });
         }
@@ -615,12 +640,12 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
                 }
                 var vehicle = vehicleExpenses[vehicleId];
                 if (!vehicle.expenses[expenses[i]._id.expenseType]) {
-                    var expenseTotal = { "expenseTotal": expenses[i].totalExpenses };
+                    var expenseTotal = {"expenseTotal": expenses[i].totalCredit+expenses[i].totalCash};
                     expenseTotal["name"] = expenseTypes[expenses[i]._id.expenseType];
                     vehicle.expenses[expenses[i]._id.expenseType] = expenseTotal;
                 } else {
                     var expense = vehicle.expenses[expenses[i]._id.expenseType];
-                    expense["expenseTotal"] += expenses[i].totalExpenses;
+                    expense["expenseTotal"] += expenses[i].totalCredit+expenses[i].totalCash;
                 }
             }
             var results = [];
@@ -631,17 +656,17 @@ function getExpensesByVehicles(jwt, condition, params, callback) {
             for (id in vehicleExpenses) {
                 var vehicleExpense = vehicleExpenses[id];
                 vehicleExpense.exps = [];
-                var resultExpense = { "dieselExpense": 0, "tollExpense": 0, "mExpense": 0, "misc": 0 };
+                var resultExpense = {"dieselExpense": 0, "tollExpense": 0, "mExpense": 0, "misc": 0};
                 for (e in vehicleExpense.expenses) {
                     var vExpense = vehicleExpense.expenses[e];
 
-                    if (vExpense["name"] == "Diesel") {
+                    if (vExpense["name"].toLowerCase() == "diesel") {
                         resultExpense["dieselExpense"] += vExpense.expenseTotal;
                         totalDieselExpense = totalDieselExpense + resultExpense["dieselExpense"];
-                    } else if (vExpense["name"] == "Toll") {
+                    } else if (vExpense["name"].toLowerCase() == "toll") {
                         resultExpense["tollExpense"] += vExpense.expenseTotal;
                         totaltollExpense = totaltollExpense + resultExpense["tollExpense"];
-                    } else if (vExpense["name"] == "Maintenance") {
+                    } else if (vExpense["name"].toLowerCase() == "maintenance") {
                         resultExpense["mExpense"] += vExpense.expenseTotal;
                         totalmExpense = totalmExpense + resultExpense["mExpense"];
                     } else {
@@ -748,12 +773,12 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
         messages: []
     };
     condition.mode = "Credit";
-    expenseColl.aggregate({ $match: condition },
+    expenseColl.aggregate({$match: condition},
         {
             $group: {
                 _id: null,
-                totalAmount: { $sum: "$totalAmount" },
-                paidAmount: { $sum: "$paidAmount" }
+                totalAmount: {$sum: "$totalAmount"},
+                paidAmount: {$sum: "$paidAmount"}
             }
         },
         function (err, expense) {
@@ -776,6 +801,7 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
         });
 
 };
+
 function getPaybleAmountByParty(condition, params, callback) {
     var retObj = {
         status: false,
@@ -786,9 +812,9 @@ function getPaybleAmountByParty(condition, params, callback) {
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     condition.mode = "Credit";
-    expenseColl.aggregate({ $match: condition },
+    expenseColl.aggregate({$match: condition},
         {
             "$lookup": {
                 "from": "parties",
@@ -796,16 +822,16 @@ function getPaybleAmountByParty(condition, params, callback) {
                 "foreignField": "_id",
                 "as": "partyId"
             }
-        }, { "$unwind": "$partyId" }, {
+        }, {"$unwind": "$partyId"}, {
             $group: {
                 _id: "$partyId",
-                totalAmount: { $sum: "$totalAmount" },
-                paidAmount: { $sum: "$paidAmount" },
-                payableAmount: { $sum: { $subtract: ["$totalAmount", "$paidAmount"] } }
+                totalAmount: {$sum: "$totalAmount"},
+                paidAmount: {$sum: "$paidAmount"},
+                payableAmount: {$sum: {$subtract: ["$totalAmount", "$paidAmount"]}}
             }
-        }, { "$sort": sort },
-        { "$skip": skipNumber },
-        { "$limit": limit },
+        }, {"$sort": sort},
+        {"$skip": skipNumber},
+        {"$limit": limit},
 
         function (err, payble) {
             if (err) {
@@ -839,6 +865,7 @@ function getPaybleAmountByParty(condition, params, callback) {
 
         });
 }
+
 Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
     var condition = {};
     var retObj = {
@@ -866,12 +893,12 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
             callback(response);
         });
     } else if (params.partyId) {
-        condition = { "accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId) }
+        condition = {"accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId)}
         getPaybleAmountByParty(condition, params, function (response) {
             callback(response);
         });
     } else {
-        ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+        ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
@@ -980,7 +1007,10 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, callback) {
         retObj.message.push("Please select valid party");
         callback(retObj);
     } else {
-        expenseColl.find({ accountId: jwt.accountId, partyId: params.partyId }).populate('partyId').populate('expenseType').lean().exec(function (err, partyData) {
+        expenseColl.find({
+            accountId: jwt.accountId,
+            partyId: params.partyId
+        }).populate('partyId').populate('expenseType').lean().exec(function (err, partyData) {
             if (err) {
                 retObj.status = false;
                 retObj.message.push("Please try again");
@@ -988,25 +1018,25 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, callback) {
             } else if (partyData.length > 0) {
                 retObj.status = true;
                 retObj.message.push("success");
-                retObj.grossAmounts={
-                    totalAmount:0,
-                    paidAmount:0,
-                    payableAmount:0
+                retObj.grossAmounts = {
+                    totalAmount: 0,
+                    paidAmount: 0,
+                    payableAmount: 0
 
                 }
-                for(var i=0;i<partyData.length>0;i++){
-                    partyData[i].payableAmount=partyData[i].totalAmount-(partyData[i].paidAmount || 0);
+                for (var i = 0; i < partyData.length > 0; i++) {
+                    partyData[i].payableAmount = partyData[i].totalAmount - (partyData[i].paidAmount || 0);
 
-                    retObj.grossAmounts.totalAmount+=partyData[i].totalAmount;
-                    retObj.grossAmounts.paidAmount+=partyData[i].paidAmount;
-                    retObj.grossAmounts.payableAmount+=partyData[i].payableAmount;
-                    if(i===partyData.length-1){
+                    retObj.grossAmounts.totalAmount += partyData[i].totalAmount;
+                    retObj.grossAmounts.paidAmount += partyData[i].paidAmount;
+                    retObj.grossAmounts.payableAmount += partyData[i].payableAmount;
+                    if (i === partyData.length - 1) {
 
-                        retObj.partyData=partyData;
+                        retObj.partyData = partyData;
                         callback(retObj);
                     }
                 }
-                
+
             } else {
                 retObj.status = false;
                 retObj.message.push("No Expenses found");
