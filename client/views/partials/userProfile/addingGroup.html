@@ -56,16 +56,16 @@
                                         <span class="caret"></span></button>
                                     <ul class="dropdown-menu assign-trucks list-inline col-xs-12">
                                         <li ng-repeat="truck in trucks" class="col-xs-5"
-                                            ng-show="$index<trucks.length/2">
+                                           >
                                             <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]"
                                                    ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}
                                         </li>
-                                        <li ng-repeat="truck in trucks" class="col-xs-5"
+                                      <!--  ng-show="$index<trucks.length/2" <li ng-repeat="truck in trucks" class="col-xs-5"
                                             ng-show="$index>trucks.length/2">
                                             <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]"
                                                    ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}
                                         </li>
-                                    </ul>
+                                    </ul>-->
                                 </div>
                             </div>
                         </div>

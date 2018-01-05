@@ -65,7 +65,7 @@ Utils.prototype.isValidDateStr = function (dateStr) {
 
 Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, callback) {
     var result = {};
-    if(documents === null) documents=[];
+    if (documents === null) documents = [];
     var ids = _.pluck(documents, fieldTopopulate);
 //  UsersColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
 //  GroupsColl.find({'_id': {$in: ids}}, {"userName": 1}, function (err, userNames) {
@@ -100,7 +100,6 @@ Utils.prototype.populateNameInUsersColl = function (documents, fieldTopopulate, 
         }
     });
 };
-
 
 
 Utils.prototype.populateNameInDriversCollmultiple = function (truckDocuments, fieldTopopulate, fieldsToGet, callback) {
@@ -157,7 +156,7 @@ Utils.prototype.populateNameInPartyColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var party = _.find(names, function (users) {
-                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                    if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (party) {
                     if (!item.attrs) {
@@ -188,7 +187,7 @@ Utils.prototype.populateNameInTripLaneColl = function (documents, fieldTopopulat
         for (var i = 0; i < documents.length; i++) {
             var item = documents[i];
             var tripLane = _.find(names, function (users) {
-                if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
             });
             if (tripLane) {
                 if (!item.attrs) {
@@ -218,7 +217,7 @@ Utils.prototype.populateNameInTrucksColl = function (documents, fieldTopopulate,
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Trucks = _.find(names, function (users) {
-                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                    if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (Trucks) {
                     if (!item.attrs) {
@@ -248,7 +247,7 @@ Utils.prototype.populateNameInExpenseColl = function (documents, fieldTopopulate
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Trucks = _.find(names, function (users) {
-                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                    if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (Trucks) {
                     if (!item.attrs) {
@@ -279,7 +278,7 @@ Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Roles = _.find(names, function (users) {
-                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                    if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (Roles) {
                     if (!item.attrs) {
@@ -356,7 +355,7 @@ Utils.prototype.populateNameInTripsColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Trips = _.find(names, function (users) {
-                    if(item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                    if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
                 if (Trips) {
                     if (!item.attrs) {
@@ -376,46 +375,46 @@ Utils.prototype.populateNameInTripsColl = function (documents, fieldTopopulate, 
 
 Utils.prototype.getErpSettings = function (erp, accountId) {
     var condition = {};
-    var today=new Date();
-    
+    var today = new Date();
+
     if (erp.filterType === "day") {
-        condition=  {
+        condition = {
             "accountId": accountId,
-             date: {
-                $gte: today.setHours(0,0,0,0)
-               
+            date: {
+                $gte: today.setHours(0, 0, 0, 0)
+
             }
         }
     } else if (erp.filterType === "week") {
-        condition=  {
+        condition = {
             "accountId": accountId,
-             date: {
+            date: {
                 $gte: new Date(new Date().setDate(new Date().getDate() - 7)),
-                $lte:today
+                $lte: today
             }
         }
     } else if (erp.filterType === "month") {
-        condition=  {
+        condition = {
             "accountId": accountId,
-             date: {
-                $gte:  new Date(new Date().setDate(new Date().getDate() - 30)),
+            date: {
+                $gte: new Date(new Date().setDate(new Date().getDate() - 30)),
                 $lte: today
             }
         }
     } else if (erp.filterType === "year") {
-        condition=  {
+        condition = {
             "accountId": accountId,
-             date: {
-                $gte:  new Date(new Date().setDate(new Date().getDate() - 365)),
+            date: {
+                $gte: new Date(new Date().setDate(new Date().getDate() - 365)),
                 $lte: today
             }
         }
     } else if (erp.filterType === "custom") {
-        condition=  {
+        condition = {
             "accountId": accountId,
-             date: {
+            date: {
                 $gte: erp.fromDate,
-                $lte:erp.toDate
+                $lte: erp.toDate
             }
         }
     }
@@ -423,22 +422,49 @@ Utils.prototype.getErpSettings = function (erp, accountId) {
 }
 
 Utils.prototype.getErpSettingsForTruckExpiry = function (erp) {
-    var condition = {};
-    var today=new Date();
-    
+    var output = {};
+    var today = new Date();
+
     if (erp.filterType === "day") {
-        condition= today.setHours(0,0,0,0);
+        output = {
+            condition: {
+                $lte: today
+            },
+            type: 'day',
+            date: today
+        };
     } else if (erp.filterType === "week") {
-        condition=new Date(new Date().setDate(new Date().getDate()+ 7))
+        output = {
+            condition: {
+                $lte: new Date(new Date().setDate(new Date().getDate() + 7))
+
+            }, type: 'week',
+            date: new Date(new Date().setDate(new Date().getDate() + 7))
+        }
     } else if (erp.filterType === "month") {
-        condition= new Date(new Date().setDate(new Date().getDate() + 30))
+        output = {
+            condition: {
+                $lte: new Date(new Date().setDate(new Date().getDate() + 30))
+            }, type: 'month',
+            date: new Date(new Date().setDate(new Date().getDate() + 30))
+        }
     } else if (erp.filterType === "year") {
-        condition=  new Date(new Date().setDate(new Date().getDate()+ 365))
-       
+        output = {
+            condition: {
+                $lte: new Date(new Date().setDate(new Date().getDate() + 365))
+            }, type: 'year',
+            date: new Date(new Date().setDate(new Date().getDate() + 365))
+        }
+
     } else if (erp.filterType === "custom") {
-        condition= erp.fromDate 
+        output = {
+            condition: {$gte: erp.fromDate, $lte: erp.toDate},
+            type: 'custom',
+            fromDate: erp.fromDate,
+            toDate:erp.toDate
+        }
     }
-    return condition;
+    return output;
 }
 
 module.exports = new Utils();

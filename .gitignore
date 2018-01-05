@@ -65,3 +65,4 @@ typings/
 
 # MAC OS
 .DS_Store
+!/server/apis/truckAPIs.js
