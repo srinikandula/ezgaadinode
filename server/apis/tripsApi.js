@@ -763,7 +763,7 @@ Trips.prototype.findTotalRevenue = function (erpSettingsCondition, callback) {
         },
         expensesTotal: function (callback) {
             ExpenseCostColl.aggregate({ $match: erpSettingsCondition },
-                { $group: { _id: null, totalExpenses: { $sum: "$cost" } } },
+                { $group: { _id: null, totalCash: { $sum: "$cost" },totalCredit: { $sum: "$totalAmount" } } },
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
                 });
@@ -786,9 +786,10 @@ Trips.prototype.findTotalRevenue = function (erpSettingsCondition, callback) {
                     totalFright = populateResults.tripFreightTotal[0].totalFreight;
                 }
                 if (populateResults.expensesTotal[0]) {
-                    totalExpenses = populateResults.expensesTotal[0].totalExpenses;
+                    totalExpenses = populateResults.expensesTotal[0].totalCash+populateResults.expensesTotal[0].totalCredit;
                 }
-                retObj.totalRevenue = totalFright - totalExpenses;
+                retObj.totalRevenue = totalFright;
+                //retObj.totalRevenue = totalFright - totalExpenses;
             } else {
                 retObj.totalRevenue = 0//populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             }
@@ -934,7 +935,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         },
         expensesTotal: function (callback) {
             ExpenseCostColl.aggregate(condition,
-                { $group: { _id: "$vehicleNumber", totalExpenses: { $sum: "$cost" } } },
+                { $group: { _id: JSON.parse(JSON.stringify("$vehicleNumber")), totalCash: { $sum: "$cost" } , totalCredit: { $sum: "$totalAmount" }} },
                 { "$sort": sort },
                 { "$skip": skipNumber },
                 { "$limit": limit },
@@ -962,6 +963,8 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 var vehicleInfo = _.find(populateResults.tripFreightTotal, function (freight) {
                     if (freight._id === vehicle.registrationNo) {
                         return freight;
+                    }else{
+                        return false;
                     }
                 });
                 if (vehicleInfo) {
@@ -970,12 +973,15 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                     vehicle.totalFreight = 0;
                 }
                 vehicleInfo = _.find(populateResults.expensesTotal, function (expense) {
-                    if (expense._id === vehicle.registrationNo) {
+                    if (JSON.parse(JSON.stringify(expense._id)) === vehicle.registrationNo) {
                         return expense;
+                    }else{
+                        return false;
                     }
                 });
+
                 if (vehicleInfo) {
-                    vehicle.totalExpense = vehicleInfo.totalExpenses;
+                    vehicle.totalExpense = vehicleInfo.totalCash+vehicleInfo.totalCredit;
                 } else {
                     vehicle.totalExpense = 0;
                 }

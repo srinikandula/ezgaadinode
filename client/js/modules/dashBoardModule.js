@@ -128,7 +128,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             $scope.getAmountsBypartyId(id);
             $scope.initializeparams();
         }
-       
+
         $scope.getTruckExpirs = function () {
             $scope.initializeparams();
             $scope.expiryParams = new NgTableParams({
@@ -476,8 +476,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.Expenseamount = 0;
 
         $scope.GetExpense = function (expenseName, ExpenseAMount) {
-
-            if ((expenseName == 'Diesel') || (expenseName == 'Toll') || (expenseName == 'Maintenance')) {
+            console.log('========>',expenseName, ExpenseAMount);
+            if ((expenseName.toLowerCase() == 'diesel') || (expenseName.toLowerCase() == 'toll') || (expenseName.toLowerCase() == 'maintenance')) {
                 return 0;
             } else {
                 return ExpenseAMount;
@@ -725,4 +725,3 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         }
     }]);
 
-    
