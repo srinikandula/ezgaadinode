@@ -9,6 +9,8 @@ const ObjectId = mongoose.Types.ObjectId;
 
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var AccountsColl = require('./../models/schemas').AccountsColl;
+
 
 var config = require('./../config/config');
 var Helpers = require('./utils');
@@ -41,7 +43,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        TrucksColl.find({ registrationNo: truckDetails.registrationNo }, function (err, truck) {
+        TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
             if (err) {
                 retObj.messages.push("Error, try again!");
                 callback(retObj);
@@ -76,7 +78,7 @@ Trucks.prototype.findTruck = function (jwt, truckId, callback) {
         messages: []
     };
 
-    TrucksColl.findOne({ _id: truckId, accountId: jwt.accountId }, function (err, truck) {
+    TrucksColl.findOne({_id: truckId, accountId: jwt.accountId}, function (err, truck) {
         if (err) {
             retObj.messages.push("Error while finding truck, try Again");
             callback(retObj);
@@ -98,7 +100,7 @@ Trucks.prototype.assignTrucks = function (jwt, groupId, truckIds, callback) {
         status: false,
         messages: []
     };
-    TrucksColl.update({ _id: { $in: truckIds } }, { $set: { groupId: groupId } }, { multi: true }, function (err, truck) {
+    TrucksColl.update({_id: {$in: truckIds}}, {$set: {groupId: groupId}}, {multi: true}, function (err, truck) {
         if (err) {
             retObj.messages.push("Error While updating Details");
             callback(retObj);
@@ -120,7 +122,7 @@ Trucks.prototype.unAssignTrucks = function (jwt, truckIds, callback) {
         status: false,
         messages: []
     };
-    TrucksColl.update({ _id: { $in: truckIds } }, { $set: { groupId: null } }, { multi: true }, function (err, truck) {
+    TrucksColl.update({_id: {$in: truckIds}}, {$set: {groupId: null}}, {multi: true}, function (err, truck) {
         if (err) {
             retObj.messages.push("Error While updating Details");
             callback(retObj);
@@ -137,7 +139,6 @@ Trucks.prototype.unAssignTrucks = function (jwt, truckIds, callback) {
 };
 
 
-
 Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
     var retObj = {
         status: false,
@@ -145,11 +146,11 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
     };
     truckDetails = Helpers.removeEmptyFields(truckDetails);
     truckDetails.updatedBy = jwt.id;
-    TrucksColl.findOneAndUpdate({ _id: truckDetails._id },
+    TrucksColl.findOneAndUpdate({_id: truckDetails._id},
         {
             $set: truckDetails
         },
-        { new: true }, function (err, truck) {
+        {new: true}, function (err, truck) {
             if (err) {
                 retObj.messages.push("Error while updating truck, try Again");
                 callback(retObj);
@@ -190,7 +191,6 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, callback) {
 // };
 
 
-
 Trucks.prototype.getTrucks = function (jwt, params, callback) {
     var retObj = {
         status: false,
@@ -200,15 +200,16 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
     if (!params.page) {
         params.page = 1;
     }
+
     if (jwt.type === "account") {
         if (!params.truckName) {
-            condition = { accountId: jwt.accountId }
+            condition = {accountId: jwt.accountId}
         } else {
-            condition = { accountId: jwt.accountId, registrationNo: { $regex: '.*' + params.truckName + '.*' } }
+            condition = {accountId: jwt.accountId, registrationNo: {$regex: '.*' + params.truckName + '.*'}}
         }
         var skipNumber = (params.page - 1) * params.size;
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-        var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
         async.parallel({
             trucks: function (trucksCallback) {
                 TrucksColl
@@ -235,7 +236,7 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
                     })
             },
             count: function (countCallback) {
-                TrucksColl.count({ accountId: jwt.accountId }, function (err, count) {
+                TrucksColl.count({accountId: jwt.accountId}, function (err, count) {
                     countCallback(err, count);
                 });
             }
@@ -253,56 +254,73 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
         });
     }
     else {
-        if (!params.truckName) {
-            condition = { accountId: jwt.accountId, groupId: jwt.id }
-        } else {
-            condition = { accountId: jwt.accountId, groupId: jwt.id, registrationNo: { $regex: '.*' + params.truckName + '.*' } }
-        }
-        async.parallel({
-            trucks: function (trucksCallback) {
-                TrucksColl
-                    .find({ accountId: jwt.accountId, groupId: jwt.id })
-                    .sort({ createdAt: 1 })
-                    .skip(skipNumber)
-                    .limit(pageLimits.trucksPaginationLimit)
-                    .lean()
-                    .exec(function (err, trucks) {
-                        async.parallel({
-                            createdbyname: function (createdbyCallback) {
-                                Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
-                                    createdbyCallback(createdby.err, createdby.documents);
-                                });
-                            },
-                            driversname: function (driversnameCallback) {
-                                Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
-                                    driversnameCallback(driver.err, driver.documents);
-                                });
-                            }
-                        }, function (populateErr, populateResults) {
-                            trucksCallback(populateErr, populateResults);
-                        });
-                    })
-            },
-            count: function (countCallback) {
-                TrucksColl.count({ accountId: jwt.accountId, groupId: jwt.groupId }, function (err, count) {
-                    countCallback(err, count);
-                });
-            }
-        }, function (err, results) {
+        AccountsColl.findOne({_id: jwt.id}, function (err, accountData) {
             if (err) {
                 retObj.messages.push('Error retrieving trucks');
                 callback(retObj);
+            } else if (accountData) {
+                if (accountData.truckId.length > 0) {
+                    if (!params.truckName) {
+                        condition = {_id: {$in: accountData.truckId}}
+                    } else {
+                        condition = {registrationNo: {$regex: '.*' + params.truckName + '.*'}}
+                    }
+                    async.parallel({
+
+                        trucks: function (trucksCallback) {
+                            TrucksColl
+                                .find(condition)
+                                .sort({createdAt: 1})
+                                .skip(skipNumber)
+                                .limit(pageLimits.trucksPaginationLimit)
+                                .lean()
+                                .exec(function (err, trucks) {
+                                    async.parallel({
+                                        createdbyname: function (createdbyCallback) {
+                                            Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                                                createdbyCallback(createdby.err, createdby.documents);
+                                            });
+                                        },
+                                        driversname: function (driversnameCallback) {
+                                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
+                                                driversnameCallback(driver.err, driver.documents);
+                                            });
+                                        }
+                                    }, function (populateErr, populateResults) {
+                                        trucksCallback(populateErr, populateResults);
+                                    });
+                                })
+                        },
+                        count: function (countCallback) {
+                            TrucksColl.count({accountId: jwt.accountId, groupId: jwt.groupId}, function (err, count) {
+                                countCallback(err, count);
+                            });
+                        }
+                    }, function (err, results) {
+                        if (err) {
+                            retObj.messages.push('Error retrieving trucks');
+                            callback(retObj);
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push('Success');
+                            retObj.count = results.count;
+                            retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
+                            callback(retObj);
+                        }
+                    });
+                } else {
+                    retObj.messages.push('There is no assigned trucks');
+                    callback(retObj);
+                }
             } else {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.count = results.count;
-                retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
+                retObj.messages.push('Error retrieving trucks');
                 callback(retObj);
             }
         });
+
+
     }
 };
-
 
 
 Trucks.prototype.getUnAssignedTrucks = function (jwt, gId, callback) {
@@ -313,7 +331,10 @@ Trucks.prototype.getUnAssignedTrucks = function (jwt, gId, callback) {
 
     //group == currentgroupId or group === null
     //db.inventory.find( { $or: [ { quantity: { $lt: 20 } }, { price: 10 } ] } )
-    TrucksColl.find({ $or: [{ groupId: gId }, { groupId: { $exists: false } }], accountId: jwt.accountId }, function (err, trucks) {
+    TrucksColl.find({
+        $or: [{groupId: gId}, {groupId: {$exists: false}}],
+        accountId: jwt.accountId
+    }, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
@@ -331,36 +352,36 @@ Trucks.prototype.getAllAccountTrucks = function (jwt, callback) {
         messages: []
     };
     TrucksColl
-        .find({ accountId: jwt.accountId }).sort({ createdAt: -1 }).exec(function (err, trucks) {
-            if (err) {
-                retObj.messages.push('Error getting trucks');
+        .find({accountId: jwt.accountId}).sort({createdAt: -1}).exec(function (err, trucks) {
+        if (err) {
+            retObj.messages.push('Error getting trucks');
+            callback(retObj);
+        } else {
+            async.parallel({
+                createdbyname: function (createdbyCallback) {
+                    Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                        createdbyCallback(createdby.err, createdby.documents);
+                    });
+                },
+                driversname: function (driversnameCallback) {
+                    Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
+                        driversnameCallback(driver.err, driver.documents);
+                    });
+                }
+            }, function (populateErr, populateResults) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.trucks = trucks;
                 callback(retObj);
-            } else {
-                async.parallel({
-                    createdbyname: function (createdbyCallback) {
-                        Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
-                            createdbyCallback(createdby.err, createdby.documents);
-                        });
-                    },
-                    driversname: function (driversnameCallback) {
-                        Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
-                            driversnameCallback(driver.err, driver.documents);
-                        });
-                    }
-                }, function (populateErr, populateResults) {
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    retObj.trucks = trucks;
-                    callback(retObj);
-                });
-                // Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
-                //     retObj.status = true;
-                //     retObj.messages.push('Success');
-                //     retObj.trucks = trucks;
-                //     callback(retObj);
-                // });
-            }
-        });
+            });
+            // Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
+            //     retObj.status = true;
+            //     retObj.messages.push('Success');
+            //     retObj.trucks = trucks;
+            //     callback(retObj);
+            // });
+        }
+    });
 };
 
 Trucks.prototype.deleteTruck = function (truckId, callback) {
@@ -369,7 +390,7 @@ Trucks.prototype.deleteTruck = function (truckId, callback) {
         messages: []
     };
 
-    TrucksColl.remove({ _id: truckId }, function (err) {
+    TrucksColl.remove({_id: truckId}, function (err) {
         if (err) {
             retObj.messages.push('Error deleting truck');
             callback(retObj);
@@ -386,39 +407,61 @@ Trucks.prototype.findExpiryCount = function (jwt, callback) {
         status: false,
         messages: []
     };
-
-    var today = new Date();
-    var dateplus30 = new Date(today.setDate(today.getDate() + 30));
-
-    async.parallel({
-        fitnessExpiryCount: function (fitnessExpiryCallback) {
-            TrucksColl.count({ accountId: jwt.accountId, fitnessExpiry: { $lte: dateplus30 } }, function (err, expiryCount) {
-                fitnessExpiryCallback(err, expiryCount);
-            });
-        }, permitExpiryCount: function (permitExpiryCallback) {
-            TrucksColl.count({ accountId: jwt.accountId, permitExpiry: { $lte: dateplus30 } }, function (err, expiryCount) {
-                permitExpiryCallback(err, expiryCount);
-            });
-        }, insuranceExpiryCount: function (insuranceExpiryCallback) {
-            TrucksColl.count({ accountId: jwt.accountId, insuranceExpiry: { $lte: dateplus30 } }, function (err, expiryCount) {
-                insuranceExpiryCallback(err, expiryCount);
-            });
-        }, pollutionExpiryCount: function (pollutionExpiryCallback) {
-            TrucksColl.count({ accountId: jwt.accountId, pollutionExpiry: { $lte: dateplus30 } }, function (err, expiryCount) {
-                pollutionExpiryCallback(err, expiryCount);
-            });
-        }, taxExpiryCount: function (taxExpiryCallback) {
-            TrucksColl.count({ accountId: jwt.accountId, taxDueDate: { $lte: dateplus30 } }, function (err, expiryCount) {
-                taxExpiryCallback(err, expiryCount);
+    ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else if (erpSettings) {
+            var today = new Date();
+            //var dateplus30 = new Date(today.setDate(today.getDate() + 30));
+            var dateplus30 = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry).condition;
+            console.log('datataa', dateplus30)
+            async.parallel({
+                fitnessExpiryCount: function (fitnessExpiryCallback) {
+                    TrucksColl.count({
+                        accountId: jwt.accountId,
+                        fitnessExpiry: dateplus30
+                    }, function (err, expiryCount) {
+                        fitnessExpiryCallback(err, expiryCount);
+                    });
+                }, permitExpiryCount: function (permitExpiryCallback) {
+                    TrucksColl.count({
+                        accountId: jwt.accountId,
+                        permitExpiry: dateplus30
+                    }, function (err, expiryCount) {
+                        permitExpiryCallback(err, expiryCount);
+                    });
+                }, insuranceExpiryCount: function (insuranceExpiryCallback) {
+                    TrucksColl.count({
+                        accountId: jwt.accountId,
+                        insuranceExpiry: dateplus30
+                    }, function (err, expiryCount) {
+                        insuranceExpiryCallback(err, expiryCount);
+                    });
+                }, pollutionExpiryCount: function (pollutionExpiryCallback) {
+                    TrucksColl.count({
+                        accountId: jwt.accountId,
+                        pollutionExpiry: dateplus30
+                    }, function (err, expiryCount) {
+                        pollutionExpiryCallback(err, expiryCount);
+                    });
+                }, taxExpiryCount: function (taxExpiryCallback) {
+                    TrucksColl.count({
+                        accountId: jwt.accountId,
+                        taxDueDate: dateplus30
+                    }, function (err, expiryCount) {
+                        taxExpiryCallback(err, expiryCount);
+                    });
+                }
+            }, function (populateErr, populateResults) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.expiryCount = populateResults;
+                callback(retObj);
             });
         }
-    }, function (populateErr, populateResults) {
-        retObj.status = true;
-        retObj.messages.push('Success');
-        retObj.expiryCount = populateResults;
-        callback(retObj);
     });
-
 };
 
 Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
@@ -435,7 +478,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
     var data = [];
     var condition = {};
     var dateplus30 = "";
-    ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+    ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
         if (err) {
             retObj.status = false;
             retObj.messages.push("Please try again");
@@ -447,71 +490,75 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
 
             var skipNumber = (params.page - 1) * params.size;
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-            dateplus30 = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry)
+         var erp = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry);
+            dateplus30=erp.condition;
+
             if (!params.regNumber) {
                 condition = {
                     accountId: mongoose.Types.ObjectId(jwt.accountId),
-                    $or: [{ fitnessExpiry: { $lte: dateplus30 } },
-                    { permitExpiry: { $lte: dateplus30 } },
-                    { insuranceExpiry: { $lte: dateplus30 } },
-                    { pollutionExpiry: { $lte: dateplus30 } },
-                    { taxDueDate: { $lte: dateplus30 } },
-                    { fitnessExpiry: 1 }]
+                    $or: [{fitnessExpiry: dateplus30},
+                        {permitExpiry: dateplus30},
+                        {insuranceExpiry: dateplus30},
+                        {pollutionExpiry: dateplus30},
+                        {taxDueDate: dateplus30},
+                        {fitnessExpiry: dateplus30}]
                 }
             } else {
 
                 condition = {
                     accountId: mongoose.Types.ObjectId(jwt.accountId),
                     _id: mongoose.Types.ObjectId(params.regNumber),
-                    $or: [{ fitnessExpiry: { $lte: dateplus30 } },
-                    { permitExpiry: { $lte: dateplus30 } },
-                    { insuranceExpiry: { $lte: dateplus30 } },
-                    { pollutionExpiry: { $lte: dateplus30 } },
-                    { taxDueDate: { $lte: dateplus30 } },
-                    { fitnessExpiry: 1 }]
+                    $or: [{fitnessExpiry: dateplus30},
+                        {permitExpiry: dateplus30},
+                        {insuranceExpiry: dateplus30},
+                        {pollutionExpiry: dateplus30},
+                        {taxDueDate: dateplus30},
+                        {fitnessExpiry: dateplus30}]
                 }
             }
+            console.log('sdsds',dateplus30,condition);
             TrucksColl.aggregate([{
                 $match: condition
             },
-            {
-                $project: {
-                    registrationNo: 1,
-                    fitnessExpiry: 1, isfitnessExpiry: { $lte: ['$fitnessExpiry', dateplus30] },
-                    permitExpiry: 1, ispermitExpiry: { $lte: ['$permitExpiry', dateplus30] },
-                    insuranceExpiry: 1, isinsuranceExpiry: { $lte: ['$insuranceExpiry', dateplus30] },
-                    pollutionExpiry: 1, ispollutionExpiry: { $lte: ['$pollutionExpiry', dateplus30] },
-                    taxDueDate: 1, istaxDueDate: { $lte: ['$taxDueDate', dateplus30] }
-                }
-            }, { "$sort": sort },
-            { "$skip": skipNumber },
-            { "$limit": limit },
+                {
+                    $project: {
+                        registrationNo: 1,
+                        fitnessExpiry: 1,
+                        permitExpiry: 1,
+                        insuranceExpiry: 1,
+                        pollutionExpiry: 1,
+                        taxDueDate: 1,
+                    }
+                }, {"$sort": sort},
+                {"$skip": skipNumber},
+                {"$limit": limit},
             ], function (populateErr, populateResults) {
-
+                console.log('populateResults',populateResults);
+                if(erp.type==='custom'){
                     for (var i = 0; i < populateResults.length; i++) {
-                        if (populateResults[i].isfitnessExpiry === true) {
+                        if (populateResults[i].fitnessExpiry<=erp.toDate && populateResults[i].fitnessExpiry>=erp.fromDate ) {
                             fitnessExpiry = populateResults[i].fitnessExpiry;
                         } else {
                             fitnessExpiry = "--";
                         }
-                        if (populateResults[i].ispermitExpiry === true) {
+                        if (populateResults[i].permitExpiry<=erp.toDate && populateResults[i].permitExpiry>=erp.fromDate ) {
                             permitExpiry = populateResults[i].permitExpiry;
                         } else {
                             permitExpiry = "--";
                         }
-                        if (populateResults[i].isinsuranceExpiry === true) {
+                        if (populateResults[i].insuranceExpiry<=erp.toDate && populateResults[i].insuranceExpiry>=erp.fromDate ) {
                             insuranceExpiry = populateResults[i].insuranceExpiry;
                         } else {
                             insuranceExpiry = "--";
                         }
-                        if (populateResults[i].ispollutionExpiry === true) {
+                        if (populateResults[i].pollutionExpiry<=erp.toDate && populateResults[i].pollutionExpiry>=erp.fromDate ) {
                             pollutionExpiry = populateResults[i].pollutionExpiry;
                         } else {
                             pollutionExpiry = "--";
                         }
-                        if (populateResults[i].istaxDueDate === true) {
+                        if (populateResults[i].taxDueDate<=erp.toDate && populateResults[i].taxDueDate>=erp.fromDate ) {
                             taxDueDate = populateResults[i].taxDueDate;
                         } else {
                             taxDueDate = "--";
@@ -525,11 +572,49 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                             taxDueDate: taxDueDate
                         });
                     }
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    retObj.expiryTrucks = data;
-                    callback(retObj);
-                });
+                }else{
+                    for (var i = 0; i < populateResults.length; i++) {
+                        if (populateResults[i].fitnessExpiry <= erp.date) {
+                            fitnessExpiry = populateResults[i].fitnessExpiry;
+                        } else {
+                            fitnessExpiry = "--";
+                        }
+                        if (populateResults[i].permitExpiry <= erp.date) {
+                            permitExpiry = populateResults[i].permitExpiry;
+                        } else {
+                            permitExpiry = "--";
+                        }
+                        if (populateResults[i].insuranceExpiry <= erp.date) {
+                            insuranceExpiry = populateResults[i].insuranceExpiry;
+                        } else {
+                            insuranceExpiry = "--";
+                        }
+                        if (populateResults[i].pollutionExpiry<= erp.date) {
+                            pollutionExpiry = populateResults[i].pollutionExpiry;
+                        } else {
+                            pollutionExpiry = "--";
+                        }
+                        if (populateResults[i].taxDueDate<= erp.date) {
+                            taxDueDate = populateResults[i].taxDueDate;
+                        } else {
+                            taxDueDate = "--";
+                        }
+                        data.push({
+                            registrationNo: populateResults[i].registrationNo,
+                            fitnessExpiry: fitnessExpiry,
+                            permitExpiry: permitExpiry,
+                            insuranceExpiry: insuranceExpiry,
+                            pollutionExpiry: pollutionExpiry,
+                            taxDueDate: taxDueDate
+                        });
+                    }
+                }
+
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.expiryTrucks = data;
+                callback(retObj);
+            });
 
         } else {
             retObj.status = false;
@@ -551,7 +636,7 @@ Trucks.prototype.fitnessExpiryTrucks = function (jwt, callback) {
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate() + 30));
 
-    TrucksColl.find({ accountId: jwt.accountId, fitnessExpiry: { $lte: dateplus30 } }, function (err, trucks) {
+    TrucksColl.find({accountId: jwt.accountId, fitnessExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
@@ -573,7 +658,7 @@ Trucks.prototype.permitExpiryTrucks = function (jwt, callback) {
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate() + 30));
 
-    TrucksColl.find({ accountId: jwt.accountId, permitExpiry: { $lte: dateplus30 } }, function (err, trucks) {
+    TrucksColl.find({accountId: jwt.accountId, permitExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
@@ -595,7 +680,7 @@ Trucks.prototype.insuranceExpiryTrucks = function (jwt, callback) {
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate() + 30));
 
-    TrucksColl.find({ accountId: jwt.accountId, insuranceExpiry: { $lte: dateplus30 } }, function (err, trucks) {
+    TrucksColl.find({accountId: jwt.accountId, insuranceExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
@@ -617,7 +702,7 @@ Trucks.prototype.pollutionExpiryTrucks = function (jwt, callback) {
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate() + 30));
 
-    TrucksColl.find({ accountId: jwt.accountId, pollutionExpiry: { $lte: dateplus30 } }, function (err, trucks) {
+    TrucksColl.find({accountId: jwt.accountId, pollutionExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
@@ -639,7 +724,7 @@ Trucks.prototype.taxExpiryTrucks = function (jwt, callback) {
     var today = new Date();
     var dateplus30 = new Date(today.setDate(today.getDate() + 30));
 
-    TrucksColl.find({ accountId: jwt.accountId, taxDueDate: { $lte: dateplus30 } }, function (err, trucks) {
+    TrucksColl.find({accountId: jwt.accountId, taxDueDate: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
             callback(retObj);
@@ -654,7 +739,7 @@ Trucks.prototype.taxExpiryTrucks = function (jwt, callback) {
 
 Trucks.prototype.countTrucks = function (jwt, callback) {
     var result = {};
-    TrucksColl.count({ 'accountId': jwt.accountId }, function (err, data) {
+    TrucksColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -722,7 +807,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params, callback) 
         Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
             if (expairResponse.status) {
                 var output = [];
-                if(expairResponse.expiryTrucks.length) {
+                if (expairResponse.expiryTrucks.length) {
                     for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
                         output.push({
                             Registration_No: expairResponse.expiryTrucks[i].registrationNo,
@@ -752,7 +837,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params, callback) 
                             });
                         }
                     }
-                }else{
+                } else {
                     retObj.status = false;
                     retObj.messages.push('No records found');
                     callback(retObj);

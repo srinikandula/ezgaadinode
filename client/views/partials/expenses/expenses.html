@@ -4,7 +4,7 @@
         <div class="col-xs-8 col-xs-push-1 pall-zero">
             <div class="col-sm-8">
                 <div class="input-group stylish-input-group">
-                    <input type="text" class="form-control" ng-model="truckNumber1"  placeholder="Search">
+                    <input type="text" class="form-control" ng-model="truckNumber1" placeholder="Search">
                     <span class="input-group-addon">
                     <button type="button" ng-click="searchByVechicleNumber(truckNumber1);">
                             <i class="fa fa-search sear" aria-hidden="true"></i>
@@ -19,7 +19,7 @@
                     <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
                 </select>
             </div>
-            </div>
+        </div>
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
         <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
@@ -35,6 +35,7 @@
             <td data-title="'Amount'" sortable="'totalAmount'" class="clickable-item col-sm-1">{{
                 maintanence.totalAmount }}
 
+            </td>
             <td data-title="'Mode'" sortable="'mode'" class="clickable-item col-sm-1">{{
                 maintanence.mode }}
             </td>
@@ -61,7 +62,7 @@
     <div class="add-image pull-right">
         <figure>
             <a href="#" ng-click="goToEditExpensePage()">
-                <img src="images/Add_Expenses.png" alt="Add Expenses"  title="Add Expenses"></a>
+                <img src="images/Add_Expenses.png" alt="Add Expenses" title="Add Expenses"></a>
         </figure>
     </div>
 </div>
