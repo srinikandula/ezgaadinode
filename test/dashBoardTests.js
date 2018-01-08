@@ -45,9 +45,13 @@ describe('DashboardTest', () => {
     * Test the /GET route Getting Dashboard Information
     */
     describe('/GET Dashboard', () => {
+        User.remove(function (err, account) {
+
+        });
         userData.save(function (err, account) {
 
         });
+
         it('Retrieving Login Information', (done) => {
             let userData = {
                 "userName": "ramarao",
@@ -555,7 +559,8 @@ describe('DashboardTest', () => {
                     "expenseName": "Toll",
                     "date": new Date(),
                     "paidAmount": 0,
-                    "totalAmount": 100,
+                    "totalAmount": 0,
+                    "cost": 100,
                     "mode": "Cash"
                 };
 
@@ -620,7 +625,8 @@ describe('DashboardTest', () => {
                             "expenseType": expensemasterId,
                             "date": new Date(),
                             "paidAmount": 0,
-                            "totalAmount": 100,
+                            "totalAmount": 0,
+                            "cost": 100,
                             "mode": "Cash"
                         };
                         chai.request(server)

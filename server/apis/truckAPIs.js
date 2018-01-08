@@ -265,6 +265,7 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
                     } else {
                         condition = {registrationNo: {$regex: '.*' + params.truckName + '.*'}}
                     }
+                    console.log('consdition',condition)
                     async.parallel({
 
                         trucks: function (trucksCallback) {
