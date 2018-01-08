@@ -364,15 +364,24 @@ PaymentsReceived.prototype.findPendingDueForAccount = function (condition, callb
  * @param jwt
  * @param callback
  */
-function getDuesByParty(jwt, condition, callback) {
+function getDuesByParty(jwt, condition,params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
+    if (!params.page) {
+        params.page = 1;
+    }
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         tripFrightTotal: function (callback) {
             TripColl.aggregate(condition,
                 { $group: { _id: "$partyId", totalFright: { $sum: "$freightAmount" } } },
+                {"$sort": sort},
+                {"$skip": skipNumber},
+                {"$limit": limit},
                 function (err, totalFrieght) {
                     callback(err, totalFrieght);
                 });
@@ -451,7 +460,7 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
                 }, "partyId": ObjectId(params.partyId)
             }
         }
-        getDuesByParty(jwt, condition, function (response) {
+        getDuesByParty(jwt, condition,params, function (response) {
             callback(response);
         })
     } else if (params.fromDate && params.toDate) {
@@ -463,12 +472,12 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
                 }
             }
         }
-        getDuesByParty(jwt, condition, function (response) {
+        getDuesByParty(jwt, condition,params, function (response) {
             callback(response);
         })
     } else if (params.partyId) {
         condition = { $match: { "accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId) } }
-        getDuesByParty(jwt, condition, function (response) {
+        getDuesByParty(jwt, condition,params, function (response) {
             callback(response);
         })
     } else {
@@ -481,7 +490,7 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
             } else if (erpSettings) {
 
                 condition = { $match: Utils.getErpSettings(erpSettings.payment, erpSettings.accountId) }
-                getDuesByParty(jwt, condition, function (response) {
+                getDuesByParty(jwt, condition,params, function (response) {
                     callback(response);
                 })
             } else {

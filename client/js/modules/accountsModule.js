@@ -362,19 +362,19 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     $scope.truckId2 = [];
 
     function getTruckIds() {
-        TrucksService.getAllTrucks(1, function (success) {
+        TrucksService.getAllTrucks({}, function (success) {
             if (success.data.status) {
-                $scope.trucks = success.data.trucks
+                $scope.trucks = success.data.trucks;
                 if ($scope.group.truckId.length > 0) {
                     for (var i = 0; i < $scope.trucks.length; i++) {
-                        for (var j = 0; j < $scope.group.truckId.length; j++) {
-                            if ($scope.trucks[i]._id === $scope.group.truckId[j]) {
-                                $scope.truckId2.push(true);
-                            } else {
-                                $scope.truckId2.push(false);
-                            }
-                        }
 
+                        if( $scope.group.truckId.indexOf($scope.trucks[i]._id) !=-1){
+                            $scope.truckId2.push(true);
+
+                        }else{
+                            $scope.truckId2.push(false);
+
+                        }
 
                     }
                 }

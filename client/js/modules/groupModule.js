@@ -171,6 +171,7 @@ app.controller('groupEditController', ['$scope', 'GroupServices', 'AccountServic
 
         params = $scope.groupDetails;
         $scope.checkboxModel.forEach(function (assignedTruck) {
+            console.log('assignedTruck',assignedTruck);
             if (assignedTruck) {
                 $scope.checkedTrucks.push(assignedTruck);
             }

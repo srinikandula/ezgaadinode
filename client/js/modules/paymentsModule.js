@@ -39,6 +39,7 @@ app.factory('PaymentsService', function ($http) {
             }).then(success, error)
         },
         getDuesByParty: function (params, success, error) {
+            console.log(params);
             $http({
                 url: '/v1/payments/getDuesByParty/',
                 method: "GET",

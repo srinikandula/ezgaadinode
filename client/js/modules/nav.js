@@ -44,7 +44,6 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
 }]).controller('LeftNavCtrl', ['$scope', '$rootScope', '$state', 'Utils', '$cookies', '$stateParams', function ($scope, $rootScope, $state, Utils, $cookies, $stateParams) {
 
     $scope.canEditAccounts = function () {
-        console.log($cookies.get('editAccounts') == "true");
         return $cookies.get('editAccounts') == "true";
     };
 
