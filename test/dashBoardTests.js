@@ -45,9 +45,8 @@ describe('DashboardTest', () => {
     * Test the /GET route Getting Dashboard Information
     */
     describe('/GET Dashboard', () => {
-        User.remove(function (err, account) {
-
-        });
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

@@ -26,6 +26,8 @@ describe('Expense MasterTest', () => {
     * Test the /GET route Getting Expense Master Information
     */
     describe('/GET Expense Master', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

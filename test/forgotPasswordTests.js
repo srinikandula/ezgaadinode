@@ -22,33 +22,36 @@ chai.use(chaiHttp);
 
 describe('Forgot Password Test', () => {
     describe('/GET Forgot Password', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });
         /*
         * Test the /POST route Retrieving Forgot Password Information Failure
         */
-        it('Retrieving Retrieving Forgot Password Information Failure', (done) => {
-            let contactPhone = {"contactPhone":9874563210}
+        it('Retrieving Forgot Password Information Failure', (done) => {
+            let contactPhone = {"contactPhone":9874563211}
             chai.request(server)
                 .post('/v1/group/forgot-password')
                 .send(contactPhone)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql('Phone number not found');
+                    res.body.should.have.property('messages').eql(['Phone number not found']);
                     done();
                 });
         });
         /*
         * Test the /POST route Retrieving Forgot Password Information Success
         */
-        it('Retrieving Retrieving Forgot Password Information Success', (done) => {
+        it('Retrieving Forgot Password Information Success', (done) => {
             let contactPhone = {"contactPhone":7382042321}
             chai.request(server)
                 .post('/v1/group/forgot-password')
                 .send(contactPhone)
                 .end((err, res) => {
+                console.log(res.body);
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('messages').eql(['OTP sent successfully']);
@@ -82,44 +85,10 @@ describe('Forgot Password Test', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['OTP verified successfully']);
-
-                    done();
-                });
-        });
-        /*
-       * Test the /POST route Reset password Information failure
-       */
-        it('Retrieving Reset password Information failure', (done) => {
-            let contactPhone = {"contactPhone":7382042321,"password":""}
-            chai.request(server)
-                .post('/v1/group/reset-password')
-                .send(contactPhone)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Please enter password']);
-
+                    res.body.should.have.property('messages').eql(['OTP verified successfully,Password sent to phone']);
                     done();
                 });
         });
 
-
-        /*
-     * Test the /POST route Reset password Information success
-     */
-        it('Retrieving Reset password Information success', (done) => {
-            let contactPhone = {"contactPhone":7382042321,"password":"mtw12345"}
-            chai.request(server)
-                .post('/v1/group/reset-password')
-                .send(contactPhone)
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('messages').eql(['Your Password reseted sucessfully']);
-
-                    done();
-                });
-        });
     });
 });

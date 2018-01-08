@@ -157,6 +157,7 @@ Groups.prototype.forgotPassword = function (contactPhone, callback) {
                             } else {
                                 retObj.status = true;
                                 retObj.messages.push("OTP sent successfully");
+                                retObj.otp = otp;
                                 callback(retObj);
                             }
                         });

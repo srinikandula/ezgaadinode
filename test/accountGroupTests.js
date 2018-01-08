@@ -17,7 +17,8 @@ let accountGroupId = null;
 let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
-    "contactPhone": 9999999999
+    "contactPhone": 9999999999,
+    "type": "account"
 });
 let headerData = {"token": token};
 
@@ -28,16 +29,12 @@ describe('AccountGroupTests', () => {
     * Test the /GET route Getting Account Group Information
     */
     describe('/GET AccountGroup', () => {
+        User.remove({}, function (err, result) {
+        })
         userData.save(function (err, account) {
 
         });
         it('Retrieving Login Information', (done) => {
-            let userData = {
-                "userName": "ramarao",
-                "password": "9999999999",
-                "contactPhone": 9999999999,
-                "type":"account"
-            };
             chai.request(server)
                 .post('/v1/group/login')
                 .send(userData)
@@ -57,17 +54,15 @@ describe('AccountGroupTests', () => {
         * Test the /GET route Retrieving Empty Account Group Information Success
         */
         it('Retrieving Empty Account Group Information', (done) => {
-            User.remove({}, function (error, result) {
-                chai.request(server)
-                    .get('/v1/admin/getAllAccountGroup')
-                    .set(headerData)
-                    .end((err, res) => {
-                        res.should.have.status(200);
-                        res.body.should.be.a('object');
-                        res.body.should.have.property('messages').eql(['Success']);
-                        done();
-                    });
-            });
+            chai.request(server)
+                .get('/v1/admin/getAllAccountGroup')
+                .set(headerData)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('messages').eql(['Success']);
+                    done();
+                });
         });
         /*
         * Test the /POST route Adding Account Group Information Success
@@ -116,7 +111,6 @@ describe('AccountGroupTests', () => {
                             .set(headerData)
                             .send(accountGroupData)
                             .end((err, res) => {
-                                console.log('iohfvusdv',res.body);
                                 expect(err).to.be.null;
                                 res.body.should.have.property('messages').eql(['Success']);
                                 res.body.accountGroup.should.have.property('userName').eql('gps');
@@ -210,6 +204,7 @@ describe('AccountGroupTests', () => {
                 "truckId": [{"truckId": truckId}],
                 "erpEnabled": true,
                 "gpsEnabled": true,
+                "type": "group"
             };
             chai.request(server)
                 .put('/v1/admin/updateAccountGroup')
@@ -238,6 +233,7 @@ describe('AccountGroupTests', () => {
                 "truckId": [{"truckId": truckId}],
                 "erpEnabled": true,
                 "gpsEnabled": true,
+                "type": "group"
             };
             chai.request(server)
                 .put('/v1/admin/updateAccountGroup')

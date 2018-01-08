@@ -27,6 +27,8 @@ describe('ERPSettingsTests', () => {
     * Test the /GET route Getting User Profile Information
     */
     describe('/GET ERPSettings', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

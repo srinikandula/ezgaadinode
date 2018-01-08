@@ -30,6 +30,8 @@ describe('ExpenseTest', () => {
     * Test the /GET route Getting Expense Information
     */
     describe('/GET Expense', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

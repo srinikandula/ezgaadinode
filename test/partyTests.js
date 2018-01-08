@@ -26,6 +26,8 @@ describe('PartyTest', () => {
     * Test the /GET route Getting Party Information
     */
     describe('/GET Party', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

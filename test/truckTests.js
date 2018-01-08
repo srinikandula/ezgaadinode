@@ -31,6 +31,8 @@ describe('TruckTest', () => {
     * Test the /GET route Getting Truck Information
     */
     describe('/GET Truck', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });
