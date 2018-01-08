@@ -907,10 +907,6 @@ function getPaybleAmountByParty(condition, params, callback) {
 }
 
 Expenses.prototype.getPaybleAmountByParty = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
     var condition = {};
     var retObj = {
         status: false,
