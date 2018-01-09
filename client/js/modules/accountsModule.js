@@ -245,7 +245,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         contactName: '',
         contactPhone: '',
         location: '',
-        truckId: [],
+        truckIds: [],
         erpEnabled: '',
         gpsEnabled: '',
         type: '',
@@ -365,10 +365,10 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         TrucksService.getAllTrucks({}, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
-                if ($scope.group.truckId.length > 0) {
+                if ($scope.group.truckIds.length > 0) {
                     for (var i = 0; i < $scope.trucks.length; i++) {
 
-                        if( $scope.group.truckId.indexOf($scope.trucks[i]._id) !=-1){
+                        if( $scope.group.truckIds.indexOf($scope.trucks[i]._id) !=-1){
                             $scope.truckId2.push(true);
 
                         }else{
@@ -390,10 +390,10 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
 
     $scope.truckSelected = function (status, truckId) {
         if (status) {
-            $scope.group.truckId.push(truckId);
+            $scope.group.truckIds.push(truckId);
         } else {
-            var index = $scope.group.truckId.indexOf(truckId);
-            $scope.group.truckId.splice(index, 1);
+            var index = $scope.group.truckIds.indexOf(truckId);
+            $scope.group.truckIds.splice(index, 1);
         }
     }
 
@@ -430,7 +430,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             params.errors.push('Please Provide Location');
         }
 
-        if (!params.truckId.length) {
+        if (!params.truckIds.length) {
             params.errors.push('Please Select Atleast One Vehicle');
         }
         if (!params.erpEnabled && !params.gpsEnabled) {

@@ -264,9 +264,9 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
                 retObj.messages.push('Error retrieving trucks');
                 callback(retObj);
             } else if (accountData) {
-                if (accountData.truckId.length > 0) {
+                if (accountData.truckIds.length > 0) {
                     if (!params.truckName) {
-                        condition = {_id: {$in: accountData.truckId}}
+                        condition = {_id: {$in: accountData.truckIds}}
                     } else {
                         condition = {registrationNo: {$regex: '.*' + params.truckName + '.*'}}
                     }
