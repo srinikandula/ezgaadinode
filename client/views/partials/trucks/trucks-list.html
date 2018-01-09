@@ -67,10 +67,10 @@
                 class="clickable-item col-sm-1">{{ trucks.attrs.createdByName }}
             </td>
             <td data-title="'Action'" class="col-sm-2">
-                <a href="#" class="btn" ng-click="goToEditTruckPage(trucks._id)">
+                <a href="#" class="btn"  ng-click="goToEditTruckPage(trucks._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
 
-                <a href="#" class="btn" ng-click="deleteTruck(trucks._id)">
+                <a href="#" class="btn"  ng-show="type==='account'" ng-click="deleteTruck(trucks._id)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
             </td>
@@ -79,7 +79,7 @@
             <td colspan="8">No trucks Records exist.</td>
         </tr>
     </table>
-    <div class="add-image pull-right">
+    <div class="add-image pull-right" ng-show="type==='account'">
         <figure>
             <a href="#" ng-click="goToEditTruckPage()"><img src="images/Add_Truck.png" alt="Add Truck"
                                                             title="Add Truck"></a>

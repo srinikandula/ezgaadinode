@@ -388,6 +388,7 @@ app.run(function ($transitions, $rootScope, $cookies) {
    
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
+        $rootScope.type = $cookies.get('type');
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
 

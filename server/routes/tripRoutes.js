@@ -53,7 +53,7 @@ AuthRouter.get('/:tripId', function (req, res) {
     });
 });
 AuthRouter.delete('/:tripId', function (req, res) {
-    Trips.deleteTrip(req.params.tripId, function (result) {
+    Trips.deleteTrip(req.jwt,req.params.tripId, function (result) {
         res.send(result);
     });
 });

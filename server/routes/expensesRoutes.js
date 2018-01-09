@@ -48,7 +48,7 @@ AuthRouter.put('/updateExpense', function (req, res) {
 });
 
 AuthRouter.delete('/:expenseId', function (req, res) {
-    ExpenseCost.deleteExpenseRecord(req.params.expenseId, function (result) {
+    ExpenseCost.deleteExpenseRecord(req.jwt,req.params.expenseId, function (result) {
         res.send(result);
     });
 });

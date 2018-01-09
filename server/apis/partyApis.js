@@ -74,7 +74,11 @@ if (result.status === false) {
 } else {
     partyDetails.createdBy = jwt.id;
     partyDetails.updatedBy = jwt.id;
-    partyDetails.accountId = jwt.accountId;
+    if (jwt.type === "account") {
+        partyDetails.accountId =jwt.accountId;
+    } else {
+        partyDetails.accountId =jwt.groupAccountId;
+    }
     var partyDoc = new PartyCollection(partyDetails);
     partyDoc.save(function (err, party) {
         if (err) {
@@ -115,37 +119,51 @@ Party.prototype.findParty = function (jwt, partyId, callback) {
 
 
 Party.prototype.updateParty = function (jwt, partyDetails, callback) {
-    var result = { messages: [] };
-    PartyCollection.findOneAndUpdate({ _id: partyDetails._id, accountId: jwt.accountId },
-        {
-            $set: {
-                "name": partyDetails.name,
-                "contact": partyDetails.contact,
-                "email": partyDetails.email,
-                "city": partyDetails.city,
-                "tripLanes": partyDetails.tripLanes,
-                "updatedBy": jwt.id,
-                "partyType": partyDetails.partyType,
-                "isSms": partyDetails.isSms,
-                "isEmail": partyDetails.isEmail
-            }
-        },
-        { new: true }, function (err, party) {
-            if (err) {
-                result.status = false;
-                result.messages.push("Error while updating party, try Again");
-                callback(result);
-            } else if (party) {
-                result.status = true;
-                result.messages.push("Party updated successfully");
-                result.party = party;
-                callback(result);
-            } else {
-                result.status = false;
-                result.messages.push("Error, finding party");
-                callback(result);
-            }
-        });
+    var result = {status:false, messages: [] };
+    var giveAccess=false;
+    if (jwt.type === "account" && partyDetails.accountId===jwt.accountId) {
+        giveAccess=true;
+    } else if(jwt.type === "group" && partyDetails.createdBy===jwt.id) {
+        giveAccess=true;
+
+    }else{
+        result.status = false;
+        result.messages.push("Unauthorized access");
+        callback(result);
+    }
+    if(giveAccess) {
+   /* , accountId: jwt.accountId*/
+        PartyCollection.findOneAndUpdate({_id: partyDetails._id},
+            {
+                $set: {
+                    "name": partyDetails.name,
+                    "contact": partyDetails.contact,
+                    "email": partyDetails.email,
+                    "city": partyDetails.city,
+                    "tripLanes": partyDetails.tripLanes,
+                    "updatedBy": jwt.id,
+                    "partyType": partyDetails.partyType,
+                    "isSms": partyDetails.isSms,
+                    "isEmail": partyDetails.isEmail
+                }
+            },
+            {new: true}, function (err, party) {
+                if (err) {
+                    result.status = false;
+                    result.messages.push("Error while updating party, try Again");
+                    callback(result);
+                } else if (party) {
+                    result.status = true;
+                    result.messages.push("Party updated successfully");
+                    result.party = party;
+                    callback(result);
+                } else {
+                    result.status = false;
+                    result.messages.push("Error, finding party");
+                    callback(result);
+                }
+            });
+    }
 };
 
 Party.prototype.getAccountParties = function (jwt, params, callback) {
@@ -290,21 +308,36 @@ Party.prototype.deleteParty = function (jwt, partyId, callback) {
     var query = { _id: partyId };
     //if the use is not admin
     //query['accountId'] = jwt.accountId;
-    PartyCollection.remove(query, function (err, retValue) {
-        if (err) {
-            result.status = false;
-            result.message = 'Error deleting party';
-            callback(result);
-        } else if (retValue.result && retValue.result.n === 1) {
-            result.status = true;
-            result.message = 'Success';
-            callback(result);
-        } else {
-            result.status = false;
-            result.message = 'Error deleting party';
-            callback(result);
-        }
-    });
+    var giveAccess=false;
+    if (jwt.type === "account") {
+        query={_id: partyId,accountId:jwt.accountId};
+        giveAccess=true;
+    } else if(jwt.type === "group") {
+        query={_id: partyId,createdBy:jwt.id};
+        giveAccess=true;
+    }else{
+        result.status = false;
+        result.message = "Unauthorized access";
+        callback(result);
+    }
+
+    if(giveAccess) {
+        PartyCollection.remove(query, function (err, retValue) {
+            if (err) {
+                result.status = false;
+                result.message = 'Error deleting party';
+                callback(result);
+            } else if (retValue.result && retValue.result.n === 1) {
+                result.status = true;
+                result.message = 'Success';
+                callback(result);
+            } else {
+                result.status = false;
+                result.message = 'Error deleting party';
+                callback(result);
+            }
+        });
+    }
 };
 Party.prototype.countParty = function (jwt, callback) {
     var result = {};

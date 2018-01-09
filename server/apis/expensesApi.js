@@ -94,7 +94,11 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, callback) {
     } else {
         expenseDetails.createdBy = jwt.id;
         expenseDetails.updatedBy = jwt.id;
-        expenseDetails.accountId = jwt.accountId;
+        if (jwt.type === "account") {
+            expenseDetails.accountId =jwt.accountId;
+        } else {
+            expenseDetails.accountId =jwt.groupAccountId;
+        }
         saveExpense(expenseDetails, jwt, result, callback);
     }
 };
@@ -136,19 +140,32 @@ function updateExpense(expense, jwt, callback) {
 }
 
 Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
-    if (expense.expenseType === 'others' && expense.expenseName) {
-        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, function (eTResult) {
-            if (eTResult.status) {
-                expense.expenseType = eTResult.newDoc._id.toString();
-                updateExpense(expense, jwt, callback);
-            } else {
-                result.status = false;
-                result.message = "Error creating new expense type, try Again";
-                callback(result);
-            }
-        });
-    } else {
-        updateExpense(expense, jwt, callback);
+    var giveAccess=false;
+    if (jwt.type === "account" && expense.accountId===jwt.accountId) {
+        giveAccess=true;
+    } else if(jwt.type === "group" && expense.createdBy===jwt.id) {
+        giveAccess=true;
+
+    }else{
+        result.status = false;
+        result.message = "Unauthorized access";
+        callback(result);
+    }
+    if(giveAccess) {
+        if (expense.expenseType === 'others' && expense.expenseName) {
+            expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, function (eTResult) {
+                if (eTResult.status) {
+                    expense.expenseType = eTResult.newDoc._id.toString();
+                    updateExpense(expense, jwt, callback);
+                } else {
+                    result.status = false;
+                    result.message = "Error creating new expense type, try Again";
+                    callback(result);
+                }
+            });
+        } else {
+            updateExpense(expense, jwt, callback);
+        }
     }
 };
 
@@ -347,23 +364,39 @@ Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
 };
 
 
-Expenses.prototype.deleteExpenseRecord = function (expenseId, callback) {
+Expenses.prototype.deleteExpenseRecord = function (jwt,expenseId, callback) {
     var result = {};
-    expenseColl.remove({_id: expenseId}, function (err, returnValue) {
-        if (err) {
-            result.status = false;
-            result.message = 'Error deleting expenses Record';
-            callback(result);
-        } else if (returnValue.result.n === 0) {
-            result.status = false;
-            result.message = 'Error deleting expenses Record';
-            callback(result);
-        } else {
-            result.status = true;
-            result.message = 'Success';
-            callback(result);
-        }
-    });
+    var condition={};
+    var giveAccess=false;
+    if (jwt.type === "account") {
+        condition={_id: expenseId,accountId:jwt.accountId};
+        giveAccess=true;
+    } else if(jwt.type === "group") {
+        condition={_id: expenseId,createdBy:jwt.id};
+        giveAccess=true;
+    }else{
+        result.status = false;
+        result.message = "Unauthorized access";
+        callback(result);
+    }
+
+    if(giveAccess) {
+        expenseColl.remove(condition, function (err, returnValue) {
+            if (err) {
+                result.status = false;
+                result.message = 'Error deleting expenses Record';
+                callback(result);
+            } else if (returnValue.result.n === 0) {
+                result.status = false;
+                result.message = 'Error deleting expenses Record';
+                callback(result);
+            } else {
+                result.status = true;
+                result.message = 'Success';
+                callback(result);
+            }
+        });
+    }
 };
 Expenses.prototype.countExpense = function (jwt, callback) {
     var result = {};
