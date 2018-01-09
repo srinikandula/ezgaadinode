@@ -26,6 +26,8 @@ describe('DriverTest', () => {
     * Test the /GET route Getting Driver Information
     */
     describe('/GET Driver', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

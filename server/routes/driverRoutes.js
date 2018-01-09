@@ -4,6 +4,13 @@ var OpenRouter = express.Router();
 
 var Drivers = require('../apis/driversApi');
 
+
+AuthRouter.get('/getAllDriversForFilter', function (req, res) {
+    Drivers.getAllDriversForFilter(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.post('/', function (req, res) {
     Drivers.addDriver(req.jwt, req.body, function (result) {
         res.json(result);

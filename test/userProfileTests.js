@@ -42,7 +42,6 @@ describe('UserProfileTests', () => {
                 .post('/v1/group/login')
                 .send(userData)
                 .end((err, res) => {
-                    console.log('user',res.body)
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -84,7 +83,7 @@ describe('UserProfileTests', () => {
                     res.body.result.profile.should.be.a('object');
                     res.body.result.profile.should.have.property('userName').eql('ramarao');
                     res.body.result.profile.should.have.property('type').eql('account');
-                    res.body.result.should.have.property('accountGroupsCount').eql(0);
+                    res.body.result.should.have.property('accountGroupsCount').eql(1);
                     res.body.result.should.have.property('accountTrucksCount').eql(0);
                     done();
                 });

@@ -429,5 +429,28 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId, callb
     });
 }
 
+Party.prototype.getAllPartiesForFilter = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    PartyCollection.find({'accountId': jwt.accountId},{name: 1}, function (err, data) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error getting Parties');
+            callback(retObj);
+        } else if(data){
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.parties = data;
+            callback(retObj);
+        } else {
+            retObj.status = false;
+            retObj.messages.push('No Parties Found');
+            callback(retObj);
+        }
+    })
+};
+
 
 module.exports = new Party();

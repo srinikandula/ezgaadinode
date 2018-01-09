@@ -127,7 +127,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
         });
     };
     $scope.getAllTrucks = function () {
-        TrucksService.getAllTrucks(null, function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
             if (success.data.status) {
                 $scope.trucksList = success.data.trucks;
             } else {

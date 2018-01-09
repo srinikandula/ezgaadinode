@@ -9,6 +9,12 @@ AuthRouter.post('/', function (req, res) {
     });
 });
 
+AuthRouter.get('/getAllTrucksForFilter', function (req, res) {
+    Trucks.getAllTrucksForFilter(req.jwt, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/downloadExpiryDetailsByTruck', function (req, res) {
 
     Trucks.downloadExpiryDetailsByTruck(req.jwt, req.query, function (result) {
@@ -75,11 +81,11 @@ AuthRouter.get('/taxExpiryTrucks', function (req, res) {
     });
 });
 
-AuthRouter.get('/:truckId', function (req, res) {
+/*AuthRouter.get('/:truckId', function (req, res) {
     Trucks.findTruck(req.jwt, req.params.truckId, function (result) {
         res.send(result);
     });
-});
+});*/
 AuthRouter.put('/', function (req, res) {
     Trucks.updateTruck(req.jwt, req.body, function (result) {
         res.send(result);
@@ -127,8 +133,6 @@ AuthRouter.get('/total/count', function (req, res) {
         res.send(result);
     });
 });
-
-
 
 
 module.exports = {

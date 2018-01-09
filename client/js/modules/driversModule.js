@@ -44,6 +44,11 @@ app.factory('DriverService', function ($http) {
                 url: '/v1/drivers/total/count',
                 method: "GET"
             }).then(success, error)
+        },getAllDriversForFilter: function (success, error) {
+            $http({
+                url: '/v1/drivers/getAllDriversForFilter',
+                method: "GET",
+            }).then(success, error)
         }
     }
 });
@@ -86,7 +91,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             });
         };
     $scope.getAllDrivers=function(){
-        DriverService.getAllDrivers(function(success){
+        DriverService.getAllDriversForFilter(function (success) {
             if (success.data.status) {
                 $scope.driversList = success.data.drivers;
             } else {
@@ -94,7 +99,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
                     Notification.error({ message: message });
                 });
             }
-        },function(error){
+        }, function (error) {
 
         })
     }
@@ -159,7 +164,6 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                console.log('driverName',driverName);
                 params.driverName=driverName;
                 loadTableData(params);
             }

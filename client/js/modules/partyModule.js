@@ -68,6 +68,11 @@ app.factory('PartyService', function ($http, $cookies) {
                 url: '/v1/party/total/count',
                 method: "GET"
             }).then(success, error)
+        },getAllPartiesForFilter: function (success, error) {
+            $http({
+                url: '/v1/party/getAllPartiesForFilter',
+                method: "GET",
+            }).then(success, error)
         }
     }
 });
@@ -106,7 +111,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         });
     };
     $scope.getAllParties = function () {
-        PartyService.getParties(null, function (success) {
+        PartyService.getAllPartiesForFilter(function (success) {
             if (success.data.status) {
                 $scope.partiesList = success.data.parties;
             } else {
@@ -114,9 +119,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                     Notification.error({ message: message });
                 });
             }
-        }, function (err) {
+        }, function (error) {
 
-        });
+        })
     }
     $scope.init = function () {
         $scope.partyParams = new NgTableParams({

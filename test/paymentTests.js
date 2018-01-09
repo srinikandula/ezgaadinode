@@ -28,6 +28,8 @@ describe('PaymentTest', () => {
     * Test the /GET route Getting Payment Information
     */
     describe('/GET Payment', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

@@ -3,6 +3,11 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Party = require('./../apis/partyApis');
 
+AuthRouter.get('/getAllPartiesForFilter', function (req, res) {
+    Party.getAllPartiesForFilter(req.jwt, function (result) {
+        res.send(result);
+    });
+});
 
 AuthRouter.post('/addParty', function (req, res) {
     Party.addParty(req.jwt, req.body, function (result) {

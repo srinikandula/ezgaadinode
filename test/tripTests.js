@@ -32,6 +32,8 @@ describe('TripTest', () => {
     * Test the /GET route Getting Trip Information
     */
     describe('/GET Trip', () => {
+        User.remove({},function (err, result){
+        })
         userData.save(function (err, account) {
 
         });

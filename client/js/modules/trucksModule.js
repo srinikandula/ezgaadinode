@@ -130,6 +130,11 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method:"GET",
                 params:params
             }).then(success,error);
+        },getAllTrucksForFilter: function (success, error) {
+            $http({
+                url: '/v1/trucks/getAllTrucksForFilter',
+                method: "GET",
+            }).then(success, error)
         }
     }
 });
@@ -172,7 +177,6 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
         TrucksService.getAllTrucks(pageable, function (response) {
-            console.log('====>>>', response);
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.trucks)) {
                 $scope.loading = false;
@@ -185,7 +189,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         });
     };
     $scope.getAllTrucks = function () {
-        TrucksService.getAllTrucks(null, function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
             if (success.data.status) {
                 $scope.trucksList = success.data.trucks;
             } else {
