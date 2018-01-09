@@ -258,8 +258,12 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
                 callback(retObj);
             } else {
                 if (tripDetails.share) {
+                    retObj.status = true;
+                    retObj.messages.push("Trip Added Successfully");
+                    retObj.trips = trip;
+                    callback(retObj);
                     shareTripDetails(tripDetails, trip, function (shareResponse) {
-                        callback(shareResponse);
+                       // callback(shareResponse);
                     })
 
                 } else {
@@ -334,15 +338,20 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
                 callback(retObj);
             } else if (trip) {
                 if (tripDetails.share) {
+                    retObj.status = true;
+                    retObj.messages.push("Trip updated successfully");
+                    retObj.trip = trip;
+                    callback(retObj);
                     shareTripDetails(tripDetails, trip, function (shareResponse) {
+
                         if (shareResponse.status) {
                             retObj.status = true;
                             retObj.messages.push("Trip updated successfully");
                             retObj.trip = trip;
-                            callback(retObj);
+                           // callback(retObj);
                         } else {
                             shareResponse.trip = trip;
-                            callback(shareResponse);
+                            //callback(shareResponse);
                         }
                     })
                 } else {

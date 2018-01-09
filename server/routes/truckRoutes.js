@@ -94,7 +94,7 @@ AuthRouter.put('/', function (req, res) {
 
 
 AuthRouter.delete('/:truckId', function (req, res) {
-    Trucks.deleteTruck(req.params.truckId, function (result) {
+    Trucks.deleteTruck(req.jwt,req.params.truckId, function (result) {
         res.send(result);
     });
 });
