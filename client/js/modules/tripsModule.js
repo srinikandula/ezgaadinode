@@ -258,7 +258,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
 
     function getTruckIds() {
-        TrucksService.getAllAccountTrucks(function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find($scope.trucks, function (truck) {
@@ -283,7 +283,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     function getDriverIds() {
-        DriverService.getAllDrivers(function (success) {
+        DriverService.getAllDriversForFilter(function (success) {
             if (success.data.status) {
                 $scope.drivers = success.data.drivers;
                 //console.log($scope.drivers);
@@ -311,7 +311,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     $scope.selectTripLane = function (triplane) {
-        console.log("selected triplane " + JSON.stringify(triplane));
         $scope.trip.tripLane = triplane.name;
 
     }

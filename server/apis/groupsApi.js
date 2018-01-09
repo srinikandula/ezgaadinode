@@ -58,6 +58,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                     jwt.sign({
                         id: user._id,
                         accountId: user._id,
+                        groupAccountId: user.accountId,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
                         type: user.type

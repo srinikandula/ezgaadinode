@@ -139,7 +139,7 @@ function getPayments(condition, jwt, params, callback) {
                 });
         },
         count: function (countCallback) {
-            PaymentsReceivedColl.count({ 'accountId': jwt.accountId }, function (err, count) {
+            PaymentsReceivedColl.count({'accountId': jwt.accountId }, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -161,7 +161,11 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
     var result = {};
     var condition = {};
     if (!params.partyName) {
-        condition = { 'accountId': jwt.accountId }
+        if (jwt.type === "account") {
+            condition = {'accountId': jwt.accountId};
+        } else {
+            condition = {'accountId': jwt.groupAccountId};
+        }
         getPayments(condition,jwt, params,function(paymentResp){
             callback(paymentResp);
         });
@@ -172,7 +176,11 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
                 result.message = 'Error retrieving Payments Costs';
                 callback(retObj);
             }else if(partyData){
-                condition = { 'accountId': jwt.accountId ,partyId:partyData._id};
+                if (jwt.type === "account") {
+                    condition = {'accountId': jwt.accountId,partyId:partyData._id};
+                } else {
+                    condition = {'accountId': jwt.groupAccountId,partyId:partyData._id};
+                }
                 getPayments(condition,jwt, params,function(paymentResp){
                     callback(paymentResp);
                 });
@@ -294,7 +302,7 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
 
 PaymentsReceived.prototype.countPayments = function (jwt, callback) {
     var result = {};
-    PaymentsReceivedColl.count({ 'accountId': jwt.accountId }, function (err, data) {
+    PaymentsReceivedColl.count({'accountId': jwt.accountId }, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';

@@ -158,14 +158,24 @@ Party.prototype.getAccountParties = function (jwt, params, callback) {
         params.page = 1;
 
     }
-    if (!params.partyName) {
-        condition = { accountId: jwt.accountId }
-    } else {
-        condition = { accountId: jwt.accountId, name: { $regex: '.*' + params.partyName + '.*' } }
-    }
+
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    if (jwt.type === "account") {
+        if (!params.partyName) {
+            condition = {accountId: jwt.accountId}
+        } else {
+            condition = {accountId: jwt.accountId, name: {$regex: '.*' + params.partyName + '.*'}}
+        }
+    }
+    else {
+        if (!params.partyName) {
+            condition = {"accountId": jwt.groupAccountId}
+        } else {
+            condition = {"accountId": jwt.groupAccountId, name: {$regex: '.*' + params.partyName + '.*'}}
+        }
+    }
     async.parallel({
         parties: function (partiesCallback) {
             PartyCollection
@@ -238,12 +248,17 @@ Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
         status: false,
         messages: []
     };
-
-    PartyCollection.find({ partyType: 'Supplier', accountId: jwt.accountId }, function (err, parties) {
+    var condition = {};
+    if (jwt.type === "account") {
+        condition = {partyType: 'Supplier','accountId': jwt.accountId};
+    } else {
+        condition = {partyType: 'Supplier','accountId': jwt.groupAccountId };
+    }
+    PartyCollection.find(condition, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             callback(retObj);
-        } else {
+        } else if(parties) {
             Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
                 if (response.status) {
                     retObj.status = true;
@@ -255,6 +270,9 @@ Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
                     callback(retObj);
                 }
             });
+        } else {
+            retObj.message.push('No Parties Found');
+            callback(retObj);
         }
     });
 };
@@ -264,8 +282,13 @@ Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
         status: false,
         messages: []
     };
-
-    PartyCollection.find({ partyType: 'Transporter', accountId: jwt.accountId }, function (err, parties) {
+    var condition = {};
+    if(jwt.type === "account") {
+        condition = {partyType: 'Transporter',accountId: jwt.accountId };
+    } else {
+        condition = {partyType: 'Transporter',accountId: jwt.groupAccountId }
+    }
+    PartyCollection.find(condition, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             callback(retObj);
@@ -308,7 +331,7 @@ Party.prototype.deleteParty = function (jwt, partyId, callback) {
 };
 Party.prototype.countParty = function (jwt, callback) {
     var result = {};
-    PartyCollection.count({ 'accountId': jwt.accountId }, function (err, data) {
+    PartyCollection.count({'accountId': jwt.accountId }, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -434,7 +457,13 @@ Party.prototype.getAllPartiesForFilter = function (jwt, callback) {
         status: false,
         messages: []
     };
-    PartyCollection.find({'accountId': jwt.accountId},{name: 1}, function (err, data) {
+    var condition = {};
+    if (jwt.type === "account") {
+        condition = {'accountId': jwt.accountId};
+    } else {
+        condition = {'accountId': jwt.groupAccountId};
+    }
+    PartyCollection.find(condition,{name: 1}, function (err, data) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Parties');

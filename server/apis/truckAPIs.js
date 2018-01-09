@@ -794,7 +794,7 @@ function getAllTrucksForFilterCondition(condition,callback) {
         status: false,
         messages: []
     };
-    TrucksColl.find(condition, function (err, data) {
+    TrucksColl.find(condition,{registrationNo:1}, function (err, data) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Trucks');

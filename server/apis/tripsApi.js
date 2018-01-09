@@ -394,7 +394,7 @@ Trips.prototype.getAll = function (jwt, params, callback) {
             async.parallel({
                 trips: function (tripsCallback) {
                     TripCollection
-                        .find({ 'accountId': jwt.accountId })
+                        .find({'accountId': jwt.accountId })
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)
@@ -451,7 +451,7 @@ Trips.prototype.getAll = function (jwt, params, callback) {
             async.parallel({
                 trips: function (tripsCallback) {
                     TripCollection
-                        .find({ 'accountId': jwt.accountId, 'groupId': jwt.id })
+                        .find({'accountId': jwt.accountId, 'groupId': jwt.id })
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)
@@ -518,11 +518,20 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
-    if (!params.truckNumber) {
-        condition = { 'accountId': jwt.accountId };
+    if (jwt.type === "account") {
+        if (!params.truckNumber) {
+            condition = {'accountId': jwt.accountId };
+        } else {
+            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber }
+        }
     } else {
-        condition = { 'accountId': jwt.accountId, 'attrs.truckName': { $regex: '.*' + params.truckNumber + '.*' } }
+        if (!params.truckNumber) {
+            condition = {'accountId': jwt.groupAccountId };
+        } else {
+            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber }
+        }
     }
+console.log('condition',condition);
     async.parallel({
         trips: function (tripsCallback) {
             TripCollection
@@ -1058,7 +1067,7 @@ Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
 
 Trips.prototype.countTrips = function (jwt, callback) {
     var result = {};
-    TripCollection.count({ 'accountId': jwt.accountId }, function (err, data) {
+    TripCollection.count({'accountId': jwt.accountId }, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -1152,13 +1161,19 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
         status: false,
         messages: []
     };
+    var condition = {};
 
     if (!jwt.accountId || !ObjectId.isValid(jwt.accountId)) {
         retObj.status = false;
         retObj.messages.push("Invalid Login");
         callback(retObj);
     } else {
-        TripCollection.distinct('partyId', { accountId: jwt.accountId }, function (err, partyIds) {
+        if(jwt.type === "account") {
+            condition = { accountId: jwt.accountId };
+        } else {
+            condition = { accountId: jwt.groupAccountId }
+        }
+        TripCollection.distinct('partyId',condition, function (err, partyIds) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
