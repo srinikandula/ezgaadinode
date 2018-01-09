@@ -1042,7 +1042,7 @@ body {
 .date-pick {
     cursor: pointer;
     position: absolute;
-    right: 5px;
+    right: 15px;
     top: 8px;
 
 }
@@ -1824,13 +1824,21 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     font-weight: lighter;
     z-index: -99999999999;
 }
+.focus-effect-for-input-trucks {
+    position: absolute;
+    top: 13px;
+    color: #989898;
+    font-size: 15px;
+    font-weight: lighter;
+}
+
 
 .custom-form-control {
     background-color: transparent !important;
     z-index: 10 !important;
 }
 
-.custom-form-control:not([disabled]):focus ~ .focus-effect-for-input {
+.custom-form-control:not([disabled]):focus ~ .focus-effect-for-input, .custom-form-control:not([disabled]):focus ~ .focus-effect-for-input-trucks {
     /*whsOnd:not([disabled]):focus~.AxOyFc*/
     transform: scale(.9) translateY(-20px);
     left: 0;
@@ -1850,10 +1858,20 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     -moz-transition: all 0.5s ease-in-out; /** Firefox **/
     -o-transition: all 0.5s ease-in-out; /** Opera **/
 }
+.ng-not-empty + .focus-effect-for-input-trucks {
+    transform: scale(.9) translateY(-20px);
+    left: -10px;
+    top: 8px;
+    color: #1E4495;
+    transition: all 0.5s ease-in-out;
+    -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
+    -moz-transition: all 0.5s ease-in-out; /** Firefox **/
+    -o-transition: all 0.5s ease-in-out; /** Opera **/
+}
 
 /*sign-up input css*/
 
-.top_sign .focus-effect-for-input {
+.top_sign .focus-effect-for-input, .top_sign .focus-effect-for-input-trucks {
     color: #467371;
 }
 
@@ -2058,3 +2076,28 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 .profile-pic {
     border-radius: 50%;
 }
+.styling-input-list-trucks{
+    position: relative;
+}
+.select2 > .select2-choice.ui-select-match {
+    /* Because of the inclusion of Bootstrap */
+    height: 45px;
+}
+
+.selectize-control > .selectize-dropdown {
+    top: 36px;
+}
+/* Some additional styling to demonstrate that append-to-body helps achieve the proper z-index layering. */
+.select-box {
+    background: #fff;
+    position: relative;
+    z-index: 1;
+}
+.alert-info.positioned {
+    margin-top: 1em;
+    position: relative;
+    z-index: 10000; /* The select2 dropdown has a z-index of 9999 */
+}
+/*.ui-select-choices-row:hover{*/
+ /*background-color: #eee !important;*/
+/*}*/

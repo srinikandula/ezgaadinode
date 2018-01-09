@@ -275,7 +275,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
 }]);
 
-app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state) {
+app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverService', '$stateParams', 'Notification', '$state','$rootScope', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state,$rootScope) {
     $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
@@ -297,6 +297,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         taxDueDate: '',
         errors: []
     };
+
     $scope.driverName = "";
 
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
@@ -318,7 +319,6 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                     });
                     if (selectedDriver) {
                         $scope.driverName = selectedDriver.fullName;
-
                     }
 
                 } else {
@@ -350,7 +350,6 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.addOrUpdateTruck = function () {
         var params = $scope.truck;
         params.errors = [];
-
         if (!params.registrationNo) {
             params.errors.push('Invalid Registration ID');
         }
@@ -403,4 +402,3 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         }
     }
 }]);
-

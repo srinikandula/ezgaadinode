@@ -222,6 +222,30 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
         }
     }
 };
+Accounts.prototype.updateNewAccount = function (jwtObj, accountInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    AccountsColl.findOneAndUpdate(
+        {_id: accountInfo._id},
+        {$set: accountInfo},
+        {new: true},
+        function (err, account) {
+            if (err) {
+                retObj.messages.push("Error while updating Account, try Again");
+                callback(retObj);
+            } else if (account) {
+                retObj.status = true;
+                retObj.messages.push("Account updated successfully");
+                callback(retObj);
+            } else {
+                retObj.messages.push("Account doesn\\'t exist");
+                callback(retObj);
+            }
+        });
+
+};
 
 function updateAccounts(jwtObj, accountInfo, callback) {
     var retObj = {

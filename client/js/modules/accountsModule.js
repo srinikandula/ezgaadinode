@@ -27,6 +27,13 @@ app.factory('AccountServices', function ($http, $cookies) {
                 data: accountInfo
             }).then(success, error)
         },
+        updateNewAccount: function (accountInfo, success, error) {
+            $http({
+                url: '/v1/admin/accounts/newUpdate',
+                method: "PUT",
+                data: accountInfo
+            }).then(success, error)
+        },
         erpDashboard: function (success, error) {
             $http({
                 url: '/v1/admin/erpDashboard',
@@ -252,6 +259,81 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         isActive: true,
         success: [],
         errors: []
+    };
+
+
+    $scope.addNewAccount = {
+        userName: '',
+        password: '',
+        contactPhone: '',
+        erpEnabled: '',
+        gpsEnabled: '',
+        isActive: true,
+        success: [],
+        errors: []
+    };
+
+    if ($stateParams.accountId) {
+        $scope.pagetitle = "Update Account";
+        AccountServices.getAccount($stateParams.accountId, function (success) {
+            if (success.data.status) {
+                $scope.addNewAccount = success.data.account;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (err) {
+        })
+    }
+
+    $scope.addOrUpdateNewAccount = function () {
+        var params = $scope.addNewAccount;
+        params.errors = [];
+        params.success = [];
+
+        if (!params._id && !params.userName) {
+            params.errors.push('Invalid User Name');
+        }
+
+        if (!params._id && !params.password) {
+            params.errors.push('Invalid Password');
+        }
+
+        if (!params._id && !params.contactPhone) {
+            params.errors.push('Invalid Mobile Number');
+        }
+
+        if (!params.errors.length) {
+            if (params._id) {
+                // If _id update the account
+                AccountServices.updateNewAccount(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.messages;
+                        $state.go('accounts');
+                        Notification.success({message: "Account Updated Successfully"});
+                    } else {
+                        params.errors = success.data.messages;
+                    }
+                }, function (err) {
+
+                });
+            } else {
+                // _id doesn\'t exist => create account
+                AccountServices.addAccount(params, function (success) {
+                    if (success.data.status) {
+                        params.success = success.data.messages;
+                        $state.go('accounts');
+                        Notification.success({message: "Account Added Successfully"});
+                    } else {
+                        params.errors = success.data.messages;
+                    }
+                }, function (err) {
+
+                });
+            }
+        }
+
     };
 
     $scope.trucks = [];

@@ -1,86 +1,98 @@
-
-        <div class="main-right col-xs-12" ng-controller="AddEditAccountCtrl">
-            <div class="col-xs-12 account-edit">
-                <h2 class="login-heading">{{pagetitle}}</h2>
-                <form ng-submit="addOrUpdateAccount()" class="mt-10">
-                    <div class="col-sm-6 col-xs-12">
-                        <div class="form-group col-xs-12">
-                            <label for="userName" class="col-sm-4 pall-zero col-xs-12">User Name</label>
-                            <div class="col-xs-12 col-sm-8">
-                                <input ng-model="account.userName" type="text" class="form-control" id="userName"
-                                       placeholder="Username">
-                            </div>
-                        </div>
-
-                        <div class="form-group col-xs-12">
-                            <label for="password" class="col-sm-4 pall-zero col-xs-12">Password</label>
-                            <div class="col-xs-12 col-sm-8">
-                                <input ng-model="account.password" type="password" class="form-control" id="password"
-                                       placeholder="Password">
-                            </div>
-                        </div>
-
-                        <div class="form-group col-xs-12">
-                            <label for="contactPhone" class="col-sm-4 pall-zero col-xs-12">Mobile</label>
-                            <div class="col-xs-12 col-sm-8">
-                                <input ng-model="account.contactPhone" type="text" class="form-control" id="contactPhone"
-                                       placeholder="Mobile">
-                            </div>
-                        </div>
-
-                        <div class="form-group col-xs-12">
-                            <div class="">
-                                <label class="col-sm-4 pall-zero">ERP Status</label>
-                                <div class="col-sm-8">
-                                    <input type="checkbox" ng-model="account.erpEnabled">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group col-xs-12">
-                            <div class="">
-                                <label class="col-sm-4 pall-zero">GPS Status</label>
-                                <div class="col-sm-8">
-                                    <input type="checkbox" ng-model="account.gpsEnabled">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group col-xs-12">
-                            <div class="">
-                                <label class="col-sm-4 pall-zero">Account Status</label>
-                                <div class="col-sm-8">
-                                    <input type="checkbox" ng-model="account.isActive">
-                                </div>
-                            </div>
-                        </div>
+<div class="main-right col-xs-12" ng-controller="AddEditAccountCtrl">
+    <div class="col-xs-12 account-edit">
+        <h2 class="title-name">{{pagetitle}}</h2>
+        <form ng-submit="addOrUpdateNewAccount()" class="mt-10">
+            <div class="col-sm-6 col-xs-12 col-sm-push-3">
+                <div class="form-group col-xs-12">
+                    <div class="col-xs-12 styling-input-list">
+                        <input ng-model="addNewAccount.userName" type="text" class="form-control custom-form-control">
+                        <label class="focus-effect-for-input">User Name</label>
                     </div>
-                    <div class="clearfix"></div>
-                    <div class="col-xs-4 col-xs-push-4">
+                </div>
 
-                        <div>
-                            <div class="alert alert-danger" role="alert" ng-show="account.errors.length">
-                                <ul>
-                                    <li ng-repeat="error in account.errors">{{error}}</li>
-                                </ul>
-                            </div>
+                <div class="form-group col-xs-12">
 
-                            <div class="alert alert-success" role="alert" ng-show="account.success.length">
-                                <ul>
-                                    <li ng-repeat="success in account.success">{{success}}</li>
-                                </ul>
-                            </div>
+                    <div class="col-xs-12 styling-input-list">
+                        <input ng-model="addNewAccount.password" type="password"
+                               class="form-control custom-form-control" id="password">
+                        <label class="focus-effect-for-input">Password</label>
 
-                            <button type="submit" class="btn btn-primary">Submit</button>
-                            <input type="button" value="Cancel" class="btn btn-red" ng-click="cancel()"/>
+                    </div>
+                </div>
+
+                <div class="form-group col-xs-12">
+
+                    <div class="col-xs-12 styling-input-list">
+                        <input ng-model="addNewAccount.contactPhone" type="text"
+                               class="form-control custom-form-control" id="contactPhone">
+                        <label for="contactPhone" class="focus-effect-for-input">Mobile</label>
+
+                    </div>
+                </div>
+
+
+                <div class=" col-xs-12 form-group">
+                    <div class="erp-gps col-xs-6 form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="addNewAccount.erpEnabled">
+                                <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                ERP Status
+                            </label>
                         </div>
                     </div>
 
-                </form>
+
+                    <div class="erp-gps col-xs-6 form-group">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="addNewAccount.gpsEnabled">
+                                <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                GPS Status
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-xs-12">
+                    <div class="erp-gps col-xs-6">
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" ng-model="addNewAccount.isActive">
+                                <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                Account Status
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
             </div>
-        </div>
+            <div class="clearfix"></div>
+            <div class="col-xs-4 col-xs-push-4">
+
+                <div>
+                    <div class="alert alert-danger" role="alert" ng-show="addNewAccount.errors.length">
+                        <ul>
+                            <li ng-repeat="error in addNewAccount.errors">{{error}}</li>
+                        </ul>
+                    </div>
+
+                    <div class="alert alert-success" role="alert" ng-show="addNewAccount.success.length">
+                        <ul>
+                            <li ng-repeat="success in addNewAccount.success">{{success}}</li>
+                        </ul>
+                    </div>
+                    <button type="button" class="btn can" ng-click="cancel()">Cancel</button>
+
+                    <button type="submit" class="btn can last">Submit</button>
+                </div>
+            </div>
+
+        </form>
+
     </div>
+</div>
+</div>
 </div>
 
 
