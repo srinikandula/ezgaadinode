@@ -118,7 +118,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         });
     };
     $scope.getAllTrucks = function () {
-        TrucksService.getAllTrucks(null, function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
             if (success.data.status) {
                 $scope.trucksList = success.data.trucks;
             } else {

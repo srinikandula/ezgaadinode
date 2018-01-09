@@ -265,7 +265,6 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
                     } else {
                         condition = {registrationNo: {$regex: '.*' + params.truckName + '.*'}}
                     }
-                    console.log('consdition',condition)
                     async.parallel({
 
                         trucks: function (trucksCallback) {
@@ -417,7 +416,6 @@ Trucks.prototype.findExpiryCount = function (jwt, callback) {
             var today = new Date();
             //var dateplus30 = new Date(today.setDate(today.getDate() + 30));
             var dateplus30 = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry).condition;
-            console.log('datataa', dateplus30)
             async.parallel({
                 fitnessExpiryCount: function (fitnessExpiryCallback) {
                     TrucksColl.count({
@@ -519,7 +517,6 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                         {fitnessExpiry: dateplus30}]
                 }
             }
-            console.log('sdsds',dateplus30,condition);
             TrucksColl.aggregate([{
                 $match: condition
             },
@@ -536,7 +533,6 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                 {"$skip": skipNumber},
                 {"$limit": limit},
             ], function (populateErr, populateResults) {
-                console.log('populateResults',populateResults);
                 if(erp.type==='custom'){
                     for (var i = 0; i < populateResults.length; i++) {
                         if (populateResults[i].fitnessExpiry<=erp.toDate && populateResults[i].fitnessExpiry>=erp.fromDate ) {
@@ -753,6 +749,58 @@ Trucks.prototype.countTrucks = function (jwt, callback) {
         }
     })
 };
+
+Trucks.prototype.getAllTrucksForFilter = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {};
+    if(jwt.type === 'account') {
+        condition = {'accountId': jwt.accountId},{registrationNo: 1};
+        getAllTrucksForFilterCondition(condition,callback);
+    } else {
+        AccountsColl.findOne({'_id': jwt.accountId},{truckId: 1}, function (err, groupTrucks) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push('Error getting Trucks From Group');
+                callback(retObj);
+            } else if(groupTrucks){
+                retObj.status = true;
+                retObj.messages.push('Success');
+                condition = {'_id':{"$in":groupTrucks.truckId}};
+                getAllTrucksForFilterCondition(condition,callback);
+            } else {
+                retObj.status = false;
+                retObj.messages.push('No Trucks Found For Group');
+                callback(retObj);
+            }
+        });
+    }
+};
+
+function getAllTrucksForFilterCondition(condition,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TrucksColl.find(condition, function (err, data) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error getting Trucks');
+            callback(retObj);
+        } else if(data){
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.trucks = data;
+            callback(retObj);
+        } else {
+            retObj.status = false;
+            retObj.messages.push('No Trucks Found');
+            callback(retObj);
+        }
+    })
+}
 
 function dateToStringFormat(date) {
     if (date instanceof Date) {

@@ -331,4 +331,27 @@ Drivers.prototype.countDrivers = function (jwt, callback) {
     })
 };
 
+Drivers.prototype.getAllDriversForFilter = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    DriversColl.find({'accountId': jwt.accountId},{fullName: 1}, function (err, data) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error getting Drivers');
+            callback(retObj);
+        } else if(data){
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.drivers = data;
+            callback(retObj);
+        } else {
+            retObj.status = false;
+            retObj.messages.push('No Drivers Found');
+            callback(retObj);
+        }
+    })
+};
+
 module.exports = new Drivers();

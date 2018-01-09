@@ -112,7 +112,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
         });
     };
     $scope.getAllParties = function () {
-        PartyService.getParties(null, function (success) {
+        PartyService.getAllPartiesForFilter(function (success) {
             if (success.data.status) {
                 $scope.partiesList = success.data.parties;
             } else {
