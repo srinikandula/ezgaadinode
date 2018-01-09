@@ -89,7 +89,7 @@ Accounts.prototype.getAccounts = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var query = {};
     if (params.filter && params.filter.trim().length > 0) {
         query = {"userName": {$regex: params.filter.trim()}};
@@ -279,8 +279,8 @@ Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
                         expiringCallback(response.error, response.expiryCount);
                     });
                 },
-                paybleAmount:function(paybleCallback){
-                    Expenses.findPaybleAmountForAccount(Utils.getErpSettings(erpSettings.expense,erpSettings.accountId), function (response) {
+                paybleAmount: function (paybleCallback) {
+                    Expenses.findPaybleAmountForAccount(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId), function (response) {
                         paybleCallback(response.error, response.paybleCount);
                     });
                 }
@@ -432,7 +432,7 @@ Accounts.prototype.getAllAccountGroup = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var query = {"type": "group", "accountId": jwt.id};
 
     async.parallel({
@@ -611,11 +611,11 @@ Accounts.prototype.updateErpSettings = function (params, callback) {
             callback(retObj);
         } else if (oldAcc) {
             params.updatedBy = params._id;
-            ErpSettingsColl.findOneAndUpdate({_id: params._id}, {$set: params}, function (err, oldAcc) {
+            ErpSettingsColl.findOneAndUpdate({_id: params._id}, {$set: params}, function (err, updatedData) {
                 if (err) {
                     retObj.messages.push('Error in updating the settings');
                     callback(retObj);
-                } else if (oldAcc) {
+                } else if (updatedData) {
                     retObj.status = true;
                     retObj.messages.push('Success');
                     callback(retObj);

@@ -26,49 +26,54 @@ Trucks.prototype.addTruck = function (jwt, truckDetails, callback) {
         status: false,
         messages: []
     };
+    if (jwt.type === "account") {
+        if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
+            retObj.messages.push("Please fill all the required truck details");
+        }
 
-    if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
-        retObj.messages.push("Please fill all the required truck details");
-    }
+        if (!truckDetails.registrationNo || !_.isString(truckDetails.registrationNo)) {
+            retObj.messages.push("Please provide valid registration number");
+        }
 
-    if (!truckDetails.registrationNo || !_.isString(truckDetails.registrationNo)) {
-        retObj.messages.push("Please provide valid registration number");
-    }
-
-    if (!truckDetails.truckType || !_.isString(truckDetails.truckType)) {
-        retObj.messages.push("Please provide valid Truck type");
-    }
+        if (!truckDetails.truckType || !_.isString(truckDetails.truckType)) {
+            retObj.messages.push("Please provide valid Truck type");
+        }
 
 
-    if (retObj.messages.length) {
-        callback(retObj);
+        if (retObj.messages.length) {
+            callback(retObj);
+        } else {
+            TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
+                if (err) {
+                    retObj.messages.push("Error, try again!");
+                    callback(retObj);
+                } else if (truck && truck.length > 0) {
+                    retObj.messages.push("Truck already exists");
+                    callback(retObj);
+                } else {
+                    truckDetails.createdBy = jwt.id;
+                    truckDetails.accountId = jwt.id;
+                    truckDetails = Helpers.removeEmptyFields(truckDetails);
+                    var truckDoc = new TrucksColl(truckDetails);
+                    truckDoc.save(function (err, truck) {
+                        if (err) {
+                            retObj.messages.push("Error while adding truck, try Again");
+                            callback(retObj);
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push("Truck Added Successfully");
+                            retObj.truck = truck;
+                            Helpers.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
+                            callback(retObj);
+                        }
+                    });
+                }
+            });
+        }
     } else {
-        TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
-            if (err) {
-                retObj.messages.push("Error, try again!");
-                callback(retObj);
-            } else if (truck && truck.length > 0) {
-                retObj.messages.push("Truck already exists");
-                callback(retObj);
-            } else {
-                truckDetails.createdBy = jwt.id;
-                truckDetails.accountId = jwt.id;
-                truckDetails = Helpers.removeEmptyFields(truckDetails);
-                var truckDoc = new TrucksColl(truckDetails);
-                truckDoc.save(function (err, truck) {
-                    if (err) {
-                        retObj.messages.push("Error while adding truck, try Again");
-                        callback(retObj);
-                    } else {
-                        retObj.status = true;
-                        retObj.messages.push("Truck Added Successfully");
-                        retObj.truck = truck;
-                        Helpers.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
-                        callback(retObj);
-                    }
-                });
-            }
-        });
+        retObj.status = false;
+        retObj.messages.push("Unauthorized access");
+        callback(retObj);
     }
 };
 
@@ -259,13 +264,13 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
                 retObj.messages.push('Error retrieving trucks');
                 callback(retObj);
             } else if (accountData) {
-                if (accountData.truckId.length > 0) {
+                if (accountData.truckIds.length > 0) {
                     if (!params.truckName) {
-                        condition = {_id: {$in: accountData.truckId}}
+                        condition = {_id: {$in: accountData.truckIds}}
                     } else {
                         condition = {registrationNo: {$regex: '.*' + params.truckName + '.*'}}
                     }
-                    console.log('consdition',condition)
+                    console.log('consdition', condition)
                     async.parallel({
 
                         trucks: function (trucksCallback) {
@@ -385,22 +390,27 @@ Trucks.prototype.getAllAccountTrucks = function (jwt, callback) {
     });
 };
 
-Trucks.prototype.deleteTruck = function (truckId, callback) {
+Trucks.prototype.deleteTruck = function (jwt, truckId, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-
-    TrucksColl.remove({_id: truckId}, function (err) {
-        if (err) {
-            retObj.messages.push('Error deleting truck');
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            callback(retObj);
-        }
-    });
+    if (jwt.type === 'account') {
+        TrucksColl.remove({_id: truckId}, function (err) {
+            if (err) {
+                retObj.messages.push('Error deleting truck');
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                callback(retObj);
+            }
+        });
+    } else {
+        retObj.status = false;
+        retObj.messages.push("Unauthorized access");
+        callback(retObj);
+    }
 };
 
 Trucks.prototype.findExpiryCount = function (jwt, callback) {
@@ -493,8 +503,8 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
             var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-         var erp = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry);
-            dateplus30=erp.condition;
+            var erp = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry);
+            dateplus30 = erp.condition;
 
             if (!params.regNumber) {
                 condition = {
@@ -519,7 +529,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                         {fitnessExpiry: dateplus30}]
                 }
             }
-            console.log('sdsds',dateplus30,condition);
+            console.log('sdsds', dateplus30, condition);
             TrucksColl.aggregate([{
                 $match: condition
             },
@@ -536,30 +546,30 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                 {"$skip": skipNumber},
                 {"$limit": limit},
             ], function (populateErr, populateResults) {
-                console.log('populateResults',populateResults);
-                if(erp.type==='custom'){
+                console.log('populateResults', populateResults);
+                if (erp.type === 'custom') {
                     for (var i = 0; i < populateResults.length; i++) {
-                        if (populateResults[i].fitnessExpiry<=erp.toDate && populateResults[i].fitnessExpiry>=erp.fromDate ) {
+                        if (populateResults[i].fitnessExpiry <= erp.toDate && populateResults[i].fitnessExpiry >= erp.fromDate) {
                             fitnessExpiry = populateResults[i].fitnessExpiry;
                         } else {
                             fitnessExpiry = "--";
                         }
-                        if (populateResults[i].permitExpiry<=erp.toDate && populateResults[i].permitExpiry>=erp.fromDate ) {
+                        if (populateResults[i].permitExpiry <= erp.toDate && populateResults[i].permitExpiry >= erp.fromDate) {
                             permitExpiry = populateResults[i].permitExpiry;
                         } else {
                             permitExpiry = "--";
                         }
-                        if (populateResults[i].insuranceExpiry<=erp.toDate && populateResults[i].insuranceExpiry>=erp.fromDate ) {
+                        if (populateResults[i].insuranceExpiry <= erp.toDate && populateResults[i].insuranceExpiry >= erp.fromDate) {
                             insuranceExpiry = populateResults[i].insuranceExpiry;
                         } else {
                             insuranceExpiry = "--";
                         }
-                        if (populateResults[i].pollutionExpiry<=erp.toDate && populateResults[i].pollutionExpiry>=erp.fromDate ) {
+                        if (populateResults[i].pollutionExpiry <= erp.toDate && populateResults[i].pollutionExpiry >= erp.fromDate) {
                             pollutionExpiry = populateResults[i].pollutionExpiry;
                         } else {
                             pollutionExpiry = "--";
                         }
-                        if (populateResults[i].taxDueDate<=erp.toDate && populateResults[i].taxDueDate>=erp.fromDate ) {
+                        if (populateResults[i].taxDueDate <= erp.toDate && populateResults[i].taxDueDate >= erp.fromDate) {
                             taxDueDate = populateResults[i].taxDueDate;
                         } else {
                             taxDueDate = "--";
@@ -573,7 +583,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                             taxDueDate: taxDueDate
                         });
                     }
-                }else{
+                } else {
                     for (var i = 0; i < populateResults.length; i++) {
                         if (populateResults[i].fitnessExpiry <= erp.date) {
                             fitnessExpiry = populateResults[i].fitnessExpiry;
@@ -590,12 +600,12 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params, callback) {
                         } else {
                             insuranceExpiry = "--";
                         }
-                        if (populateResults[i].pollutionExpiry<= erp.date) {
+                        if (populateResults[i].pollutionExpiry <= erp.date) {
                             pollutionExpiry = populateResults[i].pollutionExpiry;
                         } else {
                             pollutionExpiry = "--";
                         }
-                        if (populateResults[i].taxDueDate<= erp.date) {
+                        if (populateResults[i].taxDueDate <= erp.date) {
                             taxDueDate = populateResults[i].taxDueDate;
                         } else {
                             taxDueDate = "--";

@@ -33,7 +33,7 @@ var accountSchema = new mongoose.Schema({
     groupName: String,
     contactName: String,
     location: String,
-    truckId: [],
+    truckIds: [],
     profilePic: String,
     updatedBy: String,
     createdBy: String,
