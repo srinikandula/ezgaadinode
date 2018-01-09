@@ -20,7 +20,7 @@
                     <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
                     <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
                         <option value="" selected>All Vehicles</option>
-                        <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
+                        <option ng-repeat="truck in trucksList" value="">{{truck.registrationNo}}</option>
                     </select>
                 </div>
                 </div>

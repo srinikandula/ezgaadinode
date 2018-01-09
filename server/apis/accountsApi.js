@@ -390,6 +390,10 @@ Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callbac
         retObj.messages.push('Invalid Mobile Number');
     }
 
+    if(accountGroupInfo.truckIds.length<=0){
+        retObj.messages.push('Please select at least one truck');
+    }
+
     if (retObj.messages.length) {
         callback(retObj);
     } else {
