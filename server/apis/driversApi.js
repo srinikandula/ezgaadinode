@@ -33,7 +33,7 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
         } else {
             driverInfo.createdBy = jwt.id;
             driverInfo.groupId = jwt.id;
-            driverInfo.accountId = jwt.accountId;
+            driverInfo.accountId = jwt.groupAccountId;
         }
         driverInfo.mobile = Number(driverInfo.mobile);
         driverInfo.driverId = "DR" + parseInt((Math.random() * 100000)); // Need to fix this
@@ -189,90 +189,117 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
         status: false,
         messages: []
     };
+    var giveAccess=false;
+    var giveAccess=false;
+    if (jwt.type === "account" && driverInfo.accountId===jwt.accountId) {
+        giveAccess=true;
+    } else if(jwt.type === "group" && driverInfo.createdBy===jwt.id) {
+        giveAccess=true;
 
-    if (!driverInfo._id) {
-        retObj.messages.push('Invalid driverId');
+    }else{
+        result.status = false;
+        result.message = "Unauthorized access";
+        callback(result);
     }
+    if(giveAccess) {
+        if (!driverInfo._id) {
+            retObj.messages.push('Invalid driverId');
+        }
 
-    if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
-        retObj.messages.push('Mobile number should be of ten digits');
-    }
+        if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
+            retObj.messages.push('Mobile number should be of ten digits');
+        }
 
-    if (retObj.messages.length) {
-        callback(retObj);
-    } else {
-        driverInfo.updatedBy = jwt.id;
-        driverInfo.mobile = Number(driverInfo.mobile);
+        if (retObj.messages.length) {
+            callback(retObj);
+        } else {
+            driverInfo.updatedBy = jwt.id;
+            driverInfo.mobile = Number(driverInfo.mobile);
 
-        DriversColl.find({
-            accountId: driverInfo.accountId,
-            _id: {$ne: driverInfo._id},
-            $or: [{"mobile": driverInfo.mobile}, {"fullName": driverInfo.fullName}]
-        }, function (err, drivers) {
-            if (err) {
-                retObj.messages.push('Error fetching accounts');
-                callback(retObj);
-            } else if (!drivers.length) { // if no driver is found with the same phone number or full name
-                DriversColl.findOneAndUpdate({_id: driverInfo._id}, driverInfo, {new: true}, function (err, oldDriver) {
-                    if (err) {
-                        retObj.messages.push('Error saving driver');
-                        callback(retObj);
-                    } else if (oldDriver) {
-                        retObj.status = true;
-                        retObj.messages.push('Success');
-                        retObj.driver = oldDriver;
-                        Utils.cleanUpTruckDriverAssignment(jwt, oldDriver.truckId, oldDriver._id);
-                        callback(retObj);
-                    } else {
-                        retObj.messages.push('Driver does\'t exist');
-                        callback(retObj);
+            DriversColl.find({
+                accountId: driverInfo.accountId,
+                _id: {$ne: driverInfo._id},
+                $or: [{"mobile": driverInfo.mobile}, {"fullName": driverInfo.fullName}]
+            }, function (err, drivers) {
+                if (err) {
+                    retObj.messages.push('Error fetching accounts');
+                    callback(retObj);
+                } else if (!drivers.length) { // if no driver is found with the same phone number or full name
+                    DriversColl.findOneAndUpdate({_id: driverInfo._id}, driverInfo, {new: true}, function (err, oldDriver) {
+                        if (err) {
+                            retObj.messages.push('Error saving driver');
+                            callback(retObj);
+                        } else if (oldDriver) {
+                            retObj.status = true;
+                            retObj.messages.push('Success');
+                            retObj.driver = oldDriver;
+                            Utils.cleanUpTruckDriverAssignment(jwt, oldDriver.truckId, oldDriver._id);
+                            callback(retObj);
+                        } else {
+                            retObj.messages.push('Driver does\'t exist');
+                            callback(retObj);
+                        }
+                    });
+                } else {
+                    var duplicateFound = _.find(drivers, function (driver) {
+                        return driver.mobile === driverInfo.mobile;
+                    });
+
+                    if (duplicateFound) {
+                        retObj.messages.push(" Mobile number is used by other driver in the account");
                     }
-                });
-            } else {
-                var duplicateFound = _.find(drivers, function (driver) {
-                    return driver.mobile === driverInfo.mobile;
-                });
 
-                if (duplicateFound) {
-                    retObj.messages.push(" Mobile number is used by other driver in the account");
+                    duplicateFound = _.find(drivers, function (driver) {
+                        return driver.fullName === driverInfo.fullName;
+                    });
+
+                    if (duplicateFound) {
+                        retObj.messages.push(" DUPLICATE!! Please choose a different name for the driver")
+                    }
+
+                    callback(retObj);
                 }
-
-                duplicateFound = _.find(drivers, function (driver) {
-                    return driver.fullName === driverInfo.fullName;
-                });
-
-                if (duplicateFound) {
-                    retObj.messages.push(" DUPLICATE!! Please choose a different name for the driver")
-                }
-
-                callback(retObj);
-            }
-        });
+            });
+        }
     }
 };
 
-Drivers.prototype.deleteDriver = function (driverId, callback) {
+Drivers.prototype.deleteDriver = function (jwt,driverId, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-
-    if (!Utils.isValidObjectId(driverId)) {
-        retObj.messages.push('Invalid driver Id');
+    var condition={};
+    var giveAccess=false;
+    if (jwt.type === "account") {
+        giveAccess=true;
+    } else if(jwt.type === "group") {
+        giveAccess=true;
+    }else{
+        retObj.status = false;
+        retObj.messages.push('Unauthorized access');
+        callback(result);
     }
 
-    if (retObj.messages.length) {
-        callback(retObj);
-    } else {
-        DriversColl.remove({_id: driverId}, function (err) {
-            if (err) {
-                retObj.messages.push('Error deleting Driver');
-                callback(retObj);
-            } else {
-                retObj.messages.push('Success');
-                callback(retObj);
-            }
-        });
+    if(giveAccess) {
+
+        if (!Utils.isValidObjectId(driverId)) {
+            retObj.messages.push('Invalid driver Id');
+        }
+
+        if (retObj.messages.length) {
+            callback(retObj);
+        } else {
+            DriversColl.remove({_id: driverId}, function (err) {
+                if (err) {
+                    retObj.messages.push('Error deleting Driver');
+                    callback(retObj);
+                } else {
+                    retObj.messages.push('Success');
+                    callback(retObj);
+                }
+            });
+        }
     }
 };
 

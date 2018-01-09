@@ -17,7 +17,7 @@ var emailService = require('./mailerApi');
 
 var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
-log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60 });
+log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 
 var PaymentsReceived = function () {
 };
@@ -34,12 +34,12 @@ PaymentsReceived.prototype.getTotalAmount = function (accId, callback) {
     };
     PaymentsReceivedColl.aggregate([
         {
-            "$match": { accountId: ObjectId(accId) }
+            "$match": {accountId: ObjectId(accId)}
         },
         {
             "$group": {
                 "_id": null,
-                "total": { "$sum": "$amount" }
+                "total": {"$sum": "$amount"}
             }
         }
     ], function (err, sum) {
@@ -79,10 +79,14 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        details.date=new Date(details.date);
-        details.accountId = jwt.accountId;
+        details.date = new Date(details.date);
         details.createdBy = jwt.id;
         details.updatedBy = jwt.id;
+        if (jwt.type === "account") {
+            details.accountId = jwt.accountId;
+        } else {
+            details.accountId = jwt.groupAccountId;
+        }
         var insertDoc = new PaymentsReceivedColl(details);
         insertDoc.save(function (err, payment) {
             if (err) {
@@ -97,6 +101,7 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
         });
     }
 };
+
 function getPayments(condition, jwt, params, callback) {
     var result = {};
     if (!params.page) {
@@ -111,7 +116,7 @@ function getPayments(condition, jwt, params, callback) {
     async.parallel({
         mCosts: function (mCostsCallback) {
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
             PaymentsReceivedColl
                 .find(condition)
                 .sort(sort)
@@ -139,7 +144,7 @@ function getPayments(condition, jwt, params, callback) {
                 });
         },
         count: function (countCallback) {
-            PaymentsReceivedColl.count({'accountId': jwt.accountId }, function (err, count) {
+            PaymentsReceivedColl.count({'accountId': jwt.accountId}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -157,6 +162,7 @@ function getPayments(condition, jwt, params, callback) {
         }
     });
 }
+
 PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
     var result = {};
     var condition = {};
@@ -166,12 +172,12 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
         } else {
             condition = {'accountId': jwt.groupAccountId};
         }
-        getPayments(condition,jwt, params,function(paymentResp){
+        getPayments(condition, jwt, params, function (paymentResp) {
             callback(paymentResp);
         });
     } else {
-        PartyCollection.findOne({name: { $regex: '.*' + params.partyName + '.*' }},function(err,partyData){
-            if(err){
+        PartyCollection.findOne({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partyData) {
+            if (err) {
                 result.status = false;
                 result.message = 'Error retrieving Payments Costs';
                 callback(retObj);
@@ -184,12 +190,12 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
                 getPayments(condition,jwt, params,function(paymentResp){
                     callback(paymentResp);
                 });
-            }else{
+            } else {
                 result.status = true;
-            result.message = 'Success';
-            result.count = 0;
-            result.paymentsCosts = [];
-            callback(result);
+                result.message = 'Success';
+                result.count = 0;
+                result.paymentsCosts = [];
+                callback(result);
             }
         })
     }
@@ -197,7 +203,7 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
 
 PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
     var result = {};
-    PaymentsReceivedColl.findOne({ _id: paymentsId, accountId: jwt.accountId }, function (err, paymentsReceived) {
+    PaymentsReceivedColl.findOne({_id: paymentsId, accountId: jwt.accountId}, function (err, paymentsReceived) {
         if (err) {
             result.status = false;
             result.message = "Error while finding Payments, try Again";
@@ -220,7 +226,7 @@ PaymentsReceived.prototype.getAllAccountPayments = function (jwt, callback) {
         status: false,
         messages: []
     };
-    PaymentsReceivedColl.find({ accountId: jwt.accountId }, function (err, payments) {
+    PaymentsReceivedColl.find({accountId: jwt.accountId}, function (err, payments) {
         if (err) {
             retObj.messages.push('Error getting payments');
             callback(retObj);
@@ -244,7 +250,7 @@ PaymentsReceived.prototype.findPartyPayments = function (jwt, partyId, callback)
         status: false,
         messages: []
     };
-    PaymentsReceivedColl.find({ accountId: jwt.accountId, partyId: partyId }, function (err, payments) {
+    PaymentsReceivedColl.find({accountId: jwt.accountId, partyId: partyId}, function (err, payments) {
         if (err) {
             retObj.messages.push('Error getting payments');
             callback(retObj);
@@ -262,24 +268,36 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
         status: false,
         messages: []
     };
-    // paymentDetails = Utils.removeEmptyFields(paymentDetails);
-    paymentDetails.updatedBy = jwt.id;
-    PaymentsReceivedColl.findOneAndUpdate({
-        accountId: jwt.accountId,
-        _id: paymentDetails._id
-    }, { $set: paymentDetails }, { new: true }, function (err, payment) {
-        if (err) {
-            retObj.messages.push("Error while updating payment, try Again");
-            callback(retObj);
-        } else if (payment) {
-            retObj.status = true;
-            retObj.messages.push("Payment updated successfully");
-            callback(retObj);
-        } else {
-            retObj.messages.push("Error, finding payment");
-            callback(retObj);
-        }
-    });
+    var giveAccess = false;
+    if (jwt.type === "account" && paymentDetails.accountId === jwt.accountId) {
+        giveAccess = true;
+    } else if (jwt.type === "group" && paymentDetails.createdBy === jwt.id) {
+        giveAccess = true;
+
+    } else {
+        retObj.status = false;
+        retObj.messages.push("Unauthorized access");
+        callback(result);
+    }
+    if (giveAccess) {
+        paymentDetails = Utils.removeEmptyFields(paymentDetails);
+        paymentDetails.updatedBy = jwt.id;
+        PaymentsReceivedColl.findOneAndUpdate({
+            _id: paymentDetails._id
+        }, {$set: paymentDetails}, {new: true}, function (err, payment) {
+            if (err) {
+                retObj.messages.push("Error while updating payment, try Again");
+                callback(retObj);
+            } else if (payment) {
+                retObj.status = true;
+                retObj.messages.push("Payment updated successfully");
+                callback(retObj);
+            } else {
+                retObj.messages.push("Error, finding payment");
+                callback(retObj);
+            }
+        });
+    }
 };
 
 PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
@@ -287,17 +305,32 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
         status: false,
         messages: []
     };
+    var condition={};
+    var giveAccess=false;
+    if (jwt.type === "account") {
+        condition={accountId: jwt.accountId, _id: id};
+        giveAccess=true;
+    } else if(jwt.type === "group") {
+        condition={_id: id,createdBy:jwt.id};
+        giveAccess=true;
+    }else{
+        retObj.status = false;
+        retObj.messages.push("Unauthorized access");
+        callback(result);
+    }
 
-    PaymentsReceivedColl.remove({ accountId: jwt.accountId, _id: id }, function (err) {
-        if (err) {
-            retObj.messages.push('Error deleting payment');
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('payment successfully Deleted');
-            callback(retObj);
-        }
-    });
+    if(giveAccess) {
+        PaymentsReceivedColl.remove(condition, function (err) {
+            if (err) {
+                retObj.messages.push('Error deleting payment');
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('payment successfully Deleted');
+                callback(retObj);
+            }
+        });
+    }
 };
 
 PaymentsReceived.prototype.countPayments = function (jwt, callback) {
@@ -328,15 +361,15 @@ PaymentsReceived.prototype.findPendingDueForAccount = function (condition, callb
     };
     async.parallel({
         tripFrightTotal: function (callback) {
-            TripColl.aggregate({ $match: condition},
-                { $group: { _id: null, totalFright: { $sum: "$freightAmount" } } },
+            TripColl.aggregate({$match: condition},
+                {$group: {_id: null, totalFright: {$sum: "$freightAmount"}}},
                 function (err, totalFrieght) {
                     callback(err, totalFrieght);
                 });
         },
         paymentsTotal: function (callback) {
-            PaymentsReceivedColl.aggregate({ $match: condition },
-                { $group: { _id: null, totalPayments: { $sum: "$amount" } } },
+            PaymentsReceivedColl.aggregate({$match: condition},
+                {$group: {_id: null, totalPayments: {$sum: "$amount"}}},
                 function (err, totalPayments) {
                     callback(err, totalPayments);
                 });
@@ -367,12 +400,13 @@ PaymentsReceived.prototype.findPendingDueForAccount = function (condition, callb
         }
     });
 }
+
 /**
  * Find the dues grouped by party
  * @param jwt
  * @param callback
  */
-function getDuesByParty(jwt, condition,params, callback) {
+function getDuesByParty(jwt, condition, params, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -386,7 +420,7 @@ function getDuesByParty(jwt, condition,params, callback) {
     async.parallel({
         tripFrightTotal: function (callback) {
             TripColl.aggregate(condition,
-                { $group: { _id: "$partyId", totalFright: { $sum: "$freightAmount" } } },
+                {$group: {_id: "$partyId", totalFright: {$sum: "$freightAmount"}}},
                 {"$sort": sort},
                 {"$skip": skipNumber},
                 {"$limit": limit},
@@ -396,7 +430,7 @@ function getDuesByParty(jwt, condition,params, callback) {
         },
         paymentsTotal: function (callback) {
             PaymentsReceivedColl.aggregate(condition,
-                { $group: { _id: "$partyId", totalPayments: { $sum: "$amount" } } },
+                {$group: {_id: "$partyId", totalPayments: {$sum: "$amount"}}},
                 function (err, totalPayments) {
                     callback(err, totalPayments);
                 });
@@ -413,7 +447,7 @@ function getDuesByParty(jwt, condition,params, callback) {
             var grossExpenses = 0;
             var grossDue = 0;
             for (var i = 0; i < partyIds.length; i++) {
-                var party = { "id": partyIds[i], "totalPayment": 0, "totalFright": 0 };
+                var party = {"id": partyIds[i], "totalPayment": 0, "totalFright": 0};
                 var partyInfo = _.find(populateResults.tripFrightTotal, function (total) {
                     if (total._id === party.id) {
                         return total;
@@ -441,7 +475,7 @@ function getDuesByParty(jwt, condition,params, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.parties = result.documents;
-                retObj.grossAmounts = { grossFreight: grossFreight, grossExpenses: grossExpenses, grossDue: grossDue }
+                retObj.grossAmounts = {grossFreight: grossFreight, grossExpenses: grossExpenses, grossDue: grossDue}
                 callback(retObj);
             })
 
@@ -468,7 +502,7 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
                 }, "partyId": ObjectId(params.partyId)
             }
         }
-        getDuesByParty(jwt, condition,params, function (response) {
+        getDuesByParty(jwt, condition, params, function (response) {
             callback(response);
         })
     } else if (params.fromDate && params.toDate) {
@@ -480,25 +514,25 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
                 }
             }
         }
-        getDuesByParty(jwt, condition,params, function (response) {
+        getDuesByParty(jwt, condition, params, function (response) {
             callback(response);
         })
     } else if (params.partyId) {
-        condition = { $match: { "accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId) } }
-        getDuesByParty(jwt, condition,params, function (response) {
+        condition = {$match: {"accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId)}}
+        getDuesByParty(jwt, condition, params, function (response) {
             callback(response);
         })
     } else {
-        condition = { $match: { "accountId": ObjectId(jwt.accountId) } }
-        ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+        condition = {$match: {"accountId": ObjectId(jwt.accountId)}}
+        ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);
             } else if (erpSettings) {
 
-                condition = { $match: Utils.getErpSettings(erpSettings.payment, erpSettings.accountId) }
-                getDuesByParty(jwt, condition,params, function (response) {
+                condition = {$match: Utils.getErpSettings(erpSettings.payment, erpSettings.accountId)}
+                getDuesByParty(jwt, condition, params, function (response) {
                     callback(response);
                 })
             } else {
@@ -507,9 +541,9 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
                 callback(retObj);
             }
         });
-       
+
     }
-    
+
 };
 
 PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, params, callback) {

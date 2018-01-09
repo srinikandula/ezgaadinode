@@ -58,7 +58,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                     jwt.sign({
                         id: user._id,
                         accountId: user._id,
-                        groupAccountId: user.accountId,
+                        groupAccountId:user.accountId,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
                         type: user.type
@@ -81,6 +81,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                                     retObj.loadEnabled = user.loadEnabled;
                                     retObj.editAccounts = user.editAccounts;
                                     retObj.profilePic=user.profilePic;
+                                    retObj.type=user.type;
                                     callback(retObj);
                                 }else{
                                     var erpSettings=new ErpSettingsColl({accountId:user._id});
@@ -98,6 +99,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                                             retObj.loadEnabled = user.loadEnabled;
                                             retObj.editAccounts = user.editAccounts;
                                             retObj.profilePic=user.profilePic;
+                                            retObj.type=user.type;
                                             callback(retObj);
                                         }else{
                                             retObj.messages.push('Please try again');

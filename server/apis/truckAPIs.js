@@ -83,7 +83,7 @@ Trucks.prototype.findTruck = function (jwt, truckId, callback) {
         messages: []
     };
 
-    TrucksColl.findOne({_id: truckId, accountId: jwt.accountId}, function (err, truck) {
+    TrucksColl.findOne({_id: truckId}, function (err, truck) {
         if (err) {
             retObj.messages.push("Error while finding truck, try Again");
             callback(retObj);

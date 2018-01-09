@@ -20,7 +20,11 @@
                     <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
                     <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
                         <option value="" selected>All Vehicles</option>
+<<<<<<< 0b2743ceed4296d40eeeeb0f9bb9c7ae019dc903
                         <option ng-repeat="truck in trucksList" value="{{truck._id}}">{{truck.registrationNo}}</option>
+=======
+                        <option ng-repeat="truck in trucksList" value="">{{truck.registrationNo}}</option>
+>>>>>>> Restrict adding,updating and deleting of navs of account in group login
                     </select>
                 </div>
                 </div>

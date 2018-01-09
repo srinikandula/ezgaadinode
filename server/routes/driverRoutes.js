@@ -47,7 +47,7 @@ AuthRouter.put('/', function (req, res) {
     });
 });
 AuthRouter.delete('/:driverId', function (req, res) {
-    Drivers.deleteDriver(req.params.driverId, function (result) {
+    Drivers.deleteDriver(req.jwt,req.params.driverId, function (result) {
         res.send(result);
     });
 });

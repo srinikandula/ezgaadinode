@@ -30,7 +30,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
                     $cookies.put('token', success.data.token);
-                    $cookies.put('role', success.data.role);
+                    $cookies.put('type', success.data.type);
                     $cookies.put('userName', success.data.userName);
                     $cookies.put('editAccounts', success.data.editAccounts);
                     $cookies.put('profilePic', success.data.profilePic);
