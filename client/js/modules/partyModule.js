@@ -104,6 +104,8 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             if (angular.isArray(response.data.parties)) {
                 $scope.loading = false;
                 $scope.parties = response.data.parties;
+                $scope.userId=response.data.userId;
+                $scope.userType=response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.parties;
                 $scope.currentPageOfParties = $scope.parties;
@@ -161,13 +163,11 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                         );
                         $scope.getCount();
                     } else {
-                        success.data.messages.forEach(function (message) {
                             swal(
-                                'Deleted!',
-                                message,
+                                'Error!',
+                                success.data.message,
                                 'error'
                             );
-                        });
                     }
                 }, function (err) {
 

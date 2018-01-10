@@ -157,6 +157,8 @@ function getPayments(condition, jwt, params, callback) {
             result.status = true;
             result.message = 'Success';
             result.count = results.count;
+            result.userId=jwt.id;
+            result.userType=jwt.type;
             result.paymentsCosts = results.mCosts.createdbyname;
             callback(result);
         }
@@ -203,7 +205,13 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
 
 PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
     var result = {};
-    PaymentsReceivedColl.findOne({_id: paymentsId, accountId: jwt.accountId}, function (err, paymentsReceived) {
+    var condition={};
+    if (jwt.type === "account") {
+        condition = {_id: paymentsId,'accountId': jwt.accountId};
+    } else {
+        condition = {_id: paymentsId,'createdBy': jwt.id };
+    }
+    PaymentsReceivedColl.findOne(condition, function (err, paymentsReceived) {
         if (err) {
             result.status = false;
             result.message = "Error while finding Payments, try Again";
@@ -215,7 +223,7 @@ PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, cal
             callback(result);
         } else {
             result.status = false;
-            result.message = "Payment is not found!";
+            result.message = "Unauthorized access or Payment is not found!";
             callback(result);
         }
     });
@@ -320,9 +328,13 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
     }
 
     if(giveAccess) {
-        PaymentsReceivedColl.remove(condition, function (err) {
+        PaymentsReceivedColl.remove(condition, function (err,returnValue) {
             if (err) {
                 retObj.messages.push('Error deleting payment');
+                callback(retObj);
+            } else if (returnValue.result.n === 0) {
+                retObj.status = false;
+                retObj.messages.push('Unauthorized access or Error deleting payment Record');
                 callback(retObj);
             } else {
                 retObj.status = true;

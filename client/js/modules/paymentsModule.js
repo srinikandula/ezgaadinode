@@ -104,6 +104,8 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             if (angular.isArray(response.data.paymentsCosts)) {
                 $scope.loading = false;
                 $scope.payments = response.data.paymentsCosts;
+                $scope.userId=response.data.userId;
+                $scope.userType=response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.payments;
                 $scope.currentPageOfPayments = $scope.payments;
@@ -163,7 +165,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
                     } else {
                         success.data.messages.forEach(function (message) {
                             swal(
-                                'Deleted!',
+                                'Error!',
                                 message,
                                 'error'
                             );
