@@ -284,7 +284,7 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
         messages: []
     };
 
-    TripCollection.findOne({_id: tripId, accountId: jwt.accountId}, function (err, trip) {
+    TripCollection.findOne({_id: tripId}, function (err, trip) {
         if (err) {
             retObj.messages.push("Error while finding trip, try Again");
             callback(retObj);
@@ -337,7 +337,7 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
     } else {
         retObj.status = false;
         retObj.message = "Unauthorized access";
-        callback(result);
+        callback(retObj);
     }
     if (giveAccess) {
         tripDetails = Utils.removeEmptyFields(tripDetails);
@@ -545,7 +545,6 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
         }
 
     }
-console.log('condition',condition);
     async.parallel({
         trips: function (tripsCallback) {
             TripCollection
@@ -595,6 +594,8 @@ console.log('condition',condition);
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
+            retObj.userId=jwt.id;
+            retObj.userType=jwt.type;
             retObj.trips = results.trips.createdbyname; //as trips is callby reference
             callback(retObj);
         }
@@ -628,17 +629,21 @@ Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
         if (retObj.messages.length) {
             callback(retObj);
         } else {
-            TripCollection.find({_id: tripId}, function (err) {
+            console.log('condition',condition);
+            TripCollection.find(condition, function (err) {
                 if (err) {
                     retObj.messages.push('No Trips Found');
                     callback(retObj);
                 } else {
-                    TripCollection.remove({_id: tripId}, function (err) {
+                    TripCollection.remove(condition, function (err,data) {
                         if (err) {
-                            retObj.messages.push('Error deleting trip');
+                            retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
-                        } else {
-                            retObj.status = true;
+                        } else if(data.result.n === 0) {
+                            retObj.status = false;
+                            retObj.messages.push('Unauthorized access or Error deleting trip');
+                            callback(retObj);
+                        }else{
                             retObj.messages.push('Success');
                             callback(retObj);
                         }

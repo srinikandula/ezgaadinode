@@ -35,7 +35,7 @@ AuthRouter.get('/getAllExpenses', function (req, res) {
 
 
 AuthRouter.get('/getExpense/:expenseId', function (req, res) {
-    ExpenseCost.findExpenseRecord(req.params.expenseId, function (result) {
+    ExpenseCost.findExpenseRecord(req.jwt,req.params.expenseId, function (result) {
         res.send(result);
     });
 });

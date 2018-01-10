@@ -147,6 +147,8 @@ Drivers.prototype.getDrivers = function (jwt, params, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.count = results.count;
+                retObj.userId=jwt.id;
+                retObj.userType=jwt.type;
                 retObj.drivers = results.drivers;
                 callback(retObj);
             }
@@ -159,7 +161,12 @@ Drivers.prototype.getDriverDetails = function (jwt, driverId, callback) {
         status: false,
         messages: []
     };
-
+    var condition={};
+    if (jwt.type === "account") {
+        condition = {_id: driverId,'accountId': jwt.accountId};
+    } else {
+        condition = {_id: driverId,'createdBy': jwt.id };
+    }
     if (!Utils.isValidObjectId(driverId)) {
         retObj.messages.push('Invalid driverId');
     }
@@ -167,7 +174,7 @@ Drivers.prototype.getDriverDetails = function (jwt, driverId, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        DriversColl.findOne({_id: driverId, accountId: jwt.accountId}, function (err, driver) {
+        DriversColl.findOne(condition, function (err, driver) {
             if (err) {
                 retObj.messages.push('Error retrieving driver');
                 callback(retObj);
@@ -177,7 +184,7 @@ Drivers.prototype.getDriverDetails = function (jwt, driverId, callback) {
                 retObj.driver = driver;
                 callback(retObj);
             } else {
-                retObj.messages.push('Driver with Id doesn\'t exist');
+                retObj.messages.push('Unauthorized access or Driver with Id doesn\'t exist');
                 callback(retObj);
             }
         });
@@ -272,8 +279,10 @@ Drivers.prototype.deleteDriver = function (jwt,driverId, callback) {
     var condition={};
     var giveAccess=false;
     if (jwt.type === "account") {
+        condition={_id: driverId,accountId:jwt.accountId};
         giveAccess=true;
     } else if(jwt.type === "group") {
+        condition={_id: driverId,accountId:jwt.accountId};
         giveAccess=true;
     }else{
         retObj.status = false;
@@ -290,9 +299,13 @@ Drivers.prototype.deleteDriver = function (jwt,driverId, callback) {
         if (retObj.messages.length) {
             callback(retObj);
         } else {
-            DriversColl.remove({_id: driverId}, function (err) {
+            DriversColl.remove(condition, function (err,returnValue) {
                 if (err) {
                     retObj.messages.push('Error deleting Driver');
+                    callback(retObj);
+                } else if (returnValue.result.n === 0) {
+                    retObj.status = false;
+                    retObj.messages.push('Unauthorized access or Error deleting driver Record');
                     callback(retObj);
                 } else {
                     retObj.messages.push('Success');

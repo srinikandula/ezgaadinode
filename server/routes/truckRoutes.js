@@ -81,11 +81,12 @@ AuthRouter.get('/taxExpiryTrucks', function (req, res) {
     });
 });
 
-/*AuthRouter.get('/:truckId', function (req, res) {
+AuthRouter.get('/:truckId', function (req, res) {
     Trucks.findTruck(req.jwt, req.params.truckId, function (result) {
         res.send(result);
     });
-});*/
+});
+
 AuthRouter.put('/', function (req, res) {
     Trucks.updateTruck(req.jwt, req.body, function (result) {
         res.send(result);

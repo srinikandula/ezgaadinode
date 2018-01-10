@@ -111,6 +111,8 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             if (angular.isArray(response.data.trips)) {
                 $scope.loading = false;
                 $scope.trips = response.data.trips;
+                $scope.userId=response.data.userId;
+                $scope.userType=response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trips;
                 $scope.currentPageOfTrips = $scope.trips;
@@ -170,7 +172,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                         } else {
                             success.data.messages.forEach(function (message) {
                                 swal(
-                                    'Deleted!',
+                                    'Error!',
                                     message,
                                     'error'
                                 );
@@ -392,7 +394,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                         Notification.success({message: 'Trip updated successfully'});
                         $state.go('trips');
                     } else {
-                        params.errors = success.data.messages;
+                        params.errors.push(success.data.message);
                     }
                 }, function (err) {
 
@@ -403,7 +405,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                         Notification.success('Trip added successfully');
                         $state.go('trips');
                     } else {
-                        params.errors = success.data.messages;
+                        params.errors = success.data.message;
                     }
                 }, function (err) {
 

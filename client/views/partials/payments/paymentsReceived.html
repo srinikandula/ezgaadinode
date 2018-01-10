@@ -52,10 +52,10 @@
                     </td>
 
                     <td data-title="'Action'" class="">
-                        <a href="#" class="btn" ng-click="goToEditPaymentsPage(payments._id)">
+                        <a href="#" ng-show="userType=='account' || userId==payments.createdBy" class="btn" ng-click="goToEditPaymentsPage(payments._id)">
                             <span class="glyphicon glyphicon-pencil"></span></a>
 
-                        <a href="#" class="btn" ng-click="deletePaymentsRecord(payments._id)">
+                        <a href="#" ng-show="userType=='account' || userId==payments.createdBy" class="btn" ng-click="deletePaymentsRecord(payments._id)">
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
