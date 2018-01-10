@@ -47,13 +47,13 @@
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
-                    <li class="payble"  ui-sref="payableByParty">
+                    <li class="payble" ui-sref="payableByParty">
                         <span class="payable">Payable</span><br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.paybleAmount || 0}}
                         </small>
                     </li>
-                    <li class="payble"  ui-sref="receivableByParty">
+                    <li class="payble" ui-sref="receivableByParty">
                         <span class="receivable">Receivable</span> <br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.pendingDue || 0}}
@@ -106,26 +106,29 @@
             <h3 class="db-title">Expense - {{vehicleId}}:</h3>
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
                 <tr ng-repeat="listOfExpensesByVehicleId in expensesByVehicleId" style="text-align: center;">
-                    <td data-title="'Date'" sortable="'regNumber'" class="clickable-item col-sm-2">
+                    <td data-title="'Date'" sortable="'regNumber'" class="clickable-item">
                         {{listOfExpensesByVehicleId.date | date:'dd-MM-yyyy' }}
                     </td>
-                    <td data-title="'Diesel'" sortable="'dieselExpense'" class="clickable-item col-sm-2">
-                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'diesel' ? listOfExpensesByVehicleId.totalAmount :
+                    <td data-title="'Diesel'" sortable="'dieselExpense'" class="clickable-item">
+                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'diesel' ?
+                        listOfExpensesByVehicleId.totalAmount :
                         "0" }}
                     </td>
-                    <td data-title="'Toll'" sortable="'tollExpense'" class="clickable-item col-sm-2">
-                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'toll' ? listOfExpensesByVehicleId.totalAmount : "0"
+                    <td data-title="'Toll'" sortable="'tollExpense'" class="clickable-item">
+                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'toll' ?
+                        listOfExpensesByVehicleId.totalAmount : "0"
                         }}
 
                     </td>
 
-                    <td data-title="'Maintenance'" sortable="'mExpense'" class="clickable-item col-sm-2">
-                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'maintenance' ? listOfExpensesByVehicleId.totalAmount
+                    <td data-title="'Maintenance'" sortable="'mExpense'" class="clickable-item">
+                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'maintenance' ?
+                        listOfExpensesByVehicleId.totalAmount
                         : "0" }}
                     </td>
 
-                    <td data-title="'Miscellaneous'" sortable="'misc'" class="clickable-item col-sm-2">
-                      {{GetExpense(listOfExpensesByVehicleId.attrs.expenseName,listOfExpensesByVehicleId.totalAmount)}}
+                    <td data-title="'Miscellaneous'" sortable="'misc'" class="clickable-item">
+                        {{GetExpense(listOfExpensesByVehicleId.attrs.expenseName,listOfExpensesByVehicleId.totalAmount)}}
                     </td>
 
                 </tr>
