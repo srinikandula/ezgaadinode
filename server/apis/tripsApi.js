@@ -48,17 +48,17 @@ function shareTripDetails(tripDetails, trip, callback) {
         status: false,
         messages: []
     };
-    PartyCollection.findOne({ _id: tripDetails.partyId }, function (err, partyData) {
+    PartyCollection.findOne({_id: tripDetails.partyId}, function (err, partyData) {
         if (err) {
             retObj.messages.push("Error while share details, try Again");
             callback(retObj);
         } else if (partyData) {
-            TrucksColl.findOne({ _id: tripDetails.registrationNo }, function (err, truckData) {
+            TrucksColl.findOne({_id: tripDetails.registrationNo}, function (err, truckData) {
                 if (err) {
                     retObj.messages.push("Error while share details, try Again");
                     callback(retObj);
                 } else if (truckData) {
-                    DriversColl.findOne({ _id: tripDetails.driverId }, function (err, driverData) {
+                    DriversColl.findOne({_id: tripDetails.driverId}, function (err, driverData) {
                         if (err) {
                             retObj.messages.push("Error while share details, try Again");
                             callback(retObj);
@@ -67,14 +67,14 @@ function shareTripDetails(tripDetails, trip, callback) {
                                 accountId: tripDetails.accountId,
                                 notificationType: 0,
                                 content: "Party Name: " + partyData.name + "," +
-                                    "Date : " + new Date(tripDetails.date).toLocaleDateString() + "," +
-                                    "Vehicle No:" + truckData.registrationNo + "," +
-                                    "Driver Name:" + driverData.fullName + "," +
-                                    "Driver Number:" + driverData.mobile + "," +
-                                    "Trip Lane:" + tripDetails.tripLane + "," +
-                                    "Tonnage :" + tripDetails.tonnage + "," +
-                                    "Rate:" + tripDetails.rate + "," +
-                                    "Amount:" + tripDetails.freightAmount,
+                                "Date : " + new Date(tripDetails.date).toLocaleDateString() + "," +
+                                "Vehicle No:" + truckData.registrationNo + "," +
+                                "Driver Name:" + driverData.fullName + "," +
+                                "Driver Number:" + driverData.mobile + "," +
+                                "Trip Lane:" + tripDetails.tripLane + "," +
+                                "Tonnage :" + tripDetails.tonnage + "," +
+                                "Rate:" + tripDetails.rate + "," +
+                                "Amount:" + tripDetails.freightAmount,
                                 status: true,
                                 tripId: trip._id,
                                 message: "success"
@@ -84,14 +84,14 @@ function shareTripDetails(tripDetails, trip, callback) {
                                 var smsParams = {
                                     contact: partyData.contact,
                                     message: "Hi " + partyData.name + ",\n" +
-                                        "Date : " + new Date(tripDetails.date).toLocaleString() + ",\n" +
-                                        "Vehicle No:" + truckData.registrationNo + ",\n" +
-                                        "Driver Name:" + driverData.fullName + ",\n" +
-                                        "Driver Number:" + driverData.mobile + ",\n" +
-                                        "Trip Lane:" + tripDetails.tripLane + ",\n" +
-                                        "Tonnage :" + tripDetails.tonnage + ",\n" +
-                                        "Rate:" + tripDetails.rate + ",\n" +
-                                        "Amount:" + tripDetails.freightAmount
+                                    "Date : " + new Date(tripDetails.date).toLocaleString() + ",\n" +
+                                    "Vehicle No:" + truckData.registrationNo + ",\n" +
+                                    "Driver Name:" + driverData.fullName + ",\n" +
+                                    "Driver Number:" + driverData.mobile + ",\n" +
+                                    "Trip Lane:" + tripDetails.tripLane + ",\n" +
+                                    "Tonnage :" + tripDetails.tonnage + ",\n" +
+                                    "Rate:" + tripDetails.rate + ",\n" +
+                                    "Amount:" + tripDetails.freightAmount
                                 }
                                 SmsService.sendSMS(smsParams, function (smsResponse) {
                                     if (smsResponse.status) {
@@ -241,6 +241,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
+
         if (jwt.type === "account") {
             tripDetails.createdBy = jwt.id;
             tripDetails.accountId = jwt.accountId;
@@ -248,7 +249,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
         else {
             tripDetails.createdBy = jwt.id;
             tripDetails.groupId = jwt.id;
-            tripDetails.accountId = jwt.accountId;
+            tripDetails.accountId = jwt.groupAccountId;
         }
         tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
         var tripDoc = new TripCollection(tripDetails);
@@ -263,7 +264,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
                     retObj.trips = trip;
                     callback(retObj);
                     shareTripDetails(tripDetails, trip, function (shareResponse) {
-                       // callback(shareResponse);
+                        // callback(shareResponse);
                     })
 
                 } else {
@@ -283,7 +284,7 @@ Trips.prototype.findTrip = function (jwt, tripId, callback) {
         messages: []
     };
 
-    TripCollection.findOne({ _id: tripId, accountId: jwt.accountId }, function (err, trip) {
+    TripCollection.findOne({_id: tripId, accountId: jwt.accountId}, function (err, trip) {
         if (err) {
             retObj.messages.push("Error while finding trip, try Again");
             callback(retObj);
@@ -327,44 +328,56 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
         status: false,
         messages: []
     };
+    var giveAccess = false;
+    if (jwt.type === "account" && tripDetails.accountId === jwt.accountId) {
+        giveAccess = true;
+    } else if (jwt.type === "group" && tripDetails.createdBy === jwt.id) {
+        giveAccess = true;
 
-    tripDetails = Utils.removeEmptyFields(tripDetails);
+    } else {
+        retObj.status = false;
+        retObj.message = "Unauthorized access";
+        callback(result);
+    }
+    if (giveAccess) {
+        tripDetails = Utils.removeEmptyFields(tripDetails);
 
-    TripCollection.findOneAndUpdate({ _id: tripDetails._id },
-        { $set: tripDetails },
-        { new: true }, function (err, trip) {
-            if (err) {
-                retObj.messages.push("Error while updating Trip, try Again");
-                callback(retObj);
-            } else if (trip) {
-                if (tripDetails.share) {
-                    retObj.status = true;
-                    retObj.messages.push("Trip updated successfully");
-                    retObj.trip = trip;
+        TripCollection.findOneAndUpdate({_id: tripDetails._id},
+            {$set: tripDetails},
+            {new: true}, function (err, trip) {
+                if (err) {
+                    retObj.messages.push("Error while updating Trip, try Again");
                     callback(retObj);
-                    shareTripDetails(tripDetails, trip, function (shareResponse) {
+                } else if (trip) {
+                    if (tripDetails.share) {
+                        retObj.status = true;
+                        retObj.messages.push("Trip updated successfully");
+                        retObj.trip = trip;
+                        callback(retObj);
+                        shareTripDetails(tripDetails, trip, function (shareResponse) {
 
-                        if (shareResponse.status) {
-                            retObj.status = true;
-                            retObj.messages.push("Trip updated successfully");
-                            retObj.trip = trip;
-                           // callback(retObj);
-                        } else {
-                            shareResponse.trip = trip;
-                            //callback(shareResponse);
-                        }
-                    })
+                            if (shareResponse.status) {
+                                retObj.status = true;
+                                retObj.messages.push("Trip updated successfully");
+                                retObj.trip = trip;
+                                // callback(retObj);
+                            } else {
+                                shareResponse.trip = trip;
+                                //callback(shareResponse);
+                            }
+                        })
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push("Trip updated successfully");
+                        retObj.trip = trip;
+                        callback(retObj);
+                    }
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push("Trip updated successfully");
-                    retObj.trip = trip;
+                    retObj.messages.push("Error, finding trip");
                     callback(retObj);
                 }
-            } else {
-                retObj.messages.push("Error, finding trip");
-                callback(retObj);
-            }
-        });
+            });
+    }
 };
 
 /** this is to be used with super user login
@@ -390,11 +403,11 @@ Trips.prototype.getAll = function (jwt, params, callback) {
         if (jwt.type = "account") {
             var skipNumber = (params.page - 1) * params.size;
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
             async.parallel({
                 trips: function (tripsCallback) {
                     TripCollection
-                        .find({'accountId': jwt.accountId })
+                        .find({'accountId': jwt.accountId})
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)
@@ -451,7 +464,7 @@ Trips.prototype.getAll = function (jwt, params, callback) {
             async.parallel({
                 trips: function (tripsCallback) {
                     TripCollection
-                        .find({'accountId': jwt.accountId, 'groupId': jwt.id })
+                        .find({'accountId': jwt.accountId, 'groupId': jwt.id})
                         .sort(sort)
                         .skip(skipNumber)
                         .limit(limit)
@@ -530,6 +543,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
         } else {
             condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber }
         }
+
     }
 console.log('condition',condition);
     async.parallel({
@@ -588,36 +602,50 @@ console.log('condition',condition);
 
 };
 
-Trips.prototype.deleteTrip = function (tripId, callback) {
+Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-
-    if (!Utils.isValidObjectId(tripId)) {
-        retObj.messages.push('Invalid trip id');
-    }
-
-    if (retObj.messages.length) {
-        callback(retObj);
+    var condition = {};
+    var giveAccess = false;
+    if (jwt.type === "account") {
+        condition = {_id: tripId, accountId: jwt.accountId};
+        giveAccess = true;
+    } else if (jwt.type === "group") {
+        condition = {_id: tripId, createdBy: jwt.id};
+        giveAccess = true;
     } else {
-        TripCollection.find({ _id: tripId }, function (err) {
-            if (err) {
-                retObj.messages.push('No Trips Found');
-                callback(retObj);
-            } else {
-                TripCollection.remove({ _id: tripId }, function (err) {
-                    if (err) {
-                        retObj.messages.push('Error deleting trip');
-                        callback(retObj);
-                    } else {
-                        retObj.status = true;
-                        retObj.messages.push('Success');
-                        callback(retObj);
-                    }
-                })
-            }
-        });
+
+        retObj.messages.push('Unauthorized access');
+        callback(retObj);
+    }
+    if (giveAccess) {
+        if (!Utils.isValidObjectId(tripId)) {
+            retObj.messages.push('Invalid trip id');
+        }
+
+        if (retObj.messages.length) {
+            callback(retObj);
+        } else {
+            TripCollection.find({_id: tripId}, function (err) {
+                if (err) {
+                    retObj.messages.push('No Trips Found');
+                    callback(retObj);
+                } else {
+                    TripCollection.remove({_id: tripId}, function (err) {
+                        if (err) {
+                            retObj.messages.push('Error deleting trip');
+                            callback(retObj);
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push('Success');
+                            callback(retObj);
+                        }
+                    })
+                }
+            });
+        }
     }
 };
 
@@ -643,7 +671,7 @@ Trips.prototype.getReport = function (jwt, filter, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        var query = { date: { $gte: filter.fromDate, $lte: filter.toDate } };
+        var query = {date: {$gte: filter.fromDate, $lte: filter.toDate}};
         if (filter.registrationNo) {
             query.registrationNo = filter.registrationNo;
         }
@@ -750,7 +778,7 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
                 if (dataToEmail.tripsReport[i].trip.payments.freightAmount) payment['Freight Amount'] = dataToEmail.tripsReport[i].trip.payments.freightAmount;
                 if (dataToEmail.tripsReport[i].trip.payments.advance) payment['Advance'] = dataToEmail.tripsReport[i].trip.payments.advance;
                 if (dataToEmail.tripsReport[i].trip.payments.balance) payment['Balance'] = dataToEmail.tripsReport[i].trip.payments.balance;
-                dataSimplifiedForEmail.push({ trip: trip, payment: payment });
+                dataSimplifiedForEmail.push({trip: trip, payment: payment});
             }
             var params = {
                 templateName: 'tripReport',
@@ -773,15 +801,15 @@ Trips.prototype.findTotalRevenue = function (erpSettingsCondition, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now
-            TripCollection.aggregate([{ $match: erpSettingsCondition },
-            { $group: { _id: null, totalFreight: { $sum: "$freightAmount" } } }],
+            TripCollection.aggregate([{$match: erpSettingsCondition},
+                    {$group: {_id: null, totalFreight: {$sum: "$freightAmount"}}}],
                 function (err, totalFreight) {
                     callback(err, totalFreight);
                 });
         },
         expensesTotal: function (callback) {
-            ExpenseCostColl.aggregate({ $match: erpSettingsCondition },
-                { $group: { _id: null, totalCash: { $sum: "$cost" },totalCredit: { $sum: "$totalAmount" } } },
+            ExpenseCostColl.aggregate({$match: erpSettingsCondition},
+                {$group: {_id: null, totalCash: {$sum: "$cost"}, totalCredit: {$sum: "$totalAmount"}}},
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
                 });
@@ -804,7 +832,7 @@ Trips.prototype.findTotalRevenue = function (erpSettingsCondition, callback) {
                     totalFright = populateResults.tripFreightTotal[0].totalFreight;
                 }
                 if (populateResults.expensesTotal[0]) {
-                    totalExpenses = populateResults.expensesTotal[0].totalCash+populateResults.expensesTotal[0].totalCredit;
+                    totalExpenses = populateResults.expensesTotal[0].totalCash + populateResults.expensesTotal[0].totalCredit;
                 }
                 retObj.totalRevenue = totalFright;
                 //retObj.totalRevenue = totalFright - totalExpenses;
@@ -840,8 +868,8 @@ Trips.prototype.findTotalRevenue = function (erpSettingsCondition, callback) {
  * @param callback
  */
 Trips.prototype.findRevenueByParty = function (jwt, callback) {
-    TripCollection.aggregate({ $match: { "accountId": ObjectId(jwt.accountId) } },
-        { $group: { _id: "$partyId", totalFreight: { $sum: "$freightAmount" } } },
+    TripCollection.aggregate({$match: {"accountId": ObjectId(jwt.accountId)}},
+        {$group: {_id: "$partyId", totalFreight: {$sum: "$freightAmount"}}},
         function (error, revenue) {
             var retObj = {
                 status: false,
@@ -903,19 +931,19 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
             callback(response);
         });
     } else if (params.regNumber) {
-        condition = { $match: { "accountId": ObjectId(jwt.accountId), "registrationNo": params.regNumber } }
+        condition = {$match: {"accountId": ObjectId(jwt.accountId), "registrationNo": params.regNumber}}
         getRevenueByVehicle(jwt, condition, params, function (response) {
             callback(response);
         });
     } else {
-        ErpSettingsColl.findOne({ accountId: jwt.accountId }, function (err, erpSettings) {
+        ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);
             } else if (erpSettings) {
 
-                condition = { $match: Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId) }
+                condition = {$match: Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId)}
                 getRevenueByVehicle(jwt, condition, params, function (response) {
                     callback(response);
                 });
@@ -939,24 +967,30 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
-                { $group: { _id: "$registrationNo", totalFreight: { $sum: "$freightAmount" } } },
-                { "$sort": sort },
-                { "$skip": skipNumber },
-                { "$limit": limit },
+                {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
+                {"$sort": sort},
+                {"$skip": skipNumber},
+                {"$limit": limit},
                 function (err, totalFreight) {
                     callback(err, totalFreight);
                 });
         },
         expensesTotal: function (callback) {
             ExpenseCostColl.aggregate(condition,
-                { $group: { _id: JSON.parse(JSON.stringify("$vehicleNumber")), totalCash: { $sum: "$cost" } , totalCredit: { $sum: "$totalAmount" }} },
-                { "$sort": sort },
-                { "$skip": skipNumber },
-                { "$limit": limit },
+                {
+                    $group: {
+                        _id: JSON.parse(JSON.stringify("$vehicleNumber")),
+                        totalCash: {$sum: "$cost"},
+                        totalCredit: {$sum: "$totalAmount"}
+                    }
+                },
+                {"$sort": sort},
+                {"$skip": skipNumber},
+                {"$limit": limit},
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
                 });
@@ -977,11 +1011,11 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
             var grossExpenses = 0;
             var grossRevenue = 0;
             for (var i = 0; i < vehicleIds.length; i++) {
-                var vehicle = { "registrationNo": vehicleIds[i] };
+                var vehicle = {"registrationNo": vehicleIds[i]};
                 var vehicleInfo = _.find(populateResults.tripFreightTotal, function (freight) {
                     if (freight._id === vehicle.registrationNo) {
                         return freight;
-                    }else{
+                    } else {
                         return false;
                     }
                 });
@@ -993,13 +1027,13 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 vehicleInfo = _.find(populateResults.expensesTotal, function (expense) {
                     if (JSON.parse(JSON.stringify(expense._id)) === vehicle.registrationNo) {
                         return expense;
-                    }else{
+                    } else {
                         return false;
                     }
                 });
 
                 if (vehicleInfo) {
-                    vehicle.totalExpense = vehicleInfo.totalCash+vehicleInfo.totalCredit;
+                    vehicle.totalExpense = vehicleInfo.totalCash + vehicleInfo.totalCredit;
                 } else {
                     vehicle.totalExpense = 0;
                 }
@@ -1017,14 +1051,19 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.revenue = result.documents;
-                retObj.grossAmounts = { grossFreight: grossFreight, grossExpenses: grossExpenses, grossRevenue: grossRevenue }
+                retObj.grossAmounts = {
+                    grossFreight: grossFreight,
+                    grossExpenses: grossExpenses,
+                    grossRevenue: grossRevenue
+                }
                 callback(retObj);
             })
         }
     });
 }
+
 Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
-    TripCollection.find({ "accountId": jwt.accountId, "partyId": partyId },
+    TripCollection.find({"accountId": jwt.accountId, "partyId": partyId},
         function (error, trips) {
             var retObj = {
                 status: false,
@@ -1045,7 +1084,7 @@ Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
 }
 
 Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
-    TripCollection.find({ "accountId": ObjectId(jwt.accountId), "registrationNo": vehicleId },
+    TripCollection.find({"accountId": ObjectId(jwt.accountId), "registrationNo": vehicleId},
         function (error, trips) {
             var retObj = {
                 status: false,
@@ -1067,7 +1106,8 @@ Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
 
 Trips.prototype.countTrips = function (jwt, callback) {
     var result = {};
-    TripCollection.count({'accountId': jwt.accountId }, function (err, data) {
+
+    TripCollection.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -1174,12 +1214,12 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
             condition = { accountId: jwt.groupAccountId }
         }
         TripCollection.distinct('partyId',condition, function (err, partyIds) {
-            if (err) {
+           if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);
             } else if (partyIds.length > 0) {
-                PartyCollection.find({ _id: { $in: partyIds } },{name:1,contact:1}, function (err, partyList) {
+                PartyCollection.find({_id: {$in: partyIds}}, {name: 1, contact: 1}, function (err, partyList) {
                     if (err) {
                         retObj.status = false;
                         retObj.messages.push("Please try again");
