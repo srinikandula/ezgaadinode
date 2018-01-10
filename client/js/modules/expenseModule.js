@@ -285,7 +285,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
     };
 
     function getTruckIds() {
-        TrucksService.getAllAccountTrucks(function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find($scope.trucks, function (truck) {

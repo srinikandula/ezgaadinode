@@ -54,6 +54,7 @@ ExpenseMaster.prototype.getAllAccountExpenses = function (jwt, params, callback)
         status: false,
         messages: []
     };
+    var condition = {}
     if (!params.page) {
         params.page = 1;
     } else if (!_.isNumber(Number(params.page))) {
@@ -64,8 +65,13 @@ ExpenseMaster.prototype.getAllAccountExpenses = function (jwt, params, callback)
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.limit ? parseInt(params.limit) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
+    if (jwt.type === "account") {
+        condition = {'accountId': jwt.accountId};
+    } else {
+        condition = {'accountId': jwt.groupAccountId };
+    }
     ExpenseMasterColl
-        .find({$or:[{'accountId': jwt.accountId},{isDefault:true}]})
+        .find({$or:[condition,{isDefault:true}]})
         .sort(sort)
         .skip(skipNumber)
         .limit(limit)

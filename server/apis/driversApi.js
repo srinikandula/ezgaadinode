@@ -84,112 +84,73 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     }
 };
 
-Drivers.prototype.getDrivers= function (jwt, params, callback) {
-    console.log('driverNamre',params.driverName);
+Drivers.prototype.getDrivers = function (jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var condition={};
+    var condition = {};
     if (!params.page) {
         params.page = 1;
     }
-     if (retObj.messages.length) {
+    if (retObj.messages.length) {
         callback(retObj);
     } else {
-         var skipNumber = (params.page - 1) * params.size;
-         var limit = params.size? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-         var sort = params.sort ? JSON.parse(params.sort) :{createdAt: -1};
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-         if (jwt.type = "account") {
-            if(!params.driverName){
-                condition={ accountId: jwt.accountId }
-            }else{
-                condition={ accountId: jwt.accountId,fullName: { $regex: '.*' + params.driverName + '.*' } }
+        if (jwt.type === "account") {
+            if (!params.driverName) {
+                condition = {accountId: jwt.accountId}
+            } else {
+                condition = {accountId: jwt.accountId, fullName: {$regex: '.*' + params.driverName + '.*'}}
             }
-            async.parallel({
-                drivers: function (driversCallback) {
-                    DriversColl
-                        .find(condition)
-                        .sort(sort)
-                        .skip(skipNumber)
-                        .limit(limit)
-                        .populate('truckId')
-                        .lean()
-                        .exec(function (err, drivers) {
-                            Utils.populateNameInUsersColl(drivers, "createdBy", function (response) {
-                                if (response.status) {
-                                    driversCallback(err, response.documents);
-                                } else {
-                                    driversCallback(err, null);
-                                }
-                            });
-                            // driversCallback(err, drivers);
-                        });
-                },
-                count: function (countCallback) {
-                    DriversColl.count(function (err, count) {
-                        countCallback(err, count);
-                    });
-                }
-            }, function (err, results) {
-                if (err) {
-                    retObj.messages.push('Error retrieving accounts');
-                    callback(retObj);
-                } else {
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    retObj.count = results.count;
-                    retObj.drivers = results.drivers;
-                    callback(retObj);
-                }
-            });
         }
         else {
-            var skipNumber = (params.page - 1) * params.size;
-            if(!params.driverName){
-                condition={"accountId": jwt.accountId, "groupId": jwt.id}
-            }else{
-                condition={"accountId": jwt.accountId, "groupId": jwt.id,fullName: { $regex: '.*' + params.driverName + '.*' }}
+            if (!params.driverName) {
+                condition = {"accountId": jwt.groupAccountId}
+            } else {
+                condition = {"accountId": jwt.groupAccountId, fullName: {$regex: '.*' + params.driverName + '.*'}}
             }
-            async.parallel({
-                drivers: function (driversCallback) {
-                    DriversColl
-                        .find(condition)
-                        .sort(sort)
-                        .skip(skipNumber)
-                        .limit(limit)
-                        .populate('truckId')
-                        .lean()
-                        .exec(function (err, drivers) {
-                            Utils.populateNameInUsersColl(drivers, "createdBy", function (response) {
-                                if (response.status) {
-                                    driversCallback(err, response.documents);
-                                } else {
-                                    driversCallback(err, null);
-                                }
-                            });
-                            // driversCallback(err, drivers);
-                        });
-                },
-                count: function (countCallback) {
-                    DriversColl.count(function (err, count) {
-                        countCallback(err, count);
-                    });
-                }
-            }, function (err, results) {
-                if (err) {
-                    retObj.messages.push('Error retrieving accounts');
-                    callback(retObj);
-                } else {
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    retObj.count = results.count;
-                    retObj.drivers = results.drivers;
-                    callback(retObj);
-                }
-            });
         }
+        async.parallel({
+            drivers: function (driversCallback) {
+                DriversColl
+                    .find(condition)
+                    .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .populate('truckId')
+                    .lean()
+                    .exec(function (err, drivers) {
+                        Utils.populateNameInUsersColl(drivers, "createdBy", function (response) {
+                            if (response.status) {
+                                driversCallback(err, response.documents);
+                            } else {
+                                driversCallback(err, null);
+                            }
+                        });
+                        // driversCallback(err, drivers);
+                    });
+            },
+            count: function (countCallback) {
+                DriversColl.count(function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, results) {
+            if (err) {
+                retObj.messages.push('Error retrieving accounts');
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = results.count;
+                retObj.drivers = results.drivers;
+                callback(retObj);
+            }
+        });
     }
 };
 
@@ -317,7 +278,7 @@ Drivers.prototype.deleteDriver = function (driverId, callback) {
 
 Drivers.prototype.countDrivers = function (jwt, callback) {
     var result = {};
-    DriversColl.count({'accountId':jwt.accountId},function (err, data) {
+    DriversColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -336,12 +297,18 @@ Drivers.prototype.getAllDriversForFilter = function (jwt, callback) {
         status: false,
         messages: []
     };
-    DriversColl.find({'accountId': jwt.accountId},{fullName: 1}, function (err, data) {
+    var condition = {};
+    if (jwt.type === "account") {
+        condition = {'accountId': jwt.accountId};
+    } else {
+        condition = {'accountId': jwt.groupAccountId};
+    }
+    DriversColl.find(condition, {fullName: 1}, function (err, data) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Drivers');
             callback(retObj);
-        } else if(data){
+        } else if (data) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.drivers = data;

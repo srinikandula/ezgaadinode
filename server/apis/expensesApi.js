@@ -237,19 +237,26 @@ Expenses.prototype.getExpenseCosts = function (jwt, params, callback) {
     var condition = {};
 
     if (!params.truckNumber) {
-        condition = {'accountId': jwt.accountId};
+        if (jwt.type === "account") {
+            condition = {'accountId': jwt.accountId};
+        } else {
+            condition = {'accountId': jwt.groupAccountId };
+        }
         getExpenseCosts(condition, jwt, params, function (response) {
             callback(response);
         })
     } else {
-
         trucksCollection.findOne({registrationNo: {$regex: '.*' + params.truckNumber + '.*'}}, function (err, truckData) {
             if (err) {
                 result.status = false;
                 result.message = 'Error retrieving expenses Costs';
                 callback(result);
             } else if (truckData) {
-                condition = {'accountId': jwt.accountId, 'vehicleNumber': truckData._id}
+                if (jwt.type === "account") {
+                    condition = {'accountId': jwt.accountId, 'vehicleNumber': truckData._id};
+                } else {
+                    condition = {'accountId': jwt.groupAccountId, 'vehicleNumber': truckData._id};
+                }
                 getExpenseCosts(condition, jwt, params, function (response) {
                     callback(response);
                 })
