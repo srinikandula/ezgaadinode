@@ -8,6 +8,11 @@ AuthRouter.post('/accounts/add', function (req, res) {
         res.json(result);
     });
 });
+AuthRouter.post('/accounts/add', function (req, res) {
+    Accounts.addNewAccount(req.jwt, req.body, function (result) {
+        res.json(result);
+    });
+});
 
 AuthRouter.get('/accounts/fetch', function (req, res) {
     Accounts.getAccounts(req.jwt, req.query, function (result) {
@@ -29,6 +34,11 @@ AuthRouter.get('/accounts/:accountId', function (req, res) {
 
 AuthRouter.put('/accounts/update', function (req, res) {
     Accounts.updateAccount(req.jwt, req.body, function (result) {
+        res.json(result);
+    });
+});
+AuthRouter.put('/accounts/newUpdate', function (req, res) {
+    Accounts.updateNewAccount(req.jwt, req.body, function (result) {
         res.json(result);
     });
 });
