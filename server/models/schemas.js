@@ -210,7 +210,7 @@ var notificationsSchema=mongoose.Schema({
     status:{type:Boolean,default:false},
     tripId:{type: ObjectId, ref: 'trips'},
     message:String
-},{timestamps: String})
+},{timestamps: String});
 
 var erpSettingsSchema=mongoose.Schema({
     accountId:{type: ObjectId, ref: 'accounts'},
@@ -244,7 +244,31 @@ var erpSettingsSchema=mongoose.Schema({
         fromDate:{type:Date},
         toDate:{type:Date}
     }
-},{timestamps: String})
+},{timestamps: String});
+
+var devicePositions = new mongoose.Schema({
+    name: String,
+    uniqueId: String,
+    deviceId: String,
+    protocol: String,
+    deviceTime: Number,
+    fixTime: Number,
+    valid: String,
+    latitude: String,
+    longitude: String,
+    location: {
+        type: {
+            type: String,
+            default: "Point"
+        },
+        coordinates: [Number]  //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    },
+    altitude: String,
+    speed: String,
+    course: String,
+    statusCode: String
+    // isViewed : Boolean
+},{ timestamps: true, versionKey: false });
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -260,5 +284,6 @@ module.exports = {
     GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
     OtpColl:mongoose.model('otps',otpSchema,'otps'),
     NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications'),
-    ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings')
+    ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings'),
+    GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions')
 };
