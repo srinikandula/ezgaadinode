@@ -98,7 +98,13 @@ if (result.status === false) {
 
 Party.prototype.findParty = function (jwt, partyId, callback) {
     var result = {};
-    PartyCollection.findOne({ _id: partyId, accountId: jwt.accountId }, function (err, party) {
+    var condition={};
+    if (jwt.type === "account") {
+        condition = {_id: partyId,'accountId': jwt.accountId};
+    } else {
+        condition = {_id: partyId,'createdBy': jwt.id };
+    }
+    PartyCollection.findOne(condition, function (err, party) {
         if (err) {
             result.status = false;
             result.message = "Error while finding party, try Again";
@@ -111,7 +117,7 @@ Party.prototype.findParty = function (jwt, partyId, callback) {
             callback(result);
         } else {
             result.status = false;
-            result.message = "Party is not found!";
+            result.message = "Unauthorized access or Party is not found!";
             callback(result);
         }
     });
@@ -228,6 +234,8 @@ Party.prototype.getAccountParties = function (jwt, params, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
+            retObj.userId=jwt.id;
+            retObj.userType=jwt.type;
             retObj.parties = results.parties.createdbyname;
             callback(retObj);
 
@@ -356,7 +364,7 @@ Party.prototype.deleteParty = function (jwt, partyId, callback) {
                 callback(result);
             } else {
                 result.status = false;
-                result.message = 'Error deleting party';
+                result.message = 'Unauthorized access or Error deleting party';
                 callback(result);
             }
         });

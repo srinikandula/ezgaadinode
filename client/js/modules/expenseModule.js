@@ -119,6 +119,8 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             if (angular.isArray(response.data.expenses)) {
                 $scope.loading = false;
                 $scope.maintanenceCosts = response.data.expenses;
+                $scope.userId=response.data.userId;
+                $scope.userType=response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.maintanenceCosts;
                 $scope.currentPageOfMaintanence = $scope.maintanenceCosts;
@@ -168,6 +170,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
         }).then((result) => {
             if (result.value) {
                 ExpenseService.deleteRecord(id, function (success) {
+                    console.log('asdas',success.data);
                     if (success.data.status) {
                         swal(
                             'Deleted!',
@@ -178,7 +181,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                     } else {
                         success.data.messages.forEach(function (message) {
                             swal(
-                                'Deleted!',
+                                'Error!',
                                 message,
                                 'error'
                             );
@@ -368,11 +371,13 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         if (!params.error.length) {
             if ($stateParams.expenseId) {
                 ExpenseService.updateRecord(params, function (success) {
+                    console.log('success',success.data)
                     if (success.data.status) {
                         Notification.success({message: success.data.message});
                         $state.go('expenses');
                     } else {
-                        params.error = success.data.message;
+                        console.log(success.data.message)
+                        params.error.push(success.data.message);
                     }
 
                 }, function (err) {
@@ -384,7 +389,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                         Notification.success({message: success.data.message});
                         $state.go('expenses');
                     } else {
-                        params.error = success.data.message;
+                        params.error.push(success.data.message);
                     }
                 });
             }

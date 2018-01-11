@@ -55,11 +55,12 @@
                 <td data-title="'Created By'" sortable="'createdByName'"
                     class="clickable-item">{{ drivers.attrs.createdByName }}
                 </td>
-                <td data-title="'Action'">
-                    <a href="#" class="btn edit-icon" ng-click="goToEditDriverPage(drivers._id)">
+
+                <td data-title="'Action'" class="col-sm-2">
+                    <a href="#" ng-show="userType=='account' || userId==drivers.createdBy" class="btn" ng-click="goToEditDriverPage(drivers._id)">
                         <span class="glyphicon glyphicon-pencil"></span></a>
 
-                    <a href="#" class="btn edit-icon" ng-click="deleteDriver(drivers._id)">
+                    <a href="#" ng-show="userType=='account' || userId==drivers.createdBy" class="btn" ng-click="deleteDriver(drivers._id)">
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
                 </td>

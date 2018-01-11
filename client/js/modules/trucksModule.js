@@ -176,6 +176,8 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             if (angular.isArray(response.data.trucks)) {
                 $scope.loading = false;
                 $scope.trucks = response.data.trucks;
+                $scope.userId=response.data.userId;
+                $scope.userType=response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trucks;
                 $scope.currentPageOfTrucks = $scope.trucks;
@@ -308,6 +310,8 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                     $scope.truck.permitExpiry = new Date($scope.truck.permitExpiry);
                     $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
                     $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
+                    $scope.userId=success.data.userId;
+                    $scope.userType=success.data.userType;
                     var selectedDriver = _.find($scope.drivers, function (driver) {
                         return driver._id.toString() === $scope.truck.driverId;
                     });

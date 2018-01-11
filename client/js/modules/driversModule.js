@@ -83,6 +83,8 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
                 if (angular.isArray(response.data.drivers)) {
                     $scope.loading = false;
                     $scope.drivers = response.data.drivers;
+                    $scope.userId=response.data.userId;
+                    $scope.userType=response.data.userType;
                     tableParams.total(response.totalElements);
                     tableParams.data = $scope.drivers;
                     $scope.currentPageOfDrivers = $scope.drivers;
@@ -132,7 +134,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
         }).then((result) => {
             if (result.value) {
                 DriverService.deleteDriver(driverId, function (success) {
-                    if (success) {
+                    if (success.data.status) {
                         swal(
                             'Deleted!',
                             'Driver deleted successfully.',
@@ -142,7 +144,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
                     } else {
                         success.data.messages.forEach(function (message) {
                             swal(
-                                'Deleted!',
+                                'Error!',
                                 message,
                                 'error'
                             );
@@ -201,7 +203,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                 //console.log('driver',$scope.driver);
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error(success.data.message)
+                    Notification.error(message)
                 });
             }
         }, function (err) {

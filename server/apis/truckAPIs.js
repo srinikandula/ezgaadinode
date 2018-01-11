@@ -89,6 +89,8 @@ Trucks.prototype.findTruck = function (jwt, truckId, callback) {
             callback(retObj);
         } else if (truck) {
             retObj.status = true;
+            retObj.userId=jwt.id;
+            retObj.userType=jwt.type;
             retObj.messages.push("Truck found successfully");
             retObj.truck = truck;
             callback(retObj);
@@ -253,6 +255,8 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.count = results.count;
+                retObj.userId=jwt.id;
+                retObj.userType=jwt.type;
                 retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
                 callback(retObj);
             }
@@ -767,10 +771,10 @@ Trucks.prototype.getAllTrucksForFilter = function (jwt, callback) {
     };
     var condition = {};
     if(jwt.type === 'account') {
-        condition = {'accountId': jwt.accountId},{registrationNo: 1};
+        condition = {'accountId': jwt.accountId};
         getAllTrucksForFilterCondition(condition,callback);
     } else {
-        AccountsColl.findOne({'_id': jwt.accountId},{truckId: 1}, function (err, groupTrucks) {
+        AccountsColl.findOne({'_id': jwt.id},{truckIds: 1}, function (err, groupTrucks) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error getting Trucks From Group');
@@ -778,7 +782,7 @@ Trucks.prototype.getAllTrucksForFilter = function (jwt, callback) {
             } else if(groupTrucks){
                 retObj.status = true;
                 retObj.messages.push('Success');
-                condition = {'_id':{"$in":groupTrucks.truckId}};
+                condition = {'_id':{"$in":groupTrucks.truckIds}};
                 getAllTrucksForFilterCondition(condition,callback);
             } else {
                 retObj.status = false;
