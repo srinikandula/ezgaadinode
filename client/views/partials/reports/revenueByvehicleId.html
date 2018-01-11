@@ -108,20 +108,20 @@
 
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
                 <tr ng-repeat="revenueListbyId in revenueByVehicleId" style="text-align: center;">
-                    <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-2">
+                    <td data-title="'Date'" sortable="'date'" class="clickable-item">
                         {{revenueListbyId.date | date:'yyyy-MM-dd'}}
                     </td>
-                    <td data-title="'Trip ID'" sortable="'tripId'" class="clickable-item col-sm-2">
+                    <td data-title="'Trip ID'" sortable="'tripId'" class="clickable-item">
                         {{!revenueListbyId.tripId == true ? "--":revenueListbyId.tripId}}
                     </td>
-                    <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
+                    <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item">
                         {{!revenueListbyId.attrs.partyName == true ? "--":revenueListbyId.attrs.partyName}}
                     </td>
 
-                    <td data-title="'Frieight Amount'" sortable="'freightAmount'" class="clickable-item col-sm-2">
+                    <td data-title="'Frieight Amount'" sortable="'freightAmount'" class="clickable-item">
                         {{ !revenueListbyId.freightAmount == true ? "--":revenueListbyId.freightAmount}}
                     </td>
-                    <td data-title="'Expenses'" sortable="'cost'" class="clickable-item col-sm-2">
+                    <td data-title="'Expenses'" sortable="'cost'" class="clickable-item">
                         {{!revenueListbyId.cost == true ? "--": revenueListbyId.cost}}
                     </td>
                 </tr>

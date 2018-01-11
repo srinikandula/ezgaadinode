@@ -25,33 +25,33 @@
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
         <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
-            <td data-title="'Date'" sortable="'date'" class="clickable-item col-sm-1">{{ maintanence.date |
+            <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ maintanence.date |
                 date:'yyyy-MM-dd'}}
             </td>
-            <td data-title="'Vehicle Number'" sortable="'truckName'" class="clickable-item col-sm-1">{{
+            <td data-title="'Vehicle No'" sortable="'truckName'" class="clickable-item">{{
                 maintanence.attrs.truckName}}
             </td>
-            <td data-title="'Expense Type'" sortable="'expenseName'" class="clickable-item col-sm-2">{{
+            <td data-title="'Expense Type'" sortable="'expenseName'" class="clickable-item">{{
                 maintanence.attrs.expenseName }}
             </td>
-            <td data-title="'Amount'" sortable="'totalAmount'" class="clickable-item col-sm-1">{{
+            <td data-title="'Amount'" sortable="'totalAmount'" class="clickable-item">{{
                 maintanence.totalAmount }}
 
             </td>
-            <td data-title="'Mode'" sortable="'mode'" class="clickable-item col-sm-1">{{
+            <td data-title="'Mode'" sortable="'mode'" class="clickable-item">{{
                 maintanence.mode }}
             </td>
-            <td data-title="'Description'" sortable="'description'" class="clickable-item col-sm-2">{{
+            <td data-title="'Description'" sortable="'description'" class="clickable-item">{{
                 maintanence.description
                 }}
             </td>
             <td data-title="'Created By'" sortable="'createdByName'"
-                class="clickable-item col-sm-1">{{ maintanence.attrs.createdByName }}
+                class="clickable-item">{{ maintanence.attrs.createdByName }}
             </td>
-            <td data-title="'Action'" class="col-sm-2">
-                <a href="#" class="btn" ng-click="goToEditExpensePage(maintanence._id)">
+            <td data-title="'Action'">
+                <a href="#" class="btn edit-icon" ng-click="goToEditExpensePage(maintanence._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
-                <a href="#" class="btn" ng-click="deleteExpenseRecord(maintanence._id)">
+                <a href="#" class="btn edit-icon" ng-click="deleteExpenseRecord(maintanence._id)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
             </td>

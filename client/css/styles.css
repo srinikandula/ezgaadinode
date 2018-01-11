@@ -63,7 +63,9 @@
     font-size: 25px;
     cursor: pointer;
 }
-
+.edit-icon{
+    padding: 6px;
+}
 .br-one {
     border-right: 1px solid #ccc !important;
 }
@@ -528,22 +530,18 @@ body {
 }
 
 .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
-    padding: 5px !important;
+    padding: 3px !important;
     vertical-align: middle;
-    text-align: left;
-    color: #000;
+    text-align: center;
+    color: #333;
 }
 
-/*.table-bordered>tbody>tr>td, .table-bordered>tbody>tr>th, .table-bordered>tfoot>tr>td, .table-bordered>tfoot>tr>th, .table-bordered>thead>tr>td, .table-bordered>thead>tr>th{*/
-/*border: none !important;*/
-/*}*/
-
 .ng-table th.sortable {
-    padding: 3px !important;
+    padding: 10px !important;
     font-weight: bold;
     font-size: 15px;
-    color: #000;
-    text-align: left;
+    color: #333;
+    text-align: center;
 }
 
 .red {
@@ -1176,7 +1174,7 @@ body {
 }
 
 .filterFromDate, .filterToDate {
-    width: 20%;
+    width: 24%;
     float: left;
     padding: 0 !important;
 }

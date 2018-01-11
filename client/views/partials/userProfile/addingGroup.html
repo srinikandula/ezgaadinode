@@ -1,7 +1,8 @@
 <div class="col-xs-12">
+    <div class="col-xs-12">
         <div class="col-xs-12 profile-page">
 
-            <div class="col-xs-11 profile-tabs pall-zero">
+            <div class="col-xs-11 profile-tabs">
                 <div class="top-block">
                     <ul class="list-inline">
                         <li><a href="#" ui-sref="myProfile">My Profile</a></li>
@@ -55,17 +56,11 @@
                                             data-toggle="dropdown">Select Truck
                                         <span class="caret"></span></button>
                                     <ul class="dropdown-menu assign-trucks list-inline col-xs-12">
-                                        <li ng-repeat="truck in trucks" class="col-xs-5"
-                                           >
+                                        <li ng-repeat="truck in trucks" class="col-xs-5">
                                             <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]"
                                                    ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}
                                         </li>
-                                      <!--  ng-show="$index<trucks.length/2" <li ng-repeat="truck in trucks" class="col-xs-5"
-                                            ng-show="$index>trucks.length/2">
-                                            <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]"
-                                                   ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}
-                                        </li>
-                                    </ul>-->
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -114,4 +109,5 @@
                 </div>
             </div>
         </div>
+    </div>
 </div>
