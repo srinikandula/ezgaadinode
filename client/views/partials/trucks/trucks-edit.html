@@ -31,32 +31,32 @@
 
                 <!--<div class="col-xs-12 select-box">-->
 
-                    <!--<ui-select ng-model="driverName" theme="select2"-->
-                               <!--style="min-width: 390px;"-->
-                               <!--title="Choose a person" append-to-body="true">-->
-                        <!--<ui-select-match placeholder="Select a Driver" class="form-control custom-form-control">-->
-                            <!--{{$select.selected.fullName}}-->
-                        <!--</ui-select-match>-->
-                        <!--<ui-select-choices-->
-                                <!--repeat="driver in drivers | propsFilter: {fullName: $select.search}">-->
-                            <!--&lt;!&ndash;<span ng-click="selectDriverId($index);"></span>&ndash;&gt;-->
-                            <!--<div ng-bind-html="driver.fullName | highlight: $select.search"></div>-->
-                        <!--</ui-select-choices>-->
-                    <!--</ui-select>-->
+                <!--<ui-select ng-model="driverName" theme="select2"-->
+                <!--style="min-width: 390px;"-->
+                <!--title="Choose a person" append-to-body="true">-->
+                <!--<ui-select-match placeholder="Select a Driver" class="form-control custom-form-control">-->
+                <!--{{$select.selected.fullName}}-->
+                <!--</ui-select-match>-->
+                <!--<ui-select-choices-->
+                <!--repeat="driver in drivers | propsFilter: {fullName: $select.search}">-->
+                <!--&lt;!&ndash;<span ng-click="selectDriverId($index);"></span>&ndash;&gt;-->
+                <!--<div ng-bind-html="driver.fullName | highlight: $select.search"></div>-->
+                <!--</ui-select-choices>-->
+                <!--</ui-select>-->
 
                 <!--</div>-->
 
 
                 <div class="col-xs-12">
-                <input id="city" type="text" ng-model="driverName"
-                uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue"
-                class="form-control custom-form-control" typeahead-min-length="1"
-                typeahead-on-select="selectDriverId($item)" typeahead-select-on-exact="true"
-                typeahead-no-results="noDriver" autocomplete="false" placeholder="Assign Driver">
-                <div ng-show="noDriver">
-                <i class="glyphicon glyphicon-remove red"></i>
-                <span class="red"> No Results Found </span>
-                </div>
+                    <input id="city" type="text" ng-model="driverName"
+                           uib-typeahead="driver.fullName for driver in drivers | filter:$viewValue"
+                           class="form-control custom-form-control" typeahead-min-length="1"
+                           typeahead-on-select="selectDriverId($item)" typeahead-select-on-exact="true"
+                           typeahead-no-results="noDriver" autocomplete="false" placeholder="Assign Driver">
+                    <div ng-show="noDriver">
+                        <i class="glyphicon glyphicon-remove red"></i>
+                        <span class="red"> No Results Found </span>
+                    </div>
                 </div>
             </div>
 

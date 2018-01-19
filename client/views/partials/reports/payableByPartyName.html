@@ -111,21 +111,21 @@
                     <table class="table table-bordered table-striped table-condensed table-hover"
                            ng-table="paybleParams">
                         <tr ng-repeat="party in payableAmounts" style="text-align: center;">
-                            <td data-title="'Date'" sortable="'partyName'" class="clickable-item col-sm-2">
+                            <td data-title="'Date'" sortable="'partyName'" class="clickable-item">
 
                                 {{party.date | date:"dd MMM yyyy"}}
                             </td>
-                            <td data-title="'Expense Type'" sortable="'partyContact'" class="clickable-item col-sm-2">
+                            <td data-title="'Expense Type'" sortable="'partyContact'" class="clickable-item">
                                 {{party.expenseType.expenseName}}
                             </td>
-                            <td data-title="'Total Amount'" sortable="'totalFright'" class="clickable-item col-sm-2">
+                            <td data-title="'Total Amount'" sortable="'totalFright'" class="clickable-item">
                                 {{party.totalAmount}}
                             </td>
-                            <td data-title="'Paid Amount'" sortable="'totalPayment'" class="clickable-item col-sm-2">
+                            <td data-title="'Paid Amount'" sortable="'totalPayment'" class="clickable-item">
                                 {{party.paidAmount}}
                             </td>
 
-                            <td data-title="'Payable'" sortable="'totalDue'" class="clickable-item col-sm-2">
+                            <td data-title="'Payable'" sortable="'totalDue'" class="clickable-item">
                                 {{party.payableAmount}}
                             </td>
 

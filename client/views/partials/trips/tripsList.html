@@ -31,32 +31,33 @@
 
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="tripParams">
                 <tr ng-repeat="trips in currentPageOfTrips" style="text-align: center;">
-                    <td data-title="'Trip Date'" sortable="'date'" class="clickable-item col-sm-1">
+                    <td data-title="'Trip Date'" sortable="'date'" class="clickable-item">
                         {{trips.date | date:'yyyy-MM-dd'}}
                     </td>
-                    <td data-title="'Reg No'" sortable="'truckName'" class="clickable-item col-sm-1">{{
+                    <td data-title="'Reg No'" sortable="'truckName'" class="clickable-item">{{
                         trips.attrs.truckName}}
                     </td>
-                    <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">{{
+                    <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item">{{
                         trips.attrs.partyName }}
                     </td>
-                    <td data-title="'Driver'" sortable="'fullName'" class="clickable-item col-sm-2">{{
+                    <td data-title="'Driver'" sortable="'fullName'" class="clickable-item">{{
                         trips.attrs.fullName }}
                     </td>
-                    <td data-title="'Freight'" sortable="'freightAmount'" class="clickable-item col-sm-1">{{
+                    <td data-title="'Freight'" sortable="'freightAmount'" class="clickable-item">{{
                         trips.freightAmount }}
                     </td>
-                    <td data-title="'Trip Lane'" sortable="'tripLane'" class="clickable-item col-sm-2">{{
+                    <td data-title="'Trip Lane'" sortable="'tripLane'" class="clickable-item">{{
                         trips.tripLane }}
                     </td>
                     <td data-title="'Created By'" sortable="'createdByName'"
-                        class="clickable-item col-sm-1">{{ trips.attrs.createdByName }}
+                        class="clickable-item">{{ trips.attrs.createdByName }}
                     </td>
                     <td data-title="'Action'" class="col-sm-2">
                         <a href="#" ng-show="userType=='account' || userId==trips.createdBy" class="btn" ng-click="goToEditTripPage(trips._id)">
                             <span class="glyphicon glyphicon-pencil"></span></a>
 
                         <a href="#" ng-show="userType=='account' || userId==trips.createdBy" class="btn" ng-click="deleteTrip(trips._id)">
+
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </td>

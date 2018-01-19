@@ -130,11 +130,6 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method:"GET",
                 params:params
             }).then(success,error);
-        },getAllTrucksForFilter: function (success, error) {
-            $http({
-                url: '/v1/trucks/getAllTrucksForFilter',
-                method: "GET",
-            }).then(success, error)
         }
     }
 });
@@ -191,7 +186,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         });
     };
     $scope.getAllTrucks = function () {
-        TrucksService.getAllTrucksForFilter(function (success) {
+        TrucksService.getAllTrucks(null, function (success) {
             if (success.data.status) {
                 $scope.trucksList = success.data.trucks;
             } else {
@@ -277,7 +272,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
 }]);
 
-app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverService', '$stateParams', 'Notification', '$state','$rootScope', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state,$rootScope) {
+app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverService', '$stateParams', 'Notification', '$state', function ($scope, Utils, TrucksService, DriverService, $stateParams, Notification, $state) {
     $scope.goToTrucksPage = function () {
         $state.go('trucks');
     };
@@ -299,7 +294,6 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         taxDueDate: '',
         errors: []
     };
-
     $scope.driverName = "";
 
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
@@ -323,6 +317,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                     });
                     if (selectedDriver) {
                         $scope.driverName = selectedDriver.fullName;
+
                     }
 
                 } else {
@@ -354,6 +349,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.addOrUpdateTruck = function () {
         var params = $scope.truck;
         params.errors = [];
+
         if (!params.registrationNo) {
             params.errors.push('Invalid Registration ID');
         }
@@ -406,3 +402,4 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         }
     }
 }]);
+

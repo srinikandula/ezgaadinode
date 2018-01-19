@@ -27,32 +27,34 @@
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
         <tr ng-repeat="parties in currentPageOfParties" style="text-align: center;">
 
-            <td data-title="'Party Name'" sortable="'name'" class="clickable-item col-sm-2">{{
+            <td data-title="'Party Name'" sortable="'name'" class="clickable-item">{{
                 parties.name}}
             </td>
-            <td data-title="'Contact'" sortable="'contact'" class="clickable-item col-sm-2">{{
+            <td data-title="'Contact'" sortable="'contact'" class="clickable-item">{{
                 parties.contact }}
             </td>
-            <td data-title="'Email'" sortable="'email'" class="clickable-item col-sm-2">{{
+            <td data-title="'Email'" sortable="'email'" class="clickable-item">{{
                 parties.email }}
             </td>
-            <td data-title="'City'" sortable="'city'" class="clickable-item col-sm-1">{{
+            <td data-title="'City'" sortable="'city'" class="clickable-item">{{
                 parties.city }}
             </td>
-            <td data-title="'Party Type'" sortable="'partyType'" class="clickable-item col-sm-1">{{
+            <td data-title="'Party Type'" sortable="'partyType'" class="clickable-item">{{
                 parties.partyType }}
             </td>
-            <td data-title="'Triplanes'" sortable="'tripLanes'" class="clickable-item col-sm-1">{{
+            <td data-title="'Triplanes'" sortable="'tripLanes'" class="clickable-item">{{
                 parties.tripLanes.length }}
             </td>
 
             <td data-title="'Created By'" sortable="'createdByName'"
-                class="clickable-item col-sm-1">{{ parties.attrs.createdByName }}
+                class="clickable-item">{{ parties.attrs.createdByName }}
             </td>
+
             <td data-title="'Action'" class="col-sm-2">
                 <a href="#" ng-show="userType=='account' || userId==parties.createdBy" class="btn" ng-click="goToEditPartyPage(parties._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
                 <a href="#" ng-show="userType=='account' || userId==parties.createdBy" class="btn" ng-click="deleteParty(parties._id)">
+
                     <span class="glyphicon glyphicon-remove"></span></a>
             </td>
         </tr>

@@ -5,14 +5,15 @@
         <div class="col-xs-8 col-xs-push-1 pall-zero">
             <div class="col-sm-8">
                 <form>
-                <div class="input-group stylish-input-group">
-                    <input type="text" ng-model="truckName1" class="form-control" placeholder="Search by truck number">
-                    <span class="input-group-addon">
+                    <div class="input-group stylish-input-group">
+                        <input type="text" ng-model="truckName1" class="form-control"
+                               placeholder="Search by truck number">
+                        <span class="input-group-addon">
                         <button type="submit" ng-click="searchByTruckName(truckName1);">
                            <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
                     </span>
-                </div>
+                    </div>
                 </form>
             </div>
             <div class="col-sm-4 pall-zero pos-relative">
@@ -28,49 +29,46 @@
 
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckParams">
         <tr ng-repeat="trucks in currentPageOfTrucks" style="text-align: center;">
-            <td data-title="'Reg No'" sortable="'registrationNo'" class="clickable-item col-sm-1">
+            <td data-title="'Reg No'" sortable="'registrationNo'" class="clickable-item">
                 {{trucks.registrationNo}}<br>{{trucks.truckType}}/{{trucks.tonnage}}
             </td>
-            <!--<td data-title="'TruckType'" sortable="'truckType'" class="clickable-item col-sm-1">{{-->
-            <!--trucks.truckType}}-->
-            <!--</td>-->
-            <!--<td data-title="'Tonnage'" sortable="'tonnage'" class="clickable-item col-sm-1">{{-->
-            <!--trucks.tonnage }}-->
-            <!--</td>-->
-            <td data-title="'Permit'" sortable="'permitExpiry'" class="clickable-item col-sm-1">
+
+            <td data-title="'Permit'" sortable="'permitExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.permitExpiry)">
                     {{trucks.permitExpiry | date:'dd/MM/yyyy'}}</span>
             </td>
-            <td data-title="'Pollution'" sortable="'pollutionExpiry'" class="clickable-item col-sm-1">
+            <td data-title="'Pollution'" sortable="'pollutionExpiry'" class="clickable-item">
                         <span ng-class="getBackGroundColor(trucks.pollutionExpiry)">
                             {{ trucks.pollutionExpiry | date:'dd/MM/yyyy' }}</span>
             </td>
-            <td data-title="'Insurance'" sortable="'insuranceExpiry'" class="clickable-item col-sm-1">
+            <td data-title="'Insurance'" sortable="'insuranceExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.insuranceExpiry)">
                     {{ trucks.insuranceExpiry | date:'dd/MM/yyyy' }}</span>
             </td>
-            <td data-title="'Fitness'" sortable="'fitnessExpiry'" class="clickable-item col-sm-1">
+            <td data-title="'Fitness'" sortable="'fitnessExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.fitnessExpiry)">
                     {{trucks.fitnessExpiry | date:'dd/MM/yyyy' }}</span>
             </td>
-            <td data-title="'Tax'" sortable="'taxExpiry'" class="clickable-item col-sm-1">
+            <td data-title="'Tax'" sortable="'taxExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.taxDueDate)">
                     {{trucks.taxDueDate | date:'dd/MM/yyyy' }}</span>
             </td>
-            <td data-title="'Driver'" sortable="'fullName'" class="clickable-item col-sm-1">
+            <td data-title="'Driver'" sortable="'fullName'" class="clickable-item">
                 <span>{{ trucks.attrs.fullName }}</span>
             </td>
-            <td data-title="'Driver Num'" sortable="'mobile'" class="clickable-item col-sm-1">{{
+            <td data-title="'Driver Num'" sortable="'mobile'" class="clickable-item">{{
                 trucks.attrs.mobile }}
             </td>
             <td data-title="'Created By'" sortable="'createdByName'"
                 class="clickable-item col-sm-1">{{ trucks.attrs.createdByName }}
             </td>
-            <td data-title="'Action'" class="col-sm-2">
-                <a href="#" class="btn"  ng-click="goToEditTruckPage(trucks._id)">
+
+            <td data-title="'Action'">
+                <a href="#" class="btn edit-icon" ng-click="goToEditTruckPage(trucks._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
 
-                <a href="#" class="btn"  ng-show="userType=='account'" ng-click="deleteTruck(trucks._id)">
+                <a href="#" class="btn edit-icon"  ng-show="userType=='account'" ng-click="deleteTruck(trucks._id)">
+
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
             </td>
@@ -81,8 +79,9 @@
     </table>
     <div class="add-image pull-right" ng-show="type==='account'">
         <figure>
-            <a href="#" ng-click="goToEditTruckPage()"><img src="images/Add_Truck.png" alt="Add Truck"
-                                                            title="Add Truck"></a>
+            <a href="#" ng-click="goToEditTruckPage()">
+                <img src="images/Add_Truck.png" alt="Add Truck"
+                     title="Add Truck"></a>
         </figure>
     </div>
 
