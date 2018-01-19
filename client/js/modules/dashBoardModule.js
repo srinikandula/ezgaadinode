@@ -59,7 +59,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             });
 
-        }
+        };
 
         $scope.vehicleExpenses = function () {
             $scope.initializeparams();
@@ -164,6 +164,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
             });
         };
+        console.log('cobtroller loading')
         $scope.erpDashBoard();
 
         $scope.getTruckExpires = function () {
@@ -465,14 +466,14 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                     $scope.payableAmounts = success.data.partyData;
                     $scope.grossAmounts=success.data.grossAmounts;
                 } else {
-                    success.data.messages.forEach(function (message) {
+                    success.data.message.forEach(function (message) {
                         Notification.error({ message: message });
                     });
                 }
             },function(error){
 
             })
-        }
+        };
         $scope.shareRevenueDetailsByVechicleViaEmail = function () {
             swal({
                 title: 'Share revenue data using email',
