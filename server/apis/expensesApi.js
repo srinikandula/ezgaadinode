@@ -141,11 +141,13 @@ function updateExpense(expense, jwt, callback) {
 
 Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
     var giveAccess=false;
+    var result={
+        status:false,
+    }
     if (jwt.type === "account" && expense.accountId===jwt.accountId) {
         giveAccess=true;
     } else if(jwt.type === "group" && expense.createdBy===jwt.id) {
         giveAccess=true;
-
     }else{
         result.status = false;
         result.message = "Unauthorized access";
@@ -159,7 +161,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense, callback) {
                     updateExpense(expense, jwt, callback);
                 } else {
                     result.status = false;
-                    result.message = "Error creating new expense type, try Again";
+                    result.message = "Unauthorized access or Error creating new expense type";
                     callback(result);
                 }
             });
@@ -219,6 +221,8 @@ function getExpenseCosts(condition, jwt, params, callback) {
         } else {
             result.status = true;
             result.message = 'Success';
+            result.userId=jwt.id;
+            result.userType=jwt.type;
             result.count = results.count;
             var i=0;
             async.map(results.mCosts.createdbyname,function (expense,expCall) {
@@ -350,9 +354,15 @@ Expenses.prototype.getAll = function (jwt, req, callback) {
     });
 };
 
-Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
+Expenses.prototype.findExpenseRecord = function (jwt,expenseId, callback) {
     var result = {};
-    expenseColl.findOne({_id: expenseId}, function (err, record) {
+    var condition={};
+    if (jwt.type === "account") {
+        condition = {_id: expenseId,'accountId': jwt.accountId};
+    } else {
+        condition = {_id: expenseId,'createdBy': jwt.id };
+    }
+    expenseColl.findOne(condition, function (err, record) {
         if (err) {
             result.status = false;
             result.message = "Error while finding expenses Record, try Again";
@@ -364,7 +374,7 @@ Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
             callback(result);
         } else {
             result.status = false;
-            result.message = "expenses Record is not found!";
+            result.message = "Unauthorized access or expenses Record is not found!";
             callback(result);
         }
     });
@@ -372,7 +382,10 @@ Expenses.prototype.findExpenseRecord = function (expenseId, callback) {
 
 
 Expenses.prototype.deleteExpenseRecord = function (jwt,expenseId, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
     var condition={};
     var giveAccess=false;
     if (jwt.type === "account") {
@@ -383,7 +396,7 @@ Expenses.prototype.deleteExpenseRecord = function (jwt,expenseId, callback) {
         giveAccess=true;
     }else{
         result.status = false;
-        result.message = "Unauthorized access";
+        result.messages.push("Unauthorized access");
         callback(result);
     }
 
@@ -391,30 +404,33 @@ Expenses.prototype.deleteExpenseRecord = function (jwt,expenseId, callback) {
         expenseColl.remove(condition, function (err, returnValue) {
             if (err) {
                 result.status = false;
-                result.message = 'Error deleting expenses Record';
+                result.messages.push('Error deleting expenses Record');
                 callback(result);
             } else if (returnValue.result.n === 0) {
                 result.status = false;
-                result.message = 'Error deleting expenses Record';
+                result.messages.push('Unauthorized access or Error deleting expenses Record');
                 callback(result);
             } else {
                 result.status = true;
-                result.message = 'Success';
+                result.messages.push('Success');
                 callback(result);
             }
         });
     }
 };
 Expenses.prototype.countExpense = function (jwt, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
     expenseColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
-            result.message = 'Error getting count';
+            result.messages.push('Error getting count');
             callback(result);
         } else {
             result.status = true;
-            result.message = 'Success';
+            result.messages.push('Success');
             result.count = data;
             callback(result);
         }
@@ -441,7 +457,6 @@ Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback)
             } else {
                 retObj.status = true;
                 if (result.length > 0) {
-                    console.log(result[0].totalCash,result[0].totalCredit)
                     retObj.totalExpenses = result[0].totalCash+result[0].totalCredit;
                 } else {
                     retObj.totalExpenses = 0;
@@ -532,7 +547,7 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, callback) 
     expenseColl.find({'accountId': jwt.accountId, "vehicleNumber": vehicleId}, function (err, expenses) {
         if (err) {
             result.status = false;
-            result.message = 'Error getting count';
+            result.messages.push('Error getting count');
             callback(result);
         } else {
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function (results) {

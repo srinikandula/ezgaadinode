@@ -20,11 +20,8 @@
                     <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
                     <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
                         <option value="" selected>All Vehicles</option>
-<<<<<<< 0b2743ceed4296d40eeeeb0f9bb9c7ae019dc903
                         <option ng-repeat="truck in trucksList" value="{{truck._id}}">{{truck.registrationNo}}</option>
-=======
-                        <option ng-repeat="truck in trucksList" value="">{{truck.registrationNo}}</option>
->>>>>>> Restrict adding,updating and deleting of navs of account in group login
+
                     </select>
                 </div>
                 </div>
@@ -55,11 +52,12 @@
                     <td data-title="'Created By'" sortable="'createdByName'"
                         class="clickable-item">{{ trips.attrs.createdByName }}
                     </td>
-                    <td data-title="'Action'">
-                        <a href="#" class="btn edit-icon" ng-click="goToEditTripPage(trips._id)">
+                    <td data-title="'Action'" class="col-sm-2">
+                        <a href="#" ng-show="userType=='account' || userId==trips.createdBy" class="btn" ng-click="goToEditTripPage(trips._id)">
                             <span class="glyphicon glyphicon-pencil"></span></a>
 
-                        <a href="#" class="btn edit-icon" ng-click="deleteTrip(trips._id)">
+                        <a href="#" ng-show="userType=='account' || userId==trips.createdBy" class="btn" ng-click="deleteTrip(trips._id)">
+
                             <span class="glyphicon glyphicon-remove"></span>
                         </a>
                     </td>
