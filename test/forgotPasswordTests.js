@@ -15,7 +15,8 @@ let otp = null;
 let userData = new User({
     "userName": "naresh",
     "password": "7382042321",
-    "contactPhone": 7382042321
+    "contactPhone": 7382042321,
+    "type": "account"
 });
 
 chai.use(chaiHttp);

@@ -11,13 +11,16 @@ var chaiHttp = require('chai-http');
 var server = require('../server');
 var should = chai.should();
 let expect = chai.expect;
+let userId = null;
 let token = null;
+let accountType = null;
 let partyId = null;
 let paymentId = null;
 let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
-    "contactPhone": 9999999999
+    "contactPhone": 9999999999,
+    "type": "account"
 });
 let headerData = { "token": token };
 
@@ -43,7 +46,9 @@ describe('PaymentTest', () => {
                 res.body.should.be.a('object');
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
+                userId = res.body._id;
                 token = res.body.token;
+                accountType = res.body.type;
                 headerData = { "token": token };
                 done();
             });
@@ -327,7 +332,8 @@ describe('PaymentTest', () => {
                 "_id": paymentId,
                 "partyId": partyId,
                 "date": new Date(),
-                "amount": 150
+                "amount": 150,
+                "accountId": userId,
             }
             chai.request(server)
                 .put('/v1/payments/updatePayments')

@@ -13,7 +13,9 @@ var chaiHttp = require('chai-http');
 var server = require('../server');
 var should = chai.should();
 let expect = chai.expect;
+let userId = null;
 let token = null;
+let accountType = null;
 let truckId = null;
 let driverId = null;
 let partyId = null;
@@ -21,7 +23,8 @@ let tripId = null;
 let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
-    "contactPhone": 9999999999
+    "contactPhone": 9999999999,
+    "type": "account"
 });
 let headerData = {"token": token};
 
@@ -47,7 +50,9 @@ describe('TripTest', () => {
                 res.body.should.be.a('object');
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
+                userId = res.body._id;
                 token = res.body.token;
+                accountType = res.body.type;
                 headerData = {"token": token};
                 done();
             });
@@ -235,7 +240,7 @@ describe('TripTest', () => {
        * Test the /GET route Retrieving Trip Information by vechicle number  Information Success
        */
       it('Retrieving Trip Information by vechicle number Information Success', (done) => {
-        var truckNumber="AP36AA9876";
+        var truckNumber=truckId;
         chai.request(server)
             .get('/v1/trips/getAllAccountTrips?truckNumber='+truckNumber)
             .set(headerData)
@@ -255,7 +260,8 @@ describe('TripTest', () => {
         it('Updating Trip Information', (done) => {
             let tripData = {
                 "_id": tripId,
-                "freightAmount": 1300
+                "freightAmount": 1300,
+                "accountId": userId,
             };
             chai.request(server)
                 .put('/v1/trips')
@@ -273,7 +279,7 @@ describe('TripTest', () => {
         /*
         * Test the /PUT route Deleting Trip Information Success
         */
-        it('Deleting Trip Information', (done) => {
+        /*it('Deleting Trip Information', (done) => {
             chai.request(server)
                 .delete('/v1/trips/'+tripId)
                 .set(headerData)
@@ -284,6 +290,6 @@ describe('TripTest', () => {
                     res.body.should.have.property('messages').eql(['Success']);
                     done();
                 });
-        }).timeout(5000);
+        }).timeout(5000);*/
     });
 });
