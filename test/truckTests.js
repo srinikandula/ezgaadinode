@@ -10,7 +10,9 @@ var chaiHttp = require('chai-http');
 var server = require('../server');
 var should = chai.should();
 let expect = chai.expect;
+let userId = null;
 let token = null;
+let accountType = null;
 let truckId = null;
 let fitnessExpiry = null;
 let permitExpiry = null;
@@ -47,7 +49,9 @@ describe('TruckTest', () => {
                 res.body.should.be.a('object');
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
+                userId = res.body._id;
                 token = res.body.token;
+                accountType = res.body.type;
                 headerData = {"token": token};
                 done();
             });
@@ -182,6 +186,7 @@ describe('TruckTest', () => {
                 "insuranceExpiry": today,
                 "pollutionExpiry": today,
                 "taxDueDate": today,
+                "accountId": userId,
             };
             chai.request(server)
                 .put('/v1/trucks')

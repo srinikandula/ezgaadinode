@@ -10,7 +10,9 @@ var chaiHttp = require('chai-http');
 var server = require('../server');
 var should = chai.should();
 let expect = chai.expect;
+let userId = null;
 let token = null;
+let accountType = null;
 let partyId = null;
 let userData = new User({
     "userName": "ramarao",
@@ -42,7 +44,9 @@ describe('PartyTest', () => {
                 res.body.should.be.a('object');
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
+                userId = res.body._id;
                 token = res.body.token;
+                accountType = res.body.type;
                 headerData = { "token": token };
                 done();
             });
@@ -190,7 +194,8 @@ describe('PartyTest', () => {
                 ],
                "partyType":"Transporter",
                 "isSms": false,
-                "isEmail": true
+                "isEmail": true,
+                "accountId": userId,
             };
             chai.request(server)
                 .put('/v1/party/updateParty')

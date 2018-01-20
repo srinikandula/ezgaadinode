@@ -192,11 +192,11 @@ Drivers.prototype.getDriverDetails = function (jwt, driverId, callback) {
 };
 
 Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
+    console.log(driverInfo);
     var retObj = {
         status: false,
         messages: []
     };
-    var giveAccess=false;
     var giveAccess=false;
     if (jwt.type === "account" && driverInfo.accountId===jwt.accountId) {
         giveAccess=true;
@@ -204,8 +204,8 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
         giveAccess=true;
 
     }else{
-        result.status = false;
-        result.message = "Unauthorized access";
+        retObj.status = false;
+        retObj.messages.push("Unauthorized access");
         callback(result);
     }
     if(giveAccess) {

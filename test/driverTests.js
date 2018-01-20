@@ -10,7 +10,9 @@ var chaiHttp = require('chai-http');
 var server = require('../server');
 var should = chai.should();
 let expect = chai.expect;
+let userId = null;
 let token = null;
+let accountType = null;
 let driverId = null;
 let userData = new User({
     "userName": "ramarao",
@@ -45,7 +47,9 @@ describe('DriverTest', () => {
                 res.body.should.be.a('object');
                 res.body.should.have.property('userName').eql('ramarao');
                 res.body.should.have.property('token');
+                userId = res.body._id;
                 token = res.body.token;
+                accountType = res.body.type;
                 headerData = { "token": token };
                 done();
             });
@@ -154,6 +158,7 @@ describe('DriverTest', () => {
                 "_id": driverId,
                 "fullName": "Kumar",
                 "mobile": 9618489849,
+                "accountId": userId,
             };
             chai.request(server)
                 .put('/v1/drivers')

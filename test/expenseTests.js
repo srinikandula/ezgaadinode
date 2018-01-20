@@ -12,14 +12,17 @@ var chaiHttp = require('chai-http');
 var server = require('../server');
 var should = chai.should();
 let expect = chai.expect;
+let userId = null;
 let token = null;
+let accountType = null;
 let truckId = null;
 let expenseMasterId = null;
 let expenseId = null;
 let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
-    "contactPhone": 9999999999,"type": "account"
+    "contactPhone": 9999999999,
+    "type": "account"
 });
 let headerData = { "token": token };
 
@@ -45,7 +48,9 @@ describe('ExpenseTest', () => {
                     res.body.should.be.a('object');
                     res.body.should.have.property('userName').eql('ramarao');
                     res.body.should.have.property('token');
+                    userId = res.body._id;
                     token = res.body.token;
+                    accountType = res.body.type;
                     headerData = { "token": token };
                     done();
                 });
@@ -116,8 +121,9 @@ describe('ExpenseTest', () => {
                                     "expenseName": "Toll",
                                     "date": new Date(),
                                     "paidAmount": 0,
-                                    "totalAmount": 100,
-                                    "mode": "Cash"
+                                    "totalAmount": 0,
+                                    "cost": 100,
+                                    "mode": "Cash",
                                 };
 
                                 chai.request(server)
@@ -182,8 +188,10 @@ describe('ExpenseTest', () => {
                 "expenseType": expenseMasterId,
                 "date": new Date(),
                 "totalAmount": 1300,
-                "paidAmount": 0,
-                "mode": "Credit"
+                "paidAmount": 1000,
+                "cost": 0,
+                "mode": "Credit",
+                "accountId": userId,
             };
             chai.request(server)
                 .put('/v1/expense/updateExpense')
@@ -194,6 +202,8 @@ describe('ExpenseTest', () => {
                     res.body.should.be.a('object');
                     res.body.should.have.property('message').eql('expenses Cost updated successfully');
                     res.body.expense.should.have.property('totalAmount').eql(1300);
+                    res.body.expense.should.have.property('paidAmount').eql(1000);
+                    res.body.expense.should.have.property('cost').eql(0);
                     done();
                 });
         });
@@ -205,8 +215,9 @@ describe('ExpenseTest', () => {
                 "vehicleNumber": truckId,
                 "expenseType": expenseMasterId,
                 "date": new Date(),
-                "totalAmount": 1300,
+                "totalAmount": 0,
                 "paidAmount": 0,
+                "cost": 100,
                 "mode": "Cash"
             };
 
@@ -235,7 +246,7 @@ describe('ExpenseTest', () => {
                 console.log('deleting', res.body)
                 res.should.have.status(200);
                 res.body.should.be.a('object');
-                res.body.should.have.property('message').eql('Success');
+                res.body.should.have.property('messages').eql([ 'Success' ]);
                 done();
             });
     });

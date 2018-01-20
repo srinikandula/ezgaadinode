@@ -101,7 +101,7 @@ describe('AccountGroupTests', () => {
                             "contactName": 'gps',
                             "contactPhone": '9874563210',
                             "location": 'Hyd',
-                            "truckId": [{"truckId": truckId}],
+                            "truckIds": [{"truckId": truckId}],
                             "erpEnabled": true,
                             "gpsEnabled": true,
                             "type": "group",
@@ -172,7 +172,7 @@ describe('AccountGroupTests', () => {
                             "contactName": 'gps',
                             "contactPhone": '9874563210',
                             "location": 'Hyd',
-                            "truckId": [{"truckId": truckId}],
+                            "truckIds": [{"truckId": truckId}],
                             "erpEnabled": true,
                             "gpsEnabled": true,
                             "type": "group"

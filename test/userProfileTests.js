@@ -78,7 +78,7 @@ describe('UserProfileTests', () => {
                     res.body.result.profile.should.be.a('object');
                     res.body.result.profile.should.have.property('userName').eql('ramarao');
                     res.body.result.profile.should.have.property('type').eql('account');
-                    res.body.result.should.have.property('accountGroupsCount').eql(1);
+                    res.body.result.should.have.property('accountGroupsCount').eql(0);
                     res.body.result.should.have.property('accountTrucksCount').eql(0);
                     done();
                 });
