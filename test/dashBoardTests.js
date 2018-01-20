@@ -33,7 +33,8 @@ let taxDueDate = null;
 let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
-    "contactPhone": 9999999999
+    "contactPhone": 9999999999,
+    "type": "account"
 });
 let headerData = {"token": token};
 
@@ -52,12 +53,6 @@ describe('DashboardTest', () => {
         });
 
         it('Retrieving Login Information', (done) => {
-            let userData = {
-                "userName": "ramarao",
-                "password": "9999999999",
-                "contactPhone": 9999999999,
-                "type": "account"
-            };
             chai.request(server)
                 .post('/v1/group/login')
                 .send(userData)
@@ -160,7 +155,7 @@ describe('DashboardTest', () => {
         */
         it('Retrieving Empty Payments Receivable Information', (done) => {
             chai.request(server)
-                .get('/v1/payments/getDuesByParty/?fromDate=&partyId=&toDate=')
+                .get('/v1/payments/getDuesByParty/?fromDate=&partyId=&toDate=&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -441,7 +436,7 @@ describe('DashboardTest', () => {
             var regNumber = "";
             var email = "naresh.d@mtwlabs.com";
             chai.request(server)
-                .get("/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=" + email + "&fromDate=" + fromDate + "&regNumber=" + regNumber + "&toDate=" + toDate)
+                .get('/v1/trips/shareRevenueDetailsByVechicleViaEmail?email=' + email + '&fromDate=' + fromDate + '&regNumber=' + regNumber + '&toDate=' + toDate + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1065,7 +1060,7 @@ describe('DashboardTest', () => {
                     res.body.should.have.property('messages').eql(['Payable details shared successfully']);
                     done();
                 });
-        }).timeout(5000);
+        }).timeout(10000);
         /*
         * Test the /Get route Sending Total Payments Payable Details without Email Information Success
         */
@@ -1164,7 +1159,7 @@ describe('DashboardTest', () => {
         */
         it('Retrieving Empty Total Payment Payable by Party Information', (done) => {
             chai.request(server)
-                .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=')
+                .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1208,7 +1203,7 @@ describe('DashboardTest', () => {
                     res.body.should.have.property('messages').eql(['Successfully Added']);
                     paymentId = res.body._id;
                     chai.request(server)
-                        .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=')
+                        .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=&page=1&size=10&sort={"createdAt":-1}')
                         .set(headerData)
                         .end((err, res) => {
                             res.should.have.status(200);
@@ -1252,7 +1247,7 @@ describe('DashboardTest', () => {
                     res.body.should.have.property('messages').eql(['Successfully Added']);
                     paymentId = res.body._id;
                     chai.request(server)
-                        .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=')
+                        .get('/v1/payments/getDuesByParty?fromDate=&toDate=&partyId=&page=1&size=10&sort={"createdAt":-1}')
                         .set(headerData)
                         .end((err, res) => {
                             res.should.have.status(200);
@@ -1280,9 +1275,10 @@ describe('DashboardTest', () => {
             var toDate = new Date();
             var partyId1 = "";
             chai.request(server)
-                .get('/v1/payments/getDuesByParty?fromDate=' + fromDate + '&toDate=' + toDate + '&partyId=' + partyId1)
+                .get('/v1/payments/getDuesByParty?fromDate=' + fromDate + '&toDate=' + toDate + '&partyId=' + partyId1 + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
+                console.log('drfhfgjhfj',res.body)
                     res.should.have.status(200);
                     res.body.should.be.a('object');
                     res.body.should.have.property('parties');
@@ -1306,7 +1302,7 @@ describe('DashboardTest', () => {
             var toDate = ""
             var partyId1 = partyId;
             chai.request(server)
-                .get('/v1/payments/getDuesByParty?fromDate=' + fromDate + '&toDate=' + toDate + '&partyId=' + partyId1)
+                .get('/v1/payments/getDuesByParty?fromDate=' + fromDate + '&toDate=' + toDate + '&partyId=' + partyId1 + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -1332,7 +1328,7 @@ describe('DashboardTest', () => {
             var toDate = new Date();
             var partyId1 = partyId;
             chai.request(server)
-                .get('/v1/payments/getDuesByParty?fromDate=' + fromDate + '&toDate=' + toDate + '&partyId=' + partyId1)
+                .get('/v1/payments/getDuesByParty?fromDate=' + fromDate + '&toDate=' + toDate + '&partyId=' + partyId1 + '&page=1&size=10&sort={"createdAt":-1}')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);

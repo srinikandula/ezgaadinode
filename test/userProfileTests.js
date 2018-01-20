@@ -15,7 +15,8 @@ let accountId = null;
 let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
-    "contactPhone": 9999999999
+    "contactPhone": 9999999999,
+    "type": "account"
 });
 let headerData = {"token": token};
 
@@ -32,12 +33,6 @@ describe('UserProfileTests', () => {
 
         });
         it('Retrieving Login Information', (done) => {
-            let userData = {
-                "userName": "ramarao",
-                "password": "9999999999",
-                "contactPhone": 9999999999,
-                "type": "account"
-            };
             chai.request(server)
                 .post('/v1/group/login')
                 .send(userData)
