@@ -247,6 +247,7 @@ var erpSettingsSchema=mongoose.Schema({
 },{timestamps: String});
 
 var devicePositions = new mongoose.Schema({
+    gprmc: String,
     name: String,
     uniqueId: String,
     deviceId: String,
@@ -266,7 +267,14 @@ var devicePositions = new mongoose.Schema({
     altitude: String,
     speed: String,
     course: String,
-    statusCode: String
+    statusCode: String,
+    attributes: {
+        batteryLevel: String,
+        distance: Number,
+        totalDistance: Number,
+        motion: Number
+    },
+    address: String
     // isViewed : Boolean
 },{ timestamps: true, versionKey: false });
 
