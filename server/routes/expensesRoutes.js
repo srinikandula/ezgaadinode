@@ -113,7 +113,6 @@ AuthRouter.get('/sharePayableDetailsViaEmail',function(req,res){
 })
 
 AuthRouter.get('/getPaybleAmountByPartyId',function(req,res){
-    console.log('query===>>||>>',req.query)
     ExpenseCost.getPaybleAmountByPartyId(req.jwt,req.query, function (result) {
         res.send(result);
     });

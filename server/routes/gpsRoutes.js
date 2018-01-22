@@ -10,6 +10,7 @@ OpenRouter.get('/AddDevicePositions', function (req, res) {
     });
 });
 
+
 module.exports = {
     AuthRouter: AuthRouter,
     OpenRouter: OpenRouter

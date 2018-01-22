@@ -629,7 +629,6 @@ Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
         if (retObj.messages.length) {
             callback(retObj);
         } else {
-            console.log('condition',condition);
             TripCollection.find(condition, function (err) {
                 if (err) {
                     retObj.messages.push('No Trips Found');
@@ -644,6 +643,7 @@ Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
                             retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
                         }else{
+                            retObj.status = true;
                             retObj.messages.push('Success');
                             callback(retObj);
                         }
