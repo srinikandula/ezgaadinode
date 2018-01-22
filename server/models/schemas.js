@@ -28,7 +28,7 @@ var accountSchema = new mongoose.Schema({
     contactPhone: Number,
     password: String,
     email: String,
-    type: {type: String, default:"account"},
+    type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
     groupName: String,
     contactName: String,
@@ -37,17 +37,17 @@ var accountSchema = new mongoose.Schema({
     profilePic: String,
     updatedBy: String,
     createdBy: String,
-    isActive: {type: Boolean, default:true},
-    gpsEnabled: {type: Boolean, default:false},
-    erpEnabled: {type: Boolean, default:false},
-    loadEnabled:{type: Boolean, default:false},
-    editAccounts: {type: Boolean, default:false}
+    isActive: {type: Boolean, default: true},
+    gpsEnabled: {type: Boolean, default: false},
+    erpEnabled: {type: Boolean, default: false},
+    loadEnabled: {type: Boolean, default: false},
+    editAccounts: {type: Boolean, default: false}
 }, {
     timestamps: true
 });
 var groupSchema = new mongoose.Schema({
     name: String,
-    type: {type: Boolean, default:"account"},
+    type: {type: Boolean, default: "account"},
     accountId: {
         type: ObjectId, ref: 'accounts'
     },
@@ -59,7 +59,7 @@ var groupSchema = new mongoose.Schema({
 
     updatedBy: String,
     createdBy: String,
-    isActive: {type: Boolean, default:true},
+    isActive: {type: Boolean, default: true},
     attrs: {}
 }, {
     timestamps: true
@@ -73,7 +73,7 @@ var truckSchema = new mongoose.Schema({
     fitnessExpiry: Date,
     permitExpiry: Date,
     insuranceExpiry: Date,
-    tracking_available:Number,
+    tracking_available: Number,
     accountId: {type: ObjectId, ref: 'accounts'},
     driverId: String,
     pollutionExpiry: Date,
@@ -86,7 +86,7 @@ var truckSchema = new mongoose.Schema({
 
 var tripSchema = new mongoose.Schema({
     date: Date,
-    registrationNo:String, //this will be truck id
+    registrationNo: String, //this will be truck id
     partyId: {type: ObjectId, ref: 'parties'},
     freightAmount: Number, //5000
     tonnage: Number,    //new
@@ -95,14 +95,14 @@ var tripSchema = new mongoose.Schema({
     remarks: String,    //new
     tripLane: String,
     tripExpenses: Number,
-    driverId : {type: ObjectId, ref: 'drivers'},
+    driverId: {type: ObjectId, ref: 'drivers'},
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: {type: ObjectId, ref: 'groups'},
     updatedBy: String,
     createdBy: String,
     paymentHistory: [],
     attrs: {},
-    share:{type:Boolean,default:false}
+    share: {type: Boolean, default: false}
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
@@ -112,13 +112,13 @@ var partySchema = new mongoose.Schema({
     city: String,
     accountId: {type: ObjectId, ref: 'accounts'},
     groupId: String,
-    tripLanes:[],
+    tripLanes: [],
     updatedBy: String,
     createdBy: String,
     attrs: {},
-    partyType:String,
-    isEmail:{type:Boolean,default:false},
-    isSms:{type:Boolean,default:false}
+    partyType: String,
+    isEmail: {type: Boolean, default: false},
+    isSms: {type: Boolean, default: false}
 }, {timestamps: true});
 
 
@@ -129,7 +129,7 @@ var eventDataSchema = new mongoose.Schema({
     longitude: Number,
     speed: Number,
     distance: Number,
-    datetime:Number,
+    datetime: Number,
     attrs: {}
 }, {timestamps: true});
 
@@ -141,7 +141,7 @@ var driverSchema = new mongoose.Schema({
     mobile: Number,
     licenseNumber: String,
     licenseValidity: Date,
-    salary:  Number,
+    salary: Number,
     createdBy: String,
     updatedBy: String,
     driverId: String,
@@ -154,8 +154,8 @@ var expensesSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     vehicleNumber: {type: ObjectId, ref: 'trucks'},
     expenseType: {type: ObjectId, ref: 'expenseMaster'},
-    partyId:{type: ObjectId, ref: 'parties'},
-    description:String,
+    partyId: {type: ObjectId, ref: 'parties'},
+    description: String,
     date: Date,
     totalAmount: {type: Number, default: 0},
     paidAmount: {type: Number, default: 0},
@@ -165,7 +165,7 @@ var expensesSchema = new mongoose.Schema({
     createdBy: String,
     isDefault: {type: Boolean, default: false},
     attrs: {}
-},{timestamps: true});
+}, {timestamps: true});
 
 var rolesSchema = new mongoose.Schema({
     roleName: String,
@@ -173,7 +173,7 @@ var rolesSchema = new mongoose.Schema({
     createdBy: String,
     menus: [],
     attrs: {}
-},{timestamps: true});
+}, {timestamps: true});
 
 var expenseMaster = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -181,7 +181,7 @@ var expenseMaster = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     attrs: {}
-},{timestamps: String});
+}, {timestamps: String});
 
 var payments = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -191,60 +191,60 @@ var payments = mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     date: Date,
-    paymentType:String,
-    paymentRefNo:String,
+    paymentType: String,
+    paymentRefNo: String,
     attrs: {}
-},{timestamps: String});
+}, {timestamps: String});
 
 var otpSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    otp:Number,
-    expaireIn:Number,
-    contactPhone:Number
-},{timestamps: String});
+    otp: Number,
+    expaireIn: Number,
+    contactPhone: Number
+}, {timestamps: String});
 
-var notificationsSchema=mongoose.Schema({
-    accountId:{type: ObjectId, ref: 'accounts'},
-    notificationType:Number,// 0 -SMS, 1-EMAIL, 2-BOTH
-    content:String,
-    status:{type:Boolean,default:false},
-    tripId:{type: ObjectId, ref: 'trips'},
-    message:String
-},{timestamps: String});
+var notificationsSchema = mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    notificationType: Number,// 0 -SMS, 1-EMAIL, 2-BOTH
+    content: String,
+    status: {type: Boolean, default: false},
+    tripId: {type: ObjectId, ref: 'trips'},
+    message: String
+}, {timestamps: String});
 
-var erpSettingsSchema=mongoose.Schema({
-    accountId:{type: ObjectId, ref: 'accounts'},
-    revenue:{
-        filterType:{type:String,default:"month"},
-        fromDate:{type:Date},
-        toDate:{type:Date}
+var erpSettingsSchema = mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    revenue: {
+        filterType: {type: String, default: "month"},
+        fromDate: {type: Date},
+        toDate: {type: Date}
     },
-    payment:{
-        filterType:{type:String,default:"month"},
-        fromDate:{type:Date},
-        toDate:{type:Date}
+    payment: {
+        filterType: {type: String, default: "month"},
+        fromDate: {type: Date},
+        toDate: {type: Date}
     },
-    expense:{
-        filterType:{type:String,default:"month"},
-        fromDate:{type:Date},
-        toDate:{type:Date}
+    expense: {
+        filterType: {type: String, default: "month"},
+        fromDate: {type: Date},
+        toDate: {type: Date}
     },
-    expiry:{
-        filterType:{type:String,default:"month"},
-        fromDate:{type:Date},
-        toDate:{type:Date}
+    expiry: {
+        filterType: {type: String, default: "month"},
+        fromDate: {type: Date},
+        toDate: {type: Date}
     },
-    tollCard:{
-        filterType:{type:String,default:"month"},
-        fromDate:{type:Date},
-        toDate:{type:Date}
+    tollCard: {
+        filterType: {type: String, default: "month"},
+        fromDate: {type: Date},
+        toDate: {type: Date}
     },
-    fuelCard:{
-        filterType:{type:String,default:"month"},
-        fromDate:{type:Date},
-        toDate:{type:Date}
+    fuelCard: {
+        filterType: {type: String, default: "month"},
+        fromDate: {type: Date},
+        toDate: {type: Date}
     }
-},{timestamps: String});
+}, {timestamps: String});
 
 var devicePositions = new mongoose.Schema({
     gprmc: String,
@@ -276,7 +276,12 @@ var devicePositions = new mongoose.Schema({
     },
     address: String
     // isViewed : Boolean
-},{ timestamps: true, versionKey: false });
+}, {timestamps: true, versionKey: false});
+
+var deviceSchema = new mongoose.Schema({
+    deviceId: String,
+    truckId: {type: ObjectId, ref: 'trucks'}
+}, {timestamps: true, versionKey: false});
 
 var secretKeys = new mongoose.Schema({
     secret: {
@@ -307,5 +312,8 @@ module.exports = {
     ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings'),
     GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions'),
     SecretKeysColl:mongoose.model('secretKeys',secretKeys,'secretKeys'),
-    SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter')
+    SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
+    DeviceColl: mongoose.model('devices', deviceSchema, 'devices')
+
 };
+
