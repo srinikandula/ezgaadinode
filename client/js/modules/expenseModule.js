@@ -83,6 +83,12 @@ app.factory('ExpenseService', function ($http) {
                 method: "GET",
                 params: params
             }).then(success, error);
+        },
+        getPaybleAmountByPartyId:function(partyId,success,error){
+            $http({
+                url: '/v1/expense/getPaybleAmountByParty/' + partyId,
+                method: "GET",
+            }).then(success, error);
         }
     }
 });

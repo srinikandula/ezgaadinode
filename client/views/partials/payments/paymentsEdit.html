@@ -10,20 +10,21 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 pos-relative">
-                        <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                        <input type="text" ng-model="partyName"
-                               uib-typeahead="party.name for party in parties | filter:$viewValue"
-                               class="form-control custom-form-control" typeahead-min-length="1"
-                               typeahead-on-select="selectPartyId($item)"
-                               typeahead-select-on-exact="true"
-                               typeahead-no-results="noParty" autocomplete="false" placeholder="Party Name*">
 
-                        <div ng-show="noParty">
-                            <i class="glyphicon glyphicon-remove red"></i>
-                            <span class="red"> No Results Found </span>
-                        </div>
+                    <div class="col-xs-12 select-box">
+                        <ui-select ng-model="paymentsDetails.partyId" theme="select2"
+                                   style="min-width: 390px;"
+                                   title="Choose a Party" append-to-body="true">
+                            <ui-select-match placeholder="Select a Party*" class="form-control custom-form-control">
+                                {{$select.selected.name || partyName}}
+                            </ui-select-match>
+                            <ui-select-choices
+                                    repeat="party in parties | propsFilter: {name: $select.search}">
+                                <div ng-bind-html="party.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
                     </div>
+
                 </div>
                 <div class="form-group col-xs-12">
                     <div class="col-xs-12 styling-input-list">

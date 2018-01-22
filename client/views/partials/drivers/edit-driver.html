@@ -23,7 +23,20 @@
                 </div>
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 pos-relative">
+                    <div class="col-xs-12 select-box">
+                        <ui-select ng-model="driver.truckId" theme="select2"
+                                   style="min-width: 390px;"
+                                   title="Choose a Truck" append-to-body="true">
+                            <ui-select-match placeholder="Select a Truck*" class="form-control custom-form-control">
+                                {{$select.selected.registrationNo || truckRegNo}}
+                            </ui-select-match>
+                            <ui-select-choices
+                                    repeat="truck in trucks | propsFilter: {registrationNo: $select.search}">
+                                <div ng-bind-html="truck.registrationNo | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                  <!--  <div class="col-xs-12 pos-relative">
                         <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
                         <input type="text" ng-model="truckRegNo"
                                uib-typeahead="truck.registrationNo for truck in trucks | filter:$viewValue"
@@ -35,7 +48,7 @@
                             <i class="glyphicon glyphicon-remove red"></i>
                             <span class="red"> No Results Found </span>
                         </div>
-                    </div>
+                    </div>-->
 
                 </div>
                 <div class="form-group col-xs-12">

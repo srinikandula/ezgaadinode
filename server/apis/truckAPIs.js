@@ -249,6 +249,7 @@ Trucks.prototype.getTrucks = function (jwt, params, callback) {
             }
         }, function (err, results) {
             if (err) {
+                console.log("Error--->", err);
                 retObj.messages.push('Error retrieving trucks');
                 callback(retObj);
             } else {

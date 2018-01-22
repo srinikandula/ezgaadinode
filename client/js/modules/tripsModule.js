@@ -240,8 +240,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                     return party._id.toString() === $scope.trip.partyId;
                 });
                 if (selectedParty) {
+                    console.log('selectedParty',selectedParty);
                     $scope.partyName = selectedParty.name;
-                    $scope.tripLanesList = selectedParty.tripLanes;
+                    $scope.tripLanes = selectedParty.tripLanes;
                 }
 
             } else {
@@ -294,7 +295,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 });
                 //console.log('selectedDriver : ',selectedDriver)
                 if (selectedDriver) {
-                    $scope.driverId = selectedDriver.fullName;
+                    $scope.driverName = selectedDriver.fullName;
                 }
             } else {
                 success.data.messages(function (message) {
@@ -312,13 +313,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         $scope.trip.driverNumber = driver.mobile;
     }
 
-    $scope.selectTripLane = function (triplane) {
-        $scope.trip.tripLane = triplane.name;
-
-    }
     $scope.selectParty = function (party) {
-        $scope.trip.partyId = party._id;
-        $scope.tripLanesList = party.tripLanes;
+        console.log("Welcome", party);
+        $scope.tripLanes = party.partyId.tripLanes;
 
     }
 
