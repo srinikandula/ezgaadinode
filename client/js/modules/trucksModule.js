@@ -132,11 +132,11 @@ app.factory('TrucksService', function ($http, $cookies) {
             }).then(success,error);
         },
         getAllTrucksForFilter: function (success, error) {
-            $http({
-                url: '/v1/trucks/getAllTrucksForFilter',
-                method: "GET",
-            }).then(success, error)
-        }
+        $http({
+            url: '/v1/trucks/getAllTrucksForFilter',
+            method: "GET",
+        }).then(success, error)
+    }
     }
 });
 
