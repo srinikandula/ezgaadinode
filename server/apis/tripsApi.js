@@ -972,6 +972,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
@@ -980,6 +981,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 {"$skip": skipNumber},
                 {"$limit": limit},
                 function (err, totalFreight) {
+                console.log('error1',err);
                     callback(err, totalFreight);
                 });
         },
