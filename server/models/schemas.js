@@ -82,7 +82,8 @@ var truckSchema = new mongoose.Schema({
     createdBy: String,
     status: Number,
     attrs: {},
-    deviceId:{type: ObjectId, ref: 'devices'}
+    deviceId: {type: ObjectId, ref: 'devices'},
+    lookingForLoad: {type: Boolean, default: false}
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
@@ -283,8 +284,8 @@ var deviceSchema = new mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
     truckId: {type: ObjectId, ref: 'trucks'},
-    simNumber:String,
-    imei:String
+    simNumber: String,
+    imei: String
 }, {timestamps: true, versionKey: false});
 
 var secretKeys = new mongoose.Schema({
@@ -298,6 +299,21 @@ var secretKeysCounter = new mongoose.Schema({
     secretId: {type: ObjectId, ref: 'secretKeys'},
     counter: Number
 });
+var loadRequestSchema = new mongoose.Schema({
+        createdBy: {type: ObjectId, ref: 'accounts'},
+        accountId: {type: ObjectId, ref: 'accounts'},
+        truckId: {type: ObjectId, ref: 'trucks'},
+        tripLane: String,
+        possibleStartDate: {type: Date},
+        active: {type: Boolean, default: false},
+        createdDate: {type: Date, default: new Date()},
+    },
+    {
+        timestamps: true, versionKey:
+        false
+    }
+);
+
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -317,7 +333,7 @@ module.exports = {
     GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions'),
     SecretKeysColl:mongoose.model('secretKeys',secretKeys,'secretKeys'),
     SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
-    DeviceColl: mongoose.model('devices', deviceSchema, 'devices')
-
+    DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
+    LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests')
 };
 
