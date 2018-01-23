@@ -274,9 +274,7 @@ Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
         messages: []
     };
     var condition = {};
-    if (jwt.type === "group") {
-        jwt.accountId =jwt.groupAccountId;
-    }
+
     ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
         if (err) {
             retObj.status = false;
