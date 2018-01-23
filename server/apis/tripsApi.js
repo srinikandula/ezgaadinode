@@ -532,21 +532,14 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
-    if (jwt.type === "account") {
-        if (!params.truckNumber) {
-            condition = {'accountId': jwt.accountId };
-        } else {
-            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber }
-        }
-    } else {
-        if (!params.truckNumber) {
-            condition = {'accountId': jwt.groupAccountId };
-        } else {
-            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber }
-        }
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
+    if (!params.truckNumber) {
+        condition = {'accountId': jwt.accountId};
+    } else {
+        condition = {'accountId': jwt.accountId, 'registrationNo': {$regex: '.*' + params.truckNumber + '.*'}}
     }
+
     async.parallel({
         trips: function (tripsCallback) {
             TripCollection
@@ -596,8 +589,8 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
-            retObj.userId=jwt.id;
-            retObj.userType=jwt.type;
+            retObj.userId = jwt.id;
+            retObj.userType = jwt.type;
             retObj.trips = results.trips.createdbyname; //as trips is callby reference
             callback(retObj);
         }
@@ -605,7 +598,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
 };
 
-Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
+Trips.prototype.deleteTrip = function (jwt, tripId, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -631,21 +624,21 @@ Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
         if (retObj.messages.length) {
             callback(retObj);
         } else {
-            console.log('condition',condition);
+            console.log('condition', condition);
             TripCollection.find(condition, function (err) {
                 if (err) {
                     retObj.messages.push('No Trips Found');
                     callback(retObj);
                 } else {
-                    TripCollection.remove(condition, function (err,data) {
+                    TripCollection.remove(condition, function (err, data) {
                         if (err) {
                             retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
-                        } else if(data.result.n === 0) {
+                        } else if (data.result.n === 0) {
                             retObj.status = false;
                             retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
-                        }else{
+                        } else {
                             retObj.messages.push('Success');
                             callback(retObj);
                         }
@@ -1212,13 +1205,13 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
         retObj.messages.push("Invalid Login");
         callback(retObj);
     } else {
-        if(jwt.type === "account") {
-            condition = { accountId: jwt.accountId };
+        if (jwt.type === "account") {
+            condition = {accountId: jwt.accountId};
         } else {
-            condition = { accountId: jwt.groupAccountId }
+            condition = {accountId: jwt.groupAccountId}
         }
-        TripCollection.distinct('partyId',condition, function (err, partyIds) {
-           if (err) {
+        TripCollection.distinct('partyId', condition, function (err, partyIds) {
+            if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);
