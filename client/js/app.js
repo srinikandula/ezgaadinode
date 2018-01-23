@@ -347,6 +347,15 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'auth'
         }
+    }).state({
+        name: 'devices',
+        url: '/gps/devices',
+        templateUrl: 'views/partials/gps/devices.html',
+        data: {activeTab: 'gpsReports'
+            },
+        params: {
+            access: 'auth'
+        }
     });
     $urlRouterProvider.otherwise('/login');
 });

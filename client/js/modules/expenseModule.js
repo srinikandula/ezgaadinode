@@ -84,10 +84,20 @@ app.factory('ExpenseService', function ($http) {
                 params: params
             }).then(success, error);
         },
-        getPaybleAmountByPartyId:function(partyId,success,error){
+        sharePayableDetailsViaEmail: function (params, success, error) {
             $http({
-                url: '/v1/expense/getPaybleAmountByParty/' + partyId,
+                url: '/v1/expense/sharePayableDetailsViaEmail',
                 method: "GET",
+                params: params
+            }).then(success, error);
+        },
+        getPaybleAmountByPartyId:function(params,success,error){
+            $http({
+                url: '/v1/expense/getPaybleAmountByPartyId',
+                method: "GET",
+                params: {
+                    partyId:params
+                }
             }).then(success, error);
         }
     }

@@ -14,6 +14,7 @@ var NotificationColl = require('./../models/schemas').NotificationColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DriversColl = require('./../models/schemas').DriversColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var LoadRequestColl = require('./../models/schemas').LoadRequestColl;
 
 
 var Utils = require('./utils');
@@ -532,18 +533,18 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     if (jwt.type === "account") {
         if (!params.truckNumber) {
-            condition = {'accountId': jwt.accountId };
+            condition = {'accountId': jwt.accountId};
         } else {
-            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber }
+            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber}
         }
     } else {
         if (!params.truckNumber) {
-            condition = {'accountId': jwt.groupAccountId };
+            condition = {'accountId': jwt.groupAccountId};
         } else {
-            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber }
+            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber}
         }
 
     }
@@ -596,8 +597,8 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
-            retObj.userId=jwt.id;
-            retObj.userType=jwt.type;
+            retObj.userId = jwt.id;
+            retObj.userType = jwt.type;
             retObj.trips = results.trips.createdbyname; //as trips is callby reference
             callback(retObj);
         }
@@ -605,7 +606,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
 };
 
-Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
+Trips.prototype.deleteTrip = function (jwt, tripId, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -631,21 +632,21 @@ Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
         if (retObj.messages.length) {
             callback(retObj);
         } else {
-            console.log('condition',condition);
             TripCollection.find(condition, function (err) {
                 if (err) {
                     retObj.messages.push('No Trips Found');
                     callback(retObj);
                 } else {
-                    TripCollection.remove(condition, function (err,data) {
+                    TripCollection.remove(condition, function (err, data) {
                         if (err) {
                             retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
-                        } else if(data.result.n === 0) {
+                        } else if (data.result.n === 0) {
                             retObj.status = false;
                             retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
-                        }else{
+                        } else {
+                            retObj.status = true;
                             retObj.messages.push('Success');
                             callback(retObj);
                         }
@@ -904,10 +905,6 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
  */
 
 Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
     var condition = {};
     var retObj = {
         status: false,
@@ -969,12 +966,14 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
+    console.log('conditrion',condition);
     if (!params.page) {
         params.page = 1;
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
@@ -983,6 +982,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 {"$skip": skipNumber},
                 {"$limit": limit},
                 function (err, totalFreight) {
+                console.log('error1',err);
                     callback(err, totalFreight);
                 });
         },
@@ -1215,13 +1215,13 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
         retObj.messages.push("Invalid Login");
         callback(retObj);
     } else {
-        if(jwt.type === "account") {
-            condition = { accountId: jwt.accountId };
+        if (jwt.type === "account") {
+            condition = {accountId: jwt.accountId};
         } else {
-            condition = { accountId: jwt.groupAccountId }
+            condition = {accountId: jwt.groupAccountId}
         }
-        TripCollection.distinct('partyId',condition, function (err, partyIds) {
-           if (err) {
+        TripCollection.distinct('partyId', condition, function (err, partyIds) {
+            if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);
@@ -1251,5 +1251,73 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
         })
     }
 
+};
+
+Trips.prototype.loockingForTripRequest=function (jwt,params,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    if(!params.truckId || !ObjectId.isValid(params.truckId)){
+        retObj.messages.push('Please select truck');
+        callback(retObj);
+    }else{
+        params.accountId=jwt.accountId;
+        params.createdBy=jwt.id;
+        var loadRequest=new LoadRequestColl(params);
+        loadRequest.save(function (err,data) {
+            if(err){
+                retObj.messages.push('Please try again');
+                callback(retObj);
+            }else if(data){
+                TrucksColl.findOneAndUpdate({_id:params.truckId},
+                    {lookingForLoad:true},
+                    function (err,updatedData) {
+                        if(err){
+                            retObj.messages.push('Error while load request');
+                            callback(retObj);
+                        }else if(updatedData){
+                                shareLoadRequestDetailsToParties(jwt,params,callback)
+                        }else{
+                            retObj.messages.push('Error while load request');
+                            callback(retObj);
+                        }
+                    })
+            }else{
+                retObj.messages.push('Please try again');
+                callback(retObj);
+            }
+        })
+
+    }
+
+};
+function shareLoadRequestDetailsToParties(jwt,params,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    PartyCollection.find({accountId:jwt.accountId,partyType : "Transporter"},function (err,partList) {
+        if(err){
+            retObj.messages.push("Error while sharing load request");
+            callback(retObj);
+        }else if(partList.length>0){
+            async.each(partList,function (party,partyCallback) {
+                if(party.isSms){
+
+                }
+            },function (err) {
+                if(err){
+                    return callback(retObj);
+                }else{
+                    callback(retObj)
+                }
+            })
+        }else{
+            retObj.messages.push("No Parties found to share load request");
+            callback(retObj);
+        }
+    })
 }
+
 module.exports = new Trips();

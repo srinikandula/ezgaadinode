@@ -58,6 +58,7 @@ app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/expense', Expense.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
+app.use('/v1/gps', Gps.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {
