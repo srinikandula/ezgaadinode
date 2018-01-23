@@ -8,11 +8,6 @@ AuthRouter.post('/accounts/add', function (req, res) {
         res.json(result);
     });
 });
-AuthRouter.post('/accounts/add', function (req, res) {
-    Accounts.addNewAccount(req.jwt, req.body,req, function (result) {
-        res.json(result);
-    });
-});
 
 AuthRouter.get('/accounts/fetch', function (req, res) {
     Accounts.getAccounts(req.jwt, req.query,req, function (result) {
