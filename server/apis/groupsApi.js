@@ -55,14 +55,17 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                     retObj.messages.push("User doesn't exist");
                     callback(retObj);
                 } else if ((user.password === password)) {
-                    jwt.sign({
+                    var obj = {
                         id: user._id,
                         accountId: user._id,
-                        groupAccountId:user.accountId,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
                         type: user.type
-                    }, config.jwt.secret, config.jwt.options, function (err, token, options) {
+                    };
+                    if(user.type === "group") {
+                        obj.accountId = user.accountId;
+                    }
+                    jwt.sign(obj, config.jwt.secret, config.jwt.options, function (err, token, options) {
                         if (err) {
                             retObj.messages.push('Please try again');
                             callback(retObj);
