@@ -178,6 +178,7 @@ function getExpenseCosts(condition, jwt, params, callback) {
         mCosts: function (mCostsCallback) {
             var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
             var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+            console.log('sort',sort);
             expenseColl
                 .find(condition)
                 .sort(sort)

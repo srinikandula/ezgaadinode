@@ -77,6 +77,13 @@ app.factory('ExpenseService', function ($http) {
                 params: params
             }).then(success, error);
         },
+        sharePayableDetailsViaEmail: function (params, success, error) {
+            $http({
+                url: '/v1/expense/sharePayableDetailsViaEmail',
+                method: "GET",
+                params: params
+            }).then(success, error);
+        },
         getPaybleAmountByParty:function(params,success,error){
             $http({
                 url: '/v1/expense/getPaybleAmountByParty',

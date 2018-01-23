@@ -162,7 +162,7 @@
             </div>
             <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
                 <tr ng-repeat="expensesByVehicle in totalExpensesbyVehicle" style="text-align: center;">
-                    <td data-title="'Registration No'" sortable="'regNumber'" class="clickable-item col-sm-2">
+                    <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
                         <a href="#"
                            ui-sref="expenseByVehicleId({vehicleId:expensesByVehicle.regNumber, id:expensesByVehicle.id})">
                             {{expensesByVehicle.regNumber }}</a>
