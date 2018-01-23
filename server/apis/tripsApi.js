@@ -532,18 +532,18 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     if (jwt.type === "account") {
         if (!params.truckNumber) {
-            condition = {'accountId': jwt.accountId };
+            condition = {'accountId': jwt.accountId};
         } else {
-            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber }
+            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber}
         }
     } else {
         if (!params.truckNumber) {
-            condition = {'accountId': jwt.groupAccountId };
+            condition = {'accountId': jwt.groupAccountId};
         } else {
-            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber }
+            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber}
         }
 
     }
@@ -596,8 +596,8 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
-            retObj.userId=jwt.id;
-            retObj.userType=jwt.type;
+            retObj.userId = jwt.id;
+            retObj.userType = jwt.type;
             retObj.trips = results.trips.createdbyname; //as trips is callby reference
             callback(retObj);
         }
@@ -605,7 +605,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
 
 };
 
-Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
+Trips.prototype.deleteTrip = function (jwt, tripId, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -636,15 +636,15 @@ Trips.prototype.deleteTrip = function (jwt,tripId, callback) {
                     retObj.messages.push('No Trips Found');
                     callback(retObj);
                 } else {
-                    TripCollection.remove(condition, function (err,data) {
+                    TripCollection.remove(condition, function (err, data) {
                         if (err) {
                             retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
-                        } else if(data.result.n === 0) {
+                        } else if (data.result.n === 0) {
                             retObj.status = false;
                             retObj.messages.push('Unauthorized access or Error deleting trip');
                             callback(retObj);
-                        }else{
+                        } else {
                             retObj.status = true;
                             retObj.messages.push('Success');
                             callback(retObj);
@@ -904,10 +904,6 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
  */
 
 Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
     var condition = {};
     var retObj = {
         status: false,
@@ -969,6 +965,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
+    console.log('conditrion',condition);
     if (!params.page) {
         params.page = 1;
     }
@@ -1215,13 +1212,13 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
         retObj.messages.push("Invalid Login");
         callback(retObj);
     } else {
-        if(jwt.type === "account") {
-            condition = { accountId: jwt.accountId };
+        if (jwt.type === "account") {
+            condition = {accountId: jwt.accountId};
         } else {
-            condition = { accountId: jwt.groupAccountId }
+            condition = {accountId: jwt.groupAccountId}
         }
-        TripCollection.distinct('partyId',condition, function (err, partyIds) {
-           if (err) {
+        TripCollection.distinct('partyId', condition, function (err, partyIds) {
+            if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);

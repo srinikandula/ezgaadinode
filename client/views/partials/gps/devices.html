@@ -1,10 +1,92 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+<div class="col-xs-12 gpsListView" ng-controller="GpsCtrl" ng-init="getDevices();getAllTrucks();">
+    <div class="col-xs-12">
+        <div class="lisk-block col-xs-12">
+            <div class="col-xs-12">
+                <ul>
+                    <li class="report"><h2>Reports</h2></li>
+                    <li>
+                        <div class="form-details">
+                            <date-picker class="'textfield'" ng-model="listView.fromDate"></date-picker>
+                        </div>
+                    </li>
 
-</body>
-</html>
+                    <li>
+                        <div class="form-details">
+                            <date-picker class="'textfield br-one'" ng-model="listView.toDate"></date-picker>
+                        </div>
+                    </li>
+
+                    <li class="go-sub">
+                        <button type="button" class="btn go">Go</button>
+                    </li>
+
+                    <li class="sea-wid">
+                        <div class="search-box">
+                            <input type="text" class="form-control textfiled1" placeholder="search">
+                            <input type="button" class="sea-btn">
+                        </div>
+                        <div class="clearfix"></div>
+                    </li>
+                    <li class="map-wid"><a href="#" class="map" ui-sref="mapView">Map view</a></li>
+                    <li class="map-wid"><a href="#" class="map" ui-sref="listView">List view</a></li>
+
+                    <li class="mail-wid"><a href="#" class="mail">
+                        <img src="images/Reports_Mail.png" width="40" height="28" alt="Reports Mail"></a></li>
+
+                    <li class="mail-wid mar-rgt-space pull-right"><a href="#" class="mail">
+                        <img src="images/Reports_Download.png" width="40" height="28" alt="img"></a></li>
+
+                </ul>
+            </div>
+            <div class="col-xs-12 mt-25">
+                <div class="col-md-2"><input type="text" placeholder="Device Id" ng-model="device.deviceId"
+                                             class="form-control"></div>
+                <div class="col-md-2"><input type="text" placeholder="IMEI Number" ng-model="device.imei"
+                                             class="form-control"></div>
+                <div class="col-md-2"><input type="text" placeholder="Sim Number" ng-model="device.simNumber"
+                                             class="form-control"></div>
+                <div class="col-md-2">
+                    <select class="form-control" ng-model="device.truckId">
+                        <option value="" selected>All Vehicles</option>
+                        <option ng-repeat="truck in trucksList" value="{{truck._id}}">{{truck.registrationNo}}</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button class="btn-info btn" ng-click="addDevice();">Add Device</button>
+                </div>
+
+            </div>
+            <div class="alert alert-danger" role="alert" ng-show="device.errors.length">
+                <ul>
+                    <li ng-repeat="error in device.errors">{{error}}</li>
+                </ul>
+            </div>
+            <div class="col-xs-12 mt-25">
+
+                <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
+                    <tr style="text-align: center;" ng-repeat="device in devicesList">
+
+                        <td data-title="'Device'" sortable="'totalFright'" class="clickable-item col-sm-3">
+                            {{device.deviceId}}
+                        </td>
+                        <td data-title="'IMEI'" sortable="'totalFright'" class="clickable-item col-sm-3">
+                            {{device.imei}}
+                        </td>
+                        <td data-title="'Sim Number'" sortable="'totalFright'" class="clickable-item col-sm-3">
+                            {{device.simNumber}}
+                        </td>
+                        <td data-title="'Truck'" sortable="'totalPayment'" class="clickable-item col-sm-3">
+                            {{device.truckId.registrationNo}}
+                        </td>
+                    </tr>
+                    <!-- <tr ng-if="!parties || parties.length === 0">
+                         <td colspan="8">No Records exist.</td>
+                     </tr>-->
+
+                </table>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>

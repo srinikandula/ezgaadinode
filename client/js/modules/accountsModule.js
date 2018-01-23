@@ -311,7 +311,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                     if (success.data.status) {
                         params.success = success.data.messages;
                         $state.go('accounts');
-                        Notification.success({message: "Account Updated Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -417,7 +416,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                         params.success = success.data.messages;
                         Notification.success({message: "Account Updated Successfully"});
                         $state.go('myProfile');
-                        Notification.success({message: "Account Updated Successfully"});
                     } else {
                         params.errors = success.data.messages;
                     }

@@ -16,14 +16,13 @@ app.factory('groupMapService', function ($http, $cookies) {
     }
 });
 
-app.controller('GroupMapController', ['$scope', '$state','groupMapService', function ($scope, $state,groupMapService) {
+app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsService', function ($scope, $state,groupMapService,GpsService) {
 
     var locations = [];
-    $scope.getData = function () {
-
-        groupMapService.getGroupMap(function (success) {
+    $scope.gpsTrackingByMapView=function () {
+        GpsService.gpsTrackingByMapView(function (success) {
             if (success.data.status) {
-                locations = success.data.resutls;
+                locations = success.data.data;
                 $scope.loadData();
 
             } else {
@@ -45,14 +44,13 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService', func
         for (var i = 0; i< locations.length; i++) {
             marker = new google.maps.Marker({
                 position: new google.maps.LatLng(locations[i].latitude, locations[i].longitude),
-                icon: "http://maps.google.com/mapfiles/kml/pal4/icon62.png",
+                icon: "/images/Track_Vehicle_Red.png",
                 label: {
-                    text: locations[i]._id,
+                    text: locations[i].name,
                     color: "black"
                 },
                 map: map
             });
-
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
                 return function() {
                     infowindow.setContent(locations[i]._id);
@@ -61,7 +59,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService', func
             })(marker, i));
         }
     };
-    $scope.getData();
+    $scope.gpsTrackingByMapView();
     // setTimeout(function () {$scope.loadData();}, 40);
 
 }]);
