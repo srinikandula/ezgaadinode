@@ -81,7 +81,8 @@ var truckSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     status: Number,
-    attrs: {}
+    attrs: {},
+    deviceId:{type: ObjectId, ref: 'devices'}
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
@@ -271,8 +272,11 @@ var devicePositions = new mongoose.Schema({
 }, {timestamps: true, versionKey: false});
 
 var deviceSchema = new mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
-    truckId: {type: ObjectId, ref: 'trucks'}
+    truckId: {type: ObjectId, ref: 'trucks'},
+    simNumber:String,
+    imei:String
 }, {timestamps: true, versionKey: false});
 
 module.exports = {
