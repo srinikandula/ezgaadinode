@@ -534,20 +534,13 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    if (jwt.type === "account") {
-        if (!params.truckNumber) {
-            condition = {'accountId': jwt.accountId};
-        } else {
-            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber}
-        }
-    } else {
-        if (!params.truckNumber) {
-            condition = {'accountId': jwt.groupAccountId};
-        } else {
-            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber}
-        }
 
+    if (!params.truckNumber) {
+        condition = {'accountId': jwt.accountId};
+    } else {
+        condition = {'accountId': jwt.accountId, 'registrationNo': {$regex: '.*' + params.truckNumber + '.*'}}
     }
+
     async.parallel({
         trips: function (tripsCallback) {
             TripCollection

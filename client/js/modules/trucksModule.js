@@ -192,7 +192,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         });
     };
     $scope.getAllTrucks = function () {
-        TrucksService.getAllTrucksForFilter( function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
             if (success.data.status) {
                 $scope.trucksList = success.data.trucks;
             } else {

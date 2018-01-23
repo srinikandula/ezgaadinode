@@ -27,14 +27,10 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        if (jwt.type === "account") {
-            driverInfo.createdBy = jwt.id;
-            driverInfo.accountId = jwt.accountId;
-        } else {
-            driverInfo.createdBy = jwt.id;
-            driverInfo.groupId = jwt.id;
-            driverInfo.accountId = jwt.groupAccountId;
-        }
+
+        driverInfo.createdBy = jwt.id;
+        driverInfo.groupId = jwt.id;
+        driverInfo.accountId = jwt.accountId;
         driverInfo.mobile = Number(driverInfo.mobile);
         driverInfo.driverId = "DR" + parseInt((Math.random() * 100000)); // Need to fix this
         delete driverInfo.joiningDate;
@@ -100,20 +96,12 @@ Drivers.prototype.getDrivers = function (jwt, params, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-        if (jwt.type === "account") {
-            if (!params.driverName) {
-                condition = {accountId: jwt.accountId}
-            } else {
-                condition = {accountId: jwt.accountId, fullName: {$regex: '.*' + params.driverName + '.*'}}
-            }
+        if (!params.driverName) {
+            condition = {accountId: jwt.accountId}
+        } else {
+            condition = {accountId: jwt.accountId, fullName: {$regex: '.*' + params.driverName + '.*'}}
         }
-        else {
-            if (!params.driverName) {
-                condition = {"accountId": jwt.groupAccountId}
-            } else {
-                condition = {"accountId": jwt.groupAccountId, fullName: {$regex: '.*' + params.driverName + '.*'}}
-            }
-        }
+
         async.parallel({
             drivers: function (driversCallback) {
                 DriversColl
@@ -147,8 +135,8 @@ Drivers.prototype.getDrivers = function (jwt, params, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.count = results.count;
-                retObj.userId=jwt.id;
-                retObj.userType=jwt.type;
+                retObj.userId = jwt.id;
+                retObj.userType = jwt.type;
                 retObj.drivers = results.drivers;
                 callback(retObj);
             }
@@ -161,11 +149,11 @@ Drivers.prototype.getDriverDetails = function (jwt, driverId, callback) {
         status: false,
         messages: []
     };
-    var condition={};
+    var condition = {};
     if (jwt.type === "account") {
-        condition = {_id: driverId,'accountId': jwt.accountId};
+        condition = {_id: driverId, 'accountId': jwt.accountId};
     } else {
-        condition = {_id: driverId,'createdBy': jwt.id };
+        condition = {_id: driverId, 'createdBy': jwt.id};
     }
     if (!Utils.isValidObjectId(driverId)) {
         retObj.messages.push('Invalid driverId');
@@ -197,18 +185,18 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
         status: false,
         messages: []
     };
-    var giveAccess=false;
-    if (jwt.type === "account" && driverInfo.accountId===jwt.accountId) {
-        giveAccess=true;
-    } else if(jwt.type === "group" && driverInfo.createdBy===jwt.id) {
-        giveAccess=true;
+    var giveAccess = false;
+    if (jwt.type === "account" && driverInfo.accountId === jwt.accountId) {
+        giveAccess = true;
+    } else if (jwt.type === "group" && driverInfo.createdBy === jwt.id) {
+        giveAccess = true;
 
-    }else{
+    } else {
         retObj.status = false;
         retObj.messages.push("Unauthorized access");
         callback(result);
     }
-    if(giveAccess) {
+    if (giveAccess) {
         if (!driverInfo._id) {
             retObj.messages.push('Invalid driverId');
         }
@@ -271,49 +259,37 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, callback) {
     }
 };
 
-Drivers.prototype.deleteDriver = function (jwt,driverId, callback) {
+Drivers.prototype.deleteDriver = function (jwt, driverId, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var condition={};
-    var giveAccess=false;
-    if (jwt.type === "account") {
-        condition={_id: driverId,accountId:jwt.accountId};
-        giveAccess=true;
-    } else if(jwt.type === "group") {
-        condition={_id: driverId,accountId:jwt.accountId};
-        giveAccess=true;
-    }else{
-        retObj.status = false;
-        retObj.messages.push('Unauthorized access');
-        callback(result);
+
+    if (!Utils.isValidObjectId(driverId)) {
+        retObj.messages.push('Invalid driver Id');
     }
 
-    if(giveAccess) {
-
-        if (!Utils.isValidObjectId(driverId)) {
-            retObj.messages.push('Invalid driver Id');
-        }
-
-        if (retObj.messages.length) {
-            callback(retObj);
-        } else {
-            DriversColl.remove(condition, function (err,returnValue) {
-                if (err) {
-                    retObj.messages.push('Error deleting Driver');
-                    callback(retObj);
-                } else if (returnValue.result.n === 0) {
-                    retObj.status = false;
-                    retObj.messages.push('Unauthorized access or Error deleting driver Record');
-                    callback(retObj);
-                } else {
-                    retObj.messages.push('Success');
-                    callback(retObj);
-                }
-            });
-        }
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        DriversColl.remove({_id: driverId, accountId: jwt.accountId}, function (err, returnValue) {
+            console.log('returnValue',returnValue);
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push('Error deleting Driver');
+                callback(retObj);
+            } else if (returnValue.result.n === 0) {
+                retObj.status = false;
+                retObj.messages.push('Unauthorized access or Error deleting driver Record');
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                callback(retObj);
+            }
+        });
     }
+
 };
 
 Drivers.prototype.countDrivers = function (jwt, callback) {
@@ -337,13 +313,8 @@ Drivers.prototype.getAllDriversForFilter = function (jwt, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
-    if (jwt.type === "account") {
-        condition = {'accountId': jwt.accountId};
-    } else {
-        condition = {'accountId': jwt.groupAccountId};
-    }
-    DriversColl.find(condition, {fullName: 1}, function (err, data) {
+
+    DriversColl.find({'accountId': jwt.accountId}, {fullName: 1}, function (err, data) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Drivers');
