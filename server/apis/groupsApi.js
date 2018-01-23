@@ -7,9 +7,9 @@ var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
 var AccountsCollection = require('./../models/schemas').AccountsColl;
 var OtpColl = require('./../models/schemas').OtpColl;
-var ErpSettingsColl=require('./../models/schemas').ErpSettingsColl;
+var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 
-log4js.configure(__dirname + '/../config/log4js_config.json', { reloadSecs: 60 });
+log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
 
 var config_msg91 = config.msg91;
@@ -58,7 +58,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                     jwt.sign({
                         id: user._id,
                         accountId: user._id,
-                        groupAccountId:user.accountId,
+                        groupAccountId: user.accountId,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
                         type: user.type
@@ -67,11 +67,11 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                             retObj.messages.push('Please try again');
                             callback(retObj);
                         } else {
-                            ErpSettingsColl.findOne({accountId:user._id},function(err,settingsData){
-                                if(err){
+                            ErpSettingsColl.findOne({accountId: user._id}, function (err, settingsData) {
+                                if (err) {
                                     retObj.messages.push('Please try again');
                                     callback(retObj);
-                                }else if(settingsData){
+                                } else if (settingsData) {
                                     retObj.status = true;
                                     retObj._id = user._id;
                                     retObj.token = token;
@@ -80,16 +80,16 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                                     retObj.erpEnabled = user.erpEnabled;
                                     retObj.loadEnabled = user.loadEnabled;
                                     retObj.editAccounts = user.editAccounts;
-                                    retObj.profilePic=user.profilePic;
-                                    retObj.type=user.type;
+                                    retObj.profilePic = user.profilePic;
+                                    retObj.type = user.type;
                                     callback(retObj);
-                                }else{
-                                    var erpSettings=new ErpSettingsColl({accountId:user._id});
-                                    erpSettings.save(function(err,saveSettings){
-                                        if(err){
+                                } else {
+                                    var erpSettings = new ErpSettingsColl({accountId: user._id});
+                                    erpSettings.save(function (err, saveSettings) {
+                                        if (err) {
                                             retObj.messages.push('Please try again');
                                             callback(retObj);
-                                        }else if(saveSettings){
+                                        } else if (saveSettings) {
                                             retObj.status = true;
                                             retObj._id = user._id;
                                             retObj.token = token;
@@ -98,17 +98,17 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                                             retObj.erpEnabled = user.erpEnabled;
                                             retObj.loadEnabled = user.loadEnabled;
                                             retObj.editAccounts = user.editAccounts;
-                                            retObj.profilePic=user.profilePic;
-                                            retObj.type=user.type;
+                                            retObj.profilePic = user.profilePic;
+                                            retObj.type = user.type;
                                             callback(retObj);
-                                        }else{
+                                        } else {
                                             retObj.messages.push('Please try again');
                                             callback(retObj);
                                         }
                                     })
                                 }
                             })
-                           
+
                         }
                     });
 
@@ -130,7 +130,7 @@ Groups.prototype.forgotPassword = function (contactPhone, callback) {
         retObj.messages.push("Please enter valid phone number");
         callback(retObj);
     } else {
-        AccountsCollection.findOne({ contactPhone: contactPhone }, function (err, data) {
+        AccountsCollection.findOne({contactPhone: contactPhone}, function (err, data) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Error finding user");
@@ -196,7 +196,7 @@ Groups.prototype.verifyOtp = function (body, callback) {
         retObj.messages.push("Please enter OTP");
         callback(retObj);
     } else {
-        OtpColl.findOne({ contactPhone: body.contactPhone, otp: body.otp }, function (err, data) {
+        OtpColl.findOne({contactPhone: body.contactPhone, otp: body.otp}, function (err, data) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Error while verifying OTP");
@@ -207,7 +207,7 @@ Groups.prototype.verifyOtp = function (body, callback) {
                     retObj.messages.push("OTP Expired");
                     callback(retObj);
                 } else {
-                    AccountsCollection.findOne({ contactPhone: body.contactPhone }, function (err, userData) {
+                    AccountsCollection.findOne({contactPhone: body.contactPhone}, function (err, userData) {
                         if (err) {
                             retObj.status = false;
                             retObj.messages.push("Error while verifying OTP");
@@ -220,7 +220,7 @@ Groups.prototype.verifyOtp = function (body, callback) {
                                     retObj.messages.push("Error finding user");
                                     callback(retObj);
                                 } else {
-                                    OtpColl.findOneAndRemove({ contactPhone: body.contactPhone }, function (err, otpData) {
+                                    OtpColl.findOneAndRemove({contactPhone: body.contactPhone}, function (err, otpData) {
                                         if (err) {
                                             retObj.status = false;
                                             retObj.messages.push("Error while reset password");
@@ -272,13 +272,13 @@ Groups.prototype.resetPasword = function (body, callback) {
         callback(retObj);
     } else {
         AccountsCollection.findOneAndUpdate(
-            { contactPhone: body.contactPhone }, { password: body.password }, function (err, data) {
+            {contactPhone: body.contactPhone}, {password: body.password}, function (err, data) {
                 if (err) {
                     retObj.status = false;
                     retObj.messages.push("Error while reset password");
                     callback(retObj);
                 } else if (data) {
-                    OtpColl.findOneAndRemove({ contactPhone: body.contactPhone }, function (err, otpData) {
+                    OtpColl.findOneAndRemove({contactPhone: body.contactPhone}, function (err, otpData) {
                         if (err) {
                             retObj.status = false;
                             retObj.messages.push("Error while reset password");
@@ -302,4 +302,98 @@ Groups.prototype.resetPasword = function (body, callback) {
 
     }
 }
+
+Groups.prototype.googleLogin = function (userData, callback) {
+    console.log('email', userData['email']);
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    // console.log('userData', userData);
+    var query = {
+        email: userData['email'],
+    };
+    AccountsCollection
+        .findOne(query)
+        .exec(function (err, user) {
+            if (err) {
+                retObj.messages.push('Error finding user');
+                callback(retObj);
+            }
+            if (user) {     //user exists
+                jwt.sign({
+                    id: user._id,
+                    accountId: user._id,
+                    // groupAccountId: user.accountId,
+                    // userName: user.userName,        //username ??
+                    // contactPhone: user.contactPhone,    //contact number??
+                    type: user.type
+                }, config.jwt.secret, config.jwt.options, function (err, token, options) {
+                    if (err) {
+                        retObj.messages.push('Please try again');
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj._id = user._id;
+                        retObj.token = token;
+                        // retObj.userName = userName;
+                        retObj.gpsEnabled = user.gpsEnabled;
+                        retObj.erpEnabled = user.erpEnabled;
+                        retObj.loadEnabled = user.loadEnabled;
+                        retObj.editAccounts = user.editAccounts;
+                        retObj.profilePic = user.profilePic;
+                        retObj.type = user.type;
+                        callback(retObj);
+                    }
+                });
+            } else {
+                var newId = mongoose.Types.ObjectId();
+                var document = {_id:newId, email:userData['email']};
+                console.log('document', document);
+                var newaccount = new AccountsCollection(document);
+                newaccount.save(function (err) {
+                    console.log(err);
+                    if(err) {
+                        retObj.messages.push('Error adding account');
+                        callback(retObj);
+                    } else {
+                        var erpSettings = new ErpSettingsColl({accountId: newId});
+                        erpSettings.save(function (err) {
+                            if(err) {
+                                retObj.messages.push('Error adding Erp settings');
+                                callback(retObj);
+                            } else {
+                                jwt.sign({
+                                    id: newId,
+                                    accountId: newId,
+                                    // groupAccountId: user.accountId,
+                                    // userName: user.userName,        //username ??
+                                    // contactPhone: user.contactPhone,    //contact number??
+                                    type: 'account'
+                                }, config.jwt.secret, config.jwt.options, function (err, token, options) {
+                                    if (err) {
+                                        retObj.messages.push('Please try again');
+                                        callback(retObj);
+                                    } else {
+                                        retObj.status = true;
+                                        retObj._id = newId;
+                                        retObj.token = token;
+                                        // retObj.userName = userName;
+                                        retObj.gpsEnabled = false;
+                                        retObj.erpEnabled = false;
+                                        retObj.loadEnabled = false;
+                                        retObj.editAccounts = false;
+                                        // retObj.profilePic = user.profilePic;
+                                        retObj.type = 'account';
+                                        callback(retObj);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+};
+
 module.exports = new Groups();

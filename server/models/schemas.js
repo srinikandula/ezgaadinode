@@ -278,6 +278,18 @@ var devicePositions = new mongoose.Schema({
     // isViewed : Boolean
 },{ timestamps: true, versionKey: false });
 
+var secretKeys = new mongoose.Schema({
+    secret: {
+        type: String
+    }
+},{ timestamps: true, versionKey: false });
+
+var secretKeysCounter = new mongoose.Schema({
+    date: String,
+    secretId: {type: ObjectId, ref: 'secretKeys'},
+    counter: Number
+});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -293,5 +305,7 @@ module.exports = {
     OtpColl:mongoose.model('otps',otpSchema,'otps'),
     NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications'),
     ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings'),
-    GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions')
+    GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions'),
+    SecretKeysColl:mongoose.model('secretKeys',secretKeys,'secretKeys'),
+    SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter')
 };

@@ -1,4 +1,4 @@
-<div class="col-xs-12" ng-controller="LeftNavCtrl">
+<div class="col-xs-12" ng-controller="GpsSettingsCrtl">
     <div class="col-xs-12">
         <div class="col-xs-12 profile-page">
             <div class="col-xs-9 profile-tabs">
@@ -84,6 +84,14 @@
                     <div class="clearfix"></div>
                     <div class="userEmail">
                         <p> testuser@gmail.com</p>
+                    </div>
+                    <div class="">
+                        <input type="text" class="form-control" placeholder="secret key" ng-model="secretkey">
+                        <button class="btn btn-danger mt-20" type="submit" ng-click="addSecret()">Add Secret Key</button>
+                        <button class="btn btn-primary pull-right mt-20" type="submit" ui-sref="secretKeys">View Secret Keys</button>
+                    </div>
+                    <div ng-show="secretkeyerror">
+                        {{secretkeyerror}}
                     </div>
                 </div>
 
