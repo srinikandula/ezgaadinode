@@ -209,6 +209,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.drivers = [];
     $scope.parties = [];
+    $scope.trucks = [];
     $scope.isFirstOpen = true;
     $scope.trip = {
         date: '',
@@ -262,6 +263,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     function getTruckIds() {
         TrucksService.getAllTrucksForFilter(function (success) {
+            console.log('getAllTrucksForFilter',success.data)
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find($scope.trucks, function (truck) {
