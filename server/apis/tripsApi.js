@@ -252,9 +252,11 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
             tripDetails.accountId = jwt.groupAccountId;
         }
         tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
+        tripDetails.tripLane = tripDetails.tripLane.name;
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err, trip) {
             if (err) {
+                console.log(err);
                 retObj.messages.push("Error while adding trip, try Again");
                 callback(retObj);
             } else {
@@ -341,7 +343,7 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, callback) {
     }
     if (giveAccess) {
         tripDetails = Utils.removeEmptyFields(tripDetails);
-
+        tripDetails.tripLane = tripDetails.tripLane.name;
         TripCollection.findOneAndUpdate({_id: tripDetails._id},
             {$set: tripDetails},
             {new: true}, function (err, trip) {

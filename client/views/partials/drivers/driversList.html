@@ -34,19 +34,19 @@
                     {{drivers.driverId}}
                 </td>
                 <td data-title="'Name'" sortable="'fullName'" class="clickable-item">{{
-                    drivers.fullName}}
+                    drivers.fullName || '--'}}
                 </td>
                 <td data-title="'Mobile'" sortable="'mobile'" class="clickable-item">{{
-                    drivers.mobile }}
+                    drivers.mobile || '--' }}
                 </td>
                 <td data-title="'V No'" sortable="'truckId'" class="clickable-item">{{
-                    drivers.truckId.registrationNo }}
+                    drivers.truckId.registrationNo || '--' }}
                 </td>
                 <td data-title="'Salary'" sortable="'salary'" class="clickable-item">{{
-                    drivers.salary }}
+                    drivers.salary || '--'}}
                 </td>
                 <td data-title="'License'" sortable="'licenseNumber'" class="clickable-item">{{
-                    drivers.licenseNumber }}
+                    drivers.licenseNumber || '--' }}
                 </td>
                 <td data-title="'Validity'" sortable="'licenseValidity'" class="clickable-item">{{
                     drivers.licenseValidity | date:'yyyy-MM-dd'

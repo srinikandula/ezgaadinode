@@ -58,7 +58,9 @@
                                     <ul class="dropdown-menu assign-trucks list-inline col-xs-12">
                                         <li ng-repeat="truck in trucks" class="col-xs-5">
                                             <input type="checkbox" value="{{truck._id}}" ng-model="truckId2[$index]"
-                                                   ng-click="truckSelected(truckId2[$index],truck._id)">{{truck.registrationNo}}
+                                                   ng-click="truckSelected(truckId2[$index],truck._id)" id="RegNo{{$index}}">
+                                            <label for="RegNo{{$index}}">{{truck.registrationNo}}</label>
+
                                         </li>
                                     </ul>
                                 </div>

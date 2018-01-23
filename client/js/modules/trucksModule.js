@@ -130,6 +130,12 @@ app.factory('TrucksService', function ($http, $cookies) {
                 method:"GET",
                 params:params
             }).then(success,error);
+        },
+        getAllTrucksForFilter: function (success, error) {
+            $http({
+                url: '/v1/trucks/getAllTrucksForFilter',
+                method: "GET",
+            }).then(success, error)
         }
     }
 });
@@ -277,9 +283,6 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         $state.go('trucks');
     };
 
-    $scope.selectDriverId = function (driver) {
-        $scope.truck.driverId = driver._id;
-    }
     $scope.drivers = [];
     $scope.truck = {
         registrationNo: '',

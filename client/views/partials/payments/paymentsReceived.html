@@ -39,13 +39,13 @@
                         payments.amount }}
                     </td>
                     <td data-title="'Payment Type'" sortable="'paymentType'" class="clickable-item">{{
-                        payments.paymentType }}
+                        payments.paymentType}}
                     </td>
                     <td data-title="'Payment Ref No'" sortable="'paymentRefNo'" class="clickable-item">{{
-                        payments.paymentRefNo }}
+                        payments.paymentRefNo || '---' }}
                     </td>
                     <td data-title="'Description'" sortable="'description'" class="clickable-item">{{
-                        payments.description}}
+                        payments.description || '---'}}
                     </td>
                     <td data-title="'Created By'" sortable="'createdByName'"
                         class="clickable-item">{{ payments.attrs.createdByName }}
