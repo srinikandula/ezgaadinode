@@ -166,14 +166,14 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
             var deviceList = _.pluck(_.pluck(trucksData, "deviceId"), "deviceId");
             GpsColl.aggregate([
                     {$match: {uniqueId: {$in: deviceList}}},
-                    /*{"$sort": {"createdAt": -1}},*/
+                    {"$sort": {"createdAt": -1}},
                     {
                         $group: {
                             _id: "$uniqueId",
-                            latitude: {$last: "$latitude"},
-                            longitude: {$last: "$longitude"},
-                            altitude: {$last: "$altitude"},
-                            name:{$last: "$name"}
+                            latitude: {$first: "$latitude"},
+                            longitude: {$first: "$longitude"},
+                            altitude: {$first: "$altitude"},
+                            name: {$first: "$name"}
 
                         }
                     }],

@@ -34,7 +34,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
 
     $scope.loadData = function (){
         var map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 6,
+            zoom: 7,
             center: new google.maps.LatLng(18.2699, 78.0489),
             mapTypeId: google.maps.MapTypeId.ROADMAP
         });
@@ -45,15 +45,15 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
             marker = new google.maps.Marker({
                 position: new google.maps.LatLng(locations[i].latitude, locations[i].longitude),
                 icon: "/images/Track_Vehicle_Red.png",
-                label: {
+                /*label: {
                     text: locations[i].name,
                     color: "black"
-                },
+                },*/
                 map: map
             });
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
                 return function() {
-                    infowindow.setContent(locations[i]._id);
+                    infowindow.setContent(locations[i].name+"<br>"+locations[i]._id);
                     infowindow.open(map, marker);
                 }
             })(marker, i));
