@@ -82,7 +82,8 @@ var truckSchema = new mongoose.Schema({
     createdBy: String,
     status: Number,
     attrs: {},
-    deviceId:{type: ObjectId, ref: 'devices'}
+    deviceId: {type: ObjectId, ref: 'devices'},
+    lookingForLoad: {type: Boolean, default: false}
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
@@ -275,9 +276,25 @@ var deviceSchema = new mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
     truckId: {type: ObjectId, ref: 'trucks'},
-    simNumber:String,
-    imei:String
+    simNumber: String,
+    imei: String
 }, {timestamps: true, versionKey: false});
+
+var loadRequestSchema = new mongoose.Schema({
+        createdBy: {type: ObjectId, ref: 'accounts'},
+        accountId: {type: ObjectId, ref: 'accounts'},
+        truckId: {type: ObjectId, ref: 'trucks'},
+        tripLane: String,
+        possibleStartDate: {type: Date},
+        active: {type: Boolean, default: false},
+        createdDate: {type: Date, default: new Date()},
+    },
+    {
+        timestamps: true, versionKey:
+        false
+    }
+);
+
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -295,5 +312,6 @@ module.exports = {
     NotificationColl: mongoose.model('notifications', notificationsSchema, 'notifications'),
     ErpSettingsColl: mongoose.model('erpsettings', erpSettingsSchema, 'erpsettings'),
     GpsColl: mongoose.model('devicePositions', devicePositions, 'devicePositions'),
-    DeviceColl: mongoose.model('devices', deviceSchema, 'devices')
+    DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
+    LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests')
 };

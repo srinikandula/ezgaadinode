@@ -14,6 +14,7 @@ var NotificationColl = require('./../models/schemas').NotificationColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DriversColl = require('./../models/schemas').DriversColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var LoadRequestColl = require('./../models/schemas').LoadRequestColl;
 
 
 var Utils = require('./utils');
@@ -1250,5 +1251,73 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
         })
     }
 
+};
+
+Trips.prototype.loockingForTripRequest=function (jwt,params,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    if(!params.truckId || !ObjectId.isValid(params.truckId)){
+        retObj.messages.push('Please select truck');
+        callback(retObj);
+    }else{
+        params.accountId=jwt.accountId;
+        params.createdBy=jwt.id;
+        var loadRequest=new LoadRequestColl(params);
+        loadRequest.save(function (err,data) {
+            if(err){
+                retObj.messages.push('Please try again');
+                callback(retObj);
+            }else if(data){
+                TrucksColl.findOneAndUpdate({_id:params.truckId},
+                    {lookingForLoad:true},
+                    function (err,updatedData) {
+                        if(err){
+                            retObj.messages.push('Error while load request');
+                            callback(retObj);
+                        }else if(updatedData){
+                                shareLoadRequestDetailsToParties(jwt,params,callback)
+                        }else{
+                            retObj.messages.push('Error while load request');
+                            callback(retObj);
+                        }
+                    })
+            }else{
+                retObj.messages.push('Please try again');
+                callback(retObj);
+            }
+        })
+
+    }
+
+};
+function shareLoadRequestDetailsToParties(jwt,params,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    PartyCollection.find({accountId:jwt.accountId,partyType : "Transporter"},function (err,partList) {
+        if(err){
+            retObj.messages.push("Error while sharing load request");
+            callback(retObj);
+        }else if(partList.length>0){
+            async.each(partList,function (party,partyCallback) {
+                if(party.isSms){
+
+                }
+            },function (err) {
+                if(err){
+                    return callback(retObj);
+                }else{
+                    callback(retObj)
+                }
+            })
+        }else{
+            retObj.messages.push("No Parties found to share load request");
+            callback(retObj);
+        }
+    })
 }
+
 module.exports = new Trips();
