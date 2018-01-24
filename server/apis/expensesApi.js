@@ -442,7 +442,7 @@ Expenses.prototype.countExpense = function (jwt, callback) {
  * @param jwt
  * @param callback
  */
-Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, callback) {
+Expenses.prototype.findTotalExpenses = function (erpSettingsCondition,req, callback) {
    // erpSettingsCondition.mode='Cash';
     expenseColl.aggregate({$match: erpSettingsCondition},
         {$group: {_id: null, totalCash: {$sum: "$cost"}, totalCredit: {$sum: "$totalAmount"}}},
@@ -822,7 +822,7 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params, cal
 
 }
 
-Expenses.prototype.findPaybleAmountForAccount = function (condition, callback) {
+Expenses.prototype.findPaybleAmountForAccount = function (condition,req, callback) {
     var retObj = {
         status: false,
         messages: []

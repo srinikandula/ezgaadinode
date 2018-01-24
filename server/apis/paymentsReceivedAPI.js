@@ -366,7 +366,7 @@ PaymentsReceived.prototype.countPayments = function (jwt, callback) {
  * Find the total of pending payments in the account using the below formula
  * sum(total_trips_frieght) - sum(payment amount)
  */
-PaymentsReceived.prototype.findPendingDueForAccount = function (condition, callback) {
+PaymentsReceived.prototype.findPendingDueForAccount = function (condition,req, callback) {
     var retObj = {
         status: false,
         messages: []

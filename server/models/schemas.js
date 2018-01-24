@@ -314,6 +314,14 @@ var loadRequestSchema = new mongoose.Schema({
     }
 );
 
+var analyticsSchema = mongoose.Schema({
+    action:String,
+    remoteIp:String,
+    userAgent:String,
+    attrs:{},
+    // accountId:{type: ObjectId, ref: 'accounts'},
+    response:String
+},{timestamps: String});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -334,6 +342,7 @@ module.exports = {
     SecretKeysColl:mongoose.model('secretKeys',secretKeys,'secretKeys'),
     SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
-    LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests')
+    LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
+    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics')
 };
 
