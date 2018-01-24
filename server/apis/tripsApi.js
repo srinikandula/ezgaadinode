@@ -966,7 +966,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
-    console.log('conditrion',condition);
+    console.log('conditrion', condition);
     if (!params.page) {
         params.page = 1;
     }
@@ -982,7 +982,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 {"$skip": skipNumber},
                 {"$limit": limit},
                 function (err, totalFreight) {
-                console.log('error1',err);
+                    console.log('error1', err);
                     callback(err, totalFreight);
                 });
         },
@@ -1062,7 +1062,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                     grossFreight: grossFreight,
                     grossExpenses: grossExpenses,
                     grossRevenue: grossRevenue
-                }
+                };
                 callback(retObj);
             })
         }
@@ -1088,7 +1088,7 @@ Trips.prototype.findTripsByParty = function (jwt, partyId, callback) {
                 });
             }
         });
-}
+};
 
 Trips.prototype.findTripsByVehicle = function (jwt, vehicleId, callback) {
     TripCollection.find({"accountId": ObjectId(jwt.accountId), "registrationNo": vehicleId},
@@ -1253,37 +1253,38 @@ Trips.prototype.getPartiesByTrips = function (jwt, callback) {
 
 };
 
-Trips.prototype.loockingForTripRequest=function (jwt,params,callback) {
-    var retObj={
-        status:false,
-        messages:[]
+Trips.prototype.loockingForTripRequest = function (jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
     };
-    if(!params.truckId || !ObjectId.isValid(params.truckId)){
+    console.log()
+    if (!params.truckId || !ObjectId.isValid(params.truckId)) {
         retObj.messages.push('Please select truck');
         callback(retObj);
-    }else{
-        params.accountId=jwt.accountId;
-        params.createdBy=jwt.id;
-        var loadRequest=new LoadRequestColl(params);
-        loadRequest.save(function (err,data) {
-            if(err){
+    } else {
+        params.accountId = jwt.accountId;
+        params.createdBy = jwt.id;
+        var loadRequest = new LoadRequestColl(params);
+        loadRequest.save(function (err, data) {
+            if (err) {
                 retObj.messages.push('Please try again');
                 callback(retObj);
-            }else if(data){
-                TrucksColl.findOneAndUpdate({_id:params.truckId},
-                    {lookingForLoad:true},
-                    function (err,updatedData) {
-                        if(err){
+            } else if (data) {
+                TrucksColl.findOneAndUpdate({_id: params.truckId},
+                    {lookingForLoad: true},
+                    function (err, updatedData) {
+                        if (err) {
                             retObj.messages.push('Error while load request');
                             callback(retObj);
-                        }else if(updatedData){
-                                shareLoadRequestDetailsToParties(jwt,params,callback)
-                        }else{
+                        } else if (updatedData) {
+                            shareLoadRequestDetailsToParties(jwt, params, callback)
+                        } else {
                             retObj.messages.push('Error while load request');
                             callback(retObj);
                         }
                     })
-            }else{
+            } else {
                 retObj.messages.push('Please try again');
                 callback(retObj);
             }
@@ -1292,32 +1293,104 @@ Trips.prototype.loockingForTripRequest=function (jwt,params,callback) {
     }
 
 };
-function shareLoadRequestDetailsToParties(jwt,params,callback) {
-    var retObj={
-        status:false,
-        messages:[]
+
+function shareLoadRequestDetailsToParties(jwt, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
     };
-    PartyCollection.find({accountId:jwt.accountId,partyType : "Transporter"},function (err,partList) {
-        if(err){
+    PartyCollection.find({accountId: jwt.accountId, partyType: "Transporter"}, function (err, partList) {
+        if (err) {
             retObj.messages.push("Error while sharing load request");
             callback(retObj);
-        }else if(partList.length>0){
-            async.each(partList,function (party,partyCallback) {
-                if(party.isSms){
-
+        } else if (partList.length > 0) {
+            async.each(partList, function (party, partyCallback) {
+                if (party.isSms) {
+                    shareLoadRequestDetailsViaSMS(party, params, function (smsResp) {
+                        if (smsResp.status) {
+                            if (party.isEmail) {
+                                shareLoadRequestDetailsViaEmail(party, params, function (emailResp) {
+                                    if (emailResp.status) {
+                                        partyCallback(false);
+                                    } else {
+                                        partyCallback(emailResp)
+                                    }
+                                })
+                            } else {
+                                partyCallback(smsResp);
+                            }
+                        } else {
+                            retObj.status = false;
+                            retObj.messages.push('sms sending failed');
+                            partyCallback(retObj);
+                        }
+                    });
+                } else if (party.isEmail) {
+                    shareLoadRequestDetailsViaEmail(party, params, function (emailResp) {
+                        if (emailResp.status) {
+                            partyCallback(false);
+                        } else {
+                            partyCallback(emailResp)
+                        }
+                    })
                 }
-            },function (err) {
-                if(err){
+            }, function (err) {
+                if (err) {
                     return callback(retObj);
-                }else{
-                    callback(retObj)
+                } else {
+                    console.log('finish request');
+                    retObj.status = true;
+                    retObj.messages.push('looking for request sent successfully');
+                    callback(retObj);
                 }
             })
-        }else{
+        } else {
             retObj.messages.push("No Parties found to share load request");
             callback(retObj);
         }
     })
+}
+
+function shareLoadRequestDetailsViaEmail(partyData, trip, callback) {
+    var emailparams = {
+        templateName: 'lookingForLoad',
+        subject: "Easygaadi Load Request",
+        to: partyData.email,
+        data: {
+
+            "name": partyData.name,
+            "tripLane": trip.tripLane
+
+        }//dataToEmail.tripsReport
+
+    };
+    if (trip.possibleStartDate) {
+        emailparams.data.possibleStartDate = new Date(trip.possibleStartDate).toLocaleDateString();
+    }
+    emailService.sendEmail(emailparams, function (emailResponse) {
+        callback(emailResponse);
+    });
+}
+
+function shareLoadRequestDetailsViaSMS(partyData, trip, callback) {
+    var smsParams = {
+        contact: partyData.contact,
+        message: "Hi " + partyData.name + ",\n" +
+        "We are looking for load. "
+    };
+    if (trip.tripLane) {
+        smsParams.message = smsParams.message + "\nTrip lane : " + trip.tripLane
+    }
+
+    if (trip.possibleStartDate) {
+        smsParams.message = smsParams.message + "\npossible date: " + trip.possibleStartDate
+
+    }
+
+    SmsService.sendSMS(smsParams, function (smsResponse) {
+        callback(smsResponse);
+    });
+
 }
 
 module.exports = new Trips();
