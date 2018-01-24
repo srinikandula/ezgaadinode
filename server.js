@@ -2,6 +2,8 @@ var express = require('express');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+// var passport = require('passport');
+// var GoogleStrategy = require('passport-google-oauth2').Strategy;
 
 var app = express();
 
@@ -20,16 +22,57 @@ var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
 var Groups = require('./server/routes/groupRoutes');
 var Gps = require('./server/routes/gpsRoutes');
+var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(express.static('client', {index: "/views/index.html"}));
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
 app.use(bodyParser.urlencoded({limit: config.bodyParserLimit, extended: true}));
 app.use(cookieParser());
+
+/*passport.serializeUser(function (user, cb) {
+    cb(null, user);
+});
+
+passport.deserializeUser(function (obj, cb) {
+    cb(null, obj);
+});
+
+passport.use(new GoogleStrategy({
+    clientID: config.googleAuth.clientID,
+    clientSecret: config.googleAuth.clientSecret,
+    callbackURL: config.googleAuth.callbackURL,
+    passReqToCallback: true
+}, function (request, accessToken, refreshToken, profile, done) {
+    return done(null, profile);
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get('/login/google', passport.authenticate('google', {
+    scope: [
+        'https://www.googleapis.com/auth/plus.login',
+        'https://www.googleapis.com/auth/plus.profile.emails.read']
+}));
+
+app.get('/login/google/return',
+    passport.authenticate('google', {failureRedirect: '/'}),
+    function (req, res) {
+        groupsApi.googleLogin(req['user'], function (result) {
+            console.log('result', result);
+            res.cookie('token', result.token);
+            res.cookie('type', result.type);
+            // $cookies.put('userName', result.userName);
+            res.cookie('editAccounts', result.editAccounts);
+            if(result.profilePic) res.cookie('profilePic', result.profilePic);
+            res.redirect('/reports');
+        });
+    });*/
 
 app.use(function (req, res, next) {
     if (/^\/v1\//.test(req.url)) {
@@ -58,6 +101,7 @@ app.use('/v1/roles', Roles.AuthRouter);
 app.use('/v1/expense', Expense.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
+app.use('/v1/gps', Gps.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {

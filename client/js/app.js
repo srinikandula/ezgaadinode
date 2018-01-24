@@ -347,6 +347,15 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'auth'
         }
+    }).state({
+        name: 'secretKeys',
+        url: '/settings/secretKeys',
+        templateUrl: 'views/partials/settings/SecretKeys.html',
+        data: {activeTab: 'secret',
+            subTab: 'GPS'},
+        params: {
+            access: 'auth'
+        }
     });
     $urlRouterProvider.otherwise('/login');
 });

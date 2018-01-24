@@ -35,9 +35,15 @@
     "port": 465,
     "secure": true,
     "auth": {
-        "user": "easygaadinode@gmail.com",
-        "pass": "easygaadi123"
+      "user": "easygaadinode@gmail.com",
+      "pass": "easygaadi123"
     }
-},
-  "bodyParserLimit": "50mb"
+  },
+  "googleAuth": {
+    "clientID": "981881296801-e30gs5ebcm6k4rip9q7a0e8nehp5j07c.apps.googleusercontent.com",
+    "clientSecret": "C97qjf-_9Q6KRrUYM_s6pFha",
+    "callbackURL": "http://localhost:2000/login/google/return"
+  },
+  "bodyParserLimit": "50mb",
+  "googleSecretKeyLimit": 30
 }
