@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+
+<body>
+<div>
+    <h4>Hi $emailData.name ,</h4>
+    <h4>We are looking for load </h4>
+    #if($emailData.possibleStartDate)
+    <h4>Possible date : $emailData.possibleStartDate</h4>
+    #end
+    #if($emailData.tripLane)
+    <h4>Traip Lane : $emailData.tripLane</h4>
+    #end
+
+</div>
+</body>
+
+</html>

@@ -104,6 +104,12 @@ AuthRouter.get('/total/count', function (req, res) {
     });
 });
 
+AuthRouter.post('/loockingForTripRequest', function (req, res) {
+    Trips.loockingForTripRequest(req.jwt,req.body,function (result) {
+        res.send(result);
+    });
+});
+
 
 
 module.exports = {

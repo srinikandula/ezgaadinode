@@ -6,6 +6,7 @@ var config = require('./../config/config');
 var GpsColl = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
+var TrucksColl = require('./../models/schemas').TrucksColl;
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -144,7 +145,59 @@ function addInitialCounters() {
         }
     });
 }
+Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {};
+    if (jwt.type === "account") {
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null}}
+    } else {
+        condition = {accountId: jwt.id, deviceId: {$ne: null}}
+    }
 
-// addInitialCounters();
+    TrucksColl.find(condition).populate({path: "deviceId", select: 'deviceId'}).exec(function (err, trucksData) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else if (trucksData) {
+
+            var deviceList = _.pluck(_.pluck(trucksData, "deviceId"), "deviceId");
+            GpsColl.aggregate([
+                    {$match: {uniqueId: {$in: deviceList}}},
+                    {"$sort": {"createdAt": -1}},
+                    {
+                        $group: {
+                            _id: "$uniqueId",
+                            latitude: {$first: "$latitude"},
+                            longitude: {$first: "$longitude"},
+                            altitude: {$first: "$altitude"},
+                            name: {$first: "$name"}
+
+                        }
+                    }],
+                function (err, devices) {
+                    if (err) {
+                        retObj.messages.push("Please try again");
+                        callback(retObj);
+                    } else if (devices) {
+                        retObj.status = true;
+                        retObj.data = devices;
+                        retObj.messages.push("success");
+                        callback(retObj);
+                    } else {
+                        retObj.messages.push("Please try again");
+                        callback(retObj);
+                    }
+                });
+
+        } else {
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        }
+    })
+
+};
 
 module.exports = new Gps();
