@@ -69,12 +69,12 @@ http {
         		proxy_http_version 1.1;
         		proxy_set_header Upgrade $http_upgrade;
         		proxy_set_header Connection "upgrade";
-    		}
+    	}
 		location /api/socket {
         		proxy_pass http://mybus/api/socket;
         		proxy_http_version 1.1;
         		proxy_set_header Upgrade $http_upgrade;
         		proxy_set_header Connection "upgrade";
-    		}
+    	}
 	}
 }
