@@ -315,10 +315,13 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find($scope.trucks, function (truck) {
+                    console.log("Truck No",$scope.expenseDetails.vehicleNumber);
                     return truck._id.toString() === $scope.expenseDetails.vehicleNumber;
                 });
                 if (selectedTruck) {
                     $scope.truckRegNo = selectedTruck.registrationNo;
+                    console.log('success', $scope.truckRegNo)
+
                 }
 
             } else {
@@ -394,12 +397,10 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         if (!params.error.length) {
             if ($stateParams.expenseId) {
                 ExpenseService.updateRecord(params, function (success) {
-                    console.log('success',success.data)
                     if (success.data.status) {
                         Notification.success({message: success.data.message});
                         $state.go('expenses');
                     } else {
-                        console.log(success.data.message)
                         params.error.push(success.data.message);
                     }
 

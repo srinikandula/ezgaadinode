@@ -68,7 +68,9 @@ Drivers.prototype.addDriver = function (jwt, driverInfo,req, callback) {
 
                 callback(retObj);
             } else {
+                console.log("Driver Info", driverInfo);
                 var driverDoc = new DriversColl(driverInfo);
+                console.log("driverDoc", driverDoc);
                 driverDoc.save(driverInfo, function (err, newDoc) {
                     if (err) {
                         retObj.messages.push('Error saving driver');

@@ -175,6 +175,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             }, function (success) {
                 if (success.data.status) {
                     $scope.expiryTrucks = success.data.expiryTrucks;
+                    console.log("Trucsk",$scope.expiryTrucks);
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
