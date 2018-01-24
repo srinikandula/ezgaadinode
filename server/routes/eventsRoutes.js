@@ -4,6 +4,8 @@ var AuthRouter = express.Router();
 var url = require('url');
 
 var Events = require('./../apis/eventsApi');
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
 
 var EventData = require('./../apis/eventDataApi');
 
@@ -37,6 +39,7 @@ OpenRouter.get('/:accountId', function (request, res) {
         }
     }
     if(retObj.messages.length > 0) {
+        analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
         res.json(retObj);
     }else {
         Events.getEventData(request.params.accountId, startDate.getTime()/1000, endDate.getTime()/1000, function(result) {
@@ -53,6 +56,7 @@ AuthRouter.get('/latestLocation/:deviceId', function (req, res) {
         retObj.messages.push("Missing deviceId in request params");
     }
     if(retObj.messages.length > 0) {
+        analyticsService.create(req,serviceActions.get_latest_device_loc_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         res.json(retObj);
     }else {
         Events.getLatestLocation(req.jwt, req.params.deviceId, function(result) {
@@ -92,6 +96,7 @@ OpenRouter.get('/get/srlogistics', function (request, res) {
         }
     }
     if(retObj.messages.length > 0) {
+        analyticsService.create(request,serviceActions.get_srlogistics_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
         res.json(retObj);
     }else {
         Events.getEventData('s.rlogistics@yahoo.com', startDate.getTime()/1000, endDate.getTime()/1000, function(result) {
@@ -109,6 +114,7 @@ OpenRouter.get('/get/srlogistics/latestLocations', function (request, res) {
     retObj.messages = [];
 
     if(retObj.messages.length > 0) {
+        analyticsService.create(request,serviceActions.get_srlogistics_lat_loc_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
         res.json(retObj);
     }else {
         Events.getLatestLocations('s.rlogistics@yahoo.com', function(result) {
