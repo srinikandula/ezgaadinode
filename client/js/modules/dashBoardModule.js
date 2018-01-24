@@ -164,7 +164,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
             });
         };
-        console.log('cobtroller loading')
         $scope.erpDashBoard();
 
         $scope.getTruckExpires = function () {
