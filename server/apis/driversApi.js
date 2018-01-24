@@ -323,8 +323,6 @@ Drivers.prototype.deleteDriver = function (jwt,driverId,req, callback) {
         }
     }
 
-};
-
 Drivers.prototype.countDrivers = function (jwt,req, callback) {
     var result = {};
     DriversColl.count({'accountId': jwt.accountId}, function (err, data) {
