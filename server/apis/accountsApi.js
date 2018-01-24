@@ -14,11 +14,13 @@ var Trips = require('./tripsApi');
 var Expenses = require('./expensesApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
 var Trucks = require('./truckAPIs');
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/adminConstants');
 
 var Accounts = function () {
 };
 
-Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
+Accounts.prototype.addAccount = function (jwtObj, accountInfo,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -37,14 +39,17 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
     }
 
     if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.add_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error fetching account');
+                analyticsService.create(req,serviceActions.add_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (account) {
                 retObj.messages.push('Account with same userName already exists');
+                analyticsService.create(req,serviceActions.add_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 accountInfo.createdBy = jwtObj.id;
@@ -52,12 +57,14 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
                 (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
                     if (err) {
                         retObj.messages.push('Error saving account');
+                        analyticsService.create(req,serviceActions.add_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     } else {
                         accountInfo.accountId = savedAcc._id;
                         accountInfo.type = "account";
                         retObj.status = true;
                         retObj.messages.push('Success');
+                        analyticsService.create(req,serviceActions.add_account,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                         callback(retObj);
                         /*(new GroupsColl(accountInfo)).save(function (err) {
                             if (err) {
@@ -77,7 +84,7 @@ Accounts.prototype.addAccount = function (jwtObj, accountInfo, callback) {
     }
 };
 
-Accounts.prototype.getAccounts = function (jwt, params, callback) {
+Accounts.prototype.getAccounts = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -120,18 +127,20 @@ Accounts.prototype.getAccounts = function (jwt, params, callback) {
     }, function (err, results) {
         if (err) {
             retObj.messages.push('Error retrieving accounts');
+            analyticsService.create(req,serviceActions.get_accounts_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
             retObj.accounts = results.accounts;
+            analyticsService.create(req,serviceActions.get_accounts,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
 };
 
-Accounts.prototype.getAllAccounts = function (callback) {
+Accounts.prototype.getAllAccounts = function (req,callback) {
     var retObj = {
         status: false,
         messages: []
@@ -140,17 +149,19 @@ Accounts.prototype.getAllAccounts = function (callback) {
     AccountsColl.find({}, {name: 1}, function (err, accounts) {
         if (err) {
             retObj.messages.push('Error retrieving accounts');
+            analyticsService.create(req,serviceActions.get_all_accounts_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.accounts = accounts;
+            analyticsService.create(req,serviceActions.get_all_accounts,{accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
 };
 
-Accounts.prototype.getAccountDetails = function (accountId, callback) {
+Accounts.prototype.getAccountDetails = function (accountId,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -161,26 +172,30 @@ Accounts.prototype.getAccountDetails = function (accountId, callback) {
     }
 
     if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.get_account_details_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         AccountsColl.findOne({"_id": ObjectId(accountId)}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error retrieving account');
+                analyticsService.create(req,serviceActions.get_account_details_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (account) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.account = account;
+                analyticsService.create(req,serviceActions.get_account_details,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
                 retObj.messages.push('Account with Id doesn\'t exist');
+                analyticsService.create(req,serviceActions.get_account_details_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
     }
 };
 
-Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
+Accounts.prototype.updateAccount = function (jwtObj, accountInfo,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -199,6 +214,7 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
     }
 
     if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.update_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         if (accountInfo.oldPassword) {
@@ -208,12 +224,14 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo, callback) {
             }, function (err, oldAcc) {
                 if (err) {
                     retObj.messages.push('Please Try Again');
+                    analyticsService.create(req,serviceActions.update_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                     callback(retObj);
                 } else if (oldAcc) {
                     accountInfo.profile.password = accountInfo.newPassword;
                     updateAccounts(jwtObj, accountInfo, callback)
                 } else {
                     retObj.messages.push('Invalid Password');
+                    analyticsService.create(req,serviceActions.update_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                     callback(retObj);
                 }
             });
@@ -247,7 +265,7 @@ Accounts.prototype.updateNewAccount = function (jwtObj, accountInfo, callback) {
 
 };
 
-function updateAccounts(jwtObj, accountInfo, callback) {
+function updateAccounts(jwtObj, accountInfo,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -256,19 +274,22 @@ function updateAccounts(jwtObj, accountInfo, callback) {
     AccountsColl.findOneAndUpdate({_id: accountInfo.profile._id}, {$set: accountInfo.profile}, function (err, oldAcc) {
         if (err) {
             retObj.messages.push('Error updating the account');
+            analyticsService.create(req,serviceActions.update_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else if (oldAcc) {
             retObj.status = true;
             retObj.messages.push('Success');
+            analyticsService.create(req,serviceActions.update_account,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         } else {
             retObj.messages.push('Account doesn\'t exist');
+            analyticsService.create(req,serviceActions.update_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         }
     });
 }
 
-Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
+Accounts.prototype.erpDashBoardContent = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -281,33 +302,34 @@ Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
         if (err) {
             retObj.status = false;
             retObj.messages.push("Please try again");
+            analyticsService.create(req,serviceActions.erp_dashboard_content_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else if (erpSettings) {
 
             async.parallel({
                 expensesTotal: function (expensesTotalCallback) {
-                    Expenses.findTotalExpenses(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId), function (response) {
+                    Expenses.findTotalExpenses(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId),req, function (response) {
                         expensesTotalCallback(response.error, response.totalExpenses);
                     });
                 },
                 totalRevenue: function (totalRevenueCallback) {
-                    Trips.findTotalRevenue(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId), function (response) {
+                    Trips.findTotalRevenue(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId),req, function (response) {
 
                         totalRevenueCallback(response.error, response.totalRevenue);
                     });
                 },
                 pendingDue: function (pendingDueCallback) {
-                    PaymentsReceived.findPendingDueForAccount(Utils.getErpSettings(erpSettings.payment, erpSettings.accountId), function (response) {
+                    PaymentsReceived.findPendingDueForAccount(Utils.getErpSettings(erpSettings.payment, erpSettings.accountId),req, function (response) {
                         pendingDueCallback(response.error, response.pendingDue);
                     });
                 },
                 expiring: function (expiringCallback) {
-                    Trucks.findExpiryCount(Utils.getErpSettings(erpSettings.expiry, erpSettings.accountId), function (response) {
+                    Trucks.findExpiryCount(Utils.getErpSettings(erpSettings.expiry, erpSettings.accountId),req, function (response) {
                         expiringCallback(response.error, response.expiryCount);
                     });
                 },
                 paybleAmount: function (paybleCallback) {
-                    Expenses.findPaybleAmountForAccount(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId), function (response) {
+                    Expenses.findPaybleAmountForAccount(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId),req, function (response) {
                         paybleCallback(response.error, response.paybleCount);
                     });
                 }
@@ -315,54 +337,61 @@ Accounts.prototype.erpDashBoardContent = function (jwt, callback) {
                 if (error) {
                     retObj.status = true;
                     retObj.messages.push(JSON.stringify(error));
+                    analyticsService.create(req,serviceActions.erp_dashboard_content_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                     callback(retObj);
                 } else {
                     retObj.status = true;
                     retObj.result = dashboardContent;
+                    analyticsService.create(req,serviceActions.erp_dashboard_content,{accountId:req.jwt.id,success:true},function(response){ });
                     callback(retObj);
                 }
             });
         } else {
             retObj.status = false;
             retObj.messages.push("Please try again");
+            analyticsService.create(req,serviceActions.erp_dashboard_content_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         }
     })
 }
 
-Accounts.prototype.countAccounts = function (jwt, callback) {
+Accounts.prototype.countAccounts = function (jwt,req, callback) {
     var result = {};
     AccountsColl.count(function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
+            analyticsService.create(req,serviceActions.count_accounts_err,{accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
             callback(result);
         } else {
             result.status = true;
             result.message = 'Success';
             result.count = data;
+            analyticsService.create(req,serviceActions.count_accounts,{accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
         }
     })
 };
 
-Accounts.prototype.countAccountGroups = function (jwt, callback) {
+Accounts.prototype.countAccountGroups = function (jwt,req, callback) {
     var result = {};
     AccountsColl.count({"accountId": ObjectId(jwt.accountId), "type": "group"}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
+            analyticsService.create(req,serviceActions.count_acc_grps_err,{accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
             callback(result);
         } else {
             result.status = true;
             result.message = 'Success';
             result.count = data;
+            analyticsService.create(req,serviceActions.count_acc_grps,{accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
         }
     })
 };
 
-Accounts.prototype.userProfile = function (jwt, callback) {
+Accounts.prototype.userProfile = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -388,17 +417,19 @@ Accounts.prototype.userProfile = function (jwt, callback) {
         if (error) {
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
+            analyticsService.create(req,serviceActions.get_profile_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('User Profile Found');
             retObj.result = userProfileContent;
+            analyticsService.create(req,serviceActions.get_profile,{accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
 }
 
-Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callback) {
+Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -426,9 +457,11 @@ Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callbac
         AccountsColl.findOne({userName: accountGroupInfo.userName}, function (err, account) {
             if (err) {
                 retObj.messages.push('Error fetching account');
+                analyticsService.create(req,serviceActions.add_acc_grp_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (account) {
                 retObj.messages.push('Account Group with same userName already exists');
+                analyticsService.create(req,serviceActions.add_acc_grp_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 accountGroupInfo.createdBy = jwtObj.id;
@@ -436,12 +469,14 @@ Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callbac
                 (new AccountsColl(accountGroupInfo)).save(function (err, savedAcc) {
                     if (err) {
                         retObj.messages.push('Error saving account');
+                        analyticsService.create(req,serviceActions.add_acc_grp_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     } else {
                         accountGroupInfo.accountId = savedAcc._id;
                         retObj.status = true;
                         retObj.messages.push('Success');
                         retObj.accountGroup = savedAcc;
+                        analyticsService.create(req,serviceActions.add_acc_grp,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                         callback(retObj);
                     }
                 });
@@ -450,7 +485,7 @@ Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, callbac
     }
 };
 
-Accounts.prototype.getAllAccountGroup = function (jwt, params, callback) {
+Accounts.prototype.getAllAccountGroup = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -486,18 +521,20 @@ Accounts.prototype.getAllAccountGroup = function (jwt, params, callback) {
     }, function (err, results) {
         if (err) {
             retObj.messages.push('Error retrieving accounts');
+            analyticsService.create(req,serviceActions.get_all_acc_grps_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
             retObj.accountGroup = results.accountGroup;
+            analyticsService.create(req,serviceActions.get_all_acc_grps,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
 };
 
-Accounts.prototype.getAccountGroup = function (accountGroupId, callback) {
+Accounts.prototype.getAccountGroup = function (accountGroupId,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -508,27 +545,31 @@ Accounts.prototype.getAccountGroup = function (accountGroupId, callback) {
     }
 
     if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.get_acc_grp_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         AccountsColl.findOne({"_id": ObjectId(accountGroupId)}).lean().exec(function (err, accountGroup) {
             if (err) {
                 retObj.messages.push('Error retrieving account');
+                analyticsService.create(req,serviceActions.get_acc_grp_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (accountGroup) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 accountGroup.confirmPassword = accountGroup.password;
                 retObj.accountGroup = accountGroup;
+                analyticsService.create(req,serviceActions.get_acc_grp,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
                 retObj.messages.push('Account with Id doesn\'t exist');
+                analyticsService.create(req,serviceActions.get_acc_grp_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
     }
 };
 
-Accounts.prototype.updateAccountGroup = function (jwtObj, accountGroupInfo, callback) {
+Accounts.prototype.updateAccountGroup = function (jwtObj, accountGroupInfo,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -538,26 +579,30 @@ Accounts.prototype.updateAccountGroup = function (jwtObj, accountGroupInfo, call
     }
 
     if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.update_acc_grp_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         accountGroupInfo.updatedBy = jwtObj.id;
         AccountsColl.findOneAndUpdate({_id: accountGroupInfo._id}, {$set: accountGroupInfo}, function (err, oldAcc) {
             if (err) {
                 retObj.messages.push('Error updating the account group');
+                analyticsService.create(req,serviceActions.update_acc_grp_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (oldAcc) {
                 retObj.status = true;
                 retObj.messages.push('Success');
+                analyticsService.create(req,serviceActions.update_acc_grp,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
                 retObj.messages.push('Account Group doesn\'t exist');
+                analyticsService.create(req,serviceActions.update_acc_grp_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
     }
 };
 
-Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
+Accounts.prototype.uploadUserProfilePic = function (accountId, body,req, callback) {
     var retObj = {};
     if (!accountId || !ObjectId.isValid(accountId)) {
         retObj.status = false;
@@ -573,6 +618,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
             if (err) {
                 retObj.status = false;
                 retObj.message = "Please upload valid image";
+                analyticsService.create(req,serviceActions.upld_usr_profile_pic_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 AccountsColl.findOneAndUpdate({_id: accountId}, {
@@ -581,15 +627,18 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
                     if (err) {
                         retObj.status = false;
                         retObj.message = "Please try again";
+                        analyticsService.create(req,serviceActions.upld_usr_profile_pic_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     } else if (data) {
                         retObj.status = true;
                         retObj.message = "Image uploaded successfully";
-                        retObj.profilePic = accountId + '.jpg'
+                        retObj.profilePic = accountId + '.jpg';
+                        analyticsService.create(req,serviceActions.upld_usr_profile_pic,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                         callback(retObj);
                     } else {
                         retObj.status = false;
                         retObj.message = "Please try again latter";
+                        analyticsService.create(req,serviceActions.upld_usr_profile_pic_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     }
                 })
@@ -599,7 +648,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, callback) {
     }
 }
 
-Accounts.prototype.getErpSettings = function (jwt, callback) {
+Accounts.prototype.getErpSettings = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -610,26 +659,30 @@ Accounts.prototype.getErpSettings = function (jwt, callback) {
     }
 
     if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.get_erp_settings_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         ErpSettingsColl.findOne({"accountId": ObjectId(jwt.accountId)}, function (err, erpSettings) {
             if (err) {
                 retObj.messages.push('Error retrieving Settings');
+                analyticsService.create(req,serviceActions.get_erp_settings_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (erpSettings) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.erpSettings = erpSettings;
+                analyticsService.create(req,serviceActions.get_erp_settings,{accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
                 retObj.messages.push('Account with Id doesn\'t exist');
+                analyticsService.create(req,serviceActions.get_erp_settings_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
     }
 };
 
-Accounts.prototype.updateErpSettings = function (params, callback) {
+Accounts.prototype.updateErpSettings = function (params,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -638,24 +691,29 @@ Accounts.prototype.updateErpSettings = function (params, callback) {
     ErpSettingsColl.findOne({_id: params._id}, function (err, oldAcc) {
         if (err) {
             retObj.messages.push('Please Try Again');
+            analyticsService.create(req,serviceActions.update_erp_settings_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else if (oldAcc) {
             params.updatedBy = params._id;
             ErpSettingsColl.findOneAndUpdate({_id: params._id}, {$set: params}, function (err, updatedData) {
                 if (err) {
                     retObj.messages.push('Error in updating the settings');
+                    analyticsService.create(req,serviceActions.update_erp_settings_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                     callback(retObj);
                 } else if (updatedData) {
                     retObj.status = true;
                     retObj.messages.push('Success');
+                    analyticsService.create(req,serviceActions.update_erp_settings,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                     callback(retObj);
                 } else {
                     retObj.messages.push('Account doesn\'t exist');
+                    analyticsService.create(req,serviceActions.update_erp_settings_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                     callback(retObj);
                 }
             });
         } else {
             retObj.messages.push('Invalid Account Id');
+            analyticsService.create(req,serviceActions.update_erp_settings_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         }
     });

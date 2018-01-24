@@ -805,7 +805,7 @@ Trips.prototype.sendEmail = function (jwt, data, callback) {
  * Find the Total fright from the trips in the account
  */
 
-Trips.prototype.findTotalRevenue = function (erpSettingsCondition, callback) {
+Trips.prototype.findTotalRevenue = function (erpSettingsCondition,req, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now

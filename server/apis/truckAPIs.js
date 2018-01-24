@@ -417,7 +417,7 @@ Trucks.prototype.deleteTruck = function (jwt, truckId, callback) {
     }
 };
 
-Trucks.prototype.findExpiryCount = function (jwt, callback) {
+Trucks.prototype.findExpiryCount = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []

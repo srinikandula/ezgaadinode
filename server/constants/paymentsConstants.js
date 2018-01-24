@@ -1,0 +1,27 @@
+const serviceActions= {
+    add_payment:'ADD_PAYMENT',
+    add_payment_err:'ADD_PAYMENT_ERR',
+    get_all_acc_payments:'GET_ALL_ACC_PAYMENTS',
+    get_all_acc_payments_err:'GET_ALL_ACC_PAYMENTS_ERR',
+    update_payments:'UPDATE_PAYMENTS',
+    update_payments_err:'UPDATE_PAYMENTS_ERR',
+    find_payments_recieved:'FIND_PAYMENTS_RECIEVED',
+    find_payments_recieved_err:'FIND_PAYMENTS_RECIEVED_ERR',
+    del_payments_record:'DEL_PAYMENTS_RECORD',
+    del_payments_record_err:'DEL_PAYMENTS_RECORD_ERR',
+    count_payments:'COUNT_PAYMENTS',
+    count_payments_err:'COUNT_PAYMENTS_ERR',
+    get_payments:'GET_PAYMENTS',
+    get_payments_err:'GET_PAYMENTS_ERR',
+    get_total_amnt:'GET_TOTAL_AMNT',
+    get_total_amnt_err:'GET_TOTAL_AMNT_ERR',
+    get_account_due:'GET_ACCOUNT_DUE',
+    get_account_due_err:'GET_ACCOUNT_DUE_ERR',
+    get_dues_by_party:'GET_DUES_BY_PARTY',
+    get_dues_by_party_err:'GET_DUES_BY_PARTY_ERR',
+    share_party_payment_det_by_email:'SHARE_PARTY_PAYMENT_DET_BY_EMAIL',
+    share_party_payment_det_by_email_err:'SHARE_PARTY_PAYMENT_DET_BY_EMAIL_ERR',
+    dwnld_party_payment_det:'DWNLD_PARTY_PAYMENT_DET',
+    dwnld_party_payment_det_err:'DWNLD_PARTY_PAYMENT_DET_ERR'
+};
+module.exports=serviceActions;
