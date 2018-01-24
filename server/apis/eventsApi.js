@@ -9,9 +9,11 @@ var pool  = mysql.createPool(config.mysql);
 var pool_crm  = mysql.createPool(config.mysql_crm);
 var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
 
 
-Events.prototype.getEventData = function(accountId, startDate, endDate, callback) {
+Events.prototype.getEventData = function(accountId, startDate, endDate,request, callback) {
     var retObj = {};
     retObj.messages = [];
 
@@ -40,24 +42,26 @@ Events.prototype.getEventData = function(accountId, startDate, endDate, callback
                 retObj.status = false;
                 retObj.messages.push('Error fetching data');
                 retObj.messages.push(JSON.stringify(err));
-
+                analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.results = results.eventData.concat(results.eventDataTemp);
                 retObj.count = retObj.results.length;
+                analyticsService.create(request,serviceActions.get_event_data,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:true},function(response){ });
                 callback(retObj);
             }
         });
     } else {
         callback(retObj);
+        analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
     }
 };
 
 
 
-Events.prototype.getLatestLocations = function(accountId,callback) {
+Events.prototype.getLatestLocations = function(accountId,request,callback) {
     var retObj = {};
     retObj.messages = [];
 
@@ -86,17 +90,19 @@ Events.prototype.getLatestLocations = function(accountId,callback) {
                 retObj.status = false;
                 retObj.messages.push('Error fetching data');
                 retObj.messages.push(JSON.stringify(err));
-
+                analyticsService.create(request,serviceActions.get_lat_loc_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.results = results.eventData.concat(results.eventDataTemp);
                 retObj.count = retObj.results.length;
+                analyticsService.create(request,serviceActions.get_lat_loc,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:true},function(response){ });
                 callback(retObj);
             }
         });
     } else {
+        analyticsService.create(request,serviceActions.get_lat_loc_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     }
 };
@@ -109,7 +115,7 @@ Events.prototype.getLatestLocations = function(accountId,callback) {
  * @param callback
  */
 
-Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
+Events.prototype.getLatestLocation = function(jwt, deviceId,req, callback) {
     var retObj = {};
     retObj.messages = [];
 
@@ -126,6 +132,7 @@ Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
            if(error){
                retObj.status = false;
                retObj.messages.push('Error finding account info' + error.message);
+               analyticsService.create(req,serviceActions.get_latest_device_loc_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                callback(retObj);
            } else {
                var eventDataQuery = "SELECT deviceID as vehicle_number, accountID as transportername, timestamp as datetime, latitude, longitude, speedKPH as speed, distanceKM as distance FROM EventData WHERE accountID='" + account.userName + "' and deviceID = '"+deviceId+"' order by timestamp desc limit 1";
@@ -133,6 +140,7 @@ Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
                    if(error){
                        retObj.status = false;
                        retObj.messages.push('Error finding GPS location. info:' + error.message);
+                       analyticsService.create(req,serviceActions.get_latest_device_loc_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                        callback(retObj);
                    } else {
                        for(var i =0; i< latestLocation.length; i++) {
@@ -140,12 +148,14 @@ Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
                        }
                        retObj.results = latestLocation;
                        retObj.status = true;
+                       analyticsService.create(req,serviceActions.get_latest_device_loc,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
                        callback(retObj);
                    }
                });
            }
         });
     } else {
+        analyticsService.create(req,serviceActions.get_latest_device_loc_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     }
 };
@@ -193,7 +203,7 @@ Events.prototype.getLatestLocation = function(jwt, deviceId, callback) {
     });
 }*/
 
-Events.prototype.getAccountData = function (callback) {
+Events.prototype.getAccountData = function (request,callback) {
     var retObj = {
         status: false,
         messages: []
@@ -204,6 +214,7 @@ Events.prototype.getAccountData = function (callback) {
             retObj.status = false;
             retObj.messages.push('Error fetching data');
             retObj.messages.push(JSON.stringify(err));
+            analyticsService.create(request,serviceActions.get_account_data_err,{accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -217,12 +228,13 @@ Events.prototype.getAccountData = function (callback) {
                 EventData.createAccountData(AccountData)
             }
             retObj.count = retObj.results.length;
+            analyticsService.create(request,serviceActions.get_account_data,{accountId:request.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
 }
 
-Events.prototype.getAccountGroupData = function (callback) {
+Events.prototype.getAccountGroupData = function (request,callback) {
     var retObj = {
         status: false,
         messages: []
@@ -236,6 +248,7 @@ Events.prototype.getAccountGroupData = function (callback) {
                         retObj.status = false;
                         retObj.messages.push('Error fetching data');
                         retObj.messages.push(JSON.stringify(err));
+                        analyticsService.create(request,serviceActions.get_account_grp_data_err,{accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     } else {
                         retObj.status = true;
@@ -251,6 +264,7 @@ Events.prototype.getAccountGroupData = function (callback) {
                             EventData.createAccountGroupData(accountGroupData)
                         }
                         retObj.count = retObj.results.length;
+                        analyticsService.create(request,serviceActions.get_account_grp_data,{accountId:request.jwt.id,success:true},function(response){ });
                         callback(retObj);
                     }
                 });

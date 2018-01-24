@@ -2,6 +2,9 @@ var EventDataCollection = require('./../models/schemas').EventDataCollection;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
+
 var EventData = function () {
 };
 
@@ -51,7 +54,7 @@ EventData.prototype.deleteAll = function (callback) {
 }
 
 
-EventData.prototype.getGroupMapEvents = function (callback) {
+EventData.prototype.getGroupMapEvents = function (request,callback) {
     var retObj = {
         status: false,
         messages: []
@@ -65,18 +68,20 @@ EventData.prototype.getGroupMapEvents = function (callback) {
     }], function (err, resutls) {
         if (err) {
             retObj.messages.push('Error saving EventData');
+            analyticsService.create(request,serviceActions.get_grp_map_events_err,{accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.resutls = resutls;
+            analyticsService.create(request,serviceActions.get_grp_map_events,{accountId:request.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
 }
 
 
-EventData.prototype.getTrackEvents = function (vehicleNumber, callback) {
+EventData.prototype.getTrackEvents = function (vehicleNumber,request, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -84,11 +89,13 @@ EventData.prototype.getTrackEvents = function (vehicleNumber, callback) {
     EventDataCollection.find({"vehicle_number": vehicleNumber}, function (err, results) {
         if (err) {
             retObj.messages.push('Error saving EventData');
+            analyticsService.create(request,serviceActions.track_events_by_veh_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.results = results;
+            analyticsService.create(request,serviceActions.track_events_by_veh,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
