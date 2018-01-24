@@ -219,12 +219,9 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     if (!_.isObject(tripDetails) || _.isEmpty(tripDetails)) {
         retObj.messages.push("Please fill all the required trip details");
     }
-
     if (!tripDetails.date) {
         retObj.messages.push("Please add date");
     }
-
-
     if (!tripDetails.partyId) {
         retObj.messages.push("Please select a party");
     }
@@ -242,22 +239,14 @@ Trips.prototype.addTrip = function (jwt, tripDetails, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-
-        if (jwt.type === "account") {
-            tripDetails.createdBy = jwt.id;
-            tripDetails.accountId = jwt.accountId;
-        }
-        else {
-            tripDetails.createdBy = jwt.id;
-            tripDetails.groupId = jwt.id;
-            tripDetails.accountId = jwt.groupAccountId;
-        }
+        tripDetails.createdBy = jwt.id;
+        tripDetails.groupId = jwt.id;
+        tripDetails.accountId = jwt.accountId;
         tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
         tripDetails.tripLane = tripDetails.tripLane.name;
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err, trip) {
             if (err) {
-                console.log(err);
                 retObj.messages.push("Error while adding trip, try Again");
                 callback(retObj);
             } else {
@@ -522,11 +511,42 @@ Trips.prototype.getAll = function (jwt, params, callback) {
 };
 
 Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
+    var result = {};
+
+    if (!params.truckNumber) {
+        getTrips({'accountId': jwt.accountId}, jwt, params, function (response) {
+            callback(response);
+        })
+    } else {
+        TrucksColl.findOne({registrationNo: {$regex: '.*' + params.truckNumber + '.*'}}, function (err, truckData) {
+            console.log('truckData',truckData)
+            if (err) {
+                result.status = false;
+                result.message = 'Error retrieving expenses Costs';
+                callback(result);
+            } else if (truckData) {
+                getTrips({
+                    'accountId': jwt.accountId,
+                    'registrationNo': truckData._id
+                }, jwt, params, function (response) {
+                    callback(response);
+                })
+            } else {
+                result.status = true;
+                result.message = 'Success';
+                result.count = 0;
+                result.expenses = [];
+                callback(result);
+            }
+        })
+    }
+};
+
+function getTrips(condition, jwt, params, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var condition = {};
     if (!params.page) {
         params.page = 1;
     }
@@ -534,20 +554,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    if (jwt.type === "account") {
-        if (!params.truckNumber) {
-            condition = {'accountId': jwt.accountId};
-        } else {
-            condition = {'accountId': jwt.accountId, 'registrationNo': params.truckNumber}
-        }
-    } else {
-        if (!params.truckNumber) {
-            condition = {'accountId': jwt.groupAccountId};
-        } else {
-            condition = {'accountId': jwt.groupAccountId, 'registrationNo': params.truckNumber}
-        }
 
-    }
     async.parallel({
         trips: function (tripsCallback) {
             TripCollection
@@ -603,8 +610,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, callback) {
             callback(retObj);
         }
     });
-
-};
+}
 
 Trips.prototype.deleteTrip = function (jwt, tripId, callback) {
     var retObj = {
@@ -906,10 +912,7 @@ Trips.prototype.findRevenueByParty = function (jwt, callback) {
 
 Trips.prototype.findRevenueByVehicle = function (jwt, params, callback) {
     var condition = {};
-    var retObj = {
-        status: false,
-        messages: []
-    };
+
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {
             $match: {

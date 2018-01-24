@@ -883,8 +883,8 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params, callback) 
                         })
                         if (i === expairResponse.expiryTrucks.length - 1) {
                             var emailparams = {
-                                templateName: 'sharesExpairyDetailsByTruck',
-                                subject: "Easygaadi Expairy Details",
+                                templateName: 'sharesExpiryDetailsByTruck',
+                                subject: "Easygaadi Expiry Details",
                                 to: params.email,
                                 data: {
                                     expiryTrucks: output

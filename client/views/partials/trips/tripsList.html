@@ -7,7 +7,7 @@
                 <div class="col-sm-8">
                     <form>
                     <div class="input-group stylish-input-group">
-                        <input type="text" class="form-control" ng-model="truckNumber1"  placeholder="Search">
+                        <input type="text" class="form-control" ng-model="truckNumber1"  placeholder="Search By Vehicle Number">
                         <span class="input-group-addon">
                         <button type="submit" ng-click="searchByVechicleNumber(truckNumber1);">
                                 <i class="fa fa-search sear" aria-hidden="true"></i>
@@ -20,7 +20,7 @@
                     <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
                     <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
                         <option value="" selected>All Vehicles</option>
-                        <option ng-repeat="truck in trucksList" value="{{truck._id}}">{{truck.registrationNo}}</option>
+                        <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
 
                     </select>
                 </div>

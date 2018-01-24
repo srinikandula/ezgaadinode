@@ -131,12 +131,12 @@ app.factory('TrucksService', function ($http, $cookies) {
                 params:params
             }).then(success,error);
         },
-        getAllTrucksForFilter: function (success, error) {
-        $http({
-            url: '/v1/trucks/getAllTrucksForFilter',
-            method: "GET",
-        }).then(success, error)
-    }
+        getAllTrucksForFilter:function (success,error) {
+            $http({
+                url:'/v1/trucks/getAllTrucksForFilter',
+                method:"GET"
+            }).then(success,error);
+        }
     }
 });
 
@@ -192,7 +192,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         });
     };
     $scope.getAllTrucks = function () {
-        TrucksService.getAllTrucksForFilter( function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
             if (success.data.status) {
                 $scope.trucksList = success.data.trucks;
             } else {
