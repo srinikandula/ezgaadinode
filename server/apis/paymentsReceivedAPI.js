@@ -82,11 +82,8 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
         details.date = new Date(details.date);
         details.createdBy = jwt.id;
         details.updatedBy = jwt.id;
-        if (jwt.type === "account") {
-            details.accountId = jwt.accountId;
-        } else {
-            details.accountId = jwt.groupAccountId;
-        }
+        details.accountId = jwt.accountId;
+
         var insertDoc = new PaymentsReceivedColl(details);
         insertDoc.save(function (err, payment) {
             if (err) {
@@ -157,8 +154,8 @@ function getPayments(condition, jwt, params, callback) {
             result.status = true;
             result.message = 'Success';
             result.count = results.count;
-            result.userId=jwt.id;
-            result.userType=jwt.type;
+            result.userId = jwt.id;
+            result.userType = jwt.type;
             result.paymentsCosts = results.mCosts.createdbyname;
             callback(result);
         }
@@ -169,12 +166,7 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
     var result = {};
     var condition = {};
     if (!params.partyName) {
-        if (jwt.type === "account") {
-            condition = {'accountId': jwt.accountId};
-        } else {
-            condition = {'accountId': jwt.groupAccountId};
-        }
-        getPayments(condition, jwt, params, function (paymentResp) {
+        getPayments({'accountId': jwt.accountId}, jwt, params, function (paymentResp) {
             callback(paymentResp);
         });
     } else {
@@ -183,13 +175,8 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
                 result.status = false;
                 result.message = 'Error retrieving Payments Costs';
                 callback(retObj);
-            }else if(partyData){
-                if (jwt.type === "account") {
-                    condition = {'accountId': jwt.accountId,partyId:partyData._id};
-                } else {
-                    condition = {'accountId': jwt.groupAccountId,partyId:partyData._id};
-                }
-                getPayments(condition,jwt, params,function(paymentResp){
+            } else if (partyData) {
+                getPayments({'accountId': jwt.accountId, partyId: partyData._id}, jwt, params, function (paymentResp) {
                     callback(paymentResp);
                 });
             } else {
@@ -205,11 +192,11 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
 
 PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
     var result = {};
-    var condition={};
+    var condition = {};
     if (jwt.type === "account") {
-        condition = {_id: paymentsId,'accountId': jwt.accountId};
+        condition = {_id: paymentsId, 'accountId': jwt.accountId};
     } else {
-        condition = {_id: paymentsId,'createdBy': jwt.id };
+        condition = {_id: paymentsId, 'createdBy': jwt.id};
     }
     PaymentsReceivedColl.findOne(condition, function (err, paymentsReceived) {
         if (err) {
@@ -313,22 +300,22 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
         status: false,
         messages: []
     };
-    var condition={};
-    var giveAccess=false;
+    var condition = {};
+    var giveAccess = false;
     if (jwt.type === "account") {
-        condition={accountId: jwt.accountId, _id: id};
-        giveAccess=true;
-    } else if(jwt.type === "group") {
-        condition={_id: id,createdBy:jwt.id};
-        giveAccess=true;
-    }else{
+        condition = {accountId: jwt.accountId, _id: id};
+        giveAccess = true;
+    } else if (jwt.type === "group") {
+        condition = {_id: id, createdBy: jwt.id};
+        giveAccess = true;
+    } else {
         retObj.status = false;
         retObj.messages.push("Unauthorized access");
         callback(result);
     }
 
-    if(giveAccess) {
-        PaymentsReceivedColl.remove(condition, function (err,returnValue) {
+    if (giveAccess) {
+        PaymentsReceivedColl.remove(condition, function (err, returnValue) {
             if (err) {
                 retObj.messages.push('Error deleting payment');
                 callback(retObj);
@@ -347,7 +334,7 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
 
 PaymentsReceived.prototype.countPayments = function (jwt, callback) {
     var result = {};
-    PaymentsReceivedColl.count({'accountId': jwt.accountId }, function (err, data) {
+    PaymentsReceivedColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';

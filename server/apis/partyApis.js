@@ -247,7 +247,6 @@ Party.prototype.getAllParties = function (callback) {
                     retObj.status = true;
                     retObj.messages.push('Success');
                     retObj.parties = response.documents;
-                    console.log("All PArties", retObj.parties);
                     callback(retObj);
                 } else {
                     retObj.messages.push('Error getting parties');
@@ -263,12 +262,7 @@ Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
         messages: []
     };
     var condition = {};
-    if (jwt.type === "account") {
-        condition = {partyType: 'Supplier', 'accountId': jwt.accountId};
-    } else {
-        condition = {partyType: 'Supplier', 'accountId': jwt.groupAccountId};
-    }
-    PartyCollection.find(condition, function (err, parties) {
+    PartyCollection.find({partyType: 'Supplier', 'accountId': jwt.accountId}, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             callback(retObj);
@@ -296,13 +290,8 @@ Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
-    if (jwt.type === "account") {
-        condition = {partyType: 'Transporter', accountId: jwt.accountId};
-    } else {
-        condition = {partyType: 'Transporter', accountId: jwt.groupAccountId}
-    }
-    PartyCollection.find(condition, function (err, parties) {
+
+    PartyCollection.find({partyType: 'Transporter', accountId: jwt.accountId}, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             callback(retObj);

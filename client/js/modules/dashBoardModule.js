@@ -259,7 +259,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         };
 
         $scope.getAllTrucks = function () {
-            TrucksService.getAllTrucks(null, function (success) {
+            TrucksService.getAllTrucksForFilter(function (success) {
                 if (success.data.status) {
                     $scope.trucksList = success.data.trucks;
                 } else {
@@ -349,17 +349,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             });
         };
 
-        $scope.getAllParties = function () {
-            PartyService.getParties(null, function (success) {
-                if (success.data.status) {
-                    $scope.partiesList = success.data.parties;
-                } else {
-
-                }
-            }, function (err) {
-
-            });
-        };
         $scope.getTotalAmountReceivable = function () {
             PaymentsService.getTotalPaymentsReceivable(function (success) {
                 if (success.data.status) {
@@ -516,7 +505,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
         $scope.sharePaymentsDetailsByPartyViaEmail = function () {
             swal({
-                title: 'Share revenue data using email',
+                title: 'Share payment data using email',
                 input: 'email',
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
@@ -555,7 +544,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         }
         $scope.shareExpensesDetailsViaEmail = function () {
             swal({
-                title: 'Share expense data',
+                title: 'Share expense data using email',
                 input: 'email',
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
@@ -594,7 +583,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         }
         $scope.shareExpairedDetailsViaEmail = function () {
             swal({
-                title: 'Share expairy data',
+                title: 'Share expiry data using email',
                 input: 'email',
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
@@ -626,14 +615,14 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 if (result.value) {
                     swal({
                         type: 'success',
-                        html: 'Expairy details sent successfully'
+                        html: 'Expiry details sent successfully'
                     })
                 }
             })
         }
         $scope.sharePayableDetailsViaEmail = function () {
             swal({
-                title: 'Share payable details',
+                title: 'Share payable data using mail',
                 input: 'email',
                 showCancelButton: true,
                 confirmButtonText: 'Submit',

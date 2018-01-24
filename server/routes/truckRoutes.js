@@ -19,7 +19,7 @@ AuthRouter.get('/downloadExpiryDetailsByTruck', function (req, res) {
 
     Trucks.downloadExpiryDetailsByTruck(req.jwt, req.query, function (result) {
         if (result.status) {
-            res.xls('Expairy' + new Date().toLocaleDateString() + '.xlsx', result.data);
+            res.xls('Expiry' + new Date().toLocaleDateString() + '.xlsx', result.data);
         } else {
             res.send(result);
         }

@@ -52,7 +52,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
                     retObj.messages.push('Error finding user');
                     callback(retObj);
                 } else if (!user) {
-                    retObj.messages.push("User doesn't exist");
+                    retObj.messages.push("Invalid Credentials");
                     callback(retObj);
                 } else if ((user.password === password)) {
                     var obj = {
