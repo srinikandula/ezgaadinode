@@ -328,6 +328,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
 
         $scope.getAmountsByparty = function () {
+
             PaymentsService.getDuesByParty({
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
@@ -336,7 +337,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 sort: $scope.filters.sort,
                 size: $scope.filters.size
             }, function (success) {
+                console.log("jdichiush",success);
                 if (success.data.status) {
+
                     $scope.parties = success.data.parties;
                     $scope.partiesAmount = success.data.grossAmounts;
                 } else {
