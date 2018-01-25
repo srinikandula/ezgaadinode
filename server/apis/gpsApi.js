@@ -7,6 +7,7 @@ var GpsColl = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var DevicePositionsWitoutLocationColl = require('./../models/schemas').devicePositionsWitoutLocationColl;
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -19,29 +20,29 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
         status: false,
         messages: []
     };
+    pushPositionsWithoutLocation(position);
     position.location = {};
     position.location.coordinates = [position.longitude, position.latitude];
-
     var options = {
         provider: 'google',
         httpAdapter: 'https'
     };
     var fulldate = new Date();
-    var today = fulldate.getDate() + '' + fulldate.getMonth() + 1 + '' + fulldate.getFullYear();
-
-    SecretKeyCounterColl.findOne({date: today, counter: {$lt: config.googleSecretKeyLimit}}).populate('secretId', {secret:1}).exec(function (errsecret, secret) {
+    var today = fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear();
+    SecretKeyCounterColl.findOne({date: today, counter: {$lt: config.googleSecretKeyLimit}}).populate('secretId', {secret: 1}).exec(function (errsecret, secret) {
         if (errsecret) {
             retObj.messages.push('Error getting secret');
-        } else if(secret){
-            // console.log('secret', secret);
+            callback(retObj);
+        } else if (secret) {
+            console.log('secret', secret);
             options.apiKey = secret.secretId.secret;
             var geocoder = nodeGeocoder(options);
-            console.log('options', options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 position.address = location[0]['formattedAddress'];
                 SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
                     if (incerr) {
                         retObj.messages.push('Error incrementing secret');
+                        callback(retObj);
                     } else {
                         retObj.messages.push('Secret Incremented');
                         var positionDoc = new GpsColl(position);
@@ -60,12 +61,28 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
             });
         } else {
             retObj.messages.push('Secrets Completed for today');
-            console.log('Secrets Completed for today');
+            var positionDoc = new GpsColl(position);
+            positionDoc.save(function (err) {
+                if (err) {
+                    retObj.messages.push('Error saving position');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Successfully saved the position');
+                    callback(retObj);
+                }
+            });
         }
     });
 };
 
-Gps.prototype.addSecret = function(secret, callback) {
+function pushPositionsWithoutLocation(position) {
+    var positionDoc = new DevicePositionsWitoutLocationColl(position);
+    positionDoc.save(function (err) {
+    });
+}
+
+Gps.prototype.addSecret = function (secret, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -100,8 +117,8 @@ Gps.prototype.getAllSecrets = function (callback) {
         messages: []
     };
     var fulldate = new Date();
-    SecretKeyCounterColl.find({date:fulldate.getDate() + '' + fulldate.getMonth() + 1 + '' + fulldate.getFullYear()}).populate('secretId', {secret:1}).exec(function (errsecrets, secretKeys) {
-        if(errsecrets) {
+    SecretKeyCounterColl.find({date: fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear()}).populate('secretId', {secret: 1}).exec(function (errsecrets, secretKeys) {
+        if (errsecrets) {
             retObj.messages.push('Error getting secrets');
         } else {
             retObj.status = true;
@@ -118,14 +135,14 @@ function addInitialCounters() {
         messages: []
     };
     var fulldate = new Date();
-    console.log(fulldate, fulldate.getDate() + '' + fulldate.getMonth() + 1 + '' + fulldate.getFullYear());
+    console.log(fulldate, fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear());
     SecretKeyColl.find(function (secreterr, secrets) {
         if (secreterr) {
             retObj.messages.push('Error getting secrets');
         } else {
             async.map(secrets, function (secret, asyncCallback) {
                 var counterDoc = new SecretKeyCounterColl({
-                    date: fulldate.getDate() + '' + fulldate.getMonth() + 1 + '' + fulldate.getFullYear(),
+                    date: fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear(),
                     secretId: secret._id,
                     counter: 0
                 });
@@ -145,6 +162,8 @@ function addInitialCounters() {
         }
     });
 }
+
+// addInitialCounters();
 Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
     var retObj = {
         status: false,

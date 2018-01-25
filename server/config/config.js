@@ -24,5 +24,10 @@ if(fs.existsSync(localConfigPath)) {
 
 var finalJSONConfig = JSON.parse(fs.readFileSync(selectedConfigPath));
 
+if(!finalJSONConfig.googleSecretKeyLimit) {
+    console.log('googleSecretKeyLimit DOESNT EXIST');
+    process.exit();
+}
+
 module.exports = finalJSONConfig;
 
