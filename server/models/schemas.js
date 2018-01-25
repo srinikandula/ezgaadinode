@@ -368,6 +368,6 @@ module.exports = {
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
-    devicePositionsWitoutLocationColl:mongoose('devicePositionsWitoutLocation', devicePositionsWitoutLocation, 'devicePositionsWitoutLocation')
+    devicePositionsWitoutLocationColl:mongoose.model('devicePositionsWitoutLocation', devicePositionsWitoutLocation, 'devicePositionsWitoutLocation')
 };
 
