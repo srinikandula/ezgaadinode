@@ -38,25 +38,27 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
             var geocoder = nodeGeocoder(options);
             console.log('options', options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
-                position.address = location[0]['formattedAddress'];
-                SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
-                    if (incerr) {
-                        retObj.messages.push('Error incrementing secret');
-                    } else {
-                        retObj.messages.push('Secret Incremented');
-                        var positionDoc = new GpsColl(position);
-                        positionDoc.save(function (err) {
-                            if (err) {
-                                retObj.messages.push('Error saving position');
-                                callback(retObj);
-                            } else {
-                                retObj.status = true;
-                                retObj.messages.push('Successfully saved the position');
-                                callback(retObj);
-                            }
-                        });
-                    }
-                });
+                if(location) {
+                    position.address = location[0]['formattedAddress'];
+                    SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
+                        if (incerr) {
+                            retObj.messages.push('Error incrementing secret');
+                        } else {
+                            retObj.messages.push('Secret Incremented');
+                            var positionDoc = new GpsColl(position);
+                            positionDoc.save(function (err) {
+                                if (err) {
+                                    retObj.messages.push('Error saving position');
+                                    callback(retObj);
+                                } else {
+                                    retObj.status = true;
+                                    retObj.messages.push('Successfully saved the position');
+                                    callback(retObj);
+                                }
+                            });
+                        }
+                    });
+                }
             });
         } else {
             retObj.messages.push('Secrets Completed for today');
