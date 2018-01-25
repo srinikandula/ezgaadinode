@@ -749,7 +749,7 @@ Trucks.prototype.insuranceExpiryTrucks = function (jwt,req, callback) {
     });
 };
 
-Trucks.prototype.pollutionExpiryTrucks = function (jwt, callback) {
+Trucks.prototype.pollutionExpiryTrucks = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -820,10 +820,11 @@ Trucks.prototype.getAllTrucksForFilter = function (jwt,req, callback) {
         status: false,
         messages: []
     };
+    console.log(req.jwt);
     var condition = {};
     if(jwt.type === 'account') {
         condition = {'accountId': jwt.accountId};
-        getAllTrucksForFilterCondition(condition,callback);
+        getAllTrucksForFilterCondition(condition,req,callback);
     } else {
         AccountsColl.findOne({'_id': jwt.id},{truckIds: 1}, function (err, groupTrucks) {
             if (err) {
@@ -835,7 +836,7 @@ Trucks.prototype.getAllTrucksForFilter = function (jwt,req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 condition = {'_id':{"$in":groupTrucks.truckIds}};
-                getAllTrucksForFilterCondition(condition,callback);
+                getAllTrucksForFilterCondition(condition,req,callback);
                 analyticsService.create(req,serviceActions.get_all_trus_for_filter,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
             } else {
                 retObj.status = false;
@@ -847,7 +848,7 @@ Trucks.prototype.getAllTrucksForFilter = function (jwt,req, callback) {
     }
 };
 
-function getAllTrucksForFilterCondition(condition,callback) {
+function getAllTrucksForFilterCondition(condition,req,callback) {
     var retObj = {
         status: false,
         messages: []
@@ -856,17 +857,18 @@ function getAllTrucksForFilterCondition(condition,callback) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Trucks');
-            analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else if(data){
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = data;
+            analyticsService.create(req,serviceActions.get_all_trus_for_filter,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         } else {
             retObj.status = false;
             retObj.messages.push('No Trucks Found');
-            analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         }
     })

@@ -1,4 +1,6 @@
 var analyticsColl=require('./../models/schemas').analyticsColl;
+var UAParser = require('ua-parser-js');
+var parser = new UAParser();
 var service = function () {
 };
 
@@ -7,6 +9,7 @@ service.prototype.create = function(req, systemAction, attrs, callback){
     var retObj={};
     analytics.remoteIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     analytics.userAgent = req.headers['user-agent'];
+    console.log(parser.setUA(req.headers['user-agent']).getResult());
     analytics.action=systemAction;
     analytics.attrs=attrs;
     var analyticsData=new analyticsColl(analytics);

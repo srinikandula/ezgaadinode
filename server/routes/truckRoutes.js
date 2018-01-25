@@ -10,7 +10,7 @@ AuthRouter.post('/', function (req, res) {
 });
 
 AuthRouter.get('/getAllTrucksForFilter', function (req, res) {
-    Trucks.getAllTrucksForFilter(req.jwt, function (result) {
+    Trucks.getAllTrucksForFilter(req.jwt,req, function (result) {
         res.send(result);
     });
 });
