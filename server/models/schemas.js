@@ -256,7 +256,7 @@ var devicePositions = new mongoose.Schema({
     protocol: String,
     deviceTime: Number,
     fixTime: Number,
-    valid: String,
+    valid: Boolean,
     location: {
         type: {
             type: String,

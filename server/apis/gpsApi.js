@@ -21,6 +21,10 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
         messages: []
     };
     pushPositionsWithoutLocation(position);
+    if(position.latitude === 'true' || position.latitude === 'false') {
+        position.latitude = position.valid;
+        position.valid = false
+    }
     position.location = {};
     position.location.coordinates = [position.longitude, position.latitude];
     var options = {
@@ -34,7 +38,6 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
             retObj.messages.push('Error getting secret');
             callback(retObj);
         } else if (secret) {
-            console.log('secret', secret);
             options.apiKey = secret.secretId.secret;
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
