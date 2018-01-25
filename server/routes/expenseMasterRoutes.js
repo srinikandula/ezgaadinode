@@ -4,37 +4,37 @@ var AuthRouter = express.Router();
 var ExpenseMaster = require('./../apis/expenseMasterApi');
 
 AuthRouter.post('/', function (req, res) {
-    ExpenseMaster.addExpenseType(req.jwt, req.body, function (result) {
+    ExpenseMaster.addExpenseType(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/', function (req, res) {
-    ExpenseMaster.getAllAccountExpenses(req.jwt, req.query, function (result) {
+    ExpenseMaster.getAllAccountExpenses(req.jwt, req.query,req, function (result) {
         res.json(result);
     });
 });
 
 AuthRouter.get('/getExpense/:id', function (req, res) {
-    ExpenseMaster.getExpenseType(req.jwt, req.params.id, function (result) {
+    ExpenseMaster.getExpenseType(req.jwt, req.params.id,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.put('/', function (req, res) {
-    ExpenseMaster.updateExpenseType(req.jwt, req.body, function (result) {
+    ExpenseMaster.updateExpenseType(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.delete('/:id', function (req, res) {
-    ExpenseMaster.deleteExpenseType(req.jwt, req.params.id, function (result) {
+    ExpenseMaster.deleteExpenseType(req.jwt, req.params.id,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/count', function (req, res) {
-    ExpenseMaster.count(req.jwt, function (result) {
+    ExpenseMaster.count(req.jwt,req, function (result) {
         res.send(result);
     });
 });

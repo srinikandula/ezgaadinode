@@ -8,6 +8,8 @@ var log4js = require('log4js')
 var AccountsCollection = require('./../models/schemas').AccountsColl;
 var OtpColl = require('./../models/schemas').OtpColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var serviceActions=require('./../constants/constants');
+var analyticsService=require('./../apis/analyticsApi');
 
 log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
@@ -17,8 +19,12 @@ var msg91 = require("msg91")(config_msg91.auth_Key, config_msg91.sender_id, conf
 
 var Groups = function () {
 };
+function create(req,action,attrs){
+    analyticsService.create(req,action,attrs,function(response){ });
+}
 
-Groups.prototype.login = function (userName, password, contactPhone, callback) {
+
+Groups.prototype.login = function (userName, password, contactPhone,req, callback) {
     logger.info("logging in user:" + userName);
     var retObj = {
         status: false,
@@ -38,6 +44,7 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
     }
 
     if (retObj.messages.length) {
+        create(req,serviceActions.invalid_login_params,{body:JSON.stringify(req.body),success:false,messages:retObj.messages});
         return callback(retObj);
     } else {
         var query = {
@@ -50,9 +57,11 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
             .exec(function (err, user) {
                 if (err) {
                     retObj.messages.push('Error finding user');
+                    create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
                     callback(retObj);
                 } else if (!user) {
                     retObj.messages.push("Invalid Credentials");
+                    create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false})
                     callback(retObj);
                 } else if ((user.password === password)) {
                     var obj = {
@@ -114,9 +123,10 @@ Groups.prototype.login = function (userName, password, contactPhone, callback) {
 
                         }
                     });
-
+                    create(req,serviceActions.login_successful,{body:JSON.stringify(req.body),accountId:user._id,success:true});
                 } else {
                     retObj.messages.push("Invalid Credentials");
+                    create(req,serviceActions.invalid_login,{body:JSON.stringify(req.body),accountId:user._id,success:false});
                     callback(retObj);
                 }
             });
