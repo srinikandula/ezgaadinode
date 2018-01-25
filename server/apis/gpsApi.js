@@ -7,7 +7,6 @@ var GpsColl = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
-var DevicePositionsWitoutLocationColl = require('./../models/schemas').devicePositionsWitoutLocationColl;
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -20,7 +19,6 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
         status: false,
         messages: []
     };
-    pushPositionsWithoutLocation(position);
     if(position.latitude === 'true' || position.latitude === 'false') {
         position.latitude = position.valid;
         position.valid = false
@@ -79,12 +77,6 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
         }
     });
 };
-
-function pushPositionsWithoutLocation(position) {
-    var positionDoc = new DevicePositionsWitoutLocationColl(position);
-    positionDoc.save(function (err) {
-    });
-}
 
 Gps.prototype.addSecret = function (secret, callback) {
     var retObj = {
