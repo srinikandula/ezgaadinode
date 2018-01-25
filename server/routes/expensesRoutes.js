@@ -4,7 +4,7 @@ var AuthRouter = express.Router();
 var ExpenseCost = require('../apis/expensesApi');
 
 AuthRouter.post('/addExpense', function (req, res) {
-    ExpenseCost.addExpense(req.jwt, req.body, function (result) {
+    ExpenseCost.addExpense(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
@@ -16,73 +16,73 @@ AuthRouter.post('/addExpense', function (req, res) {
 // });
 
 AuthRouter.get('/all/accountExpense', function (req, res) {
-    ExpenseCost.getAllAccountExpenseCosts(req.jwt, function (result) {
+    ExpenseCost.getAllAccountExpenseCosts(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getAll', function (req, res) {
-    ExpenseCost.getAll(req.jwt, req.body, function (result) {
+    ExpenseCost.getAll(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getAllExpenses', function (req, res) {
-    ExpenseCost.getExpenseCosts(req.jwt, req.query, function (result) {
+    ExpenseCost.getExpenseCosts(req.jwt, req.query,req, function (result) {
         res.json(result);
     });
 });
 
 
 AuthRouter.get('/getExpense/:expenseId', function (req, res) {
-    ExpenseCost.findExpenseRecord(req.jwt,req.params.expenseId, function (result) {
+    ExpenseCost.findExpenseRecord(req.jwt,req.params.expenseId,req, function (result) {
         res.send(result);
     });
 });
 
 
 AuthRouter.put('/updateExpense', function (req, res) {
-    ExpenseCost.updateExpenseCost(req.jwt, req.body, function (result) {
+    ExpenseCost.updateExpenseCost(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.delete('/:expenseId', function (req, res) {
-    ExpenseCost.deleteExpenseRecord(req.jwt,req.params.expenseId, function (result) {
+    ExpenseCost.deleteExpenseRecord(req.jwt,req.params.expenseId,req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.get('/total/count', function (req, res) {
-    ExpenseCost.countExpense(req.jwt, function (result) {
+    ExpenseCost.countExpense(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/total', function (req, res) {
-    ExpenseCost.findTotalExpenses(req.jwt, function (result) {
+    ExpenseCost.findTotalExpenses(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/groupByVehicle', function (req, res) {
-    ExpenseCost.findExpensesByVehicles(req.jwt, req.query, function (result) {
+    ExpenseCost.findExpensesByVehicles(req.jwt, req.query,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/vehicleExpense/:vehicleId', function (req, res) {
-    ExpenseCost.findExpensesForVehicle(req.jwt,req.params.vehicleId, function (result) {
+    ExpenseCost.findExpensesForVehicle(req.jwt,req.params.vehicleId,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/shareExpensesDetailsViaEmail',function(req,res){
-    ExpenseCost.shareExpensesDetailsViaEmail(req.jwt,req.query, function (result) {
+    ExpenseCost.shareExpensesDetailsViaEmail(req.jwt,req.query,req, function (result) {
         res.send(result);
     });
 })
 AuthRouter.get('/downloadExpenseDetailsByVechicle',function(req,res){
-    ExpenseCost.downloadExpenseDetailsByVechicle(req.jwt,req.query, function (result) {
+    ExpenseCost.downloadExpenseDetailsByVechicle(req.jwt,req.query,req, function (result) {
         if(result.status){
             res.xls('expense'+new Date().toLocaleDateString()+'.xlsx', result.data);
         }else{
@@ -92,7 +92,7 @@ AuthRouter.get('/downloadExpenseDetailsByVechicle',function(req,res){
 })
 
 AuthRouter.get('/downloadPaybleDetailsByParty',function(req,res){
-    ExpenseCost.downloadPaybleDetailsByParty(req.jwt,req.query, function (result) {
+    ExpenseCost.downloadPaybleDetailsByParty(req.jwt,req.query,req, function (result) {
         if(result.status){
             res.xls('payble'+new Date().toLocaleDateString()+'.xlsx', result.data);
         }else{
@@ -101,19 +101,19 @@ AuthRouter.get('/downloadPaybleDetailsByParty',function(req,res){
     });
 })
 AuthRouter.get('/getPaybleAmountByParty',function(req,res){
-    ExpenseCost.getPaybleAmountByParty(req.jwt,req.query,function(result){
+    ExpenseCost.getPaybleAmountByParty(req.jwt,req.query,req,function(result){
         res.send(result);
     })
 })
 
 AuthRouter.get('/sharePayableDetailsViaEmail',function(req,res){
-    ExpenseCost.sharePayableDetailsViaEmail(req.jwt,req.query, function (result) {
+    ExpenseCost.sharePayableDetailsViaEmail(req.jwt,req.query,req, function (result) {
         res.send(result);
     });
 })
 
 AuthRouter.get('/getPaybleAmountByPartyId',function(req,res){
-    ExpenseCost.getPaybleAmountByPartyId(req.jwt,req.query, function (result) {
+    ExpenseCost.getPaybleAmountByPartyId(req.jwt,req.query,req, function (result) {
         res.send(result);
     });
 })

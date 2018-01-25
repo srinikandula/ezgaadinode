@@ -4,7 +4,7 @@ var async = require('async');
 var DriversColl = require('./../models/schemas').DriversColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var analyticsService=require('./../apis/analyticsApi');
-var serviceActions=require('./../constants/driverConstants');
+var serviceActions=require('./../constants/constants');
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -279,6 +279,7 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo,req, callback) {
 };
 
 Drivers.prototype.deleteDriver = function (jwt,driverId,req, callback) {
+    console.log('In delete Driver');
     var retObj = {
         status: false,
         messages: []
