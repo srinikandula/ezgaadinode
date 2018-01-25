@@ -7,6 +7,8 @@ var PaymentsReceivedColl = require('./../models/schemas').paymentsReceivedColl;
 var TripColl = require('./../models/schemas').TripCollection;
 var PartyCollection = require('./../models/schemas').PartyCollection;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
 
 
 var config = require('./../config/config');
@@ -27,7 +29,7 @@ var PaymentsReceived = function () {
  * @param accId
  * @param callback
  */
-PaymentsReceived.prototype.getTotalAmount = function (accId, callback) {
+PaymentsReceived.prototype.getTotalAmount = function (accId,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -45,18 +47,20 @@ PaymentsReceived.prototype.getTotalAmount = function (accId, callback) {
     ], function (err, sum) {
         if (err) {
             retObj.messages.push("Error while getting amount details, try Again");
+            analyticsService.create(req,serviceActions.get_total_amnt_err,{accountId:req.jwt.accountId,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
             logger.error("Error:   failed find amount total by account" + JSON.stringify(err));
         } else {
             retObj.status = true;
             retObj.messages.push("Success");
             retObj.amounts = sum;
+            analyticsService.create(req,serviceActions.get_total_amnt,{accountId:req.jwt.accountId,success:true},function(response){ });
             callback(retObj);
         }
     });
 };
 
-PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
+PaymentsReceived.prototype.addPayments = function (jwt, details,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -77,6 +81,7 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
         retObj.messages.push('Enter payment reference number');
     }
     if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.add_payment_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         details.date = new Date(details.date);
@@ -88,11 +93,13 @@ PaymentsReceived.prototype.addPayments = function (jwt, details, callback) {
         insertDoc.save(function (err, payment) {
             if (err) {
                 retObj.messages.push("Error, try Again");
+                analyticsService.create(req,serviceActions.add_payment_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push("Successfully Added");
                 retObj.payments = payment;
+                analyticsService.create(req,serviceActions.add_payment,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             }
         });
@@ -162,11 +169,16 @@ function getPayments(condition, jwt, params, callback) {
     });
 }
 
-PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
+PaymentsReceived.prototype.getPayments = function (jwt, params,req, callback) {
     var result = {};
     var condition = {};
     if (!params.partyName) {
         getPayments({'accountId': jwt.accountId}, jwt, params, function (paymentResp) {
+            if(paymentResp.status){
+                analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
+            }
             callback(paymentResp);
         });
     } else {
@@ -174,9 +186,15 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
             if (err) {
                 result.status = false;
                 result.message = 'Error retrieving Payments Costs';
+                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
                 callback(retObj);
             } else if (partyData) {
                 getPayments({'accountId': jwt.accountId, partyId: partyData._id}, jwt, params, function (paymentResp) {
+                    if(paymentResp.status){
+                        analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                    }else{
+                        analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
+                    }
                     callback(paymentResp);
                 });
             } else {
@@ -184,13 +202,14 @@ PaymentsReceived.prototype.getPayments = function (jwt, params, callback) {
                 result.message = 'Success';
                 result.count = 0;
                 result.paymentsCosts = [];
+                analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
                 callback(result);
             }
         })
     }
 };
 
-PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, callback) {
+PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId,req, callback) {
     var result = {};
     var condition = {};
     if (jwt.type === "account") {
@@ -202,21 +221,24 @@ PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId, cal
         if (err) {
             result.status = false;
             result.message = "Error while finding Payments, try Again";
+            analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         } else if (paymentsReceived) {
             result.status = true;
             result.message = "Payment found successfully";
             result.paymentsDetails = paymentsReceived;
+            analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
         } else {
             result.status = false;
             result.message = "Unauthorized access or Payment is not found!";
+            analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         }
     });
 };
 
-PaymentsReceived.prototype.getAllAccountPayments = function (jwt, callback) {
+PaymentsReceived.prototype.getAllAccountPayments = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -224,11 +246,13 @@ PaymentsReceived.prototype.getAllAccountPayments = function (jwt, callback) {
     PaymentsReceivedColl.find({accountId: jwt.accountId}, function (err, payments) {
         if (err) {
             retObj.messages.push('Error getting payments');
+            analyticsService.create(req,serviceActions.get_all_acc_payments_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.payments = payments;
+            analyticsService.create(req,serviceActions.get_all_acc_payments,{accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
@@ -258,7 +282,7 @@ PaymentsReceived.prototype.findPartyPayments = function (jwt, partyId, callback)
     });
 };
 
-PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callback) {
+PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -272,6 +296,7 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
     } else {
         retObj.status = false;
         retObj.messages.push("Unauthorized access");
+        analyticsService.create(req,serviceActions.update_payments_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(result);
     }
     if (giveAccess) {
@@ -282,20 +307,23 @@ PaymentsReceived.prototype.updatePayment = function (jwt, paymentDetails, callba
         }, {$set: paymentDetails}, {new: true}, function (err, payment) {
             if (err) {
                 retObj.messages.push("Error while updating payment, try Again");
+                analyticsService.create(req,serviceActions.update_payments_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (payment) {
                 retObj.status = true;
                 retObj.messages.push("Payment updated successfully");
+                analyticsService.create(req,serviceActions.update_payments,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
                 retObj.messages.push("Error, finding payment");
+                analyticsService.create(req,serviceActions.update_payments_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
     }
 };
 
-PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
+PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -311,6 +339,7 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
     } else {
         retObj.status = false;
         retObj.messages.push("Unauthorized access");
+        analyticsService.create(req,serviceActions.del_payments_record_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(result);
     }
 
@@ -318,31 +347,36 @@ PaymentsReceived.prototype.deletePaymentsRecord = function (jwt, id, callback) {
         PaymentsReceivedColl.remove(condition, function (err, returnValue) {
             if (err) {
                 retObj.messages.push('Error deleting payment');
+                analyticsService.create(req,serviceActions.del_payments_record_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (returnValue.result.n === 0) {
                 retObj.status = false;
                 retObj.messages.push('Unauthorized access or Error deleting payment Record');
+                analyticsService.create(req,serviceActions.del_payments_record_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('payment successfully Deleted');
+                analyticsService.create(req,serviceActions.del_payments_record,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             }
         });
     }
 };
 
-PaymentsReceived.prototype.countPayments = function (jwt, callback) {
+PaymentsReceived.prototype.countPayments = function (jwt,req, callback) {
     var result = {};
     PaymentsReceivedColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
+            analyticsService.create(req,serviceActions.count_payments_err,{accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         } else {
             result.status = true;
             result.message = 'Success';
             result.count = data;
+            analyticsService.create(req,serviceActions.count_payments,{accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
         }
     })
@@ -377,6 +411,7 @@ PaymentsReceived.prototype.findPendingDueForAccount = function (condition,req, c
         if (populateErr) {
             retObj.status = true;
             retObj.messages.push(JSON.stringify(populateErr));
+            analyticsService.create(req,serviceActions.get_account_due_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -395,6 +430,7 @@ PaymentsReceived.prototype.findPendingDueForAccount = function (condition,req, c
                 retObj.pendingDue = 0 //populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
             }
             // retObj.pendingDue = populateResults.tripFrightTotal[0].totalFright - populateResults.paymentsTotal[0].totalPayments;
+            analyticsService.create(req,serviceActions.get_account_due,{accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
@@ -482,7 +518,7 @@ function getDuesByParty(jwt, condition, params, callback) {
     });
 }
 
-PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
+PaymentsReceived.prototype.getDuesByParty = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -502,6 +538,11 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
             }
         }
         getDuesByParty(jwt, condition, params, function (response) {
+            if(response.status){
+                analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
+            }
             callback(response);
         })
     } else if (params.fromDate && params.toDate) {
@@ -514,11 +555,21 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
             }
         }
         getDuesByParty(jwt, condition, params, function (response) {
+            if(response.status){
+                analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
+            }
             callback(response);
         })
     } else if (params.partyId) {
         condition = {$match: {"accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId)}}
         getDuesByParty(jwt, condition, params, function (response) {
+            if(response.status){
+                analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
+            }
             callback(response);
         })
     } else {
@@ -527,16 +578,23 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (erpSettings) {
 
                 condition = {$match: Utils.getErpSettings(erpSettings.payment, erpSettings.accountId)}
                 getDuesByParty(jwt, condition, params, function (response) {
+                    if(response.status){
+                        analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+                    }else{
+                        analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
+                    }
                     callback(response);
                 })
             } else {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
@@ -545,7 +603,7 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params, callback) {
 
 };
 
-PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, params, callback) {
+PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -553,6 +611,7 @@ PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, 
     if (!params.email || !Utils.isEmail(params.email)) {
         retObj.status = false;
         retObj.messages.push('Please enter valid email');
+        analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
         PaymentsReceived.prototype.getDuesByParty(jwt, params, function (revenueResponse) {
@@ -570,12 +629,15 @@ PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, 
                     if (emailResponse.status) {
                         retObj.status = true;
                         retObj.messages.push('Payments details share successfully');
+                        analyticsService.create(req,serviceActions.share_party_payment_det_by_email,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
                         callback(retObj);
                     } else {
+                        analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:emailResponse.messages},function(response){ });
                         callback(emailResponse);
                     }
                 });
             } else {
+                analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:revenueResponse.messages},function(response){ });
                 callback(revenueResponse);
             }
         })
@@ -584,7 +646,7 @@ PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, 
 };
 
 
-PaymentsReceived.prototype.downloadPaymentDetailsByParty = function (jwt, params, callback) {
+PaymentsReceived.prototype.downloadPaymentDetailsByParty = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -612,10 +674,12 @@ PaymentsReceived.prototype.downloadPaymentDetailsByParty = function (jwt, params
                         Due_Amount: paymentsResponse.grossAmounts.grossDue
                     })
                     retObj.data = output;
+                    analyticsService.create(req,serviceActions.dwnld_party_payment_det,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
                     callback(retObj);
                 }
             }
         } else {
+            analyticsService.create(req,serviceActions.dwnld_party_payment_det_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:paymentsResponse.messages},function(response){ });
             callback(paymentsResponse);
         }
     })

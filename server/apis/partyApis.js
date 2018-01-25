@@ -12,11 +12,13 @@ var PaymentsReceived = require('./paymentsReceivedAPI');
 var ExpenseCostColl = require('./expensesApi');
 var TripCollection = require('./../models/schemas').TripCollection;
 var ExpenseCostColl1 = require('./../models/schemas').ExpenseCostColl;
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
 const ObjectId = mongoose.Types.ObjectId;
 var Party = function () {
 };
 
-Party.prototype.addParty = function (jwt, partyDetails, callback) {
+Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
 
     var result = {message: [], status: true};
 
@@ -68,6 +70,7 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
 
 
     if (result.status === false) {
+        analyticsService.create(req,serviceActions.add_party_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:result.message},function(response){ });
         callback(result);
     } else {
         partyDetails.createdBy = jwt.id;
@@ -80,18 +83,20 @@ Party.prototype.addParty = function (jwt, partyDetails, callback) {
                 result.status = false;
                 result.message.push("Error while adding party, try Again");
                 result.error = err;
+                analyticsService.create(req,serviceActions.add_party_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:result.message},function(response){ });
                 callback(result);
             } else {
                 result.status = true;
                 result.message.push("Party Added Successfully");
                 result.party = party;
+                analyticsService.create(req,serviceActions.add_party,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
                 callback(result);
             }
         });
     }
 };
 
-Party.prototype.findParty = function (jwt, partyId, callback) {
+Party.prototype.findParty = function (jwt, partyId,req, callback) {
     var result = {};
     var condition = {};
     if (jwt.type === "account") {
@@ -104,22 +109,25 @@ Party.prototype.findParty = function (jwt, partyId, callback) {
             result.status = false;
             result.message = "Error while finding party, try Again";
             result.error = err;
+            analyticsService.create(req,serviceActions.find_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         } else if (party) {
             result.status = true;
             result.message = "Party found successfully";
             result.party = party;
+            analyticsService.create(req,serviceActions.find_party,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
             callback(result);
         } else {
             result.status = false;
             result.message = "Unauthorized access or Party is not found!";
+            analyticsService.create(req,serviceActions.find_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         }
     });
 };
 
 
-Party.prototype.updateParty = function (jwt, partyDetails, callback) {
+Party.prototype.updateParty = function (jwt, partyDetails,req, callback) {
     var result = {status: false, messages: []};
     var giveAccess = false;
     if (jwt.type === "account" && partyDetails.accountId === jwt.accountId) {
@@ -130,6 +138,7 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
     } else {
         result.status = false;
         result.messages.push("Unauthorized access");
+        analyticsService.create(req,serviceActions.update_party_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
         callback(result);
     }
     if (giveAccess) {
@@ -152,22 +161,25 @@ Party.prototype.updateParty = function (jwt, partyDetails, callback) {
                 if (err) {
                     result.status = false;
                     result.messages.push("Error while updating party, try Again");
+                    analyticsService.create(req,serviceActions.update_party_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
                     callback(result);
                 } else if (party) {
                     result.status = true;
                     result.messages.push("Party updated successfully");
                     result.party = party;
+                    analyticsService.create(req,serviceActions.update_party,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
                     callback(result);
                 } else {
                     result.status = false;
                     result.messages.push("Error, finding party");
+                    analyticsService.create(req,serviceActions.update_party_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
                     callback(result);
                 }
             });
     }
 };
 
-Party.prototype.getAccountParties = function (jwt, params, callback) {
+Party.prototype.getAccountParties = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -217,6 +229,7 @@ Party.prototype.getAccountParties = function (jwt, params, callback) {
     }, function (err, results) {
         if (err) {
             retObj.messages.push('Error retrieving parties');
+            analyticsService.create(req,serviceActions.get_account_parties_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -225,13 +238,14 @@ Party.prototype.getAccountParties = function (jwt, params, callback) {
             retObj.userId = jwt.id;
             retObj.userType = jwt.type;
             retObj.parties = results.parties.createdbyname;
+            analyticsService.create(req,serviceActions.get_account_parties,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
             callback(retObj);
 
         }
     });
 };
 
-Party.prototype.getAllParties = function (callback) {
+Party.prototype.getAllParties = function (req,callback) {
     var retObj = {
         status: false,
         messages: []
@@ -240,6 +254,7 @@ Party.prototype.getAllParties = function (callback) {
     PartyCollection.find({}, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
+            analyticsService.create(req,serviceActions.get_all_parties_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
@@ -247,16 +262,18 @@ Party.prototype.getAllParties = function (callback) {
                     retObj.status = true;
                     retObj.messages.push('Success');
                     retObj.parties = response.documents;
+                    analyticsService.create(req,serviceActions.get_all_parties,{accountId:req.jwt.id,success:true},function(response){ });
                     callback(retObj);
                 } else {
                     retObj.messages.push('Error getting parties');
+                    analyticsService.create(req,serviceActions.get_all_parties_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                     callback(retObj);
                 }
             });
         }
     });
 };
-Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
+Party.prototype.getAllPartiesBySupplier = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -265,6 +282,7 @@ Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
     PartyCollection.find({partyType: 'Supplier', 'accountId': jwt.accountId}, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
+            analyticsService.create(req,serviceActions.get_parties_by_supp_err,{accountId:jwt.id,success:false,messages:retObj.message},function(response){ });
             callback(retObj);
         } else if (parties) {
             Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
@@ -272,20 +290,23 @@ Party.prototype.getAllPartiesBySupplier = function (jwt, callback) {
                     retObj.status = true;
                     retObj.messages.push('Success');
                     retObj.parties = response.documents;
+                    analyticsService.create(req,serviceActions.get_parties_by_supp,{accountId:jwt.id,success:true},function(response){ });
                     callback(retObj);
                 } else {
                     retObj.messages.push('Error getting parties');
+                    analyticsService.create(req,serviceActions.get_parties_by_supp_err,{accountId:jwt.id,success:false,messages:retObj.message},function(response){ });
                     callback(retObj);
                 }
             });
         } else {
             retObj.message.push('No Parties Found');
+            analyticsService.create(req,serviceActions.get_parties_by_supp_err,{accountId:jwt.id,success:false,messages:retObj.message},function(response){ });
             callback(retObj);
         }
     });
 };
 
-Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
+Party.prototype.getAllPartiesByTransporter = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -294,6 +315,7 @@ Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
     PartyCollection.find({partyType: 'Transporter', accountId: jwt.accountId}, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
+            analyticsService.create(req,serviceActions.get_parties_by_trans_err,{accountId:jwt.id,success:false,messages:retObj.message},function(response){ });
             callback(retObj);
         } else {
             Utils.populateNameInUsersColl(parties, "createdBy", function (response) {
@@ -301,9 +323,11 @@ Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
                     retObj.status = true;
                     retObj.messages.push('Success');
                     retObj.parties = response.documents;
+                    analyticsService.create(req,serviceActions.get_parties_by_trans,{accountId:jwt.id,success:true},function(response){ });
                     callback(retObj);
                 } else {
                     retObj.messages.push('Error getting parties');
+                    analyticsService.create(req,serviceActions.get_parties_by_trans_err,{accountId:jwt.id,success:false,messages:retObj.message},function(response){ });
                     callback(retObj);
                 }
             });
@@ -311,37 +335,42 @@ Party.prototype.getAllPartiesByTransporter = function (jwt, callback) {
     });
 };
 
-Party.prototype.deleteParty = function (jwt, partyId, callback) {
+Party.prototype.deleteParty = function (jwt, partyId,req, callback) {
     var result = {};
 
     PartyCollection.remove({_id: partyId, accountId: jwt.accountId}, function (err, retValue) {
         if (err) {
             result.status = false;
             result.message = 'Error deleting party';
+            analyticsService.create(req,serviceActions.del_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         } else if (retValue.result && retValue.result.n === 1) {
             result.status = true;
             result.message = 'Success';
+            analyticsService.create(req,serviceActions.del_party,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
             callback(result);
         } else {
             result.status = false;
             result.message = 'Unauthorized access or Error deleting party';
+            analyticsService.create(req,serviceActions.del_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         }
     });
 
 };
-Party.prototype.countParty = function (jwt, callback) {
+Party.prototype.countParty = function (jwt,req, callback) {
     var result = {};
     PartyCollection.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
+            analyticsService.create(req,serviceActions.count_party_err,{accountId:jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         } else {
             result.status = true;
             result.message = 'Success';
             result.count = data;
+            analyticsService.create(req,serviceActions.count_party,{accountId:jwt.id,success:true},function(response){ });
             callback(result);
         }
     })
@@ -352,7 +381,7 @@ Party.prototype.countParty = function (jwt, callback) {
  * @param partyId
  * @param callback
  */
-Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId, callback) {
+Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -374,6 +403,7 @@ Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId, callback)
         if (error) {
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
+            analyticsService.create(req,serviceActions.find_trips_and_pymnts_for_parties_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -396,6 +426,7 @@ Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId, callback)
                     return x.date > y.date ? 1 : -1;
                 });
             }
+            analyticsService.create(req,serviceActions.find_trips_and_pymnts_for_parties,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
@@ -405,7 +436,7 @@ Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId, callback)
 * Retrieve trips and expenses details based on vehicle number
 * */
 
-Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId, callback) {
+Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -427,6 +458,7 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId, callb
         if (error) {
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
+            analyticsService.create(req,serviceActions.find_trips_and_pymnts_for_veh_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -447,6 +479,7 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId, callb
                     });
                 }
                 retObj.totalRevenue = {totalFreight: totalFreight, totalExpenses: totalExpenses};
+                analyticsService.create(req,serviceActions.find_trips_and_pymnts_for_veh,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
                 callback(retObj);
             });
 
@@ -454,7 +487,7 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId, callb
     });
 }
 
-Party.prototype.getAllPartiesForFilter = function (jwt, callback) {
+Party.prototype.getAllPartiesForFilter = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -464,15 +497,18 @@ Party.prototype.getAllPartiesForFilter = function (jwt, callback) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Parties');
+            analyticsService.create(req,serviceActions.get_all_parties_for_filter_err,{accountId:jwt.id,success:false,messages:result.messages},function(response){ });
             callback(retObj);
         } else if (data) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.parties = data;
+            analyticsService.create(req,serviceActions.get_all_parties_for_filter,{accountId:jwt.id,success:true},function(response){ });
             callback(retObj);
         } else {
             retObj.status = false;
             retObj.messages.push('No Parties Found');
+            analyticsService.create(req,serviceActions.get_all_parties_for_filter_err,{accountId:jwt.id,success:false,messages:result.messages},function(response){ });
             callback(retObj);
         }
     })
