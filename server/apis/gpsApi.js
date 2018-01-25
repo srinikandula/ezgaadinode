@@ -96,14 +96,22 @@ Gps.prototype.addSecret = function (secret, email, callback) {
             callback(retObj);
         } else {
             var secretDoc = new SecretKeyColl({secret: secret, email: email});
-            secretDoc.save(function (err) {
+            secretDoc.save(function (err, secretSaved) {
                 if (err) {
                     retObj.messages.push('Error saving secret');
                     callback(retObj);
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    callback(retObj);
+                    var fulldate = new Date();
+                    var counterDoc = new SecretKeyCounterColl({
+                        date: fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear(),
+                        secretId: secretSaved._id,
+                        counter: 0
+                    });
+                    counterDoc.save(function (err) {
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        callback(retObj);
+                    });
                 }
             });
         }
