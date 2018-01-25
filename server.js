@@ -27,9 +27,9 @@ var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(express.static('client', {index: "/views/index.html"}));
-
+// app.use(express.static('client', {index: "/views/adminIndex.html"}));
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
 app.use(bodyParser.urlencoded({limit: config.bodyParserLimit, extended: true}));
 app.use(cookieParser());
@@ -79,6 +79,7 @@ app.use(function (req, res, next) {
         next();
     } else {
         res.sendFile(__dirname + '/client/views/index.html');
+        // res.sendFile(__dirname + '/client/views/adminIndex.html');
     }
 });
 
