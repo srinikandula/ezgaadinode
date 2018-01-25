@@ -12,7 +12,7 @@ OpenRouter.get('/AddDevicePositions', function (req, res) {
 });
 
 AuthRouter.post('/addSecret', function (req, res) {
-    gps.addSecret(req.body.secret, function (result) {
+    gps.addSecret(req.body.secret, req.body.email, function (result) {
         res.send(result);
     });
 });

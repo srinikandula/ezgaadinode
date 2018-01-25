@@ -19,7 +19,7 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
         status: false,
         messages: []
     };
-    if(position.latitude === 'true' || position.latitude === 'false') {
+    if (position.latitude === 'true' || position.latitude === 'false') {
         position.latitude = position.valid;
         position.valid = false
     }
@@ -31,7 +31,10 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
     };
     var fulldate = new Date();
     var today = fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear();
-    SecretKeyCounterColl.findOne({date: today, counter: {$lt: config.googleSecretKeyLimit}}).populate('secretId', {secret: 1}).exec(function (errsecret, secret) {
+    SecretKeyCounterColl.findOne({
+        date: today,
+        counter: {$lt: config.googleSecretKeyLimit}
+    }).populate('secretId', {secret: 1}).exec(function (errsecret, secret) {
         if (errsecret) {
             retObj.messages.push('Error getting secret');
             callback(retObj);
@@ -39,7 +42,7 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
             options.apiKey = secret.secretId.secret;
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
-                if(location) {
+                if (location) {
                     position.address = location[0]['formattedAddress'];
                     SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
                         if (incerr) {
@@ -78,7 +81,7 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
     });
 };
 
-Gps.prototype.addSecret = function (secret, callback) {
+Gps.prototype.addSecret = function (secret, email, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -92,7 +95,7 @@ Gps.prototype.addSecret = function (secret, callback) {
             retObj.messages.push('Secret already exists');
             callback(retObj);
         } else {
-            var secretDoc = new SecretKeyColl({secret: secret});
+            var secretDoc = new SecretKeyColl({secret: secret, email: email});
             secretDoc.save(function (err) {
                 if (err) {
                     retObj.messages.push('Error saving secret');
