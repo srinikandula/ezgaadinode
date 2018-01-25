@@ -407,25 +407,13 @@ Drivers.prototype.deleteDriver = function (jwt, driverId, req, callback) {
         retObj.messages.push('Invalid driver Id');
     }
     if (retObj.messages.length) {
-        analyticsService.create(req, serviceActions.delete_driver_err, {
-            body: JSON.stringify(req.params),
-            accountId: req.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
+        analyticsService.create(req,serviceActions.delete_driver_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        DriversColl.remove(condition, function (err, returnValue) {
+        DriversColl.remove(condition, function (err,returnValue) {
             if (err) {
                 retObj.messages.push('Error deleting Driver');
-                analyticsService.create(req, serviceActions.delete_driver_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                analyticsService.create(req,serviceActions.delete_driver_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (returnValue.result.n === 0) {
                 retObj.status = false;
