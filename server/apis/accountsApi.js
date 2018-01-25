@@ -397,12 +397,12 @@ Accounts.prototype.userProfile = function (jwt,req, callback) {
 
     async.parallel({
         profile: function (profileCallback) {
-            Accounts.prototype.getAccountDetails(jwt.id, function (response) {
+            Accounts.prototype.getAccountDetails(jwt.id,req, function (response) {
                 profileCallback(response.error, response.account);
             });
         },
         accountGroupsCount: function (accountGroupCountCallback) {
-            Accounts.prototype.countAccountGroups(jwt, function (response) {
+            Accounts.prototype.countAccountGroups(jwt,req, function (response) {
                 accountGroupCountCallback(response.error, response.count);
             });
         },

@@ -193,7 +193,6 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
         }).then((result) => {
             if (result.value) {
                 ExpenseService.deleteRecord(id, function (success) {
-                    console.log('asdas',success.data);
                     if (success.data.status) {
                         swal(
                             'Deleted!',
