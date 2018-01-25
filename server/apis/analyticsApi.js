@@ -9,7 +9,8 @@ service.prototype.create = function(req, systemAction, attrs, callback){
     var retObj={};
     analytics.remoteIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
     analytics.userAgent = req.headers['user-agent'];
-    console.log(parser.setUA(req.headers['user-agent']).getResult());
+    analytics.OS=parser.setUA(req.headers['user-agent']).getOS();
+    // console.log(parser.setUA(req.headers['user-agent']).getResult());
     analytics.action=systemAction;
     analytics.attrs=attrs;
     var analyticsData=new analyticsColl(analytics);

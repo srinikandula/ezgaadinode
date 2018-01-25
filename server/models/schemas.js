@@ -319,7 +319,11 @@ var analyticsSchema = mongoose.Schema({
     userAgent:String,
     attrs:{},
     // accountId:{type: ObjectId, ref: 'accounts'},
-    response:String
+    response:String,
+    OS:{
+        name:String,
+        version:String
+    }
 },{timestamps: String});
 
 module.exports = {
