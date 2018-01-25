@@ -278,32 +278,6 @@ var devicePositions = new mongoose.Schema({
     // isViewed : Boolean
 }, {timestamps: true, versionKey: false});
 
-var devicePositionsWitoutLocation = new mongoose.Schema({
-    gprmc: String,
-    name: String,
-    uniqueId: String,
-    deviceId: String,
-    protocol: String,
-    deviceTime: Number,
-    fixTime: Number,
-    valid: String,
-    latitude: String,
-    longitude: String,
-    altitude: String,
-    speed: String,
-    course: String,
-    statusCode: String,
-    attributes: {
-        batteryLevel: String,
-        distance: Number,
-        totalDistance: Number,
-        motion: Number
-    },
-    address: String
-    // isViewed : Boolean
-}, {timestamps: true, versionKey: false});
-
-
 var deviceSchema = new mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
@@ -367,7 +341,6 @@ module.exports = {
     SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
-    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
-    devicePositionsWitoutLocationColl:mongoose.model('devicePositionsWitoutLocation', devicePositionsWitoutLocation, 'devicePositionsWitoutLocation')
+    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics')
 };
 
