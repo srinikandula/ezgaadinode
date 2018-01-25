@@ -537,7 +537,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
                 }, "vehicleNumber": params.regNumber
             }
         }
-        getExpensesByVehicles(jwt, condition, params, function (response) {
+        getExpensesByVehicles(jwt, condition, params,req, function (response) {
             callback(response);
         })
     } else if (params.fromDate && params.toDate) {
@@ -549,12 +549,12 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
                 }
             }
         }
-        getExpensesByVehicles(jwt, condition, params, function (response) {
+        getExpensesByVehicles(jwt, condition, params,req, function (response) {
             callback(response);
         })
     } else if (params.regNumber) {
         condition = {$match: {"accountId": ObjectId(jwt.accountId), "vehicleNumber": params.regNumber}}
-        getExpensesByVehicles(jwt, condition, params, function (response) {
+        getExpensesByVehicles(jwt, condition, params,req, function (response) {
             callback(response);
         })
     } else {
@@ -567,7 +567,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
             } else if (erpSettings) {
 
                 condition = {$match: Utils.getErpSettings(erpSettings.expense, erpSettings.accountId)}
-                getExpensesByVehicles(jwt, condition, params, function (response) {
+                getExpensesByVehicles(jwt, condition, params,req, function (response) {
                     callback(response);
                 })
             } else {
