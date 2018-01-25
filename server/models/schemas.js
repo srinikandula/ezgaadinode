@@ -289,7 +289,8 @@ var deviceSchema = new mongoose.Schema({
 var secretKeys = new mongoose.Schema({
     secret: {
         type: String
-    }
+    },
+    email: String
 },{ timestamps: true, versionKey: false });
 
 var secretKeysCounter = new mongoose.Schema({

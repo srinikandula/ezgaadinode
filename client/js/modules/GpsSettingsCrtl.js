@@ -22,7 +22,7 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
         if(!$scope.secretkey) {
             $scope.secretkeyerror = 'Please enter a secret key'
         } else {
-            GpsSettingsService.addSecret({secret:$scope.secretkey}, function (success) {
+            GpsSettingsService.addSecret({secret:$scope.secretkey, email: $scope.email}, function (success) {
                 if(success.data.status) {
                     Notification.success(success.data.messages[0]);
                     $state.go('secretKeys')
