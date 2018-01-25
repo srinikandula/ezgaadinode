@@ -4,34 +4,34 @@ var AuthRouter = express.Router();
 var Trips = require('../apis/tripsApi');
 
 AuthRouter.post('/addTrip', function (req, res) {
-    Trips.addTrip(req.jwt, req.body, function (result) {
+    Trips.addTrip(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getAllAccountTrips', function (req, res) {
-    Trips.getAllAccountTrips(req.jwt, req.query, function (result) {
+    Trips.getAllAccountTrips(req.jwt, req.query,req, function (result) {
         res.json(result);
     });
 });
 AuthRouter.get('/getAllTrips', function (req, res) {
-    Trips.getAll(req.jwt, req.query, function (result) {
+    Trips.getAll(req.jwt, req.query,req, function (result) {
         res.json(result);
     });
 });
 AuthRouter.put('/', function (req, res) {
-    Trips.updateTrip(req.jwt, req.body, function (result) {
+    Trips.updateTrip(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.get('/shareRevenueDetailsByVechicleViaEmail', function (req, res) {
-    Trips.shareRevenueDetailsByVechicleViaEmail(req.jwt, req.query, function (result) {
+    Trips.shareRevenueDetailsByVechicleViaEmail(req.jwt, req.query,req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.get('/downloadRevenueDetailsByVechicle', function (req, res) {
 
-    Trips.downloadRevenueDetailsByVechicle(req.jwt,req.query, function (result) {
+    Trips.downloadRevenueDetailsByVechicle(req.jwt,req.query,req, function (result) {
         if(result.status){
             res.xls('revenue'+new Date().toLocaleDateString()+'.xlsx', result.data);
         }else{
@@ -43,52 +43,52 @@ AuthRouter.get('/downloadRevenueDetailsByVechicle', function (req, res) {
 
 });
 AuthRouter.get('/getPartiesByTrips',function(req,res){
-    Trips.getPartiesByTrips(req.jwt,function(result){
+    Trips.getPartiesByTrips(req.jwt,req,function(result){
         res.send(result);
     })
 })
 AuthRouter.get('/:tripId', function (req, res) {
-    Trips.findTrip(req.jwt, req.params.tripId, function (result) {
+    Trips.findTrip(req.jwt, req.params.tripId,req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.delete('/:tripId', function (req, res) {
-    Trips.deleteTrip(req.jwt,req.params.tripId, function (result) {
+    Trips.deleteTrip(req.jwt,req.params.tripId,req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.post('/report', function (req, res) {
-    Trips.getReport(req.jwt, req.body, function (result) {
+    Trips.getReport(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/find/totalRevenue', function (req, res) {
-    Trips.findTotalRevenue(req.jwt, function (result) {
+    Trips.findTotalRevenue(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.get('/find/revenueByParty', function (req, res) {
-    Trips.findRevenueByParty(req.jwt, function (result) {
+    Trips.findRevenueByParty(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/find/revenueByVehicle', function (req, res) {
-    Trips.findRevenueByVehicle(req.jwt, req.query, function (result) {
+    Trips.findRevenueByVehicle(req.jwt, req.query,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/find/tripsByParty/:partyId', function (req, res) {
-    Trips.findTripsByParty(req.jwt, req.params.partyId, function (result) {
+    Trips.findTripsByParty(req.jwt, req.params.partyId,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/find/tripsByVehicle/:VehicleId', function (req, res) {
     console.log(req.params);
-    Trips.findTripsByVehicle(req.jwt, req.params.VehicleId, function (result) {
+    Trips.findTripsByVehicle(req.jwt, req.params.VehicleId,req, function (result) {
         res.send(result);
     });
 });
@@ -99,13 +99,13 @@ AuthRouter.put('/sendEmail', function (req, res) {
     })
 });
 AuthRouter.get('/total/count', function (req, res) {
-    Trips.countTrips(req.jwt, function (result) {
+    Trips.countTrips(req.jwt, req,function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.post('/loockingForTripRequest', function (req, res) {
-    Trips.loockingForTripRequest(req.jwt,req.body,function (result) {
+    Trips.loockingForTripRequest(req.jwt,req.body,req,function (result) {
         res.send(result);
     });
 });
