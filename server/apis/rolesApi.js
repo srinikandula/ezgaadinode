@@ -7,11 +7,13 @@ var RolesColl = require('./../models/schemas').Roles;
 var config = require('./../config/config');
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
 
 var Roles = function () {
 };
 
-Roles.prototype.addRole = function (jwt, roleDetails, callback) {
+Roles.prototype.addRole = function (jwt, roleDetails,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -19,6 +21,7 @@ Roles.prototype.addRole = function (jwt, roleDetails, callback) {
 
     if (!roleDetails.roleName || !_.isString(roleDetails.roleName)) {
         retObj.messages.push("Please provide valid role name");
+        analyticsService.create(req,serviceActions.add_role_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     }
 
@@ -26,9 +29,11 @@ Roles.prototype.addRole = function (jwt, roleDetails, callback) {
         RolesColl.findOne({roleName: roleDetails.roleName}, function (err, role) {
             if (err) {
                 retObj.messages.push("Error, try again!");
+                analyticsService.create(req,serviceActions.add_role_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (role) {
                 retObj.messages.push("Role already exists");
+                analyticsService.create(req,serviceActions.add_role_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 roleDetails.createdBy = jwt.id;
@@ -38,10 +43,12 @@ Roles.prototype.addRole = function (jwt, roleDetails, callback) {
                 insertDoc.save(function (err) {
                     if (err) {
                         retObj.messages.push("Error, try Again");
+                        analyticsService.create(req,serviceActions.add_role_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     } else {
                         retObj.status = true;
                         retObj.messages.push("Successfully Added");
+                        analyticsService.create(req,serviceActions.add_role,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                         callback(retObj);
                     }
                 });
@@ -50,7 +57,7 @@ Roles.prototype.addRole = function (jwt, roleDetails, callback) {
     }
 };
 
-Roles.prototype.getRoles = function (pageNumber, callback) {
+Roles.prototype.getRoles = function (pageNumber,req, callback) {
     var result = {
         status: false,
         messages: []
@@ -60,6 +67,7 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
         pageNumber = 1;
     } else if (!_.isNumber(Number(pageNumber))) {
         result.messages.push('Invalid page number');
+        analyticsService.create(req,serviceActions.get_roles_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
         return callback(result);
     }
 
@@ -90,18 +98,20 @@ Roles.prototype.getRoles = function (pageNumber, callback) {
     }, function (err, results) {
         if (err) {
             result.messages.push('Error retrieving roles');
+            analyticsService.create(req,serviceActions.get_roles_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
             callback(result);
         } else {
             result.status = true;
             result.messages.push('Success');
             result.count = results.count;
             result.roles = results.roles;
+            analyticsService.create(req,serviceActions.get_roles,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
         }
     });
 };
 
-Roles.prototype.getAllRoles = function (callback) {
+Roles.prototype.getAllRoles = function (req,callback) {
     var result = {
         status: false,
         messages: []
@@ -109,17 +119,19 @@ Roles.prototype.getAllRoles = function (callback) {
     RolesColl.find({}, {roleName: 1}, function (err, roles) {
         if (err) {
             result.messages.push('Error getting roles');
+            analyticsService.create(req,serviceActions.get_all_roles_err,{accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
             callback(result);
         } else {
             result.status = true;
             result.messages.push('Success');
             result.roles = roles;
+            analyticsService.create(req,serviceActions.get_all_roles,{accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
         }
     });
 };
 
-Roles.prototype.getRole = function (id, callback) {
+Roles.prototype.getRole = function (id,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -128,17 +140,19 @@ Roles.prototype.getRole = function (id, callback) {
     RolesColl.findOne({_id: id}, function (err, role) {
         if (err) {
             retObj.messages.push('Error getting role');
+            analyticsService.create(req,serviceActions.get_role_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.role = role;
+            analyticsService.create(req,serviceActions.get_role,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });
 };
 
-Roles.prototype.updateRole = function (jwt, roleDetails, callback) {
+Roles.prototype.updateRole = function (jwt, roleDetails,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -152,19 +166,22 @@ Roles.prototype.updateRole = function (jwt, roleDetails, callback) {
         function (err, role) {
             if (err) {
                 retObj.messages.push("Error while updating role, try Again");
+                analyticsService.create(req,serviceActions.update_role_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (role) {
                 retObj.status = true;
                 retObj.messages.push("Role updated successfully");
+                analyticsService.create(req,serviceActions.update_role,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
                 retObj.messages.push("Error, finding role");
+                analyticsService.create(req,serviceActions.update_role_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
 };
 
-Roles.prototype.deleteRole = function (id, callback) {
+Roles.prototype.deleteRole = function (id,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -173,10 +190,12 @@ Roles.prototype.deleteRole = function (id, callback) {
     RolesColl.remove({_id: id}, function (err) {
         if (err) {
             retObj.messages.push('Error deleting role');
+            analyticsService.create(req,serviceActions.delete_role_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Successfully Deleted !!');
+            analyticsService.create(req,serviceActions.delete_role,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     });

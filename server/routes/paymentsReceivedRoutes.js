@@ -4,51 +4,51 @@ var AuthRouter = express.Router();
 var PaymentsReceived = require('../apis/paymentsReceivedAPI');
 
 AuthRouter.post('/addPayments', function (req, res) {
-    PaymentsReceived.addPayments(req.jwt, req.body, function (result) {
+    PaymentsReceived.addPayments(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/', function (req, res) {
-    PaymentsReceived.getAllAccountPayments(req.jwt, function (result) {
+    PaymentsReceived.getAllAccountPayments(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.put('/updatePayments', function (req, res) {
-    PaymentsReceived.updatePayment(req.jwt, req.body, function (result) {
+    PaymentsReceived.updatePayment(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getPaymentsRecord/:paymentsId', function (req, res) {
     //console.log(req);
-    PaymentsReceived.findPaymentsReceived(req.jwt,req.params.paymentsId, function (result) {
+    PaymentsReceived.findPaymentsReceived(req.jwt,req.params.paymentsId,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.delete('/:id', function (req, res) {
-    PaymentsReceived.deletePaymentsRecord(req.jwt, req.params.id, function (result) {
+    PaymentsReceived.deletePaymentsRecord(req.jwt, req.params.id,req, function (result) {
         res.send(result);
 
     });
 });
 
 AuthRouter.get('/countPayments', function (req, res) {
-    PaymentsReceived.countPayments(req.jwt, function (result) {
+    PaymentsReceived.countPayments(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getPayments', function (req, res) {
-    PaymentsReceived.getPayments(req.jwt, req.query, function (result) {
+    PaymentsReceived.getPayments(req.jwt, req.query,req, function (result) {
         res.json(result);
     });
 });
 
 AuthRouter.get('/getTotalAmount',function(req,res){
-   PaymentsReceived.getTotalAmount(req.jwt.accountId,function(result){
+   PaymentsReceived.getTotalAmount(req.jwt.accountId,req,function(result){
        res.send(result);
    })
 });
@@ -60,25 +60,25 @@ AuthRouter.get('/getPartyTotal',function(req,res){
 });
 
 AuthRouter.get('/getAccountDue',function(req,res){
-    PaymentsReceived.findPendingDueForAccount(req.jwt,function(result){
+    PaymentsReceived.findPendingDueForAccount(req.jwt,req,function(result){
         res.send(result);
     })
 });
 
 AuthRouter.get('/getDuesByParty',function(req,res){
-    PaymentsReceived.getDuesByParty(req.jwt,req.query,function(result){
+    PaymentsReceived.getDuesByParty(req.jwt,req.query,req,function(result){
         res.send(result);
     })
 });
 
 AuthRouter.get('/sharePaymentsDetailsByPartyViaEmail',function(req,res){
-    PaymentsReceived.sharePaymentsDetailsByPartyViaEmail(req.jwt,req.query,function(result){
+    PaymentsReceived.sharePaymentsDetailsByPartyViaEmail(req.jwt,req.query,req,function(result){
         res.send(result);
     })
 })
 AuthRouter.get('/downloadPaymentDetailsByParty', function (req, res) {
     
-    PaymentsReceived.downloadPaymentDetailsByParty(req.jwt,req.query, function (result) {
+    PaymentsReceived.downloadPaymentDetailsByParty(req.jwt,req.query,req, function (result) {
             if(result.status){
                 res.xls('payments'+new Date().toLocaleDateString()+'.xlsx', result.data);
             }else{

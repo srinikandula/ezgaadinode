@@ -4,76 +4,76 @@ var AuthRouter = express.Router();
 var Party = require('./../apis/partyApis');
 
 AuthRouter.get('/getAllPartiesForFilter', function (req, res) {
-    Party.getAllPartiesForFilter(req.jwt, function (result) {
+    Party.getAllPartiesForFilter(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.post('/addParty', function (req, res) {
-    Party.addParty(req.jwt, req.body, function (result) {
+    Party.addParty(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getAllPartiesBySupplier', function (req, res) {
-    Party.getAllPartiesBySupplier(req.jwt, function (result) {
+    Party.getAllPartiesBySupplier(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/getAllPartiesByTransporter', function (req, res) {
-    Party.getAllPartiesByTransporter(req.jwt, function (result) {
+    Party.getAllPartiesByTransporter(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 
 AuthRouter.get('/:partyId', function (req, res) {
-    Party.findParty(req.jwt, req.params.partyId, function (result) {
+    Party.findParty(req.jwt, req.params.partyId,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.put('/updateParty', function (req, res) {
-    Party.updateParty(req.jwt, req.body, function (result) {
+    Party.updateParty(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/get/accountParties', function (req, res) {
-    Party.getAccountParties(req.jwt, req.query, function (result) {
+    Party.getAccountParties(req.jwt, req.query,req, function (result) {
         res.json(result);
     });
 });
 
 AuthRouter.get('/get/all', function (req, res) {
-    Party.getAllParties(function (result) {
+    Party.getAllParties(req,function (result) {
         res.send(result);
     });
 });
 
 
 AuthRouter.delete('/:partyId', function (req, res) {
-    Party.deleteParty(req.jwt, req.params.partyId, function (result) {
+    Party.deleteParty(req.jwt, req.params.partyId,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/total/count', function (req, res) {
-    Party.countParty(req.jwt, function (result) {
+    Party.countParty(req.jwt,req, function (result) {
         res.send(result);
     });
 });
 
 
 AuthRouter.get('/tripsPayments/:partyId', function (req, res) {
-    Party.findTripsAndPaymentsForParty(req.jwt, req.params.partyId, function (result) {
+    Party.findTripsAndPaymentsForParty(req.jwt, req.params.partyId,req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.get('/vehiclePayments/:vehicleId', function (req, res) {
-    Party.findTripsAndPaymentsForVehicle(req.jwt, req.params.vehicleId, function (result) {
+    Party.findTripsAndPaymentsForVehicle(req.jwt, req.params.vehicleId,req, function (result) {
         res.send(result);
     });
 });
