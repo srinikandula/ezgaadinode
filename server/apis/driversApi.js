@@ -407,25 +407,13 @@ Drivers.prototype.deleteDriver = function (jwt, driverId, req, callback) {
         retObj.messages.push('Invalid driver Id');
     }
     if (retObj.messages.length) {
-        analyticsService.create(req, serviceActions.delete_driver_err, {
-            body: JSON.stringify(req.params),
-            accountId: req.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
+        analyticsService.create(req,serviceActions.delete_driver_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        DriversColl.remove(condition, function (err, returnValue) {
+        DriversColl.remove(condition, function (err,returnValue) {
             if (err) {
                 retObj.messages.push('Error deleting Driver');
-                analyticsService.create(req, serviceActions.delete_driver_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                analyticsService.create(req,serviceActions.delete_driver_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (returnValue.result.n === 0) {
                 retObj.status = false;
@@ -486,25 +474,12 @@ Drivers.prototype.getAllDriversForFilter = function (jwt, req, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
-    var accountId;
-    if (jwt.type === "account") {
-        condition = {'accountId': jwt.accountId};
-        accountId = jwt.accountId;
-    } else {
-        condition = {'accountId': jwt.groupAccountId};
-        accountId = jwt.groupAccountId;
-    }
-    DriversColl.find(condition, {fullName: 1}, function (err, data) {
+
+    DriversColl.find({'accountId': jwt.accountId}, {fullName: 1}, function (err, data) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Drivers');
-            analyticsService.create(req, serviceActions.get_drivers_for_filter_err, {
-                accountId: accountId,
-                success: false,
-                messages: result.messages
-            }, function (response) {
-            });
+            analyticsService.create(req,serviceActions.get_drivers_for_filter_err,{accountId:jwt.accountId,success:false,messages:result.messages},function(response){ });
             callback(retObj);
         } else if (data) {
             retObj.status = true;
@@ -515,6 +490,7 @@ Drivers.prototype.getAllDriversForFilter = function (jwt, req, callback) {
                 success: true
             }, function (response) {
             });
+            analyticsService.create(req,serviceActions.get_drivers_for_filter,{accountId:jwt.accountId,success:true},function(response){ });
             callback(retObj);
         } else {
             retObj.status = false;
@@ -525,6 +501,7 @@ Drivers.prototype.getAllDriversForFilter = function (jwt, req, callback) {
                 messages: result.messages
             }, function (response) {
             });
+            analyticsService.create(req,serviceActions.get_drivers_for_filter_err,{accountId:jwt.accountId,success:false,messages:result.messages},function(response){ });
             callback(retObj);
         }
     })

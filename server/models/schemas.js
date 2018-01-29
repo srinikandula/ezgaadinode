@@ -83,7 +83,7 @@ var truckSchema = new mongoose.Schema({
     createdBy: String,
     status: Number,
     attrs: {},
-    deviceId: {type: ObjectId, ref: 'devices'},
+    deviceId: String,
     lookingForLoad: {type: Boolean, default: false}
 }, {timestamps: true});
 
@@ -284,7 +284,18 @@ var deviceSchema = new mongoose.Schema({
     deviceId: String,
     truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
-    imei: String
+    imei: String,
+    simPhoneNumber: String,
+    installedBy: String,  //installed UserId
+    accountId:{type: ObjectId, ref: 'accounts'},
+    devicePaymentStatus: String,
+    devicePaymentPlan: String, //reference to device payment plan
+    isDamaged: String, //duplicate to status?
+    replacedFor: String, //if this is replacement to another device
+    equipmentType: String,
+    serialNumber: String,
+    status: String,  // we need to create device status type master
+    remarks: String,
 }, {timestamps: true, versionKey: false});
 
 var secretKeys = new mongoose.Schema({
