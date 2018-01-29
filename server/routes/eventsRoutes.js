@@ -42,7 +42,7 @@ OpenRouter.get('/:accountId', function (request, res) {
         analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
         res.json(retObj);
     }else {
-        Events.getEventData(request.params.accountId, startDate.getTime()/1000, endDate.getTime()/1000, function(result) {
+        Events.getEventData(request.params.accountId, startDate.getTime()/1000, endDate.getTime()/1000,request, function(result) {
             res.json(result);
         });
     }
@@ -59,7 +59,7 @@ AuthRouter.get('/latestLocation/:deviceId', function (req, res) {
         analyticsService.create(req,serviceActions.get_latest_device_loc_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         res.json(retObj);
     }else {
-        Events.getLatestLocation(req.jwt, req.params.deviceId, function(result) {
+        Events.getLatestLocation(req.jwt, req.params.deviceId,req, function(result) {
             res.json(result);
         });
     }
@@ -99,7 +99,7 @@ OpenRouter.get('/get/srlogistics', function (request, res) {
         analyticsService.create(request,serviceActions.get_srlogistics_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
         res.json(retObj);
     }else {
-        Events.getEventData('s.rlogistics@yahoo.com', startDate.getTime()/1000, endDate.getTime()/1000, function(result) {
+        Events.getEventData('s.rlogistics@yahoo.com', startDate.getTime()/1000, endDate.getTime()/1000,request, function(result) {
             res.json(result);
         });
     }
@@ -158,7 +158,7 @@ OpenRouter.get('/get/srlogistics/reload', function (request, res) {
         res.json(retObj);
     }else {
         EventData.deleteAll(function(){
-            Events.getEventData('s.rlogistics@yahoo.com', startDate.getTime()/1000, endDate.getTime()/1000, function(response) {
+            Events.getEventData('s.rlogistics@yahoo.com', startDate.getTime()/1000, endDate.getTime()/1000,request, function(response) {
                 //retObj.results = results.eventData.concat(results.eventDataTemp);
                 var eventData = response.results;
                 for(var i=0; i< eventData.length;i++) {
@@ -172,13 +172,13 @@ OpenRouter.get('/get/srlogistics/reload', function (request, res) {
 });
 
 OpenRouter.get('/get/groupMap', function (request, res) {
-    EventData.getGroupMapEvents(function(results){
+    EventData.getGroupMapEvents(request,function(results){
         res.json(results);
     });
 });
 
 OpenRouter.get('/get/trackEvents/:vehicleNumber', function (request, res) {
-    EventData.getTrackEvents(request.params.vehicleNumber, function(results){
+    EventData.getTrackEvents(request.params.vehicleNumber,request, function(results){
         res.json(results);
     });
 });
@@ -191,21 +191,21 @@ OpenRouter.get('/get/trackEvents/:vehicleNumber', function (request, res) {
 });*/
 
 OpenRouter.get('/get/accounts', function (request, res) {
-    Events.getAccountData(function(results){
+    Events.getAccountData(request,function(results){
         //console.log(results);
         res.json(results);
     });
 });
 
 OpenRouter.get('/get/accountGroups', function (request, res) {
-    Events.getAccountGroupData(function(results){
+    Events.getAccountGroupData(request,function(results){
         //console.log(results);
         //res.json(results);
     });
 });
 
 OpenRouter.get('/get/trucks', function (request, res) {
-    Events.getTrucksData(function(results){
+    Events.getTrucksData(request,function(results){
         //console.log(results);
         //res.json(results);
     });

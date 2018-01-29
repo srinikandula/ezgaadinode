@@ -45,37 +45,20 @@ Events.prototype.getEventData = function (accountId, startDate, endDate, request
                 retObj.status = false;
                 retObj.messages.push('Error fetching data');
                 retObj.messages.push(JSON.stringify(err));
-                analyticsService.create(request, serviceActions.get_event_data_err, {
-                    body: JSON.stringify(request.params),
-                    accountId: request.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.results = results.eventData.concat(results.eventDataTemp);
                 retObj.count = retObj.results.length;
-                analyticsService.create(request, serviceActions.get_event_data, {
-                    body: JSON.stringify(request.params),
-                    accountId: request.jwt.id,
-                    success: true
-                }, function (response) {
-                });
+                analyticsService.create(request,serviceActions.get_event_data,{body:JSON.stringify(request.params),success:true},function(response){ });
                 callback(retObj);
             }
         });
     } else {
         callback(retObj);
-        analyticsService.create(request, serviceActions.get_event_data_err, {
-            body: JSON.stringify(request.params),
-            accountId: request.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
+        analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
     }
 };
 
@@ -109,36 +92,19 @@ Events.prototype.getLatestLocations = function (accountId, request, callback) {
                 retObj.status = false;
                 retObj.messages.push('Error fetching data');
                 retObj.messages.push(JSON.stringify(err));
-                analyticsService.create(request, serviceActions.get_lat_loc_err, {
-                    body: JSON.stringify(request.params),
-                    accountId: request.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                analyticsService.create(request,serviceActions.get_lat_loc_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.results = results.eventData.concat(results.eventDataTemp);
                 retObj.count = retObj.results.length;
-                analyticsService.create(request, serviceActions.get_lat_loc, {
-                    body: JSON.stringify(request.params),
-                    accountId: request.jwt.id,
-                    success: true
-                }, function (response) {
-                });
+                analyticsService.create(request,serviceActions.get_lat_loc,{body:JSON.stringify(request.params),success:true},function(response){ });
                 callback(retObj);
             }
         });
     } else {
-        analyticsService.create(request, serviceActions.get_lat_loc_err, {
-            body: JSON.stringify(request.params),
-            accountId: request.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
+        analyticsService.create(request,serviceActions.get_lat_loc_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     }
 };
@@ -273,12 +239,7 @@ Events.prototype.getAccountData = function (request, callback) {
             retObj.status = false;
             retObj.messages.push('Error fetching data');
             retObj.messages.push(JSON.stringify(err));
-            analyticsService.create(request, serviceActions.get_account_data_err, {
-                accountId: request.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
+            analyticsService.create(request,serviceActions.get_account_data_err,{success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -292,11 +253,7 @@ Events.prototype.getAccountData = function (request, callback) {
                 EventData.createAccountData(AccountData)
             }
             retObj.count = retObj.results.length;
-            analyticsService.create(request, serviceActions.get_account_data, {
-                accountId: request.jwt.id,
-                success: true
-            }, function (response) {
-            });
+            analyticsService.create(request,serviceActions.get_account_data,{success:true},function(response){ });
             callback(retObj);
         }
     });
@@ -316,12 +273,7 @@ Events.prototype.getAccountGroupData = function (request, callback) {
                         retObj.status = false;
                         retObj.messages.push('Error fetching data');
                         retObj.messages.push(JSON.stringify(err));
-                        analyticsService.create(request, serviceActions.get_account_grp_data_err, {
-                            accountId: request.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
+                        analyticsService.create(request,serviceActions.get_account_grp_data_err,{success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     } else {
                         retObj.status = true;
@@ -337,11 +289,7 @@ Events.prototype.getAccountGroupData = function (request, callback) {
                             EventData.createAccountGroupData(accountGroupData)
                         }
                         retObj.count = retObj.results.length;
-                        analyticsService.create(request, serviceActions.get_account_grp_data, {
-                            accountId: request.jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
+                        analyticsService.create(request,serviceActions.get_account_grp_data,{success:true},function(response){ });
                         callback(retObj);
                     }
                 });
