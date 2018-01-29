@@ -69,13 +69,13 @@ EventData.prototype.getGroupMapEvents = function (request,callback) {
     }], function (err, resutls) {
         if (err) {
             retObj.messages.push('Error saving EventData');
-            analyticsService.create(request,serviceActions.get_grp_map_events_err,{accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(request,serviceActions.get_grp_map_events_err,{success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.resutls = resutls;
-            analyticsService.create(request,serviceActions.get_grp_map_events,{accountId:request.jwt.id,success:true},function(response){ });
+            analyticsService.create(request,serviceActions.get_grp_map_events,{success:true},function(response){ });
             callback(retObj);
         }
     });
@@ -90,13 +90,13 @@ EventData.prototype.getTrackEvents = function (vehicleNumber,request, callback) 
     EventDataCollection.find({"vehicle_number": vehicleNumber}, function (err, results) {
         if (err) {
             retObj.messages.push('Error saving EventData');
-            analyticsService.create(request,serviceActions.track_events_by_veh_err,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(request,serviceActions.track_events_by_veh_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.results = results;
-            analyticsService.create(request,serviceActions.track_events_by_veh,{body:JSON.stringify(request.params),accountId:request.jwt.id,success:true},function(response){ });
+            analyticsService.create(request,serviceActions.track_events_by_veh,{body:JSON.stringify(request.params),success:true},function(response){ });
             callback(retObj);
         }
     });
