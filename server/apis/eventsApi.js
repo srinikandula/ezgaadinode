@@ -308,7 +308,7 @@ Events.prototype.getTrucksData = function (callback) {
     var driverId = null;
     var pollutionExpiry = "0000-00-00";// getting error using default value as null
     var taxDueDate = "0000-00-00";// getting error using default value as null
-    TrucksColl.remove({},function (error,truckData) {
+    //TrucksColl.remove({},function (error,truckData) {
         AccountsColl.find({}, function (error, accountsData) {
             accountsData.forEach(function (account) {
                 if (account.userName !== "") {
@@ -341,7 +341,7 @@ Events.prototype.getTrucksData = function (callback) {
                 }
             });
         });
-    });
+    //});
 }
 
 Events.prototype.getDeviceTrucksData = function (callback) {
@@ -349,7 +349,7 @@ Events.prototype.getDeviceTrucksData = function (callback) {
         status: false,
         messages: [],
     };
-    DeviceColl.remove({},function (error,deviceData) {
+    //DeviceColl.remove({},function (error,deviceData) {
         TrucksColl.find({}, function (error, trucksData) {
             trucksData.forEach(function (truck) {
                 if (truck.registrationNo !== "") {
@@ -376,7 +376,7 @@ Events.prototype.getDeviceTrucksData = function (callback) {
                 }
             });
         });
-    });
+    //});
 }
 
 function convertDate(olddate) {
