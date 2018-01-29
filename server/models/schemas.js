@@ -84,7 +84,14 @@ var truckSchema = new mongoose.Schema({
     status: Number,
     attrs: {},
     deviceId: String,
-    lookingForLoad: {type: Boolean, default: false}
+    lookingForLoad: {type: Boolean, default: false},
+    latestLocation: {
+        type: {
+            type: String,
+            default: "Point"
+        },
+        coordinates: [Number]  //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    }
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
