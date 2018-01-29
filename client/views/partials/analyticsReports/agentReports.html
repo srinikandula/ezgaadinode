@@ -1,0 +1,80 @@
+<div class="col-xs-12 gpsListView" ng-controller="AnalyticsReportCtrl">
+    <div class="col-xs-12">
+        <div class="lisk-block col-xs-12">
+            <div class="col-xs-12">
+                <ul>
+                    <li class="report"><h2>Reports by User Agents</h2></li>
+                    <li>
+                        <div class="form-details">
+                            <date-picker class="'textfield'" ban-future="'banFutureDate'" ng-model="dateParams.from"></date-picker>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="form-details">
+                            <date-picker class="'textfield br-one'" ban-future="'banFutureDate'" ng-model="dateParams.to"></date-picker>
+                        </div>
+                    </li>
+
+                    <li>
+                        <div class="form-details">
+                            <select class="form-control ng-pristine ng-valid ng-empty ng-touched" ng-model="userAgent">
+                                <option selected="selected">Select User Agent</option>
+                                <option>Mac OS</option>
+                                <option>Linux</option>
+                                <option>Windows</option>
+                            </select>
+                        </div>
+                    </li>
+
+                    <li class="go-sub">
+                        <button type="button" class="btn go" ng-click="getReportsByUserAgent()">Go</button>
+                    </li>
+
+                    <!--<li class="sea-wid">-->
+                    <!--<div class="search-box">-->
+                    <!--<input type="text" class="form-control textfiled1" placeholder="search">-->
+                    <!--<input type="button" class="sea-btn">-->
+                    <!--</div>-->
+                    <!--<div class="clearfix"></div>-->
+                    <!--</li>-->
+                    <!--<li class="map-wid"><a href="#" class="map" ui-sref="mapView">Map view</a></li>-->
+                    <!--<li class="map-wid"><a href="#" class="map" ui-sref="listView">List view</a></li>-->
+
+                    <!--<li class="mail-wid"><a href="#" class="mail">-->
+                    <!--<img src="images/Reports_Mail.png" width="40" height="28" alt="Reports Mail"></a></li>-->
+
+                    <!--<li class="mail-wid mar-rgt-space pull-right"><a href="#" class="mail">-->
+                    <!--<img src="images/Reports_Download.png" width="40" height="28" alt="img"></a></li>-->
+
+                </ul>
+            </div>
+            <div class="col-xs-12 mt-25">
+                <a ui-sref="devices" class="btn btn-info pull-right mb-10">Devices</a>
+                <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
+                    <tr style="text-align: center;" ng-repeat="report in reportsByUserAgent">
+                        <td data-title="'User Name'" sortable="'partyName'" class="clickable-item col-sm-2">
+                            <a href="#"></a>
+                            {{report.attrs.accountId.userName}}
+                        </td>
+                        <td data-title="'Last Login Time'" sortable="'partyContact'" class="clickable-item col-sm-3">
+                            {{report.createdAt |date : "dd/MM/y HH:mm"}}
+                        </td>
+                        <td data-title="'User Agent'" sortable="'totalFright'" class="clickable-item col-sm-3">
+                            {{report.userAgentJSON.os.name}} {{report.userAgentJSON.os.version}} {{report.userAgentJSON.browser.name}} {{report.userAgentJSON.browser.version}}
+                        </td>
+                        <td data-title="'Remote IP'" sortable="'totalPayment'" class="clickable-item col-sm-3">
+                            {{report.remoteIp}}
+                        </td>
+                    </tr>
+                    <!-- <tr ng-if="!parties || parties.length === 0">
+                         <td colspan="8">No Records exist.</td>
+                     </tr>-->
+
+                </table>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+    </div>
+</div>

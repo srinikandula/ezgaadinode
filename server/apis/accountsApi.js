@@ -402,7 +402,7 @@ Accounts.prototype.userProfile = function (jwt,req, callback) {
             });
         },
         accountGroupsCount: function (accountGroupCountCallback) {
-            Accounts.prototype.countAccountGroups(jwt, function (response) {
+            Accounts.prototype.countAccountGroups(jwt,req, function (response) {
                 accountGroupCountCallback(response.error, response.count);
             });
         },

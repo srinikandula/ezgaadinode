@@ -997,7 +997,7 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback)
                 $lte: new Date(params.toDate),
             }, "partyId": ObjectId(params.partyId)
         }
-        getPaybleAmountByParty(condition, params, function (response) {
+        getPaybleAmountByParty(condition, params,req, function (response) {
             callback(response);
         });
     } else if (params.fromDate && params.toDate) {
@@ -1007,12 +1007,12 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback)
                 $lte: new Date(params.toDate),
             }
         }
-        getPaybleAmountByParty(condition, params, function (response) {
+        getPaybleAmountByParty(condition, params,req, function (response) {
             callback(response);
         });
     } else if (params.partyId) {
         condition = {"accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId)}
-        getPaybleAmountByParty(condition, params, function (response) {
+        getPaybleAmountByParty(condition, params,req, function (response) {
             callback(response);
         });
     } else {
@@ -1025,7 +1025,7 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback)
             } else if (erpSettings) {
 
                 condition = Utils.getErpSettings(erpSettings.expense, erpSettings.accountId)
-                getPaybleAmountByParty(condition, params, function (response) {
+                getPaybleAmountByParty(condition, params,req, function (response) {
                     callback(response);
                 });
             } else {

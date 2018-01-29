@@ -41,7 +41,8 @@ var accountSchema = new mongoose.Schema({
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},
-    editAccounts: {type: Boolean, default: false}
+    editAccounts: {type: Boolean, default: false},
+    lastLogin:Date
 }, {
     timestamps: true
 });
@@ -317,13 +318,10 @@ var analyticsSchema = mongoose.Schema({
     action:String,
     remoteIp:String,
     userAgent:String,
-    attrs:{},
+    userAgentJSON:{},
+    attrs:{accountId:{type: ObjectId, ref: 'accounts'}},
     // accountId:{type: ObjectId, ref: 'accounts'},
     response:String,
-    OS:{
-        name:String,
-        version:String
-    }
 },{timestamps: String});
 
 module.exports = {
