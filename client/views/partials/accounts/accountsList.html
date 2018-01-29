@@ -40,10 +40,12 @@
                 <a href="#" class="btn edit-icon" ng-click="goToEditAccountPage(account._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
             </td>
+            <td data-title="'Last Login Time'">{{account.lastLogin |date : "dd/MM/y HH:mm"}} </td>
         </tr>
         <tr ng-if="!currentPageOfAccounts || currentPageOfAccounts.length === 0">
             <td colspan="8">No account Records exist.</td>
         </tr>
+
     </table>
 
 

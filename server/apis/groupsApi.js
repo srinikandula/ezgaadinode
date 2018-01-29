@@ -74,34 +74,22 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                     if(user.type === "group") {
                         obj.accountId = user.accountId;
                     }
-                    jwt.sign(obj, config.jwt.secret, config.jwt.options, function (err, token, options) {
-                        if (err) {
+                    user.lastLogin=new Date();
+                    user.save(function (err) {
+                        if(err){
                             retObj.messages.push('Please try again');
                             callback(retObj);
-                        } else {
-                            ErpSettingsColl.findOne({accountId: user._id}, function (err, settingsData) {
+                        }else{
+                            jwt.sign(obj, config.jwt.secret, config.jwt.options, function (err, token, options) {
                                 if (err) {
                                     retObj.messages.push('Please try again');
                                     callback(retObj);
-                                } else if (settingsData) {
-                                    retObj.status = true;
-                                    retObj._id = user._id;
-                                    retObj.token = token;
-                                    retObj.userName = userName;
-                                    retObj.gpsEnabled = user.gpsEnabled;
-                                    retObj.erpEnabled = user.erpEnabled;
-                                    retObj.loadEnabled = user.loadEnabled;
-                                    retObj.editAccounts = user.editAccounts;
-                                    retObj.profilePic = user.profilePic;
-                                    retObj.type = user.type;
-                                    callback(retObj);
                                 } else {
-                                    var erpSettings = new ErpSettingsColl({accountId: user._id});
-                                    erpSettings.save(function (err, saveSettings) {
+                                    ErpSettingsColl.findOne({accountId: user._id}, function (err, settingsData) {
                                         if (err) {
                                             retObj.messages.push('Please try again');
                                             callback(retObj);
-                                        } else if (saveSettings) {
+                                        } else if (settingsData) {
                                             retObj.status = true;
                                             retObj._id = user._id;
                                             retObj.token = token;
@@ -114,12 +102,33 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                             retObj.type = user.type;
                                             callback(retObj);
                                         } else {
-                                            retObj.messages.push('Please try again');
-                                            callback(retObj);
+                                            var erpSettings = new ErpSettingsColl({accountId: user._id});
+                                            erpSettings.save(function (err, saveSettings) {
+                                                if (err) {
+                                                    retObj.messages.push('Please try again');
+                                                    callback(retObj);
+                                                } else if (saveSettings) {
+                                                    retObj.status = true;
+                                                    retObj._id = user._id;
+                                                    retObj.token = token;
+                                                    retObj.userName = userName;
+                                                    retObj.gpsEnabled = user.gpsEnabled;
+                                                    retObj.erpEnabled = user.erpEnabled;
+                                                    retObj.loadEnabled = user.loadEnabled;
+                                                    retObj.editAccounts = user.editAccounts;
+                                                    retObj.profilePic = user.profilePic;
+                                                    retObj.type = user.type;
+                                                    callback(retObj);
+                                                } else {
+                                                    retObj.messages.push('Please try again');
+                                                    callback(retObj);
+                                                }
+                                            })
                                         }
                                     })
-                                }
-                            })
+                        }
+                    });
+
 
                         }
                     });

@@ -858,6 +858,7 @@ Trips.prototype.sendEmail = function (jwt, data,req, callback) {
  */
 
 Trips.prototype.findTotalRevenue = function (erpSettingsCondition,req, callback) {
+    console.log('JWT ',erpSettingsCondition);
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now
@@ -882,7 +883,7 @@ Trips.prototype.findTotalRevenue = function (erpSettingsCondition,req, callback)
         if (populateErr) {
             retObj.status = false;
             retObj.messages.push(JSON.stringify(populateErr));
-            analyticsService.create(req,serviceActions.find_total_revenue_err,{accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req,serviceActions.find_total_revenue_err,{accountId:req.jwt.accountId,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -902,7 +903,7 @@ Trips.prototype.findTotalRevenue = function (erpSettingsCondition,req, callback)
             }
             //retObj.totalRevenue = populateResults.tripFreightTotal.totalFreight - populateResults.expensesTotal.totalExpenses;
             //retObj.totalRevenue = populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
-            analyticsService.create(req,serviceActions.find_total_revenue,{accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req,serviceActions.find_total_revenue,{accountId:req.jwt.accountId,success:true},function(response){ });
             callback(retObj);
         }
     });

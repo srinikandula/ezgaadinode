@@ -402,7 +402,35 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             access: 'auth'
         }
+    }).state({
+        name: 'analyticsReports',
+        url: '/analytics/dashboard',
+        templateUrl: 'views/partials/analyticsReports/reports.html',
+        data: {activeTab: 'Analytics'
+        },
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'actionReports',
+        url: '/reports/lastLogin',
+        templateUrl: 'views/partials/analyticsReports/loginAnalytics.html',
+        data: {activeTab: 'Analytics'
+        },
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'agentReports',
+        url: '/reports/agentReports',
+        templateUrl: 'views/partials/analyticsReports/agentReports.html',
+        data: {activeTab: 'Analytics',
+        },
+        params: {
+            access: 'auth'
+        }
     });
+    // agentReports
     $urlRouterProvider.otherwise('/login');
 });
 

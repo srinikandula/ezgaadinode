@@ -56,6 +56,9 @@
                 <li ng-class="{selected: activeTab === 'settings'}"><a href="#" ui-sref="gpsSettings"><img
                         src="images/settings.png"><span>Settings</span></a></li>
                 <li><a href="#">  <img src="images/notifications.png"><span>Notifications</span></a></li>
+                <li ng-class="{selected: activeTab === 'Analytics'}"><a href="#" ui-sref="analyticsReports"><img
+                        src="images/settings.png"><span>Analytics</span></a></li>
+
             </ul>
             <ul class="nav navbar-nav pull-right margin-top-10 user-nav" ng-show="isLoggedInn" ng-init="loggedTrue()">
 
@@ -157,6 +160,6 @@
 <script src="js/modules/dashBoardModule.js"></script>
 <script src="js/modules/GpsSettingsCrtl.js"></script>
 <script src="js/modules/gpsModule.js"></script>
-
+<script src="js/modules/analyticsModule.js"></script>
 </body>
 </html>

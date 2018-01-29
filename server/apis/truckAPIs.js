@@ -459,7 +459,7 @@ Trucks.prototype.findExpiryCount = function (jwt,req, callback) {
         if (err) {
             retObj.status = false;
             retObj.messages.push("Please try again");
-            analyticsService.create(req,serviceActions.find_exprd_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:true,messages:retObj.messages},function(response){ });
+            analyticsService.create(req,serviceActions.find_exprd_trus_err,{body:JSON.stringify(req.params),accountId:jwt.accountId,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else if (erpSettings) {
             var today = new Date();
@@ -506,7 +506,7 @@ Trucks.prototype.findExpiryCount = function (jwt,req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.expiryCount = populateResults;
-                analyticsService.create(req,serviceActions.find_exprd_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                analyticsService.create(req,serviceActions.find_exprd_trus,{body:JSON.stringify(req.params),accountId:jwt.accountId,success:true},function(response){ });
                 callback(retObj);
             });
         }

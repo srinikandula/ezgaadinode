@@ -63,8 +63,6 @@ const serviceActions={
     count_expense_types_err:'COUNT_EXPENSE_TYPES_ERR',
     add_expense:'ADD_EXPENSE',
     add_expense_err:'ADD_EXPENSE_ERR',
-    get_all_acc_expenses:'GET_ALL_ACC_EXPENSES',
-    get_all_acc_expenses_err:'GET_ALL_ACC_EXPENSES_ERR',
     get_all_expenses:'GET_ALL_EXPENSES',
     get_all_expenses_err:'GET_ALL_EXPENSES_ERR',
     find_expense_by_id:'FIND_EXPENSE_BY_ID',

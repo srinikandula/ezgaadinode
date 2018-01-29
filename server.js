@@ -22,6 +22,7 @@ var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
 var Groups = require('./server/routes/groupRoutes');
 var Gps = require('./server/routes/gpsRoutes');
+var Analytics=require('./server/routes/reports');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -88,6 +89,7 @@ app.use(function (req, res, next) {
 app.use('/v1/events', Events.OpenRouter);
 app.use('/v1/group', Groups.OpenRouter);
 app.use('/v1/gps', Gps.OpenRouter);
+app.use('/v1/analytics', Analytics.OpenRouter);
 
 app.use(authMiddleware);
 app.use(json2xls.middleware);
