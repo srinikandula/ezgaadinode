@@ -279,6 +279,39 @@ var devicePositions = new mongoose.Schema({
     // isViewed : Boolean
 }, {timestamps: true, versionKey: false});
 
+var archivedDevicePositions = new mongoose.Schema({
+    // _id: ObjectId,
+    // updatedAt: Date,
+    // createdAt: Date,
+    gprmc: String,
+    name: String,
+    uniqueId: String,
+    deviceId: String,
+    protocol: String,
+    deviceTime: Number,
+    fixTime: Number,
+    valid: Boolean,
+    location: {
+        type: {
+            type: String,
+            default: "Point"
+        },
+        coordinates: [Number]  //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    },
+    altitude: String,
+    speed: String,
+    course: String,
+    statusCode: String,
+    attributes: {
+        batteryLevel: String,
+        distance: Number,
+        totalDistance: Number,
+        motion: Number
+    },
+    address: String
+    // isViewed : Boolean
+}, {timestamps: true, versionKey: false});
+
 var deviceSchema = new mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
@@ -351,6 +384,7 @@ module.exports = {
     NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications'),
     ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings'),
     GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions'),
+    archivedDevicePositionsColl:mongoose.model('archivedDevicePositions', archivedDevicePositions, 'archivedDevicePositions'),
     SecretKeysColl:mongoose.model('secretKeys',secretKeys,'secretKeys'),
     SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),

@@ -45,5 +45,6 @@
     "callbackURL": "http://localhost:2000/login/google/return"
   },
   "bodyParserLimit": "50mb",
-  "googleSecretKeyLimit": 3
+  "googleSecretKeyLimit": 3,
+  "devicePositionsArchiveLimit": 14
 }

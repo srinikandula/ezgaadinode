@@ -7,6 +7,7 @@ var GpsColl = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -44,25 +45,25 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if (location) {
                     position.address = location[0]['formattedAddress'];
-                    SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
-                        if (incerr) {
-                            retObj.messages.push('Error incrementing secret');
-                        } else {
-                            retObj.messages.push('Secret Incremented');
-                            var positionDoc = new GpsColl(position);
-                            positionDoc.save(function (err) {
-                                if (err) {
-                                    retObj.messages.push('Error saving position');
-                                    callback(retObj);
-                                } else {
-                                    retObj.status = true;
-                                    retObj.messages.push('Successfully saved the position');
-                                    callback(retObj);
-                                }
-                            });
-                        }
-                    });
                 }
+                SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
+                    if (incerr) {
+                        retObj.messages.push('Error incrementing secret');
+                    } else {
+                        retObj.messages.push('Secret Incremented');
+                        var positionDoc = new GpsColl(position);
+                        positionDoc.save(function (err) {
+                            if (err) {
+                                retObj.messages.push('Error saving position');
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages.push('Successfully saved the position');
+                                callback(retObj);
+                            }
+                        });
+                    }
+                });
             });
         } else {
             retObj.messages.push('Secrets Completed for today');
@@ -136,41 +137,52 @@ Gps.prototype.getAllSecrets = function (callback) {
     });
 };
 
-function addInitialCounters() {
+Gps.prototype.addInitialCounters = function (callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var fulldate = new Date();
-    console.log(fulldate, fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear());
+    //console.log(fulldate, fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear());
     SecretKeyColl.find(function (secreterr, secrets) {
         if (secreterr) {
             retObj.messages.push('Error getting secrets');
+            callback(retObj);
         } else {
             async.map(secrets, function (secret, asyncCallback) {
-                var counterDoc = new SecretKeyCounterColl({
+                SecretKeyCounterColl.findOne({
                     date: fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear(),
-                    secretId: secret._id,
-                    counter: 0
-                });
-                counterDoc.save(function (err) {
-                    asyncCallback(err, 'success');
+                    secretId: secret._id
+                }, function (errchecked, checked) {
+                    if (errchecked) {
+                        asyncCallback(errchecked)
+                    } else if (checked){
+                        asyncCallback('null', 'already added')
+                    } else {
+                        var counterDoc = new SecretKeyCounterColl({
+                            date: fulldate.getDate() + '/' + fulldate.getMonth() + 1 + '/' + fulldate.getFullYear(),
+                            secretId: secret._id,
+                            counter: 0
+                        });
+                        counterDoc.save(function (err) {
+                            asyncCallback(err, 'success');
+                        });
+                    }
                 });
             }, function (errsaving, saved) {
                 if (errsaving) {
                     retObj.messages.push('Error saving counter');
-                    console.log('error');
+                    callback(retObj);
                 } else {
                     retObj.status = true;
                     retObj.messages.push('counter saved successfully');
-                    console.log('counter saved successfully');
+                    callback(retObj);
                 }
             });
         }
     });
-}
+};
 
-// addInitialCounters();
 Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
     var retObj = {
         status: false,
@@ -224,6 +236,39 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
         }
     })
 
+};
+
+Gps.prototype.moveDevicePositions = function (callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var fulldate = new Date();
+    fulldate.setDate(fulldate.getDate() - config.devicePositionsArchiveLimit); //1 day
+    GpsColl.find({createdAt: {$lte: fulldate}}).lean().exec(function (errdata, gpsdocuments) {
+        if (errdata) {
+            console.log(errdata);
+            retObj.messages.push('Error getting data');
+            callback(retObj);
+        } else {
+            archivedDevicePositions.insertMany(gpsdocuments, function (errsaving, saved) {
+                if (errsaving) {
+                    retObj.messages.push('Error saving data');
+                    callback(retObj);
+                } else {
+                    GpsColl.remove({createdAt: {$lte: fulldate}}, function (errremoved, removed) {
+                        if (errremoved) {
+                            retObj.messages.push('Error Removing data');
+                            callback(retObj);
+                        } else {
+                            retObj.messages.push('Succesfully Moved ' + gpsdocuments.length + ' Documents');
+                            callback(retObj);
+                        }
+                    });
+                }
+            });
+        }
+    });
 };
 
 module.exports = new Gps();
