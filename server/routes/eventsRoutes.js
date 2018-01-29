@@ -211,6 +211,13 @@ OpenRouter.get('/get/trucks', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/deviceTrucks', function (request, res) {
+    Events.getDeviceTrucksData(function(results){
+        //console.log(results);
+        //res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

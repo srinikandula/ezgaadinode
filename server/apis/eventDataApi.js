@@ -1,7 +1,10 @@
+var mongoose = require('mongoose');
+var ObjectId = mongoose.Types.ObjectId;
 var EventDataCollection = require('./../models/schemas').EventDataCollection;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var DeviceColl = require('./../models/schemas').DeviceColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 
@@ -173,7 +176,6 @@ EventData.prototype.createAccountGroupData = function (accountGroupData, callbac
         messages: []
     };
     var accountGroupDoc = new AccountsColl(accountGroupData);
-
     accountGroupDoc.save(accountGroupData, function (err, newDoc) {
         if (err) {
             logger.info(JSON.stringify(err));
@@ -212,6 +214,37 @@ EventData.prototype.createTruckData = function (truckData, callback) {
             if (callback) {
                 callback(retObj);
             }
+        }
+    });
+}
+
+EventData.prototype.createDeviceTruckData = function (deviceTruckData, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var deviceTruckDataDoc = new DeviceColl(deviceTruckData);
+    deviceTruckDataDoc.save(deviceTruckData, function (err, newDoc) {
+        if (err) {
+            retObj.messages.push('Error saving Truck Data');
+            if (callback) {
+                callback(retObj);
+            }
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.deviceTruckData = newDoc;
+            var deviceTruckId = newDoc.deviceId;
+            TrucksColl.findOneAndUpdate(
+                { "_id": newDoc.truckId },
+                { $set: { deviceId: deviceTruckId } },
+                {new: true}, function (err, truckDoc) {
+                    if (callback) {
+                        callback(retObj);
+                    }
+                }
+            );
         }
     });
 }
