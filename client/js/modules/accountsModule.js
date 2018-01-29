@@ -445,6 +445,8 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         TrucksService.getAllTrucks({}, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
+                console.log("$scope.group",$scope.group);
+
                 if ($scope.group.truckIds.length > 0) {
                     for (var i = 0; i < $scope.trucks.length; i++) {
 
@@ -466,6 +468,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         }, function (error) {
             Notification.error(error);
         });
+
     }
 
     $scope.truckSelected = function (status, truckId) {
@@ -802,4 +805,3 @@ app.controller('ERPSettingsCtrl', ['$scope', 'AccountServices', 'Notification', 
         });
     }
 }]);
-
