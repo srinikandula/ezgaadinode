@@ -126,7 +126,7 @@ body {
     list-style-type: none;
 }
 
-.custom-form-control {
+.login-form-control {
     height: 42px !important;
     padding: 10px !important;
 }
@@ -155,8 +155,11 @@ body {
 .left-nav{
     background-color: #fff;
     padding: 0 !important;
+    border-right: 1px solid #CCCCCC;
 }
-
+.left-menu ul{
+    margin-top: 18px;
+}
 .left-menu-li {
     margin-bottom: 10px;
     font-size: 18px;
@@ -188,4 +191,125 @@ body {
 }
 .right-nav{
     background-color: #fff;
+}
+.cus-main{
+    padding: 15px;
+}
+
+.custom-ul li{
+    padding: 10px 0;
+    font-size: 13px;
+    line-height: 31px;
+}
+.custom-ul li a{
+    text-decoration: none;
+    padding: 0 5px;
+}
+/*.active{*/
+    /*background-color: #c0c0c0;*/
+    /*color: #000;*/
+/*}*/
+.custom-form-control{
+    width: 65% !important;
+    height: 35px;
+}
+.newCust{
+    padding: 25px;
+}
+
+.pos-relative {
+    position: relative;
+}
+.date-pick {
+    cursor: pointer;
+    position: absolute;
+    right: 36%;
+    top: 5px;
+}
+.routes{
+    display: block;
+}
+.routes h4{
+    margin: 15px 24% 25px 0;
+    display: inline-block;
+    font-weight: bold;
+}
+.routes span{
+    font-size: 24px;
+    cursor: pointer;
+}
+.checkbox label{
+    font-size: 15px;
+    padding-left: 0 !important;
+}
+.checkbox label:after,
+.radio label:after {
+    content: '';
+    display: table;
+    clear: both;
+}
+
+.checkbox .cr,
+.radio .cr {
+    position: relative;
+    display: inline-block;
+    border: 1px solid #a9a9a9;
+    border-radius: .25em;
+    width: 1.3em;
+    height: 1.3em;
+    float: left;
+    margin-right: .5em;
+}
+
+.radio .cr {
+    border-radius: 50%;
+}
+
+.checkbox .cr .cr-icon,
+.radio .cr .cr-icon {
+    position: absolute;
+    font-size: .8em;
+    line-height: 0;
+    top: 50%;
+    left: 20%;
+}
+
+.radio .cr .cr-icon {
+    margin-left: 0.04em;
+}
+
+.checkbox label input[type="checkbox"],
+.radio label input[type="radio"] {
+    display: none;
+}
+
+.checkbox label input[type="checkbox"] + .cr > .cr-icon,
+.radio label input[type="radio"] + .cr > .cr-icon {
+    transform: scale(3) rotateZ(-20deg);
+    opacity: 0;
+    transition: all .3s ease-in;
+}
+
+.checkbox label input[type="checkbox"]:checked + .cr > .cr-icon,
+.radio label input[type="radio"]:checked + .cr > .cr-icon {
+    transform: scale(1) rotateZ(0deg);
+    opacity: 1;
+}
+
+.checkbox label input[type="checkbox"]:disabled + .cr,
+.radio label input[type="radio"]:disabled + .cr {
+    opacity: .5;
+}
+.save-btns{
+    margin: 0 auto;
+    display: block;
+    text-align: center;
+}
+.accordion-toggle span{
+    text-decoration: none;
+    font-size: 14px;
+}
+.accordion-toggle:hover, .accordion-toggle:focus  {
+text-decoration: none !important;
+    color: #c9302c;
 }

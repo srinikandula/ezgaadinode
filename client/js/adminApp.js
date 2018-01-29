@@ -1,4 +1,4 @@
-var app = angular.module('easygaadiAdmin', ['ui.router']);
+var app = angular.module('easygaadiAdmin', ['ui.router','ui.bootstrap']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -17,7 +17,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'customers',
         url: '/customers',
-        templateUrl: 'views/partials/admin/customers.html',
+        templateUrl: 'views/partials/admin/customers/customers.html',
+    }).state({
+        name: 'createCustomer',
+        url: '/createCustomer',
+        templateUrl: 'views/partials/admin/customers/createCustomer.html',
     }).state({
         name: 'services',
         url: '/services',

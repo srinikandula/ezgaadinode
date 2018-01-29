@@ -3,7 +3,7 @@ app.directive('adminleftMenu', function () {
         restrict: 'E',
         template: '<div class="left-menu"> \n' +
         '        <ul class="list-unstyled">\n' +
-        '           <li class="left-menu-li">' +
+        '           <li class="left-menu-li" ui-sref-active="active">' +
         '               <a  ui-sref="{{label | lowercase}}" class="left-menu-anchor" >{{label}}</a> \n' +
         '           </li> \n'+
         '        </ul>\n' +
