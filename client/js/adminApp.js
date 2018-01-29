@@ -14,22 +14,28 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'dashboard',
         url: '/dashboard',
         templateUrl: 'views/partials/admin/dashboard.html',
+        data:{activeTab: 'dashboard'}
     }).state({
         name: 'customers',
         url: '/customers',
         templateUrl: 'views/partials/admin/customers/customers.html',
+        data:{activeTab: 'customers'}
     }).state({
         name: 'createCustomer',
         url: '/createCustomer',
         templateUrl: 'views/partials/admin/customers/createCustomer.html',
+        data:{activeTab: 'customers'}
+
     }).state({
         name: 'services',
         url: '/services',
         templateUrl: 'views/partials/admin/services.html',
+        data:{activeTab: 'services'}
     }).state({
         name: 'orderProcess',
         url: '/orderProcess',
         templateUrl: 'views/partials/admin/orderProcess.html',
+        data:{activeTab: 'orderProcess'}
     });
 
     $urlRouterProvider.otherwise('/login');
@@ -37,16 +43,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
 
 
 
-// app.run(function ($transitions, $rootScope, $cookies) {
-//
-//     $transitions.onSuccess({to: '*'}, function (to) {
-//         $rootScope.profilePic = $cookies.get('profilePic');
-//         $rootScope.type = $cookies.get('type');
-//         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
-//         $rootScope.subTab = to.promise.$$state.value.data.subTab;
-//
-//     });
-// });
+app.run(function ($transitions, $rootScope) {
+    $transitions.onSuccess({to: '*'}, function (to) {
+        $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
+    });
+});
 
 
 
