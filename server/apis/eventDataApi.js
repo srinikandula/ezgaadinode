@@ -1,5 +1,3 @@
-var mongoose = require('mongoose');
-var ObjectId = mongoose.Types.ObjectId;
 var EventDataCollection = require('./../models/schemas').EventDataCollection;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
