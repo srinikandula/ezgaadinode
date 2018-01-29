@@ -321,7 +321,7 @@ var analyticsSchema = mongoose.Schema({
     userAgentJSON:{},
     attrs:{accountId:{type: ObjectId, ref: 'accounts'}},
     // accountId:{type: ObjectId, ref: 'accounts'},
-    response:String,
+    response:String
 },{timestamps: String});
 
 module.exports = {

@@ -397,7 +397,7 @@ Accounts.prototype.userProfile = function (jwt,req, callback) {
 
     async.parallel({
         profile: function (profileCallback) {
-            Accounts.prototype.getAccountDetails(jwt.id, function (response) {
+            Accounts.prototype.getAccountDetails(jwt.id,req, function (response) {
                 profileCallback(response.error, response.account);
             });
         },

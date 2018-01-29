@@ -1,4 +1,4 @@
-var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification', 'ngImgCrop', 'ngFileUpload',  'ngSanitize', 'ui.select']);
+var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification', 'ngImgCrop', 'ngFileUpload', 'ngSanitize', 'ui.select']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -55,9 +55,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'accounts',
         url: '/accounts',
         templateUrl: 'views/partials/accounts/accountsList.html',
-        activeTab: 'accounts',
-        data: {
-            subTab: 'ERP'},
+        data: {activeTab: 'accounts',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth'
         }
@@ -65,23 +65,22 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'accountsEdit',
         url: '/accountsEdit/:accountId',
         templateUrl: 'views/partials/accounts/edit-account.html',
-        activeTab: 'accounts',
-        data: {
-            subTab: 'ERP'},
+        data: {activeTab: 'accounts',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open',
             accountId: null
         }
-    })
-        .state({
-            name: 'groups',
-            url: '/groups',
-            templateUrl: 'views/partials/groups/show-groups.html',
-            data: {activeTab: 'groups'},
-            params: {
-                access: 'open'
-            }
-        }).state({
+    }).state({
+        name: 'groups',
+        url: '/groups',
+        templateUrl: 'views/partials/groups/show-groups.html',
+        data: {activeTab: 'groups'},
+        params: {
+            access: 'open'
+        }
+    }).state({
         name: 'groupsEdit',
         url: '/groupsEdit/:groupId',
         templateUrl: 'views/partials/groups/groupsEdit.html',
@@ -94,8 +93,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'drivers',
         url: '/drivers',
         templateUrl: 'views/partials/drivers/driversList.html',
-        data: {activeTab: 'drivers',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'drivers',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open'
         }
@@ -103,8 +104,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'driversEdit',
         url: '/driversEdit/:driverId',
         templateUrl: 'views/partials/drivers/edit-driver.html',
-        data: {activeTab: 'drivers',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'drivers',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open',
             driverId: null
@@ -113,8 +116,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'trucks',
         url: '/trucks',
         templateUrl: 'views/partials/trucks/trucks-list.html',
-        data: {activeTab: 'trucks',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'trucks',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open'
         }
@@ -122,8 +127,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'trucksEdit',
         url: '/trucksEdit/:truckId',
         templateUrl: 'views/partials/trucks/trucks-edit.html',
-        data: {activeTab: 'trucks',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'trucks',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open',
             truckId: null
@@ -132,8 +139,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'trips',
         url: '/trips',
         templateUrl: 'views/partials/trips/tripsList.html',
-        data: {activeTab: 'trips',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'trips',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth'
         }
@@ -141,8 +150,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'tripsEdit',
         url: '/tripsEdit/:tripId',
         templateUrl: 'views/partials/trips/tripsEdit.html',
-        data: {activeTab: 'trips',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'trips',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth',
             tripId: null
@@ -151,8 +162,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'parties',
         url: '/parties',
         templateUrl: 'views/partials/party/party-list.html',
-        data: {activeTab: 'parties',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'parties',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open'
         }
@@ -160,8 +173,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'editParty',
         url: '/editParty/:partyId',
         templateUrl: 'views/partials/party/edit-party.html',
-        data: {activeTab: 'parties',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'parties',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth',
             partyId: null
@@ -178,8 +193,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'expenses',
         url: '/expenses',
         templateUrl: 'views/partials/expenses/expenses.html',
-        data: {activeTab: 'expenses',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'expenses',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open'
         }
@@ -187,8 +204,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'expensesEdit',
         url: '/expensesEdit/:expenseId',
         templateUrl: 'views/partials/expenses/expensesEdit.html',
-        data: {activeTab: 'expenses',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'expenses',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open',
             expenseId: null
@@ -197,8 +216,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'payments',
         url: '/payments',
         templateUrl: 'views/partials/payments/paymentsReceived.html',
-        data: {activeTab: 'payments',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'payments',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth'
         }
@@ -206,8 +227,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'paymentsEdit',
         url: '/paymentsEdit/:paymentsId',
         templateUrl: 'views/partials/payments/paymentsEdit.html',
-        data: {activeTab: 'payments',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'payments',
+            subTab: 'ERP'
+        },
         params: {
             access: 'open',
             paymentsId: null
@@ -228,7 +251,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'settings'},
         params: {
             access: 'open',
-             }
+        }
     }).state({
         name: 'reportsSettings',
         url: '/reportsSettings',
@@ -267,8 +290,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'reports',
         url: '/reports/revenueByVehicles',
         templateUrl: 'views/partials/reports/revenueByVehicles.html',
-        data: {activeTab: 'Reports',
-               subTab: 'ERP'},
+        data: {
+            activeTab: 'Reports',
+            subTab: 'ERP'
+        },
 
         params: {
             access: 'auth'
@@ -277,18 +302,22 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'revenueByvehicleId',
         url: '/reports/revenueByvehicleId/:vehicleId/:id',
         templateUrl: 'views/partials/reports/revenueByvehicleId.html',
-        data: {activeTab: 'Reports',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'Reports',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth',
-            vehicleId:null, id: null
+            vehicleId: null, id: null
         }
     }).state({
         name: 'expenseByVehicles',
         url: '/reports/expenseByVehicles',
         templateUrl: 'views/partials/reports/expenseByVehicles.html',
-        data: {activeTab: 'Reports',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'Reports',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth'
         }
@@ -296,18 +325,22 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'expenseByVehicleId',
         url: '/reports/expenseByVehicleId/:vehicleId/:id',
         templateUrl: 'views/partials/reports/expenseByVehicleId.html',
-        data: {activeTab: 'reports',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'reports',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth',
-            vehicleId:null, id: null
+            vehicleId: null, id: null
         }
     }).state({
         name: 'receivableByParty',
         url: '/reports/receivableByParty',
         templateUrl: 'views/partials/reports/receivableByParties.html',
-        data: {activeTab: 'Reports',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'Reports',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth'
         }
@@ -315,17 +348,19 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'receivableByPartyName',
         url: '/reports/receivableByPartyName/:partyId/:name',
         templateUrl: 'views/partials/reports/receivableByPartyName.html',
-        data: {activeTab: 'ERP',subTab: 'ERP'},
+        data: {activeTab: 'ERP', subTab: 'ERP'},
         params: {
             access: 'auth',
-            partyId:null, name:null
+            partyId: null, name: null
         }
     }).state({
         name: 'payableByParty',
         url: '/reports/payableByParty',
         templateUrl: 'views/partials/reports/payableByParty.html',
-        data: {activeTab: 'Reports',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'Reports',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth'
         }
@@ -333,17 +368,19 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'payableByPartyName',
         url: '/reports/payableByPartyName/:partyId/:name',
         templateUrl: 'views/partials/reports/payableByPartyName.html',
-        data: {activeTab: 'ERP',subTab: 'ERP'},
+        data: {activeTab: 'ERP', subTab: 'ERP'},
         params: {
             access: 'auth',
-            partyId:null, name:null
+            partyId: null, name: null
         }
     }).state({
         name: 'listOfExpireTrucks',
         url: '/reports/listOfExpireTrucks',
         templateUrl: 'views/partials/reports/expiryTrucks.html',
-        data: {activeTab: 'Reports',
-            subTab: 'ERP'},
+        data: {
+            activeTab: 'Reports',
+            subTab: 'ERP'
+        },
         params: {
             access: 'auth'
         }
@@ -408,17 +445,17 @@ app.config(function (NotificationProvider, $httpProvider) {
         positionY: 'bottom'
     });
     // Interceptor for redirecting to login page if not logged in
-    $httpProvider.interceptors.push(function ($q, $location,$rootScope, $cookies) {
+    $httpProvider.interceptors.push(function ($q, $location, $rootScope, $cookies) {
         return {
-            'request': function(config) {
-              
-               $rootScope.reqloading=true;
+            'request': function (config) {
+
+                $rootScope.reqloading = true;
                 return config;
             },
-            'response': function(config) {
-                $rootScope.reqloading=false;
-                 return config;
-             },
+            'response': function (config) {
+                $rootScope.reqloading = false;
+                return config;
+            },
             'responseError': function (response) {
                 if ([400, 401, 402, 403].indexOf(response.status) > -1) {
                     $cookies.remove('token');
@@ -431,7 +468,7 @@ app.config(function (NotificationProvider, $httpProvider) {
 });
 
 app.run(function ($transitions, $rootScope, $cookies) {
-   
+
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');
@@ -441,14 +478,14 @@ app.run(function ($transitions, $rootScope, $cookies) {
     });
 });
 
-app.filter('propsFilter', function() {
-    return function(items, props) {
-         var out = [];
+app.filter('propsFilter', function () {
+    return function (items, props) {
+        var out = [];
 
         if (angular.isArray(items)) {
             var keys = Object.keys(props);
 
-            items.forEach(function(item) {
+            items.forEach(function (item) {
                 var itemMatches = false;
 
                 for (var i = 0; i < keys.length; i++) {

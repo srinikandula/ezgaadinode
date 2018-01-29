@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Easy Gaadi</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/fav.png" type="image/png" sizes="32x32">
+
+    <!--Bower CSS Files here ---->
+    <link rel="stylesheet" href="css/adminStyles.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="components/bootstrap/dist/css/bootstrap.min.css">
+    <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+<div class="main-page" ng-app="easygaadiAdmin">
+    <div class="container-fluid pall-zero">
+        <nav class="navbar custom-navbar">
+            <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand logo" href="#"><img src="images/logo-login.png"> </a>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="#" class="login-user"><img src="images/user.png">Sravan Kumar</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="col-sm-2 col-xs-12 left-nav">
+                    <adminleft-menu label="Dashboard"></adminleft-menu>
+                    <adminleft-menu label="Customers" ui-sref="customers"></adminleft-menu>
+                    <adminleft-menu label="Services"></adminleft-menu>
+                    <adminleft-menu label="Order Process"></adminleft-menu>
+                    <adminleft-menu label="Settings"></adminleft-menu>
+                    <adminleft-menu label="Set Notifications"></adminleft-menu>
+                    <adminleft-menu label="Admin"></adminleft-menu>
+
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-xs-12 col-sm-10 right-nav">
+                    <ui-view></ui-view>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="clearfix"></div>
+</div>
+
+<!--bower scripts-->
+<script src="components/jquery/dist/jquery.min.js"></script>
+<script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="components/angular/angular.min.js"></script>
+<script src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
+
+<!---Routing adminApp.js File-->
+<script src="js/adminApp.js"></script>
+
+<!---Controllers--->
+
+<!---Directives--->
+<script src="js/directives/adminLeftNav.js"></script>
+
+</body>
+</html>
