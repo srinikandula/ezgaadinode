@@ -45,20 +45,34 @@ Events.prototype.getEventData = function (accountId, startDate, endDate, request
                 retObj.status = false;
                 retObj.messages.push('Error fetching data');
                 retObj.messages.push(JSON.stringify(err));
-                analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(request, serviceActions.get_event_data_err, {
+                    body: JSON.stringify(request.params),
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.results = results.eventData.concat(results.eventDataTemp);
                 retObj.count = retObj.results.length;
-                analyticsService.create(request,serviceActions.get_event_data,{body:JSON.stringify(request.params),success:true},function(response){ });
+                analyticsService.create(request, serviceActions.get_event_data, {
+                    body: JSON.stringify(request.params),
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
     } else {
         callback(retObj);
-        analyticsService.create(request,serviceActions.get_event_data_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(request, serviceActions.get_event_data_err, {
+            body: JSON.stringify(request.params),
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
     }
 };
 
@@ -92,19 +106,33 @@ Events.prototype.getLatestLocations = function (accountId, request, callback) {
                 retObj.status = false;
                 retObj.messages.push('Error fetching data');
                 retObj.messages.push(JSON.stringify(err));
-                analyticsService.create(request,serviceActions.get_lat_loc_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(request, serviceActions.get_lat_loc_err, {
+                    body: JSON.stringify(request.params),
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.results = results.eventData.concat(results.eventDataTemp);
                 retObj.count = retObj.results.length;
-                analyticsService.create(request,serviceActions.get_lat_loc,{body:JSON.stringify(request.params),success:true},function(response){ });
+                analyticsService.create(request, serviceActions.get_lat_loc, {
+                    body: JSON.stringify(request.params),
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
     } else {
-        analyticsService.create(request,serviceActions.get_lat_loc_err,{body:JSON.stringify(request.params),success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(request, serviceActions.get_lat_loc_err, {
+            body: JSON.stringify(request.params),
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     }
 };
@@ -233,13 +261,17 @@ Events.prototype.getAccountData = function (request, callback) {
         status: false,
         messages: []
     };
-    var accountDataQuery = "select accountId as userName,contactPhone,password,contactEmail as email from Account";
+    var accountDataQuery = "select accountID as userName,contactPhone,password,contactEmail as email from Account order by accountID";
     pool.query(accountDataQuery, function (err, results) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error fetching data');
             retObj.messages.push(JSON.stringify(err));
-            analyticsService.create(request,serviceActions.get_account_data_err,{success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(request, serviceActions.get_account_data_err, {
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -253,7 +285,8 @@ Events.prototype.getAccountData = function (request, callback) {
                 EventData.createAccountData(AccountData)
             }
             retObj.count = retObj.results.length;
-            analyticsService.create(request,serviceActions.get_account_data,{success:true},function(response){ });
+            analyticsService.create(request, serviceActions.get_account_data, {success: true}, function (response) {
+            });
             callback(retObj);
         }
     });
@@ -267,13 +300,17 @@ Events.prototype.getAccountGroupData = function (request, callback) {
     AccountsColl.find({}, function (error, accountsData) {
         accountsData.forEach(function (account) {
             if (account.userName) {
-                var accountGroupDataQuery = "select accountId as userName,contactPhone,password from DeviceGroup where accountId='" + account.userName + "'";
+                var accountGroupDataQuery = "select accountID as userName,contactPhone,password from DeviceGroup where accountID='" + account.userName + "'";
                 pool.query(accountGroupDataQuery, function (err, results) {
                     if (err) {
                         retObj.status = false;
                         retObj.messages.push('Error fetching data');
                         retObj.messages.push(JSON.stringify(err));
-                        analyticsService.create(request,serviceActions.get_account_grp_data_err,{success:false,messages:retObj.messages},function(response){ });
+                        analyticsService.create(request, serviceActions.get_account_grp_data_err, {
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
                         callback(retObj);
                     } else {
                         retObj.status = true;
@@ -289,7 +326,8 @@ Events.prototype.getAccountGroupData = function (request, callback) {
                             EventData.createAccountGroupData(accountGroupData)
                         }
                         retObj.count = retObj.results.length;
-                        analyticsService.create(request,serviceActions.get_account_grp_data,{success:true},function(response){ });
+                        analyticsService.create(request, serviceActions.get_account_grp_data, {success: true}, function (response) {
+                        });
                         callback(retObj);
                     }
                 });
@@ -298,7 +336,7 @@ Events.prototype.getAccountGroupData = function (request, callback) {
     });
 }
 
-Events.prototype.getTrucksData = function (callback) {
+Events.prototype.getTrucksData = function (request, callback) {
     var retObj = {
         status: false,
         messages: [],
@@ -308,74 +346,91 @@ Events.prototype.getTrucksData = function (callback) {
     var driverId = null;
     var pollutionExpiry = "0000-00-00";// getting error using default value as null
     var taxDueDate = "0000-00-00";// getting error using default value as null
-    //TrucksColl.remove({},function (error,truckData) {
-        AccountsColl.find({}, function (error, accountsData) {
-            accountsData.forEach(function (account) {
-                if (account.userName !== "") {
-                    console.log('account', account.userName);
-                    var trucksDataQuery = "select t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type where c.gps_account_id='" + account.userName + "'";
-                    console.log('trucksDataQuery', trucksDataQuery);
-                    pool_crm.query(trucksDataQuery, function (err, queryData) {
-                        if (err) {
-                            retObj.status = false;
-                            retObj.messages.push('Error fetching data');
-                            retObj.messages.push(JSON.stringify(err));
-                            callback(retObj);
-                        } else {
-                            if (queryData.length !== 0) {
-                                for (var i = 0; i < queryData.length; i++) {
-                                    queryData[i].fitnessExpiry = convertDate(queryData[i].fitnessExpiry);
-                                    queryData[i].permitExpiry = convertDate(queryData[i].permitExpiry);
-                                    queryData[i].insuranceExpiry = convertDate(queryData[i].insuranceExpiry);
-                                    queryData[i].pollutionExpiry = convertDate(queryData[i].pollutionExpiry);
-                                    queryData[i].taxDueDate = convertDate(queryData[i].taxDueDate);
-                                    queryData[i].accountId = account._id;
-                                    queryData[i].driverId = driverId;
-                                    queryData[i].pollutionExpiry = convertDate(pollutionExpiry);
-                                    queryData[i].taxDueDate = convertDate(taxDueDate);
-                                    EventData.createTruckData(queryData[i]);
-                                }
-                            }
+    AccountsColl.find({}, function (error, accountsData) {
+        accountsData.forEach(function (account) {
+            if (account.userName !== "") {
+                var trucksDataQuery = "select t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type where c.gps_account_id='" + account.userName + "'";
+                var deviceDataQuery = "select vehicleId as registrationNo,vehicleModel as truckType,vehicleModel as modelAndYear,vehicleModel as tonnage,fitnessExpire as fitnessExpiry,NPExpire as permitExpiry,insuranceExpire as insuranceExpiry from Device where accountId = '" + account.userName + "'";
+                async.parallel({
+                    truckData: function (truckDataCallback) {
+                        pool_crm.query(trucksDataQuery, function (err, truckDataResults) {
+                            truckDataCallback(err, truckDataResults)
+                        });
+                    },
+                    deviceData: function (deviceDataCallback) {
+                        pool.query(deviceDataQuery, function (err, deviceDataResults) {
+                            deviceDataCallback(err, deviceDataResults)
+                        });
+                    }
+                }, function (err, results) {
+                    console.log(results);
+                    if (err) {
+                        retObj.status = false;
+                        retObj.messages.push('Error fetching data');
+                        retObj.messages.push(JSON.stringify(err));
+                        callback(retObj);
+                    } else {
+                        console.log("looking up :" + account.userName);
+                        retObj.results = results.truckData.concat(results.deviceData);
+                        console.log(account.userName + ' --->trucks: ' + retObj.results.length);
+                        for (var i = 0; i < retObj.results.length; i++) {
+                            var truckData = retObj.results[i];
+                            truckData.fitnessExpiry = convertDate(truckData.fitnessExpiry);
+                            truckData.permitExpiry = convertDate(truckData.permitExpiry);
+                            truckData.insuranceExpiry = convertDate(truckData.insuranceExpiry);
+                            truckData.pollutionExpiry = convertDate(truckData.pollutionExpiry);
+                            truckData.taxDueDate = convertDate(truckData.taxDueDate);
+                            truckData.accountId = account._id;
+                            truckData.driverId = driverId;
+                            truckData.pollutionExpiry = convertDate(pollutionExpiry);
+                            truckData.taxDueDate = convertDate(taxDueDate);
+                            EventData.createTruckData(truckData);
                         }
-                    });
-                }
-            });
+                        console.log("Done Loading all trucks for account");
+                        retObj.count = retObj.results.length;
+                        retObj.status = true;
+                        retObj.messages.push('Done');
+                        callback(retObj);
+                    }
+                });
+            }
         });
-    //});
+        console.log("Done Loading for all accounts");
+    });
 }
 
-Events.prototype.getDeviceTrucksData = function (callback) {
+Events.prototype.getDeviceTrucksData = function (request, callback) {
     var retObj = {
         status: false,
         messages: [],
     };
     //DeviceColl.remove({},function (error,deviceData) {
-        TrucksColl.find({}, function (error, trucksData) {
-            trucksData.forEach(function (truck) {
-                if (truck.registrationNo !== "") {
-                    console.log('account', truck.registrationNo);
-                    var deviceTrucksDataQuery = "select deviceId,simID as simNumber,imeiNumber as imei,simPhoneNumber,installedBy,devicePaymentStatus,isDamaged,equipmentType,serialNumber from Device where vehicleID = '" + truck.registrationNo + "'";
-                    console.log('deviceTrucksDataQuery', deviceTrucksDataQuery);
-                    pool.query(deviceTrucksDataQuery, function (err, queryData) {
-                        if (err) {
-                            retObj.status = false;
-                            retObj.messages.push('Error fetching data');
-                            retObj.messages.push(JSON.stringify(err));
-                            callback(retObj);
-                        } else {
-                            if (queryData.length !== 0) {
-                                for (var i = 0; i < queryData.length; i++) {
-                                    queryData[i].createdBy = truck.accountId;
-                                    queryData[i].truckId = truck._id;
-                                    queryData[i].accountId = truck.accountId;
-                                    EventData.createDeviceTruckData(queryData[i]);
-                                }
+    TrucksColl.find({}, function (error, trucksData) {
+        trucksData.forEach(function (truck) {
+            if (truck.registrationNo !== "") {
+                console.log('account', truck.registrationNo);
+                var deviceTrucksDataQuery = "select deviceId,simID as simNumber,imeiNumber as imei,simPhoneNumber,installedBy,devicePaymentStatus,isDamaged,equipmentType,serialNumber from Device where vehicleID = '" + truck.registrationNo + "'";
+                console.log('deviceTrucksDataQuery', deviceTrucksDataQuery);
+                pool.query(deviceTrucksDataQuery, function (err, queryData) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.messages.push('Error fetching data');
+                        retObj.messages.push(JSON.stringify(err));
+                        callback(retObj);
+                    } else {
+                        if (queryData.length !== 0) {
+                            for (var i = 0; i < queryData.length; i++) {
+                                queryData[i].createdBy = truck.accountId;
+                                queryData[i].truckId = truck._id;
+                                queryData[i].accountId = truck.accountId;
+                                EventData.createDeviceTruckData(queryData[i]);
                             }
                         }
-                    });
-                }
-            });
+                    }
+                });
+            }
         });
+    });
     //});
 }
 

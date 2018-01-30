@@ -192,7 +192,7 @@ EventData.prototype.createAccountGroupData = function (accountGroupData, callbac
     });
 }
 
-EventData.prototype.createTruckData = function (truckData, callback) {
+EventData.prototype.createTruckData = function (truckData) {
     var retObj = {
         status: false,
         messages: []
@@ -203,21 +203,13 @@ EventData.prototype.createTruckData = function (truckData, callback) {
         if (!truckFound || truckFound.length === 0) {
             truckDataDoc.save(truckData, function (err, newDoc) {
                 if (err) {
-                    retObj.messages.push('Error saving Truck Data');
-                    if (callback) {
-                        callback(retObj);
-                    }
+                    logger.error(JSON.stringify(err));
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    retObj.truckData = newDoc;
-                    if (callback) {
-                        callback(retObj);
-                    }
+                    logger.info("truck saved");
                 }
             });
         } else {
-            logger.info("ignoring to save Truck data" + truckData);
+            logger.info("ignoring to save truck data" + truckData);
         }
     });
 }
@@ -229,7 +221,7 @@ EventData.prototype.createDeviceTruckData = function (deviceTruckData, callback)
     };
 
     var deviceTruckDataDoc = new DeviceColl(deviceTruckData);
-    DeviceColl.find({"deviceId": truckData.deviceId}, function (error, deviceTruckFound) {
+    DeviceColl.find({"deviceId": deviceTruckData.deviceId}, function (error, deviceTruckFound) {
         if (!deviceTruckFound || deviceTruckFound.length === 0) {
             deviceTruckDataDoc.save(deviceTruckData, function (err, newDoc) {
                 if (err) {

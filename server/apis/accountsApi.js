@@ -407,7 +407,7 @@ Accounts.prototype.userProfile = function (jwt,req, callback) {
             });
         },
         accountTrucksCount: function (accountTrucksCountCallback) {
-            Trucks.countTrucks(jwt, function (response) {
+            Trucks.countTrucks(jwt,req, function (response) {
                 accountTrucksCountCallback(response.error, response.count);
             });
         },
