@@ -59,7 +59,7 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
                             } else {
                                 retObj.status = true;
                                 retObj.messages.push('Successfully saved the position');
-                                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc.location}},function (truUpderr,result) {
+                                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc}},function (truUpderr,result) {
                                     if(truUpderr){
                                         retObj.messages.push('Error updating the truck position');
                                         callback(retObj);
