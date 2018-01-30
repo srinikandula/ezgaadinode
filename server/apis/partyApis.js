@@ -390,7 +390,7 @@ Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId,req, callb
     var totalPaid = 0;
     async.parallel({
         trips: function (tripsCallback) {
-            Trips.findTripsByParty(jwt, partyId, function (tripsResults) {
+            Trips.findTripsByParty(jwt, partyId,req, function (tripsResults) {
                 tripsCallback(tripsResults.error, tripsResults.trips);
             });
         },
@@ -443,12 +443,12 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
     };
     async.parallel({
         trips: function (tripsCallback) {
-            Trips.findTripsByVehicle(jwt, vehicleId, function (tripsResults) {
+            Trips.findTripsByVehicle(jwt, vehicleId,req, function (tripsResults) {
                 tripsCallback(tripsResults.error, tripsResults.trips);
             });
         },
         expenses: function (expensesCallback) {
-            ExpenseCostColl.findVehicleExpenses(jwt, vehicleId, function (expensesResults) {
+            ExpenseCostColl.findVehicleExpenses(jwt, vehicleId, req,function (expensesResults) {
                 expensesCallback(expensesResults.error, expensesResults.expenses);
             });
         },

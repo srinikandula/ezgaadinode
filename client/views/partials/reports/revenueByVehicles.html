@@ -1,4 +1,5 @@
-<div class="col-xs-12 pall-zero" ng-controller="dashboardController" ng-init="vehicleRevenue();getAllTrucks();erpDashboard();">
+<div class="col-xs-12 pall-zero" ng-controller="dashboardController"
+     ng-init="getRevenueByVehicle();getAllTrucks();">
     <div class="col-sm-3 col-xs-12">
         <div class="reports-panel activated" ui-sref="reports">
             <div class="reports-image">
@@ -47,13 +48,13 @@
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
-                    <li class="payble"  ui-sref="payableByParty">
+                    <li class="payble" ui-sref="payableByParty">
                         <span class="payable">Payable</span><br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.paybleAmount || 0}}
                         </small>
                     </li>
-                    <li class="payble"  ui-sref="receivableByParty">
+                    <li class="payble" ui-sref="receivableByParty">
                         <span class="receivable">Receivable</span> <br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.pendingDue || 0}}
@@ -163,36 +164,9 @@
                 </div>
             </div>
 
-           <!-- <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
-                <tr ng-repeat="revenueListByRegNo in revenueByVehicle" style="text-align: center;">
-                    <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
-
-                        <a href="#" ui-sref="revenueByvehicleId({vehicleId:revenueListByRegNo.attrs.truckName, id:revenueListByRegNo.registrationNo})">
-                            {{revenueListByRegNo.attrs.truckName}}</a>
-                    </td>
-                    <td data-title="'Total Freight'" sortable="'totalFreight'" class="clickable-item col-sm-2">
-                        {{ revenueListByRegNo.totalFreight}}
-                    </td>
-                    <td data-title="'Total Expense'" sortable="'totalExpense'" class="clickable-item col-sm-2">
-                        {{ revenueListByRegNo.totalExpense}}
-                    </td>
-
-                    <td data-title="'Net Revenue'" sortable="'totalRevenue'" class="clickable-item col-sm-2">
-                        {{ revenueListByRegNo.totalRevenue}}
-                    </td>
-                </tr>
-
-                <tr ng-if="!revenueByVehicle || revenueByVehicle.length === 0">
-                    <td colspan="8">No Records exist.</td>
-                </tr>
-                <tr class="text-center">
-                    <td><b>Total</b></td>
-                    <td><b>{{totalRevenue.grossFreight}}</b></td>
-                    <td><b>{{totalRevenue.grossExpenses}}</b></td>
-                    <td><b>{{totalRevenue.grossRevenue}}</b></td>
-                </tr>
-            </table>-->
-            <table id="revenuelist"  class="display table table-striped table-bordered style-table category-table table table-hover" cellspacing="0" width="100%">
+            <table id="revenuelist"
+                   class="display table table-striped table-bordered style-table category-table table table-hover"
+                   cellspacing="0" width="100%">
                 <tfoot>
                 <tr>
                     <th>Total</th>

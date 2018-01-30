@@ -1208,7 +1208,7 @@ Trips.prototype.shareRevenueDetailsByVechicleViaEmail = function (jwt, params,re
         analyticsService.create(req,serviceActions.revenue_det_by_veh_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Trips.prototype.findRevenueByVehicle(jwt, params, function (revenueResponse) {
+        Trips.prototype.findRevenueByVehicle(jwt, params,req, function (revenueResponse) {
             if (revenueResponse.status) {
                 var emailparams = {
                     templateName: 'shareRevenueDetailsByVechicle',
