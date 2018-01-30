@@ -257,7 +257,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 });
             }
         })
-    }
+    };
     $scope.searchByTruckName = function (truckName) {
         $scope.truckParams = new NgTableParams({
             page: 1, // show first page
