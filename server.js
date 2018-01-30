@@ -28,7 +28,7 @@ var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 app.use(express.static('client', {index: "/views/index.html"}));
 // app.use(express.static('client', {index: "/views/adminIndex.html"}));
 
