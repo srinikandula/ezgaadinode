@@ -233,11 +233,11 @@ EventData.prototype.createDeviceTruckData = function (deviceTruckData, callback)
                     retObj.status = true;
                     retObj.messages.push('Success');
                     retObj.deviceTruckData = newDoc;
-                    var deviceTruckId = newDoc.deviceId;
+                    var deviceTruckId = newDoc.imei;
                     TrucksColl.findOneAndUpdate(
                         {"_id": newDoc.truckId},
                         {$set: {deviceId: deviceTruckId}},
-                        {new: true}, function (err, truckDoc) {
+                        function (err, truckDoc) {
                             if (callback) {
                                 callback(retObj);
                             }
