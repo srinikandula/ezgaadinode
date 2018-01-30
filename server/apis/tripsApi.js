@@ -1041,22 +1041,12 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
-    console.log('conditrion', condition);
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    sort={createdAt: 1};
-    console.log('===>',sort);
+
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
-                {"$sort": sort},
                 {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
-                {"$skip": skipNumber},
-                {"$limit": limit},
+
                 function (err, totalFreight) {
                     console.log('error1', err);
                     callback(err, totalFreight);
@@ -1064,7 +1054,6 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         },
         expensesTotal: function (callback) {
             ExpenseCostColl.aggregate(condition,
-                {"$sort": sort},
                 {
                     $group: {
                         _id: JSON.parse(JSON.stringify("$vehicleNumber")),
@@ -1072,8 +1061,6 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                         totalCredit: {$sum: "$totalAmount"}
                     }
                 },
-                {"$skip": skipNumber},
-                {"$limit": limit},
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
                 });
