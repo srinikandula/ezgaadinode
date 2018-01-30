@@ -1,5 +1,5 @@
-app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'PaymentsService', 'AccountServices', '$stateParams',
-    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, PaymentsService, AccountServices, $stateParams) {
+app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'PaymentsService', 'AccountServices', '$stateParams','$compile',
+    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, PaymentsService, AccountServices, $stateParams, $compile) {
 
         $scope.vehicleId = $stateParams.vehicleId;
         $scope.id = $stateParams.id;
@@ -41,7 +41,8 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
 
         $scope.vehicleRevenue = function () {
-            $scope.initializeparams();
+           // $scope.initializeparams();
+            $scope.getRevenueByVehicle();
             $scope.revenueParams = new NgTableParams({
                 page: 1, // show first page
                 size: 10,
@@ -205,14 +206,49 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             TripServices.findRevenueByVehicle({
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
-                regNumber: $scope.regNumber,
-                page: $scope.filters.page,
-                sort: $scope.filters.sort,
-                size: $scope.filters.size,
+                regNumber: $scope.regNumber
+
             }, function (success) {
                 if (success.data.status) {
                     $scope.revenueByVehicle = success.data.revenue;
                     $scope.totalRevenue = success.data.grossAmounts;
+                    $scope.table = $('#revenuelist').DataTable({
+
+                        responsive: true,
+                        aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                        iDisplayLength: 10,
+                        sDom: 'tp',
+                        columnDefs: [{
+
+                            orderable: true,
+                            targets: 0,
+                            responsivePriority: 1
+                        }],
+
+                        data: $scope.revenueByVehicle,
+                        columns: [
+                            {"title": "Registration No",
+                                "data": "attrs.truckName",
+                                "render": function(data, type, row){
+
+                                    return '<a class="ui-sref" >' + data + '</a>';
+
+                                }},
+                            {title: 'Total Freight', "data":"totalFreight"},
+                            {title: "Total Expense", "data": "totalExpense"},
+                            {title: "Net Revenue", "data": "totalRevenue"}
+
+                        ],
+
+
+
+                        searching: true
+
+                    }).on('click', '.ui-sref', function () {
+                        var data = $scope.table.row($(this).parents('tr')).data();
+                        console.log('data',data)
+                        $state.go('revenueByvehicleId',{vehicleId: data.attrs.truckName ,id:data.registrationNo});
+                    })
 
 
                 } else {

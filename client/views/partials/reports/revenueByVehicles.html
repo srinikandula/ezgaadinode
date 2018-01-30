@@ -163,7 +163,7 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
+           <!-- <table class="table table-bordered table-striped table-condensed table-hover" ng-table="revenueParams">
                 <tr ng-repeat="revenueListByRegNo in revenueByVehicle" style="text-align: center;">
                     <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item col-sm-2">
 
@@ -191,6 +191,16 @@
                     <td><b>{{totalRevenue.grossExpenses}}</b></td>
                     <td><b>{{totalRevenue.grossRevenue}}</b></td>
                 </tr>
+            </table>-->
+            <table id="revenuelist"  class="display table table-striped table-bordered style-table category-table table table-hover" cellspacing="0" width="100%">
+                <tfoot>
+                <tr>
+                    <th>Total</th>
+                    <th>{{totalRevenue.grossFreight}}</th>
+                    <th>{{totalRevenue.grossExpenses}}</th>
+                    <th>{{totalRevenue.grossRevenue}}</th>
+                </tr>
+                </tfoot>
             </table>
         </div>
     </div>

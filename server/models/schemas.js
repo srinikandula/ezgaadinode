@@ -335,14 +335,10 @@ var deviceSchema = new mongoose.Schema({
 var secretKeys = new mongoose.Schema({
     secret: {
         type: String
-<<<<<<< ff4e110291690dab91d8518401e80a63bb72d130
     },
     email: String
 },{ timestamps: true, versionKey: false });
-=======
-    }
-}, {timestamps: true, versionKey: false});
->>>>>>> pull request
+
 
 var secretKeysCounter = new mongoose.Schema({
     date: String,
