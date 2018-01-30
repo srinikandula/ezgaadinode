@@ -52,14 +52,14 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
                     } else {
                         retObj.messages.push('Secret Incremented');
                         var positionDoc = new GpsColl(position);
-                        positionDoc.save(function (err) {
+                        positionDoc.save(function (err,result) {
                             if (err) {
                                 retObj.messages.push('Error saving position');
                                 callback(retObj);
                             } else {
                                 retObj.status = true;
                                 retObj.messages.push('Successfully saved the position');
-                                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{latestLocation:positionDoc.location}},function (truUpderr,result) {
+                                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc.location,latestLocation:result._id}},function (truUpderr,result) {
                                     if(truUpderr){
                                         retObj.messages.push('Error updating the truck position');
                                         callback(retObj);
@@ -77,14 +77,23 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
         } else {
             retObj.messages.push('Secrets Completed for today');
             var positionDoc = new GpsColl(position);
-            positionDoc.save(function (err) {
+            positionDoc.save(function (err,result) {
                 if (err) {
                     retObj.messages.push('Error saving position');
                     callback(retObj);
                 } else {
                     retObj.status = true;
                     retObj.messages.push('Successfully saved the position');
-                    callback(retObj);
+                    TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc,latestLocation:result._id}},function (truUpderr,result) {
+                        if(truUpderr){
+                            retObj.messages.push('Error updating the truck position');
+                            callback(retObj);
+                        }else{
+                            retObj.status = true;
+                            retObj.messages.push('Successfully updated the truck position');
+                            callback(retObj);
+                        }
+                    });
                 }
             });
         }
