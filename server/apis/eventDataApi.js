@@ -246,7 +246,7 @@ EventData.prototype.createDeviceTruckData = function (deviceTruckData, callback)
                 }
             });
         } else {
-            logger.info("ignoring to save Device data" + truckData);
+            logger.info("ignoring to save Device data" + deviceTruckData);
         }
     });
 }

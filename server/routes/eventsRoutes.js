@@ -212,7 +212,7 @@ OpenRouter.get('/get/trucks', function (request, res) {
 });
 
 OpenRouter.get('/get/deviceTrucks', function (request, res) {
-    Events.getDeviceTrucksData(function(results){
+    Events.getDeviceTrucksData(request,function(results){
         //console.log(results);
         //res.json(results);
     });
