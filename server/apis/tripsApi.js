@@ -1048,12 +1048,13 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-
+    sort={createdAt: 1};
+    console.log('===>',sort);
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
-                {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
                 {"$sort": sort},
+                {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
                 {"$skip": skipNumber},
                 {"$limit": limit},
                 function (err, totalFreight) {
@@ -1063,6 +1064,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         },
         expensesTotal: function (callback) {
             ExpenseCostColl.aggregate(condition,
+                {"$sort": sort},
                 {
                     $group: {
                         _id: JSON.parse(JSON.stringify("$vehicleNumber")),
@@ -1070,7 +1072,6 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                         totalCredit: {$sum: "$totalAmount"}
                     }
                 },
-                {"$sort": sort},
                 {"$skip": skipNumber},
                 {"$limit": limit},
                 function (err, totalExpenses) {
