@@ -6,8 +6,8 @@ var OpenRouter = express.Router();
 var gps = require('../apis/gpsApi');
 var devices = require('../apis/devicesApi');
 
-OpenRouter.post('/AddDevicePositions', function (req, res) {
-    gps.AddDevicePositions(req.body, function (result) {
+OpenRouter.get('/AddDevicePositions', function (req, res) {
+    gps.AddDevicePositions(req.query, function (result) {
         res.send(result);
     });
 });
