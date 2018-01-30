@@ -82,9 +82,10 @@ var truckSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     status: Number,
-    attrs: {},
+    attrs: {latestLocation:{}},
+    // latestLocation:{type:ObjectId,ref:'devicePositions'},
     deviceId: String,
-    lookingForLoad: {type: Boolean, default: false}
+    lookingForLoad: {type: Boolean, default: false},
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({

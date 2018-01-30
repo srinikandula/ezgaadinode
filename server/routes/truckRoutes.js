@@ -135,6 +135,11 @@ AuthRouter.get('/total/count', function (req, res) {
     });
 });
 
+AuthRouter.get('/getTrucksByPopulate', function (req, res) {
+    Trucks.getTrucksByPopulate(req.jwt, req.query,req, function (result) {
+        res.json(result);
+    });
+});
 
 module.exports = {
     OpenRouter: OpenRouter,

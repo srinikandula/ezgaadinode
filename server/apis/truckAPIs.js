@@ -170,6 +170,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
     };
     truckDetails = Helpers.removeEmptyFields(truckDetails);
     truckDetails.updatedBy = jwt.id;
+    delete truckDetails.attrs.latestLocation;
     TrucksColl.findOneAndUpdate({_id: truckDetails._id},
         {
             $set: truckDetails
@@ -241,6 +242,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
             trucks: function (trucksCallback) {
                 TrucksColl
                     .find(condition)
+                    .populate('latestLocation')
                     .sort(sort)
                     .skip(skipNumber)
                     .limit(limit)
@@ -258,6 +260,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
                                 });
                             }
                         }, function (populateErr, populateResults) {
+                            // console.log(populateResults);
                             trucksCallback(populateErr, populateResults);
                         });
                     })
@@ -974,4 +977,148 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
         })
     }
 }
+
+Trucks.prototype.getTrucksByPopulate = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {};
+    if (!params.page) {
+        params.page = 1;
+    }
+
+    if (jwt.type === "account") {
+        if (!params.truckName) {
+            condition = {accountId: jwt.accountId}
+        } else {
+            condition = {accountId: jwt.accountId, registrationNo: {$regex: '.*' + params.truckName + '.*'}}
+        }
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+        async.parallel({
+            trucks: function (trucksCallback) {
+                TrucksColl
+                    .find(condition)
+                    .sort(sort)
+                    .populate('latestLocation')
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, trucks) {
+                        async.parallel({
+                            createdbyname: function (createdbyCallback) {
+                                Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                                    createdbyCallback(createdby.err, createdby.documents);
+                                });
+                            },
+                            driversname: function (driversnameCallback) {
+                                Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
+                                    driversnameCallback(driver.err, driver.documents);
+                                });
+                            }
+                        }, function (populateErr, populateResults) {
+                            // console.log(populateResults);
+                            trucksCallback(populateErr, populateResults);
+                        });
+                    })
+            },
+            count: function (countCallback) {
+                TrucksColl.count({accountId: jwt.accountId}, function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, results) {
+            if (err) {
+                console.log("Error--->", err);
+                retObj.messages.push('Error retrieving trucks');
+                analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = results.count;
+                retObj.userId=jwt.id;
+                retObj.userType=jwt.type;
+                retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
+                analyticsService.create(req,serviceActions.retrieve_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                callback(retObj);
+            }
+        });
+    }
+    else {
+        AccountsColl.findOne({_id: jwt.id}, function (err, accountData) {
+            if (err) {
+                retObj.messages.push('Error retrieving trucks');
+                callback(retObj);
+            } else if (accountData) {
+                if (accountData.truckIds.length > 0) {
+                    if (!params.truckName) {
+                        condition = {_id: {$in: accountData.truckIds}}
+                    } else {
+                        condition = {registrationNo: {$regex: '.*' + params.truckName + '.*'}}
+                    }
+                    async.parallel({
+
+                        trucks: function (trucksCallback) {
+                            TrucksColl
+                                .find(condition)
+                                .sort({createdAt: 1})
+                                .skip(skipNumber)
+                                .limit(pageLimits.trucksPaginationLimit)
+                                .lean()
+                                .exec(function (err, trucks) {
+                                    async.parallel({
+                                        createdbyname: function (createdbyCallback) {
+                                            Helpers.populateNameInUsersColl(trucks, "createdBy", function (createdby) {
+                                                createdbyCallback(createdby.err, createdby.documents);
+                                            });
+                                        },
+                                        driversname: function (driversnameCallback) {
+                                            Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
+                                                driversnameCallback(driver.err, driver.documents);
+                                            });
+                                        }
+                                    }, function (populateErr, populateResults) {
+                                        trucksCallback(populateErr, populateResults);
+                                    });
+                                })
+                        },
+                        count: function (countCallback) {
+                            TrucksColl.count({accountId: jwt.accountId, groupId: jwt.groupId}, function (err, count) {
+                                countCallback(err, count);
+                            });
+                        }
+                    }, function (err, results) {
+                        if (err) {
+                            retObj.messages.push('Error retrieving trucks');
+                            analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                            callback(retObj);
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push('Success');
+                            retObj.count = results.count;
+                            retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
+                            analyticsService.create(req,serviceActions.retrieve_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                            callback(retObj);
+                        }
+                    });
+                } else {
+                    retObj.messages.push('There is no assigned trucks');
+                    analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                    callback(retObj);
+                }
+            } else {
+                retObj.messages.push('Error retrieving trucks');
+                analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                callback(retObj);
+            }
+        });
+
+
+    }
+};
+
+
 module.exports = new Trucks();
