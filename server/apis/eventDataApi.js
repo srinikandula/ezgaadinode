@@ -192,7 +192,7 @@ EventData.prototype.createAccountGroupData = function (accountGroupData, callbac
     });
 }
 
-EventData.prototype.createTruckData = function (truckData) {
+EventData.prototype.createTruckData = function (truckData, deviceData) {
     var retObj = {
         status: false,
         messages: []
@@ -201,10 +201,26 @@ EventData.prototype.createTruckData = function (truckData) {
     var truckDataDoc = new TrucksColl(truckData);
     TrucksColl.find({"registrationNo": truckData.registrationNo}, function (error, truckFound) {
         if (!truckFound || truckFound.length === 0) {
-            truckDataDoc.save(truckData, function (err, newDoc) {
+            truckDataDoc.save(truckData, function (err, newTruck) {
                 if (err) {
                     logger.error(JSON.stringify(err));
                 } else {
+                    if(deviceData){
+                        DeviceColl.save(deviceData, function(error, newDevice){
+                            if(!error){
+                                TrucksColl.findOneAndUpdate(
+                                    {"_id": newTruck._id},
+                                    {$set: {deviceId: newDevice.imei}},
+                                    function (err, truckDoc) {
+                                        if (err) {
+                                            logger.error("Error setting deviceId in to truck :"+JSON.stringify(err));
+                                        }
+                                    }
+                                );
+                            }
+                        });
+                    }
+
                     logger.info("truck saved");
                 }
             });

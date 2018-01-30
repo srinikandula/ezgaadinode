@@ -336,106 +336,143 @@ Events.prototype.getAccountGroupData = function (request, callback) {
     });
 }
 
-Events.prototype.getTrucksData = function (request, callback) {
+Events.prototype.createTruckFromEGTruck = function (request, callback) {
     var retObj = {
         status: false,
         messages: [],
     };
-
-    var groupId = null;
     var driverId = null;
     var pollutionExpiry = "0000-00-00";// getting error using default value as null
     var taxDueDate = "0000-00-00";// getting error using default value as null
-    AccountsColl.find({}, function (error, accountsData) {
-        accountsData.forEach(function (account) {
-            if (account.userName !== "") {
-                var trucksDataQuery = "select t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type where c.gps_account_id='" + account.userName + "'";
-                var deviceDataQuery = "select vehicleId as registrationNo,vehicleModel as truckType,vehicleModel as modelAndYear,vehicleModel as tonnage,fitnessExpire as fitnessExpiry,NPExpire as permitExpiry,insuranceExpire as insuranceExpiry from Device where accountId = '" + account.userName + "'";
-                async.parallel({
-                    truckData: function (truckDataCallback) {
-                        pool_crm.query(trucksDataQuery, function (err, truckDataResults) {
-                            truckDataCallback(err, truckDataResults)
-                        });
-                    },
-                    deviceData: function (deviceDataCallback) {
-                        pool.query(deviceDataQuery, function (err, deviceDataResults) {
-                            deviceDataCallback(err, deviceDataResults)
-                        });
-                    }
-                }, function (err, results) {
-                    console.log(results);
-                    if (err) {
-                        retObj.status = false;
-                        retObj.messages.push('Error fetching data');
-                        retObj.messages.push(JSON.stringify(err));
-                        callback(retObj);
-                    } else {
-                        console.log("looking up :" + account.userName);
-                        retObj.results = results.truckData.concat(results.deviceData);
-                        console.log(account.userName + ' --->trucks: ' + retObj.results.length);
-                        for (var i = 0; i < retObj.results.length; i++) {
-                            var truckData = retObj.results[i];
-                            truckData.fitnessExpiry = convertDate(truckData.fitnessExpiry);
-                            truckData.permitExpiry = convertDate(truckData.permitExpiry);
-                            truckData.insuranceExpiry = convertDate(truckData.insuranceExpiry);
-                            truckData.pollutionExpiry = convertDate(truckData.pollutionExpiry);
-                            truckData.taxDueDate = convertDate(truckData.taxDueDate);
-                            truckData.accountId = account._id;
-                            truckData.driverId = driverId;
-                            truckData.pollutionExpiry = convertDate(pollutionExpiry);
-                            truckData.taxDueDate = convertDate(taxDueDate);
-                            EventData.createTruckData(truckData);
-                        }
-                        console.log("Done Loading all trucks for account");
-                        retObj.count = retObj.results.length;
-                        retObj.status = true;
-                        retObj.messages.push('Done');
-                        callback(retObj);
-                    }
+
+    var trucksDataQuery = "select c.gps_account_id as userName, t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type ";// where c.gps_account_id='" + account.userName + "'";
+    var trucks = [];
+    pool_crm.query(trucksDataQuery, function (err, truckDataResults) {
+        for (var i = 0; i < truckDataResults.length; i++) {
+            var truckData = truckDataResults[i];
+            var truck = {};
+
+            truck.fitnessExpiry = convertDate(truckData.fitnessExpiry);
+            truck.permitExpiry = convertDate(truckData.permitExpiry);
+            truck.insuranceExpiry = convertDate(truckData.insuranceExpiry);
+            truck.pollutionExpiry = convertDate(truckData.pollutionExpiry);
+            truck.taxDueDate = convertDate(truckData.taxDueDate);
+            //truckData.driverId = driverId;
+            truck.pollutionExpiry = convertDate(pollutionExpiry);
+            truck.taxDueDate = convertDate(taxDueDate);
+            truck.registrationNo = truckData.registrationNo;
+            truck.userName = truckData.userName;
+            var truckDoc = new TrucksColl(truck);
+            truckDoc.save(truckDoc, function (error, newTrucks) {
+                if(error){
+                    console.log(error);
+                } else {
+                    console.log("New trucks inserted");
+                }
+            });
+        }
+
+        AccountsColl.find({},{"userName":1}, function (err, accounts) {
+            for(var i=0;i<accounts.length;i++){
+                TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
+                    console.log("Truck is updated "+ JSON.stringify(truck));
                 });
             }
         });
-        console.log("Done Loading for all accounts");
+
+        retObj.status = true;
+        retObj.messages.push('trucks are being loaded from eg_truck');
+        callback(retObj);
     });
 }
 
-Events.prototype.getDeviceTrucksData = function (request, callback) {
+Events.prototype.createTruckFromDevices = function (request, callback) {
     var retObj = {
         status: false,
         messages: [],
     };
-    //DeviceColl.remove({},function (error,deviceData) {
-    TrucksColl.find({}, function (error, trucksData) {
-        trucksData.forEach(function (truck) {
-            if (truck.registrationNo !== "") {
-                console.log('account', truck.registrationNo);
-                var deviceTrucksDataQuery = "select deviceId,simID as simNumber,imeiNumber as imei,simPhoneNumber,installedBy,devicePaymentStatus,isDamaged,equipmentType,serialNumber from Device where vehicleID = '" + truck.registrationNo + "'";
-                console.log('deviceTrucksDataQuery', deviceTrucksDataQuery);
-                pool.query(deviceTrucksDataQuery, function (err, queryData) {
-                    if (err) {
-                        retObj.status = false;
-                        retObj.messages.push('Error fetching data');
-                        retObj.messages.push(JSON.stringify(err));
-                        callback(retObj);
-                    } else {
-                        if (queryData.length !== 0) {
-                            for (var i = 0; i < queryData.length; i++) {
-                                queryData[i].createdBy = truck.accountId;
-                                queryData[i].truckId = truck._id;
-                                queryData[i].accountId = truck.accountId;
-                                EventData.createDeviceTruckData(queryData[i]);
-                            }
+
+    var deviceDataQuery = "select accountId, deviceId, installedById, devicePaymentStatus, currentPlanId, isDamaged, equipmentType, vehicleModel, vehicleId, licenseExpire, insuranceExpire, fitnessExpire, NPExpire, fuelCapacity, installTime, resetTime, expirationTime, serialNumber, simPhoneNumber, simID, imeiNumber, isActive, lastStopTime from Device";
+    pool.query(deviceDataQuery, function (err, devices) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            if (devices.length !== 0) {
+                for (var i = 0; i < devices.length; i++) {
+                    var device = devices[i];
+                    var truckData = {};
+                    truckData.userName = device.accountId;
+                    truckData.fitnessExpiry = convertDate(device.fitnessExpire);
+                    truckData.permitExpiry = convertDate(device.NPExpire);
+                    truckData.insuranceExpiry = convertDate(device.insuranceExpire);
+                    truckData.pollutionExpiry = convertDate(device.pollutionExpiry);
+                    truckData.taxDueDate = convertDate(device.taxDueDate);
+                    truckData.deviceId = device.imeiNumber;
+                    truckData.registrationNo = device.vehicleId;
+                    truckData.truckType = device.vehicleModel;
+                    truckData.tracking_available = 1;
+                    var truckDoc = new TrucksColl(truckData);
+                    truckDoc.save(truckDoc, function (error, newTrucks) {
+                        if(error){
+                            console.log(error);
+                        } else {
+                            console.log("New trucks inserted");
                         }
-                    }
-                });
+                    });
+
+                    var deviceData = {};
+                    deviceData.deviceId = device.deviceId;
+                    //deviceData.truckId = truckId; //get deviceId
+                    deviceData.simNumber = device.simID;
+                    deviceData.imei = device.imeiNumber;
+                    deviceData.simPhoneNumber = device.simPhoneNumber;
+                    deviceData.installedBy = device.installedById;
+                    deviceData.userName = device.accountId; //find accountId
+                    deviceData.devicePaymentStatus = device.devicePaymentStatus;
+                    deviceData.devicePaymentPlan = device.currentPlanId;
+                    deviceData.isDamaged = device.isDamaged;
+                    deviceData.equipmentType = device.equipmentType;
+                    deviceData.serialNumber = device.serialNumber;
+                    deviceData.isActive = device.isActive;
+                    deviceData.lastStopTime = device.lastStopTime;
+                    deviceData.fuelCapacity = device.fuelCapacity;
+                    deviceData.installTime = device.installTime
+                    var deviceDoc = new DeviceColl(deviceData);
+                    deviceDoc.save(deviceData, function (error, device) {
+                        if(error){
+                            console.log(error);
+                        } else {
+                            console.log("New device inserted");
+                        }
+                    });
+                    AccountsColl.find({},{"userName":1}, function (err, accounts) {
+                        for(var i=0;i<accounts.length;i++){
+                            TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
+                                console.log("Truck is updated "+ JSON.stringify(truck));
+                            });
+                            DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
+                                console.log("Device is updated "+ JSON.stringify(device));
+                            });
+                        }
+                    });
+                    //EventData.createTruckData(truckData,deviceData);
+                }
+                retObj.status = true;
+                retObj.messages.push('trucks are being loaded');
+                callback(retObj);
             }
-        });
+        }
     });
     //});
 }
 
 function convertDate(olddate) {
-    if (olddate == "0000-00-00") {
+    if(!olddate) {
+        return new Date();
+    } else if (olddate == "0000-00-00") {
         return new Date();
     } else {
         return new Date(olddate);

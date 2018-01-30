@@ -67,6 +67,7 @@ var groupSchema = new mongoose.Schema({
 });
 
 var truckSchema = new mongoose.Schema({
+    userName: String,
     registrationNo: String,
     truckType: String,
     modelAndYear: String,
@@ -314,9 +315,10 @@ var archivedDevicePositions = new mongoose.Schema({
 }, {timestamps: true, versionKey: false});
 
 var deviceSchema = new mongoose.Schema({
+    userName: String,
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
-    truckId: {type: ObjectId, ref: 'trucks'},
+    //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
     imei: String,
     simPhoneNumber: String,
@@ -324,11 +326,17 @@ var deviceSchema = new mongoose.Schema({
     accountId:{type: ObjectId, ref: 'accounts'},
     devicePaymentStatus: String,
     devicePaymentPlan: String, //reference to device payment plan
+    lastStopTime : Date,
+    fuelCapacity: Number,
+    installTime: Date,
+    resetTime: Date,
+    paymentStart: Date,
+    paymentEnd: Date,
     isDamaged: String, //duplicate to status?
     replacedFor: String, //if this is replacement to another device
     equipmentType: String,
     serialNumber: String,
-    status: String,  // we need to create device status type master
+    isActive: {type: Boolean, default: true},
     remarks: String,
 }, {timestamps: true, versionKey: false});
 

@@ -205,16 +205,14 @@ OpenRouter.get('/get/accountGroups', function (request, res) {
 });
 
 OpenRouter.get('/get/trucks', function (request, res) {
-    Events.getTrucksData(request,function(results){
-        //console.log(results);
-        //res.json(results);
+    Events.createTruckFromEGTruck(request,function(results){
+        res.json(results);
     });
 });
 
 OpenRouter.get('/get/deviceTrucks', function (request, res) {
-    Events.getDeviceTrucksData(request,function(results){
-        //console.log(results);
-        //res.json(results);
+    Events.createTruckFromDevices(request,function(results){
+        res.json(results);
     });
 });
 
