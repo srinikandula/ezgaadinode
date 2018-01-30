@@ -269,7 +269,6 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
             }
         }, function (err, results) {
             if (err) {
-                console.log("Error--->", err);
                 retObj.messages.push('Error retrieving trucks');
                 analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
@@ -820,7 +819,6 @@ Trucks.prototype.getAllTrucksForFilter = function (jwt,req, callback) {
         status: false,
         messages: []
     };
-    console.log(req.jwt);
     var condition = {};
     if(jwt.type === 'account') {
         condition = {'accountId': jwt.accountId};

@@ -485,22 +485,11 @@ Drivers.prototype.getAllDriversForFilter = function (jwt, req, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.drivers = data;
-            analyticsService.create(req, serviceActions.get_drivers_for_filter, {
-                accountId: accountId,
-                success: true
-            }, function (response) {
-            });
             analyticsService.create(req,serviceActions.get_drivers_for_filter,{accountId:jwt.accountId,success:true},function(response){ });
             callback(retObj);
         } else {
             retObj.status = false;
             retObj.messages.push('No Drivers Found');
-            analyticsService.create(req, serviceActions.get_drivers_for_filter_err, {
-                accountId: accountId,
-                success: false,
-                messages: result.messages
-            }, function (response) {
-            });
             analyticsService.create(req,serviceActions.get_drivers_for_filter_err,{accountId:jwt.accountId,success:false,messages:result.messages},function(response){ });
             callback(retObj);
         }
