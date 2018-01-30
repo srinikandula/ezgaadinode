@@ -1,4 +1,4 @@
-<div class="col-xs-12 pall-zero" ng-controller="dashboardController" ng-init="getTruckExpirs();getAllTrucks()">
+<div class="col-xs-12 pall-zero" ng-controller="dashboardController" ng-init="getTruckExpires();getAllTrucks()">
     <div class="col-sm-3 col-xs-12">
         <div class="reports-panel" ui-sref="reports">
             <div class="reports-image">
@@ -145,30 +145,10 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expiryParams">
-                <tr ng-repeat="expiryList in expiryTrucks" style="text-align: center;">
-                    <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item">
-                        {{expiryList.registrationNo }}
-                    </td>
-                    <td data-title="'Fitness Expiry'" sortable="'fitnessExpiry'" class="clickable-item">
-                        {{ expiryList.fitnessExpiry | date:'MM-dd-yyyy'}}
-                    </td>
-                    <td data-title="'Permit Expiry'" sortable="'permitExpiry'" class="clickable-item">
-                        {{ expiryList.permitExpiry | date:'MM-dd-yyyy'}}
-                    </td>
-                    <td data-title="'Tax Expiry'" sortable="'taxExpiry'" class="clickable-item">
-                        {{ expiryList.taxDueDate | date:'MM-dd-yyyy'}}
-                    </td>
-                    <td data-title="'Insurance Expiry'" sortable="'insuranceExpiry'" class="clickable-item">
-                        {{ expiryList.insuranceExpiry | date:'MM-dd-yyyy'}}
-                    </td>
-                    <td data-title="'Pollution Expiry'" sortable="'pollutionExpiry'" class="clickable-item">
-                        {{ expiryList.pollutionExpiry | date:'MM-dd-yyyy'}}
-                    </td>
-                </tr>
-                <tr ng-if="!expiryTrucks || expiryTrucks.length === 0">
-                    <td colspan="8">No Payments Records exist.</td>
-                </tr>
+            <table id="truckExpirylist"
+                   class="display table table-striped table-bordered style-table category-table table table-hover"
+                   cellspacing="0" width="100%">
+
             </table>
         </div>
     </div>

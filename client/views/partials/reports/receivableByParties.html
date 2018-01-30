@@ -100,7 +100,7 @@
     </div>
 
     <div class="col-xs-12">
-        <div class="main-temp col-xs-12 mt-20" ng-init="paymentsReceivable();getAllParties();">
+        <div class="main-temp col-xs-12 mt-20" ng-init="getAmountsByparty();getAllParties();">
             <div class="col-xs-12 pall-zero db-expenses">
                 <div class="col-xs-3 pall-zero"><p>Total Receivables</p></div>
                 <div class="col-xs-9 pall-zero">
@@ -161,39 +161,17 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="receivableParams">
-                <tr ng-repeat="amountByParties in parties" style="text-align: center;">
-                    <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
-                        <a href="#"
-                           ui-sref="receivableByPartyName({partyId:amountByParties.id, name:amountByParties.attrs.partyName })" >
-                            {{amountByParties.attrs.partyName }}</a>
-                    </td>
-                    <td data-title="'Party Mobile'" sortable="'partyContact'" class="clickable-item col-sm-2">
-                        {{ amountByParties.attrs.partyContact}}
-                    </td>
-                    <td data-title="'Total Fright'" sortable="'totalFright'" class="clickable-item col-sm-2">
-                        {{ amountByParties.totalFright}}
-                    </td>
-                    <td data-title="'Paid Amount'" sortable="'totalPayment'" class="clickable-item col-sm-2">
-                        {{ amountByParties.totalPayment}}
-                    </td>
-
-                    <td data-title="'Due Amount'" sortable="'totalDue'" class="clickable-item col-sm-2">
-                        {{ amountByParties.totalDue}}
-                    </td>
-
+            <table id="receivablelist"
+                   class="display table table-striped table-bordered style-table category-table table table-hover"
+                   cellspacing="0" width="100%">
+                <tfoot>
+                <tr>
+                    <th colspan="2">Total</th>
+                    <th>{{partiesAmount.grossFreight}}</th>
+                    <th>{{partiesAmount.grossExpenses}}</th>
+                    <th>{{partiesAmount.grossDue}}</th>
                 </tr>
-                <tr ng-if="!parties || parties.length === 0">
-                    <td colspan="8">No Records exist.</td>
-                </tr>
-                <tr class="text-center">
-                    <td colspan="2"><b>Total</b></td>
-                    <td><b>{{partiesAmount.grossFreight}}</b></td>
-                    <td><b>{{partiesAmount.grossExpenses}}</b></td>
-                    <td><b>{{partiesAmount.grossDue}}</b></td>
-
-
-                </tr>
+                </tfoot>
             </table>
         </div>
     </div>

@@ -536,13 +536,6 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
             analyticsService.create(req,serviceActions.find_exprd_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:true,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else if (erpSettings) {
-            if (!params.page) {
-                params.page = 1;
-            }
-
-            var skipNumber = (params.page - 1) * params.size;
-            var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
             var erp = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry);
             dateplus30 = erp.condition;
@@ -582,9 +575,8 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
                         pollutionExpiry: 1,
                         taxDueDate: 1,
                     }
-                }, {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit},
+                }, {"$sort": {createdAt: -1}},
+
             ], function (populateErr, populateResults) {
              if (erp.type === 'custom') {
                     for (var i = 0; i < populateResults.length; i++) {

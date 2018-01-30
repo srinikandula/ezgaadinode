@@ -446,19 +446,12 @@ function getDuesByParty(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
     async.parallel({
         tripFrightTotal: function (callback) {
             TripColl.aggregate(condition,
                 {$group: {_id: "$partyId", totalFright: {$sum: "$freightAmount"}}},
-                {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit},
+                {"$sort": {createdAt: -1}},
                 function (err, totalFrieght) {
                     callback(err, totalFrieght);
                 });
