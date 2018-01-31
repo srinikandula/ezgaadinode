@@ -91,13 +91,6 @@ app.factory('ExpenseService', function ($http) {
                 params: params
             }).then(success, error);
         },
-        sharePayableDetailsViaEmail: function (params, success, error) {
-            $http({
-                url: '/v1/expense/sharePayableDetailsViaEmail',
-                method: "GET",
-                params: params
-            }).then(success, error);
-        },
         getPaybleAmountByPartyId:function(params,success,error){
             $http({
                 url: '/v1/expense/getPaybleAmountByPartyId',
@@ -314,7 +307,6 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find($scope.trucks, function (truck) {
-                    console.log("Truck No",$scope.expenseDetails.vehicleNumber);
                     return truck._id.toString() === $scope.expenseDetails.vehicleNumber;
                 });
                 if (selectedTruck) {
