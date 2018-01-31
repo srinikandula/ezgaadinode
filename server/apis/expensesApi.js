@@ -811,7 +811,7 @@ Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params,req, cal
         analyticsService.create(req,serviceActions.share_expense_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
+        Expenses.prototype.findExpensesByVehicles(jwt, params,req, function (expensesResponse) {
             if (expensesResponse.status) {
                 var emailparams = {
                     templateName: 'shareExpenseDetailsByVechicle',
@@ -848,7 +848,7 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params,req,
         messages: []
     };
 
-    Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
+    Expenses.prototype.findExpensesByVehicles(jwt, params,req, function (expensesResponse) {
         if (expensesResponse.status) {
             var output = [];
             for (var i = 0; i < expensesResponse.expenses.length; i++) {
