@@ -416,7 +416,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     truckData.tracking_available = 1;
                     var truckDoc = new TrucksColl(truckData);
                     truckDoc.save(truckDoc, function (error, newTrucks) {
-                        if(error){
+                        if (error) {
                             console.log(error);
                         } else {
                             console.log("New trucks inserted");
@@ -442,19 +442,19 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     deviceData.installTime = device.installTime
                     var deviceDoc = new DeviceColl(deviceData);
                     deviceDoc.save(deviceData, function (error, device) {
-                        if(error){
+                        if (error) {
                             console.log(error);
                         } else {
                             console.log("New device inserted");
                         }
                     });
-                    AccountsColl.find({},{"userName":1}, function (err, accounts) {
-                        for(var i=0;i<accounts.length;i++){
+                    AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                        for (var i = 0; i < accounts.length; i++) {
                             TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
-                                console.log("Truck is updated "+ JSON.stringify(truck));
+                                console.log("Truck is updated " + JSON.stringify(truck));
                             });
                             DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
-                                console.log("Device is updated "+ JSON.stringify(device));
+                                console.log("Device is updated " + JSON.stringify(device));
                             });
                         }
                     });
@@ -464,14 +464,8 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                 retObj.messages.push('trucks are being loaded');
                 callback(retObj);
             }
-<<<<<<< f52f7f9dfde63e3fb6cba0a3f9afd2331bf849a5
         }
-=======
-        });
-        pool.end();
->>>>>>> pull request
     });
-    //});
 }
 
 function convertDate(olddate) {
