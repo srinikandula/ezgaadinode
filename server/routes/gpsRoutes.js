@@ -48,7 +48,7 @@ AuthRouter.get('/addInitialCounters',function (req,res) {
     }) ;
 });
 
-OpenRouter.get('/getDeviceTrucks',function (req,res) {
+AuthRouter.get('/getDeviceTrucks',function (req,res) {
     gps.getDeviceTrucks(function (results) {
         res.send(results);
     })
