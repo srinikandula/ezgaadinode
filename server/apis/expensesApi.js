@@ -633,7 +633,7 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId,req, callba
 /*
 * Retrieve expenseType and truckName based on truck
 * */
-Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
+Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -684,13 +684,6 @@ function getExpensesByVehicles(jwt, condition, params,req, callback) {
         status: false,
         messages: []
     };
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-
     async.parallel({
         expenses: function (expensesCallback) {
             expenseColl.aggregate(condition,
@@ -702,9 +695,8 @@ function getExpensesByVehicles(jwt, condition, params,req, callback) {
                     }
 
                 },
-                {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit}, function (error, expensesResult) {
+                {"$sort":  {createdAt: -1}},
+                 function (error, expensesResult) {
                     expensesCallback(error, expensesResult);
                 });
         },
@@ -922,12 +914,6 @@ function getPaybleAmountByParty(condition, params,req, callback) {
         status: false,
         messages: []
     };
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     condition.mode = "Credit";
     expenseColl.aggregate({$match: condition},
         {
@@ -944,11 +930,10 @@ function getPaybleAmountByParty(condition, params,req, callback) {
                 paidAmount: {$sum: "$paidAmount"},
                 payableAmount: {$sum: {$subtract: ["$totalAmount", "$paidAmount"]}}
             }
-        }, {"$sort": sort},
-        {"$skip": skipNumber},
-        {"$limit": limit},
+        }, {"$sort": {createdAt: -1}},
 
         function (err, payble) {
+
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');

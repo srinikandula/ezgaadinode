@@ -4,9 +4,9 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
     }
 
     $scope.loginParams = {
-        userName: '',
-        password: '',
-        contactPhone: '',
+        userName: $cookies.get('rememberUserName'),
+        password: $cookies.get('rememberPassword'),
+        contactPhone: $cookies.get('rememberContactPhone'),
         errors: []
     };
 
@@ -27,6 +27,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
             params.errors.push('Invalid Contact Number');
         }
         if (!params.errors.length) {
+            $scope.rememberMe();
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
                     $cookies.put('token', success.data.token);
@@ -89,5 +90,11 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
         }
     }
 
-
+    $scope.rememberMe=function () {
+        if($scope.remember){
+            $cookies.put('rememberUserName',$scope.loginParams.userName);
+            $cookies.put('rememberPassword', $scope.loginParams.password);
+            $cookies.put('rememberContactPhone', $scope.loginParams.contactPhone);
+        }
+    }
 }]);
