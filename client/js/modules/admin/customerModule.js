@@ -1,7 +1,7 @@
 app.controller('customerCtrl',['$scope', '$state',function ($scope, $state) {
 
     $scope.cancel = function () {
-        $state.go('customers');
+        $state.go('customers.customersLead');
     };
 
     $scope.leadStatus = ['Initiate', 'Duplicate', 'Junk Lead', 'Language Barrier', 'Callback', 'Not interested',
