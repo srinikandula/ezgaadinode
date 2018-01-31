@@ -170,7 +170,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
     };
     truckDetails = Helpers.removeEmptyFields(truckDetails);
     truckDetails.updatedBy = jwt.id;
-    delete truckDetails.attrs.latestLocation;
+    // delete truckDetails.attrs.latestLocation;
     TrucksColl.findOneAndUpdate({_id: truckDetails._id},
         {
             $set: truckDetails
