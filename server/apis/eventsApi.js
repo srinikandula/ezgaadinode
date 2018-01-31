@@ -464,7 +464,12 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                 retObj.messages.push('trucks are being loaded');
                 callback(retObj);
             }
+<<<<<<< f52f7f9dfde63e3fb6cba0a3f9afd2331bf849a5
         }
+=======
+        });
+        pool.end();
+>>>>>>> pull request
     });
     //});
 }
