@@ -48,6 +48,12 @@ AuthRouter.get('/addInitialCounters',function (req,res) {
     }) ;
 });
 
+OpenRouter.get('/getDeviceTrucks',function (req,res) {
+    gps.getDeviceTrucks(function (results) {
+        res.send(results);
+    })
+});
+
 /*OpenRouter.get('/moveDevicePositions', function (rew, res) {
     gps.moveDevicePositions(function (result) {
         res.send(result);
