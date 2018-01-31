@@ -261,7 +261,7 @@ Events.prototype.getAccountData = function (request, callback) {
         status: false,
         messages: []
     };
-    var accountDataQuery = "select accountID as userName,contactPhone,password,contactEmail as email from Account order by accountID";
+    var accountDataQuery = "select accountID as userName,contactPhone,password,contactEmail as email,contactName,contactAddress,displayName from Account order by accountID";
     pool.query(accountDataQuery, function (err, results) {
         if (err) {
             retObj.status = false;
