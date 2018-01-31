@@ -45,7 +45,6 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if (location) {
                     position.address = location[0]['formattedAddress'];
-                    console.log('address', position.address);
                 }
                 SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
                     if (incerr) {
@@ -53,7 +52,6 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
                     } else {
                         retObj.messages.push('Secret Incremented');
                         var positionDoc = new GpsColl(position);
-                        console.log(positionDoc);
                         positionDoc.save(function (err,result) {
                             if (err) {
                                 retObj.messages.push('Error saving position');
