@@ -297,7 +297,7 @@ Gps.prototype.moveDevicePositions = function (callback) {
 Gps.prototype.getDeviceTrucks = function (callback) {
     var retObj = {
         status: false,
-        message: []
+        messages: []
     };
     TrucksColl.find({deviceId:{$exists:true},accountId:{$exists:true},userName:{$nin:['accounts']}},{"attrs.latestLocation":1,accountId:1,registrationNo:1,truckType:1,tracking_available:1},function (err,results) {
         if(err){
