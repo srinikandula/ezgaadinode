@@ -10,7 +10,7 @@ var OtpColl = require('./../models/schemas').OtpColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var serviceActions=require('./../constants/constants');
 var analyticsService=require('./../apis/analyticsApi');
-
+var keysColl = require('./../models/schemas').keysColl;
 log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
 
