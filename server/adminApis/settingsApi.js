@@ -7,6 +7,7 @@ var serviceActions = require('./../constants/constants');
 var TrucksTypesColl = require("../models/schemas").TrucksTypesColl;
 var LoadTypesColl = require("../models/schemas").LoadTypesColl;
 var GoodsTypesColl = require("../models/schemas").GoodsTypesColl;
+var erpGpsPlansColl = require("../models/schemas").erpGpsPlansColl;
 
 var Settings = function () {
 };
@@ -837,4 +838,377 @@ Settings.prototype.deleteLoadType = function (req, callback) {
     }
 
 };
+
+/*Author : SVPrasadK*/
+/*Plan Start*/
+Settings.prototype.getPlan = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {};
+    var params = req.params;
+
+    if (!params.page) {
+        params.page = 1;
+    }
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
+        if (!params.planName) {
+            condition = {accountId: req.jwt.accountId}
+        } else {
+            condition = {accountId: req.jwt.accountId, fullName: {$regex: '.*' + params.planName + '.*'}}
+        }
+
+        async.parallel({
+            gpsPlans: function (gpsPlansCallback) {
+                erpGpsPlansColl
+                    .find(condition)
+                    .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, gpsPlans) {
+                        Utils.populateNameInUsersColl(gpsPlans, "createdBy", function (response) {
+                            if (response.status) {
+                                gpsPlansCallback(err, response.documents);
+                            } else {
+                                gpsPlansCallback(err, null);
+                            }
+                        });
+                    });
+            },
+            count: function (countCallback) {
+                erpGpsPlansColl.count(function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, docs) {
+            if (err) {
+                retObj.messages.push('Error retrieving gps plan');
+                analyticsService.create(req, serviceActions.get_plan_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = docs.count;
+                retObj.userId = req.jwt.id;
+                retObj.userType = req.jwt.type;
+                retObj.data = docs.gpsPlans;
+                analyticsService.create(req, serviceActions.get_plan, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Settings.prototype.addPlan = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var planInfo = req.body;
+
+    if (!planInfo.planName || !_.isString(planInfo.planName)) {
+        retObj.messages.push('Invalid Plan Name');
+    }
+    if (!planInfo.durationInMonths || !_.isNumber(planInfo.durationInMonths)) {
+        retObj.messages.push('Invalid Duration Period');
+    }
+    if (!planInfo.amount || !_.isNumber(planInfo.amount)) {
+        retObj.messages.push('Invalid Amount');
+    }
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.add_plan_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    }
+    else {
+        erpGpsPlansColl.findOne({planName: planInfo.planName}, function (err, oldDoc) {
+            if (err) {
+                retObj.messages.push('Error retrieving gps plan');
+                analyticsService.create(req, serviceActions.add_plan_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (oldDoc) {
+                retObj.messages.push('GPS Plan already exists');
+                analyticsService.create(req, serviceActions.add_plan_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                planInfo.createdBy = req.jwt.id;
+                planInfo.accountId = req.jwt.id;
+                (new erpGpsPlansColl(planInfo)).save(function (err, doc) {
+                    if (err) {
+                        retObj.messages.push('Error saving plan');
+                        analyticsService.create(req, serviceActions.add_plan_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        planInfo.planId = doc._id;
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.data = doc;
+                        analyticsService.create(req, serviceActions.add_plan, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                });
+            }
+        });
+    }
+};
+
+Settings.prototype.getPlanDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var gpsPlanId = req.query.gpsPlanId;
+
+    if (!Utils.isValidObjectId(gpsPlanId)) {
+        retObj.messages.push('Invalid gps plan id');
+    }
+
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.get_plan_err, {
+            body: JSON.stringify(req.params),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        erpGpsPlansColl.findOne({"_id": ObjectId(gpsPlanId)}, function (err, doc) {
+            if (err) {
+                retObj.messages.push('Error retrieving gps plan');
+                analyticsService.create(req, serviceActions.get_plan_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.get_plan, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push('GPS plan with Id doesn\'t exist');
+                analyticsService.create(req, serviceActions.get_plan_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Settings.prototype.updatePlan = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var planInfo = req.body;
+
+    if (!Utils.isValidObjectId(planInfo.gpsPlanId)) {
+        retObj.messages.push('Invalid gps plan Id');
+    }
+    if (!planInfo.planName || !_.isString(planInfo.planName)) {
+        retObj.messages.push('Invalid Plan Name');
+    }
+    if (!planInfo.durationInMonths || !_.isNumber(planInfo.durationInMonths)) {
+        retObj.messages.push('Invalid Duration Period');
+    }
+    if (!planInfo.amount || !_.isNumber(planInfo.amount)) {
+        retObj.messages.push('Invalid Amount');
+    }
+
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.update_plan_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        erpGpsPlansColl.findOne({
+            _id: planInfo.gpsPlanId,
+        }, function (err, oldDoc) {
+            if (err) {
+                retObj.messages.push('Please Try Again');
+                analyticsService.create(req, serviceActions.update_plan_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (oldDoc) {
+                planInfo.updatedBy = req.jwt.id;
+                erpGpsPlansColl.findOneAndUpdate({_id: planInfo.gpsPlanId}, {$set: planInfo}, function (err, doc) {
+                    if (err) {
+                        retObj.messages.push('Error updating the gps plan');
+                        analyticsService.create(req, serviceActions.update_plan_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else if (doc) {
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.data = doc;
+                        analyticsService.create(req, serviceActions.update_plan, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.messages.push('GPS plan with Id doesn\'t exist');
+                        analyticsService.create(req, serviceActions.update_plan_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                });
+            } else {
+                retObj.messages.push('GPS plan with Id doesn\'t exist');
+                analyticsService.create(req, serviceActions.update_plan_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Settings.prototype.deletePlan = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var jwt = req.jwt;
+    var gpsPlanId = req.body.gpsPlanId;
+    var condition = {};
+    var giveAccess = false;
+
+    if (!Utils.isValidObjectId(gpsPlanId)) {
+        retObj.messages.push('Invalid gps plan id');
+    }
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.delete_plan_err, {
+            body: JSON.stringify(req.params),
+            gpsPlanId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        erpGpsPlansColl.remove({_id: gpsPlanId}, function (err, returnValue) {
+            if (err) {
+                retObj.messages.push('Error deleting gps plan');
+                analyticsService.create(req, serviceActions.delete_plan_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (returnValue.result.n === 0) {
+                retObj.status = false;
+                retObj.messages.push('Unauthorized access or Error deleting gps plan');
+                analyticsService.create(req, serviceActions.delete_plan_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                analyticsService.create(req, serviceActions.delete_plan, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+}
+/*Plan End*/
 module.exports = new Settings();
