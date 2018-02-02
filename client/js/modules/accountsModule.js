@@ -386,7 +386,8 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     $scope.createKeyPair = function (id) {
         AccountServices.createKeyPair({accountId:id},function (success) {
             if (success.data.status) {
-                console.log(success.data.results);
+                // console.log(success.data.results);
+                getKeyPairsForAccount();
             }else{
 
             }
