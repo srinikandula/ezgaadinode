@@ -421,7 +421,7 @@ var devicePlans = new mongoose.Schema({
     updatedBy: {type: ObjectId, ref: 'accounts'}
 },{timestamps: String});
 
-var accountdeviceplanhistory = new mongoose.Schema({
+var accountDevicePlanHistory = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     accountName: String,
     deviceId: {type: ObjectId, ref: 'devices'},
@@ -467,7 +467,7 @@ module.exports = {
     NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications'),
     ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings'),
     GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions'),
-    archivedDevicePositionsColl:mongoose.model('archivedDevicePositions', archivedDevicePositions, 'archivedDevicePositions'),
+    ArchivedDevicePositionsColl:mongoose.model('archivedDevicePositions', archivedDevicePositions, 'archivedDevicePositions'),
     SecretKeysColl:mongoose.model('secretKeys',secretKeys,'secretKeys'),
     SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
