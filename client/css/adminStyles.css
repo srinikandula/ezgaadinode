@@ -326,3 +326,22 @@ footer{
 .name-head{
     font-size: 20px;
 }
+.smsenabled{
+    margin: 0 !important;
+}
+.account-rotues p{
+    display: inline-block;
+    font-size: 17px;
+    margin: 10px 0 22px 0px;
+    padding-right: 10px;
+}
+.account-rotues span{
+    display: inline-block;
+}
+
+.plans li{
+    width: 22% !important;
+}
+.planfc{
+    width: 100% !important;
+}

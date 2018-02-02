@@ -74,6 +74,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/services/serviceDashboard.html',
         data:{activeTab: 'services'}
     }).state({
+        name: 'addNewAccount',
+        url: '/addNewAccount',
+        templateUrl: 'views/partials/admin/services/addNewAccount.html',
+        data:{activeTab: 'services'}
+    }).state({
         name: 'services.gpsAccounts',
         url: '/gpsAccounts',
         templateUrl: 'views/partials/admin/services/gpsAccounts.html',
