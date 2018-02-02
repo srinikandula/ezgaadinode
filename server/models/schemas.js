@@ -32,6 +32,8 @@ var accountSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     groupName: String,
     contactName: String,
+    displayName: String,
+    contactAddress: String,
     location: String,
     truckIds: [],
     profilePic: String,
