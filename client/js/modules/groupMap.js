@@ -19,10 +19,14 @@ app.factory('groupMapService', function ($http, $cookies) {
 app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsService', function ($scope, $state,groupMapService,GpsService) {
 
     var locations = [];
+    var regNos=[];
+    var truckTypes=[];
     $scope.gpsTrackingByMapView=function () {
         GpsService.gpsTrackingByMapView(function (success) {
             if (success.data.status) {
                 locations = success.data.data;
+                regNos=success.data.regNos;
+                truckTypes=success.data.truckTypes;
                 $scope.loadData();
 
             } else {
@@ -43,7 +47,8 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
         var marker;
         for (var i = 0; i< locations.length; i++) {
             marker = new google.maps.Marker({
-                position: new google.maps.LatLng(locations[i].latitude, locations[i].longitude),
+                // new google.maps.LatLng($scope.addBranchParams.loc.coordinates[1], $scope.addBranchParams.loc.coordinates[0/]);
+                position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
                 icon: "/images/Track_Vehicle_Red.png",
                 /*label: {
                     text: locations[i].name,
@@ -53,7 +58,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
             });
             google.maps.event.addListener(marker, 'click', (function(marker, i) {
                 return function() {
-                    infowindow.setContent(locations[i].name+"<br>"+locations[i]._id);
+                    infowindow.setContent(regNos[i]+"<br>"+truckTypes[i]);
                     infowindow.open(map, marker);
                 }
             })(marker, i));

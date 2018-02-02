@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
-
+const ObjectId = mongoose.Types.ObjectId;
 var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
 var AccountsCollection = require('./../models/schemas').AccountsColl;
@@ -10,7 +10,7 @@ var OtpColl = require('./../models/schemas').OtpColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var serviceActions=require('./../constants/constants');
 var analyticsService=require('./../apis/analyticsApi');
-
+var keysColl = require('./../models/schemas').keysColl;
 log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
 
@@ -416,6 +416,46 @@ Groups.prototype.googleLogin = function (userData, callback) {
                 });
             }
         });
+};
+
+Groups.prototype.loginByKeys = function (apiKey,secretKey,req,callback) {
+    var retObj={
+        status: false,
+        messages: []
+    };
+    keysColl.findOne({apiKey:apiKey,secretKey:secretKey},function (err,result) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Please try again');
+            callback(retObj);
+        }else if(result){
+            console.log(result);
+            var groups=new Groups();
+            console.log(result.accountId);
+            AccountsCollection.findOne({_id:ObjectId(result.accountId)},function (err,account) {
+                if(err){
+                    retObj.status=false;
+                    retObj.messages.push('Please try again');
+                    callback(retObj);
+                }else{
+                    console.log(account);
+                    groups.login(account.userName,account.password,account.contactPhone,req,function (result) {
+                        if(result.status){
+                            callback(result);
+                        }else{
+                            retObj.status=false;
+                            retObj.messages.push('Please try again');
+                            callback(retObj);
+                        }
+                    })
+                }
+            })
+        }   else{
+            retObj.status=false;
+            retObj.messages.push('Invalid API or Secret Key');
+            callback(retObj);
+        }
+    })
 };
 
 module.exports = new Groups();

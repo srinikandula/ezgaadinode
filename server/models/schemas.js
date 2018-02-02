@@ -445,6 +445,11 @@ var faultyPlanhistory = new mongoose.Schema({
     expiryTime: Date,
     received: Boolean
 },{timestamps: String});
+var keysSchema=mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    apiKey:String,
+    secretKey:String
+});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -468,8 +473,9 @@ module.exports = {
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
-    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema')
+    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema'),
     devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
     AccountdeviceplanhistoryColl: mongoose.model('accountdeviceplanhistory', accountdeviceplanhistory, 'accountdeviceplanhistory'),
-    FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory')
+    FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
+    keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys')
 };

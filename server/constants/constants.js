@@ -235,8 +235,8 @@ const serviceActions={
     delete_customer_lead:"DELETE_CUSTOMER_LEAD",
     delete_customer_lead_err:"DELETE_CUSTOMER_LEAD_ERR",
     get_customer_lead_details:"GET_CUSTOMER_LEAD_DETAILS",
-    get_customer_lead_details_err:"GET_CUSTOMER_LEAD_DETAILS_ERR"
-
-
+    get_customer_lead_details_err:"GET_CUSTOMER_LEAD_DETAILS_ERR",
+    get_truck_locations:'GET_TRUCK_LOCATIONS',
+    get_truck_locations_err:'GET_TRUCK_LOCATIONS_ERR'
 };
 module.exports=serviceActions;
