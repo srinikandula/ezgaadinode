@@ -216,6 +216,18 @@ OpenRouter.get('/get/deviceTrucks', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/devicePlans', function (request, res) {
+    Events.getDevicePlans(request,function(results){
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/devicePlansHistory', function (request, res) {
+    Events.devicePlansHistory(request,function(results){
+        res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

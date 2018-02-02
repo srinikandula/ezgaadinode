@@ -12,6 +12,9 @@ var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
+var DevicePlansColl = require('./../models/schemas').devicePlansColl;
+var AccountdeviceplanhistoryColl = require('./../models/schemas').AccountdeviceplanhistoryColl;
+var FaultyPlanhistoryColl = require('./../models/schemas').FaultyPlanhistoryColl;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 
@@ -364,7 +367,7 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
             truck.userName = truckData.userName;
             var truckDoc = new TrucksColl(truck);
             truckDoc.save(truckDoc, function (error, newTrucks) {
-                if(error){
+                if (error) {
                     console.log(error);
                 } else {
                     console.log("New trucks inserted");
@@ -372,10 +375,10 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
             });
         }
 
-        AccountsColl.find({},{"userName":1}, function (err, accounts) {
-            for(var i=0;i<accounts.length;i++){
+        AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+            for (var i = 0; i < accounts.length; i++) {
                 TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
-                    console.log("Truck is updated "+ JSON.stringify(truck));
+                    console.log("Truck is updated " + JSON.stringify(truck));
                 });
             }
         });
@@ -439,7 +442,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     deviceData.isActive = device.isActive;
                     deviceData.lastStopTime = device.lastStopTime;
                     deviceData.fuelCapacity = device.fuelCapacity;
-                    deviceData.installTime = device.installTime
+                    deviceData.installTime = device.installTime;
                     var deviceDoc = new DeviceColl(deviceData);
                     deviceDoc.save(deviceData, function (error, device) {
                         if (error) {
@@ -466,10 +469,167 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
             }
         }
     });
-}
+};
+
+Events.prototype.getDevicePlans = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var devicePlanQuery = "select * from DevicePlans";
+    pool.query(devicePlanQuery, function (err, plans) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(plans, function (plan, planCallBack) {
+                DevicePlansColl.findOne({devicePlanId: plan.id_device_plans}, function (findplanerr, planfound) {
+                    if (findplanerr) {
+                        planCallBack(findplanerr);
+                    } else if (planfound) {
+                        planCallBack('plan added already');
+                    } else {
+                        var planDoc = new DevicePlansColl({
+                            devicePlanId: plan.id_device_plans,
+                            franchiseId: plan.id_franchise,
+                            planName: plan.plan_name,
+                            durationInMonths: plan.duration_in_months,
+                            amount: plan.amount,
+                            status: plan.status,
+                            remark: plan.remark
+                        });
+                        planDoc.save(function (err) {
+                            planCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (planerr, plansaved) {
+                console.log('planerr', planerr);
+                console.log('plansaved', plansaved);
+                if (planerr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(planerr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('devicePlans saved succesfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.devicePlansHistory = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var devicePlanQuery = "select * from Accountdeviceplanhistory";
+    pool.query(devicePlanQuery, function (err, plansHistory) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            AccountdeviceplanhistoryColl.remove({}, function (errremoved, removed) {
+                FaultyPlanhistoryColl.remove({}, function (errfaultcollremove, faultcollremoved) {
+                });
+                if (errremoved) {
+                    retObj.status = false;
+                    retObj.messages.push('Error removing data');
+                    callback(retObj);
+                } else {
+                    async.map(plansHistory, function (plan, planCallBack) {
+                        async.parallel({
+                            accountId: function (accountCallback) {
+                                AccountsColl.findOne({userName: plan.accountID}, function (erracountid, accountid) {
+                                    if (!accountid) {
+                                        // console.log(plan.accountID, accountid);
+                                        accountCallback(erracountid, {name: plan.accountID});//null);
+                                    } else {
+                                        accountCallback(erracountid, {id: accountid._id});
+                                    }
+                                });
+                            },
+                            deviceId: function (deviceCallback) {
+                                DeviceColl.findOne({deviceId: plan.deviceID}, function (errdeviceid, deviceid) {
+                                    if (deviceid) {
+                                        deviceCallback(errdeviceid, deviceid._id);
+                                    } else {
+                                        var planDoc = new FaultyPlanhistoryColl({
+                                            accountId: plan.accountID,
+                                            deviceId: plan.deviceID,
+                                            planId: plan.planID,
+                                            amount: plan.amount,
+                                            remark: plan.remark,
+                                            creationTime: plan.creationTime,
+                                            startTime: plan.startTime,
+                                            expiryTime: plan.expiryTime,
+                                            received: plan.received
+                                        });
+                                        planDoc.save(function (errsavingfaultplan) {
+                                            deviceCallback(errsavingfaultplan, null);
+                                        });
+                                    }
+                                })
+                            },
+                            planId: function (planIdCallback) {
+                                DevicePlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
+                                    planIdCallback(planiderr, planid._id);
+                                });
+                            }
+                        }, function (errids, ids) {
+                            if (errids) {
+                                planCallBack(errids);
+                            } else {
+                                if (ids.deviceId) {
+                                    var planDoc = new AccountdeviceplanhistoryColl({
+                                        deviceId: ids.deviceId,
+                                        planId: ids.planId,
+                                        amount: plan.amount,
+                                        remark: plan.remark,
+                                        creationTime: plan.creationTime,
+                                        startTime: plan.startTime,
+                                        expiryTime: plan.expiryTime,
+                                        received: plan.received
+                                    });
+                                    if (ids.accountId) {
+                                        if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
+                                        else planDoc.accountName = ids.accountId.name;
+                                    }
+                                    planDoc.save(function (err) {
+                                        planCallBack(err, 'saved');
+                                    });
+                                } else {
+                                    planCallBack(err, 'saved');
+                                }
+                            }
+                        });
+                    }, function (planerr, plansaved) {
+                        if (planerr) {
+                            retObj.status = false;
+                            retObj.messages.push('Error saving data');
+                            retObj.messages.push(JSON.stringify(planerr));
+                            callback(retObj);
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push('devicePlansHistory saved succesfully');
+                            callback(retObj);
+                        }
+                    });
+                }
+            });
+        }
+    });
+};
 
 function convertDate(olddate) {
-    if(!olddate) {
+    if (!olddate) {
         return new Date();
     } else if (olddate == "0000-00-00") {
         return new Date();

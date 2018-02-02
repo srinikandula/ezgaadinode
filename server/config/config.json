@@ -18,7 +18,7 @@
     "database": "gts"
   },
   "mysql_crm": {
-    "port": 6102,
+    "port": 3306,
     "connectionLimit": 100,
     "host": "13.127.20.40",
     "user": "root",

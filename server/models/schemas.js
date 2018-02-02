@@ -408,6 +408,44 @@ var  customerLeadsSchema = mongoose.Schema({
     leadSource:String
 },{timestamps: String});
 
+var devicePlans = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    devicePlanId: Number,
+    franchiseId: Number,
+    planName: String,
+    durationInMonths: Number,
+    status: Boolean,
+    amount: Number,
+    remark: String,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+},{timestamps: String});
+
+var accountdeviceplanhistory = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    accountName: String,
+    deviceId: {type: ObjectId, ref: 'devices'},
+    planId: {type: ObjectId, ref: 'devicePlans'},
+    remark: String,
+    amount: Number,
+    creationTime: Date,
+    startTime: String,
+    expiryTime: Date,
+    received: Boolean
+},{timestamps: String});
+
+var faultyPlanhistory = new mongoose.Schema({
+    accountId: String,//{type: ObjectId, ref: 'accounts'},
+    deviceId: String,//{type: ObjectId, ref: 'devices'},
+    planId: String,//{type: ObjectId, ref: 'devicePlans'},
+    remark: String,
+    amount: Number,
+    creationTime: Date,
+    startTime: String,
+    expiryTime: Date,
+    received: Boolean
+},{timestamps: String});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -431,5 +469,7 @@ module.exports = {
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
     CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema')
+    devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
+    AccountdeviceplanhistoryColl: mongoose.model('accountdeviceplanhistory', accountdeviceplanhistory, 'accountdeviceplanhistory'),
+    FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory')
 };
-
