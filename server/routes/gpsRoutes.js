@@ -24,28 +24,34 @@ AuthRouter.get('/getAllSecrets', function (req, res) {
     })
 });
 
-AuthRouter.get('/getDevices',function (req,res) {
+AuthRouter.get('/getDevices', function (req, res) {
     devices.getDevices(function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.post('/addDevice',function (req,res) {
-    devices.addDevice(req.jwt,req.body,function (result) {
+AuthRouter.post('/addDevice', function (req, res) {
+    devices.addDevice(req.jwt, req.body, function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.get('/gpsTrackingByMapView',function (req,res) {
-   gps.gpsTrackingByMapView(req.jwt,function (result) {
-       res.send(result);
-   }) ;
+AuthRouter.get('/gpsTrackingByMapView', function (req, res) {
+    gps.gpsTrackingByMapView(req.jwt, function (result) {
+        res.send(result);
+    });
 });
 
 AuthRouter.get('/addInitialCounters',function (req,res) {
     gps.addInitialCounters(function (result) {
         res.send(result);
     }) ;
+});
+
+AuthRouter.get('/getDeviceTrucks',function (req,res) {
+    gps.getDeviceTrucks(function (results) {
+        res.send(results);
+    })
 });
 
 /*OpenRouter.get('/moveDevicePositions', function (rew, res) {

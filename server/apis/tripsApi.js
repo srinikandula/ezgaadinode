@@ -1041,21 +1041,12 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
-    console.log('conditrion', condition);
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
                 {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
-                {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit},
+
                 function (err, totalFreight) {
                     console.log('error1', err);
                     callback(err, totalFreight);
@@ -1070,9 +1061,6 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                         totalCredit: {$sum: "$totalAmount"}
                     }
                 },
-                {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit},
                 function (err, totalExpenses) {
                     callback(err, totalExpenses);
                 });
@@ -1220,7 +1208,7 @@ Trips.prototype.shareRevenueDetailsByVechicleViaEmail = function (jwt, params,re
         analyticsService.create(req,serviceActions.revenue_det_by_veh_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Trips.prototype.findRevenueByVehicle(jwt, params, function (revenueResponse) {
+        Trips.prototype.findRevenueByVehicle(jwt, params,req, function (revenueResponse) {
             if (revenueResponse.status) {
                 var emailparams = {
                     templateName: 'shareRevenueDetailsByVechicle',

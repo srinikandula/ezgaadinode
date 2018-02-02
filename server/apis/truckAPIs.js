@@ -170,7 +170,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
     };
     truckDetails = Helpers.removeEmptyFields(truckDetails);
     truckDetails.updatedBy = jwt.id;
-    delete truckDetails.attrs.latestLocation;
+    // delete truckDetails.attrs.latestLocation;
     TrucksColl.findOneAndUpdate({_id: truckDetails._id},
         {
             $set: truckDetails
@@ -536,13 +536,6 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
             analyticsService.create(req,serviceActions.find_exprd_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:true,messages:retObj.messages},function(response){ });
             callback(retObj);
         } else if (erpSettings) {
-            if (!params.page) {
-                params.page = 1;
-            }
-
-            var skipNumber = (params.page - 1) * params.size;
-            var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
             var erp = Helpers.getErpSettingsForTruckExpiry(erpSettings.expiry);
             dateplus30 = erp.condition;
@@ -582,9 +575,8 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
                         pollutionExpiry: 1,
                         taxDueDate: 1,
                     }
-                }, {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit},
+                }, {"$sort": {createdAt: -1}},
+
             ], function (populateErr, populateResults) {
              if (erp.type === 'custom') {
                     for (var i = 0; i < populateResults.length; i++) {
@@ -883,13 +875,13 @@ function dateToStringFormat(date) {
     }
 }
 
-Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params, callback) {
+Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
+    Trucks.prototype.findExpiryTrucks(jwt, params,req, function (expairResponse) {
         if (expairResponse.status) {
             var output = [];
             for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
@@ -929,7 +921,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
         analyticsService.create(req,serviceActions.exprd_tru_det_email_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
+        Trucks.prototype.findExpiryTrucks(jwt, params,req, function (expairResponse) {
             if (expairResponse.status) {
                 var output = [];
                 if (expairResponse.expiryTrucks.length) {
@@ -944,7 +936,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
                         })
                         if (i === expairResponse.expiryTrucks.length - 1) {
                             var emailparams = {
-                                templateName: 'sharesExpiryDetailsByTruck',
+                                templateName: 'sharesExpairyDetailsByTruck',
                                 subject: "Easygaadi Expiry Details",
                                 to: params.email,
                                 data: {

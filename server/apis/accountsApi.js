@@ -240,7 +240,7 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo,req, callback) 
         }
     }
 };
-Accounts.prototype.updateNewAccount = function (jwtObj, accountInfo, callback) {
+Accounts.prototype.updateNewAccount = function (jwtObj, accountInfo,req, callback) {
     var retObj = {
         status: false,
         messages: []

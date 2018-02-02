@@ -148,7 +148,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
     var giveAccess = false;
     var result = {
         status: false,
-    }
+    };
     if (jwt.type === "account" && expense.accountId === jwt.accountId) {
         giveAccess = true;
     } else if (jwt.type === "group" && expense.createdBy === jwt.id) {
@@ -633,7 +633,7 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId,req, callba
 /*
 * Retrieve expenseType and truckName based on truck
 * */
-Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, callback) {
+Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -684,13 +684,6 @@ function getExpensesByVehicles(jwt, condition, params,req, callback) {
         status: false,
         messages: []
     };
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-
     async.parallel({
         expenses: function (expensesCallback) {
             expenseColl.aggregate(condition,
@@ -702,9 +695,8 @@ function getExpensesByVehicles(jwt, condition, params,req, callback) {
                     }
 
                 },
-                {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit}, function (error, expensesResult) {
+                {"$sort":  {createdAt: -1}},
+                 function (error, expensesResult) {
                     expensesCallback(error, expensesResult);
                 });
         },
@@ -811,7 +803,7 @@ Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params,req, cal
         analyticsService.create(req,serviceActions.share_expense_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
+        Expenses.prototype.findExpensesByVehicles(jwt, params,req, function (expensesResponse) {
             if (expensesResponse.status) {
                 var emailparams = {
                     templateName: 'shareExpenseDetailsByVechicle',
@@ -848,7 +840,7 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params,req,
         messages: []
     };
 
-    Expenses.prototype.findExpensesByVehicles(jwt, params, function (expensesResponse) {
+    Expenses.prototype.findExpensesByVehicles(jwt, params,req, function (expensesResponse) {
         if (expensesResponse.status) {
             var output = [];
             for (var i = 0; i < expensesResponse.expenses.length; i++) {
@@ -922,12 +914,6 @@ function getPaybleAmountByParty(condition, params,req, callback) {
         status: false,
         messages: []
     };
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     condition.mode = "Credit";
     expenseColl.aggregate({$match: condition},
         {
@@ -944,11 +930,10 @@ function getPaybleAmountByParty(condition, params,req, callback) {
                 paidAmount: {$sum: "$paidAmount"},
                 payableAmount: {$sum: {$subtract: ["$totalAmount", "$paidAmount"]}}
             }
-        }, {"$sort": sort},
-        {"$skip": skipNumber},
-        {"$limit": limit},
+        }, {"$sort": {createdAt: -1}},
 
         function (err, payble) {
+
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');
@@ -1088,7 +1073,7 @@ Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params,req, call
         analyticsService.create(req,serviceActions.share_payable_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Expenses.prototype.getPaybleAmountByParty(jwt, params, function (payableResponse) {
+        Expenses.prototype.getPaybleAmountByParty(jwt, params,req, function (payableResponse) {
             if (payableResponse.status) {
                 var emailparams = {
                     templateName: 'sharePayableDetailsByParty',

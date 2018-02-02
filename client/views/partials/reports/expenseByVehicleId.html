@@ -104,45 +104,19 @@
 
         <div class="main-temp col-xs-12 mt-20">
             <h3 class="db-title">Expense - {{vehicleId}}:</h3>
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
-                <tr ng-repeat="listOfExpensesByVehicleId in expensesByVehicleId" style="text-align: center;">
-                    <td data-title="'Date'" sortable="'regNumber'" class="clickable-item">
-                        {{listOfExpensesByVehicleId.date | date:'dd-MM-yyyy' }}
-                    </td>
-                    <td data-title="'Diesel'" sortable="'dieselExpense'" class="clickable-item">
-                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'diesel' ?
-                        listOfExpensesByVehicleId.totalAmount :
-                        "0" }}
-                    </td>
-                    <td data-title="'Toll'" sortable="'tollExpense'" class="clickable-item">
-                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'toll' ?
-                        listOfExpensesByVehicleId.totalAmount : "0"
-                        }}
 
-                    </td>
-
-                    <td data-title="'Maintenance'" sortable="'mExpense'" class="clickable-item">
-                        {{ listOfExpensesByVehicleId.attrs.expenseName.toLowerCase() == 'maintenance' ?
-                        listOfExpensesByVehicleId.totalAmount
-                        : "0" }}
-                    </td>
-
-                    <td data-title="'Miscellaneous'" sortable="'misc'" class="clickable-item">
-                        {{GetExpense(listOfExpensesByVehicleId.attrs.expenseName,listOfExpensesByVehicleId.totalAmount)}}
-                    </td>
-
+            <table id="expenseByPartylist"
+                   class="display table table-striped table-bordered style-table category-table table table-hover"
+                   cellspacing="0" width="100%">
+                <tfoot>
+                <tr>
+                    <th >Total</th>
+                    <th>{{totalExpenses.totalDieselExpense}}</th>
+                    <th>{{totalExpenses.totaltollExpense}}</th>
+                    <th>{{totalExpenses.totalmExpense}}</th>
+                    <th>{{totalExpenses.totalmisc}}</th>
                 </tr>
-                <tr ng-if="!expensesByVehicleId || expensesByVehicleId.length === 0">
-                    <td colspan="8">No Records exist.</td>
-                </tr>
-                <tr class="text-center">
-                    <td><b>Total</b></td>
-                    <td><b>{{totalExpenses.totalDieselExpense}}</b></td>
-                    <td><b>{{totalExpenses.totaltollExpense}}</b></td>
-                    <td><b>{{totalExpenses.totalmExpense}}</b></td>
-                    <td><b>{{totalExpenses.totalmisc}}</b></td>
-
-                </tr>
+                </tfoot>
             </table>
         </div>
     </div>

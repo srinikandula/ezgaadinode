@@ -446,19 +446,12 @@ function getDuesByParty(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
-    if (!params.page) {
-        params.page = 1;
-    }
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
     async.parallel({
         tripFrightTotal: function (callback) {
             TripColl.aggregate(condition,
                 {$group: {_id: "$partyId", totalFright: {$sum: "$freightAmount"}}},
-                {"$sort": sort},
-                {"$skip": skipNumber},
-                {"$limit": limit},
+                {"$sort": {createdAt: -1}},
                 function (err, totalFrieght) {
                     callback(err, totalFrieght);
                 });
@@ -614,7 +607,7 @@ PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, 
         analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        PaymentsReceived.prototype.getDuesByParty(jwt, params, function (revenueResponse) {
+        PaymentsReceived.prototype.getDuesByParty(jwt, params,req, function (revenueResponse) {
             if (revenueResponse.status) {
                 var emailparams = {
                     templateName: 'sharesPaymentsDetailsByParty',

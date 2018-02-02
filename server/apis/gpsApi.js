@@ -59,7 +59,7 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
                             } else {
                                 retObj.status = true;
                                 retObj.messages.push('Successfully saved the position');
-                                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc.location}},function (truUpderr,result) {
+                                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc}},function (truUpderr,result) {
                                     if(truUpderr){
                                         retObj.messages.push('Error updating the truck position');
                                         callback(retObj);
@@ -212,41 +212,46 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
     } else {
         condition = {accountId: jwt.id, deviceId: {$ne: null}}
     }
-
-    TrucksColl.find(condition).populate({path: "deviceId", select: 'deviceId'}).exec(function (err, trucksData) {
+    console.log(jwt.type,jwt.accountId);
+    TrucksColl.find(condition).exec(function (err, trucksData) {
         if (err) {
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (trucksData) {
-
-            var deviceList = _.pluck(_.pluck(trucksData, "deviceId"), "deviceId");
-            GpsColl.aggregate([
-                    {$match: {uniqueId: {$in: deviceList}}},
-                    {"$sort": {"createdAt": -1}},
-                    {
-                        $group: {
-                            _id: "$uniqueId",
-                            latitude: {$first: "$latitude"},
-                            longitude: {$first: "$longitude"},
-                            altitude: {$first: "$altitude"},
-                            name: {$first: "$name"}
-
-                        }
-                    }],
-                function (err, devices) {
-                    if (err) {
-                        retObj.messages.push("Please try again");
-                        callback(retObj);
-                    } else if (devices) {
-                        retObj.status = true;
-                        retObj.data = devices;
-                        retObj.messages.push("success");
-                        callback(retObj);
-                    } else {
-                        retObj.messages.push("Please try again");
-                        callback(retObj);
-                    }
-                });
+            console.log('Trucks ',trucksData[0].attrs.latestLocation,typeof trucksData);
+            var locations=_.pluck(_.pluck(trucksData,"attrs"),"latestLocation");
+            retObj.status = true;
+            retObj.data = locations;
+            retObj.messages.push("success");
+            callback(retObj);
+            // var deviceList = _.pluck(_.pluck(trucksData, "deviceId"), "deviceId");
+            // GpsColl.aggregate([
+            //         {$match: {uniqueId: {$in: deviceList}}},
+            //         {"$sort": {"createdAt": -1}},
+            //         {
+            //             $group: {
+            //                 _id: "$uniqueId",
+            //                 latitude: {$first: "$latitude"},
+            //                 longitude: {$first: "$longitude"},
+            //                 altitude: {$first: "$altitude"},
+            //                 name: {$first: "$name"}
+            //
+            //             }
+            //         }],
+            //     function (err, devices) {
+            //         if (err) {
+            //             retObj.messages.push("Please try again");
+            //             callback(retObj);
+            //         } else if (devices) {
+            //             retObj.status = true;
+            //             retObj.data = devices;
+            //             retObj.messages.push("success");
+            //             callback(retObj);
+            //         } else {
+            //             retObj.messages.push("Please try again");
+            //             callback(retObj);
+            //         }
+            //     });
 
         } else {
             retObj.messages.push("Please try again");
@@ -287,6 +292,25 @@ Gps.prototype.moveDevicePositions = function (callback) {
             });
         }
     });
+};
+
+Gps.prototype.getDeviceTrucks = function (callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TrucksColl.find({deviceId:{$exists:true},accountId:{$exists:true},userName:{$nin:['accounts']}},{"attrs.latestLocation":1,accountId:1,registrationNo:1,truckType:1,tracking_available:1},function (err,results) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Error fetching data');
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push('success');
+            retObj.results=results;
+            callback(retObj);
+        }
+    })
 };
 
 module.exports = new Gps();

@@ -261,7 +261,7 @@ Events.prototype.getAccountData = function (request, callback) {
         status: false,
         messages: []
     };
-    var accountDataQuery = "select accountID as userName,contactPhone,password,contactEmail as email from Account order by accountID";
+    var accountDataQuery = "select accountID as userName,contactPhone,password,contactEmail as email,contactName,contactAddress,displayName from Account order by accountID";
     pool.query(accountDataQuery, function (err, results) {
         if (err) {
             retObj.status = false;
@@ -416,7 +416,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     truckData.tracking_available = 1;
                     var truckDoc = new TrucksColl(truckData);
                     truckDoc.save(truckDoc, function (error, newTrucks) {
-                        if(error){
+                        if (error) {
                             console.log(error);
                         } else {
                             console.log("New trucks inserted");
@@ -442,19 +442,19 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     deviceData.installTime = device.installTime
                     var deviceDoc = new DeviceColl(deviceData);
                     deviceDoc.save(deviceData, function (error, device) {
-                        if(error){
+                        if (error) {
                             console.log(error);
                         } else {
                             console.log("New device inserted");
                         }
                     });
-                    AccountsColl.find({},{"userName":1}, function (err, accounts) {
-                        for(var i=0;i<accounts.length;i++){
+                    AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                        for (var i = 0; i < accounts.length; i++) {
                             TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
-                                console.log("Truck is updated "+ JSON.stringify(truck));
+                                console.log("Truck is updated " + JSON.stringify(truck));
                             });
                             DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
-                                console.log("Device is updated "+ JSON.stringify(device));
+                                console.log("Device is updated " + JSON.stringify(device));
                             });
                         }
                     });
@@ -466,7 +466,6 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
             }
         }
     });
-    //});
 }
 
 function convertDate(olddate) {

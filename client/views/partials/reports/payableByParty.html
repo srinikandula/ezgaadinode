@@ -1,4 +1,4 @@
-<div class="col-xs-12 pall-zero" ng-controller="dashboardController" ng-init="paybleByParty()">
+<div class="col-xs-12 pall-zero" ng-controller="dashboardController" ng-init="getPaybleByParty()">
     <div class="col-sm-3 col-xs-12">
         <div class="reports-panel" ui-sref="reports">
             <div class="reports-image">
@@ -164,38 +164,17 @@
                 </div>
             </div>
 
-            <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paybleParams">
-                <tr ng-repeat="party in paybleList" style="text-align: center;">
-                    <td data-title="'Party Name'" sortable="'partyName'" class="clickable-item col-sm-2">
-                        <a href="#" ui-sref="payableByPartyName({partyId:party._id._id, name:party._id.name})">
-                            {{party._id.name}}</a>
-                    </td>
-                    <td data-title="'Party Mobile'" sortable="'partyContact'" class="clickable-item col-sm-2">
-                        {{party._id.contact}}
-                    </td>
-                    <td data-title="'Total Amount'" sortable="'totalFright'" class="clickable-item col-sm-2">
-                        {{party.totalAmount}}
-                    </td>
-                    <td data-title="'Paid Amount'" sortable="'totalPayment'" class="clickable-item col-sm-2">
-                        {{party.paidAmount}}
-                    </td>
-
-                    <td data-title="'Payable'" sortable="'totalDue'" class="clickable-item col-sm-2">
-                        {{party.payableAmount}}
-                    </td>
-
+            <table id="payablelist"
+                   class="display table table-striped table-bordered style-table category-table table table-hover"
+                   cellspacing="0" width="100%">
+                <tfoot>
+                <tr>
+                    <th colspan="2">Total</th>
+                    <th>{{gross.totalAmount}}</th>
+                    <th>{{gross.paidAmount}}</th>
+                    <th>{{gross.payableAmount}}</th>
                 </tr>
-                <tr ng-if="!paybleList || paybleList.length === 0">
-                    <td colspan="8">No Records exist.</td>
-                </tr>
-                <tr class="text-center">
-                    <td colspan="2"><b>Total</b></td>
-                    <td><b>{{gross.totalAmount}}</b></td>
-                    <td><b>{{gross.paidAmount}}</b></td>
-                    <td><b>{{gross.payableAmount}}</b></td>
-
-
-                </tr>
+                </tfoot>
             </table>
         </div>
     </div>
