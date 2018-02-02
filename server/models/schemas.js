@@ -408,6 +408,12 @@ var  customerLeadsSchema = mongoose.Schema({
     leadSource:String
 },{timestamps: String});
 
+var keysSchema=mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    apiKey:String,
+    secretKey:String
+});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -430,6 +436,7 @@ module.exports = {
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
-    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema')
+    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema'),
+    keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys')
 };
 

@@ -8,6 +8,8 @@ var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -208,51 +210,24 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
     };
     var condition = {};
     if (jwt.type === "account") {
-        condition = {accountId: jwt.accountId, deviceId: {$ne: null}}
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null},"attrs.latestLocation":{$exists:true}}
     } else {
         condition = {accountId: jwt.id, deviceId: {$ne: null}}
     }
-    console.log(jwt.type,jwt.accountId);
     TrucksColl.find(condition).exec(function (err, trucksData) {
         if (err) {
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (trucksData) {
-            console.log('Trucks ',trucksData[0].attrs.latestLocation,typeof trucksData);
             var locations=_.pluck(_.pluck(trucksData,"attrs"),"latestLocation");
+            var regNos=_.pluck(trucksData,'registrationNo');
+            var truckTypes=_.pluck(trucksData,'truckType')
             retObj.status = true;
             retObj.data = locations;
+            retObj.regNos= regNos;
+            retObj.truckTypes=truckTypes;
             retObj.messages.push("success");
             callback(retObj);
-            // var deviceList = _.pluck(_.pluck(trucksData, "deviceId"), "deviceId");
-            // GpsColl.aggregate([
-            //         {$match: {uniqueId: {$in: deviceList}}},
-            //         {"$sort": {"createdAt": -1}},
-            //         {
-            //             $group: {
-            //                 _id: "$uniqueId",
-            //                 latitude: {$first: "$latitude"},
-            //                 longitude: {$first: "$longitude"},
-            //                 altitude: {$first: "$altitude"},
-            //                 name: {$first: "$name"}
-            //
-            //             }
-            //         }],
-            //     function (err, devices) {
-            //         if (err) {
-            //             retObj.messages.push("Please try again");
-            //             callback(retObj);
-            //         } else if (devices) {
-            //             retObj.status = true;
-            //             retObj.data = devices;
-            //             retObj.messages.push("success");
-            //             callback(retObj);
-            //         } else {
-            //             retObj.messages.push("Please try again");
-            //             callback(retObj);
-            //         }
-            //     });
-
         } else {
             retObj.messages.push("Please try again");
             callback(retObj);
@@ -294,7 +269,7 @@ Gps.prototype.moveDevicePositions = function (callback) {
     });
 };
 
-Gps.prototype.getDeviceTrucks = function (callback) {
+Gps.prototype.getDeviceTrucks = function (req,callback) {
     var retObj = {
         status: false,
         messages: []
@@ -303,11 +278,13 @@ Gps.prototype.getDeviceTrucks = function (callback) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Error fetching data');
+            analyticsService.create(req,serviceActions.get_truck_locations_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
         }else{
             retObj.status=true;
             retObj.messages.push('success');
             retObj.results=results;
+            analyticsService.create(req,serviceActions.get_truck_locations,{accountId:req.jwt.id,success:true},function(response){ });
             callback(retObj);
         }
     })

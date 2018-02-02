@@ -49,7 +49,7 @@ AuthRouter.get('/addInitialCounters',function (req,res) {
 });
 
 AuthRouter.get('/getDeviceTrucks',function (req,res) {
-    gps.getDeviceTrucks(function (results) {
+    gps.getDeviceTrucks(req,function (results) {
         res.send(results);
     })
 });

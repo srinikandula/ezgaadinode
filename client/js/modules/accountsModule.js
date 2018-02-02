@@ -104,6 +104,18 @@ app.factory('AccountServices', function ($http, $cookies) {
                 method: "PUT",
                 data: params
             }).then(success, error)
+        },
+        createKeyPair:function (body,success,error) {
+            $http({
+                url: '/v1/admin/createKeyPair/'+body.accountId,
+                method: "GET"
+            }).then(success, error)
+        },
+        getKeyPairsForAccount:function (body,success,error) {
+            $http({
+                url: '/v1/admin/getKeyPairsForAccount/'+body,
+                method: "GET"
+            }).then(success, error)
         }
     }
 });
@@ -278,6 +290,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         AccountServices.getAccount($stateParams.accountId, function (success) {
             if (success.data.status) {
                 $scope.addNewAccount = success.data.account;
+                getKeyPairsForAccount();
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -369,6 +382,18 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     } else {
         getTruckIds();
     }
+
+    $scope.createKeyPair = function (id) {
+        AccountServices.createKeyPair({accountId:id},function (success) {
+            if (success.data.status) {
+                console.log(success.data.results);
+            }else{
+
+            }
+        },function (error) {
+
+        })
+    };
 
     $scope.userProfilee = function () {
         AccountServices.userProfile(function (success) {
@@ -589,6 +614,20 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         }, function () {
         });
     }
+
+    function getKeyPairsForAccount() {
+        AccountServices.getKeyPairsForAccount($scope.addNewAccount._id,function (success) {
+            if(success.data.status){
+                console.log(success.data.results);
+                $scope.keys=success.data.results;
+            }else{
+
+            }
+        },function (error) {
+
+        })
+    }
+
 }]);
 app.controller('userProfilePicCtrl', ['$scope', '$uibModalInstance', 'AccountServices', '$cookies', '$rootScope', '$state', 'modelType', 'Upload', '$sce', function ($scope, $uibModalInstance, AccountServices, $cookies, $rootScope, $state, modelType, Upload, $sce) {
 
@@ -804,4 +843,5 @@ app.controller('ERPSettingsCtrl', ['$scope', 'AccountServices', 'Notification', 
 
         });
     }
+
 }]);
