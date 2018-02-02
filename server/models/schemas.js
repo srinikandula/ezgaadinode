@@ -42,7 +42,7 @@ var accountSchema = new mongoose.Schema({
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},
     editAccounts: {type: Boolean, default: false},
-    lastLogin:Date
+    lastLogin: Date
 }, {
     timestamps: true
 });
@@ -83,7 +83,7 @@ var truckSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     status: Number,
-    attrs: {latestLocation:{}},
+    attrs: {latestLocation: {}},
     // latestLocation:{type:ObjectId,ref:'devicePositions'},
     deviceId: String,
     lookingForLoad: {type: Boolean, default: false},
@@ -323,10 +323,10 @@ var deviceSchema = new mongoose.Schema({
     imei: String,
     simPhoneNumber: String,
     installedBy: String,  //installed UserId
-    accountId:{type: ObjectId, ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
     devicePaymentStatus: String,
     devicePaymentPlan: String, //reference to device payment plan
-    lastStopTime : Date,
+    lastStopTime: Date,
     fuelCapacity: Number,
     installTime: Date,
     resetTime: Date,
@@ -345,7 +345,7 @@ var secretKeys = new mongoose.Schema({
         type: String
     },
     email: String
-},{ timestamps: true, versionKey: false });
+}, {timestamps: true, versionKey: false});
 
 
 var secretKeysCounter = new mongoose.Schema({
@@ -364,19 +364,76 @@ var loadRequestSchema = new mongoose.Schema({
     },
     {
         timestamps: true, versionKey:
-        false
+            false
     }
 );
 
 var analyticsSchema = mongoose.Schema({
-    action:String,
-    remoteIp:String,
-    userAgent:String,
-    userAgentJSON:{},
-    attrs:{accountId:{type: ObjectId, ref: 'accounts'}},
+    action: String,
+    remoteIp: String,
+    userAgent: String,
+    userAgentJSON: {},
+    attrs: {accountId: {type: ObjectId, ref: 'accounts'}},
     // accountId:{type: ObjectId, ref: 'accounts'},
-    response:String
-},{timestamps: String});
+    response: String
+}, {timestamps: String});
+
+var devicePlans = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    devicePlanId: Number,
+    franchiseId: Number,
+    planName: String,
+    durationInMonths: Number,
+    status: Boolean,
+    amount: Number,
+    remark: String,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {timestamps: String});
+
+var customerLeadsSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    name: String,
+    contactPhone: [Number],
+    email: String,
+    leadType: String,
+    converted: {type: Boolean, default: false},
+    companyName: String,
+    address: String,
+    city: String,
+    state: String,
+    pinCode: String,
+    officeNumber: Number,
+    erp: {type: Boolean, default: false},
+    gps: {type: Boolean, default: false},
+    load: {type: Boolean, default: false},
+    yearInService: Number,
+    operatingRoutes: [{source: String, destination: String}],
+    documentType: String,
+    documentFile: String,
+    paymentType: String,
+    loadPaymentToPayPercent: Number,
+    loadPaymentAdvancePercent: Number,
+    loadPaymentPodDays: Number,
+    tdsDeclarationDoc: String,
+    leadSource: String
+}, {timestamps: String});
+
+
+var trucksTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    type: String,
+}, {timestamps: String});
+
+var goodsTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    type: String,
+}, {timestamps: String});
+
+var customerTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    type: String,
+}, {timestamps: String});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -390,15 +447,22 @@ module.exports = {
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
     paymentsReceivedColl: mongoose.model('payments', payments, 'payments'),
     GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
-    OtpColl:mongoose.model('otps',otpSchema,'otps'),
-    NotificationColl:mongoose.model('notifications',notificationsSchema,'notifications'),
-    ErpSettingsColl:mongoose.model('erpsettings',erpSettingsSchema,'erpsettings'),
-    GpsColl:mongoose.model('devicePositions',devicePositions,'devicePositions'),
-    archivedDevicePositionsColl:mongoose.model('archivedDevicePositions', archivedDevicePositions, 'archivedDevicePositions'),
-    SecretKeysColl:mongoose.model('secretKeys',secretKeys,'secretKeys'),
-    SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
+    OtpColl: mongoose.model('otps', otpSchema, 'otps'),
+    NotificationColl: mongoose.model('notifications', notificationsSchema, 'notifications'),
+    ErpSettingsColl: mongoose.model('erpsettings', erpSettingsSchema, 'erpsettings'),
+    GpsColl: mongoose.model('devicePositions', devicePositions, 'devicePositions'),
+    archivedDevicePositionsColl: mongoose.model('archivedDevicePositions', archivedDevicePositions, 'archivedDevicePositions'),
+    SecretKeysColl: mongoose.model('secretKeys', secretKeys, 'secretKeys'),
+    SecretKeyCounterColl: mongoose.model('secretKeyCounter', secretKeysCounter, 'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
-    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics')
+    analyticsColl: mongoose.model('analytics', analyticsSchema, 'analytics'),
+    devicePlansColl: mongoose.model('devicePlans', devicePlans, 'devicePlans'),
+    CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeads'),
+    TrucksTypesColl: mongoose.model('trucksTypes', trucksTypesSchema, 'trucksTypes'),
+    GoodsTypesColl: mongoose.model('goodsTypes', goodsTypesSchema, 'goodsTypes'),
+    CustomerTypesColl: mongoose.model('customerTypes', customerTypesSchema, 'customerTypes')
+
 };
+
 

@@ -24,6 +24,8 @@ var Groups = require('./server/routes/groupRoutes');
 var Gps = require('./server/routes/gpsRoutes');
 var Analytics=require('./server/routes/reports');
 var Customers=require('./server/adminRoutes/customerRoutes');
+var Accounts=require('./server/adminRoutes/accountsRoutes');
+var Settings=require('./server/adminRoutes/settingsRoutes');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -108,6 +110,8 @@ app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
 app.use('/v1/customers',Customers.AuthRouter);
+app.use('/v1/accounts', Accounts.AuthRouter);
+app.use('/v1/settings', Settings.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {
