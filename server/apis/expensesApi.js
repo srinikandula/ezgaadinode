@@ -148,7 +148,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
     var giveAccess = false;
     var result = {
         status: false,
-    }
+    };
     if (jwt.type === "account" && expense.accountId === jwt.accountId) {
         giveAccess = true;
     } else if (jwt.type === "group" && expense.createdBy === jwt.id) {
@@ -1073,7 +1073,7 @@ Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params,req, call
         analyticsService.create(req,serviceActions.share_payable_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Expenses.prototype.getPaybleAmountByParty(jwt, params, function (payableResponse) {
+        Expenses.prototype.getPaybleAmountByParty(jwt, params,req, function (payableResponse) {
             if (payableResponse.status) {
                 var emailparams = {
                     templateName: 'sharePayableDetailsByParty',

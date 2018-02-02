@@ -271,7 +271,7 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, req, callback) {
     } else {
         retObj.status = false;
         retObj.messages.push("Unauthorized access");
-        callback(result);
+        callback(retObj);
     }
     if (giveAccess) {
         if (!driverInfo._id) {

@@ -108,39 +108,17 @@
                 <div class="main-temp col-xs-12">
 
                     <h3 class="db-title">Payable Amount - {{partyName}}:</h3>
-                    <table class="table table-bordered table-striped table-condensed table-hover"
-                           ng-table="paybleParams">
-                        <tr ng-repeat="party in payableAmounts" style="text-align: center;">
-                            <td data-title="'Date'" sortable="'partyName'" class="clickable-item">
-
-                                {{party.date | date:"dd MMM yyyy"}}
-                            </td>
-                            <td data-title="'Expense Type'" sortable="'partyContact'" class="clickable-item">
-                                {{party.expenseType.expenseName}}
-                            </td>
-                            <td data-title="'Total Amount'" sortable="'totalFright'" class="clickable-item">
-                                {{party.totalAmount}}
-                            </td>
-                            <td data-title="'Paid Amount'" sortable="'totalPayment'" class="clickable-item">
-                                {{party.paidAmount}}
-                            </td>
-
-                            <td data-title="'Payable'" sortable="'totalDue'" class="clickable-item">
-                                {{party.payableAmount}}
-                            </td>
-
+                   <table id="payableByPartylist"
+                           class="display table table-striped table-bordered style-table category-table table table-hover"
+                           cellspacing="0" width="100%">
+                        <tfoot>
+                        <tr>
+                            <th colspan="2">Total</th>
+                            <th>{{grossAmounts.totalAmount}}</th>
+                            <th>{{grossAmounts.paidAmount}}</th>
+                            <th>{{grossAmounts.payableAmount}}</th>
                         </tr>
-                        <tr ng-if="!payableAmounts || payableAmounts.length === 0">
-                            <td colspan="8">No Records exist.</td>
-                        </tr>
-                        <tr class="text-center">
-                            <td colspan="2"><b>Total</b></td>
-                            <td><b>{{grossAmounts.totalAmount}}</b></td>
-                            <td><b>{{grossAmounts.paidAmount}}</b></td>
-                            <td><b>{{grossAmounts.payableAmount}}</b></td>
-
-
-                        </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

@@ -875,13 +875,13 @@ function dateToStringFormat(date) {
     }
 }
 
-Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params, callback) {
+Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
+    Trucks.prototype.findExpiryTrucks(jwt, params,req, function (expairResponse) {
         if (expairResponse.status) {
             var output = [];
             for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
@@ -921,7 +921,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
         analyticsService.create(req,serviceActions.exprd_tru_det_email_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Trucks.prototype.findExpiryTrucks(jwt, params, function (expairResponse) {
+        Trucks.prototype.findExpiryTrucks(jwt, params,req, function (expairResponse) {
             if (expairResponse.status) {
                 var output = [];
                 if (expairResponse.expiryTrucks.length) {
@@ -936,7 +936,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
                         })
                         if (i === expairResponse.expiryTrucks.length - 1) {
                             var emailparams = {
-                                templateName: 'sharesExpiryDetailsByTruck',
+                                templateName: 'sharesExpairyDetailsByTruck',
                                 subject: "Easygaadi Expiry Details",
                                 to: params.email,
                                 data: {

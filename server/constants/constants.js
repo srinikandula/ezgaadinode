@@ -225,6 +225,18 @@ const serviceActions={
     unassign_trus:'UNASSIGN_TRUS',
     unassign_trus_err:'UNASSIGN_TRUS_ERR',
     get_all_trus_for_filter:'GET_ALL_TRUS_FOR_FILTER',
-    get_all_trus_for_filter_err:'GET_ALL_TRUS_FOR_FILTER_ERR'
+    get_all_trus_for_filter_err:'GET_ALL_TRUS_FOR_FILTER_ERR',
+    add_customer_lead:'ADD_CUSTOMER_LEAD',
+    add_customer_lead_err:'ADD_CUSTOMER_LEAD_ERR',
+    get_customer_leads:"GET_CUSTOMER_LEADS",
+    get_customer_leads_err:"GET_CUSTOMER_LEADS_ERR",
+    update_customer_lead:"UPDATE_CUSTOMER_LEAD",
+    update_customer_lead_err:"UPDATE_CUSTOMER_LEAD_ERR",
+    delete_customer_lead:"DELETE_CUSTOMER_LEAD",
+    delete_customer_lead_err:"DELETE_CUSTOMER_LEAD_ERR",
+    get_customer_lead_details:"GET_CUSTOMER_LEAD_DETAILS",
+    get_customer_lead_details_err:"GET_CUSTOMER_LEAD_DETAILS_ERR"
+
+
 };
 module.exports=serviceActions;

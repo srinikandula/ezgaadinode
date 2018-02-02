@@ -54,6 +54,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                         aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
                         iDisplayLength: 10,
                         sDom: 'tp',
+                        order: [[0, 'des']],
                         columnDefs: [{
 
                             responsivePriority: 1
@@ -137,8 +138,87 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.getRevenueByParty = function () {
             PartyService.getRevenueByPartyId($stateParams.id, function (success) {
                 if (success.data.status) {
-                    $scope.revenueByVehicleId = success.data.trips;
                     $scope.totalRevenueByVehicleId = success.data.totalRevenue;
+                    $scope.table = $('#revenueByPartylist').DataTable({
+                        destroy: true,
+                        responsive: true,
+                        aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                        iDisplayLength: 10,
+                        sDom: 'tp',
+                        order: [[0, 'des']],
+                        columnDefs: [{
+
+                            orderable: false,
+
+                            responsivePriority: 1
+                        }],
+
+                        data: success.data.trips,
+                        columns: [
+                            {
+                                "title": "Date",
+                                "data": "date",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return new Date(data).toLocaleDateString();
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: 'Trip ID', "data": "tripId",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Party Name", "data": "attrs.partyName",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Frieight Amount", "data": "freightAmount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Expenses", "data": "cost",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            }
+
+                        ],
+
+
+                        searching: true
+
+                    })
+
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
@@ -164,6 +244,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                         aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
                         iDisplayLength: 10,
                         sDom: 'tp',
+                        order: [[0, 'des']],
                         columnDefs: [{
 
                             orderable: true,
@@ -223,6 +304,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                         aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
                         iDisplayLength: 10,
                         sDom: 'tp',
+                        order: [[0, 'des']],
                         columnDefs: [{
 
                             responsivePriority: 1
@@ -332,6 +414,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                         aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
                         iDisplayLength: 10,
                         sDom: 'tp',
+                        order: [[0, 'des']],
                         columnDefs: [{
 
                             responsivePriority: 1
@@ -389,6 +472,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                         aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
                         iDisplayLength: 10,
                         sDom: 'tp',
+                        order: [[0, 'des']],
                         columnDefs: [{
 
                             responsivePriority: 1
@@ -493,6 +577,85 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 if (success.data.status) {
                     $scope.expensesByVehicleId = success.data.expenses;
                     $scope.totalExpenses = success.data.totalExpenses;
+                    $scope.table = $('#expenseByPartylist').DataTable({
+                        destroy: true,
+                        responsive: true,
+                        aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                        iDisplayLength: 10,
+                        sDom: 'tp',
+                        order: [[0, 'des']],
+                        columnDefs: [{
+
+                            orderable: true,
+
+                            responsivePriority: 1
+                        }],
+
+                        data: success.data.expenses,
+                        columns: [
+                            {
+                                "title": "Date",
+                                "data": "date",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return new Date(data).toLocaleDateString();
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: 'Diesel', "data": "attrs.expenseName",
+                                "render": function (data, type, row) {
+                                    if (data.toLowerCase() == 'diesel' ) {
+                                        return row.totalAmount;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Toll", "data": "attrs.expenseName",
+                                "render": function (data, type, row) {
+                                    if (data.toLowerCase() == 'toll' ) {
+                                        return row.totalAmount;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Maintenance", "data": "attrs.expenseName",
+                                "render": function (data, type, row) {
+                                    if (data.toLowerCase() == 'maintenance' ) {
+                                        return row.totalAmount;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Miscellaneous", "data": "attrs.expenseName",
+                                "render": function (data, type, row) {
+                                    if ((data.toLowerCase() == 'diesel') || (data.toLowerCase() == 'toll') || (data.toLowerCase() == 'maintenance')) {
+                                        return 0;
+                                    } else {
+                                        return row.totalAmount;
+                                    }
+
+                                }
+                            }
+
+                        ],
+
+
+                        searching: true
+
+                    })
                 } else {
                     Notification.error(success.data.message);
                 }
@@ -515,8 +678,86 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.getAmountsBypartyId = function () {
             PartyService.amountByPartyid($stateParams.partyId, function (success) {
                 if (success.data.status) {
-                    $scope.results = success.data.results;
                     $scope.amountPaid = success.data.totalPendingPayments;
+                    $scope.table = $('#amountsByPartylist').DataTable({
+                        destroy: true,
+                        responsive: true,
+                        aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                        iDisplayLength: 10,
+                        sDom: 'tp',
+                        order: [[0, 'des']],
+                        columnDefs: [{
+
+                            orderable: true,
+
+                            responsivePriority: 1
+                        }],
+
+                        data:success.data.results,
+                        columns: [
+                            {
+                                "title": "Date",
+                                "data": "date",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return new Date(data).toLocaleDateString();
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: 'Trip Id', "data": "tripId",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Registration No", "data": "attrs.truckName",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Freight Amount", "data": "freightAmount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Paid Amount", "data": "amount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '';
+                                    }
+
+                                }
+                            }
+
+                        ],
+
+
+                        searching: true
+
+                    })
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
@@ -530,8 +771,86 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.getPaybleAmountByPartyId = function () {
             ExpenseService.getPaybleAmountByPartyId($stateParams.partyId, function (success) {
                 if (success.data.status) {
-                    $scope.payableAmounts = success.data.partyData;
                     $scope.grossAmounts = success.data.grossAmounts;
+                    $scope.table = $('#payableByPartylist').DataTable({
+                        destroy: true,
+                        responsive: true,
+                        aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                        iDisplayLength: 10,
+                        sDom: 'tp',
+                        order: [[0, 'des']],
+                        columnDefs: [{
+
+                            orderable: true,
+
+                            responsivePriority: 1
+                        }],
+
+                        data:success.data.partyData,
+                        columns: [
+                            {
+                                "title": "Date",
+                                "data": "date",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return new Date(data).toLocaleDateString();
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: 'Expense Type', "data": "expenseType.expenseName",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Total Amount", "data": "totalAmount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Paid Amount", "data": "paidAmount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Payable", "data": "payableAmount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            }
+
+                        ],
+
+
+                        searching: true
+
+                    })
                 } else {
                     success.data.message.forEach(function (message) {
                         Notification.error({message: message});
