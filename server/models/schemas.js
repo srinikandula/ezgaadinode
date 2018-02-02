@@ -380,6 +380,34 @@ var analyticsSchema = mongoose.Schema({
     response:String
 },{timestamps: String});
 
+var  customerLeadsSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    name:String,
+    contactPhone:[Number],
+    email:String,
+    leadType:String,
+    converted:{type:Boolean,default:false},
+    companyName:String,
+    address:String,
+    city:String,
+    state:String,
+    pinCode:String,
+    officeNumber:Number,
+    erp:{type:Boolean,default:false},
+    gps:{type:Boolean,default:false},
+    load:{type:Boolean,default:false},
+    yearInService:Number,
+    operatingRoutes:[{source:String,destination:String}],
+    documentType:String,
+    documentFile:String,
+    paymentType:String,
+    loadPaymentToPayPercent:Number,
+    loadPaymentAdvancePercent:Number,
+    loadPaymentPodDays:Number,
+    tdsDeclarationDoc:String,
+    leadSource:String
+},{timestamps: String});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -401,6 +429,7 @@ module.exports = {
     SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
-    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics')
+    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
+    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema')
 };
 

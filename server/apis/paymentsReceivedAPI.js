@@ -607,7 +607,7 @@ PaymentsReceived.prototype.sharePaymentsDetailsByPartyViaEmail = function (jwt, 
         analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        PaymentsReceived.prototype.getDuesByParty(jwt, params, function (revenueResponse) {
+        PaymentsReceived.prototype.getDuesByParty(jwt, params,req, function (revenueResponse) {
             if (revenueResponse.status) {
                 var emailparams = {
                     templateName: 'sharesPaymentsDetailsByParty',

@@ -6,53 +6,52 @@ var Drivers = require('../apis/driversApi');
 
 
 AuthRouter.get('/getAllDriversForFilter', function (req, res) {
-    Drivers.getAllDriversForFilter(req.jwt,req, function (result) {
+    Drivers.getAllDriversForFilter(req.jwt, req, function (result) {
         res.send(result);
     });
 });
 
 AuthRouter.post('/', function (req, res) {
-    Drivers.addDriver(req.jwt, req.body,req, function (result) {
+    Drivers.addDriver(req.jwt, req.body, req, function (result) {
         res.json(result);
     });
 });
 
 AuthRouter.get('/get/:driverId', function (req, res) {
-    Drivers.getDriverDetails(req.jwt, req.params.driverId,req, function (result) {
+    Drivers.getDriverDetails(req.jwt, req.params.driverId, req, function (result) {
         res.json(result);
     });
 });
 
 AuthRouter.put('/', function (req, res) {
-    Drivers.updateDriver(req.jwt, req.body,req, function (result) {
+    Drivers.updateDriver(req.jwt, req.body, req, function (result) {
         res.json(result);
     });
 });
 
 
-
 AuthRouter.get('/account/drivers', function (req, res) {
-    Drivers.getDrivers(req.jwt, req.query,req, function (result) {
+    Drivers.getDrivers(req.jwt, req.query, req, function (result) {
         res.json(result);
     });
 });
 AuthRouter.get('/:driverId', function (req, res) {
-    Drivers.findDriver(req.params.driverId,req, function (result) {
+    Drivers.findDriver(req.params.driverId, req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.put('/', function (req, res) {
-    Drivers.updateDriver(req.jwt, req.body,req, function (result) {
+    Drivers.updateDriver(req.jwt, req.body, req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.delete('/:driverId', function (req, res) {
-    Drivers.deleteDriver(req.jwt,req.params.driverId,req, function (result) {
+    Drivers.deleteDriver(req.jwt, req.params.driverId, req, function (result) {
         res.send(result);
     });
 });
-AuthRouter.get('/total/count',function(req,res){
-    Drivers.countDrivers(req.jwt,req,function(result){
+AuthRouter.get('/total/count', function (req, res) {
+    Drivers.countDrivers(req.jwt, req, function (result) {
         res.send(result);
     });
 });

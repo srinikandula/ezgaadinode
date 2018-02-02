@@ -20,51 +20,51 @@ var Party = function () {
 
 Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
 
-    var result = {message: [], status: true};
+    var result = {messages: [], status: true};
 
     if (!_.isObject(partyDetails) || _.isEmpty(partyDetails)) {
         result.status = false;
-        result.message.push(" Please fill all the required details for party");
+        result.messages.push(" Please fill all the required details for party");
     }
     if (!partyDetails.name || !_.isString(partyDetails.name)) {
         result.status = false;
-        result.message.push(" Please provide valid party name");
+        result.messages.push(" Please provide valid party name");
     }
     if (!Utils.isValidPhoneNumber(partyDetails.contact)) {
         result.status = false;
-        result.message.push(" Please provide valid contact number for party type");
+        result.messages.push(" Please provide valid contact number for party type");
     }
 
     if (!partyDetails.partyType) {
         result.status = false;
-        result.message.push(" Please select party type");
+        result.messages.push(" Please select party type");
     }
 
     if (partyDetails.partyType === 'Transporter') {
         if (!partyDetails.isSms && !partyDetails.isEmail) {
             result.status = false;
-            result.message.push(" Please select notification type");
+            result.messages.push(" Please select notification type");
         }
         if (partyDetails.tripLanes.length > 0) {
             for (var i = 0; i < partyDetails.tripLanes.length; i++) {
                 if (!partyDetails.tripLanes[i].name) {
                     result.status = false;
-                    result.message.push('Please provide TripLane Name');
+                    result.messages.push('Please provide TripLane Name');
                 }
 
                 if (!partyDetails.tripLanes[i].from) {
                     result.status = false;
-                    result.message.push('Please provide From Name');
+                    result.messages.push('Please provide From Name');
                 }
 
                 if (!partyDetails.tripLanes[i].to) {
                     result.status = false;
-                    result.message.push('Please provide To Name');
+                    result.messages.push('Please provide To Name');
                 }
             }
         } else {
             result.status = false;
-            result.message.push('Please add triplane');
+            result.messages.push('Please add triplane');
         }
     }
 
@@ -81,9 +81,9 @@ Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
         partyDoc.save(function (err, party) {
             if (err) {
                 result.status = false;
-                result.message.push("Error while adding party, try Again");
+                result.messages.push("Error while adding party, try Again");
                 result.error = err;
-                analyticsService.create(req,serviceActions.add_party_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:result.message},function(response){ });
+                analyticsService.create(req,serviceActions.add_party_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
                 callback(result);
             } else {
                 result.status = true;
