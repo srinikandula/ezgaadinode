@@ -87,13 +87,32 @@
                     <button type="submit" class="btn can last">Submit</button>
                 </div>
             </div>
-
         </form>
 
+
+    </div>
+    <div class="clearfix"></div>
+    <div>
+    <div class="col-xs-4">
+        <h2 class="title-name">API & Secret Key</h2>
+        <button type="button" class="btn can last" ng-click="createKeyPair(addNewAccount._id)">Create Keys</button>
+
+    </div>
+        <div class="col-xs-12">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="accountParams">
+        <tr ng-repeat="key in keys" style="text-align: center;">
+            <td data-title="'API Key'" sortable="'apiKey'" class="clickable-item">{{key.apiKey}}
+            </td>
+            <td data-title="'Secret Key'" sortable="'secretKey'" class="clickable-item">{{key.secretKey }}
+            </td>
+            <td data-title="'Action'" class="clickable-item">Delete
+            </td>
+        </tr>
+    </table>
+        </div>
     </div>
 </div>
-</div>
-</div>
+
 
 
 

@@ -103,6 +103,18 @@ AuthRouter.put('/updateErpSettings', function (req, res) {
     });
 });
 
+AuthRouter.get('/createKeyPair/:accountId',function (req,res) {
+    Accounts.createKeys(req.params.accountId,req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getKeyPairsForAccount/:accountId',function (req,res) {
+    Accounts.getKeyPairsForAccount(req.params.accountId,req,function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
