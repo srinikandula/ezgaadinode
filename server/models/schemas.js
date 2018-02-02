@@ -475,7 +475,7 @@ module.exports = {
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
     CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema'),
     devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
-    AccountdeviceplanhistoryColl: mongoose.model('accountdeviceplanhistory', accountdeviceplanhistory, 'accountdeviceplanhistory'),
+    AccountdeviceplanhistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys')
 };
