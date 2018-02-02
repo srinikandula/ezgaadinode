@@ -7,7 +7,7 @@ var GpsColl = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
-var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
+var archivedDevicePositions = require('./../models/schemas').ArchivedDevicePositionsColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 
