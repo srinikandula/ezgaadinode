@@ -123,7 +123,7 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
         retObj.messages.push("Invalid customer lead");
     }
     if (retObj.messages.length > 0) {
-        analyticsService.create(req, serviceActions.update_customer_lead_err, {
+        analyticsService.create(req, serviceActions.get_customer_lead_details_err, {
             body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
@@ -135,7 +135,7 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
         CustomerLeadsColl.findOne({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.update_customer_lead_err, {
+                analyticsService.create(req, serviceActions.get_customer_lead_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -147,7 +147,7 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
                 retObj.status = true;
                 retObj.messages = "Success";
                 retObj.data = doc;
-                analyticsService.create(req, serviceActions.get_customer_leads, {
+                analyticsService.create(req, serviceActions.get_customer_lead_details, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
@@ -156,7 +156,7 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.messages.push("Customer details not found");
-                analyticsService.create(req, serviceActions.update_customer_lead_err, {
+                analyticsService.create(req, serviceActions.get_customer_lead_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,

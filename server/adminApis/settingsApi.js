@@ -630,8 +630,8 @@ Settings.prototype.addLoadType = function (req, callback) {
         callback(retObj);
     } else {
         params.createdBy = req.jwt.id;
-        var goodsType = new GoodsTypesColl(params);
-        goodsType.save(function (err, doc) {
+        var loadType = new LoadTypesColl(params);
+        loadType.save(function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_load_type_err, {
