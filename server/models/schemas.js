@@ -326,6 +326,7 @@ var deviceSchema = new mongoose.Schema({
     userName: String,
     createdBy: { type: ObjectId, ref: 'accounts' },
     deviceId: String,
+    assignedTo: {type: ObjectId, ref: 'accounts'},
     //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
     imei: String,
@@ -449,7 +450,7 @@ var customerTypesSchema = mongoose.Schema({
     type: String,
 }, {timestamps: String});
 
-var  customerLeadsSchema = mongoose.Schema({
+var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     name:String,
     contactPhone:[Number],

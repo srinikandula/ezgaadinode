@@ -278,5 +278,23 @@ const serviceActions = {
     update_franchise_err: 'UPDATE_FRANCHISE_ERR',
     delete_franchise: 'DELETE_FRANCHISE',
     delete_franchise_err: 'DELETE_FRANCHISE_ERR',
+    add_device_err:'ADD_DEVICE_ERR',
+    add_device:'ADD_DEVICE',
+    edit_device_err:'EDIT_DEVICE_ERR',
+    edit_device:'EDIT_DEVICE',
+    get_devices_err:'GET_DEVICES_ERR',
+    get_devices:'GET_DEVICES',
+    get_device_err:'GET_DEVICE_ERR',
+    get_device:'GET_DEVICE',
+    transfer_device:'TRANSFER_DEVICE',
+    transfer_device_err:'TRANSFER_DEVICE_ERR',
+    assign_device:'ASSIGN_DEVICE',
+    assign_device_err:'ASSIGN_DEVICE_ERR',
+    add_Plan_to_device:'ADD_PLAN_TO_DEVICE',
+    add_Plan_to_device_err:'ADD_PLAN_TO_DEVICE_ERR',
+    device_count:'DEVICE_COUNT',
+    device_count_err:'DEVICE_COUNT_ERR',
+    remove_device: 'REMOVE_DEVICE',
+    remove_device_err: 'REMOVE_DEVICE_ERR'
 };
 module.exports = serviceActions;
