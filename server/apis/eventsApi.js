@@ -17,7 +17,9 @@ var AccountdeviceplanhistoryColl = require('./../models/schemas').Accountdevicep
 var FaultyPlanhistoryColl = require('./../models/schemas').FaultyPlanhistoryColl;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
-
+var franchiseColl = require('./../models/schemas').franchiseColl;
+var adminRoleColl = require('./../models/schemas').adminRoleColl;
+var adminPermissionsColl = require('./../models/schemas').adminPermissionsColl;
 
 Events.prototype.getEventData = function (accountId, startDate, endDate, request, callback) {
     var retObj = {};
@@ -506,8 +508,6 @@ Events.prototype.getDevicePlans = function (request, callback) {
                     }
                 });
             }, function (planerr, plansaved) {
-                console.log('planerr', planerr);
-                console.log('plansaved', plansaved);
                 if (planerr) {
                     retObj.status = false;
                     retObj.messages.push('Error saving data');
@@ -622,6 +622,244 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                             callback(retObj);
                         }
                     });
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getFranchise = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var franchiseQuery = "select * from eg_franchise";
+    pool_crm.query(franchiseQuery, function (err, franchises) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(franchises, function (franchise, franchiseCallBack) {
+                franchiseColl.findOne({franchiseId: franchise.id_franchise}, function (findFranchiseErr, franchiseFound) {
+                    if (findFranchiseErr) {
+                        franchiseCallBack(findFranchiseErr);
+                    } else if (franchiseFound) {
+                        franchiseCallBack('franchise exists');
+                    } else {
+                        var franchiseDoc = new franchiseColl({
+                            franchiseId: franchise.id_franchise,
+                            fullName: franchise.fullname,
+                            account: franchise.account,
+                            mobile: franchise.mobile,
+                            landLine: franchise.landline,
+                            city: franchise.city,
+                            state: franchise.state,
+                            address: franchise.address,
+                            company: franchise.company,
+                            bankDetails: franchise.bank_details,
+                            panCard: franchise.pancard,
+                            gst: franchise.service_tax_no,
+                            doj: franchise.doj,
+                            status: franchise.status,
+                            createdAt: convertDate(franchise.date_created),
+                            updatedAt: convertDate(franchise.date_created),
+                        });
+                        franchiseDoc.save(function (err) {
+                            franchiseCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (franchiseErr, franchiseSaved) {
+                if (franchiseErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(franchiseErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Franchise saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getAdminRoles = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var adminRoleQuery = "select * from eg_admin_role";
+    pool_crm.query(adminRoleQuery, function (err, roles) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(roles, function (role, roleCallBack) {
+                adminRoleColl.findOne({adminRoleId: role.id_admin_role}, function (findRoleErr, roleFound) {
+                    if (findRoleErr) {
+                        roleCallBack(findRoleErr);
+                    } else if (roleFound) {
+                        roleCallBack('role exists');
+                    } else {
+                        var roleDoc = new adminRoleColl({
+                            adminRoleId: role.id_admin_role,
+                            id_franchise: role.id_franchise,
+                            role: role.role,
+                            status: role.status,
+                            createdAt: convertDate(role.date_created),
+                            updatedAt: convertDate(role.date_modified),
+                        });
+                        roleDoc.save(function (err) {
+                            roleCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (roleErr, roleSaved) {
+                if (roleErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(roleErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Admin role saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getAdminPermissions = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var adminPermissionsQuery = "select * from eg_admin_permissions";
+    pool_crm.query(adminPermissionsQuery, function (err, permissions) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(permissions, function (permission, permissionCallBack) {
+                adminPermissionsColl.findOne({adminPermissionId: permission.id_admin_role}, function (findPermissionErr, permissionFound) {
+                    if (findPermissionErr) {
+                        permissionCallBack(findPermissionErr);
+                    } else if (permissionFound) {
+                        permissionCallBack('permission exists');
+                    } else {
+                        var permissionDoc = new adminPermissionsColl({
+                            adminPermissionId: permission.id_admin_permission,
+                            id_admin_role: permission.id_admin_role,
+                            moduleName: permission.module_name,
+                            fileName: permission.file_name,
+                            title: permission.title,
+                            listAll: permission.listall,
+                            view: permission.view,
+                            add: permission.add,
+                            edit: permission.edit,
+                            trash: permission.trash,
+                            fileSortOrder: permission.file_sort_order,
+                            moduleSortOrder: permission.module_sort_order,
+                            menuType: permission.menu_type,
+                            status: permission.status,
+                            createdAt: convertDate(permission.date_modified),
+                            updatedAt: convertDate(permission.date_modified),
+                        });
+                        permissionDoc.save(function (err) {
+                            adminRoleColl.find({}, {"adminRoleId": 1}, function (err, roles) {
+                                for (var i = 0; i < roles.length; i++) {
+                                    adminPermissionsColl.update({'id_admin_role': roles[i].adminRoleId}, {$set: {adminRoleId: roles[i]._id}}, {multi: true}, function (err, permission) {
+                                        console.log("Permission is updated " + JSON.stringify(permission));
+                                    });
+                                }
+                            });
+                            permissionCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (permissionErr, permissionSaved) {
+                if (permissionErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(permissionErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Admin permission saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getEmployeeData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var employeeDataQuery = "select * from eg_admin";
+    pool_crm.query(employeeDataQuery, function (err, employees) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(employees, function (employee, employeeCallBack) {
+                AccountsColl.findOne({email: employee.email}, function (findEmployeeErr, employeeFound) {
+                    if (findEmployeeErr) {
+                        employeeCallBack(findEmployeeErr);
+                    } else if (employeeFound) {
+                        employeeCallBack('Employee exists');
+                    } else {
+                        var employeeDoc = new AccountsColl({
+                            userName: employee.email,
+                            contactPhone: employee.phone,
+                            password: "12345678",
+                            email: employee.email,
+                            type: "employee",
+                            id_admin: employee.id_admin,
+                            id_franchise: employee.id_franchise,
+                            id_admin_role: employee.id_admin_role,
+                            contactName: employee.first_name+' '+employee.last_name,
+                            displayName: employee.first_name+' '+employee.last_name,
+                            location: employee.city,
+                            isActive: employee.status,
+                            createdAt: convertDate(employee.date_created),
+                            updatedAt: convertDate(employee.date_modified),
+                        });
+                        employeeDoc.save(function (err) {
+                            adminRoleColl.find({}, {"adminRoleId": 1}, function (err, roles) {
+                                for (var i = 0; i < roles.length; i++) {
+                                    AccountsColl.update({'id_admin_role': roles[i].adminRoleId}, {$set: {adminRoleId: roles[i]._id}}, {multi: true}, function (err, permission) {
+                                        console.log("Account is updated " + JSON.stringify(permission));
+                                    });
+                                }
+                            });
+                            employeeCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (employeeErr, employeeSaved) {
+                if (employeeErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(employeeErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Admin permission saved successfully');
+                    callback(retObj);
                 }
             });
         }
