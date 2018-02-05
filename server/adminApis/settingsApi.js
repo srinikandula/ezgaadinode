@@ -5,7 +5,7 @@ var mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
-var devicePlansColl = require('../models/schemas').devicePlansColl;
+var erpGpsPlans = require('../models/schemas').erpGpsPlansColl;
 var TrucksTypesColl = require("../models/schemas").TrucksTypesColl;
 var GoodsTypesColl = require("../models/schemas").GoodsTypesColl;
 var CustomerTypesColl = require("../models/schemas").CustomerTypesColl;
@@ -284,7 +284,7 @@ Settings.prototype.deleteTruckType = function (req, callback) {
 };
 
 /*Author : SVPrasadK*/
-Settings.prototype.getGPSPlan = function (req, callback) {
+Settings.prototype.getPlan = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -310,7 +310,7 @@ Settings.prototype.getGPSPlan = function (req, callback) {
 
         async.parallel({
             gpsPlans: function (gpsPlansCallback) {
-                devicePlansColl
+                erpGpsPlans
                     .find(condition)
                     .sort(sort)
                     .skip(skipNumber)
@@ -324,18 +324,17 @@ Settings.prototype.getGPSPlan = function (req, callback) {
                                 gpsPlansCallback(err, null);
                             }
                         });
-                        // driversCallback(err, drivers);
                     });
             },
             count: function (countCallback) {
-                devicePlansColl.count(function (err, count) {
+                erpGpsPlans.count(function (err, count) {
                     countCallback(err, count);
                 });
             }
         }, function (err, docs) {
             if (err) {
                 retObj.messages.push('Error retrieving gps plan');
-                analyticsService.create(req, serviceActions.get_gpsplans_err, {
+                analyticsService.create(req, serviceActions.get_plan_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.req.jwt.id,
                     success: false,
@@ -350,7 +349,7 @@ Settings.prototype.getGPSPlan = function (req, callback) {
                 retObj.userId = req.jwt.id;
                 retObj.userType = req.jwt.type;
                 retObj.data = docs.gpsPlans;
-                analyticsService.create(req, serviceActions.get_gpsplans, {
+                analyticsService.create(req, serviceActions.get_plan, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
@@ -363,7 +362,7 @@ Settings.prototype.getGPSPlan = function (req, callback) {
 };
 
 /*Author : SVPrasadK*/
-Settings.prototype.addGPSPlan = function (req, callback) {
+Settings.prototype.addPlan = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -380,7 +379,7 @@ Settings.prototype.addGPSPlan = function (req, callback) {
         retObj.messages.push('Invalid Amount');
     }
     if (retObj.messages.length) {
-        analyticsService.create(req, serviceActions.add_gpsplans_err, {
+        analyticsService.create(req, serviceActions.add_plan_err, {
             body: JSON.stringify(req.body),
             accountId: req.jwt.id,
             success: false,
@@ -390,10 +389,10 @@ Settings.prototype.addGPSPlan = function (req, callback) {
         callback(retObj);
     }
     else {
-        devicePlansColl.findOne({planName: planInfo.planName}, function (err, oldDoc) {
+        erpGpsPlans.findOne({planName: planInfo.planName}, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Error retrieving gps plan');
-                analyticsService.create(req, serviceActions.add_gpsplans_err, {
+                analyticsService.create(req, serviceActions.add_plan_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: false,
@@ -403,7 +402,7 @@ Settings.prototype.addGPSPlan = function (req, callback) {
                 callback(retObj);
             } else if (oldDoc) {
                 retObj.messages.push('GPS Plan already exists');
-                analyticsService.create(req, serviceActions.add_gpsplans_err, {
+                analyticsService.create(req, serviceActions.add_plan_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: false,
@@ -414,10 +413,10 @@ Settings.prototype.addGPSPlan = function (req, callback) {
             } else {
                 planInfo.createdBy = req.jwt.id;
                 planInfo.accountId = req.jwt.id;
-                (new devicePlansColl(planInfo)).save(function (err, doc) {
+                (new erpGpsPlans(planInfo)).save(function (err, doc) {
                     if (err) {
                         retObj.messages.push('Error saving plan');
-                        analyticsService.create(req, serviceActions.add_gpsplans_err, {
+                        analyticsService.create(req, serviceActions.add_plan_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
                             success: false,
@@ -430,7 +429,7 @@ Settings.prototype.addGPSPlan = function (req, callback) {
                         retObj.status = true;
                         retObj.messages.push('Success');
                         retObj.data = doc;
-                        analyticsService.create(req, serviceActions.add_gpsplans, {
+                        analyticsService.create(req, serviceActions.add_plan, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
                             success: true
@@ -445,7 +444,7 @@ Settings.prototype.addGPSPlan = function (req, callback) {
 };
 
 /*Author : SVPrasadK*/
-Settings.prototype.getGPSPlanDetails = function (req, callback) {
+Settings.prototype.getPlanDetails = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -457,7 +456,7 @@ Settings.prototype.getGPSPlanDetails = function (req, callback) {
     }
 
     if (retObj.messages.length) {
-        analyticsService.create(req, serviceActions.get_gpsplans_err, {
+        analyticsService.create(req, serviceActions.get_plan_err, {
             body: JSON.stringify(req.params),
             accountId: req.jwt.id,
             success: false,
@@ -466,10 +465,10 @@ Settings.prototype.getGPSPlanDetails = function (req, callback) {
         });
         callback(retObj);
     } else {
-        devicePlansColl.findOne({"_id": ObjectId(gpsPlanId)}, function (err, doc) {
+        erpGpsPlans.findOne({"_id": ObjectId(gpsPlanId)}, function (err, doc) {
             if (err) {
                 retObj.messages.push('Error retrieving gps plan');
-                analyticsService.create(req, serviceActions.get_gpsplans_err, {
+                analyticsService.create(req, serviceActions.get_plan_err, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
                     success: false,
@@ -481,7 +480,7 @@ Settings.prototype.getGPSPlanDetails = function (req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.data = doc;
-                analyticsService.create(req, serviceActions.get_gpsplans, {
+                analyticsService.create(req, serviceActions.get_plan, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
                     success: true
@@ -490,7 +489,7 @@ Settings.prototype.getGPSPlanDetails = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.messages.push('GPS plan with Id doesn\'t exist');
-                analyticsService.create(req, serviceActions.get_gpsplans_err, {
+                analyticsService.create(req, serviceActions.get_plan_err, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
                     success: false,
@@ -504,7 +503,7 @@ Settings.prototype.getGPSPlanDetails = function (req, callback) {
 };
 
 /*Author : SVPrasadK*/
-Settings.prototype.updateGPSPlan = function (req, callback) {
+Settings.prototype.updatePlan = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -525,7 +524,7 @@ Settings.prototype.updateGPSPlan = function (req, callback) {
     }
 
     if (retObj.messages.length) {
-        analyticsService.create(req, serviceActions.update_gpsplans_err, {
+        analyticsService.create(req, serviceActions.update_plan_err, {
             body: JSON.stringify(req.body),
             accountId: req.jwt.id,
             success: false,
@@ -534,12 +533,12 @@ Settings.prototype.updateGPSPlan = function (req, callback) {
         });
         callback(retObj);
     } else {
-        devicePlansColl.findOne({
+        erpGpsPlans.findOne({
             _id: planInfo.gpsPlanId,
         }, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Please Try Again');
-                analyticsService.create(req, serviceActions.update_gpsplans_err, {
+                analyticsService.create(req, serviceActions.update_plan_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: false,
@@ -549,10 +548,10 @@ Settings.prototype.updateGPSPlan = function (req, callback) {
                 callback(retObj);
             } else if (oldDoc) {
                 planInfo.updatedBy = req.jwt.id;
-                devicePlansColl.findOneAndUpdate({_id: planInfo.gpsPlanId}, {$set: planInfo}, function (err, doc) {
+                erpGpsPlans.findOneAndUpdate({_id: planInfo.gpsPlanId}, {$set: planInfo}, function (err, doc) {
                     if (err) {
                         retObj.messages.push('Error updating the gps plan');
-                        analyticsService.create(req, serviceActions.update_gpsplans_err, {
+                        analyticsService.create(req, serviceActions.update_plan_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
                             success: false,
@@ -564,7 +563,7 @@ Settings.prototype.updateGPSPlan = function (req, callback) {
                         retObj.status = true;
                         retObj.messages.push('Success');
                         retObj.data = doc;
-                        analyticsService.create(req, serviceActions.update_gpsplans, {
+                        analyticsService.create(req, serviceActions.update_plan, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
                             success: true
@@ -573,7 +572,7 @@ Settings.prototype.updateGPSPlan = function (req, callback) {
                         callback(retObj);
                     } else {
                         retObj.messages.push('GPS plan with Id doesn\'t exist');
-                        analyticsService.create(req, serviceActions.update_gpsplans_err, {
+                        analyticsService.create(req, serviceActions.update_plan_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
                             success: false,
@@ -585,7 +584,7 @@ Settings.prototype.updateGPSPlan = function (req, callback) {
                 });
             } else {
                 retObj.messages.push('GPS plan with Id doesn\'t exist');
-                analyticsService.create(req, serviceActions.update_gpsplans_err, {
+                analyticsService.create(req, serviceActions.update_plan_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: false,
@@ -599,7 +598,7 @@ Settings.prototype.updateGPSPlan = function (req, callback) {
 };
 
 /*Author : SVPrasadK*/
-Settings.prototype.deleteGPSPlan = function (req, callback) {
+Settings.prototype.deletePlan = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -613,7 +612,7 @@ Settings.prototype.deleteGPSPlan = function (req, callback) {
         retObj.messages.push('Invalid gps plan id');
     }
     if (retObj.messages.length) {
-        analyticsService.create(req, serviceActions.delete_gpsplans_err, {
+        analyticsService.create(req, serviceActions.delete_plan_err, {
             body: JSON.stringify(req.params),
             gpsPlanId: req.jwt.id,
             success: false,
@@ -622,10 +621,10 @@ Settings.prototype.deleteGPSPlan = function (req, callback) {
         });
         callback(retObj);
     } else {
-        devicePlansColl.remove({_id: gpsPlanId}, function (err, returnValue) {
+        erpGpsPlans.remove({_id: gpsPlanId}, function (err, returnValue) {
             if (err) {
                 retObj.messages.push('Error deleting gps plan');
-                analyticsService.create(req, serviceActions.delete_gpsplans_err, {
+                analyticsService.create(req, serviceActions.delete_plan_err, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
                     success: false,
@@ -636,7 +635,7 @@ Settings.prototype.deleteGPSPlan = function (req, callback) {
             } else if (returnValue.result.n === 0) {
                 retObj.status = false;
                 retObj.messages.push('Unauthorized access or Error deleting gps plan');
-                analyticsService.create(req, serviceActions.delete_gpsplans_err, {
+                analyticsService.create(req, serviceActions.delete_plan_err, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
                     success: false,
@@ -647,7 +646,7 @@ Settings.prototype.deleteGPSPlan = function (req, callback) {
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
-                analyticsService.create(req, serviceActions.delete_account, {
+                analyticsService.create(req, serviceActions.delete_plan, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
                     success: true

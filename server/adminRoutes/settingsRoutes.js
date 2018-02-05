@@ -29,32 +29,32 @@ AuthRouter.delete('/deleteTruckType', function (req, res) {
 
 /*Author SVPrasadK*/
 
-AuthRouter.get('/getGPSPlan', function (req, res) {
-    Settings.getGPSPlan(req, function (result) {
+AuthRouter.get('/getPlan', function (req, res) {
+    Settings.getPlan(req, function (result) {
         res.json(result);
     });
 });
 
-AuthRouter.post('/addGPSPlan', function (req, res) {
-    Settings.addGPSPlan(req, function (result) {
+AuthRouter.post('/addPlan', function (req, res) {
+    Settings.addPlan(req, function (result) {
         res.json(result);
     });
 });
 
-AuthRouter.get('/getGPSPlanDetails', function (req, res) {
-    Settings.getGPSPlanDetails(req, function (result) {
+AuthRouter.get('/getPlanDetails', function (req, res) {
+    Settings.getPlanDetails(req, function (result) {
         res.json(result);
     });
 });
 
-AuthRouter.put('/updateGPSPlan', function (req, res) {
-    Settings.updateGPSPlan(req, function (result) {
+AuthRouter.put('/updatePlan', function (req, res) {
+    Settings.updatePlan(req, function (result) {
         res.json(result);
     });
 });
 
-AuthRouter.delete('/deleteGPSPlan', function (req, res) {
-    Settings.deleteGPSPlan(req, function (result) {
+AuthRouter.delete('/deletePlan', function (req, res) {
+    Settings.deletePlan(req, function (result) {
         res.send(result);
     });
 });
