@@ -33,17 +33,5 @@ const serviceActions= {
     get_erp_settings_err:'GET_ERP_SETTINGS_ERR',
     update_erp_settings:'UPDATE_ERP_SETTINGS',
     update_erp_settings_err:'UPDATE_ERP_SETTINGS_ERR',
-    add_gpsplans:'ADD_GPSPLANS',
-    add_gpsplans_err:'ADD_GPSPLANS_ERR',
-    get_gpsplans:'GET_GPSPLANS',
-    get_gpsplans_err:'GET_GPSPLANS_ERR',
-    get_all_gpsplans:'GET_ALL_GPSPLANS',
-    get_all_gpsplans_err:'GET_ALL_GPSPLANS_ERR',
-    get_gpsplans_details:'GET_GPSPLAN_DETAILS',
-    get_gpsplans_details_err:'GET_GPSPLAN_DETAILS_ERR',
-    update_gpsplans:'UPDATE_GPSPLAN',
-    update_gpsplans_err:'UPDATE_GPSPLAN_ERR',
-    delete_gpsplans:'DELETE_GPSPLAN',
-    delete_gpsplans_err:'DELETE_GPSPLAN_ERR',
 };
 module.exports=serviceActions;

@@ -4,10 +4,10 @@ var mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
+var erpGpsPlansColl = require('../models/schemas').erpGpsPlansColl;
 var TrucksTypesColl = require("../models/schemas").TrucksTypesColl;
 var LoadTypesColl = require("../models/schemas").LoadTypesColl;
 var GoodsTypesColl = require("../models/schemas").GoodsTypesColl;
-var erpGpsPlansColl = require("../models/schemas").erpGpsPlansColl;
 
 var Settings = function () {
 };

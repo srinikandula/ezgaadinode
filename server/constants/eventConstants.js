@@ -17,6 +17,8 @@ const serviceActions= {
     track_events_by_veh:'TRACK_EVENTS_BY_VEH',
     track_events_by_veh_err:'TRACK_EVENTS_BY_VEH_ERR',
     get_account_data:'GET_ACCOUNT_DATA',
-    get_account_data_err:'GET_ACCOUNT_DATA_ERR'
+    get_account_data_err:'GET_ACCOUNT_DATA_ERR',
+    get_employee_data:'GET_EMPLOYEE_DATA',
+    get_employee_data_err:'GET_EMPLOYEE_DATA_ERR'
 };
 module.exports=serviceActions;

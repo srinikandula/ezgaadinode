@@ -145,7 +145,6 @@ EventData.prototype.createAccountData = function (accountData, callback) {
     AccountsColl.find({"userName": accountData.userName}, function (error, accountFound) {
         if (!accountFound || accountFound.length === 0) {
             accountDoc.save(accountData, function (err, newDoc) {
-
                 if (err) {
                     logger.info(JSON.stringify(err));
                     retObj.messages.push('Error saving Account Data');

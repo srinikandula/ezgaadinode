@@ -277,9 +277,26 @@ const serviceActions={
     delete_truck_request:"DALETE_TRUCK_REQUEST",
     delete_truck_request_err:"DALETE_TRUCK_REQUEST_ERR",
     get_truck_request_details:"GET_TRUCK_REQUEST_DETAILS",
-    get_truck_request_details_err:"GET_TRUCK_REQUEST_DETAILS_ERR"
-
-
-
+    get_truck_request_details_err:"GET_TRUCK_REQUEST_DETAILS_ERR",
+    add_plan:'ADD_PLAN',
+    add_plan_err:'ADD_PLAN_ERR',
+    get_plan:'GET_PLAN',
+    get_plan_err:'GET_PLAN_ERR',
+    get_plan_details:'GET_PLAN_DETAILS',
+    get_plan_details_err:'GET_PLAN_DETAILS_ERR',
+    update_plan:'UPDATE_PLAN',
+    update_plan_err:'UPDATE_PLAN_ERR',
+    delete_plan:'DELETE_PLAN',
+    delete_plan_err:'DELETE_PLAN_ERR',
+    add_employee:'ADD_EMPLOYEE',
+    add_employee_err:'ADD_EMPLOYEE_ERR',
+    get_employee:'GET_EMPLOYEE',
+    get_employee_err:'GET_EMPLOYEE_ERR',
+    get_employee_details:'GET_EMPLOYEE_DETAILS',
+    get_employee_details_err:'GET_EMPLOYEE_DETAILS_ERR',
+    update_employee:'UPDATE_EMPLOYEE',
+    update_employee_err:'UPDATE_EMPLOYEE_ERR',
+    delete_employee:'DELETE_EMPLOYEE',
+    delete_employee_err:'DELETE_EMPLOYEE_ERR',
 };
 module.exports=serviceActions;

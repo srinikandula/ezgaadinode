@@ -30,8 +30,15 @@ var accountSchema = new mongoose.Schema({
     email: String,
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
+    id_admin: Number,
+    id_franchise: Number,
+    id_admin_role: Number,
+    adminRoleId: {type: ObjectId, ref: 'adminRoles'},
+    franchiseId: {type: ObjectId, ref: 'franchise'},
     groupName: String,
     contactName: String,
+    displayName: String,
+    contactAddress: String,
     location: String,
     truckIds: [],
     profilePic: String,
@@ -378,7 +385,7 @@ var analyticsSchema = mongoose.Schema({
     response: String
 }, {timestamps: String});
 
-var devicePlans = new mongoose.Schema({
+var erpGpsPlans = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     devicePlanId: Number,
     franchiseId: Number,
@@ -435,6 +442,7 @@ var customerTypesSchema = mongoose.Schema({
     type: String,
 }, {timestamps: String});
 
+<<<<<<< 61d3d72443f7aefa194b7b83bea59e2871b8aeb0
 var  customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     name:String,
@@ -545,6 +553,58 @@ var loadTypesSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     title:String,
 },{timestamps: String});
+=======
+var franchiseSchema = mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    franchiseId: Number,
+    fullName: String,
+    account: String,
+    mobile: Number,
+    landLine: String,
+    city: String,
+    state: String,
+    address: String,
+    company: String,
+    bankDetails: String,
+    panCard: String,
+    gst: String,
+    doj: Date,
+    status: Boolean,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {timestamps: true, versionKey: false});
+
+var adminRoleSchema = mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    adminRoleId: Number,
+    id_franchise: Number,
+    franchiseId: {type: ObjectId, ref: 'franchise'},
+    role: String,
+    status: Boolean,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {timestamps: true, versionKey: false});
+
+var adminPermissionsSchema = mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    adminPermissionId: Number,
+    id_admin_role: Number,
+    adminRoleId: {type: ObjectId, ref: 'adminRoles'},
+    moduleName: String,
+    fileName: String,
+    title: String,
+    listAll: Boolean,
+    view: Boolean,
+    add: Boolean,
+    edit: Boolean,
+    trash: Boolean,
+    fileSortOrder: Number,
+    moduleSortOrder: Number,
+    menuType: Number,
+    status: Boolean,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {timestamps: true, versionKey: false});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),

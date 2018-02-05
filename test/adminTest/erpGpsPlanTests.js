@@ -3,7 +3,7 @@ process.env.NODE_ENV = 'test';
 var async = require('async');
 var mongoose = require("mongoose");
 var User = require('./../../server/models/schemas').AccountsColl;
-var devicePlansColl = require('./../../server/models/schemas').devicePlansColl;
+var erpGpsPlansColl = require('./../../server/models/schemas').erpGpsPlansColl;
 var chai = require('chai');
 var chaiHttp = require('chai-http');
 var server = require('../../server');
@@ -25,9 +25,9 @@ chai.use(chaiHttp);
 
 describe('GPSPlanTests', () => {
     /*
-    * Test the /GET route Getting GPS Plan  Information
+    * Test the /GET route Getting ERP GPS Plan  Information
     */
-    describe('/GET GPS Plan', () => {
+    describe('/GET ERP GPS Plan', () => {
         User.remove({}, function (err, result) {
         })
         userData.save(function (err, account) {
@@ -50,11 +50,11 @@ describe('GPSPlanTests', () => {
                 });
         });
         /*
-        * Test the /GET route Retrieving Empty GPS Plan Information Success
+        * Test the /GET route Retrieving Empty ERP GPS Plan Information Success
         */
-        it('Retrieving Empty GPS Plan Information', (done) => {
+        it('Retrieving Empty ERP GPS Plan Information', (done) => {
             chai.request(server)
-                .get('/v1/settings/getGPSPlan')
+                .get('/v1/settings/getPlan')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -64,16 +64,16 @@ describe('GPSPlanTests', () => {
                 });
         });
         /*
-        * Test the /POST route Adding GPS Plan Information Success
+        * Test the /POST route Adding ERP GPS Plan Information Success
         */
-        it('Adding GPS Plan Information', (done) => {
+        it('Adding ERP GPS Plan Information', (done) => {
             let gpsPlanData = {
                 "planName": 'Yearly',
                 "durationInMonths": 12,
                 "amount": 4000,
             };
             chai.request(server)
-                .post('/v1/settings/addGPSPlan')
+                .post('/v1/settings/addPlan')
                 .set(headerData)
                 .send(gpsPlanData)
                 .end((err, res) => {
@@ -87,11 +87,11 @@ describe('GPSPlanTests', () => {
                 });
         });
         /*
-        * Test the /GET route Retrieving GPS Plan Information Success
+        * Test the /GET route Retrieving ERP GPS Plan Information Success
         */
-        it('Retrieving GPS Plan Information', (done) => {
+        it('Retrieving ERP GPS Plan Information', (done) => {
             chai.request(server)
-                .get('/v1/settings/getGPSPlan')
+                .get('/v1/settings/getPlan')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -102,16 +102,16 @@ describe('GPSPlanTests', () => {
                 });
         });
         /*
-        * Test the /POST route Adding GPS Plan with same credentials Information Success
+        * Test the /POST route Adding ERP GPS Plan with same credentials Information Success
         */
-        it('Adding GPS Plan with same credentials Information', (done) => {
+        it('Adding ERP GPS Plan with same credentials Information', (done) => {
             let gpsPlanData = {
                 "planName": 'Yearly',
                 "durationInMonths": 12,
                 "amount": 4000,
             };
             chai.request(server)
-                .post('/v1/settings/addGPSPlan')
+                .post('/v1/settings/addPlan')
                 .set(headerData)
                 .send(gpsPlanData)
                 .end((err, res) => {
@@ -121,9 +121,9 @@ describe('GPSPlanTests', () => {
 
         });
         /*
-        * Test the /PUT route Updating GPS Plan Information Success
+        * Test the /PUT route Updating ERP GPS Plan Information Success
         */
-        it('Updating GPS Plan Information Success', (done) => {
+        it('Updating ERP GPS Plan Information Success', (done) => {
             let gpsPlanData = {
                 "planName": 'Monthly',
                 "durationInMonths": 1,
@@ -131,7 +131,7 @@ describe('GPSPlanTests', () => {
                 "gpsPlanId": gpsPlanId
             };
             chai.request(server)
-                .put('/v1/settings/updateGPSPlan')
+                .put('/v1/settings/updatePlan')
                 .send(gpsPlanData)
                 .set(headerData)
                 .end((err, res) => {
@@ -143,9 +143,9 @@ describe('GPSPlanTests', () => {
                 });
         });
         /*
-        * Test the /PUT route Updating GPS Plan Information Failure
+        * Test the /PUT route Updating ERP GPS Plan Information Failure
         */
-        it('Updating GPS Plan Information Failure', (done) => {
+        it('Updating ERP GPS Plan Information Failure', (done) => {
             let gpsPlanData = {
                 "planName": 'Monthly',
                 "durationInMonths": 1,
@@ -153,7 +153,7 @@ describe('GPSPlanTests', () => {
                 "gpsPlanId": ""
             };
             chai.request(server)
-                .put('/v1/settings/updateGPSPlan')
+                .put('/v1/settings/updatePlan')
                 .send(gpsPlanData)
                 .set(headerData)
                 .end((err, res) => {
@@ -165,14 +165,14 @@ describe('GPSPlanTests', () => {
                 });
         });
         /*
-        * Test the /PUT route Delete GPS Plan Information
+        * Test the /PUT route Delete ERP GPS Plan Information
         */
-        it('Delete GPS Plan Information', (done) => {
+        it('Delete ERP GPS Plan Information', (done) => {
             let gpsPlanData = {
                 "gpsPlanId": gpsPlanId
             };
             chai.request(server)
-                .delete('/v1/settings/deleteGPSPlan')
+                .delete('/v1/settings/deletePlan')
                 .send(gpsPlanData)
                 .set(headerData)
                 .end((err, res) => {
