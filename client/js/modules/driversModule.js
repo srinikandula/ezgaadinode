@@ -1,4 +1,4 @@
-app.factory('DriverService', function ($http) {
+app.factory('DriverService',['$http', function ($http) {
     return {
         addDriver: function (driverInfo, success, error) {
             $http({
@@ -51,7 +51,7 @@ app.factory('DriverService', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification','paginationService','NgTableParams',
     function ($scope, $state, DriverService, Notification, paginationService, NgTableParams) {

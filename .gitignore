@@ -28,6 +28,20 @@ coverage
 # Bower dependency directory (https://bower.io/)
 bower_components
 client/components
+client/components/components.js
+client/components/components.min.js
+
+#Concatenated and Minified CSS
+client/css/minified
+client/all.css
+
+#Concatenated and Minified JS
+client/js/all.js
+client/js/app.min.js
+client/js/modules/main.js
+client/js/modules/main.min.js
+client/js/modules/admin.js
+client/js/modules/admin.min.js
 
 # node-waf configuration
 .lock-wscript

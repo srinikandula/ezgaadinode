@@ -1,6 +1,6 @@
 var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification', 'ngImgCrop', 'ngFileUpload', 'ngSanitize', 'ui.select']);
 
-app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
 
     $stateProvider.state({
@@ -432,9 +432,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     });
     // agentReports
     $urlRouterProvider.otherwise('/login');
-});
+}]);
 
-app.config(function (NotificationProvider, $httpProvider) {
+app.config(['NotificationProvider', '$httpProvider',function (NotificationProvider, $httpProvider) {
     NotificationProvider.setOptions({
         delay: 3000,
         startTop: 150,
@@ -445,7 +445,7 @@ app.config(function (NotificationProvider, $httpProvider) {
         positionY: 'bottom'
     });
     // Interceptor for redirecting to login page if not logged in
-    $httpProvider.interceptors.push(function ($q, $location, $rootScope, $cookies) {
+    $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies',function ($q, $location, $rootScope, $cookies) {
         return {
             'request': function (config) {
 
@@ -464,10 +464,10 @@ app.config(function (NotificationProvider, $httpProvider) {
                 }
             }
         };
-    });
-});
+    }]);
+}]);
 
-app.run(function ($transitions, $rootScope, $cookies) {
+app.run(['$transitions', '$rootScope', '$cookies',function ($transitions, $rootScope, $cookies) {
 
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
@@ -476,7 +476,7 @@ app.run(function ($transitions, $rootScope, $cookies) {
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
 
     });
-});
+}]);
 
 app.filter('propsFilter', function () {
     return function (items, props) {
