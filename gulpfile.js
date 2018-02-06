@@ -6,11 +6,19 @@ var gulp = require('gulp')
     , rename=  require('gulp-rename')
     , merge = require('merge-stream')
     , sourcemaps = require('gulp-sourcemaps')
+<<<<<<< HEAD
     , sequence=require('gulp-sequence');
 
 var child = require('child_process');
 var htmlreplace = require('gulp-html-replace');
 
+=======
+    , usemin = require('gulp-usemin');
+
+var htmlreplace = require('gulp-html-replace');
+
+
+>>>>>>> gulp tasks,dependency changes,gitignore
 var fs = require('fs');
 var path = require('path');
 
@@ -24,6 +32,7 @@ function getFolders(dir) {
 }
 
 gulp.task('minify-css', function () {
+<<<<<<< HEAD
     gulp.src('./client/css/all.css') // path to your file
         .pipe(minifyCss())
         .pipe(gulp.dest('./client/dist/css/'));
@@ -76,6 +85,11 @@ gulp.task('merge-components',function () {
         .pipe(uglify())
         .pipe(rename('components.min.js'))
         .pipe(gulp.dest('./client/dist/components/'))
+=======
+    gulp.src('./client/css/*.css') // path to your file
+        .pipe(minifyCss())
+        .pipe(gulp.dest('./client/css/minified'));
+>>>>>>> gulp tasks,dependency changes,gitignore
 });
 
 gulp.task('minify-js', function () {
@@ -83,11 +97,19 @@ gulp.task('minify-js', function () {
         './client/js/services.js']) // path to your files
         .pipe(sourcemaps.init())
         .pipe(concat('all.js'))
+<<<<<<< HEAD
         .pipe(gulp.dest('./client/dist/js/'))
         .pipe(rename('app.min.js'))
         .pipe(uglify())
         .pipe(sourcemaps.write('./'))
         .pipe(gulp.dest('./client/dist/js/'));
+=======
+        .pipe(gulp.dest('./client/js/'))
+        .pipe(rename('app.min.js'))
+        .pipe(uglify())
+        .pipe(sourcemaps.write('./'))
+        .pipe(gulp.dest('./client/js/'));
+>>>>>>> gulp tasks,dependency changes,gitignore
 });
 
 gulp.task('merge-modules', function() {
@@ -98,6 +120,7 @@ gulp.task('merge-modules', function() {
         // concat into foldername.js
             .pipe(concat(folder + '.js'))
             // write to output
+<<<<<<< HEAD
             .pipe(gulp.dest('./client/dist/js/'))
             // minify
             .pipe(uglify())
@@ -105,18 +128,39 @@ gulp.task('merge-modules', function() {
             .pipe(rename(folder + '.min.js'))
             // write to output again
             .pipe(gulp.dest('./client/dist/js/'));
+=======
+            .pipe(gulp.dest(scriptsPath))
+            // minify
+            .pipe(uglify({
+                mangle: false
+            }))
+            // rename to folder.min.js
+            .pipe(rename(folder + '.min.js'))
+            // write to output again
+            .pipe(gulp.dest(scriptsPath));
+>>>>>>> gulp tasks,dependency changes,gitignore
     });
 
     var root = gulp.src(path.join(scriptsPath, '/*.js'))
         .pipe(concat('main.js'))
+<<<<<<< HEAD
         .pipe(gulp.dest('./client/dist/js/'))
     .pipe(uglify())
     .pipe(rename('main.min.js'))
     .pipe(gulp.dest('./client/dist/js/'));
+=======
+        .pipe(gulp.dest(scriptsPath))
+    .pipe(uglify({
+        mangle: false
+    }))
+    .pipe(rename('main.min.js'))
+    .pipe(gulp.dest(scriptsPath));
+>>>>>>> gulp tasks,dependency changes,gitignore
 
     return merge(tasks, root);
 });
 
+<<<<<<< HEAD
 gulp.task('watchDev',function () {
     gulp.watch(['./client/css/*.css'],['merge-css','minify-css']);
     gulp.watch([path.join(scriptsPath, '/*.js')],['merge-modules']);
@@ -128,3 +172,45 @@ gulp.task('watchDev',function () {
 gulp.task('default', ['watchDev']);
 
 gulp.task('run', sequence('merge-css','minify-css','merge-vendor-css','minify-js','merge-components','merge-modules'));
+=======
+gulp.task('merge-components',function () {
+    gulp.src(['./client/components/jquery/dist/jquery.min.js',
+        './client/components/bootstrap/dist/js/bootstrap.min.js',
+        './client/components/angular/angular.min.js',
+        './client/components/angular-ui-router/release/angular-ui-router.min.js',
+        './client/components/angular-cookies/angular-cookies.min.js',
+        './client/components/angular-bootstrap/ui-bootstrap-tpls.min.js',
+        './client/components/underscore/underscore-min.js',
+        './client/components/angular-ui-notification/dist/angular-ui-notification.js',
+        './client/components/sweetalert2/dist/sweetalert2.all.min.js',
+        './client/components/ng-file-upload/ng-file-upload.min.js',
+        './client/components/ng-file-upload/ng-file-upload-shim.min.js',
+        './client/components/ng-img-crop/compile/unminified/ng-img-crop.js',
+        './client/components/angular-ui-select/dist/select.min.js',
+        './client/components/datatables.net/js/jquery.dataTables.min.js',
+        './client/components/datatables.net-responsive/js/dataTables.responsive.min.js',
+    ]) // path to your file
+        .pipe(concat('components.js'))
+        .pipe(gulp.dest('./client/components/'))
+        .pipe(uglify({mangle: false}))
+        .pipe(rename('components.min.js'))
+        .pipe(gulp.dest('./client/components/'))
+});
+
+gulp.task('replaceIndex.html',function () {
+    // var replaceThis = [
+    //     [ /^<script src="components/m, 'Hi' ],
+    // ];
+    gulp.src('./client/views/index.html')
+        .pipe(htmlreplace({
+            'js': 'js/bundle.min.js'
+        }))
+        .pipe(gulp.dest('./client/views/'));
+})
+
+gulp.task('merge-css',function () {
+    gulp.src('./client/css/minified/*.css') // path to your file
+        .pipe(concat('all.css'))
+        .pipe(gulp.dest('./client/css/'));
+});
+>>>>>>> gulp tasks,dependency changes,gitignore

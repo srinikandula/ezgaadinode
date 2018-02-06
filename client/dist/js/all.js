@@ -1,6 +1,10 @@
 var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification', 'ngImgCrop', 'ngFileUpload', 'ngSanitize', 'ui.select']);
 
+<<<<<<< HEAD
 app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function ($stateProvider, $locationProvider, $urlRouterProvider) {
+=======
+app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
+>>>>>>> gulp tasks,dependency changes,gitignore
     $locationProvider.html5Mode(true);
 
     $stateProvider.state({
@@ -432,9 +436,15 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
     });
     // agentReports
     $urlRouterProvider.otherwise('/login');
+<<<<<<< HEAD
 }]);
 
 app.config(['NotificationProvider', '$httpProvider',function (NotificationProvider, $httpProvider) {
+=======
+});
+
+app.config(function (NotificationProvider, $httpProvider) {
+>>>>>>> gulp tasks,dependency changes,gitignore
     NotificationProvider.setOptions({
         delay: 3000,
         startTop: 150,
@@ -445,7 +455,11 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
         positionY: 'bottom'
     });
     // Interceptor for redirecting to login page if not logged in
+<<<<<<< HEAD
     $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies',function ($q, $location, $rootScope, $cookies) {
+=======
+    $httpProvider.interceptors.push(function ($q, $location, $rootScope, $cookies) {
+>>>>>>> gulp tasks,dependency changes,gitignore
         return {
             'request': function (config) {
 
@@ -464,10 +478,17 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
                 }
             }
         };
+<<<<<<< HEAD
     }]);
 }]);
 
 app.run(['$transitions', '$rootScope', '$cookies',function ($transitions, $rootScope, $cookies) {
+=======
+    });
+});
+
+app.run(function ($transitions, $rootScope, $cookies) {
+>>>>>>> gulp tasks,dependency changes,gitignore
 
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
@@ -476,7 +497,11 @@ app.run(['$transitions', '$rootScope', '$cookies',function ($transitions, $rootS
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
 
     });
+<<<<<<< HEAD
 }]);
+=======
+});
+>>>>>>> gulp tasks,dependency changes,gitignore
 
 app.filter('propsFilter', function () {
     return function (items, props) {
@@ -529,7 +554,11 @@ angular.module('paginationService', ['ngTable'])
             }
         }
     });
+<<<<<<< HEAD
 app.directive('adminDatePicker', function () {
+=======
+app.directive('datePicker', function () {
+>>>>>>> gulp tasks,dependency changes,gitignore
     return {
         restrict: 'E',
         scope: {
