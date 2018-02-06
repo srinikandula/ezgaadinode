@@ -9,6 +9,12 @@ AuthRouter.post('/addDevice', function (req, res) {
     });
 });
 
+AuthRouter.post('/assignDevice', function (req, res) {
+    Devices.assignDevice(req, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.post('/transferDevice', function (req, res) {
     Devices.transferDevice(req, function (result) {
         res.json(result);
@@ -20,6 +26,20 @@ AuthRouter.get('/getDevices', function (req, res) {
         res.json(result);
     });
 });
+
+AuthRouter.post('/addDevicePlan', function (req, res) {
+    Devices.addDevicePlan(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.post('/editDevicePlan', function (req, res) {
+    Devices.editDevicePlan(req, function (result) {
+        res.json(result);
+    });
+});
+
+
 
 module.exports = {
     AuthRouter: AuthRouter

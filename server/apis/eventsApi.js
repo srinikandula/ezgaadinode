@@ -453,18 +453,18 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                             console.log("New device inserted");
                         }
                     });
-                    AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
-                        for (var i = 0; i < accounts.length; i++) {
-                            TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
-                                console.log("Truck is updated " + JSON.stringify(truck));
-                            });
-                            DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
-                                console.log("Device is updated " + JSON.stringify(device));
-                            });
-                        }
-                    });
-                    //EventData.createTruckData(truckData,deviceData);
                 }
+                AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                    for (var i = 0; i < accounts.length; i++) {
+                        TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
+                            console.log("Truck is updated " + JSON.stringify(truck));
+                        });
+                        DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
+                            console.log("Device is updated " + JSON.stringify(device));
+                        });
+                    }
+                });
+                //EventData.createTruckData(truckData,deviceData);
                 retObj.status = true;
                 retObj.messages.push('trucks are being loaded');
                 callback(retObj);
