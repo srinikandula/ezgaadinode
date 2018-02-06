@@ -25,13 +25,9 @@ var Gps = require('./server/routes/gpsRoutes');
 var Analytics=require('./server/routes/reports');
 var Customers=require('./server/adminRoutes/customerRoutes');
 var Settings=require('./server/adminRoutes/settingsRoutes');
-<<<<<<< 61d3d72443f7aefa194b7b83bea59e2871b8aeb0
 var OrderProcess=require('./server/adminRoutes/orderProcessRoutes');
 var Accounts=require('./server/adminRoutes/accountsRoutes');
 var Employees=require('./server/adminRoutes/employeeRoutes');
-=======
-var Users=require('./server/adminRoutes/userRoutes');
->>>>>>> admin role permission franchise employee data into mongoose
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -118,13 +114,8 @@ app.use('/v1/gps', Gps.AuthRouter);
 app.use('/v1/customers',Customers.AuthRouter);
 app.use('/v1/settings',Settings.AuthRouter);
 app.use('/v1/orderProcess',OrderProcess.AuthRouter);
-app.use('/v1/settings', Settings.AuthRouter);
-<<<<<<< 61d3d72443f7aefa194b7b83bea59e2871b8aeb0
+app.use('/v1/accounts', Accounts.AuthRouter);
 app.use('/v1/employees', Employees.AuthRouter);
-=======
-app.use('/v1/users', Users.AuthRouter);
-
->>>>>>> admin role permission franchise employee data into mongoose
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);
