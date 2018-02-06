@@ -444,11 +444,12 @@ var customerTypesSchema = mongoose.Schema({
 
 var franchiseSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    franchiseId: Number,
+    id_franchise: Number,
     fullName: String,
     account: String,
     mobile: Number,
     landLine: String,
+    email: String,
     city: String,
     state: String,
     address: String,

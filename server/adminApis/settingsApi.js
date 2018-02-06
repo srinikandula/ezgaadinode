@@ -336,7 +336,7 @@ Settings.prototype.getPlan = function (req, callback) {
                 retObj.messages.push('Error retrieving gps plan');
                 analyticsService.create(req, serviceActions.get_plan_err, {
                     body: JSON.stringify(req.query),
-                    accountId: req.req.jwt.id,
+                    accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
                 }, function (response) {
