@@ -331,6 +331,8 @@ var deviceSchema = new mongoose.Schema({
     simNumber: String,
     imei: String,
     simPhoneNumber: String,
+    truckId: {type: ObjectId, ref: 'trucks'},
+    address: String,
     installedBy: String,  //installed UserId
     accountId: {type: ObjectId, ref: 'accounts'},
     devicePaymentStatus: String,
@@ -360,7 +362,8 @@ var secretKeysCounter = new mongoose.Schema({
     date: String,
     secretId: { type: ObjectId, ref: 'secretKeys' },
     counter: Number
-});
+},{timestamps: true, versionKey: false});
+
 var loadRequestSchema = new mongoose.Schema({
         createdBy: {type: ObjectId, ref: 'accounts'},
         accountId: {type: ObjectId, ref: 'accounts'},
@@ -513,14 +516,13 @@ var faultyPlanhistory = new mongoose.Schema({
     creationTime: Date,
     startTime: String,
     expiryTime: Date,
-    received: Boolean
+    received: {type: Boolean, default: false}
 }, { timestamps: String });
 
-var keysSchema = mongoose.Schema({
-    accountId: { type: ObjectId, ref: 'accounts' },
-    apiKey: String,
-    secretKey: String,
-    globalAccess:Boolean
+var keysSchema=mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    apiKey:String,
+    secretKey:String
 });
 
 var trucksTypesSchema = mongoose.Schema({
