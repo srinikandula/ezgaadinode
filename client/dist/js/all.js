@@ -510,3 +510,218 @@ app.filter('propsFilter', function () {
     };
 });
 
+
+angular.module('paginationService', ['ngTable'])
+
+    .factory('paginationService', function () {
+        return {
+            pagination: function (tableParams, callback) {
+                var sortingProps = tableParams.sorting();
+                // for (var prop in sortingProps) {
+                //     if(sortingProps[prop] == "asc"){
+                //         sortingProps[prop] = 1;
+                //     }else if (sortingProps[prop] == "desc"){
+                //         sortingProps[prop] = -1;
+                //     }
+                // }
+                console.log("Sorting options are "+ sortingProps);
+                callback(sortingProps);
+            }
+        }
+    });
+app.directive('adminDatePicker', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            ngModel: "=",
+            banFuture: "=",
+            pastPresent: "=",
+            placeholder: "=placeholder",
+            class: "=class"
+        },
+        template: '<div class="pos-relative">\n' +
+        '                <span class="date-pick" ng-click="open($event)">' +
+        '                  <img src="images/date-icon.png" width="30" height="24" /> </span>\n' +
+        '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true" ng-click="open($event)" placeholder="{{placeholder}}" />\n' +
+        '        </div>\n',
+        require: 'ngModel',
+        link: function (scope, element, attributes) {
+            scope.opened = false;
+            scope.open = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                if (scope.opened) {
+                    scope.opened = !scope.opened;
+                } else {
+                    scope.opened = !scope.opened;
+                }
+            };
+            if (scope.banFuture) {
+                scope.options = {
+                    showWeeks: false,
+                    maxDate: new Date()
+                }
+            } else if (scope.pastPresent) {
+                scope.options = {
+                    showWeeks: false
+                }
+            } else {
+                scope.options = {
+                    minDate: new Date(),
+                    showWeeks: false
+                }
+            }
+        }
+    };
+
+});
+app.directive('adminleftMenu', function () {
+    return {
+        restrict: 'E',
+        template: '<div class="left-menu"> \n' +
+        '        <ul class="list-unstyled">\n' +
+        '           <li class="left-menu-li" ui-sref-active="active">' +
+        '               <a  ui-sref="{{label | lowercase}}" class="left-menu-anchor" >{{label}}</a> \n' +
+        '           </li> \n'+
+        '        </ul>\n' +
+        '    </div>',
+        scope: {label: '@', noSecond: '='},
+        link: function() {
+            //console.log($state.includes(label | lowercase));
+        }
+    };
+});
+
+
+app.directive('checkList', function() {
+    return {
+        scope: {
+            list: '=checkList',
+            value: '@'
+        },
+        link: function(scope, elem, attrs) {
+            var handler = function(setup) {
+                var checked = elem.prop('checked');
+                var index = scope.list.indexOf(scope.value);
+
+                if (checked && index == -1) {
+                    if (setup) elem.prop('checked', false);
+                    else scope.list.push(scope.value);
+                } else if (!checked && index != -1) {
+                    if (setup) elem.prop('checked', true);
+                    else scope.list.splice(index, 1);
+                }
+            };
+
+            var setupHandler = handler.bind(null, true);
+            var changeHandler = handler.bind(null, false);
+
+            elem.bind('change', function() {
+                scope.$apply(changeHandler);
+            });
+            scope.$watch('list', setupHandler, true);
+        }
+    };
+});
+
+app.directive('datePicker', function () {
+    return {
+        restrict: 'E',
+        scope: {
+            ngModel: "=",
+            banFuture: "=",
+            pastPresent: "=",
+            placeholder: "=placeholder",
+            class: "=class"
+        },
+        template: '<div class="pos-relative  styling-input-list-trucks">\n' +
+        '                <span class="date-pick" ng-click="open($event)">' +
+        '                  <img src="images/date-icon.png" width="30" height="24" /> </span>\n' +
+        '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true" ng-click="open($event)"/>\n' +
+        '<label class="focus-effect-for-input-trucks" aria-hidden="true">{{placeholder}}</label> \n' +
+        '        </div>\n',
+        require: 'ngModel',
+        link: function (scope, element, attributes) {
+            scope.opened = false;
+            scope.open = function ($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+                if (scope.opened) {
+                    scope.opened = !scope.opened;
+                } else {
+                    scope.opened = !scope.opened;
+                }
+            };
+            if (scope.banFuture) {
+                scope.options = {
+                    showWeeks: false,
+                    maxDate: new Date()
+                }
+            } else if (scope.pastPresent) {
+                scope.options = {
+                    showWeeks: false
+                }
+            } else {
+                scope.options = {
+                    minDate: new Date(),
+                    showWeeks: false
+                }
+            }
+        }
+    };
+
+});
+app.directive('leftMenu', function () {
+    return {
+        restrict: 'E',
+        template: '<div class="left-menu"> \n' +
+        '        <ul class="list-unstyled">\n' +
+        '           <li  ui-sref-active="active" class="left-menu-li">' +
+        '               <a  ui-sref="{{label | lowercase}}" class="left-menu-anchor" >' +
+        '               <img src="images/{{label | lowercase}}.png" width="55" height="40">{{label}}</a> \n' +
+        '           </li> \n'+
+        '        </ul>\n' +
+        '    </div>',
+        scope: {label: '@', noSecond: '='},
+        link: function() {
+            //console.log($state.includes(label | lowercase));
+        }
+    };
+});
+
+
+app.factory('Utils', ['$http', '$cookies',function ($http, $cookies) {
+    return {
+        isValidEmail: function (email) {
+            return _.isString(email) && /^[a-zA-Z]\S*@\S+.\S+/.test(email)
+        },
+        isValidPassword: function (password) {
+            password = password.trim();
+            return _.isString(password) && (password.length > 7)
+        },
+        isLoggedIn: function () {
+            return !!$cookies.get('token');
+        },
+        logout: function () {
+            $cookies.remove('token');
+            $cookies.remove('editAccounts');
+            $cookies.remove('role');
+            $cookies.remove('userName');
+        },
+        isValidPhoneNumber: function(phNumber) {
+            return phNumber && /^[1-9]\d{9}$/.test(phNumber);
+        }
+    }
+}]);
+
+app.factory('CommonServices',['$http', function ($http) {
+    return {
+        login: function (loginData, success, error) {
+            $http({
+                url: '/v1/group/login',
+                method: "POST",
+                data: loginData
+            }).then(success, error)
+        }
+    }
+}]);
