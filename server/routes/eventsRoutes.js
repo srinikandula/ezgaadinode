@@ -228,6 +228,31 @@ OpenRouter.get('/get/devicePlansHistory', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/franchise', function (request, res) {
+    Events.getFranchise(request,function(results){
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/adminRoles', function (request, res) {
+    Events.getAdminRoles(request,function(results){
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/adminPermissions', function (request, res) {
+    Events.getAdminPermissions(request,function(results){
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/employees', function (request, res) {
+    Events.getEmployeeData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

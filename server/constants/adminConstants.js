@@ -9,6 +9,8 @@ const serviceActions= {
     get_account_details_err:'GET_ACCOUNT_DETAILS_ERR',
     update_account:'UPDATE_ACCOUNT',
     update_account_err:'UPDATE_ACCOUNT_ERR',
+    delete_account:'DELETE_ACCOUNT',
+    delete_account_err:'DELETE_ACCOUNT_ERR',
     count_accounts:'COUNT_ACCOUNTS',
     count_accounts_err:'COUNT_ACCOUNTS_ERR',
     erp_dashboard_content:'ERP_DASHBOARD_CONTENT',
@@ -30,6 +32,6 @@ const serviceActions= {
     get_erp_settings:'GET_ERP_SETTINGS',
     get_erp_settings_err:'GET_ERP_SETTINGS_ERR',
     update_erp_settings:'UPDATE_ERP_SETTINGS',
-    update_erp_settings_err:'UPDATE_ERP_SETTINGS_ERR'
+    update_erp_settings_err:'UPDATE_ERP_SETTINGS_ERR',
 };
 module.exports=serviceActions;
