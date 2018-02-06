@@ -1,4 +1,4 @@
-app.directive('datePicker', function () {
+app.directive('adminDatePicker', function () {
     return {
         restrict: 'E',
         scope: {
