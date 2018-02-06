@@ -14,7 +14,7 @@ AuthRouter.post('/addCustomerLead', function (req, res) {
     })
 });
 
-AuthRouter.put('/updateCustomerLead', function (req, res) {
+AuthRouter.post('/updateCustomerLead', function (req, res) {
     CustomerLeads.updateCustomerLead(req,function (result) {
         res.send(result);
     })

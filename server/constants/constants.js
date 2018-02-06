@@ -267,7 +267,18 @@ const serviceActions={
     delete_load_type:"DALETE_LOAD_TYPE",
     delete_load_type_err:"DALETE_LOAD_TYPE_ERR",
     get_load_type_details:"GET_LOAD_TYPE_DETAILS",
-    get_load_type_details_err:"GET_LOAD_TYPE_DETAILS_ERR"
+    get_load_type_details_err:"GET_LOAD_TYPE_DETAILS_ERR",
+    get_truck_requests:"GET_TRUCK_REQUESTS",
+    get_truck_requests_err:"GET_TRUCK_REQUESTS_ERR",
+    add_truck_request:"ADD_TRUCK_REQUEST",
+    add_truck_request_err:"ADD_TRUCK_REQUEST_ERR",
+    update_truck_request:"UPDATE_TRUCK_REQUEST",
+    update_truck_request_err:"UPDATE_TRUCK_REQUEST_ERR",
+    delete_truck_request:"DALETE_TRUCK_REQUEST",
+    delete_truck_request_err:"DALETE_TRUCK_REQUEST_ERR",
+    get_truck_request_details:"GET_TRUCK_REQUEST_DETAILS",
+    get_truck_request_details_err:"GET_TRUCK_REQUEST_DETAILS_ERR"
+
 
 
 };
