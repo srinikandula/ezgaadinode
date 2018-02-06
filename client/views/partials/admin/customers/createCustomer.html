@@ -1,242 +1,225 @@
-<div class="col-xs-12 newCust" ng-controller="customerCtrl">
+<div class="col-xs-12 newCust" ng-controller="customerCtrl" ng-init="getCustomerLeadDetails()">
     <h4>Create Customer Leads</h4>
     <div class="col-xs-12">
-    <uib-accordion>
-        <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
-            <uib-accordion-heading>
-                User Information <i class="pull-right glyphicon"
-                                    ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-            </uib-accordion-heading>
-            <div class="col-xs-12">
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="fullName"
-                               placeholder="Full Name"/>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+                <uib-accordion-heading>
+                    User Information <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="fullName" ng-model="customerLead.name" placeholder="Full Name *" />
+                        </div>
+                        <div class="form-group pos-relative" ng-repeat="mobile in customerLead.contactPhone track by $index">
+                            <input type="text" class="form-control custom-form-control" name="mobile" ng-model="customerLead.contactPhone[$index]" ng-pattern="/^[0-9]/" placeholder="Mobile {{$index+1}} *" />
+                            <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red" ng-click="removeNumber()"></i></span>
+                            <span class="plus-pos" ng-show="$index == 0"><i class="fa fa-plus-square" aria-hidden="true" ng-click="addNumber()"></i></span>
+                        </div>
+                        <!-- <div class="form-group pos-relative" ng-show="showExtra">
+                            <input type="text" class="form-control custom-form-control" name="mobile" placeholder="Mobile 2" ng-model="customerLead.contactPhone2" />
+                            <span class="plus-pos"><i class="fa fa-check-circle clr-green"></i> <i class="fa fa-times-circle clr-red" ng-click="removeNumber()"></i></span>
+                        </div>  -->
                     </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="mobile" placeholder="Mobile"/>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <select class="form-control custom-form-control">
-                            <option>Truck Owner</option>
-                            <option>Manufacturer</option>
-                            <option>Commission Agent</option>
-                            <option>Transporter</option>
-                            <option>Factory Owners</option>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="customerLead.leadType">
+                                <option value="" selected>Select Type</option>
+                                <option ng-repeat="type in leadType" value="{{type}}">{{type}}</option>                            
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="email" placeholder="Email"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="email" ng-model="customerLead.email" placeholder="Email" />
+                        </div>
                     </div>
                 </div>
-            </div>
 
-        </div>
-        <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>
-                Address <i class="pull-right glyphicon"
-                           ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-            </uib-accordion-heading>
-            <div class="col-xs-12">
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="companyName"
-                               placeholder="Company Name"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="address"
-                               placeholder="Address"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="city" placeholder="City"/>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="state" placeholder="State"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="pincode"
-                               placeholder="Pincode"/>
-                    </div>
-                </div>
             </div>
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Address <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="companyName" ng-model="customerLead.companyName" placeholder="Company Name" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="address" ng-model="customerLead.address" placeholder="Address" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="city" ng-model="customerLead.city" placeholder="City" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="state" ng-model="customerLead.state" placeholder="State" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="pincode" ng-model="customerLead.pinCode" placeholder="Pincode" />
+                        </div>
+                    </div>
+                </div>
 
-        </div>
-        <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>
-                Service Info <i class="pull-right glyphicon"
-                                ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-            </uib-accordion-heading>
-            <div class="col-xs-12">
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <ul class="list-inline">
-                            <li>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" value="">
+            </div>
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Service Info <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                        <input type="checkbox" value="" ng-model="customerLead.erp" />
                                         <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                         ERP
                                     </label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" value="">
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                        <input type="checkbox" value="" ng-model="customerLead.gps" />
                                         <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                         GPS
                                     </label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="checkbox">
-                                    <label>
-                                        <input type="checkbox" value="">
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                        <input type="checkbox" value="" ng-model="customerLead.load" />
                                         <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                        LOAD
                                     </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <!-- <date-picker id="date" ban-future="'banFutureDate'" ng-model="expenseDetails.date" placeholder="'Service Date*'" class="'custom-form-control'"></date-picker> -->
+                            <div class="form-group">
+                                <select class="form-control custom-form-control" ng-model="customerLead.yrsInService">
+                                    <option value="" selected>Years in Service</option>
+                                    <option ng-repeat="years in yrsInService" value="{{years}}">{{years}}</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="customerLead.serviceTeam">
+                                <option value="" selected>Select</option>
+                            <option ng-repeat="team in serviceTeam" value="{{team}}">{{team}}</option>
+                            
+                        </select>
+                        </div>
+                        <div class="routes">
+                            <h4>Operating Routes</h4>
+                            <div class="pos-relative" ng-repeat="routes in customerLead.operatingRoutes track by $index">
+                                <span class="plus-pos" ng-show="$index == 0"><i class="fa fa-plus-square" aria-hidden="true" ng-click="addRoutes()"></i></span>
+
+                                <div class="form-group">
+                                    <input type="text" class="form-control custom-form-control" ng-model="routes.source" name="source" placeholder="Source" />
                                 </div>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="form-group">
-                        <date-picker id="date" ban-future="'banFutureDate'" ng-model="expenseDetails.date"
-                                     placeholder="'Service Date*'" class="'custom-form-control'"></date-picker>
-                    </div>
+                                <div class="form-group ">
+                                    <input type="text" class="form-control custom-form-control" ng-model="routes.destination" name="destination" placeholder="Destination" />
+                                </div>
+                                <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red" ng-click="routeDel()"></i></span>
+                            </div>
+                        </div>
 
-                    <div class="form-group">
-                        <select class="form-control custom-form-control">
-                            <option>Marketing Team</option>
-                            <option>Cold Calls</option>
-                            <option>Existing Customer</option>
-                            <option>Self Generator</option>
-                            <option>Employee</option>
-                            <option>Partner</option>
-                            <option>Public Relations</option>
-                            <option>Direct Mail</option>
-                            <option>Conference</option>
-                            <option>Trade Show</option>
-                            <option>Website</option>
-                            <option>Word of Mouth</option>
-                            <option>others</option>
-                        </select>
                     </div>
-                    <div class="routes">
-                        <h4>Operating Routes</h4>
-                        <span><i class="fa fa-plus-square" aria-hidden="true"></i></span>
+                    <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="source" placeholder="Source"/>
+                            <p>Uploading Customer Documents</p>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="destination" placeholder="Destination"/>
+                            <select class="form-control custom-form-control" ng-model="customerLead.proofs">
+                                <option value="" selected>Select ID Proof</option>
+                                <option ng-repeat="proofs in customerProofs" value="{{proofs}}">{{proofs}}</option>
+                        </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="file" class="form-control custom-form-control" ng-model="files" />
+                            <!-- <div class="col-sm-4">
+                                <input type="button" ng-click="uploadProof()" value="Upload" class="btn btn-success" />
+                            </div> -->
                         </div>
                     </div>
+                </div>
 
-                </div>
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <p>Uploading Customer Documents</p>
-                    </div>
-                    <div class="form-group">
-                        <select class="form-control custom-form-control">
-                            <option>Adhar Card</option>
-                            <option>Driving Licence</option>
-                            <option>PAN Card</option>
-                            <option>Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <input type="file" class="form-control custom-form-control">
-                    </div>
-                </div>
             </div>
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Company Details <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="company" ng-model="customerLead.companyName2" placeholder="Company" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="address" ng-model="customerLead.companyAddress" placeholder="Address" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="city" ng-model="customerLead.companyCity" placeholder="City" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="state" ng-model="customerLead.companyState" placeholder="State" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="pincode" ng-model="customerLead.companyPin" placeholder="Pincode" />
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="officeNumber" ng-model="customerLead.companyPhone" placeholder="Office Number" />
+                        </div>
+                    </div>
+                </div>
 
-        </div>
-        <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>
-                Company Details <i class="pull-right glyphicon"
-                                   ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-            </uib-accordion-heading>
-            <div class="col-xs-12">
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="company"
-                               placeholder="Company"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="address"
-                               placeholder="Address"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="city" placeholder="City"/>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="state" placeholder="State"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="pincode"
-                               placeholder="Pincode"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="officeNumber"
-                               placeholder="Office Number"/>
-                    </div>
-                </div>
             </div>
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Payment Details <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="customerLead.paymentType">
+                                <option value="" selected>Payment Type</option>
+                                <option ng-repeat="payType in paymentType" value="{{payType}}">{{payType}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-control custom-form-control" name="payPrecent" ng-model="customerLead.loadPaymentToPayPercent" placeholder="Load Payment To pay Percent" />
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-control custom-form-control" name="tds" ng-model="customerLead.tdsDeclarationDoc" placeholder="Tds Declaration Doc" />
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="number" class="form-control custom-form-control" name="advancePercent" ng-model="customerLead.loadPaymentAdvancePercent" placeholder="Load Payment Advance Percent" />
+                        </div>
+                        <div class="form-group">
+                            <input type="number" class="form-control custom-form-control" name="podDays" ng-model="customerLead.loadPaymentPodDays" placeholder="Load Payment Pod Days" />
+                        </div>
 
-        </div>
-        <div uib-accordion-group class="panel-default">
-            <uib-accordion-heading>
-                Payment Details <i class="pull-right glyphicon"
-                                   ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-            </uib-accordion-heading>
-            <div class="col-xs-12">
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <select class="form-control custom-form-control">
-                            <option>Cheque</option>
-                            <option>NEFT</option>
-                            <option>Cash</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="payPrecent"
-                               placeholder="Load Payment To pay Percent"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="tds"
-                               placeholder="Tds Declaration Doc"/>
+                        <div class="form-group">
+                            <input type="number" class="form-control custom-form-control" name="leadSource" ng-model="customerLead.leadSource" placeholder="Lead Source" />
+                        </div>
                     </div>
                 </div>
-                <div class="col-xs-12 col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="advancePercent"
-                               placeholder="Load Payment Advance Percent"/>
-                    </div>
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="podDays"
-                               placeholder="Load Payment Pod Days"/>
-                    </div>
 
-                    <div class="form-group">
-                        <input type="text" class="form-control custom-form-control" name="leadSource"
-                               placeholder="Lead Source"/>
-                    </div>
-                </div>
             </div>
-
-        </div>
-    </uib-accordion>
+        </uib-accordion>
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
-            <a href="#" class="btn btn-primary">Submit</a>
-
+            <a href="#" class="btn btn-primary" ng-click="createLeads()">Submit</a>
         </div>
     </div>
 </div>
