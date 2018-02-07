@@ -5,6 +5,12 @@ var logger = require('./../winston/logger')(module);
 
 /*Author SVPrasadK*/
 /*Employee Start*/
+AuthRouter.get('/countEmployee', function (req, res) {
+    Employees.countEmployee(req, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/getEmployee', function (req, res) {
     Employees.getEmployee(req, function (result) {
         res.json(result);

@@ -248,6 +248,8 @@ const serviceActions = {
     update_plan_err: 'UPDATE_PLAN_ERR',
     delete_plan: 'DELETE_PLAN',
     delete_plan_err: 'DELETE_PLAN_ERR',
+    count_employee: 'COUNT_EMPLOYEE',
+    count_employee_err: 'COUNT_EMPLOYEE_ERR',
     add_employee: 'ADD_EMPLOYEE',
     add_employee_err: 'ADD_EMPLOYEE_ERR',
     get_employee: 'GET_EMPLOYEE',

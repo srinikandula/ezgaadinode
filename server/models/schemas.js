@@ -481,19 +481,6 @@ var customerLeadsSchema = mongoose.Schema({
     leadSource:String
 }, { timestamps: String });
 
-var devicePlans = new mongoose.Schema({
-    accountId: { type: ObjectId, ref: 'accounts' },
-    devicePlanId: Number,
-    franchiseId: Number,
-    planName: String,
-    durationInMonths: Number,
-    status: Boolean,
-    amount: Number,
-    remark: String,
-    createdBy: { type: ObjectId, ref: 'accounts' },
-    updatedBy: { type: ObjectId, ref: 'accounts' }
-}, { timestamps: String });
-
 var accountDevicePlanHistory = new mongoose.Schema({
     accountId: { type: ObjectId, ref: 'accounts' },
     accountName: String,

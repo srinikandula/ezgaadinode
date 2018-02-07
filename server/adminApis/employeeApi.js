@@ -14,6 +14,35 @@ var Employees = function () {
 
 /*Author : SVPrasadK*/
 /*Franchise Start*/
+Employees.prototype.countEmployee = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    AccountsColl.count({"type":"employee"},function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting count');
+            analyticsService.create(req, serviceActions.count_employee_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = doc;
+            analyticsService.create(req, serviceActions.count_employee, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
 Employees.prototype.getFranchise = function (req, callback) {
     var retObj = {
         status: false,
@@ -696,6 +725,7 @@ Employees.prototype.updateRole = function (req, callback) {
 /*Author : SVPrasadK*/
 /*Employee Start*/
 Employees.prototype.getEmployee = function (req, callback) {
+    console.log('req getEmployee',req)
     var retObj = {
         status: false,
         messages: []
@@ -714,9 +744,9 @@ Employees.prototype.getEmployee = function (req, callback) {
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
         if (!params.contactName) {
-            condition = {accountId: req.jwt.accountId}
+            condition = {}
         } else {
-            condition = {accountId: req.jwt.accountId, role: {$regex: '.*' + params.role + '.*'}}
+            condition = {role: {$regex: '.*' + params.role + '.*'}}
         }
 
         async.parallel({

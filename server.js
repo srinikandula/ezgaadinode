@@ -93,7 +93,6 @@ app.use(function (req, res, next) {
             res.sendFile(__dirname + '/client/views/index.html');
 
         }
-        // res.sendFile(__dirname + '/client/views/adminIndex.html');
     }
 });
 

@@ -31,7 +31,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {
             customerId: null
         }
-
     }).state({
         name: 'customers.truckOwners',
         url: '/truckOwners',
@@ -183,7 +182,32 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'notifications.lookingForLoad',
         url: '/lookingForLoad',
         templateUrl: 'views/partials/admin/notifications/lookingForLoad.html',
-        data: { activeTab: 'notification' }
+        data: {activeTab: 'notification'}
+    }).state({
+        name: 'admin',
+        url: '/admin',
+        templateUrl: 'views/partials/admin/administrators/administratorMenu.html',
+        data: {activeTab: 'Admin'}
+    }).state({
+        name: 'admin.administrators',
+        url: '/administrators',
+        templateUrl: 'views/partials/admin/administrators/administrators.html',
+        data: {activeTab: 'Admin'}
+    }).state({
+        name: 'admin.adminRoles',
+        url: '/adminRoles',
+        templateUrl: 'views/partials/admin/administrators/adminRoles.html',
+        data: {activeTab: 'Admin'}
+    }).state({
+        name: 'admin.adminLogHistory',
+        url: '/adminLogHistory',
+        templateUrl: 'views/partials/admin/administrators/adminLogHistory.html',
+        data: {activeTab: 'Admin'}
+    }).state({
+        name: 'admin.franchise',
+        url: '/franchise',
+        templateUrl: 'views/partials/admin/administrators/franchise.html',
+        data: {activeTab: 'Admin'}
     });
 
     $urlRouterProvider.otherwise('/login');
