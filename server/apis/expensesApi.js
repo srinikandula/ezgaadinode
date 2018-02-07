@@ -160,7 +160,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
     }
     if (giveAccess) {
         if (expense.expenseType === 'others' && expense.expenseName) {
-            expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, function (eTResult) {
+            expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName},req, function (eTResult) {
                 if (eTResult.status) {
                     expense.expenseType = eTResult.newDoc._id.toString();
                     updateExpense(expense, jwt,req, callback);

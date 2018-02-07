@@ -124,7 +124,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         }, function (error) {
 
         })
-    }
+    };
     $scope.init = function () {
         $scope.partyParams = new NgTableParams({
             page: 1, // show first page

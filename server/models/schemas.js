@@ -378,6 +378,117 @@ var analyticsSchema = mongoose.Schema({
     response:String
 },{timestamps: String});
 
+var  customerLeadsSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    name:String,
+    contactPhone:[Number],
+    email:String,
+    leadType:String,
+    converted:{type:Boolean,default:false},
+    companyName:String,
+    address:String,
+    city:String,
+    state:String,
+    pinCode:String,
+    officeNumber:Number,
+    erp:{type:Boolean,default:false},
+    gps:{type:Boolean,default:false},
+    load:{type:Boolean,default:false},
+    yearInService:Number,
+    operatingRoutes:[{source:String,destination:String}],
+    documentType:String,
+    documentFile:String,
+    paymentType:String,
+    loadPaymentToPayPercent:Number,
+    loadPaymentAdvancePercent:Number,
+    loadPaymentPodDays:Number,
+    tdsDeclarationDoc:String,
+    leadSource:String
+},{timestamps: String});
+
+var devicePlans = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    devicePlanId: Number,
+    franchiseId: Number,
+    planName: String,
+    durationInMonths: Number,
+    status: Boolean,
+    amount: Number,
+    remark: String,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+},{timestamps: String});
+
+var accountDevicePlanHistory = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    accountName: String,
+    deviceId: {type: ObjectId, ref: 'devices'},
+    planId: {type: ObjectId, ref: 'devicePlans'},
+    remark: String,
+    amount: Number,
+    creationTime: Date,
+    startTime: String,
+    expiryTime: Date,
+    received: Boolean
+},{timestamps: String});
+
+var faultyPlanhistory = new mongoose.Schema({
+    accountId: String,//{type: ObjectId, ref: 'accounts'},
+    deviceId: String,//{type: ObjectId, ref: 'devices'},
+    planId: String,//{type: ObjectId, ref: 'devicePlans'},
+    remark: String,
+    amount: Number,
+    creationTime: Date,
+    startTime: String,
+    expiryTime: Date,
+    received: Boolean
+},{timestamps: String});
+var keysSchema=mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    apiKey:String,
+    secretKey:String
+});
+
+var trucksTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    title:String,
+    tonnes:Number,
+    mileage:Number
+},{timestamps: String});
+
+var goodsTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    title:String,
+},{timestamps: String});
+
+var loadTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    title:String,
+},{timestamps: String});
+
+var truckRequestSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    customer:String,
+    customerType:String,
+    source:String,
+    destination:String,
+    goodsType:String,
+    date:{type:Date},
+    pickupPoint:String,
+    comment:String,
+    expectedPrice:Number,
+    trackingAvailable:Boolean,
+    insuranceAvailable:Boolean,
+    accountId:{type: ObjectId, ref: 'accounts'},
+    customerLeadId:{type: ObjectId, ref: 'customerLeads'}
+
+},{timestamps: String});
+
+var loadTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    title:String,
+},{timestamps: String});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -399,6 +510,15 @@ module.exports = {
     SecretKeyCounterColl:mongoose.model('secretKeyCounter',secretKeysCounter,'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
-    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics')
+    analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
+    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeads'),
+    devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
+    AccountdeviceplanhistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
+    FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
+    keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys'),
+    TrucksTypesColl:mongoose.model('trucksTypes',trucksTypesSchema,'trucksTypes'),
+    GoodsTypesColl:mongoose.model('goodsTypes',goodsTypesSchema,'goodsTypes'),
+    LoadTypesColl:mongoose.model('loadTypes',loadTypesSchema,'loadTypes'),
+    TruckRequestColl:mongoose.model('truckRequests',truckRequestSchema,'truckRequests')
 };
 
