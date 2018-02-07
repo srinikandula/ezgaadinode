@@ -22,15 +22,10 @@ var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
 var Groups = require('./server/routes/groupRoutes');
 var Gps = require('./server/routes/gpsRoutes');
-<<<<<<< 0b209e06ba730591fb649acc96343006bd61005f
-var Analytics=require('./server/routes/reports');
-var Customers=require('./server/adminRoutes/customerRoutes');
-var Settings=require('./server/adminRoutes/settingsRoutes');
-var OrderProcess=require('./server/adminRoutes/orderProcessRoutes');
-=======
 var Analytics = require('./server/routes/reports');
 var Customers = require('./server/adminRoutes/customerRoutes');
->>>>>>> customer lead page integrated
+var Settings = require('./server/adminRoutes/settingsRoutes');
+var OrderProcess = require('./server/adminRoutes/orderProcessRoutes');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -114,13 +109,10 @@ app.use('/v1/expense', Expense.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
-<<<<<<< 0b209e06ba730591fb649acc96343006bd61005f
-app.use('/v1/customers',Customers.AuthRouter);
-app.use('/v1/settings',Settings.AuthRouter);
-app.use('/v1/orderProcess',OrderProcess.AuthRouter);
-=======
 app.use('/v1/customers', Customers.AuthRouter);
->>>>>>> customer lead page integrated
+app.use('/v1/settings', Settings.AuthRouter);
+app.use('/v1/orderProcess', OrderProcess.AuthRouter);
+
 
 
 var server = app.listen(app.get('port'), function() {
