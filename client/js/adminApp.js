@@ -131,6 +131,16 @@ app.config(function($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/createTruckRequest',
         templateUrl: 'views/partials/admin/orderProcess/createTruckRequest.html',
         data: { activeTab: 'orderProcess' }
+    }).state({
+        name: 'settings',
+        url: '/settings',
+        templateUrl: 'views/partials/admin/settings/settings.html',
+        data: { activeTab: 'settings' }
+    }).state({
+        name: 'settings.gpsSettings',
+        url: '/settings-gps',
+        templateUrl: 'views/partials/admin/settings/gpsSettings.html',
+        data: { activeTab: 'settings' }
     });
 
     $urlRouterProvider.otherwise('/login');
