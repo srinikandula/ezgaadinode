@@ -64,7 +64,7 @@ Devices.prototype.addDevices = function (req, callback) {
                 }
             });
         }, function (erradingdevices, devicesadded) {
-            console.log('devicesadded', devicesadded);
+            // console.log('devicesadded', devicesadded);
             if(erradingdevices) {
                 retObj.messages.push("Unable to add devices, please try again");
                 analyticsService.create(req, serviceActions.add_device_err, {
@@ -354,7 +354,6 @@ Devices.prototype.getDevices = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    console.log(params, skipNumber, limit, sort);
     async.parallel({
         devices: function (devicescallback) {
             DevicesColl.find({})
@@ -389,11 +388,11 @@ Devices.prototype.getDevices = function (req, callback) {
             async.map(results.devices, function (device, asyncCallback) {
                 AccountDevicePlanHistoryColl.find({deviceId: device._id})
                     .sort({expiryTime: -1}).limit(1).exec(function (errdeviceplan, deviceplan) {
-                    console.log('deviceplan.length', deviceplan, device._id);
+                    // console.log('deviceplan.length', deviceplan, device._id);
                     if (deviceplan.length > 0) {
                         device.expiryTime = deviceplan[0].expiryTime;
                         device.received = deviceplan[0].received;
-                        console.log(device);
+                        // console.log(device);
                     }
                     asyncCallback(null, 'success');
                 });
@@ -600,8 +599,8 @@ Devices.prototype.updateDevice = function (req, callback) {
     };
     var params = req.body;
     TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set:{deviceId: params.imei}}, function (errassaindevice, assigned) {
-        console.log('errassaindevice', errassaindevice);
-        console.log('assigned', assigned);
+        // console.log('errassaindevice', errassaindevice);
+        // console.log('assigned', assigned);
         if(errassaindevice) {
             retObj.messages.push("Unable to assign device to truck, please try again");
             analyticsService.create(req, serviceActions.edit_device_err, {

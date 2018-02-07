@@ -60,7 +60,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         DeviceService.count(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                console.log('count', $scope.count);
+                // console.log('count', $scope.count);
                 $scope.init();
             } else {
                 Notification.error({message: success.data.message});
@@ -82,7 +82,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
                 tableParams.data = response.data.devices;
                 $scope.currentPageOfDevices = response.data.devices;
                 // $scope.currentPageOfDevices[1].isDamaged = '1';
-                console.log('devices', $scope.currentPageOfDevices);
+                // console.log('devices', $scope.currentPageOfDevices);
             }
         });
     };
@@ -105,7 +105,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
     };
 
     $scope.deleteDevice = function (index) {
-        console.log(index);
+        // console.log(index);
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -173,7 +173,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
                 // } else {
                 //     $scope.deviceDetails.isDamaged = false;
                 // }
-                console.log($scope.deviceDetails);
+                // console.log($scope.deviceDetails);
                 $scope.getTrucksOfAccount();
             }
         });
@@ -185,7 +185,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getAllAccountsForDropdown(function (success) {
             if (success.data.status) {
                 $scope.accounts = success.data.accounts;
-                console.log('accounts', $scope.accounts.length);
+                // console.log('accounts', $scope.accounts.length);
             }
         });
     }
@@ -198,18 +198,18 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getAllTrucksOfAccount($scope.deviceDetails.accountId, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
-                console.log('trucks', $scope.trucks)
+                // console.log('trucks', $scope.trucks)
             }
         });
     };
 
     $scope.getSelectedTruckDetails = function () {
-        console.log($scope.deviceDetails.truckId);
+        // console.log($scope.deviceDetails.truckId);
         if($scope.deviceDetails.truckId) {
             var truck = _.find($scope.trucks, function (truck) {
                 return truck._id === $scope.deviceDetails.truckId;
             });
-            console.log(truck);
+            // console.log(truck);
             $scope.deviceDetails.truck = {};
             $scope.deviceDetails.truck.insuranceExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
             $scope.deviceDetails.truck.fitnessExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
@@ -224,7 +224,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             $scope.deviceDetails.error = '';
             DeviceService.updateDevice($scope.deviceDetails, function (success) {
                 if (success.data.status) {
-                    console.log('updated');
+                    // console.log('updated');
                     $state.go('services.gpsDevices');
                 }
             });
@@ -254,7 +254,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
     $scope.addDevices = function () {
         DeviceService.addDevices({devices: $scope.devicesToAdd, assignedTo: '27'}, function (success) {
             if (success.data.status) {
-                console.log('Added', success.data);
+                // console.log('Added', success.data);
                 $state.go('services.gpsDevices');
                 $scope.alreadyadded = success.data.alreadyadded;
             }
