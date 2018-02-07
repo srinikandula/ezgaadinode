@@ -1,4 +1,4 @@
-app.factory('ExpenseMasterServices', function ($http) {
+app.factory('ExpenseMasterServices',['$http', function ($http) {
     return {
         addExpense: function (expenseData, success, error) {
             $http({
@@ -40,7 +40,7 @@ app.factory('ExpenseMasterServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices', 'NgTableParams', 'Notification', function ($scope, $state, ExpenseMasterServices, NgTableParams, Notification) {
     $scope.goToEditExpenseTypePage = function (expenseTypeId) {

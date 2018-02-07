@@ -1,4 +1,4 @@
-app.factory('PaymentsService', function ($http) {
+app.factory('PaymentsService',['$http', function ($http) {
     return {
         addPayments: function (object, success, error) {
             $http({
@@ -72,7 +72,7 @@ app.factory('PaymentsService', function ($http) {
             }).then(success, error);
         }
     }
-});
+}]);
 
 app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService) {
     $scope.goToEditPaymentsPage = function (paymentsId) {
