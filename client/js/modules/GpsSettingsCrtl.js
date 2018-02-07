@@ -1,4 +1,4 @@
-app.factory('GpsSettingsService', function ($http) {
+app.factory('GpsSettingsService',['$http', function ($http) {
     return {
         addSecret: function (object, success, error) {
             $http({
@@ -14,7 +14,7 @@ app.factory('GpsSettingsService', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification', '$state', function ($scope, GpsSettingsService, Notification, $state) {
     $scope.secretkey = '';

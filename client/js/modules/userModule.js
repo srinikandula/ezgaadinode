@@ -1,4 +1,4 @@
-app.factory('UserServices', function ($http) {
+app.factory('UserServices',['$http', function ($http) {
     return {
         addUser: function (userData, success, error) {
             $http({
@@ -27,7 +27,7 @@ app.factory('UserServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', function ($scope, $state, UserServices, Notification) {
     $scope.goToEditUserPage = function (userId) {

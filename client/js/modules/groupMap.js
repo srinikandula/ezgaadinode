@@ -1,4 +1,4 @@
-app.factory('groupMapService', function ($http, $cookies) {
+app.factory('groupMapService',['$http','$cookies', function ($http, $cookies) {
     return {
         getGroupMap: function (success, error) {
             $http({
@@ -14,7 +14,7 @@ app.factory('groupMapService', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsService', function ($scope, $state,groupMapService,GpsService) {
 

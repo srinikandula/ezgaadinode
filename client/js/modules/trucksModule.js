@@ -1,4 +1,4 @@
-app.factory('TrucksService', function ($http, $cookies) {
+app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
     return {
         addTruck: function (truckDetails, success, error) {
             $http({
@@ -138,7 +138,7 @@ app.factory('TrucksService', function ($http, $cookies) {
             }).then(success,error);
         }
     }
-});
+}]);
 
 app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', '$rootScope', function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, $rootScope) {
 

@@ -1,4 +1,4 @@
-app.factory('TrackMapServices', function ($http) {
+app.factory('TrackMapServices',['$http', function ($http) {
     return {
         getEventsData: function (vehicleNumber, success, error) {
             $http({
@@ -7,7 +7,7 @@ app.factory('TrackMapServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ShowTrackMapCtrl', ['$scope', '$uibModal','TrackMapServices','TrucksService','Notification', function ($scope, $uibModal,TrackMapServices,TrucksService, Notification) {
 

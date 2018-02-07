@@ -1,4 +1,4 @@
-app.factory('TripServices', function ($http) {
+app.factory('TripServices',['$http', function ($http) {
     return {
         addTrip: function (trip, success, error) {
             $http({
@@ -81,7 +81,7 @@ app.factory('TripServices', function ($http) {
 
 
     }
-});
+}]);
 
 app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams','TrucksService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams,TrucksService) {
     $scope.goToEditTripPage = function (tripId) {

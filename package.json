@@ -5,19 +5,24 @@
   "main": "server.js",
   "scripts": {
     "start": "SET NODE_ENV=dev && node server.js",
-    "test": "mocha --timeout 10000"
+    "test": "mocha --timeout 10000",
+    "runDev": "gulp & nodemon server.js",
+    "runProd": "gulp run & pm2 start server"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "async": "^2.5.0",
     "body-parser": "^1.18.2",
+    "child_process": "^1.0.2",
     "cookie-parser": "^1.4.3",
     "download-file": "^0.1.5",
     "express": "^4.16.2",
+    "gulp-rename": "^1.2.2",
     "json2xls": "^0.1.2",
     "jsonwebtoken": "^8.1.0",
     "log4js": "^2.3.11",
+    "merge-stream": "^1.0.1",
     "moment": "^2.20.1",
     "mongoose": "^4.12.4",
     "morgan": "^1.9.0",
@@ -41,6 +46,15 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "chai-http": "^3.0.0",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-html-replace": "^1.6.2",
+    "gulp-minify-css": "^1.2.4",
+    "gulp-sequence": "^1.0.0",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-uglify": "^3.0.0",
+    "gulp-uglify-es": "^1.0.0",
+    "gulp-usemin": "^0.3.29",
     "install-peers": "^1.0.2",
     "mocha": "^4.0.1"
   }
