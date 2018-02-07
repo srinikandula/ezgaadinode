@@ -21,6 +21,13 @@ AuthRouter.get('/accounts/fetchAllAccounts', function (req, res) {
     });
 });
 
+AuthRouter.get('/accounts/getAllAccountsForDropdown', function (req, res) {
+    console.log('helloooooooo');
+    Accounts.getAllAccountsForDropdown(req, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.get('/accounts/:accountId', function (req, res) {
     Accounts.getAccountDetails(req.params.accountId,req, function (result) {
         res.json(result);
