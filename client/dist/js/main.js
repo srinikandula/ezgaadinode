@@ -1,4 +1,4 @@
-app.factory('GpsSettingsService', function ($http) {
+app.factory('GpsSettingsService',['$http', function ($http) {
     return {
         addSecret: function (object, success, error) {
             $http({
@@ -14,7 +14,7 @@ app.factory('GpsSettingsService', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification', '$state', function ($scope, GpsSettingsService, Notification, $state) {
     $scope.secretkey = '';
@@ -42,7 +42,7 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
     $scope.getAllSecrets();
 
 }]);
-app.factory('AccountServices', function ($http, $cookies) {
+app.factory('AccountServices',['$http', '$cookies', function ($http, $cookies) {
     return {
         addAccount: function (accountInfo, success, error) {
             $http({
@@ -162,7 +162,7 @@ app.factory('AccountServices', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, AccountServices, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditAccountPage = function (accountId) {
@@ -891,7 +891,7 @@ app.controller('ERPSettingsCtrl', ['$scope', 'AccountServices', 'Notification', 
 
 }]);
 
-app.factory('AnalyticsServices', function ($http, $cookies) {
+app.factory('AnalyticsServices', ['$http', '$cookies',function ($http, $cookies) {
     return {
         getLastLoginReports: function (action,from,to, success, error) {
             $http({
@@ -906,7 +906,7 @@ app.factory('AnalyticsServices', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 app.controller('AnalyticsReportCtrl', ['$scope', 'AnalyticsServices', '$state', 'NgTableParams', function ($scope, AnalyticsServices, $state, NgTableParams) {
     $scope.dateParams={
         from:new Date(),
@@ -2017,7 +2017,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
     }]);
 
 
-app.factory('DriverService', function ($http) {
+app.factory('DriverService',['$http', function ($http) {
     return {
         addDriver: function (driverInfo, success, error) {
             $http({
@@ -2070,7 +2070,7 @@ app.factory('DriverService', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification','paginationService','NgTableParams',
     function ($scope, $state, DriverService, Notification, paginationService, NgTableParams) {
@@ -2318,7 +2318,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         }
     }
 }]);
-app.factory('ExpenseMasterServices', function ($http) {
+app.factory('ExpenseMasterServices',['$http', function ($http) {
     return {
         addExpense: function (expenseData, success, error) {
             $http({
@@ -2360,7 +2360,7 @@ app.factory('ExpenseMasterServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ExpenseMasterCrtl', ['$scope', '$state', 'ExpenseMasterServices', 'NgTableParams', 'Notification', function ($scope, $state, ExpenseMasterServices, NgTableParams, Notification) {
     $scope.goToEditExpenseTypePage = function (expenseTypeId) {
@@ -2489,7 +2489,7 @@ app.controller('ExpenseMasterEditCrtl', ['$scope', '$state', 'ExpenseMasterServi
         }
     };
 }]);
-app.factory('ExpenseService', function ($http) {
+app.factory('ExpenseService',['$http', function ($http) {
     return {
         addExpense: function (object, success, error) {
             $http({
@@ -2592,7 +2592,7 @@ app.factory('ExpenseService', function ($http) {
             }).then(success, error);
         }
     }
-});
+}]);
 
 
 app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService','TrucksService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService,TrucksService) {
@@ -2904,7 +2904,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         }
     }
 }]);
-app.factory('GpsService', function ($http) {
+app.factory('GpsService',['$http', function ($http) {
     return {
         addDevice: function (object, success, error) {
             $http({
@@ -2926,7 +2926,7 @@ app.factory('GpsService', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'NgTableParams', 'paginationService','TrucksService', function ($scope, $state, GpsService, Notification, NgTableParams, paginationService,TrucksService) {
 
@@ -3010,7 +3010,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
     }
 
 }]);
-app.factory('groupMapService', function ($http, $cookies) {
+app.factory('groupMapService',['$http','$cookies', function ($http, $cookies) {
     return {
         getGroupMap: function (success, error) {
             $http({
@@ -3026,7 +3026,7 @@ app.factory('groupMapService', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsService', function ($scope, $state,groupMapService,GpsService) {
 
@@ -3080,7 +3080,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
     // setTimeout(function () {$scope.loadData();}, 40);
 
 }]);
-app.factory('GroupServices', function ($http) {
+app.factory('GroupServices',['$http', function ($http) {
     return {
         addGroup: function (userData, success, error) {
             $http({
@@ -3130,7 +3130,7 @@ app.factory('GroupServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification', 'paginationService', 'NgTableParams', function ($scope, $state, GroupServices, Notification, paginationService, NgTableParams) {
     $scope.goToEditGroupPage = function (groupId) {
@@ -3518,7 +3518,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
     };
 
 }]);
-app.factory('PartyService', function ($http, $cookies) {
+app.factory('PartyService',['$http', '$cookies', function ($http, $cookies) {
     return {
         addParty: function (partyDetails, success, error) {
             $http({
@@ -3595,7 +3595,7 @@ app.factory('PartyService', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
 
@@ -3853,7 +3853,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
 }]);
 
 
-app.factory('PaymentsService', function ($http) {
+app.factory('PaymentsService',['$http', function ($http) {
     return {
         addPayments: function (object, success, error) {
             $http({
@@ -3927,7 +3927,7 @@ app.factory('PaymentsService', function ($http) {
             }).then(success, error);
         }
     }
-});
+}]);
 
 app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService) {
     $scope.goToEditPaymentsPage = function (paymentsId) {
@@ -4237,7 +4237,7 @@ app.controller('PendingBalanceCtrl', ['$scope', '$state', 'TripServices', 'Drive
     };
 
 }]);
-app.factory('RoleServices', function ($http) {
+app.factory('RoleServices',['$http', function ($http) {
     return {
         addRole: function (roleData, success, error) {
             $http({
@@ -4278,7 +4278,7 @@ app.factory('RoleServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification', function ($scope, $state, RoleServices, Notification) {
     $scope.goToEditRolePage = function (roleId) {
@@ -4401,7 +4401,7 @@ app.controller('rolesEditController', ['$scope', 'RoleServices', '$stateParams',
         }
     }
 }]);
-app.factory('TrackMapServices', function ($http) {
+app.factory('TrackMapServices',['$http', function ($http) {
     return {
         getEventsData: function (vehicleNumber, success, error) {
             $http({
@@ -4410,7 +4410,7 @@ app.factory('TrackMapServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ShowTrackMapCtrl', ['$scope', '$uibModal','TrackMapServices','TrucksService','Notification', function ($scope, $uibModal,TrackMapServices,TrucksService, Notification) {
 
@@ -4508,7 +4508,7 @@ app.controller('ShowTrackMapCtrl', ['$scope', '$uibModal','TrackMapServices','Tr
     };
 }]);
 
-app.factory('TripLaneServices', function ($http) {
+app.factory('TripLaneServices',['$http', function ($http) {
     return {
         addTripLane: function (tripLane, success, error) {
             $http({
@@ -4556,7 +4556,7 @@ app.factory('TripLaneServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'TripLaneServices', 'paginationService', '$state', 'Notification', function ($scope, $uibModal, NgTableParams, TripLaneServices, paginationService, $state, Notification) {
     $scope.goToEditTripLanePage = function (tripLaneId) {
@@ -4704,7 +4704,7 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
 }]);
 
 
-app.factory('TripServices', function ($http) {
+app.factory('TripServices',['$http', function ($http) {
     return {
         addTrip: function (trip, success, error) {
             $http({
@@ -4787,7 +4787,7 @@ app.factory('TripServices', function ($http) {
 
 
     }
-});
+}]);
 
 app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams','TrucksService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams,TrucksService) {
     $scope.goToEditTripPage = function (tripId) {
@@ -5127,7 +5127,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 }]);
 
 
-app.factory('TrucksService', function ($http, $cookies) {
+app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
     return {
         addTruck: function (truckDetails, success, error) {
             $http({
@@ -5267,7 +5267,7 @@ app.factory('TrucksService', function ($http, $cookies) {
             }).then(success,error);
         }
     }
-});
+}]);
 
 app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', '$rootScope', function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, $rootScope) {
 
@@ -5536,7 +5536,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
 }]);
 
 
-app.factory('UserServices', function ($http) {
+app.factory('UserServices',['$http', function ($http) {
     return {
         addUser: function (userData, success, error) {
             $http({
@@ -5565,7 +5565,7 @@ app.factory('UserServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('UserCtrl', ['$scope', '$state', 'UserServices', 'Notification', function ($scope, $state, UserServices, Notification) {
     $scope.goToEditUserPage = function (userId) {
