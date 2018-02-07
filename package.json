@@ -6,8 +6,8 @@
   "scripts": {
     "start": "SET NODE_ENV=dev && node server.js",
     "test": "mocha --timeout 10000",
-    "runDev": "gulp & node server.js",
-    "runProd": "gulp run & node server.js"
+    "runDev": "gulp & nodemon server.js",
+    "runProd": "gulp run & pm2 start server"
   },
   "author": "",
   "license": "ISC",
