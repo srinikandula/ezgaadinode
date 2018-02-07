@@ -163,6 +163,27 @@ Accounts.prototype.getAllAccounts = function (req,callback) {
     });
 };
 
+Accounts.prototype.getAllAccountsForDropdown = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    AccountsColl.find({}, {userName: 1}, function (err, accounts) {
+        if (err) {
+            retObj.messages.push('Error retrieving accounts');
+            analyticsService.create(req,serviceActions.get_all_accounts_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.accounts = accounts;
+            analyticsService.create(req,serviceActions.get_all_accounts,{accountId:req.jwt.id,success:true},function(response){ });
+            callback(retObj);
+        }
+    });
+};
+
 Accounts.prototype.getAccountDetails = function (accountId,req, callback) {
     var retObj = {
         status: false,

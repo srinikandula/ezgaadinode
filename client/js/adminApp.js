@@ -1,4 +1,4 @@
-var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies']);
+var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies', 'ui.select']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -99,6 +99,16 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/services/gpsDevices.html',
         data: {activeTab: 'services'}
     }).state({
+        name: 'services.editGpsDevice',
+        url: '/editGpsDevice/:device',
+        templateUrl: 'views/partials/admin/services/editGpsDevice.html',
+        data:{activeTab: 'services', device: false}
+    }).state({
+        name: 'services.addDevice',
+        url: '/addDevice',
+        templateUrl: 'views/partials/admin/services/addDevice.html',
+        data:{activeTab: 'services', device: false}
+    }).state({
         name: 'services.deviceManagement',
         url: '/deviceManagement',
         templateUrl: 'views/partials/admin/services/deviceManagement.html',
@@ -153,4 +163,36 @@ app.run(function ($transitions, $rootScope) {
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
     });
+});
+
+app.filter('propsFilter', function () {
+    return function (items, props) {
+        var out = [];
+
+        if (angular.isArray(items)) {
+            var keys = Object.keys(props);
+
+            items.forEach(function (item) {
+                var itemMatches = false;
+
+                for (var i = 0; i < keys.length; i++) {
+                    var prop = keys[i];
+                    var text = props[prop].toLowerCase();
+                    if (item[prop].toString().toLowerCase().indexOf(text) !== -1) {
+                        itemMatches = true;
+                        break;
+                    }
+                }
+
+                if (itemMatches) {
+                    out.push(item);
+                }
+            });
+        } else {
+            // Let the output be the input untouched
+            out = items;
+        }
+
+        return out;
+    };
 });

@@ -100,10 +100,16 @@ AuthRouter.delete('/:truckId', function (req, res) {
     });
 });
 
-AuthRouter.get('/get/accountTrucks/:pageNumber', function (req, res) {
+AuthRouter.get('/get/accountTrucks/:pageNumber', function (req, res) {  //trucks of jwt.id
     Trucks.getAllAccountTrucks(req.jwt,req, function (result) {
         res.json(result);
     });
+});
+
+AuthRouter.get('/getAllTrucksOfAccount/:truckId', function (req, res) { //trucks of mentioned account id
+    Trucks.getAllTrucksOfAccount(req, function (result) {
+        res.json(result);
+    })
 });
 
 AuthRouter.get('/', function (req, res) {

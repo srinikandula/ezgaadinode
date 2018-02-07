@@ -200,7 +200,7 @@ OpenRouter.get('/get/accounts', function (request, res) {
 OpenRouter.get('/get/accountGroups', function (request, res) {
     Events.getAccountGroupData(request,function(results){
         //console.log(results);
-        //res.json(results);
+        // res.json(results);
     });
 });
 

@@ -13,7 +13,7 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
 var DevicePlansColl = require('./../models/schemas').devicePlansColl;
-var AccountdeviceplanhistoryColl = require('./../models/schemas').AccountdeviceplanhistoryColl;
+var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
 var FaultyPlanhistoryColl = require('./../models/schemas').FaultyPlanhistoryColl;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
@@ -536,7 +536,7 @@ Events.prototype.devicePlansHistory = function (request, callback) {
             retObj.messages.push(JSON.stringify(err));
             callback(retObj);
         } else {
-            AccountdeviceplanhistoryColl.remove({}, function (errremoved, removed) {
+            AccountDevicePlanHistoryColl.remove({}, function (errremoved, removed) {
                 FaultyPlanhistoryColl.remove({}, function (errfaultcollremove, faultcollremoved) {
                 });
                 if (errremoved) {
@@ -588,7 +588,7 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                                 planCallBack(errids);
                             } else {
                                 if (ids.deviceId) {
-                                    var planDoc = new AccountdeviceplanhistoryColl({
+                                    var planDoc = new AccountDevicePlanHistoryColl({
                                         deviceId: ids.deviceId,
                                         planId: ids.planId,
                                         amount: plan.amount,

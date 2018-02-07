@@ -326,7 +326,7 @@ var deviceSchema = new mongoose.Schema({
     userName: String,
     createdBy: { type: ObjectId, ref: 'accounts' },
     deviceId: String,
-    assignedTo: {type: ObjectId, ref: 'accounts'},
+    assignedTo: String,//{type: ObjectId, ref: 'accounts'},
     //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
     imei: String,
@@ -343,7 +343,7 @@ var deviceSchema = new mongoose.Schema({
     resetTime: Date,
     paymentStart: Date,
     paymentEnd: Date,
-    isDamaged: String, //duplicate to status?
+    isDamaged: {type: Boolean, default: '0'}, //duplicate to status?
     replacedFor: String, //if this is replacement to another device
     equipmentType: String,
     serialNumber: String,
@@ -641,8 +641,9 @@ module.exports = {
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
-    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeads'),
-    AccountdeviceplanhistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
+    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema'),
+    devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
+    AccountDevicePlanHistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys'),
     TrucksTypesColl:mongoose.model('trucksTypes',trucksTypesSchema,'trucksTypes'),

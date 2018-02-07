@@ -3,8 +3,14 @@ var express = require('express');
 var AuthRouter = express.Router();
 var Devices = require('./../adminApis/deviceApis');
 
-AuthRouter.post('/addDevice', function (req, res) {
-    Devices.addDevice(req, function (result) {
+AuthRouter.post('/addDevices', function (req, res) {
+    Devices.addDevices(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/deleteDevice/:deviceId', function (req, res) {
+    Devices.deleteDevice(req, function (result) {
         res.json(result);
     });
 });
@@ -21,8 +27,15 @@ AuthRouter.post('/transferDevice', function (req, res) {
     });
 });
 
+AuthRouter.get('/count', function (req, res) {
+    Devices.count(req, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.get('/getDevices', function (req, res) {
     Devices.getDevices(req, function (result) {
+        // console.log(result);
         res.json(result);
     });
 });
@@ -39,7 +52,17 @@ AuthRouter.post('/editDevicePlan', function (req, res) {
     });
 });
 
+AuthRouter.get('/getDevice/:deviceId', function (req, res) {
+    Devices.getDevice(req, function (result) {
+        res.json(result);
+    });
+});
 
+AuthRouter.post('/updateDevice', function (req, res) {
+    Devices.updateDevice(req, function (result) {
+        res.json(result);
+    });
+});
 
 module.exports = {
     AuthRouter: AuthRouter
