@@ -28,7 +28,6 @@ var accountSchema = new mongoose.Schema({
     contactPhone: Number,
     password: String,
     email: String,
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
     id_admin: Number,
@@ -36,10 +35,6 @@ var accountSchema = new mongoose.Schema({
     id_admin_role: Number,
     adminRoleId: {type: ObjectId, ref: 'adminRoles'},
     franchiseId: {type: ObjectId, ref: 'franchise'},
-=======
-    type: { type: String, default: "account" },
-    accountId: { type: ObjectId, ref: 'accounts' },
->>>>>>> customer lead page integrated
     groupName: String,
     contactName: String,
     displayName: String,
@@ -49,19 +44,11 @@ var accountSchema = new mongoose.Schema({
     profilePic: String,
     updatedBy: String,
     createdBy: String,
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
     isActive: {type: Boolean, default: true},
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},
     editAccounts: {type: Boolean, default: false},
-=======
-    isActive: { type: Boolean, default: true },
-    gpsEnabled: { type: Boolean, default: false },
-    erpEnabled: { type: Boolean, default: false },
-    loadEnabled: { type: Boolean, default: false },
-    editAccounts: { type: Boolean, default: false },
->>>>>>> customer lead page integrated
     lastLogin: Date
 }, {
     timestamps: true
@@ -104,11 +91,7 @@ var truckSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     status: Number,
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
-    attrs: {latestLocation: {}},
-=======
     attrs: { latestLocation: {} },
->>>>>>> customer lead page integrated
     // latestLocation:{type:ObjectId,ref:'devicePositions'},
     deviceId: String,
     lookingForLoad: { type: Boolean, default: false },
@@ -347,13 +330,8 @@ var deviceSchema = new mongoose.Schema({
     simNumber: String,
     imei: String,
     simPhoneNumber: String,
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
     installedBy: String,  //installed UserId
     accountId: {type: ObjectId, ref: 'accounts'},
-=======
-    installedBy: String, //installed UserId
-    accountId: { type: ObjectId, ref: 'accounts' },
->>>>>>> customer lead page integrated
     devicePaymentStatus: String,
     devicePaymentPlan: String, //reference to device payment plan
     lastStopTime: Date,
@@ -375,12 +353,7 @@ var secretKeys = new mongoose.Schema({
         type: String
     },
     email: String
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
-}, {timestamps: true, versionKey: false});
-=======
 }, { timestamps: true, versionKey: false });
->>>>>>> customer lead page integrated
-
 
 var secretKeysCounter = new mongoose.Schema({
     date: String,
@@ -388,7 +361,6 @@ var secretKeysCounter = new mongoose.Schema({
     counter: Number
 });
 var loadRequestSchema = new mongoose.Schema({
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
         createdBy: {type: ObjectId, ref: 'accounts'},
         accountId: {type: ObjectId, ref: 'accounts'},
         truckId: {type: ObjectId, ref: 'trucks'},
@@ -402,26 +374,12 @@ var loadRequestSchema = new mongoose.Schema({
             false
     }
 );
-=======
-    createdBy: { type: ObjectId, ref: 'accounts' },
-    accountId: { type: ObjectId, ref: 'accounts' },
-    truckId: { type: ObjectId, ref: 'trucks' },
-    tripLane: String,
-    possibleStartDate: { type: Date },
-    active: { type: Boolean, default: false },
-    createdDate: { type: Date, default: new Date() },
-}, {
-    timestamps: true,
-    versionKey: false
-});
->>>>>>> customer lead page integrated
 
 var analyticsSchema = mongoose.Schema({
     action: String,
     remoteIp: String,
     userAgent: String,
     userAgentJSON: {},
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
     attrs: {accountId: {type: ObjectId, ref: 'accounts'}},
     // accountId:{type: ObjectId, ref: 'accounts'},
     response: String
@@ -442,7 +400,6 @@ var erpGpsPlans = new mongoose.Schema({
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
-=======
     attrs: { accountId: { type: ObjectId, ref: 'accounts' } },
     // accountId:{type: ObjectId, ref: 'accounts'},
     response: String
@@ -450,35 +407,22 @@ var customerLeadsSchema = mongoose.Schema({
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: { type: ObjectId, ref: 'accounts' },
->>>>>>> customer lead page integrated
     name: String,
     contactPhone: [Number],
     email: String,
     leadType: String,
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
-    converted: {type: Boolean, default: false},
-=======
     converted: { type: Boolean, default: false },
->>>>>>> customer lead page integrated
     companyName: String,
     address: String,
     city: String,
     state: String,
     pinCode: String,
     officeNumber: Number,
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
-    erp: {type: Boolean, default: false},
-    gps: {type: Boolean, default: false},
-    load: {type: Boolean, default: false},
-    yearInService: Number,
-    operatingRoutes: [{source: String, destination: String}],
-=======
     erp: { type: Boolean, default: false },
     gps: { type: Boolean, default: false },
     load: { type: Boolean, default: false },
     yearInService: Number,
     operatingRoutes: [{ source: String, destination: String }],
->>>>>>> customer lead page integrated
     documentType: String,
     documentFile: String,
     paymentType: String,
@@ -487,7 +431,6 @@ var customerLeadsSchema = mongoose.Schema({
     loadPaymentPodDays: Number,
     tdsDeclarationDoc: String,
     leadSource: String
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
 }, {timestamps: String});
 
 
@@ -532,10 +475,7 @@ var  customerLeadsSchema = mongoose.Schema({
     loadPaymentPodDays:Number,
     tdsDeclarationDoc:String,
     leadSource:String
-},{timestamps: String});
-=======
 }, { timestamps: String });
->>>>>>> customer lead page integrated
 
 var devicePlans = new mongoose.Schema({
     accountId: { type: ObjectId, ref: 'accounts' },
@@ -616,11 +556,9 @@ var truckRequestSchema = mongoose.Schema({
 }, { timestamps: String });
 
 var loadTypesSchema = mongoose.Schema({
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
     createdBy: {type: ObjectId, ref: 'accounts'},
     title:String,
-},{timestamps: String}
-);
+},{timestamps: String});
 
 var franchiseSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -673,12 +611,7 @@ var adminPermissionsSchema = mongoose.Schema({
     status: Boolean,
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}
-}, {timestamps: true, versionKey: false});
-=======
-    createdBy: { type: ObjectId, ref: 'accounts' },
-    title: String,
 }, { timestamps: String });
->>>>>>> customer lead page integrated
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -701,7 +634,6 @@ module.exports = {
     SecretKeyCounterColl: mongoose.model('secretKeyCounter', secretKeysCounter, 'secretKeyCounter'),
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
-<<<<<<< 6833fb5f6d3c0139d84654ddeefbfd74f58120db
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
     CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeads'),
@@ -717,20 +649,3 @@ module.exports = {
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
     adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions')
 };
-
-
-=======
-    analyticsColl: mongoose.model('analytics', analyticsSchema, 'analytics'),
-    CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeads'),
-    devicePlansColl: mongoose.model('devicePlans', devicePlans, 'devicePlans'),
-    AccountdeviceplanhistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
-    FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
-    keysColl: mongoose.model('apiSecretKeys', keysSchema, 'apiSecretKeys'),
-    TrucksTypesColl: mongoose.model('trucksTypes', trucksTypesSchema, 'trucksTypes'),
-    GoodsTypesColl: mongoose.model('goodsTypes', goodsTypesSchema, 'goodsTypes'),
-    LoadTypesColl: mongoose.model('loadTypes', loadTypesSchema, 'loadTypes'),
-    TruckRequestColl: mongoose.model('truckRequests', truckRequestSchema, 'truckRequests')
-
-
-};
->>>>>>> customer lead page integrated
