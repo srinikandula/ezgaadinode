@@ -1,4 +1,4 @@
-app.factory('GpsService', function ($http) {
+app.factory('GpsService',['$http', function ($http) {
     return {
         addDevice: function (object, success, error) {
             $http({
@@ -20,7 +20,7 @@ app.factory('GpsService', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'NgTableParams', 'paginationService','TrucksService', function ($scope, $state, GpsService, Notification, NgTableParams, paginationService,TrucksService) {
 

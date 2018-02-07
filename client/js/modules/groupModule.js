@@ -1,4 +1,4 @@
-app.factory('GroupServices', function ($http) {
+app.factory('GroupServices',['$http', function ($http) {
     return {
         addGroup: function (userData, success, error) {
             $http({
@@ -48,7 +48,7 @@ app.factory('GroupServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('GroupCtrl', ['$scope', '$state', 'GroupServices', 'Notification', 'paginationService', 'NgTableParams', function ($scope, $state, GroupServices, Notification, paginationService, NgTableParams) {
     $scope.goToEditGroupPage = function (groupId) {

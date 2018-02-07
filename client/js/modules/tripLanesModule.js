@@ -1,4 +1,4 @@
-app.factory('TripLaneServices', function ($http) {
+app.factory('TripLaneServices',['$http', function ($http) {
     return {
         addTripLane: function (tripLane, success, error) {
             $http({
@@ -46,7 +46,7 @@ app.factory('TripLaneServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'TripLaneServices', 'paginationService', '$state', 'Notification', function ($scope, $uibModal, NgTableParams, TripLaneServices, paginationService, $state, Notification) {
     $scope.goToEditTripLanePage = function (tripLaneId) {
