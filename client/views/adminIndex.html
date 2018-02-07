@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Easy Gaadi</title>
     <base href="/">
@@ -11,6 +12,9 @@
     <link rel="stylesheet" type="text/css" href="components/bootstrap/dist/css/bootstrap.min.css">
     <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="components/angular-bootstrap/ui-bootstrap-csp.css" type="text/css">
+    <link rel="stylesheet" href="js/lib/bundles/ng-table.css">
+    <link rel="stylesheet" href="components/sweetalert2/dist/sweetalert2.min.css">
+    <link rel="stylesheet" type="text/css" href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
 
 
 
@@ -30,57 +34,67 @@
             </div>
         </nav>
     </div>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-12 pall-zero">
-                <div class="col-sm-2 col-xs-12 left-nav">
-                    <adminleft-menu label="Dashboard"></adminleft-menu>
-                    <adminleft-menu label="Customers" ui-sref="customers.customersLead"></adminleft-menu>
-                    <adminleft-menu label="Services" ui-sref="services.gpsAccounts"></adminleft-menu>
-                    <adminleft-menu label="Order Process" ui-sref="orderprocess.truckRequest"></adminleft-menu>
-                    <adminleft-menu label="Settings"></adminleft-menu>
-                    <adminleft-menu label="Set Notifications"></adminleft-menu>
-                    <adminleft-menu label="Admin"></adminleft-menu>
-                    <div class="clearfix"></div>
-                </div>
-                <div class="col-xs-12 col-sm-10 right-nav pall-zero">
-                   <div ui-view></div>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-        </div>
 
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12 pall-zero">
+                    <div class="col-sm-2 col-xs-12 left-nav">
+                        <adminleft-menu label="Dashboard"></adminleft-menu>
+                        <adminleft-menu label="Customers" ui-sref="customers.customersLead"></adminleft-menu>
+                        <adminleft-menu label="Services" ui-sref="services.gpsAccounts"></adminleft-menu>
+                        <adminleft-menu label="Order Process"></adminleft-menu>
+                        <adminleft-menu label="Settings" ui-sref="settings.gpsSettings"></adminleft-menu>
+                        <adminleft-menu label="Set Notifications"></adminleft-menu>
+                        <adminleft-menu label="Admin"></adminleft-menu>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="col-xs-12 col-sm-10 right-nav pall-zero">
+                        <div ui-view></div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+
+        </div>
     </div>
-</div>
-<div class="clearfix"></div>
-<footer>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-12 pall-zero text-center">
+    <footer>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xs-12 pall-zero text-center">
                     Powered by easygaadi.com. All Rights Reserved.
+                </div>
             </div>
         </div>
-    </div>
-</footer>
+    </footer>
 
-<!--bower scripts-->
-<script src="components/jquery/dist/jquery.min.js"></script>
-<script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="components/angular/angular.min.js"></script>
-<script src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
-<script src="components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <!--bower scripts-->
+    <script src="components/jquery/dist/jquery.min.js"></script>
+    <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="components/angular/angular.min.js"></script>
+    <script src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+    <script type="text/javascript" src="components/ng-file-upload/ng-file-upload.min.js"></script>
+    <script type="text/javascript" src="components/ng-file-upload/ng-file-upload-shim.min.js"></script>
+    <script src="components/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="components/angular-ui-notification/dist/angular-ui-notification.js"></script>
 
 
-<!---Routing adminApp.js File-->
-<script src="js/adminApp.js"></script>
 
-<!---Controllers--->
-<script src="js/modules/admin/customerModule.js"></script>
-<script src="js/modules/admin/orderProcessModule.js"></script>
 
-<!---Directives--->
-<script src="js/directives/adminLeftNav.js"></script>
-<script src="js/directives/adminDatePicker.js"></script>
+    <!--Routing adminApp.js File-->
+    <script src="js/adminApp.js"></script>
+
+    <!--Controllers-->
+    <script src="js/modules/admin/customerModule.js"></script>
+    <script src="js/modules/admin/orderProcessModule.js"></script>
+    <script src="js/modules/admin/settingsModule.js"></script>
+    <!--Services-->
+    <script src="js/services.js"></script>
+    <script src="js/lib/bundles/ng-table.js"></script>
+    <!--Directives-->
+    <script src="js/directives/adminLeftNav.js"></script>
+    <script src="js/directives/adminDatePicker.js"></script>
 
 </body>
+
 </html>

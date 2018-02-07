@@ -5,22 +5,22 @@ var ObjectId = mongoose.Schema.Types.ObjectId;
 mongoose.connect(config.mongo.url, {
     user: config.mongo.user,
     pass: config.mongo.password,
-    server: {socketOptions: {keepAlive: 1, connectTimeoutMS: 30000}},
-    replset: {socketOptions: {keepAlive: 1, connectTimeoutMS: 30000}}
+    server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+    replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }
 });
 
 var connection = mongoose.connection;
 
-connection.once('open', function () {
+connection.once('open', function() {
     console.log('CONNECTED TO MONGODB')
 });
 
-connection.on('error', function (err) {
+connection.on('error', function(err) {
     console.log('ERROR CONNECTING TO MONGODB', err);
 });
 
 var accountSchema = new mongoose.Schema({
-    userName: {   // name of the account is called accountId
+    userName: { // name of the account is called accountId
         type: String,
         index: true,
         unique: true
@@ -55,9 +55,10 @@ var accountSchema = new mongoose.Schema({
 });
 var groupSchema = new mongoose.Schema({
     name: String,
-    type: {type: Boolean, default: "account"},
+    type: { type: Boolean, default: "account" },
     accountId: {
-        type: ObjectId, ref: 'accounts'
+        type: ObjectId,
+        ref: 'accounts'
     },
     userName: {
         type: String,
@@ -67,7 +68,7 @@ var groupSchema = new mongoose.Schema({
 
     updatedBy: String,
     createdBy: String,
-    isActive: {type: Boolean, default: true},
+    isActive: { type: Boolean, default: true },
     attrs: {}
 }, {
     timestamps: true
@@ -83,55 +84,55 @@ var truckSchema = new mongoose.Schema({
     permitExpiry: Date,
     insuranceExpiry: Date,
     tracking_available: Number,
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: { type: ObjectId, ref: 'accounts' },
     driverId: String,
     pollutionExpiry: Date,
     taxDueDate: Date,
     updatedBy: String,
     createdBy: String,
     status: Number,
-    attrs: {latestLocation: {}},
+    attrs: { latestLocation: {} },
     // latestLocation:{type:ObjectId,ref:'devicePositions'},
     deviceId: String,
-    lookingForLoad: {type: Boolean, default: false},
-}, {timestamps: true});
+    lookingForLoad: { type: Boolean, default: false },
+}, { timestamps: true });
 
 var tripSchema = new mongoose.Schema({
     date: Date,
     registrationNo: String, //this will be truck id
-    partyId: {type: ObjectId, ref: 'parties'},
+    partyId: { type: ObjectId, ref: 'parties' },
     freightAmount: Number, //5000
-    tonnage: Number,    //new
-    rate: Number,   //new
+    tonnage: Number, //new
+    rate: Number, //new
     tripId: String,
-    remarks: String,    //new
+    remarks: String, //new
     tripLane: String,
     tripExpenses: Number,
-    driverId: {type: ObjectId, ref: 'drivers'},
-    accountId: {type: ObjectId, ref: 'accounts'},
-    groupId: {type: ObjectId, ref: 'groups'},
+    driverId: { type: ObjectId, ref: 'drivers' },
+    accountId: { type: ObjectId, ref: 'accounts' },
+    groupId: { type: ObjectId, ref: 'groups' },
     updatedBy: String,
     createdBy: String,
     paymentHistory: [],
     attrs: {},
-    share: {type: Boolean, default: false}
-}, {timestamps: true});
+    share: { type: Boolean, default: false }
+}, { timestamps: true });
 
 var partySchema = new mongoose.Schema({
     name: String,
     contact: Number,
     email: String,
     city: String,
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: { type: ObjectId, ref: 'accounts' },
     groupId: String,
     tripLanes: [],
     updatedBy: String,
     createdBy: String,
     attrs: {},
     partyType: String,
-    isEmail: {type: Boolean, default: false},
-    isSms: {type: Boolean, default: false}
-}, {timestamps: true});
+    isEmail: { type: Boolean, default: false },
+    isSms: { type: Boolean, default: false }
+}, { timestamps: true });
 
 
 var eventDataSchema = new mongoose.Schema({
@@ -143,13 +144,13 @@ var eventDataSchema = new mongoose.Schema({
     distance: Number,
     datetime: Number,
     attrs: {}
-}, {timestamps: true});
+}, { timestamps: true });
 
 var driverSchema = new mongoose.Schema({
-    fullName: {type: String, trim: true},
-    truckId: {type: ObjectId, ref: 'trucks'},
-    accountId: {type: ObjectId, ref: 'accounts'},
-    groupId: {type: ObjectId, ref: 'groups'},
+    fullName: { type: String, trim: true },
+    truckId: { type: ObjectId, ref: 'trucks' },
+    accountId: { type: ObjectId, ref: 'accounts' },
+    groupId: { type: ObjectId, ref: 'groups' },
     mobile: Number,
     licenseNumber: String,
     licenseValidity: Date,
@@ -157,27 +158,27 @@ var driverSchema = new mongoose.Schema({
     createdBy: String,
     updatedBy: String,
     driverId: String,
-    isActive: {type: Boolean, default: true},
+    isActive: { type: Boolean, default: true },
     attrs: {}
 }, {
     timestamps: true
 });
 var expensesSchema = new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
-    vehicleNumber: {type: ObjectId, ref: 'trucks'},
-    expenseType: {type: ObjectId, ref: 'expenseMaster'},
-    partyId: {type: ObjectId, ref: 'parties'},
+    accountId: { type: ObjectId, ref: 'accounts' },
+    vehicleNumber: { type: ObjectId, ref: 'trucks' },
+    expenseType: { type: ObjectId, ref: 'expenseMaster' },
+    partyId: { type: ObjectId, ref: 'parties' },
     description: String,
     date: Date,
-    totalAmount: {type: Number, default: 0},
-    paidAmount: {type: Number, default: 0},
-    cost: {type: Number, default: 0},
+    totalAmount: { type: Number, default: 0 },
+    paidAmount: { type: Number, default: 0 },
+    cost: { type: Number, default: 0 },
     mode: String,
     updatedBy: String,
     createdBy: String,
-    isDefault: {type: Boolean, default: false},
+    isDefault: { type: Boolean, default: false },
     attrs: {}
-}, {timestamps: true});
+}, { timestamps: true });
 
 var rolesSchema = new mongoose.Schema({
     roleName: String,
@@ -185,19 +186,19 @@ var rolesSchema = new mongoose.Schema({
     createdBy: String,
     menus: [],
     attrs: {}
-}, {timestamps: true});
+}, { timestamps: true });
 
 var expenseMaster = new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: { type: ObjectId, ref: 'accounts' },
     expenseName: String,
     updatedBy: String,
     createdBy: String,
     attrs: {}
-}, {timestamps: String});
+}, { timestamps: String });
 
 var payments = mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
-    partyId: {type: ObjectId, ref: 'parties'},
+    accountId: { type: ObjectId, ref: 'accounts' },
+    partyId: { type: ObjectId, ref: 'parties' },
     description: String,
     amount: Number,
     updatedBy: String,
@@ -206,57 +207,57 @@ var payments = mongoose.Schema({
     paymentType: String,
     paymentRefNo: String,
     attrs: {}
-}, {timestamps: String});
+}, { timestamps: String });
 
 var otpSchema = mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: { type: ObjectId, ref: 'accounts' },
     otp: Number,
     expaireIn: Number,
     contactPhone: Number
-}, {timestamps: String});
+}, { timestamps: String });
 
 var notificationsSchema = mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
-    notificationType: Number,// 0 -SMS, 1-EMAIL, 2-BOTH
+    accountId: { type: ObjectId, ref: 'accounts' },
+    notificationType: Number, // 0 -SMS, 1-EMAIL, 2-BOTH
     content: String,
-    status: {type: Boolean, default: false},
-    tripId: {type: ObjectId, ref: 'trips'},
+    status: { type: Boolean, default: false },
+    tripId: { type: ObjectId, ref: 'trips' },
     message: String
-}, {timestamps: String});
+}, { timestamps: String });
 
 var erpSettingsSchema = mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: { type: ObjectId, ref: 'accounts' },
     revenue: {
-        filterType: {type: String, default: "month"},
-        fromDate: {type: Date},
-        toDate: {type: Date}
+        filterType: { type: String, default: "month" },
+        fromDate: { type: Date },
+        toDate: { type: Date }
     },
     payment: {
-        filterType: {type: String, default: "month"},
-        fromDate: {type: Date},
-        toDate: {type: Date}
+        filterType: { type: String, default: "month" },
+        fromDate: { type: Date },
+        toDate: { type: Date }
     },
     expense: {
-        filterType: {type: String, default: "month"},
-        fromDate: {type: Date},
-        toDate: {type: Date}
+        filterType: { type: String, default: "month" },
+        fromDate: { type: Date },
+        toDate: { type: Date }
     },
     expiry: {
-        filterType: {type: String, default: "month"},
-        fromDate: {type: Date},
-        toDate: {type: Date}
+        filterType: { type: String, default: "month" },
+        fromDate: { type: Date },
+        toDate: { type: Date }
     },
     tollCard: {
-        filterType: {type: String, default: "month"},
-        fromDate: {type: Date},
-        toDate: {type: Date}
+        filterType: { type: String, default: "month" },
+        fromDate: { type: Date },
+        toDate: { type: Date }
     },
     fuelCard: {
-        filterType: {type: String, default: "month"},
-        fromDate: {type: Date},
-        toDate: {type: Date}
+        filterType: { type: String, default: "month" },
+        fromDate: { type: Date },
+        toDate: { type: Date }
     }
-}, {timestamps: String});
+}, { timestamps: String });
 
 var devicePositions = new mongoose.Schema({
     gprmc: String,
@@ -272,7 +273,7 @@ var devicePositions = new mongoose.Schema({
             type: String,
             default: "Point"
         },
-        coordinates: [Number]  //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+        coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
     altitude: String,
     speed: String,
@@ -285,8 +286,8 @@ var devicePositions = new mongoose.Schema({
         motion: Number
     },
     address: String
-    // isViewed : Boolean
-}, {timestamps: true, versionKey: false});
+        // isViewed : Boolean
+}, { timestamps: true, versionKey: false });
 
 var archivedDevicePositions = new mongoose.Schema({
     // _id: ObjectId,
@@ -305,7 +306,7 @@ var archivedDevicePositions = new mongoose.Schema({
             type: String,
             default: "Point"
         },
-        coordinates: [Number]  //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+        coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
     altitude: String,
     speed: String,
@@ -318,12 +319,12 @@ var archivedDevicePositions = new mongoose.Schema({
         motion: Number
     },
     address: String
-    // isViewed : Boolean
-}, {timestamps: true, versionKey: false});
+        // isViewed : Boolean
+}, { timestamps: true, versionKey: false });
 
 var deviceSchema = new mongoose.Schema({
     userName: String,
-    createdBy: {type: ObjectId, ref: 'accounts'},
+    createdBy: { type: ObjectId, ref: 'accounts' },
     deviceId: String,
     //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
@@ -343,21 +344,20 @@ var deviceSchema = new mongoose.Schema({
     replacedFor: String, //if this is replacement to another device
     equipmentType: String,
     serialNumber: String,
-    isActive: {type: Boolean, default: true},
+    isActive: { type: Boolean, default: true },
     remarks: String,
-}, {timestamps: true, versionKey: false});
+}, { timestamps: true, versionKey: false });
 
 var secretKeys = new mongoose.Schema({
     secret: {
         type: String
     },
     email: String
-}, {timestamps: true, versionKey: false});
-
+}, { timestamps: true, versionKey: false });
 
 var secretKeysCounter = new mongoose.Schema({
     date: String,
-    secretId: {type: ObjectId, ref: 'secretKeys'},
+    secretId: { type: ObjectId, ref: 'secretKeys' },
     counter: Number
 });
 var loadRequestSchema = new mongoose.Schema({
@@ -400,22 +400,29 @@ var erpGpsPlans = new mongoose.Schema({
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
+    attrs: { accountId: { type: ObjectId, ref: 'accounts' } },
+    // accountId:{type: ObjectId, ref: 'accounts'},
+    response: String
+}, { timestamps: String });
+
+var customerLeadsSchema = mongoose.Schema({
+    createdBy: { type: ObjectId, ref: 'accounts' },
     name: String,
     contactPhone: [Number],
     email: String,
     leadType: String,
-    converted: {type: Boolean, default: false},
+    converted: { type: Boolean, default: false },
     companyName: String,
     address: String,
     city: String,
     state: String,
     pinCode: String,
     officeNumber: Number,
-    erp: {type: Boolean, default: false},
-    gps: {type: Boolean, default: false},
-    load: {type: Boolean, default: false},
+    erp: { type: Boolean, default: false },
+    gps: { type: Boolean, default: false },
+    load: { type: Boolean, default: false },
     yearInService: Number,
-    operatingRoutes: [{source: String, destination: String}],
+    operatingRoutes: [{ source: String, destination: String }],
     documentType: String,
     documentFile: String,
     paymentType: String,
@@ -468,10 +475,10 @@ var  customerLeadsSchema = mongoose.Schema({
     loadPaymentPodDays:Number,
     tdsDeclarationDoc:String,
     leadSource:String
-},{timestamps: String});
+}, { timestamps: String });
 
 var devicePlans = new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: { type: ObjectId, ref: 'accounts' },
     devicePlanId: Number,
     franchiseId: Number,
     planName: String,
@@ -479,80 +486,79 @@ var devicePlans = new mongoose.Schema({
     status: Boolean,
     amount: Number,
     remark: String,
-    createdBy: {type: ObjectId, ref: 'accounts'},
-    updatedBy: {type: ObjectId, ref: 'accounts'}
-},{timestamps: String});
+    createdBy: { type: ObjectId, ref: 'accounts' },
+    updatedBy: { type: ObjectId, ref: 'accounts' }
+}, { timestamps: String });
 
 var accountDevicePlanHistory = new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: { type: ObjectId, ref: 'accounts' },
     accountName: String,
-    deviceId: {type: ObjectId, ref: 'devices'},
-    planId: {type: ObjectId, ref: 'devicePlans'},
+    deviceId: { type: ObjectId, ref: 'devices' },
+    planId: { type: ObjectId, ref: 'devicePlans' },
     remark: String,
     amount: Number,
     creationTime: Date,
     startTime: String,
     expiryTime: Date,
     received: Boolean
-},{timestamps: String});
+}, { timestamps: String });
 
 var faultyPlanhistory = new mongoose.Schema({
-    accountId: String,//{type: ObjectId, ref: 'accounts'},
-    deviceId: String,//{type: ObjectId, ref: 'devices'},
-    planId: String,//{type: ObjectId, ref: 'devicePlans'},
+    accountId: String, //{type: ObjectId, ref: 'accounts'},
+    deviceId: String, //{type: ObjectId, ref: 'devices'},
+    planId: String, //{type: ObjectId, ref: 'devicePlans'},
     remark: String,
     amount: Number,
     creationTime: Date,
     startTime: String,
     expiryTime: Date,
     received: Boolean
-},{timestamps: String});
-var keysSchema=mongoose.Schema({
-    accountId:{type: ObjectId, ref: 'accounts'},
-    apiKey:String,
-    secretKey:String
+}, { timestamps: String });
+var keysSchema = mongoose.Schema({
+    accountId: { type: ObjectId, ref: 'accounts' },
+    apiKey: String,
+    secretKey: String
 });
 
 var trucksTypesSchema = mongoose.Schema({
-    createdBy: {type: ObjectId, ref: 'accounts'},
-    title:String,
-    tonnes:Number,
-    mileage:Number
-},{timestamps: String});
+    createdBy: { type: ObjectId, ref: 'accounts' },
+    title: String,
+    tonnes: Number,
+    mileage: Number
+}, { timestamps: String });
 
 var goodsTypesSchema = mongoose.Schema({
-    createdBy: {type: ObjectId, ref: 'accounts'},
-    title:String,
-},{timestamps: String});
+    createdBy: { type: ObjectId, ref: 'accounts' },
+    title: String,
+}, { timestamps: String });
 
 var loadTypesSchema = mongoose.Schema({
-    createdBy: {type: ObjectId, ref: 'accounts'},
-    title:String,
-},{timestamps: String});
+    createdBy: { type: ObjectId, ref: 'accounts' },
+    title: String,
+}, { timestamps: String });
 
 var truckRequestSchema = mongoose.Schema({
-    createdBy: {type: ObjectId, ref: 'accounts'},
-    customer:String,
-    customerType:String,
-    source:String,
-    destination:String,
-    goodsType:String,
-    date:{type:Date},
-    pickupPoint:String,
-    comment:String,
-    expectedPrice:Number,
-    trackingAvailable:Boolean,
-    insuranceAvailable:Boolean,
-    accountId:{type: ObjectId, ref: 'accounts'},
-    customerLeadId:{type: ObjectId, ref: 'customerLeads'}
+    createdBy: { type: ObjectId, ref: 'accounts' },
+    customer: String,
+    customerType: String,
+    source: String,
+    destination: String,
+    goodsType: String,
+    date: { type: Date },
+    pickupPoint: String,
+    comment: String,
+    expectedPrice: Number,
+    trackingAvailable: Boolean,
+    insuranceAvailable: Boolean,
+    accountId: { type: ObjectId, ref: 'accounts' },
+    customerLeadId: { type: ObjectId, ref: 'customerLeads' }
 
-},{timestamps: String});
+}, { timestamps: String });
 
 var loadTypesSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     title:String,
-},{timestamps: String}
-);
+},{timestamps: String});
 
 var franchiseSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -605,7 +611,7 @@ var adminPermissionsSchema = mongoose.Schema({
     status: Boolean,
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}
-}, {timestamps: true, versionKey: false});
+}, { timestamps: String });
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -643,5 +649,3 @@ module.exports = {
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
     adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions')
 };
-
-
