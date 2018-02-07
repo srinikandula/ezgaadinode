@@ -132,7 +132,6 @@ CustomerLeads.prototype.getCustomerLeadDetails = function(req, callback) {
         messages: []
     };
     var params = req.query;
-    params.operatingRoutes = JSON.parse(params.operatingRoutes);
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid customer lead");
     }
