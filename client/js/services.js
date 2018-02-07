@@ -1,4 +1,4 @@
-app.factory('Utils', function ($http, $cookies) {
+app.factory('Utils', ['$http', '$cookies',function ($http, $cookies) {
     return {
         isValidEmail: function (email) {
             return _.isString(email) && /^[a-zA-Z]\S*@\S+.\S+/.test(email)
@@ -20,9 +20,9 @@ app.factory('Utils', function ($http, $cookies) {
             return phNumber && /^[1-9]\d{9}$/.test(phNumber);
         }
     }
-});
+}]);
 
-app.factory('CommonServices', function ($http) {
+app.factory('CommonServices',['$http', function ($http) {
     return {
         login: function (loginData, success, error) {
             $http({
@@ -32,4 +32,4 @@ app.factory('CommonServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);

@@ -1,4 +1,4 @@
-app.factory('PartyService', function ($http, $cookies) {
+app.factory('PartyService',['$http', '$cookies', function ($http, $cookies) {
     return {
         addParty: function (partyDetails, success, error) {
             $http({
@@ -75,7 +75,7 @@ app.factory('PartyService', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
 

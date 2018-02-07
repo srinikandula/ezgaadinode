@@ -1,4 +1,4 @@
-app.factory('AnalyticsServices', function ($http, $cookies) {
+app.factory('AnalyticsServices', ['$http', '$cookies',function ($http, $cookies) {
     return {
         getLastLoginReports: function (action,from,to, success, error) {
             $http({
@@ -13,7 +13,7 @@ app.factory('AnalyticsServices', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 app.controller('AnalyticsReportCtrl', ['$scope', 'AnalyticsServices', '$state', 'NgTableParams', function ($scope, AnalyticsServices, $state, NgTableParams) {
     $scope.dateParams={
         from:new Date(),

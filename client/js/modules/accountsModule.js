@@ -1,4 +1,4 @@
-app.factory('AccountServices', function ($http, $cookies) {
+app.factory('AccountServices',['$http', '$cookies', function ($http, $cookies) {
     return {
         addAccount: function (accountInfo, success, error) {
             $http({
@@ -118,7 +118,7 @@ app.factory('AccountServices', function ($http, $cookies) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, AccountServices, Notification, $state, paginationService, NgTableParams) {
     $scope.goToEditAccountPage = function (accountId) {

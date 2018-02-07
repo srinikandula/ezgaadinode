@@ -1,4 +1,4 @@
-app.factory('RoleServices', function ($http) {
+app.factory('RoleServices',['$http', function ($http) {
     return {
         addRole: function (roleData, success, error) {
             $http({
@@ -39,7 +39,7 @@ app.factory('RoleServices', function ($http) {
             }).then(success, error)
         }
     }
-});
+}]);
 
 app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification', function ($scope, $state, RoleServices, Notification) {
     $scope.goToEditRolePage = function (roleId) {
