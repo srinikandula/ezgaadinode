@@ -14,41 +14,47 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
         status: false,
         messages: []
     };
-
-    CustomerLeadsColl.find({ "converted": false}, function (err, docs) {
-        if (err) {
-            retObj.messages.push("Please try again");
-            analyticsService.create(req, serviceActions.get_customer_leads_err, {
-                body: JSON.stringify(req.body),
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        } else if (docs.length > 0) {
-            retObj.status = true;
-            retObj.messages = "Success";
-            retObj.data = docs;
-            analyticsService.create(req, serviceActions.get_customer_leads, {
-                body: JSON.stringify(req.query),
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
-            callback(retObj);
-        } else {
-            retObj.messages = "No Customer leads found";
-            analyticsService.create(req, serviceActions.get_customer_leads_err, {
-                body: JSON.stringify(req.body),
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        }
-    })
+    var params = req.query;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    CustomerLeadsColl.find({"converted": false}).sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .exec(function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_customer_leads_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.messages = "Success";
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_customer_leads, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("No Customer leads found");
+                analyticsService.create(req, serviceActions.get_customer_leads_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
 };
 
 CustomerLeads.prototype.addCustomerLead = function (req, callback) {
@@ -92,8 +98,8 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
             } else {
                 retObj.status = true;
                 retObj.messages = "Customer lead added successfully";
-                retObj.data=doc;
-                analyticsService.create(req, serviceActions.get_customer_leads, {
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.add_customer_lead, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
@@ -117,7 +123,7 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
         retObj.messages.push("Invalid customer lead");
     }
     if (retObj.messages.length > 0) {
-        analyticsService.create(req, serviceActions.update_customer_lead_err, {
+        analyticsService.create(req, serviceActions.get_customer_lead_details_err, {
             body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
@@ -126,12 +132,10 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
         });
         callback(retObj);
     } else {
-
-
         CustomerLeadsColl.findOne({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.update_customer_lead_err, {
+                analyticsService.create(req, serviceActions.get_customer_lead_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -143,7 +147,7 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
                 retObj.status = true;
                 retObj.messages = "Success";
                 retObj.data = doc;
-                analyticsService.create(req, serviceActions.get_customer_leads, {
+                analyticsService.create(req, serviceActions.get_customer_lead_details, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
@@ -152,7 +156,7 @@ CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.messages.push("Customer details not found");
-                analyticsService.create(req, serviceActions.update_customer_lead_err, {
+                analyticsService.create(req, serviceActions.get_customer_lead_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -203,7 +207,7 @@ CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
                 } else if (doc) {
                     retObj.status = true;
                     retObj.messages = "Customer lead updated successfully";
-                    retObj.data=doc;
+                    retObj.data = doc;
                     analyticsService.create(req, serviceActions.get_customer_leads, {
                         body: JSON.stringify(req.body),
                         accountId: req.jwt.id,

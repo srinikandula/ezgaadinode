@@ -451,6 +451,21 @@ var keysSchema=mongoose.Schema({
     secretKey:String
 });
 
+var trucksTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    type:String,
+},{timestamps: String});
+
+var goodsTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    type:String,
+},{timestamps: String});
+
+var loadTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    type:String,
+},{timestamps: String});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -477,5 +492,9 @@ module.exports = {
     devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
     AccountdeviceplanhistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
-    keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys')
+    keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys'),
+    TrucksTypesColl:mongoose.model('trucksTypes',trucksTypesSchema,'trucksTypes'),
+    GoodsTypesColl:mongoose.model('goodsTypes',goodsTypesSchema,'goodsTypes'),
+    LoadTypesColl:mongoose.model('loadTypes',loadTypesSchema,'loadTypes')
+
 };
