@@ -22,19 +22,12 @@ var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
 var Groups = require('./server/routes/groupRoutes');
 var Gps = require('./server/routes/gpsRoutes');
-<<<<<<< 52af685ecabddd3ca615c1f615b488023930a836
 var Analytics=require('./server/routes/reports');
 var Customers=require('./server/adminRoutes/customerRoutes');
 var Settings=require('./server/adminRoutes/settingsRoutes');
 var OrderProcess=require('./server/adminRoutes/orderProcessRoutes');
 var Accounts=require('./server/adminRoutes/accountsRoutes');
 var Employees=require('./server/adminRoutes/employeeRoutes');
-=======
-var Analytics = require('./server/routes/reports');
-var Customers = require('./server/adminRoutes/customerRoutes');
-var Settings = require('./server/adminRoutes/settingsRoutes');
-var OrderProcess = require('./server/adminRoutes/orderProcessRoutes');
->>>>>>> conflicts resolved
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
