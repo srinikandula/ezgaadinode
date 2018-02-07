@@ -88,7 +88,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
             }, function (error) {
             });
         }
-    }
+    };
 
     $scope.rememberMe=function () {
         if($scope.remember){

@@ -98,6 +98,7 @@ body {
     background-color: #fff;
     padding: 25px 25px 0 25px;
     text-align: center;
+    width:100%;
 }
 
 .admin-login h3 {

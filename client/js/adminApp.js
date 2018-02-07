@@ -1,4 +1,4 @@
-var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable']);
+var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -6,10 +6,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'login',
         url: '/login',
         templateUrl: 'views/partials/admin/adminLogin.html',
+        data: {activeTab: 'login'}
     }).state({
         name: 'adminHome',
         url: '/adminHome',
         templateUrl: 'views/partials/admin/adminHome.html',
+        data: {activeTab: 'adminHome'}
     }).state({
         name: 'dashboard',
         url: '/dashboard',
@@ -110,27 +112,27 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'orderprocess',
         url: '/orderprocess',
         templateUrl: 'views/partials/admin/orderProcess/orderProcess.html',
-        data: {activeTab: 'orderProcess'}
+        data: {activeTab: 'orderprocess'}
     }).state({
         name: 'orderprocess.truckRequest',
         url: '/truckRequest',
         templateUrl: 'views/partials/admin/orderProcess/truckRequets.html',
-        data: {activeTab: 'orderProcess'}
+        data: {activeTab: 'orderprocess'}
     }).state({
         name: 'orderprocess.loadRequest',
         url: '/loadRequest',
         templateUrl: 'views/partials/admin/orderProcess/loadRequest.html',
-        data: {activeTab: 'orderProcess'}
+        data: {activeTab: 'orderprocess'}
     }).state({
         name: 'orderprocess.viewOrder',
         url: '/viewOrder',
         templateUrl: 'views/partials/admin/orderProcess/viewOrder.html',
-        data: {activeTab: 'orderProcess'}
+        data: {activeTab: 'orderprocess'}
     }).state({
         name: 'createTruckRequest',
         url: '/createTruckRequest',
         templateUrl: 'views/partials/admin/orderProcess/createTruckRequest.html',
-        data: { activeTab: 'orderProcess' }
+        data: { activeTab: 'orderprocess' }
     }).state({
         name: 'settings',
         url: '/settings',
