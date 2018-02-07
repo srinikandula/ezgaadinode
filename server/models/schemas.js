@@ -514,10 +514,12 @@ var faultyPlanhistory = new mongoose.Schema({
     expiryTime: Date,
     received: Boolean
 }, { timestamps: String });
+
 var keysSchema = mongoose.Schema({
     accountId: { type: ObjectId, ref: 'accounts' },
     apiKey: String,
-    secretKey: String
+    secretKey: String,
+    globalAccess:Boolean
 });
 
 var trucksTypesSchema = mongoose.Schema({

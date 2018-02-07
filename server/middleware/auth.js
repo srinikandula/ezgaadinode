@@ -10,7 +10,7 @@ function authMiddleware(req, res, next) {
         next();
     } else if(req.headers.apikey && req.headers.secretkey){
         Groups.loginByKeys(req.headers.apikey,req.headers.secretkey,req,function (result) {
-            if(result.status){
+            if(result.status&&result.globalAccess){
                 token=result.token;
                 jwt.verify(token, config.jwt.secret, function (err, decoded) {
                     if (err) {

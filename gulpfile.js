@@ -24,9 +24,17 @@ function getFolders(dir) {
 }
 
 gulp.task('minify-css', function () {
-    gulp.src('./client/css/all.css') // path to your file
+    var minify=gulp.src('./client/css/all.css') // path to your file
         .pipe(minifyCss())
         .pipe(gulp.dest('./client/dist/css/'));
+
+    var copyImages=gulp.src('./client/images/*')
+        .pipe(gulp.dest('./client/dist/images'));
+
+    var copyFonts=gulp.src('./client/fonts/**/*')
+        .pipe(gulp.dest('./client/dist/fonts'));
+
+    return merge(minify, copyImages,copyFonts);
 });
 
 gulp.task('merge-css',function () {

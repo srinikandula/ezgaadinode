@@ -423,24 +423,24 @@ Groups.prototype.loginByKeys = function (apiKey,secretKey,req,callback) {
         status: false,
         messages: []
     };
+    var globalAccess=false;
     keysColl.findOne({apiKey:apiKey,secretKey:secretKey},function (err,result) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Please try again');
             callback(retObj);
         }else if(result){
-            console.log(result);
+            globalAccess=result.globalAccess;
             var groups=new Groups();
-            console.log(result.accountId);
             AccountsCollection.findOne({_id:ObjectId(result.accountId)},function (err,account) {
                 if(err){
                     retObj.status=false;
                     retObj.messages.push('Please try again');
                     callback(retObj);
                 }else{
-                    console.log(account);
                     groups.login(account.userName,account.password,account.contactPhone,req,function (result) {
                         if(result.status){
+                            result.globalAccess=globalAccess;
                             callback(result);
                         }else{
                             retObj.status=false;
