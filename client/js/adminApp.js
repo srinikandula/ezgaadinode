@@ -106,7 +106,27 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     }).state({
         name: 'orderProcess',
         url: '/orderProcess',
-        templateUrl: 'views/partials/admin/orderProcess.html',
+        templateUrl: 'views/partials/admin/orderProcess/orderProcess.html',
+        data:{activeTab: 'orderProcess'}
+    }).state({
+        name: 'orderProcess.truckRequest',
+        url: '/truckRequest',
+        templateUrl: 'views/partials/admin/orderProcess/truckRequets.html',
+        data:{activeTab: 'orderProcess'}
+    }).state({
+        name: 'orderProcess.loadRequest',
+        url: '/loadRequest',
+        templateUrl: 'views/partials/admin/orderProcess/loadRequest.html',
+        data:{activeTab: 'orderProcess'}
+    }).state({
+        name: 'orderProcess.viewOrder',
+        url: '/viewOrder',
+        templateUrl: 'views/partials/admin/orderProcess/viewOrder.html',
+        data:{activeTab: 'orderProcess'}
+    }).state({
+        name: 'createTruckRequest',
+        url: '/createTruckRequest',
+        templateUrl: 'views/partials/admin/orderProcess/createTruckRequest.html',
         data:{activeTab: 'orderProcess'}
     });
 

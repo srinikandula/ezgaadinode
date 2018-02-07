@@ -87,7 +87,7 @@ Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
                 callback(result);
             } else {
                 result.status = true;
-                result.message.push("Party Added Successfully");
+                result.messages.push("Party Added Successfully");
                 result.party = party;
                 analyticsService.create(req,serviceActions.add_party,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
                 callback(result);

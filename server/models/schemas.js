@@ -453,17 +453,42 @@ var keysSchema=mongoose.Schema({
 
 var trucksTypesSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
-    type:String,
+    title:String,
+    tonnes:Number,
+    mileage:Number
 },{timestamps: String});
 
 var goodsTypesSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
-    type:String,
+    title:String,
 },{timestamps: String});
 
 var loadTypesSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
-    type:String,
+    title:String,
+},{timestamps: String});
+
+var truckRequestSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    customer:String,
+    customerType:String,
+    source:String,
+    destination:String,
+    goodsType:String,
+    date:{type:Date},
+    pickupPoint:String,
+    comment:String,
+    expectedPrice:Number,
+    trackingAvailable:Boolean,
+    insuranceAvailable:Boolean,
+    accountId:{type: ObjectId, ref: 'accounts'},
+    customerLeadId:{type: ObjectId, ref: 'customerLeads'}
+
+},{timestamps: String});
+
+var loadTypesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    title:String,
 },{timestamps: String});
 
 module.exports = {
@@ -488,13 +513,15 @@ module.exports = {
     DeviceColl: mongoose.model('devices', deviceSchema, 'devices'),
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
-    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema'),
+    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeads'),
     devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
     AccountdeviceplanhistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys'),
     TrucksTypesColl:mongoose.model('trucksTypes',trucksTypesSchema,'trucksTypes'),
     GoodsTypesColl:mongoose.model('goodsTypes',goodsTypesSchema,'goodsTypes'),
-    LoadTypesColl:mongoose.model('loadTypes',loadTypesSchema,'loadTypes')
+    LoadTypesColl:mongoose.model('loadTypes',loadTypesSchema,'loadTypes'),
+    TruckRequestColl:mongoose.model('truckRequests',truckRequestSchema,'truckRequests')
+
 
 };

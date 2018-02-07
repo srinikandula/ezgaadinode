@@ -25,6 +25,7 @@ var Gps = require('./server/routes/gpsRoutes');
 var Analytics=require('./server/routes/reports');
 var Customers=require('./server/adminRoutes/customerRoutes');
 var Settings=require('./server/adminRoutes/settingsRoutes');
+var OrderProcess=require('./server/adminRoutes/orderProcessRoutes');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -110,6 +111,7 @@ app.use('/v1/payments', PaymentsReceived.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
 app.use('/v1/customers',Customers.AuthRouter);
 app.use('/v1/settings',Settings.AuthRouter);
+app.use('/v1/orderProcess',OrderProcess.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {

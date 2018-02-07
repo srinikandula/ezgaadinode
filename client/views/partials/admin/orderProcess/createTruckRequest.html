@@ -1,0 +1,114 @@
+<div class="col-xs-12 newCust" ng-controller="customerCtrl">
+    <h4>Create Customer Leads</h4>
+    <div class="col-xs-12">
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+                <uib-accordion-heading>
+                   Details <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="fullName"
+                                   placeholder="Customer *"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <select class="form-control custom-form-control">
+                                <option value="" >Customer Type</option>
+                                <option>Registered</option>
+                                <option>UnRegistered</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   placeholder="mobile"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="mobile" placeholder="company"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="mobile" placeholder="city"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="fullName"
+                                   placeholder="Email"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="mobile" placeholder="Address"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="mobile" placeholder="State"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="mobile" placeholder="Office Number"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Truck Details <i class="pull-right glyphicon"
+                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control " name="companyName"
+                                   placeholder="Company Name"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control " name="address"
+                                   placeholder="Address"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control " name="city" placeholder="City"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control " name="state" placeholder="State"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control " name="pincode"
+                                   placeholder="Pincode"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="state" placeholder="State"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="pincode"
+                                   placeholder="Pincode"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="state" placeholder="State"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="pincode"
+                                   placeholder="Pincode"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </uib-accordion>
+        <div class="col-xs-12 save-btns">
+            <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+            <a href="#" class="btn btn-primary">Submit</a>
+
+        </div>
+    </div>
+</div>

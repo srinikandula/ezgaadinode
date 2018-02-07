@@ -67,10 +67,15 @@ Settings.prototype.addTruckType = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    if (!params.type) {
+    if (!params.title) {
         retObj.messages.push("Please enter truck type");
     }
-
+    if (!params.tonnes) {
+        retObj.messages.push("Please enter tonnes");
+    }
+    if (!params.mileage) {
+        retObj.messages.push("Please enter mileage");
+    }
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_truck_type_err, {
             body: JSON.stringify(req.body),
@@ -179,7 +184,7 @@ Settings.prototype.updateTruckType = function (req, callback) {
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid truck type");
     }
-    if (!params.type) {
+    if (!params.title) {
         retObj.messages.push("Please enter truck type");
     }
 
@@ -341,7 +346,7 @@ Settings.prototype.addGoodsType = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    if (!params.type) {
+    if (!params.title) {
         retObj.messages.push("Please enter goods type");
     }
 
@@ -453,7 +458,7 @@ Settings.prototype.updateGoodsType = function (req, callback) {
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid goods type");
     }
-    if (!params.type) {
+    if (!params.title) {
         retObj.messages.push("Please enter goods type");
     }
 
@@ -615,7 +620,7 @@ Settings.prototype.addLoadType = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    if (!params.type) {
+    if (!params.title) {
         retObj.messages.push("Please enter load type");
     }
 
@@ -727,7 +732,7 @@ Settings.prototype.updateLoadType = function (req, callback) {
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid load type");
     }
-    if (!params.type) {
+    if (!params.title) {
         retObj.messages.push("Please enter loda type");
     }
 
