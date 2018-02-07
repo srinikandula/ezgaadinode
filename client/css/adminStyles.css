@@ -1,4 +1,5 @@
 /*Common CSS*/
+
 .pall-zero {
     padding: 0 !important;
 }
@@ -37,43 +38,38 @@
 
 @font-face {
     font-family: 'Gotham-Medium';
-    src: url('../fonts/Gotham-Medium/Gotham-Medium.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.otf') format('opentype'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.woff') format('woff'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.ttf') format('truetype'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.svg#Gotham-Medium') format('svg');
+    src: url('../fonts/Gotham-Medium/Gotham-Medium.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.otf') format('opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.woff') format('woff'), url('../fonts/Gotham-Medium/Gotham-Medium.ttf') format('truetype'), url('../fonts/Gotham-Medium/Gotham-Medium.svg#Gotham-Medium') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Gotham-Book';
-    src: url('../fonts/Gotham-Book/Gotham-Book.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/Gotham-Book/Gotham-Book.otf') format('opentype'),
-    url('../fonts/Gotham-Book/Gotham-Book.woff') format('woff'),
-    url('../fonts/Gotham-Book/Gotham-Book.ttf') format('truetype'),
-    url('../fonts/Gotham-Book/Gotham-Book.svg#Gotham-Book') format('svg');
+    src: url('../fonts/Gotham-Book/Gotham-Book.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Book/Gotham-Book.otf') format('opentype'), url('../fonts/Gotham-Book/Gotham-Book.woff') format('woff'), url('../fonts/Gotham-Book/Gotham-Book.ttf') format('truetype'), url('../fonts/Gotham-Book/Gotham-Book.svg#Gotham-Book') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Gotham-Light';
-    src: url('../fonts/Gotham-Light/Gotham-Light.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/Gotham-Light/Gotham-Light.otf') format('opentype'),
-    url('../fonts/Gotham-Light/Gotham-Light.woff') format('woff'),
-    url('../fonts/Gotham-Light/Gotham-Light.ttf') format('truetype'),
-    url('../fonts/Gotham-Light/Gotham-Light.svg#Gotham-Light') format('svg');
+    src: url('../fonts/Gotham-Light/Gotham-Light.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Light/Gotham-Light.otf') format('opentype'), url('../fonts/Gotham-Light/Gotham-Light.woff') format('woff'), url('../fonts/Gotham-Light/Gotham-Light.ttf') format('truetype'), url('../fonts/Gotham-Light/Gotham-Light.svg#Gotham-Light') format('svg');
     font-weight: normal;
     font-style: normal;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin: 0;
 }
-html{
+
+html {
     height: 100% !important;
 }
+
 body {
     font-family: Gotham-Light !important;
     font-size: 14px !important;
@@ -150,14 +146,16 @@ body {
     padding: 10px 0 !important;
 }
 
-.left-nav{
+.left-nav {
     background-color: #fff;
     padding: 0 !important;
     border-right: 1px solid #CCCCCC;
 }
-.left-menu ul{
+
+.left-menu ul {
     margin-top: 18px;
 }
+
 .left-menu-li {
     margin-bottom: 10px;
     font-size: 18px;
@@ -180,69 +178,83 @@ body {
     width: 100%;
     padding: 12px 15px;
     color: #000;
-
 }
 
-.left-menu-anchor:hover, .left-menu-anchor:focus {
+.left-menu-anchor:hover,
+.left-menu-anchor:focus {
     text-decoration: none;
     color: #000;
 }
-.right-nav{
+
+.right-nav {
     background-color: #fff;
 }
-.cus-main{
+
+.cus-main {
     padding: 15px;
 }
-.custom-ul li{
+
+.custom-ul li {
     padding: 10px 0 0;
     font-size: 13px;
     line-height: 31px;
 }
-.title-ul{
+
+.title-ul {
     margin: 20px 0px 5px 0;
     line-height: 30px;
 }
-.custom-ul li a{
+
+.custom-ul li a {
     text-decoration: none;
     padding: 0 5px;
 }
-.active{
+
+.active {
     background-color: #c0c0c0;
     color: #000;
 }
-.custom-form-control{
+
+.custom-form-control {
     width: 65% !important;
     height: 35px;
 }
-.newCust{
+
+.newCust {
     padding: 25px;
 }
 
 .pos-relative {
     position: relative;
 }
+
 .date-pick {
     cursor: pointer;
     position: absolute;
     right: 36%;
     top: 5px;
 }
-.routes{
+
+.routes {
     display: block;
 }
-.routes h4{
+
+.routes h4 {
     margin: 15px 24% 25px 0;
     display: inline-block;
     font-weight: bold;
 }
-.routes span{
+
+.routes span {
     font-size: 24px;
     cursor: pointer;
 }
-.checkbox label{
+
+.checkbox label {
     font-size: 15px;
     padding-left: 0 !important;
 }
+
 .checkbox label:after,
 .radio label:after {
     content: '';
@@ -284,64 +296,103 @@ body {
     display: none;
 }
 
-.checkbox label input[type="checkbox"] + .cr > .cr-icon,
-.radio label input[type="radio"] + .cr > .cr-icon {
+.checkbox label input[type="checkbox"]+.cr>.cr-icon,
+.radio label input[type="radio"]+.cr>.cr-icon {
     transform: scale(3) rotateZ(-20deg);
     opacity: 0;
     transition: all .3s ease-in;
 }
 
-.checkbox label input[type="checkbox"]:checked + .cr > .cr-icon,
-.radio label input[type="radio"]:checked + .cr > .cr-icon {
+.checkbox label input[type="checkbox"]:checked+.cr>.cr-icon,
+.radio label input[type="radio"]:checked+.cr>.cr-icon {
     transform: scale(1) rotateZ(0deg);
     opacity: 1;
 }
 
-.checkbox label input[type="checkbox"]:disabled + .cr,
-.radio label input[type="radio"]:disabled + .cr {
+.checkbox label input[type="checkbox"]:disabled+.cr,
+.radio label input[type="radio"]:disabled+.cr {
     opacity: .5;
 }
-.save-btns{
+
+.save-btns {
     margin: 0 auto;
     display: block;
     text-align: center;
 }
-.accordion-toggle span{
+
+.accordion-toggle span {
     text-decoration: none;
     font-size: 14px;
 }
-.accordion-toggle:hover, .accordion-toggle:focus  {
-text-decoration: none !important;
+
+.accordion-toggle:hover,
+.accordion-toggle:focus {
+    text-decoration: none !important;
     color: #c9302c;
 }
-.activated{
+
+.activated {
     border-bottom: 2px solid #000;
 }
-footer{
+
+footer {
     background-color: #615f5f;
     color: #fff;
     height: 50px;
     line-height: 50px;
 }
-.name-head{
+
+.name-head {
     font-size: 20px;
 }
-.smsenabled{
+
+.smsenabled {
     margin: 0 !important;
 }
-.account-rotues p{
+
+.account-rotues p {
     display: inline-block;
     font-size: 17px;
     margin: 10px 0 22px 0px;
     padding-right: 10px;
 }
-.account-rotues span{
+
+.account-rotues span {
     display: inline-block;
 }
 
-.plans li{
+.plans li {
     width: 22% !important;
 }
-.planfc{
+
+.planfc {
     width: 100% !important;
+}
+
+.ui-notification {
+    position: fixed;
+    right: 0;
+}
+
+
+/* Nagesh CSS */
+
+.plus-pos {
+    position: absolute;
+    top: 5px;
+    right: 105px;
+    cursor: pointer;
+    /* bottom: 17px; */
+}
+
+.plus-pos>i {
+    font-size: 25px;
+}
+
+.clr-green {
+    color: #30b518;
+}
+
+.clr-red {
+    color: #f00;
 }
