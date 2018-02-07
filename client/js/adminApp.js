@@ -104,30 +104,30 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/services/payments.html',
         data:{activeTab: 'services'}
     }).state({
-        name: 'orderProcess',
-        url: '/orderProcess',
+        name: 'orderprocess',
+        url: '/orderprocess',
         templateUrl: 'views/partials/admin/orderProcess/orderProcess.html',
-        data:{activeTab: 'orderProcess'}
+        data:{activeTab: 'Order Process'}
     }).state({
-        name: 'orderProcess.truckRequest',
+        name: 'orderprocess.truckRequest',
         url: '/truckRequest',
         templateUrl: 'views/partials/admin/orderProcess/truckRequets.html',
-        data:{activeTab: 'orderProcess'}
+        data:{activeTab: 'Order Process'}
     }).state({
-        name: 'orderProcess.loadRequest',
+        name: 'orderprocess.loadRequest',
         url: '/loadRequest',
         templateUrl: 'views/partials/admin/orderProcess/loadRequest.html',
-        data:{activeTab: 'orderProcess'}
+        data:{activeTab: 'Order Process'}
     }).state({
-        name: 'orderProcess.viewOrder',
+        name: 'orderprocess.viewOrder',
         url: '/viewOrder',
         templateUrl: 'views/partials/admin/orderProcess/viewOrder.html',
-        data:{activeTab: 'orderProcess'}
+        data:{activeTab: 'Order Process'}
     }).state({
         name: 'createTruckRequest',
         url: '/createTruckRequest',
         templateUrl: 'views/partials/admin/orderProcess/createTruckRequest.html',
-        data:{activeTab: 'orderProcess'}
+        data:{activeTab: 'Order Process'}
     });
 
     $urlRouterProvider.otherwise('/login');
