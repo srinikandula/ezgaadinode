@@ -442,7 +442,6 @@ var customerTypesSchema = mongoose.Schema({
     type: String,
 }, {timestamps: String});
 
-<<<<<<< 61d3d72443f7aefa194b7b83bea59e2871b8aeb0
 var  customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     name:String,
@@ -552,8 +551,9 @@ var truckRequestSchema = mongoose.Schema({
 var loadTypesSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     title:String,
-},{timestamps: String});
-=======
+},{timestamps: String}
+);
+
 var franchiseSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     id_franchise: Number,
