@@ -37,50 +37,25 @@
 
 @font-face {
     font-family: 'Gotham-Medium';
-<<<<<<< HEAD
     src: url('../fonts/Gotham-Medium/Gotham-Medium.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.otf') format('opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.woff') format('woff'), url('../fonts/Gotham-Medium/Gotham-Medium.ttf') format('truetype'), url('../fonts/Gotham-Medium/Gotham-Medium.svg#Gotham-Medium') format('svg');
-=======
-    src: url('../fonts/Gotham-Medium/Gotham-Medium.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.otf') format('opentype'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.woff') format('woff'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.ttf') format('truetype'),
-    url('../fonts/Gotham-Medium/Gotham-Medium.svg#Gotham-Medium') format('svg');
->>>>>>> gulp with npm commands
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Gotham-Book';
-<<<<<<< HEAD
     src: url('../fonts/Gotham-Book/Gotham-Book.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Book/Gotham-Book.otf') format('opentype'), url('../fonts/Gotham-Book/Gotham-Book.woff') format('woff'), url('../fonts/Gotham-Book/Gotham-Book.ttf') format('truetype'), url('../fonts/Gotham-Book/Gotham-Book.svg#Gotham-Book') format('svg');
-=======
-    src: url('../fonts/Gotham-Book/Gotham-Book.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/Gotham-Book/Gotham-Book.otf') format('opentype'),
-    url('../fonts/Gotham-Book/Gotham-Book.woff') format('woff'),
-    url('../fonts/Gotham-Book/Gotham-Book.ttf') format('truetype'),
-    url('../fonts/Gotham-Book/Gotham-Book.svg#Gotham-Book') format('svg');
->>>>>>> gulp with npm commands
     font-weight: normal;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Gotham-Light';
-<<<<<<< HEAD
     src: url('../fonts/Gotham-Light/Gotham-Light.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Light/Gotham-Light.otf') format('opentype'), url('../fonts/Gotham-Light/Gotham-Light.woff') format('woff'), url('../fonts/Gotham-Light/Gotham-Light.ttf') format('truetype'), url('../fonts/Gotham-Light/Gotham-Light.svg#Gotham-Light') format('svg');
-=======
-    src: url('../fonts/Gotham-Light/Gotham-Light.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/Gotham-Light/Gotham-Light.otf') format('opentype'),
-    url('../fonts/Gotham-Light/Gotham-Light.woff') format('woff'),
-    url('../fonts/Gotham-Light/Gotham-Light.ttf') format('truetype'),
-    url('../fonts/Gotham-Light/Gotham-Light.svg#Gotham-Light') format('svg');
->>>>>>> gulp with npm commands
     font-weight: normal;
     font-style: normal;
 }
 
-<<<<<<< HEAD
 h1,
 h2,
 h3,
@@ -94,14 +69,6 @@ html {
     height: 100% !important;
 }
 
-=======
-h1, h2, h3, h4, h5, h6 {
-    margin: 0;
-}
-html{
-    height: 100% !important;
-}
->>>>>>> gulp with npm commands
 body {
     font-family: Gotham-Light !important;
     font-size: 14px !important;
@@ -178,26 +145,16 @@ body {
     padding: 10px 0 !important;
 }
 
-<<<<<<< HEAD
 .left-nav {
-=======
-.left-nav{
->>>>>>> gulp with npm commands
     background-color: #fff;
     padding: 0 !important;
     border-right: 1px solid #CCCCCC;
 }
-<<<<<<< HEAD
 
 .left-menu ul {
     margin-top: 18px;
 }
 
-=======
-.left-menu ul{
-    margin-top: 18px;
-}
->>>>>>> gulp with npm commands
 .left-menu-li {
     margin-bottom: 10px;
     font-size: 18px;
@@ -220,7 +177,6 @@ body {
     width: 100%;
     padding: 12px 15px;
     color: #000;
-<<<<<<< HEAD
 }
 
 .left-menu-anchor:hover,
@@ -238,27 +194,10 @@ body {
 }
 
 .custom-ul li {
-=======
-
-}
-
-.left-menu-anchor:hover, .left-menu-anchor:focus {
-    text-decoration: none;
-    color: #000;
-}
-.right-nav{
-    background-color: #fff;
-}
-.cus-main{
-    padding: 15px;
-}
-.custom-ul li{
->>>>>>> gulp with npm commands
     padding: 10px 0 0;
     font-size: 13px;
     line-height: 31px;
 }
-<<<<<<< HEAD
 
 .title-ul {
     margin: 20px 0px 5px 0;
@@ -281,59 +220,29 @@ body {
 }
 
 .newCust {
-=======
-.title-ul{
-    margin: 20px 0px 5px 0;
-    line-height: 30px;
-}
-.custom-ul li a{
-    text-decoration: none;
-    padding: 0 5px;
-}
-.active{
-    background-color: #c0c0c0;
-    color: #000;
-}
-.custom-form-control{
-    width: 65% !important;
-    height: 35px;
-}
-.newCust{
->>>>>>> gulp with npm commands
     padding: 25px;
 }
 
 .pos-relative {
     position: relative;
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> gulp with npm commands
 .date-pick {
     cursor: pointer;
     position: absolute;
     right: 36%;
     top: 5px;
 }
-<<<<<<< HEAD
 
 .routes {
     display: block;
 }
 
 .routes h4 {
-=======
-.routes{
-    display: block;
-}
-.routes h4{
->>>>>>> gulp with npm commands
     margin: 15px 24% 25px 0;
     display: inline-block;
     font-weight: bold;
 }
-<<<<<<< HEAD
 
 .routes span {
     font-size: 24px;
@@ -345,16 +254,6 @@ body {
     padding-left: 0 !important;
 }
 
-=======
-.routes span{
-    font-size: 24px;
-    cursor: pointer;
-}
-.checkbox label{
-    font-size: 15px;
-    padding-left: 0 !important;
-}
->>>>>>> gulp with npm commands
 .checkbox label:after,
 .radio label:after {
     content: '';
@@ -396,48 +295,29 @@ body {
     display: none;
 }
 
-<<<<<<< HEAD
 .checkbox label input[type="checkbox"]+.cr>.cr-icon,
 .radio label input[type="radio"]+.cr>.cr-icon {
-=======
-.checkbox label input[type="checkbox"] + .cr > .cr-icon,
-.radio label input[type="radio"] + .cr > .cr-icon {
->>>>>>> gulp with npm commands
     transform: scale(3) rotateZ(-20deg);
     opacity: 0;
     transition: all .3s ease-in;
 }
 
-<<<<<<< HEAD
 .checkbox label input[type="checkbox"]:checked+.cr>.cr-icon,
 .radio label input[type="radio"]:checked+.cr>.cr-icon {
-=======
-.checkbox label input[type="checkbox"]:checked + .cr > .cr-icon,
-.radio label input[type="radio"]:checked + .cr > .cr-icon {
->>>>>>> gulp with npm commands
     transform: scale(1) rotateZ(0deg);
     opacity: 1;
 }
 
-<<<<<<< HEAD
 .checkbox label input[type="checkbox"]:disabled+.cr,
 .radio label input[type="radio"]:disabled+.cr {
     opacity: .5;
 }
 
 .save-btns {
-=======
-.checkbox label input[type="checkbox"]:disabled + .cr,
-.radio label input[type="radio"]:disabled + .cr {
-    opacity: .5;
-}
-.save-btns{
->>>>>>> gulp with npm commands
     margin: 0 auto;
     display: block;
     text-align: center;
 }
-<<<<<<< HEAD
 
 .accordion-toggle span {
     text-decoration: none;
@@ -455,26 +335,11 @@ body {
 }
 
 footer {
-=======
-.accordion-toggle span{
-    text-decoration: none;
-    font-size: 14px;
-}
-.accordion-toggle:hover, .accordion-toggle:focus  {
-text-decoration: none !important;
-    color: #c9302c;
-}
-.activated{
-    border-bottom: 2px solid #000;
-}
-footer{
->>>>>>> gulp with npm commands
     background-color: #615f5f;
     color: #fff;
     height: 50px;
     line-height: 50px;
 }
-<<<<<<< HEAD
 
 .name-head {
     font-size: 20px;
@@ -485,21 +350,11 @@ footer{
 }
 
 .account-rotues p {
-=======
-.name-head{
-    font-size: 20px;
-}
-.smsenabled{
-    margin: 0 !important;
-}
-.account-rotues p{
->>>>>>> gulp with npm commands
     display: inline-block;
     font-size: 17px;
     margin: 10px 0 22px 0px;
     padding-right: 10px;
 }
-<<<<<<< HEAD
 
 .account-rotues span {
     display: inline-block;
@@ -539,15 +394,4 @@ footer{
 
 .clr-red {
     color: #f00;
-}
-
-.account-rotues span{
-    display: inline-block;
-}
-
-.plans li{
-    width: 22% !important;
-}
-.planfc{
-    width: 100% !important;
 }
