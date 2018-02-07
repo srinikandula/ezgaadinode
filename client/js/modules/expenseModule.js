@@ -1,4 +1,4 @@
-app.factory('ExpenseService', function ($http) {
+app.factory('ExpenseService',['$http', function ($http) {
     return {
         addExpense: function (object, success, error) {
             $http({
@@ -101,7 +101,7 @@ app.factory('ExpenseService', function ($http) {
             }).then(success, error);
         }
     }
-});
+}]);
 
 
 app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notification', 'NgTableParams', 'paginationService','TrucksService', function ($scope, $state, ExpenseService, Notification, NgTableParams, paginationService,TrucksService) {
