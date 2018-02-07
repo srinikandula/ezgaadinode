@@ -107,12 +107,15 @@ PaymentsReceived.prototype.addPayments = function (jwt, details,req, callback) {
 };
 
 function getPayments(condition, jwt, params, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
     if (!params.page) {
         params.page = 1;
     } else if (!_.isNumber(Number(params.page))) {
         result.status = false;
-        result.message = 'Invalid page number';
+        result.messages.push('Invalid page number');
         return callback(result);
     }
     var skipNumber = (params.page - 1) * params.size;
@@ -155,11 +158,11 @@ function getPayments(condition, jwt, params, callback) {
     }, function (err, results) {
         if (err) {
             result.status = false;
-            result.message = 'Error retrieving Payments Costs';
+            result.messages.push('Error retrieving Payments Costs');
             callback(retObj);
         } else {
             result.status = true;
-            result.message = 'Success';
+            result.messages.push('Success');
             result.count = results.count;
             result.userId = jwt.id;
             result.userType = jwt.type;
@@ -170,7 +173,10 @@ function getPayments(condition, jwt, params, callback) {
 }
 
 PaymentsReceived.prototype.getPayments = function (jwt, params,req, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
     var condition = {};
     if (!params.partyName) {
         getPayments({'accountId': jwt.accountId}, jwt, params, function (paymentResp) {
@@ -185,21 +191,21 @@ PaymentsReceived.prototype.getPayments = function (jwt, params,req, callback) {
         PartyCollection.findOne({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partyData) {
             if (err) {
                 result.status = false;
-                result.message = 'Error retrieving Payments Costs';
-                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+                result.messages.push('Error retrieving Payments Costs');
+                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
                 callback(retObj);
             } else if (partyData) {
                 getPayments({'accountId': jwt.accountId, partyId: partyData._id}, jwt, params, function (paymentResp) {
                     if(paymentResp.status){
                         analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
                     }else{
-                        analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
+                        analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.messages},function(response){ });
                     }
                     callback(paymentResp);
                 });
             } else {
                 result.status = true;
-                result.message = 'Success';
+                result.messages.push('Success');
                 result.count = 0;
                 result.paymentsCosts = [];
                 analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
@@ -210,7 +216,10 @@ PaymentsReceived.prototype.getPayments = function (jwt, params,req, callback) {
 };
 
 PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId,req, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
     var condition = {};
     if (jwt.type === "account") {
         condition = {_id: paymentsId, 'accountId': jwt.accountId};
@@ -220,18 +229,18 @@ PaymentsReceived.prototype.findPaymentsReceived = function (jwt, paymentsId,req,
     PaymentsReceivedColl.findOne(condition, function (err, paymentsReceived) {
         if (err) {
             result.status = false;
-            result.message = "Error while finding Payments, try Again";
+            result.messages.push("Error while finding Payments, try Again");
             analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         } else if (paymentsReceived) {
             result.status = true;
-            result.message = "Payment found successfully";
+            result.messages.push("Payment found successfully");
             result.paymentsDetails = paymentsReceived;
             analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
         } else {
             result.status = false;
-            result.message = "Unauthorized access or Payment is not found!";
+            result.message.push("Unauthorized access or Payment is not found!");
             analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
             callback(result);
         }

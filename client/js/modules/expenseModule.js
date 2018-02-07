@@ -195,11 +195,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                         $scope.getCount();
                     } else {
                         success.data.messages.forEach(function (message) {
-                            swal(
-                                'Error!',
-                                message,
-                                'error'
-                            );
+                            Notification.error({ message: message });
                         });
                     }
                 })
@@ -392,7 +388,9 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                         Notification.success({message: success.data.message});
                         $state.go('expenses');
                     } else {
-                        params.error.push(success.data.message);
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
                     }
 
                 }, function (err) {
@@ -401,10 +399,14 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                 ExpenseService.addExpense(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        Notification.success({message: success.data.message});
+                        success.data.messages.forEach(function (message) {
+                            Notification.success({ message: message });
+                        });
                         $state.go('expenses');
                     } else {
-                        params.error.push(success.data.message);
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
                     }
                 });
             }

@@ -336,23 +336,26 @@ Party.prototype.getAllPartiesByTransporter = function (jwt,req, callback) {
 };
 
 Party.prototype.deleteParty = function (jwt, partyId,req, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
 
     PartyCollection.remove({_id: partyId, accountId: jwt.accountId}, function (err, retValue) {
         if (err) {
             result.status = false;
-            result.message = 'Error deleting party';
-            analyticsService.create(req,serviceActions.del_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.message},function(response){ });
+            result.messages.push('Error deleting party');
+            analyticsService.create(req,serviceActions.del_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
             callback(result);
         } else if (retValue.result && retValue.result.n === 1) {
             result.status = true;
-            result.message = 'Success';
+            result.messages.push('Success');
             analyticsService.create(req,serviceActions.del_party,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
             callback(result);
         } else {
             result.status = false;
-            result.message = 'Unauthorized access or Error deleting party';
-            analyticsService.create(req,serviceActions.del_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.message},function(response){ });
+            result.messages.push('Unauthorized access or Error deleting party');
+            analyticsService.create(req,serviceActions.del_party_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
             callback(result);
         }
     });

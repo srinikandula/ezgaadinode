@@ -1,5 +1,5 @@
 <div class="col-xs-12 newCust" ng-controller="customerCtrl">
-    <h4>Create Customer Leads</h4>
+    <h4>Truck Request</h4>
     <div class="col-xs-12">
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
@@ -59,45 +59,43 @@
                     Truck Details <i class="pull-right glyphicon"
                                ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
                 </uib-accordion-heading>
-                <div class="row">
+                <div class="row" ng-repeat="truck in truckRequest.truckDetails">
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
                             <input type="text" class="form-control " name="companyName"
-                                   placeholder="Company Name"/>
+                                   placeholder="Source"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control " name="address"
-                                   placeholder="Address"/>
+                                   placeholder="Date Time Required"/>
                         </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control " name="city" placeholder="City"/>
-                        </div>
+
                     </div>
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
-                            <input type="text" class="form-control " name="state" placeholder="State"/>
+                            <input type="text" class="form-control " name="state" placeholder="Destination"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control " name="pincode"
-                                   placeholder="Pincode"/>
+                                   placeholder="Pickup Point"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="state" placeholder="State"/>
+                            <input type="text" class="form-control" name="state" placeholder="Goods Type"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control" name="pincode"
-                                   placeholder="Pincode"/>
+                                   placeholder="Response Time/Comment"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
-                            <input type="text" class="form-control" name="state" placeholder="State"/>
+                            <input type="text" class="form-control" name="state" placeholder="Truck Type"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control" name="pincode"
-                                   placeholder="Pincode"/>
+                                   placeholder="Expected Price"/>
                         </div>
                     </div>
                 </div>

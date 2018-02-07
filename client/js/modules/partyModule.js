@@ -163,11 +163,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                         );
                         $scope.getCount();
                     } else {
-                            swal(
-                                'Error!',
-                                success.data.message,
-                                'error'
-                            );
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
                     }
                 }, function (err) {
 
@@ -302,11 +300,13 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             if (params._id) {
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
-                        params.success = success.data.message;
                         $state.go('parties');
                         Notification.success({ message: "Party Updated Successfully" });
                     } else {
-                        params.error = success.data.message;
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
+
                     }
                 }, function (err) {
 
@@ -318,7 +318,9 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                         $state.go('parties');
                         Notification.success({ message: "Party Added Successfully" });
                     } else {
-                        params.error = success.data.message;
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
                     }
                 }, function (err) {
                 });

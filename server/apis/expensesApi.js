@@ -26,12 +26,12 @@ function save(expenseDetails, result,req, callback) {
 
         if (err) {
             result.status = false;
-            result.message = "Error while adding expenses Cost, try Again";
+            result.messages.push("Error while adding expenses Cost, try Again");
             analyticsService.create(req,serviceActions.add_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
             callback(result);
         } else {
             result.status = true;
-            result.message = "expenses Cost Added Successfully";
+            result.messages.push("expenses Cost Added Successfully");
             result.expenses = expense;
             analyticsService.create(req,serviceActions.add_expense,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
             callback(result);
@@ -47,7 +47,7 @@ function saveExpense(expenseDetails, jwt, result,req, callback) {
                 save(expenseDetails, result,req, callback);
             } else {
                 result.status = false;
-                result.message = "Expense already exists or Error creating new expense type";
+                result.messages.push("Expense already exists or Error creating new expense type");
                 analyticsService.create(req,serviceActions.add_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
                 callback(result);
             }
@@ -58,43 +58,46 @@ function saveExpense(expenseDetails, jwt, result,req, callback) {
 }
 
 Expenses.prototype.addExpense = function (jwt, expenseDetails,req, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
     if (!_.isObject(expenseDetails) || _.isEmpty(expenseDetails)) {
         result.status = false;
-        result.message = "Please fill all the required expense details";
+        result.messages.push("Please fill all the required expense details");
         callback(result);
     } else if (!expenseDetails.vehicleNumber) {
         result.status = false;
-        result.message = "Please provide valid vehicle number";
+        result.messages.push("Please provide valid vehicle number");
         callback(result);
     } else if (!expenseDetails.expenseType || !_.isString(expenseDetails.expenseType)) {
         result.status = false;
-        result.message = "Please provide Expense Type";
+        result.messages.push("Please provide Expense Type");
         callback(result);
     } else if (expenseDetails.expenseType === 'others' && !expenseDetails.expenseName) {
         result.status = false;
-        result.message = "Enter other expenseType";
+        result.messages.push("Enter other expenseType");
         callback(result);
     } else if (!expenseDetails.mode) {
         result.status = false;
-        result.message = "Please Select Cash or Credit";
+        result.messages.push("Please Select Cash or Credit");
         callback(result);
     } else if (!expenseDetails.partyId && expenseDetails.mode === 'Credit') {
         result.status = false;
-        result.message = "Please Select Party";
+        result.messages.push("Please Select Party");
         callback(result);
     } else if (expenseDetails.mode === 'Cash' && (!expenseDetails.cost || _.isNaN(expenseDetails.cost))) {
         result.status = false;
-        result.message = "Please provide Total Expense Amount";
+        result.messages.push("Please provide Total Expense Amount");
         callback(result);
     } else if (expenseDetails.mode === 'Credit' && (!expenseDetails.totalAmount || _.isNaN(expenseDetails.totalAmount))) {
         result.status = false;
-        result.message = "Please enter Total Expense Amount";
+        result.messages.push("Please enter Total Expense Amount");
         callback(result);
     } else if (expenseDetails.mode === 'Credit' && _.isNaN(expenseDetails.paidAmount)) {
 
         result.status = false;
-        result.message = "Invalid Paid Amount";
+        result.messages.push("Invalid Paid Amount");
         callback(result);
     } else {
         expenseDetails.createdBy = jwt.id;
@@ -106,7 +109,10 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails,req, callback) {
 };
 
 function updateExpense(expense, jwt,req, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
     expenseColl.findOneAndUpdate({_id: expense._id},
         {
             $set: {
@@ -126,18 +132,18 @@ function updateExpense(expense, jwt,req, callback) {
         function (err, expenseDoc) {
             if (err) {
                 result.status = false;
-                result.message = "Error while updating expenses Cost Record, try Again";
+                result.messages.push("Error while updating expenses Cost Record, try Again");
                 analyticsService.create(req,serviceActions.update_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
                 callback(result);
             } else if (expenseDoc) {
                 result.status = true;
                 result.expense = expenseDoc;
-                result.message = "expenses Cost updated successfully";
+                result.messages.push("expenses Cost updated successfully");
                 analyticsService.create(req,serviceActions.update_expense,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(result);
             } else {
                 result.status = false;
-                result.message = "Error, finding expenses Record";
+                result.messages.push("Error, finding expenses Record");
                 analyticsService.create(req,serviceActions.update_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
                 callback(result);
             }
@@ -155,7 +161,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
         giveAccess = true;
     } else {
         result.status = false;
-        result.message = "Unauthorized access";
+        result.messages.push("Unauthorized access");
         callback(result);
     }
     if (giveAccess) {
@@ -166,7 +172,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
                     updateExpense(expense, jwt,req, callback);
                 } else {
                     result.status = false;
-                    result.message = "Unauthorized access or Error creating new expense type";
+                    result.messages.push("Unauthorized access or Error creating new expense type");
                     callback(result);
                 }
             });
