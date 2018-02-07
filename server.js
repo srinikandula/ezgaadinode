@@ -22,12 +22,12 @@ var ExpenseMaster = require('./server/routes/expenseMasterRoutes');
 var PaymentsReceived = require('./server/routes/paymentsReceivedRoutes');
 var Groups = require('./server/routes/groupRoutes');
 var Gps = require('./server/routes/gpsRoutes');
-var Analytics=require('./server/routes/reports');
-var Customers=require('./server/adminRoutes/customerRoutes');
-var Settings=require('./server/adminRoutes/settingsRoutes');
-var OrderProcess=require('./server/adminRoutes/orderProcessRoutes');
-var Accounts=require('./server/adminRoutes/accountsRoutes');
-var Employees=require('./server/adminRoutes/employeeRoutes');
+var Analytics = require('./server/routes/reports');
+var Customers = require('./server/adminRoutes/customerRoutes');
+var Settings = require('./server/adminRoutes/settingsRoutes');
+var OrderProcess = require('./server/adminRoutes/orderProcessRoutes');
+var Accounts = require('./server/adminRoutes/accountsRoutes');
+var Employees = require('./server/adminRoutes/employeeRoutes');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -35,10 +35,10 @@ var authMiddleware = require('./server/middleware/auth');
 app.set('port', config.port);
 // app.use(morgan('dev'));
 app.use(express.static('client', { index: "/views/index.html" }));
-// app.use(express.static('client', { index: "/views/adminIndex.html" }));
+// app.use(express.static('client', {index: "/views/adminIndex.html"}));
 
-app.use(bodyParser.json({ limit: config.bodyParserLimit }));
-app.use(bodyParser.urlencoded({ limit: config.bodyParserLimit, extended: true }));
+app.use(bodyParser.json({limit: config.bodyParserLimit}));
+app.use(bodyParser.urlencoded({limit: config.bodyParserLimit, extended: true}));
 app.use(cookieParser());
 
 /*passport.serializeUser(function (user, cb) {
@@ -81,11 +81,16 @@ app.get('/login/google/return',
         });
     });*/
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     if (/^\/v1\//.test(req.url)) {
         next();
     } else {
-        res.sendFile(__dirname + '/client/views/index.html');
+        if(req.host.indexOf('cpanel') != -1){
+            res.sendFile(__dirname + '/client/views/adminIndex.html');
+        } else{
+            res.sendFile(__dirname + '/client/views/index.html');
+
+        }
         // res.sendFile(__dirname + '/client/views/adminIndex.html');
     }
 });
@@ -111,14 +116,14 @@ app.use('/v1/expense', Expense.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
-app.use('/v1/customers',Customers.AuthRouter);
-app.use('/v1/settings',Settings.AuthRouter);
-app.use('/v1/orderProcess',OrderProcess.AuthRouter);
+app.use('/v1/customers', Customers.AuthRouter);
+app.use('/v1/settings', Settings.AuthRouter);
+app.use('/v1/orderProcess', OrderProcess.AuthRouter);
 app.use('/v1/accounts', Accounts.AuthRouter);
 app.use('/v1/employees', Employees.AuthRouter);
 
 
-var server = app.listen(app.get('port'), function() {
+var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);
 });
 
