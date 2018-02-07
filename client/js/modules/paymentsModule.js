@@ -264,7 +264,9 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                 $scope.paymentsDetails.amount = parseInt($scope.paymentsDetails.amount);
                 getPartyIds();
             } else {
-                Notification.error(success.data.message)
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
             }
         }, function (err) {
         })
@@ -301,7 +303,9 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                         Notification.success({ message: success.data.messages[0] });
                         $state.go('payments');
                     } else {
-                        params.error = success.data.message;
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
                     }
                     $state.go('payments');
 
@@ -316,7 +320,9 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                         Notification.success({ message: success.data.messages[0] });
                         $state.go('payments');
                     } else {
-                        params.error = success.data.message;
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
                     }
                 });
             }

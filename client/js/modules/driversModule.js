@@ -201,6 +201,8 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                 $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
                 getTruckIds();
                 //console.log('driver',$scope.driver);
+
+            }else{
                 success.data.messages.forEach(function (message) {
                     Notification.error(message)
                 });
@@ -273,7 +275,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                         Notification.success({message: "Driver Updated Successfully"});
                         $state.go('drivers');
                     } else {
-                        params.errors = success.data.messages;
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message)
+                        });
                     }
                 }, function (err) {
                     console.log(err);
@@ -284,7 +288,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                         Notification.success({message: "Driver Added Successfully"});
                         $state.go('drivers');
                     } else {
-                        params.errors = success.data.messages;
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message)
+                        });
                     }
                 }, function (error) {
 

@@ -344,7 +344,6 @@ Trips.prototype.updateTrip = function (jwt, tripDetails,req, callback) {
     if (giveAccess) {
         tripDetails = Utils.removeEmptyFields(tripDetails);
         tripDetails.tripLane = tripDetails.tripLane.name;
-        console.log("safdadsfasfd", tripDetails);
         TripCollection.findOneAndUpdate({_id: tripDetails._id},
             {$set: tripDetails},
             {new: true}, function (err, trip) {
@@ -531,7 +530,10 @@ Trips.prototype.getAll = function (jwt, params,req, callback) {
 };
 
 Trips.prototype.getAllAccountTrips = function (jwt, params,req, callback) {
-    var result = {};
+    var result = {
+        status:false,
+        messages:[]
+    };
 
     if (!params.truckNumber) {
         getTrips({'accountId': jwt.accountId}, jwt, params, function (response) {
@@ -544,10 +546,9 @@ Trips.prototype.getAllAccountTrips = function (jwt, params,req, callback) {
         })
     } else {
         TrucksColl.findOne({registrationNo: {$regex: '.*' + params.truckNumber + '.*'}}, function (err, truckData) {
-            console.log('truckData',truckData)
             if (err) {
                 result.status = false;
-                result.message = 'Error retrieving expenses Costs';
+                result.message.push('Error retrieving expenses Costs');
                 analyticsService.create(req,serviceActions.account_trips_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
                 callback(result);
             } else if (truckData) {
@@ -564,7 +565,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params,req, callback) {
                 })
             } else {
                 result.status = true;
-                result.message = 'Success';
+                result.message.push('Success');
                 result.count = 0;
                 result.expenses = [];
                 analyticsService.create(req,serviceActions.account_trips,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
