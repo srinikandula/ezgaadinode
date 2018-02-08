@@ -6,10 +6,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'login',
         url: '/login',
         templateUrl: 'views/partials/admin/adminLogin.html',
+        data: {activeTab: 'login'}
     }).state({
         name: 'adminHome',
         url: '/adminHome',
         templateUrl: 'views/partials/admin/adminHome.html',
+        data: {activeTab: 'adminHome'}
     }).state({
         name: 'dashboard',
         url: '/dashboard',
