@@ -36,9 +36,13 @@ var accountSchema = new mongoose.Schema({
     adminRoleId: {type: ObjectId, ref: 'adminRoles'},
     franchiseId: {type: ObjectId, ref: 'franchise'},
     groupName: String,
+    firstName: String,
+    lastName: String,
     contactName: String,
     displayName: String,
     contactAddress: String,
+    city: String,
+    state: String,
     location: String,
     truckIds: [],
     profilePic: String,
@@ -401,13 +405,6 @@ var erpGpsPlans = new mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}
 }, {timestamps: String});
-
-var customerLeadsSchema = mongoose.Schema({
-    createdBy: {type: ObjectId, ref: 'accounts'},
-    attrs: { accountId: { type: ObjectId, ref: 'accounts' } },
-    // accountId:{type: ObjectId, ref: 'accounts'},
-    response: String
-}, { timestamps: String });
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: { type: ObjectId, ref: 'accounts' },

@@ -833,7 +833,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
                             id_admin_role: employee.id_admin_role,
                             contactName: employee.first_name+' '+employee.last_name,
                             displayName: employee.first_name+' '+employee.last_name,
-                            location: employee.city,
+                            location: employee.city+' '+employee.state,
                             isActive: employee.status,
                             // createdAt: convertDate(employee.date_created),
                             // updatedAt: convertDate(employee.date_modified),

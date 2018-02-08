@@ -22,7 +22,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/customersLead',
         templateUrl: 'views/partials/admin/customers/customersLead.html',
         data: {activeTab: 'customers'}
-
     }).state({
         name: 'customers.createCustomer',
         url: '/createCustomer/:customerId',
@@ -36,37 +35,31 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/truckOwners',
         templateUrl: 'views/partials/admin/customers/truckOwners.html',
         data: {activeTab: 'customers'}
-
     }).state({
         name: 'customers.transporters',
         url: '/transporters',
         templateUrl: 'views/partials/admin/customers/transporters.html',
         data: {activeTab: 'customers'}
-
     }).state({
         name: 'customers.commissionAgent',
         url: '/commissionAgent',
         templateUrl: 'views/partials/admin/customers/commissionAgent.html',
         data: {activeTab: 'customers'}
-
     }).state({
         name: 'customers.factoryOwners',
         url: '/factoryOwners',
         templateUrl: 'views/partials/admin/customers/factoryOwners.html',
         data: {activeTab: 'customers'}
-
     }).state({
         name: 'customers.guest',
         url: '/guest',
         templateUrl: 'views/partials/admin/customers/guest.html',
         data: {activeTab: 'customers'}
-
     }).state({
         name: 'customers.restOfAll',
         url: '/restOfAll',
         templateUrl: 'views/partials/admin/customers/restOfAll.html',
         data: {activeTab: 'customers'}
-
     }).state({
         name: 'services',
         url: '/services',
@@ -193,6 +186,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/administrators',
         templateUrl: 'views/partials/admin/administrators/administrators.html',
         data: {activeTab: 'Admin'}
+    }).state({
+        name: 'addUpdateEmployee',
+        url: '/addUpdateEmployee/:employeeId',
+        templateUrl: 'views/partials/admin/administrators/addUpdateEmployee.html',
+        data: {activeTab: 'Admin'},
+        params: {
+            employeeId: null
+        }
     }).state({
         name: 'admin.adminRoles',
         url: '/adminRoles',

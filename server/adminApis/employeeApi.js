@@ -725,13 +725,12 @@ Employees.prototype.updateRole = function (req, callback) {
 /*Author : SVPrasadK*/
 /*Employee Start*/
 Employees.prototype.getEmployee = function (req, callback) {
-    console.log('req getEmployee',req)
     var retObj = {
         status: false,
         messages: []
     };
     var condition = {};
-    var params = req.params;
+    var params = req.query;
 
     if (!params.page) {
         params.page = 1;
@@ -743,10 +742,10 @@ Employees.prototype.getEmployee = function (req, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-        if (!params.contactName) {
-            condition = {}
+        if (!params.role) {
+            condition = {"type":"employee"}
         } else {
-            condition = {role: {$regex: '.*' + params.role + '.*'}}
+            condition = {"type":"employee",role: {$regex: '.*' + params.role + '.*'}}
         }
 
         async.parallel({
@@ -768,7 +767,7 @@ Employees.prototype.getEmployee = function (req, callback) {
                     });
             },
             count: function (countCallback) {
-                AccountsColl.count(function (err, count) {
+                AccountsColl.count({"type":"employee"},function (err, count) {
                     countCallback(err, count);
                 });
             }
@@ -844,7 +843,7 @@ Employees.prototype.addEmployee = function (req, callback) {
         callback(retObj);
     }
     else {
-        AccountsColl.findOne({email: employeeInfo.email}, function (err, oldDoc) {
+        AccountsColl.findOne({email: employeeInfo.email,type: "employee"}, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Error retrieving employee');
                 analyticsService.create(req, serviceActions.add_employee_err, {
@@ -870,7 +869,6 @@ Employees.prototype.addEmployee = function (req, callback) {
                 employeeInfo.accountId = req.jwt.id;
                 employeeInfo.type = "employee";
                 employeeInfo.userName = employeeInfo.email;
-                employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
                 (new AccountsColl(employeeInfo)).save(function (err, doc) {
                     if (err) {
                         retObj.messages.push('Error saving employee');
@@ -908,7 +906,7 @@ Employees.prototype.getEmployeeDetails = function (req, callback) {
     };
     var employeeId = req.query.employeeId;
 
-    if (!Utils.isValidObjectId(employeeId)) {
+    if (!employeeId || !ObjectId.isValid(employeeId)) {
         retObj.messages.push('Invalid employee Id');
     }
 

@@ -1,11 +1,12 @@
+<div ng-controller="administratorsCtrl" ng-init="getEmployee()">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Administrators</li>
         <li class="pull-right">
-            <button class="btn btn-primary" ui-sref="createAdministrator">Create New</button>
+            <button class="btn btn-primary" ui-sref="addUpdateEmployee">Create New</button>
         </li>
         <li class="pull-right col-xs-2">
             <select class="form-control">
-                <option>Select by Role</option>
+                <option>Select</option>
                 <option>Qualified</option>
                 <option>Request for Approval</option>
                 <option>Initiate</option>
@@ -16,14 +17,20 @@
                 <option>Not Interested</option>
             </select>
         </li>
-        <div class="clearfix"></div>
+        <li class="col-xs-3 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
-           ng-table="employeeParams">
+    <div class="clearfix"></div>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="employeeParams">
         <thead>
         <tr>
             <th>S No</th>
-            <th>Contact Name</th>
+            <th>First Name</th>
+            <th>Last Name</th>
             <th>Mobile</th>
             <th>Email</th>
             <th>City</th>
@@ -34,70 +41,18 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>1</td>
-            <td>2889</td>
-            <td>Sravan Kumar</td>
-            <td>TO</td>
-            <td>9618485858</td>
-            <td>01/05/2017</td>
-            <td>Yes</td>
-            <td>Yes</td>
-            <td>No</td>
-            <td>Yes</td>
-            <td>Edit/Delete</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>2889</td>
-            <td>Sravan Kumar</td>
-            <td>TO</td>
-            <td>9618485858</td>
-            <td>01/05/2017</td>
-            <td>Yes</td>
-            <td>Yes</td>
-            <td>No</td>
-            <td>Yes</td>
-            <td>Edit/Delete</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>2889</td>
-            <td>Sravan Kumar</td>
-            <td>TO</td>
-            <td>9618485858</td>
-            <td>01/05/2017</td>
-            <td>Yes</td>
-            <td>Yes</td>
-            <td>No</td>
-            <td>Yes</td>
-            <td>Edit/Delete</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>2889</td>
-            <td>Sravan Kumar</td>
-            <td>TO</td>
-            <td>9618485858</td>
-            <td>01/05/2017</td>
-            <td>Yes</td>
-            <td>Yes</td>
-            <td>No</td>
-            <td>Yes</td>
-            <td>Edit/Delete</td>
-        </tr>
-        <tr>
-            <td>1</td>
-            <td>2889</td>
-            <td>Sravan Kumar</td>
-            <td>TO</td>
-            <td>9618485858</td>
-            <td>01/05/2017</td>
-            <td>Yes</td>
-            <td>Yes</td>
-            <td>No</td>
-            <td>Yes</td>
-            <td>Edit/Delete</td>
+        <tr ng-repeat="employee in employees">
+            <td>{{$index+1}}</td>
+            <td data-title="'firstName'" sortable="'firstName'" class="clickable-item">{{employee.firstName || '--'}}</td>
+            <td data-title="'lastName'" sortable="'lastName'" class="clickable-item">{{employee.lastName || '--'}}</td>
+            <td data-title="'contactPhone'" sortable="'contactPhone'" class="clickable-item">{{employee.contactPhone || '--'}}</td>
+            <td data-title="'email'" sortable="'email'" class="clickable-item">{{employee.email || '--'}}</td>
+            <td data-title="'city'" sortable="'city'" class="clickable-item">{{employee.city || '--'}}</td>
+            <td data-title="'state'" sortable="'state'" class="clickable-item">{{employee.state || '--'}}</td>
+            <td data-title="'Role'" sortable="'erp'" class="clickable-item">{{employee.role || '--'}}</td>
+            <td data-title="'isActive'" sortable="'load'" class="clickable-item">{{employee.isActive?'Active':'Inactive'}}</td>
+            <td><a href="#" ui-sref="addEmployee({employeeId:employee._id})">Edit</a>/<a href="#" ng-click="deleteEmployee(employee._id)">Delete</a></td>
         </tr>
         </tbody>
     </table>
+</div>
