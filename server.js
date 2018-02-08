@@ -34,6 +34,7 @@ var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
+<<<<<<< 044e5cbc8958bcc1cd2b388478461b7b9f9d2df8
 // app.use(morgan('dev'));
 <<<<<<< 094a44b02cca59be98fe8f65a35dd2fb58b1ad0e
 app.use(express.static('client', { index: "/views/index.html" }));
@@ -41,6 +42,11 @@ app.use(express.static('client', { index: "/views/index.html" }));
 app.use(express.static('client', {index: "/views/index.html"}));
 >>>>>>> added files in index.html
 // app.use(express.static('client', {index: "/views/adminIndex.html"}));
+=======
+app.use(morgan('dev'));
+// app.use(express.static('client', {index: "/views/index.html"}));
+app.use(express.static('client', {index: "/views/adminIndex.html"}));
+>>>>>>> add device module
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
 app.use(bodyParser.urlencoded({limit: config.bodyParserLimit, extended: true}));

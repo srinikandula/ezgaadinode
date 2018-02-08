@@ -122,6 +122,12 @@ AuthRouter.get('/getKeyPairsForAccount/:accountId',function (req,res) {
     })
 });
 
+AuthRouter.get('/getEmployees', function (req, res) {
+    Accounts.getEmployees(req, function (result) {
+        res.send(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

@@ -32,7 +32,8 @@
     "datatables.net": "^1.10.16",
     "datatables.net-dt": "^3.2.2",
     "datatables.net-responsive": "^2.2.0",
-    "datatables.net-responsive-dt": "^2.2.0"
+    "datatables.net-responsive-dt": "^2.2.0",
+    "angularjs-dropdown-multiselect": "^1.11.8"
   },
   "resolutions": {
     "angular": "1.6.6"
