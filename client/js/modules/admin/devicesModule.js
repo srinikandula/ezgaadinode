@@ -39,6 +39,19 @@ app.factory('DeviceService', function ($http) {
                 data: device
             }).then(success, error);
         },
+        getAllDevices: function (success, error) {
+            $http({
+                url: '/v1/devices/getAllDevices',
+                method: "GET"
+            }).then(success, error)
+        },
+        transferDevices: function (devices, success, error) {
+            $http({
+                url: '/v1/devices/transferDevices',
+                method: "POST",
+                data: devices
+            }).then(success, error);
+        },
         getAllAccountsForDropdown: function (success, error) {
             $http({
                 url: '/v1/admin/accounts/getAllAccountsForDropdown',
@@ -48,6 +61,12 @@ app.factory('DeviceService', function ($http) {
         getAllTrucksOfAccount: function (truckId, success, error) {
             $http({
                 url: '/v1/trucks/getAllTrucksOfAccount/' + truckId,
+                method: "GET"
+            }).then(success, error)
+        },
+        getEmployees: function (success, error) {
+            $http({
+                url: '/v1/admin/getEmployees',
                 method: "GET"
             }).then(success, error)
         }
@@ -77,12 +96,15 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         };
         DeviceService.getDevices(pageable, function (response) {
             $scope.invalidCount = 0;
-            if (angular.isArray(response.data.devices)) {
+            console.log(response.data);
+            if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.devices;
                 $scope.currentPageOfDevices = response.data.devices;
                 // $scope.currentPageOfDevices[1].isDamaged = '1';
-                // console.log('devices', $scope.currentPageOfDevices);
+                console.log('devices', $scope.currentPageOfDevices);
+            } else {
+                Notification.error({message: response.data.messages[0]});
             }
         });
     };
@@ -178,7 +200,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
-
     getDevice();
 
     function getAccounts() {
@@ -189,9 +210,17 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
-
     getAccounts();
 
+    function getEmployees() {
+        DeviceService.getEmployees(function (success) {
+            if(success.data.status) {
+                $scope.employees = success.data.employees;
+                console.log($scope.employees);
+            }
+        });
+    }
+    getEmployees();
 
     $scope.getTrucksOfAccount = function () {
         // console.log('deviceDetails', $scope.deviceDetails);
@@ -224,18 +253,32 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             $scope.deviceDetails.error = '';
             DeviceService.updateDevice($scope.deviceDetails, function (success) {
                 if (success.data.status) {
-                    // console.log('updated');
+                    Notification.success({message: "Successfully updated"});
                     $state.go('services.gpsDevices');
+                } else {
+                    Notification.error({message: success.data.messages[0]});
                 }
             });
         }
     };
+}]);
 
+app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {
     $scope.devicesToAdd = [{
         imei: '',
         simPhoneNumber: '',
         simNumber: ''
     }];
+
+    function getEmployees() {
+        DeviceService.getEmployees(function (success) {
+            if(success.data.status) {
+                $scope.employees = success.data.employees;
+                console.log($scope.employees);
+            }
+        });
+    }
+    getEmployees();
 
     $scope.addDeviceRow = function () {
         var params = $scope.devicesToAdd;
@@ -252,12 +295,94 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
     };
 
     $scope.addDevices = function () {
-        DeviceService.addDevices({devices: $scope.devicesToAdd, assignedTo: '27'}, function (success) {
-            if (success.data.status) {
-                // console.log('Added', success.data);
-                $state.go('services.gpsDevices');
-                $scope.alreadyadded = success.data.alreadyadded;
+        $scope.errors = [];
+        var params = $scope.devicesToAdd;
+        console.log(params);
+        for(var i = 0;i < params.length-1;i++) {
+            for(var j = i+1;j < params.length;j++) {
+                if(params[i].imei === params[j].imei) {
+                    $scope.errors.push('Multiple devices cannot have same IMEI number');
+                    return;
+                }
+                if(params[i].simPhoneNumber === params[j].simPhoneNumber) {
+                    $scope.errors.push('Multiple devices cannot have same Sim PhoneNumber');
+                    return;
+                }
+                if(params[i].simNumber === params[j].simNumber) {
+                    $scope.errors.push('Multiple devices cannot have same Sim Number');
+                    return;
+                }
+            }
+        }
+        if(!params[params.length-1].imei || !params[params.length-1].simPhoneNumber || !params[params.length-1].simNumber){
+            $scope.errors.push('please fill all the details');
+        } else if(!$scope.assignedTo) {
+            $scope.errors.push('please select an employeee');
+        } else {
+            $scope.errors = '';
+            DeviceService.addDevices({devices: params, assignedTo: $scope.assignedTo}, function (success) {
+                console.log(success.data);
+                if (success.data.status) {
+                    Notification.success({message: "Successfully added"});
+                    $state.go('services.gpsDevices');
+                } else {
+                    $scope.errors = success.data.messages;
+                    Notification.error({message: success.data.messages[0]});
+                }
+            });
+        }
+    };
+}]);
+
+app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {
+
+    function getEmployees() {
+        DeviceService.getEmployees(function (success) {
+            if(success.data.status) {
+                $scope.employees = success.data.employees;
+                console.log($scope.employees);
+            }
+        });
+    }
+    getEmployees();
+    $scope.getAllDevices = function () {
+        DeviceService.getAllDevices(function (success) {
+            if(success.data.status) {
+                $scope.allDevices = success.data.devices;
+                console.log('adddevices', $scope.allDevices);
             }
         });
     };
+    $scope.getAllDevices();
+    $scope.selected_baseline_settings = {
+        displayProp: 'imei',
+        searchField: 'imei',
+        enableSearch: true,
+        scrollable: true,
+        idProp: '_id',
+        externalIdProp: '_id',
+        showCheckAll: false,
+    };
+    // function init() {
+        $scope.selectedDevices = [];
+    // } init();
+
+    $scope.transferDevices = function () {
+        console.log($scope.selectedDevices, $scope.assignedTo);
+        if($scope.selectedDevices.length < 1){
+            $scope.error = 'please select devices';
+        } else if(!$scope.assignedTo) {
+            $scope.error = 'please select an employeee';
+        } else {
+            $scope.error = '';
+            DeviceService.transferDevices({devices: _.pluck($scope.selectedDevices, '_id'), assignedTo:$scope.assignedTo}, function (success) {
+                if (success.data.status) {
+                    Notification.success({message: "Successfully transfered"});
+                    $state.go('services.gpsDevices');
+                } else {
+                    Notification.error({message: success.data.messages[0]});
+                }
+            });
+        }
+    }
 }]);

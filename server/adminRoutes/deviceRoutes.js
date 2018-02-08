@@ -21,8 +21,8 @@ AuthRouter.post('/assignDevice', function (req, res) {
     });
 });
 
-AuthRouter.post('/transferDevice', function (req, res) {
-    Devices.transferDevice(req, function (result) {
+AuthRouter.post('/transferDevices', function (req, res) {
+    Devices.transferDevices(req, function (result) {
         res.json(result);
     });
 });
@@ -60,6 +60,12 @@ AuthRouter.get('/getDevice/:deviceId', function (req, res) {
 
 AuthRouter.post('/updateDevice', function (req, res) {
     Devices.updateDevice(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getAllDevices', function (req, res) {
+    Devices.getAllDevices(req, function (result) {
         res.json(result);
     });
 });

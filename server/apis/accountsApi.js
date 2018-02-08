@@ -784,4 +784,33 @@ Accounts.prototype.getKeyPairsForAccount =function (accountId,req,callback) {
 
 };
 
+Accounts.prototype.getEmployees = function (req, callback) {
+    var retObj={
+        status: false,
+        messages: []
+    };
+    AccountsColl.find({type: "employee"}, function (errEmployee, employees) {
+        if(errEmployee) {
+            retObj.messages.push("Unable to employees");
+            analyticsService.create(req, serviceActions.get_account_data_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages = "Success";
+            retObj.employees = employees;
+            analyticsService.create(req, serviceActions.get_account_data, {
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+};
+
 module.exports = new Accounts();

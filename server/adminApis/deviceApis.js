@@ -13,10 +13,11 @@ var Devices = function () {
 };
 
 Devices.prototype.addDevices = function (req, callback) {
+    console.log(req.body)
     var retObj = {
         status: false,
         messages: [],
-        alreadyadded: []
+        // alreadyadded: []
     };
     var params = req.body.devices;
     for(var i = 0;i < params.length;i++){
@@ -38,11 +39,12 @@ Devices.prototype.addDevices = function (req, callback) {
     } else {
         async.map(params, function (eachdevice, eachdeviceCallback) {
             eachdevice.createdBy = req.jwt.id;
+            params.updatedBy = req.jwt.id;
             DevicesColl.findOne({imei: eachdevice.imei}, function (errgetdevice, getdevice) {
                 if (errgetdevice) {
                     eachdeviceCallback(errgetdevice);
                 } else if(getdevice) {
-                    retObj.alreadyadded.push(eachdevice.imei);
+                    retObj.messages.push('device with IMEI number '+eachdevice.imei+' already added');
                     eachdeviceCallback(null);
                 } else {
                     AccountsColl.findOne({userName: 'accounts'}, function (erraccount, account) {
@@ -72,6 +74,15 @@ Devices.prototype.addDevices = function (req, callback) {
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if(retObj.messages.length > 0){
+                retObj.status = false;
+                analyticsService.create(req, serviceActions.add_device, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
                 }, function (response) {
                 });
                 callback(retObj);
@@ -263,14 +274,14 @@ Devices.prototype.assignDevice = function (req, callback) {
     }
 };
 
-Devices.prototype.transferDevice = function (req, callback) {
+Devices.prototype.transferDevices = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var params = req.body;
-    if (!params.deviceId) {
-        retObj.messages.push("Please provide device id");
+    if (params.devices.length < 1) {
+        retObj.messages.push("Please provide device ids");
     }
     if (!params.assignedTo) {
         retObj.messages.push("Please provide employee id");
@@ -286,9 +297,13 @@ Devices.prototype.transferDevice = function (req, callback) {
         callback(retObj);
     } else {
         params.updatedBy = req.jwt.id;
-        DevicesColl.findOneAndUpdate({_id: params.deviceId}, {$set: {assignedTo: params.assignedTo}}, function (errdevice, device) {
-            if (errdevice) {
-                retObj.messages.push("Unable to get device, please try again");
+        async.map(params.devices, function (device, asyncCallback) {
+            DevicesColl.findOneAndUpdate({_id:device}, {assignedTo: req.body.assignedTo, updatedBy : req.jwt.id}, function (errTransfered, transfered) {
+                asyncCallback(errTransfered, transfered);
+            });
+        }, function (asyncerr, asyncsuccess) {
+            if(asyncerr) {
+                retObj.messages.push("Unable to transfer devices, please try again");
                 analyticsService.create(req, serviceActions.transfer_device_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -386,15 +401,34 @@ Devices.prototype.getDevices = function (req, callback) {
         } else {
             // for (var i = 0; i < results.devices.length; i++) console.log(results.devices[i]._id);
             async.map(results.devices, function (device, asyncCallback) {
-                AccountDevicePlanHistoryColl.find({deviceId: device._id})
-                    .sort({expiryTime: -1}).limit(1).exec(function (errdeviceplan, deviceplan) {
-                    // console.log('deviceplan.length', deviceplan, device._id);
-                    if (deviceplan.length > 0) {
-                        device.expiryTime = deviceplan[0].expiryTime;
-                        device.received = deviceplan[0].received;
-                        // console.log(device);
+                console.log('installed', device.imei, device.installedBy);
+                async.parallel({
+                    planhistory: function (planHistoryCallack) {
+                        AccountDevicePlanHistoryColl.find({deviceId: device._id})
+                            .sort({expiryTime: -1}).limit(1).exec(function (errdeviceplan, deviceplan) {
+                            // console.log('deviceplan.length', deviceplan, device._id);
+                            if (deviceplan.length > 0) {
+                                device.expiryTime = deviceplan[0].expiryTime;
+                                device.received = deviceplan[0].received;
+                                // console.log(device);
+                            }
+                            planHistoryCallack(errdeviceplan, 'success');
+                        });
+                    },
+                    employees: function (empoyeeCallback) {
+                        if(device.installedBy) {
+                            AccountsColl.findOne({id_admin: device.installedBy}, function (erremployee, employee) {
+                                if(employee) {
+                                    device.installedBy = employee.displayName;
+                                }
+                                empoyeeCallback(erremployee, 'success');
+                            });
+                        } else {
+                            empoyeeCallback(null, 'success');
+                        }
                     }
-                    asyncCallback(null, 'success');
+                }, function (parallelCallback, success) {
+                    asyncCallback(parallelCallback, success);
                 });
             }, function (errpopulated, populated) {
                 if (errpopulated) {
@@ -592,6 +626,7 @@ Devices.prototype.getDevice = function (req, callback) {
         }
     });
 };
+
 Devices.prototype.updateDevice = function (req, callback) {
     var retObj = {
         status: false,
@@ -612,7 +647,7 @@ Devices.prototype.updateDevice = function (req, callback) {
             });
             callback(retObj);
         } else {
-            DevicesColl.findOneAndUpdate({_id: params._id}, {$set:{accountId: params.accountId}}, function (errAddedAccount, accountAdded) {
+            DevicesColl.findOneAndUpdate({_id: params._id}, {$set:{accountId: params.accountId, installedBy: params.installedBy}}, function (errAddedAccount, accountAdded) {
                 if(errAddedAccount) {
                     retObj.messages.push("Unable to assign device to truck, please try again");
                     analyticsService.create(req, serviceActions.edit_device_err, {
@@ -628,6 +663,50 @@ Devices.prototype.updateDevice = function (req, callback) {
                     retObj.messages = "Success";
                     analyticsService.create(req, serviceActions.edit_device_err, {
                         body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Devices.prototype.getAllDevices = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    AccountsColl.findOne({userName: 'accounts'}, function (erraccount, account) {
+        if (erraccount) {
+            retObj.messages.push("Unable to assign device to truck, please try again");
+            analyticsService.create(req, serviceActions.get_devices_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            DevicesColl.find({"accountId" : account._id}, function (errdevices, devices) {
+                if(errdevices) {
+                    retObj.messages.push("Unable to assign device to truck, please try again");
+                    analyticsService.create(req, serviceActions.get_devices_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages = "Success";
+                    retObj.devices = devices;
+                    analyticsService.create(req, serviceActions.get_devices, {
                         accountId: req.jwt.id,
                         success: true
                     }, function (response) {

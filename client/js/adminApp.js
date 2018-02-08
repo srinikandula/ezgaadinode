@@ -1,4 +1,4 @@
-var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable', 'ui.select']);
+var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable', 'ui.select', 'angularjs-dropdown-multiselect']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -107,6 +107,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'services.addDevice',
         url: '/addDevice',
         templateUrl: 'views/partials/admin/services/addDevice.html',
+        data:{activeTab: 'services', device: false}
+    }).state({
+        name: 'services.transferDevice',
+        url: '/transferDevice',
+        templateUrl: 'views/partials/admin/services/transferDevice.html',
         data:{activeTab: 'services', device: false}
     }).state({
         name: 'services.deviceManagement',

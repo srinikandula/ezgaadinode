@@ -820,7 +820,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
                     if (findEmployeeErr) {
                         employeeCallBack(findEmployeeErr);
                     } else if (employeeFound) {
-                        employeeCallBack('Employee exists');
+                        employeeCallBack(null, 'Employee exists');
                     } else {
                         var employeeDoc = new AccountsColl({
                             userName: employee.email,
@@ -835,8 +835,8 @@ Events.prototype.getEmployeeData = function (request, callback) {
                             displayName: employee.first_name+' '+employee.last_name,
                             location: employee.city,
                             isActive: employee.status,
-                            createdAt: convertDate(employee.date_created),
-                            updatedAt: convertDate(employee.date_modified),
+                            // createdAt: convertDate(employee.date_created),
+                            // updatedAt: convertDate(employee.date_modified),
                         });
                         employeeDoc.save(function (err) {
                             adminRoleColl.find({}, {"adminRoleId": 1}, function (err, roles) {
@@ -858,7 +858,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
                     callback(retObj);
                 } else {
                     retObj.status = true;
-                    retObj.messages.push('Admin permission saved successfully');
+                    retObj.messages.push('Employees saved successfully');
                     callback(retObj);
                 }
             });
