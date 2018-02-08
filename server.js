@@ -35,7 +35,11 @@ var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
 // app.use(morgan('dev'));
+<<<<<<< 094a44b02cca59be98fe8f65a35dd2fb58b1ad0e
 app.use(express.static('client', { index: "/views/index.html" }));
+=======
+app.use(express.static('client', {index: "/views/index.html"}));
+>>>>>>> added files in index.html
 // app.use(express.static('client', {index: "/views/adminIndex.html"}));
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
