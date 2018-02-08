@@ -28,14 +28,15 @@ var Settings=require('./server/adminRoutes/settingsRoutes');
 var OrderProcess=require('./server/adminRoutes/orderProcessRoutes');
 var Accounts=require('./server/adminRoutes/accountsRoutes');
 var Employees=require('./server/adminRoutes/employeeRoutes');
+var Devices = require('./server/adminRoutes/deviceRoutes');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
-// app.use(morgan('dev'));
-app.use(express.static('client', { index: "/views/index.html" }));
-// app.use(express.static('client', { index: "/views/adminIndex.html" }));
+app.use(morgan('dev'));
+// app.use(express.static('client', {index: "/views/index.html"}));
+app.use(express.static('client', {index: "/views/adminIndex.html"}));
 
 app.use(bodyParser.json({ limit: config.bodyParserLimit }));
 app.use(bodyParser.urlencoded({ limit: config.bodyParserLimit, extended: true }));
@@ -85,8 +86,8 @@ app.use(function(req, res, next) {
     if (/^\/v1\//.test(req.url)) {
         next();
     } else {
-        res.sendFile(__dirname + '/client/views/index.html');
-        // res.sendFile(__dirname + '/client/views/adminIndex.html');
+        // res.sendFile(__dirname + '/client/views/index.html');
+        res.sendFile(__dirname + '/client/views/adminIndex.html');
     }
 });
 
@@ -116,7 +117,7 @@ app.use('/v1/settings',Settings.AuthRouter);
 app.use('/v1/orderProcess',OrderProcess.AuthRouter);
 app.use('/v1/accounts', Accounts.AuthRouter);
 app.use('/v1/employees', Employees.AuthRouter);
-
+app.use('/v1/devices', Devices.AuthRouter);
 
 var server = app.listen(app.get('port'), function() {
     console.log('Listening on port ' + server.address().port);

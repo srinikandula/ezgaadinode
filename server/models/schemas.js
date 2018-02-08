@@ -326,10 +326,13 @@ var deviceSchema = new mongoose.Schema({
     userName: String,
     createdBy: { type: ObjectId, ref: 'accounts' },
     deviceId: String,
+    assignedTo: String,//{type: ObjectId, ref: 'accounts'},
     //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
     imei: String,
     simPhoneNumber: String,
+    truckId: {type: ObjectId, ref: 'trucks'},
+    address: String,
     installedBy: String,  //installed UserId
     accountId: {type: ObjectId, ref: 'accounts'},
     devicePaymentStatus: String,
@@ -340,7 +343,7 @@ var deviceSchema = new mongoose.Schema({
     resetTime: Date,
     paymentStart: Date,
     paymentEnd: Date,
-    isDamaged: String, //duplicate to status?
+    isDamaged: {type: Boolean, default: '0'}, //duplicate to status?
     replacedFor: String, //if this is replacement to another device
     equipmentType: String,
     serialNumber: String,
@@ -359,7 +362,8 @@ var secretKeysCounter = new mongoose.Schema({
     date: String,
     secretId: { type: ObjectId, ref: 'secretKeys' },
     counter: Number
-});
+},{timestamps: true, versionKey: false});
+
 var loadRequestSchema = new mongoose.Schema({
         createdBy: {type: ObjectId, ref: 'accounts'},
         accountId: {type: ObjectId, ref: 'accounts'},
@@ -449,7 +453,7 @@ var customerTypesSchema = mongoose.Schema({
     type: String,
 }, {timestamps: String});
 
-var  customerLeadsSchema = mongoose.Schema({
+var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     name:String,
     contactPhone:[Number],
@@ -512,14 +516,13 @@ var faultyPlanhistory = new mongoose.Schema({
     creationTime: Date,
     startTime: String,
     expiryTime: Date,
-    received: Boolean
+    received: {type: Boolean, default: false}
 }, { timestamps: String });
 
-var keysSchema = mongoose.Schema({
-    accountId: { type: ObjectId, ref: 'accounts' },
-    apiKey: String,
-    secretKey: String,
-    globalAccess:Boolean
+var keysSchema=mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    apiKey:String,
+    secretKey:String
 });
 
 var trucksTypesSchema = mongoose.Schema({
@@ -638,8 +641,9 @@ module.exports = {
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
-    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeads'),
-    AccountdeviceplanhistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
+    CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema'),
+    devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
+    AccountDevicePlanHistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys'),
     TrucksTypesColl:mongoose.model('trucksTypes',trucksTypesSchema,'trucksTypes'),

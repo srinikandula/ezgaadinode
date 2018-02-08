@@ -1,0 +1,153 @@
+<div class="col-xs-12 newCust" ng-controller="DeviceEditCrtl">
+    <h4>GPS / ERP Account</h4>
+    <div class="col-xs-12">
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+                <uib-accordion-heading>
+                    User Information <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="col-xs-12">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="deviceDetails.accountId" ng-change="getTrucksOfAccount()">
+                                <option ng-repeat="account in accounts" value="{{account._id}}">{{account.userName}}</option>
+                            </select>
+                            <!--<ui-select ng-model="deviceDetails.accountId" theme="select2"
+                                       style="min-width: 390px;"
+                                       title="Choose a person" append-to-body="true">
+                                <ui-select-match placeholder="Select an account*" class="form-control custom-form-control">
+                                    {{$select.selected.userName}}
+                                </ui-select-match>
+                                <ui-select-choices
+                                        repeat="account in accounts | propsFilter: {userName: $select.search}">
+                                    <div ng-bind-html="account.userName | highlight: $select.search"></div>
+                                </ui-select-choices>
+                            </ui-select>-->
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="Device Id" ng-model="deviceDetails.imei"/>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="deviceDetails.truckId" ng-change="getSelectedTruckDetails()">
+                                <option value="" selected>Select</option>
+                                <option ng-repeat="truck in trucks" value="{{truck._id}}">{{truck.registrationNo}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="deviceDetails.installedBy">
+                                <option value="" selected>Select</option>
+                                <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="address" ng-model="deviceDetails.address"/>
+                        </div>
+                        <div class="form-group">
+                            <p class="smsenabled">Is Damaged</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="damaged" value="true" ng-model="deviceDetails.isDamaged">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            YES
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="damaged" value="false" ng-model="deviceDetails.isDamaged">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            NO
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <p class="smsenabled">Is Active*:</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="active" value="true" ng-model="deviceDetails.isActive">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Enable
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="active" value="false" ng-model="deviceDetails.isActive">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Disable
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="imei Number" ng-model="deviceDetails.imei"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="SIM Phone Number" ng-model="deviceDetails.simPhoneNumber"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="SIM ID" ng-model="deviceDetails.simNumber"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="Insurance Expire" ng-model="deviceDetails.truck.insuranceExpiry"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="Fitness Expire" ng-model="deviceDetails.truck.fitnessExpiry"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="Rc No" ng-model="deviceDetails.rcNumber"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="Insurance Amount" ng-model="deviceDetails.insuranceAmount"/>
+                        </div>
+                        <div class="form-group">
+                            <p class="smsenabled">NP Available</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="np">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            NO
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="mp">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            YES
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" placeholder="NP Expire" ng-model="deviceDetails.npExpiry"/>
+                        </div>
+                    </div>
+                    <div>Current Location: MR11 Rd, Dewas Naka, Lasudia Mori, Indore, Madhya Pradesh 453771, India</div>
+                </div>
+
+            </div>
+        </uib-accordion>
+        <div class="col-xs-12 save-btns">
+            <div ng-show="deviceDetails.error">{{deviceDetails.error}}</div>
+            <a href="#" class="btn btn-danger" ui-sref="services.gpsDevices">Cancel</a>
+            <a href="#" class="btn btn-primary" ng-click="updateDevice()">Submit</a>
+
+        </div>
+    </div>
+</div>

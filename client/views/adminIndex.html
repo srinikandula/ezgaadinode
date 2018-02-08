@@ -14,26 +14,26 @@
     <link href="components/angular-bootstrap/ui-bootstrap-csp.css" type="text/css">
     <link rel="stylesheet" href="js/lib/bundles/ng-table.css">
     <link rel="stylesheet" href="components/sweetalert2/dist/sweetalert2.min.css">
-    <link rel="stylesheet" type="text/css" href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
-
-
+    <link rel="stylesheet" type="text/css"
+          href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
+    <link rel="stylesheet" href="components/angular-ui-select/dist/select.min.css">
 
 </head>
 
 <body>
-<div class="main-page" ng-app="easygaadiAdmin">
-    <div class="container-fluid pall-zero">
-        <nav class="navbar custom-navbar">
-            <div class="container">
-                <div class="navbar-header">
-                    <a class="navbar-brand logo" href="#"><img src="images/logo-login.png"> </a>
+    <div class="main-page" ng-app="easygaadiAdmin">
+        <div class="container-fluid pall-zero">
+            <nav class="navbar custom-navbar">
+                <div class="container">
+                    <div class="navbar-header">
+                        <a class="navbar-brand logo" href="#"><img src="images/logo-login.png"> </a>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" class="login-user"><img src="images/user.png">Sravan Kumar</a></li>
+                    </ul>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" class="login-user"><img src="images/user.png">Sravan Kumar</a></li>
-                </ul>
-            </div>
-        </nav>
-    </div>
+            </nav>
+        </div>
 
         <div class="container-fluid">
             <div class="row">
@@ -77,9 +77,12 @@
     <script type="text/javascript" src="components/ng-file-upload/ng-file-upload-shim.min.js"></script>
     <script src="components/sweetalert2/dist/sweetalert2.all.min.js"></script>
     <script src="components/angular-ui-notification/dist/angular-ui-notification.js"></script>
-
-
-
+    <script src="js/lib/bundles/ng-table.js"></script>
+    <script src="components/angular-ui-select/dist/select.min.js"></script>
+    <script src="components/underscore/underscore-min.js"></script>
+    <script src="components/angular-ui-select/dist/select.min.js"></script>
+    <script src="components/underscore/underscore-min.js"></script>
+    <script type="text/javascript" src="components/angularjs-dropdown-multiselect/dist/angularjs-dropdown-multiselect.min.js"></script>
 
     <!--Routing adminApp.js File-->
     <script src="js/adminApp.js"></script>
@@ -88,6 +91,7 @@
     <script src="js/modules/admin/customerModule.js"></script>
     <script src="js/modules/admin/orderProcessModule.js"></script>
     <script src="js/modules/admin/settingsModule.js"></script>
+    <script src="js/modules/admin/devicesModule.js"></script>
     <!--Services-->
     <script src="js/services.js"></script>
     <script src="js/lib/bundles/ng-table.js"></script>

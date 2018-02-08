@@ -1,0 +1,15 @@
+<div ng-controller="transferDevicesCrtl">
+    <div>Transfer Devices</div>
+    <div ng-dropdown-multiselect=""
+         options="allDevices"
+         selected-model="selectedDevices"
+         extra-settings="selected_baseline_settings">
+    </div>
+    <select class="form-control custom-form-control" ng-model="assignedTo">
+        <option value="" selected>Select</option>
+        <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}</option>
+    </select>
+    <div ng-show="error">{{error}}</div>
+    <a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>
+    <a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>
+</div>

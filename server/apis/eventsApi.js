@@ -13,7 +13,7 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
 var DevicePlansColl = require('./../models/schemas').devicePlansColl;
-var AccountdeviceplanhistoryColl = require('./../models/schemas').AccountdeviceplanhistoryColl;
+var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
 var FaultyPlanhistoryColl = require('./../models/schemas').FaultyPlanhistoryColl;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
@@ -453,18 +453,18 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                             console.log("New device inserted");
                         }
                     });
-                    AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
-                        for (var i = 0; i < accounts.length; i++) {
-                            TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
-                                console.log("Truck is updated " + JSON.stringify(truck));
-                            });
-                            DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
-                                console.log("Device is updated " + JSON.stringify(device));
-                            });
-                        }
-                    });
-                    //EventData.createTruckData(truckData,deviceData);
                 }
+                AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                    for (var i = 0; i < accounts.length; i++) {
+                        TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
+                            console.log("Truck is updated " + JSON.stringify(truck));
+                        });
+                        DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
+                            console.log("Device is updated " + JSON.stringify(device));
+                        });
+                    }
+                });
+                //EventData.createTruckData(truckData,deviceData);
                 retObj.status = true;
                 retObj.messages.push('trucks are being loaded');
                 callback(retObj);
@@ -536,7 +536,7 @@ Events.prototype.devicePlansHistory = function (request, callback) {
             retObj.messages.push(JSON.stringify(err));
             callback(retObj);
         } else {
-            AccountdeviceplanhistoryColl.remove({}, function (errremoved, removed) {
+            AccountDevicePlanHistoryColl.remove({}, function (errremoved, removed) {
                 FaultyPlanhistoryColl.remove({}, function (errfaultcollremove, faultcollremoved) {
                 });
                 if (errremoved) {
@@ -588,7 +588,7 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                                 planCallBack(errids);
                             } else {
                                 if (ids.deviceId) {
-                                    var planDoc = new AccountdeviceplanhistoryColl({
+                                    var planDoc = new AccountDevicePlanHistoryColl({
                                         deviceId: ids.deviceId,
                                         planId: ids.planId,
                                         amount: plan.amount,
@@ -820,7 +820,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
                     if (findEmployeeErr) {
                         employeeCallBack(findEmployeeErr);
                     } else if (employeeFound) {
-                        employeeCallBack('Employee exists');
+                        employeeCallBack(null, 'Employee exists');
                     } else {
                         var employeeDoc = new AccountsColl({
                             userName: employee.email,
@@ -835,8 +835,8 @@ Events.prototype.getEmployeeData = function (request, callback) {
                             displayName: employee.first_name+' '+employee.last_name,
                             location: employee.city,
                             isActive: employee.status,
-                            createdAt: convertDate(employee.date_created),
-                            updatedAt: convertDate(employee.date_modified),
+                            // createdAt: convertDate(employee.date_created),
+                            // updatedAt: convertDate(employee.date_modified),
                         });
                         employeeDoc.save(function (err) {
                             adminRoleColl.find({}, {"adminRoleId": 1}, function (err, roles) {
@@ -858,7 +858,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
                     callback(retObj);
                 } else {
                     retObj.status = true;
-                    retObj.messages.push('Admin permission saved successfully');
+                    retObj.messages.push('Employees saved successfully');
                     callback(retObj);
                 }
             });
