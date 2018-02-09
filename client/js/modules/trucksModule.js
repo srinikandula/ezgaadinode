@@ -173,7 +173,8 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
     var loadTableData = function (tableParams) {
 
-        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),truckName:tableParams.truckName};
+        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),
+            truckName:tableParams.truckName};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
