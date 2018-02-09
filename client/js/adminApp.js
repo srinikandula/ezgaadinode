@@ -125,7 +125,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'services'}
     }).state({
         name: 'orderprocess',
-        url: '/orderprocess',
+        url: '/orderProcess',
         templateUrl: 'views/partials/admin/orderProcess/orderProcess.html',
         data: {activeTab: 'orderprocess'}
     }).state({
@@ -147,7 +147,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'createTruckRequest',
         url: '/createTruckRequest',
         templateUrl: 'views/partials/admin/orderProcess/createTruckRequest.html',
-        data: { activeTab: 'orderprocess' }
+        data: { activeTab: 'orderprocess    ' }
     }).state({
         name: 'settings',
         url: '/settings',
