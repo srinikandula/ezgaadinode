@@ -28,6 +28,59 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
     }
     position.location = {};
     position.location.coordinates = [position.longitude, position.latitude];
+    if(!position.address) {
+        getAddress(position, function (updatedAddress) {
+            var positionDoc = new GpsColl(position);
+            positionDoc.save(function (err,result) {
+                if (err) {
+                    retObj.messages.push('Error saving position');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Successfully saved the position');
+                    TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc}},function (truUpderr,result) {
+                        if(truUpderr){
+                            retObj.messages.push('Error updating the truck position');
+                            callback(retObj);
+                        }else{
+                            retObj.status = true;
+                            retObj.messages.push('Successfully updated the truck position');
+                            callback(retObj);
+                        }
+                    });
+                }
+            });
+        })
+    } else {
+        var positionDoc = new GpsColl(position);
+        positionDoc.save(function (err,result) {
+            if (err) {
+                retObj.messages.push('Error saving position');
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Successfully saved the position');
+                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc}},function (truUpderr,result) {
+                    if(truUpderr){
+                        retObj.messages.push('Error updating the truck position');
+                        callback(retObj);
+                    }else{
+                        retObj.status = true;
+                        retObj.messages.push('Successfully updated the truck position');
+                        callback(retObj);
+                    }
+                });
+            }
+        });
+    }
+
+};
+
+function getAddress(position, callback) {
+    var retObj = {
+        status: true,
+        messages: []
+    };
     var options = {
         provider: 'google',
         httpAdapter: 'https'
@@ -53,54 +106,16 @@ Gps.prototype.AddDevicePositions = function (position, callback) {
                         retObj.messages.push('Error incrementing secret');
                     } else {
                         retObj.messages.push('Secret Incremented');
-                        var positionDoc = new GpsColl(position);
-                        positionDoc.save(function (err,result) {
-                            if (err) {
-                                retObj.messages.push('Error saving position');
-                                callback(retObj);
-                            } else {
-                                retObj.status = true;
-                                retObj.messages.push('Successfully saved the position');
-                                TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc}},function (truUpderr,result) {
-                                    if(truUpderr){
-                                        retObj.messages.push('Error updating the truck position');
-                                        callback(retObj);
-                                    }else{
-                                        retObj.status = true;
-                                        retObj.messages.push('Successfully updated the truck position');
-                                        callback(retObj);
-                                    }
-                                });
-                            }
-                        });
                     }
+                    callback(retObj);
                 });
             });
         } else {
             retObj.messages.push('Secrets Completed for today');
-            var positionDoc = new GpsColl(position);
-            positionDoc.save(function (err,result) {
-                if (err) {
-                    retObj.messages.push('Error saving position');
-                    callback(retObj);
-                } else {
-                    retObj.status = true;
-                    retObj.messages.push('Successfully saved the position');
-                    TrucksColl.findOneAndUpdate({deviceId:positionDoc.deviceId},{$set:{"attrs.latestLocation":positionDoc}},function (truUpderr,result) {
-                        if(truUpderr){
-                            retObj.messages.push('Error updating the truck position');
-                            callback(retObj);
-                        }else{
-                            retObj.status = true;
-                            retObj.messages.push('Successfully updated the truck position');
-                            callback(retObj);
-                        }
-                    });
-                }
-            });
+            callback(retObj);
         }
     });
-};
+}
 
 Gps.prototype.addSecret = function (secret, email, callback) {
     var retObj = {

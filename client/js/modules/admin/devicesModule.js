@@ -52,6 +52,18 @@ app.factory('DeviceService', function ($http) {
                 data: devices
             }).then(success, error);
         },
+        getDevicePlans: function (success, error) {
+            $http({
+                url: '/v1/devices/getDevicePlans',
+                method: "GET"
+            }).then(success, error);
+        },
+        getDevicePlanHistory: function (deviceId, success, error) {
+            $http({
+                url: '/v1/devices/getDevicePlanHistory/' + deviceId,
+                method: "GET"
+            }).then(success, error);
+        },
         getAllAccountsForDropdown: function (success, error) {
             $http({
                 url: '/v1/admin/accounts/getAllAccountsForDropdown',
@@ -117,7 +129,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
                 createdAt: -1
             }
         }, {
-            counts: [],
+            counts: [50, 100, 200],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
@@ -216,7 +228,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getEmployees(function (success) {
             if(success.data.status) {
                 $scope.employees = success.data.employees;
-                console.log($scope.employees);
+                // console.log($scope.employees);
             }
         });
     }
@@ -261,6 +273,29 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             });
         }
     };
+
+    function getDevicePlans() {
+        DeviceService.getDevicePlans(function (success) {
+            if(success.data.status) {
+                $scope.devicePlans = success.data.devicePlans;
+            } else {
+                Notification.error({message: "unable to get plans"})
+            }
+        });
+    }
+    // getDevicePlans();
+
+    function getDevicePlanHistory() {
+        DeviceService.getDevicePlanHistory($stateParams.device, function (success) {
+            if(success.data.status) {
+                $scope.devicePlanHistory = success.data.devicePlanHistory;
+                console.log('history', $scope.devicePlanHistory);
+            } else {
+                Notification.error({message: "unable to get plan history"})
+            }
+        });
+    }
+    getDevicePlanHistory();
 }]);
 
 app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {

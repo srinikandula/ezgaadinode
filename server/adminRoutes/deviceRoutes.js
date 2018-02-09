@@ -40,18 +40,6 @@ AuthRouter.get('/getDevices', function (req, res) {
     });
 });
 
-AuthRouter.post('/addDevicePlan', function (req, res) {
-    Devices.addDevicePlan(req, function (result) {
-        res.json(result);
-    });
-});
-
-AuthRouter.post('/editDevicePlan', function (req, res) {
-    Devices.editDevicePlan(req, function (result) {
-        res.json(result);
-    });
-});
-
 AuthRouter.get('/getDevice/:deviceId', function (req, res) {
     Devices.getDevice(req, function (result) {
         res.json(result);
@@ -66,6 +54,24 @@ AuthRouter.post('/updateDevice', function (req, res) {
 
 AuthRouter.get('/getAllDevices', function (req, res) {
     Devices.getAllDevices(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.post('/addDevicePlan', function (req, res) {
+    Devices.addDevicePlan(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.post('/editDevicePlan', function (req, res) {
+    Devices.editDevicePlan(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getDevicePlanHistory/:deviceId', function (req, res) {
+    Devices.getDevicePlanHistory(req, function (result) {
         res.json(result);
     });
 });
