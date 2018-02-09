@@ -1,4 +1,4 @@
-app.controller('settingsCtrl', function ($scope, $uibModal, $uibModalInstance) {
+app.controller('settingsCtrl', function ($scope, $uibModal) {
 
     $scope.openPopup = function () {
         var modalInstance = $uibModal.open({
@@ -7,8 +7,5 @@ app.controller('settingsCtrl', function ($scope, $uibModal, $uibModalInstance) {
 
     };
 
-    $ctrl.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
-    };
 
 });

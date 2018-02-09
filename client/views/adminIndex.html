@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Easy Gaadi</title>
+    <title>Easy Gaadi Admin</title>
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/fav.png" type="image/png" sizes="32x32">
@@ -14,86 +14,98 @@
     <link href="components/angular-bootstrap/ui-bootstrap-csp.css" type="text/css">
     <link rel="stylesheet" href="js/lib/bundles/ng-table.css">
     <link rel="stylesheet" href="components/sweetalert2/dist/sweetalert2.min.css">
-    <link rel="stylesheet" type="text/css" href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
-
+    <link rel="stylesheet" type="text/css"
+          href="components/angular-ui-notification/dist/angular-ui-notification.min.css">
 
 
 </head>
 
 <body>
-<div class="main-page" ng-app="easygaadiAdmin">
+<div class="main-page" ng-app="easygaadiAdmin" ng-controller="adminNavCtrl" ng-cloak>
     <div class="container-fluid pall-zero">
         <nav class="navbar custom-navbar">
             <div class="container">
                 <div class="navbar-header">
                     <a class="navbar-brand logo" href="#"><img src="images/logo-login.png"> </a>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" class="login-user"><img src="images/user.png">Sravan Kumar</a></li>
+                <ul class="nav navbar-nav navbar-right" ng-if="isLoggedIn()">
+                    <li class="profile-nav">
+                        <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown"><img src="images/user.png">{{displayName}}
+                            <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#" ui-sref="myProfile">My Profile</a></li>
+                            <li><a href="#" ng-click="logout()">Logout</a></li>
+
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </nav>
     </div>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xs-12 pall-zero">
-                    <div class="col-sm-2 col-xs-12 left-nav">
-                        <adminleft-menu label="Dashboard"></adminleft-menu>
-                        <adminleft-menu label="Customers" ui-sref="customers.customersLead"></adminleft-menu>
-                        <adminleft-menu label="Services" ui-sref="services.gpsAccounts"></adminleft-menu>
-                        <adminleft-menu label="Order Process"></adminleft-menu>
-                        <adminleft-menu label="Settings" ui-sref="settings.gpsSettings"></adminleft-menu>
-                        <adminleft-menu label="Set Notifications"></adminleft-menu>
-                        <adminleft-menu label="Admin"></adminleft-menu>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="col-xs-12 col-sm-10 right-nav pall-zero">
-                        <div ui-view></div>
-                    </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div>
+                <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
+                    <adminleft-menu label="Dashboard"></adminleft-menu>
+                    <adminleft-menu label="Customers" ui-sref="customers.customersLead"></adminleft-menu>
+                    <adminleft-menu label="Services" ui-sref="services.gpsAccounts"></adminleft-menu>
+                    <adminleft-menu label="Order Process" ui-sref="orderprocess.truckRequest"></adminleft-menu>
+                    <adminleft-menu label="Settings" ui-sref="settings.gpsSettings"></adminleft-menu>
+                    <adminleft-menu label="Set Notifications"></adminleft-menu>
+                    <adminleft-menu label="Admin"></adminleft-menu>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="col-xs-12 col-sm-10 right-nav pall-zero">
+                    <div ui-view></div>
+                    <div class="clearfix"></div>
                 </div>
                 <div class="clearfix"></div>
             </div>
-
+            <div class="clearfix"></div>
         </div>
+        <div class="clearfix"></div>
     </div>
-    <footer>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xs-12 pall-zero text-center">
-                    Powered by easygaadi.com. All Rights Reserved.
-                </div>
+</div>
+<div class="clearfix"></div>
+<footer>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 pall-zero text-center">
+                Powered by easygaadi.com. All Rights Reserved.
             </div>
         </div>
-    </footer>
+    </div>
+</footer>
 
-    <!--bower scripts-->
-    <script src="components/jquery/dist/jquery.min.js"></script>
-    <script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="components/angular/angular.min.js"></script>
-    <script src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script src="components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
-    <script type="text/javascript" src="components/ng-file-upload/ng-file-upload.min.js"></script>
-    <script type="text/javascript" src="components/ng-file-upload/ng-file-upload-shim.min.js"></script>
-    <script src="components/sweetalert2/dist/sweetalert2.all.min.js"></script>
-    <script src="components/angular-ui-notification/dist/angular-ui-notification.js"></script>
+<!--bower scripts-->
+<script src="components/jquery/dist/jquery.min.js"></script>
+<script src="components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="components/angular/angular.min.js"></script>
+<script src="components/angular-ui-router/release/angular-ui-router.min.js"></script>
+<script src="components/angular-bootstrap/ui-bootstrap-tpls.min.js"></script>
+<script type="text/javascript" src="components/ng-file-upload/ng-file-upload.min.js"></script>
+<script type="text/javascript" src="components/ng-file-upload/ng-file-upload-shim.min.js"></script>
+<script src="components/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<script src="components/angular-ui-notification/dist/angular-ui-notification.js"></script>
+<script src="components/angular-cookies/angular-cookies.min.js"></script>
 
 
+<!--Routing adminApp.js File-->
+<script src="js/adminApp.js"></script>
 
+<!--Controllers-->
+<script src="js/modules/admin/adminLogin.js"></script>
+<script src="js/modules/admin/customerModule.js"></script>
+<script src="js/modules/admin/orderProcessModule.js"></script>
+<script src="js/modules/admin/settingsModule.js"></script>
 
-    <!--Routing adminApp.js File-->
-    <script src="js/adminApp.js"></script>
-
-    <!--Controllers-->
-    <script src="js/modules/admin/customerModule.js"></script>
-    <script src="js/modules/admin/orderProcessModule.js"></script>
-    <script src="js/modules/admin/settingsModule.js"></script>
-    <!--Services-->
-    <script src="js/services.js"></script>
-    <script src="js/lib/bundles/ng-table.js"></script>
-    <!--Directives-->
-    <script src="js/directives/adminLeftNav.js"></script>
-    <script src="js/directives/adminDatePicker.js"></script>
+<!--Services-->
+<script src="js/services.js"></script>
+<script src="js/lib/bundles/ng-table.js"></script>
+<!--Directives-->
+<script src="js/directives/adminLeftNav.js"></script>
+<script src="js/directives/adminDatePicker.js"></script>
 
 </body>
 
