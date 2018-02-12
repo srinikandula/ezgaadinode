@@ -1,4 +1,4 @@
-var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies', 'ui.select', 'angularjs-dropdown-multiselect']);
+var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies','ui.select','angularjs-dropdown-multiselect','ngSanitize']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -158,6 +158,14 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/settings-gps',
         templateUrl: 'views/partials/admin/settings/gpsSettings.html',
         data: { activeTab: 'settings' }
+    }).state({
+        name: 'orderprocess.editTruckRequest',
+        url: '/editTruckRequest/:_id',
+        templateUrl: 'views/partials/admin/orderProcess/editTruckRequest.html',
+        data: {activeTab: 'orderprocess'},
+        params: {
+            _id: null
+        }
     });
 
     $urlRouterProvider.otherwise('/login');
@@ -200,4 +208,5 @@ app.filter('propsFilter', function () {
 
         return out;
     };
+
 });

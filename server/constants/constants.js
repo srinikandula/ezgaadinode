@@ -298,5 +298,7 @@ const serviceActions = {
     remove_device_err: 'REMOVE_DEVICE_ERR',
     get_device_plan_history_err: 'GET_DEVICE_PLAN_HISTORY_ERR',
     get_device_plan_history: 'GET_DEVICE_PLAN_HISTORY'
+    get_truck_owners_list:'GET_TRUCK_OWNERS_LIST',
+    get_truck_owners_list_err:'GET_TRUCK_OWNERS_LIST_ERR'
 };
 module.exports = serviceActions;
