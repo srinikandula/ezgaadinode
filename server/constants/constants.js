@@ -295,6 +295,18 @@ const serviceActions = {
     device_count:'DEVICE_COUNT',
     device_count_err:'DEVICE_COUNT_ERR',
     remove_device: 'REMOVE_DEVICE',
-    remove_device_err: 'REMOVE_DEVICE_ERR'
+    remove_device_err: 'REMOVE_DEVICE_ERR',
+    get_truck_owners_list:'GET_TRUCK_OWNERS_LIST',
+    get_truck_owners_list_err:'GET_TRUCK_OWNERS_LIST_ERR',
+    count_customer_leads:'COUNT_CUSTOMER_LEADS',
+    count_customer_leads_err:'COUNT_CUSTOMER_LEADS_ERR',
+    count_truck_types:'COUNT_TRUCK_TYPES',
+    count_truck_types_err:'COUNT_TRUCK_TYPES_ERR',
+    count_goods_types:'COUNT_GOODS_TYPES',
+    count_goods_types_err:'COUNT_GOODS_TYPES_ERR',
+    count_load_types:'COUNT_LOAD_TYPES',
+    count_load_types_err:'COUNT_LOAD_TYPES_ERR',
+    count_truck_request:'COUNT_TRUCK_REQUEST',
+    count_truck_request_err:'COUNT_TRUCK_REQUEST_ERR'
 };
 module.exports = serviceActions;

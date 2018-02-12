@@ -1,0 +1,365 @@
+<div class="col-xs-12 newCust" ng-controller="orderProcessCtrl" ng-init="initializeEditTruckRequest();">
+    <h4>Edit Truck Request</h4>
+    <div class="col-xs-12">
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+                <uib-accordion-heading>
+                    Load Details <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.source"
+                                   placeholder="Source Address *"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.destination"
+                                   placeholder="Destination Address *"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.expectedPrice"
+                                   placeholder="Expected Price"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.date | date:'medium'"
+                                   placeholder="Date Required "/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.pickupPoint"
+                                   placeholder="Pickup Point"/>
+                        </div>
+                        <div class="form-group"> Distance/System Price 0[685.71/6726.51]</div>
+
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="form-group">
+                            <select ng-options="g.type as g.type for g in goodsTypesList" class="form-control"
+                                    ng-model="truckRequest.goodsType">
+                                <option value="">Goods type</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select ng-options="t.title as t.title for t in truckTypesList" class="form-control"
+                                    ng-model="truckRequest.truckType">
+                                <option value="">Truck type</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select ng-options="t.title as t.title for t in truckTypesList" class="form-control"
+                                    ng-model="truckRequest.truckType">
+                                <option value="">Trucking Required</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Loading Charge *"/>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Unloading Charge *"/>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="form-group">
+                            <select ng-options="t.title as t.title for t in truckTypesList" class="form-control"
+                                    ng-model="truck.truckType">
+                                <option value="">Insurance required</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="comment"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <textarea class="form-control" placeholder="push message"></textarea>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Search for trucks <i class="pull-right glyphicon"
+                                         ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+
+                <div class="row">
+                    <div class="col-sm-11">
+                        <div class="form-group col-sm-2">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Source *"/>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Destination *"/>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Loading Charge *"/>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Loading Charge *"/>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Loading Charge *"/>
+                        </div>
+                        <div class="form-group col-sm-2">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Tones *"/>
+                        </div>
+
+
+                    </div>
+                    <div class="col-sm-1">
+                        <div class="form-group">
+                            <button class="btn btn-info">Go</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="row col-sm-12">
+                    <table class="table table-bordered table-hover">
+                        <tr>
+                            <td>S.No</td>
+                            <td>Name</td>
+                            <td>Type</td>
+                            <td>Mobile</td>
+                            <td>No Of Trucks</td>
+                            <td>Company</td>
+                            <td>Addess</td>
+                            <td>Source</td>
+                            <td>Destination</td>
+                            <td>ADd Info</td>
+                        </tr>
+                        <tr ng-repeat="truck in trucksList">
+                            <td>{{$index+1}}</td>
+                            <td>Name</td>
+                            <td>Type</td>
+                            <td>Mobile</td>
+                            <td>No Of Trucks</td>
+                            <td>Company</td>
+                            <td>Addess</td>
+                            <td>Source</td>
+                            <td>Destination</td>
+                            <td>ADd Info</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Quotes <i class="pull-right glyphicon"
+                              ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-3">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Customer Id "/>
+                        </div>
+                        <div class="form-group col-sm-3">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Quote"/>
+                        </div>
+                        <div class="form-group col-sm-3">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Comment"/>
+                        </div>
+                        <div class="form-group col-sm-3">
+                            <button class="btn btn-info">Submit</button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="row col-sm-12">
+                    <table class="table table-bordered table-hover">
+                        <tr>
+                            <td>S.No</td>
+                            <td>Contact</td>
+                            <td>Quote</td>
+                            <td>Comment</td>
+
+                        </tr>
+                        <tr ng-repeat="truck in trucksList">
+                            <td>{{$index+1}}</td>
+                            <td>Contact</td>
+                            <td>Quote</td>
+                            <td>Comment</td>
+
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Load Booking <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Customer Id "/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Quote"/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Comment"/>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Customer Id "/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Quote"/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Comment"/>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Customer Id "/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <button class="btn btn-info">Submit</button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+            <div uib-accordion-group class="panel-default">
+                <uib-accordion-heading>
+                    Customer Details <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                </uib-accordion-heading>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Customer Id "/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Quote"/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Comment"/>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Customer Id "/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Quote"/>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Comment"/>
+                        </div>
+
+                    </div>
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-4">
+
+                            <p>Enable Sms/Email Ads</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" value="enable">
+                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                            Enable
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" value="enable">
+                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                            Disable
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <p>Status</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" value="enable">
+                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                            Enable
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" value="enable">
+                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                            Disable
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="form-group col-sm-4">
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                                   placeholder="Customer Id "/>
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+
+
+        </uib-accordion>
+
+        <div class="col-xs-12 save-btns">
+            <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+            <a href="#" class="btn btn-primary" ng-click="addTruckRequest()">Submit</a>
+
+        </div>
+    </div>
+</div>

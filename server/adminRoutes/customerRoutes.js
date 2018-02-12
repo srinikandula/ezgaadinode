@@ -1,6 +1,8 @@
 var express = require('express');
 var AuthRouter = express.Router();
 var CustomerLeads = require('../adminApis/customerLeadsApi');
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 
 AuthRouter.get('/getCustomerLeads', function(req, res) {
     CustomerLeads.getCustomerLeads(req, function(result) {
@@ -8,7 +10,13 @@ AuthRouter.get('/getCustomerLeads', function(req, res) {
     })
 });
 
-AuthRouter.post('/addCustomerLead', function(req, res) {
+AuthRouter.get('/totalCustomerLeads',function (req,res) {
+    CustomerLeads.totalCustomerLeads(req, function(result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.post('/addCustomerLead',multipartyMiddleware, function(req, res) {
     CustomerLeads.addCustomerLead(req, function(result) {
         res.send(result);
     })
@@ -28,6 +36,12 @@ AuthRouter.delete('/deleteCustomerLead', function(req, res) {
 
 AuthRouter.get('/getCustomerLeadDetails', function(req, res) {
     CustomerLeads.getCustomerLeadDetails(req, function(result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getTruckOwners',function (req,res) {
+    CustomerLeads.getTruckOwners(req, function(result) {
         res.send(result);
     })
 });

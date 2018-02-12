@@ -29,6 +29,7 @@ coverage
 bower_components
 client/components
 client/dist
+client/assets
 
 # node-waf configuration
 .lock-wscript

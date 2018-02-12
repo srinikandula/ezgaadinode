@@ -85,12 +85,17 @@ app.controller('AdminLoginCtrl', ['$scope', 'CommonServices', '$state', '$cookie
         if (!params.errors.length) {
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
-                    $cookies.put('token', success.data.token);
-                    $cookies.put('type', success.data.type);
-                    $cookies.put('userName', success.data.userName);
-                    $cookies.put('editAccounts', success.data.editAccounts);
-                    $cookies.put('profilePic', success.data.profilePic);
-                    $state.go('dashboard');
+                    if (success.data.type === 'employee') {
+                        $cookies.put('token', success.data.token);
+                        $cookies.put('type', success.data.type);
+                        $cookies.put('userName', success.data.userName);
+                        $cookies.put('editAccounts', success.data.editAccounts);
+                        $cookies.put('profilePic', success.data.profilePic);
+                        $state.go('dashboard');
+                    } else {
+                        params.errors = ['Not Authorized'];
+                    }
+
                 } else {
                     params.errors = success.data.messages;
                 }

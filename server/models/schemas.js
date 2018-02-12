@@ -544,18 +544,19 @@ var loadTypesSchema = mongoose.Schema({
 
 var truckRequestSchema = mongoose.Schema({
     createdBy: { type: ObjectId, ref: 'accounts' },
-    customer: String,
+    customer: { type: ObjectId, ref: 'accounts' },
     customerType: String,
     source: String,
+    leadType:String,
     destination: String,
     goodsType: String,
+    truckType: String,
     date: { type: Date },
     pickupPoint: String,
     comment: String,
     expectedPrice: Number,
-    trackingAvailable: Boolean,
-    insuranceAvailable: Boolean,
-    accountId: { type: ObjectId, ref: 'accounts' },
+    trackingAvailable: String,
+    insuranceAvailable: String,
     customerLeadId: { type: ObjectId, ref: 'customerLeads' }
 
 }, { timestamps: String });
