@@ -20,7 +20,7 @@ Accounts.prototype.totalAccounts = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountsColl.count(function (err, doc) {
+    AccountsColl.count({gpsEnabled: true}, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting count');
             analyticsService.create(req, serviceActions.count_accounts_err, {
@@ -33,7 +33,7 @@ Accounts.prototype.totalAccounts = function (req, callback) {
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.data = doc;
+            retObj.count = doc;
             analyticsService.create(req, serviceActions.count_accounts, {
                 accountId: req.id,
                 success: true
@@ -58,10 +58,7 @@ Accounts.prototype.getAccounts = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    var query = {"type": "account"};
-    if (params.filter && params.filter.trim().length > 0) {
-        query = {"userName": {$regex: params.filter.trim()}};
-    }
+    var query = {gpsEnabled: true};
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
@@ -100,7 +97,7 @@ Accounts.prototype.getAccounts = function (req, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = docs.count;
-            retObj.data = docs.accounts;
+            retObj.accounts = docs.accounts;
             analyticsService.create(req, serviceActions.get_accounts, {
                 body: JSON.stringify(req.query),
                 accountId: req.jwt.id,
@@ -122,11 +119,17 @@ Accounts.prototype.addAccount = function (req, callback) {
     if (!accountInfo.userName || !_.isString(accountInfo.userName)) {
         retObj.messages.push('Invalid User Name');
     }
+    if (!accountInfo.contactName || !_.isString(accountInfo.contactName)) {
+        retObj.messages.push('Invalid Full Name');
+    }
     if (!accountInfo.password || accountInfo.password.trim().length < 5) {
         retObj.messages.push('Invalid password. Password has to be at least 5 characters');
     }
     if (!accountInfo.contactPhone) {
         retObj.messages.push('Invalid Mobile Number');
+    }
+    if (!accountInfo.type) {
+        retObj.messages.push('Invalid type');
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_account_err, {
@@ -165,6 +168,7 @@ Accounts.prototype.addAccount = function (req, callback) {
                 accountInfo.type = "account";
                 (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
                     if (err) {
+                        console.log(err);
                         retObj.messages.push('Error saving account');
                         analyticsService.create(req, serviceActions.add_account_err, {
                             body: JSON.stringify(req.body),

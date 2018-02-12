@@ -3,7 +3,7 @@ var AuthRouter = express.Router();
 var Accounts = require('../adminApis/accountsApi');
 var logger = require('./../winston/logger')(module);
 
-AuthRouter.get('/totalAccounts', function (req, res) {
+AuthRouter.get('/count', function (req, res) {
     Accounts.totalAccounts(req, function (result) {
         res.send(result);
     });
