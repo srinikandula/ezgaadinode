@@ -112,7 +112,6 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.devices;
                 $scope.currentPageOfDevices = response.data.devices;
-                // $scope.currentPageOfDevices[1].isDamaged = '1';
             } else {
                 Notification.error({message: response.data.messages[0]});
             }

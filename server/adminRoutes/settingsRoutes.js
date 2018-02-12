@@ -33,10 +33,15 @@ AuthRouter.delete('/deleteTruckType', function (req, res) {
     })
 });
 
-AuthRouter.get('/getTruckDetails', function (req, res) {
+AuthRouter.get('/getTruckTypeDetails', function (req, res) {
     Settings.getTruckTypeDetails(req, function (result) {
         res.send(result);
     })
+});
+AuthRouter.get('/countTruckType', function (req, res) {
+    Settings.countTruckType(req, function (result) {
+        res.send(result);
+    });
 });
 
 AuthRouter.get('/getGoodsTypes', function (req, res) {
@@ -137,6 +142,12 @@ AuthRouter.put('/updatePlan', function (req, res) {
 
 AuthRouter.delete('/deletePlan', function (req, res) {
     Settings.deletePlan(req, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/planCount', function (req, res) {
+    Settings.planCount(req, function (result) {
         res.send(result);
     });
 });

@@ -1,4 +1,4 @@
-<div ng-controller="settingsCtrl" ng-init="getPlanDetails()">
+<div ng-controller="settingsCtrl" ng-init="getPlan();">
     <div>
         <p class="pull-left name-head">GPS Renewal Plans</p>
         <div class="row mt-20">
@@ -24,7 +24,7 @@
     </div>
     <div class="clearfix"></div>
     <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="settingParams">
-        <tr ng-repeat="plan in planData">
+        <tr ng-repeat="plan in currentPageOfgpsPlans">
             <td><input type="checkbox"/></td>
             <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Plan Name'" sortable="'planName'" class="clickable-item">{{plan.planName}}</td>
@@ -37,61 +37,66 @@
         </tr>
     </table>
     <script type="text/ng-template" id="addNewGPS.html">
-        <div class="modal-header">
-            <h3 class="modal-title" id="modal-title">New Renewal Plans</h3>
-            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
-        </div>
-        <div class="modal-body" id="modal-body">
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <input type="text" class="form-control" ng-model="gpsAddPlan.planName"
-                               placeholder="Plan Name *"/>
+        <div ng-init="initGPSPlan();">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">New Renewal Plans</h3>
+                <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <input type="text" class="form-control" ng-model="gpsAddPlan.planName"
+                                   placeholder="Plan Name *"/>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <input type="number" class="form-control" ng-model="gpsAddPlan.amount" placeholder="Amount *"/>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <input type="number" class="form-control" ng-model="gpsAddPlan.amount"
+                                   placeholder="Amount *"/>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <input type="number" class="form-control" ng-model="gpsAddPlan.durationInMonths"
-                               placeholder="Duration in Months *"/>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <input type="number" class="form-control" ng-model="gpsAddPlan.durationInMonths"
+                                   placeholder="Duration in Months *"/>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <input type="hidden" class="form-control" ng-model="gpsAddPlan.type" placeholder=""/>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <input type="hidden" class="form-control" ng-model="gpsAddPlan.type" placeholder=""/>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <p class="smsenabled">Status</p>
-                        <ul class="list-inline">
-                            <li>
-                                <div class="radio">
-                                    <label class="pl-0">
-                                        <input type="radio" ng-model="gpsAddPlan.status" ng-value="true" name="status">
-                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                        Enable
-                                    </label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" ng-model="gpsAddPlan.status" ng-value="false" name="status">
-                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                        Disable
-                                    </label>
-                                </div>
-                            </li>
-                        </ul>
+                    <div class="col-sm-6">
+                        <div class="form-group">
+                            <p class="smsenabled">Status</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label class="pl-0">
+                                            <input type="radio" ng-model="gpsAddPlan.status" ng-value="true"
+                                                   name="status">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Enable
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" ng-model="gpsAddPlan.status" ng-value="false"
+                                                   name="status">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Disable
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                </div>
-                <div class="col-sm-12 text-center">
-                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addGPSPlan()"/>
+                    <div class="col-sm-12 text-center">
+                        <input type="button" class="btn btn-primary" value="Submit" ng-click="addGPSPlan()"/>
+                    </div>
                 </div>
             </div>
         </div>

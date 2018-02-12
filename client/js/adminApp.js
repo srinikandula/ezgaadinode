@@ -153,6 +153,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/settings/gpsSettings.html',
         data: {activeTab: 'settings'}
     }).state({
+        name: 'settings.truckTypes',
+        url: '/truckTypes',
+        templateUrl: 'views/partials/admin/settings/truckTypes.html',
+        data: {activeTab: 'settings'}
+    }).state({
         name: 'notifications',
         url: '/notifications',
         templateUrl: 'views/partials/admin/notifications/notificationDashboard.html',

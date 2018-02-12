@@ -103,7 +103,7 @@ Settings.prototype.addTruckType = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.status = true;
-                retObj.messages .push("Truck type added successfully") ;
+                retObj.messages.push("Truck type added successfully");
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_truck_type, {
                     body: JSON.stringify(req.query),
@@ -209,7 +209,7 @@ Settings.prototype.updateTruckType = function (req, callback) {
                     callback(retObj);
                 } else if (doc) {
                     retObj.status = true;
-                    retObj.messages = "Truck type updated successfully";
+                    retObj.messages.push("Truck type updated successfully");
                     retObj.data = doc;
                     analyticsService.create(req, serviceActions.update_truck_type, {
                         body: JSON.stringify(req.body),
@@ -291,6 +291,23 @@ Settings.prototype.deleteTruckType = function (req, callback) {
     }
 
 };
+
+Settings.prototype.countTruckType = function (req, callback) {
+    var result = {};
+    TrucksTypesColl.count({}, function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
+
 
 /*author : Naresh d*/
 Settings.prototype.getGoodsTypes = function (req, callback) {
@@ -651,7 +668,7 @@ Settings.prototype.addLoadType = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.status = true;
-                retObj.messages .push( "Load type added successfully");
+                retObj.messages.push("Load type added successfully");
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_load_type, {
                     body: JSON.stringify(req.query),
@@ -848,7 +865,7 @@ Settings.prototype.getPlan = function (req, callback) {
         messages: []
     };
     var condition = {};
-    var params = req.params;
+    var params = req.query;
 
     if (!params.page) {
         params.page = 1;
@@ -865,7 +882,6 @@ Settings.prototype.getPlan = function (req, callback) {
         } else {
             condition = {accountId: req.jwt.accountId, fullName: {$regex: '.*' + params.planName + '.*'}}
         }
-
         async.parallel({
             gpsPlans: function (gpsPlansCallback) {
                 erpGpsPlansColl
@@ -935,7 +951,7 @@ Settings.prototype.addPlan = function (req, callback) {
     if (!planInfo.amount || !_.isNumber(planInfo.amount)) {
         retObj.messages.push('Invalid Amount');
     }
-    if (planInfo.status===undefined) {
+    if (planInfo.status === undefined) {
         retObj.messages.push('Select Status');
     }
     if (retObj.messages.length) {
@@ -975,7 +991,7 @@ Settings.prototype.addPlan = function (req, callback) {
                 planInfo.createdBy = req.jwt.id;
                 planInfo.accountId = req.jwt.id;
                 (new erpGpsPlansColl(planInfo)).save(function (err, doc) {
-                    console.log('vdsvn',err,doc);
+                    console.log('vdsvn', err, doc);
                     if (err) {
                         retObj.messages.push('Error saving plan');
                         analyticsService.create(req, serviceActions.add_plan_err, {
@@ -1216,6 +1232,23 @@ Settings.prototype.deletePlan = function (req, callback) {
         });
     }
 }
+
+
+Settings.prototype.planCount = function (req, callback) {
+    var result = {};
+    erpGpsPlansColl.count({}, function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            callback(result);
+        }
+    })
+};
 
 /*Plan End*/
 
