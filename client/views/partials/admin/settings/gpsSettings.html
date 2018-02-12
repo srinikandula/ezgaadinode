@@ -17,17 +17,16 @@
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <button class="btn btn-primary" ng-click="openPopup()">Add New</button>
+                    <button class="btn btn-primary" ng-click="saveGPSRenewalPlan()">Add New</button>
                 </div>
             </div>
         </div>
     </div>
     <div class="clearfix"></div>
     <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="settingParams">
-        <tbody>
         <tr ng-repeat="plan in planData">
             <td><input type="checkbox"/></td>
-            <td date-title="'S No'" class="clickable-item">{{$index+1}}</td>
+            <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Plan Name'" sortable="'planName'" class="clickable-item">{{plan.planName}}</td>
             <td data-title="'Duration'" sortable="'durationInMonths'" class="clickable-item">{{plan.durationInMonths}}
             </td>
@@ -36,7 +35,6 @@
             <td><a href="#" ng-click="editPlanPopup(plan._id)">Edit</a>/
                 <a href="#" ng-click="delGpsPlan(plan._id)">Delete</a></td>
         </tr>
-        </tbody>
     </table>
     <script type="text/ng-template" id="addNewGPS.html">
         <div class="modal-header">

@@ -52,7 +52,7 @@ app.factory('SettingServices', ['$http', function ($http) {
 
 
 app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTableParams', 'Notification', function ($scope, $uibModal, SettingServices, NgTableParams, Notification) {
-    $scope.openPopup = function () {
+    $scope.saveGPSRenewalPlan = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'addNewGPS.html',
             controller: 'gpsPopup',
@@ -91,7 +91,6 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 SettingServices.getPlan(pageable, function (success) {
                     if (success.data.status) {
                         $scope.planData = success.data.data;
-                        console.log("Welcome", $scope.planData);
                         tableParams.data = $scope.planData;
                         tableParams.total(parseInt(success.data.count));
                     } else {
@@ -149,8 +148,8 @@ app.controller('gpsPopup', ['$scope', '$state', '$uibModalInstance', 'Notificati
     function gpsAddFunc() {
         $scope.gpsAddPlan = {
             planName: '',
-            amount: 0,
-            durationInMonths: 0,
+            amount: '',
+            durationInMonths: '',
             type: 'gps',
             status: undefined,
             errorMessage: []
