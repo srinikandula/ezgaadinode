@@ -1,15 +1,7 @@
-<div>
-    <div>
-        <ul class="list-inline title-ul">
-            <li class="pull-left name-head">GPS Renewal Plans</li>
-            <li class="pull-right">
-                <button class="btn btn-primary" ng-click="openPopup()">Add New</button>
-            </li>
-        </ul>
-        <div class="clearfix"></div>
-    </div>
+<div ng-controller="settingsCtrl" ng-init="getPlanDetails()">
+    <p class="pull-left name-head">GPS Renewal Plans</p>
     <div class="row mt-20">
-        <div class="col-sm-7 col-sm-offset-5">
+        <div class="col-sm-8 col-sm-offset-4">
             <div class="row">
                 <div class="col-sm-6">
                     <div class="input-group">
@@ -17,88 +9,102 @@
                         <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
                     </div>
                 </div>
-                <div class="col-sm-6">
+                <div class="col-sm-4">
                     <select class="form-control">
                         <option value="" selected>Select</option>
                         <option>Enabled</option>
                         <option>Disabled</option>
                     </select>
                 </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-primary" ng-click="openPopup()">Add New</button>
+                </div>
             </div>
         </div>
     </div>
     <div class="clearfix"></div>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20">
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20"  ng-table="settingParams">
         <thead>
-        <tr>
-            <th></th>
-            <th>S No.</th>
-            <th>Plan Name</th>
-            <th>Duration</th>
-            <th>Amount</th>
-            <th>Status</th>
-            <th>Edit / Delete</th>
-        </tr>
+            <tr>
+                <th></th>
+                <th>S No.</th>
+                <th>Plan Name</th>
+                <th>Duration</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Edit / Delete</th>
+            </tr>
         </thead>
         <tbody>
-        <tr>
+        <tr ng-repeat="plan in planData">
             <td align="center"><input type="checkbox"/></td>
-            <td>S No.</td>
-            <td>Plan Name</td>
-            <td>Duration</td>
-            <td>Amount</td>
-            <td>Status</td>
-            <td>Edit / Delete</td>
+            <td>{{$index+1}}</td>
+            <td data-title="'Plan Name'" sortable="'planName'" class="clickable-item">{{plan.planName}}</td>
+            <td data-title="'Duration'" sortable="'durationInMonths'" class="clickable-item">{{plan.durationInMonths}}</td>
+            <td data-title="'Amount'" sortable="'amount'" class="clickable-item">{{plan.amount}}</td>
+            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{plan.status}}</td>
+            <td><a href="#" ng-click="editPlanPopup(plan._id)">Edit</a>/<a href="#" ng-click="delGpsPlan(plan._id)">Delete</a></td>
         </tr>
-        <tr>
-            <td align="center"><input type="checkbox"/></td>
-            <td>S No.</td>
-            <td>Plan Name</td>
-            <td>Duration</td>
-            <td>Amount</td>
-            <td>Status</td>
-            <td>Edit / Delete</td>
-        </tr>
-        <tr>
-            <td align="center"><input type="checkbox"/></td>
-            <td>S No.</td>
-            <td>Plan Name</td>
-            <td>Duration</td>
-            <td>Amount</td>
-            <td>Status</td>
-            <td>Edit / Delete</td>
-        </tr>
-        <tr>
-            <td align="center"><input type="checkbox"/></td>
-            <td>S No.</td>
-            <td>Plan Name</td>
-            <td>Duration</td>
-            <td>Amount</td>
-            <td>Status</td>
-            <td>Edit / Delete</td>
-        </tr>
-        <tr>
-            <td align="center"><input type="checkbox"/></td>
-            <td>S No.</td>
-            <td>Plan Name</td>
-            <td>Duration</td>
-            <td>Amount</td>
-            <td>Status</td>
-            <td>Edit / Delete</td>
-        </tr>
+
         </tbody>
     </table>
-</div>
+    <script type="text/ng-template" id="addNewGPS.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">New Renewal Plans</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" ng-model="gpsAddPlan.planName" placeholder="Plan Name *" />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="number" class="form-control" ng-model="gpsAddPlan.amount" placeholder="Amount *" />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="number" class="form-control" ng-model="gpsAddPlan.durationInMonths" placeholder="Duration in Months *" />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="hidden" class="form-control" ng-model="gpsAddPlan.type" placeholder="" />
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <p class="smsenabled">Status</p>
+                        <ul class="list-inline">
+                            <li>
+                                <div class="radio">
+                                    <label class="pl-0">
+                                        <input type="radio" ng-model="gpsAddPlan.status" ng-value="true" name="status">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        Enable
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" ng-model="gpsAddPlan.status" ng-value="false" name="status">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        Disable
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addGPSPlan()" />
+                </div>
+            </div>
+        </div>
 
-<script type="text/ng-template" id="addNewGPS.html">
-    <div class="modal-header">
-        <h3 class="modal-title" id="modal-title">GPS Renewal Plans</h3>
-    </div>
-    <div class="modal-body" id="modal-body">
-        asdfasdfasdfasdf
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
-        <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
-    </div>
-</script>
+    </script>
+</div>

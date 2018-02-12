@@ -35,6 +35,25 @@
     padding-top: 10px;
 }
 
+.pl-0 {
+    padding-left:0 !important;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: #fff;
+    font-size: 15px;
+    background: #666;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    text-align: center;
+    padding: 2px 0px;
+    cursor: pointer;
+}
+
 @font-face {
     font-family: 'Gotham-Medium';
     src: url('../fonts/Gotham-Medium/Gotham-Medium.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.otf') format('opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.woff') format('woff'), url('../fonts/Gotham-Medium/Gotham-Medium.ttf') format('truetype'), url('../fonts/Gotham-Medium/Gotham-Medium.svg#Gotham-Medium') format('svg');

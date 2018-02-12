@@ -8,6 +8,7 @@ var erpGpsPlansColl = require('../models/schemas').erpGpsPlansColl;
 var TrucksTypesColl = require("../models/schemas").TrucksTypesColl;
 var LoadTypesColl = require("../models/schemas").LoadTypesColl;
 var GoodsTypesColl = require("../models/schemas").GoodsTypesColl;
+var Utils = require("../apis/utils");
 
 var Settings = function () {
 };
@@ -924,15 +925,18 @@ Settings.prototype.addPlan = function (req, callback) {
         messages: []
     };
     var planInfo = req.body;
-
+    console.log('planinfo: ', planInfo);
     if (!planInfo.planName || !_.isString(planInfo.planName)) {
         retObj.messages.push('Invalid Plan Name');
     }
-    if (!planInfo.durationInMonths || !_.isNumber(planInfo.durationInMonths)) {
+    if (!planInfo.durationInMonths) {
         retObj.messages.push('Invalid Duration Period');
     }
     if (!planInfo.amount || !_.isNumber(planInfo.amount)) {
         retObj.messages.push('Invalid Amount');
+    }
+    if (planInfo.status===undefined) {
+        retObj.messages.push('Select Status');
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_plan_err, {
@@ -945,6 +949,7 @@ Settings.prototype.addPlan = function (req, callback) {
         callback(retObj);
     }
     else {
+        console.log('else');
         erpGpsPlansColl.findOne({planName: planInfo.planName}, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Error retrieving gps plan');
@@ -970,6 +975,7 @@ Settings.prototype.addPlan = function (req, callback) {
                 planInfo.createdBy = req.jwt.id;
                 planInfo.accountId = req.jwt.id;
                 (new erpGpsPlansColl(planInfo)).save(function (err, doc) {
+                    console.log('vdsvn',err,doc);
                     if (err) {
                         retObj.messages.push('Error saving plan');
                         analyticsService.create(req, serviceActions.add_plan_err, {
@@ -1064,7 +1070,7 @@ Settings.prototype.updatePlan = function (req, callback) {
     };
     var planInfo = req.body;
 
-    if (!Utils.isValidObjectId(planInfo.gpsPlanId)) {
+    if (!Utils.isValidObjectId(planInfo._id)) {
         retObj.messages.push('Invalid gps plan Id');
     }
     if (!planInfo.planName || !_.isString(planInfo.planName)) {
@@ -1088,7 +1094,7 @@ Settings.prototype.updatePlan = function (req, callback) {
         callback(retObj);
     } else {
         erpGpsPlansColl.findOne({
-            _id: planInfo.gpsPlanId,
+            _id: planInfo._id,
         }, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Please Try Again');
@@ -1102,7 +1108,7 @@ Settings.prototype.updatePlan = function (req, callback) {
                 callback(retObj);
             } else if (oldDoc) {
                 planInfo.updatedBy = req.jwt.id;
-                erpGpsPlansColl.findOneAndUpdate({_id: planInfo.gpsPlanId}, {$set: planInfo}, function (err, doc) {
+                erpGpsPlansColl.findOneAndUpdate({_id: planInfo._id}, {$set: planInfo}, function (err, doc) {
                     if (err) {
                         retObj.messages.push('Error updating the gps plan');
                         analyticsService.create(req, serviceActions.update_plan_err, {
@@ -1157,7 +1163,7 @@ Settings.prototype.deletePlan = function (req, callback) {
         messages: []
     };
     var jwt = req.jwt;
-    var gpsPlanId = req.body.gpsPlanId;
+    var gpsPlanId = req.query._id;
     var condition = {};
     var giveAccess = false;
 
