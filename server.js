@@ -29,6 +29,7 @@ var OrderProcess = require('./server/adminRoutes/orderProcessRoutes');
 var Accounts = require('./server/adminRoutes/accountsRoutes');
 var Employees = require('./server/adminRoutes/employeeRoutes');
 var Devices = require('./server/adminRoutes/deviceRoutes');
+var globalApi = require('./server/routes/globalRoutes');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -123,6 +124,7 @@ app.use('/v1/cpanel/orderProcess', OrderProcess.AuthRouter);
 app.use('/v1/cpanel/accounts', Accounts.AuthRouter);
 app.use('/v1/cpanel/employees', Employees.AuthRouter);
 app.use('/v1/cpanel/devices', Devices.AuthRouter);
+app.use('/v1/global/',globalApi.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

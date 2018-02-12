@@ -739,25 +739,6 @@ Accounts.prototype.updateErpSettings = function (params,req, callback) {
 
 };
 
-Accounts.prototype.getContactInfo  = function (accountId,req,callback) {
-    var retObj={
-        status: false,
-        messages: []
-    };
-    AccountsColl.findOne({_id:accountId},{email:1,contactPhone:1,userName:1,_id:0,alternatePhone:1},function (err,accDetails) {
-        if(err){
-            retObj.status=false;
-            retObj.messages.push('Please try again');
-            callback(retObj);
-        }else{
-            retObj.status=true;
-            retObj.messages.push('Success');
-            retObj.results=accDetails;
-            callback(retObj);
-        }
-    })
-}
-
 Accounts.prototype.getEmployees = function (req, callback) {
     var retObj={
         status: false,

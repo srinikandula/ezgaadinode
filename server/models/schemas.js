@@ -506,7 +506,8 @@ var faultyPlanhistory = new mongoose.Schema({
 var keysSchema=mongoose.Schema({
     accountId:{type: ObjectId, ref: 'accounts'},
     apiKey:String,
-    secretKey:String
+    secretKey:String,
+    globalAccess:{type: Boolean, default: false}
 });
 
 var trucksTypesSchema = mongoose.Schema({

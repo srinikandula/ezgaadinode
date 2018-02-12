@@ -110,13 +110,6 @@ AuthRouter.put('/updateErpSettings', function (req, res) {
     });
 });
 
-AuthRouter.get('/getContactInfo',function (req,res) {
-    Accounts.getContactInfo(req.jwt.accountId,req,function (result) {
-        res.send(result);
-    })
-})
-
-
 AuthRouter.get('/getEmployees', function (req, res) {
     Accounts.getEmployees(req, function (result) {
         res.send(result);

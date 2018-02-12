@@ -360,7 +360,5 @@ const serviceActions = {
     del_key_pair_err:'DEL_KEY_PAIR_ERR',
     get_acc_key_pairs:'GET_ACC_KEY_PAIRS',
     get_acc_key_pairs_err:'GET_ACC_KEY_PAIRS_ERR'
->>>>>>> alternateAndContactInfo
->>>>>>> alternateAndContactInfo
 };
 module.exports = serviceActions;

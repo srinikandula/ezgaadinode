@@ -107,19 +107,19 @@ app.factory('AccountServices',['$http', '$cookies', function ($http, $cookies) {
         },
         createKeyPair:function (body,success,error) {
             $http({
-                url: '/v1/accounts/createKeyPair/'+body.accountId+'/'+body.globalAccess,
+                url: '/v1/cpanel/accounts/createKeyPair/'+body.accountId+'/'+body.globalAccess,
                 method: "GET"
             }).then(success, error)
         },
         getKeyPairsForAccount:function (body,success,error) {
             $http({
-                url: '/v1/accounts/getKeyPairsForAccount/'+body,
+                url: '/v1/cpanel/accounts/getKeyPairsForAccount/'+body,
                 method: "GET"
             }).then(success, error)
         },
         deleteKeyPair:function (id,accountId,success,error) {
             $http({
-                url: '/v1/accounts/deleteKeyPair/'+id+'/'+accountId,
+                url: '/v1/cpanel/accounts/deleteKeyPair/'+id+'/'+accountId,
                 method: "DELETE"
             }).then(success, error)
         }
