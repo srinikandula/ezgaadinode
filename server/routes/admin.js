@@ -110,17 +110,12 @@ AuthRouter.put('/updateErpSettings', function (req, res) {
     });
 });
 
-AuthRouter.get('/createKeyPair/:accountId',function (req,res) {
-    Accounts.createKeys(req.params.accountId,req,function (result) {
+AuthRouter.get('/getContactInfo',function (req,res) {
+    Accounts.getContactInfo(req.jwt.accountId,req,function (result) {
         res.send(result);
     })
-});
+})
 
-AuthRouter.get('/getKeyPairsForAccount/:accountId',function (req,res) {
-    Accounts.getKeyPairsForAccount(req.params.accountId,req,function (result) {
-        res.send(result);
-    })
-});
 
 AuthRouter.get('/getEmployees', function (req, res) {
     Accounts.getEmployees(req, function (result) {

@@ -8,6 +8,7 @@ var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var archivedDevicePositions = require('./../models/schemas').ArchivedDevicePositionsColl;
+var AccountsColl = require('./../models/schemas').AccountsColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 
@@ -304,5 +305,45 @@ Gps.prototype.getDeviceTrucks = function (req,callback) {
         }
     })
 };
+
+Gps.prototype.findDeviceStatus = function (deviceId,req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    TrucksColl.find({deviceId:deviceId},{accountId:1},function (err,accountId) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Error fetching data');
+            callback(retObj);
+        }else{
+            AccountsColl.findOne({_id:accountId},function (err,settings) {
+                if(err){
+                    retObj.status=false;
+                    retObj.messages.push('Error fetching settings data');
+                    callback(retObj);
+                }else{
+                    var idealTime=60;
+                    var stopTime=20;
+                    var currentDate=new Date();
+                    var idealDate=new Date((currentDate-0)-(idealTime*60000));
+                    GpsColl.find({deviceId:deviceId,createdAt:{$gte:idealDate,$lte:currentDate}}).sort({createdAt:-1}).exec(function (err,positions) {
+                        if(err){
+                            retObj.status=false;
+                            retObj.messages.push('Error fetching gps positions data');
+                            callback(retObj);
+                        }else{
+                            retObj.status=true;
+                            retObj.messages.push('Success');
+                            retObj.results=positions;
+                            console.log(positions.length);
+                            callback(retObj);
+                        }
+                    })
+                }
+            })
+        }
+
+    })
+}
 
 module.exports = new Gps();

@@ -253,6 +253,18 @@ OpenRouter.get('/get/employees', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/completeData',function (request,res) {
+    Events.getCompleteData(request,function (results) {
+        res.json(results);
+    })
+});
+
+OpenRouter.get('/get/alternateContact',function (req,res) {
+    Events.getAlternateContact(req,function (results) {
+        res.json(results);
+    })
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

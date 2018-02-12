@@ -107,14 +107,20 @@ app.factory('AccountServices',['$http', '$cookies', function ($http, $cookies) {
         },
         createKeyPair:function (body,success,error) {
             $http({
-                url: '/v1/admin/createKeyPair/'+body.accountId,
+                url: '/v1/accounts/createKeyPair/'+body.accountId+'/'+body.globalAccess,
                 method: "GET"
             }).then(success, error)
         },
         getKeyPairsForAccount:function (body,success,error) {
             $http({
-                url: '/v1/admin/getKeyPairsForAccount/'+body,
+                url: '/v1/accounts/getKeyPairsForAccount/'+body,
                 method: "GET"
+            }).then(success, error)
+        },
+        deleteKeyPair:function (id,accountId,success,error) {
+            $http({
+                url: '/v1/accounts/deleteKeyPair/'+id+'/'+accountId,
+                method: "DELETE"
             }).then(success, error)
         }
     }
@@ -383,13 +389,29 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         getTruckIds();
     }
 
+    $scope.enableGlobalAccess=false;
+
     $scope.createKeyPair = function (id) {
-        AccountServices.createKeyPair({accountId:id},function (success) {
+        AccountServices.createKeyPair({accountId:id,globalAccess:$scope.enableGlobalAccess},function (success) {
             if (success.data.status) {
                 // console.log(success.data.results);
                 getKeyPairsForAccount();
             }else{
 
+            }
+        },function (error) {
+
+        })
+    };
+
+    $scope.deleteKeyPair  = function (key,accountId) {
+        console.log(accountId);
+        AccountServices.deleteKeyPair(key._id,accountId,function (success) {
+            if(success.data.status){
+                swal('', success.data.message, 'success' );
+                getKeyPairsForAccount();
+            }else{
+                swal('', success.data.message, 'warning' );
             }
         },function (error) {
 

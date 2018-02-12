@@ -53,7 +53,8 @@ var accountSchema = new mongoose.Schema({
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},
     editAccounts: {type: Boolean, default: false},
-    lastLogin: Date
+    lastLogin: Date,
+    alternatePhone:String
 }, {
     timestamps: true
 });
@@ -388,8 +389,7 @@ var analyticsSchema = mongoose.Schema({
     remoteIp: String,
     userAgent: String,
     userAgentJSON: {},
-    attrs: {accountId: {type: ObjectId, ref: 'accounts'}},
-    // accountId:{type: ObjectId, ref: 'accounts'},
+    attrs: {accountId: {type: ObjectId, ref: 'accounts'},body:String,success:Boolean},
     response: String
 }, {timestamps: String});
 

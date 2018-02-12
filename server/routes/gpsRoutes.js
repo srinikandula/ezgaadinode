@@ -54,6 +54,12 @@ AuthRouter.get('/getDeviceTrucks',function (req,res) {
     })
 });
 
+OpenRouter.get('/findDeviceStatus/:deviceId',function (req,res) {
+    gps.findDeviceStatus(req.params.deviceId,req,function (results) {
+        res.send(results);
+    })
+})
+
 /*OpenRouter.get('/moveDevicePositions', function (rew, res) {
     gps.moveDevicePositions(function (result) {
         res.send(result);
