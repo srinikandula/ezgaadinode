@@ -1,0 +1,98 @@
+<div class="col-xs-12 newCust" ng-controller="administratorsCtrl" ng-init="adminRolesDropDown();franchiseDropDown()">
+    <h4>Add Employee</h4>
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="firstName"
+                           ng-model="employee.firstName" placeholder="First Name *"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="lastName"
+                           ng-model="employee.lastName" placeholder="Last Name *"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="password"
+                           ng-model="employee.password" placeholder="Password *"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="confirmPassword"
+                           ng-model="employee.confirmPassword" placeholder="confirmPassword *"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="contactAddress"
+                           ng-model="employee.contactAddress" placeholder="Address"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="city" ng-model="employee.city"
+                           placeholder="City"/>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="state" ng-model="employee.state"
+                           placeholder="State"/>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group">
+                    <input type="text" class="form-control custom-form-control" name="email" ng-model="employee.email"
+                           placeholder="Email *"/>
+                </div>
+                <div class="form-group">
+                    <input type="number" class="form-control custom-form-control" name="mobile"
+                           ng-model="employee.contactPhone"
+                           placeholder="Mobile *"/>
+                    <!--input type="text" class="form-control custom-form-control" name="mobile"
+                           ng-model="employee.contactPhone[$index]" ng-pattern="/^[0-9]/"
+                           placeholder="Mobile {{$index+1}} *"/>
+                    <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
+                                                                     ng-click="removeNumber()"></i></span>
+                    <span class="plus-pos" ng-show="$index == 0"><i class="fa fa-plus-square" aria-hidden="true"
+                                                                    ng-click="addNumber()"></i></span-->
+                </div>
+                <div class="form-group">
+                    <select class="form-control custom-form-control" ng-model="employee.adminRoleId">
+                        <option value="" selected>Select Role *</option>
+                        <option ng-repeat="adminRole in adminRoles" value="{{adminRole._id}}">{{adminRole.role}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <select class="form-control custom-form-control" ng-model="employee.franchiseId">
+                        <option value="" selected>Select Franchise *</option>
+                        <option ng-repeat="franchise in franchises" value="{{franchise._id}}">{{franchise.fullName}}</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="file" class="form-control custom-form-control" ng-model="files"/>
+                </div>
+                <div class="form-group">
+                    <p class="smsenabled">Is Active*:</p>
+                    <ul class="list-inline">
+                        <li>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="isActive" ng-value="true" ng-model="employee.isActive">
+                                    <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                    Enable
+                                </label>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="isActive" ng-value="false" ng-model="employee.isActive">
+                                    <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                    Disable
+                                </label>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-xs-12 save-btns">
+            <a href="#" class="btn btn-danger" ui-sref="admin.administrators">Cancel</a>
+            <a href="#" class="btn btn-primary" ng-click="addUpdateEmployee()">Submit</a>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+</div>

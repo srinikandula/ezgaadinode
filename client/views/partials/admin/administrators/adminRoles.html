@@ -1,0 +1,46 @@
+<div ng-controller="administratorsCtrl" ng-init="countRole();adminRolesDropDown()">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Administrator Roles
+        </li>
+        <li class="pull-right">
+            <button class="btn btn-primary" ui-sref="admin.addUpdateAdminRole">Create New</button>
+        </li>
+        <li class="pull-right col-xs-2">
+            <select class="form-control">
+                <option>Select by Role</option>
+                <option ng-repeat="adminRole in adminRoles" value="{{adminRole.role._id}}">{{adminRole.role}}</option>
+            </select>
+        </li>
+        <li class="col-xs-3 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
+
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="roleParams">
+        <tr ng-repeat="role in currentPageOfRoles" style="text-align: center;">
+            <td data-title="'Role'" sortable="'role'" class="clickable-item">
+                {{role.role}}
+            </td>
+            <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">
+                {{role.createdAt | date:'dd/MM/yyyy'}}
+            </td>
+            <td data-title="'Date Modified'" sortable="'updatedAt'" class="clickable-item">
+                {{role.updatedAt | date:'dd/MM/yyyy hh:mm:ss'}}
+            </td>
+            <td data-title="'Status'" sortable="'status'" class="clickable-item">
+                {{role.status?'Active':'Inactive'}}
+            </td>
+            <td data-title="'Edit/Delete'" sortable="'role'" class="clickable-item">
+                <a href="#" ui-sref="admin.addUpdateAdminRole({roleId: role._id})">Edit</a> /
+                <a href="#" ng-click="deleteRole($index)">Delete</a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfRoles || currentPageOfRoles.length === 0">
+            <td colspan="8">No Roles Records exist.</td>
+        </tr>
+    </table>
+</div>

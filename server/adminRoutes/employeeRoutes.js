@@ -5,6 +5,12 @@ var logger = require('./../winston/logger')(module);
 
 /*Author SVPrasadK*/
 /*Employee Start*/
+AuthRouter.get('/countEmployee', function (req, res) {
+    Employees.countEmployee(req, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/getEmployee', function (req, res) {
     Employees.getEmployee(req, function (result) {
         res.json(result);
@@ -37,6 +43,12 @@ AuthRouter.delete('/deleteEmployee', function (req, res) {
 /*Employee End*/
 /*Author SVPrasadK*/
 /*Role Start*/
+AuthRouter.get('/countRole', function (req, res) {
+    Employees.countRole(req, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/getRole', function (req, res) {
     Employees.getRole(req, function (result) {
         res.json(result)
@@ -60,9 +72,21 @@ AuthRouter.put('/updateRole', function (req, res) {
         res.json(result);
     });
 });
+
+AuthRouter.delete('/deleteRole', function (req, res) {
+    Employees.deleteRole(req, function (result) {
+        res.json(result);
+    });
+});
 /*Role End*/
 /*Author SVPrasadK*/
 /*Franchise Start*/
+AuthRouter.get('/countFranchise', function (req, res) {
+    Employees.countFranchise(req, function (result) {
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/getFranchise', function (req, res) {
     Employees.getFranchise(req, function (result) {
         res.json(result)
@@ -93,6 +117,20 @@ AuthRouter.delete('/deleteFranchise', function (req, res) {
     });
 });
 /*Franchise End*/
+/*Author SVPrasadK*/
+/*Drop Down Start*/
+AuthRouter.get('/adminRolesDropDown', function (req, res) {
+    Employees.adminRolesDropDown(req, function (result) {
+        res.json(result)
+    });
+});
+
+AuthRouter.get('/franchiseDropDown', function (req, res) {
+    Employees.franchiseDropDown(req, function (result) {
+        res.json(result)
+    });
+});
+/*Drop Down Stop*/
 
 module.exports = {
     AuthRouter: AuthRouter

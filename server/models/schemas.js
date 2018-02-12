@@ -36,9 +36,13 @@ var accountSchema = new mongoose.Schema({
     adminRoleId: {type: ObjectId, ref: 'adminRoles'},
     franchiseId: {type: ObjectId, ref: 'franchise'},
     groupName: String,
+    firstName: String,
+    lastName: String,
     contactName: String,
     displayName: String,
     contactAddress: String,
+    city: String,
+    state: String,
     location: String,
     truckIds: [],
     profilePic: String,
@@ -403,13 +407,6 @@ var erpGpsPlans = new mongoose.Schema({
 }, {timestamps: String});
 
 var customerLeadsSchema = mongoose.Schema({
-    createdBy: {type: ObjectId, ref: 'accounts'},
-    attrs: { accountId: { type: ObjectId, ref: 'accounts' } },
-    // accountId:{type: ObjectId, ref: 'accounts'},
-    response: String
-}, { timestamps: String });
-
-var customerLeadsSchema = mongoose.Schema({
     createdBy: { type: ObjectId, ref: 'accounts' },
     name: String,
     contactPhone: [Number],
@@ -479,19 +476,6 @@ var customerLeadsSchema = mongoose.Schema({
     loadPaymentPodDays:Number,
     tdsDeclarationDoc:String,
     leadSource:String
-}, { timestamps: String });
-
-var devicePlans = new mongoose.Schema({
-    accountId: { type: ObjectId, ref: 'accounts' },
-    devicePlanId: Number,
-    franchiseId: Number,
-    planName: String,
-    durationInMonths: Number,
-    status: Boolean,
-    amount: Number,
-    remark: String,
-    createdBy: { type: ObjectId, ref: 'accounts' },
-    updatedBy: { type: ObjectId, ref: 'accounts' }
 }, { timestamps: String });
 
 var accountDevicePlanHistory = new mongoose.Schema({
@@ -643,7 +627,6 @@ module.exports = {
     analyticsColl:mongoose.model('analytics',analyticsSchema,'analytics'),
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
     CustomerLeadsColl:mongoose.model('customerLeads',customerLeadsSchema,'customerLeadsSchema'),
-    devicePlansColl:mongoose.model('devicePlans',devicePlans,'devicePlans'),
     AccountDevicePlanHistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl:mongoose.model('apiSecretKeys',keysSchema,'apiSecretKeys'),

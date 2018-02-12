@@ -12,7 +12,7 @@ var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
-var DevicePlansColl = require('./../models/schemas').devicePlansColl;
+var erpGpsPlansColl = require('./../models/schemas').erpGpsPlansColl;
 var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
 var FaultyPlanhistoryColl = require('./../models/schemas').FaultyPlanhistoryColl;
 var analyticsService = require('./../apis/analyticsApi');
@@ -487,13 +487,13 @@ Events.prototype.getDevicePlans = function (request, callback) {
             callback(retObj);
         } else {
             async.map(plans, function (plan, planCallBack) {
-                DevicePlansColl.findOne({devicePlanId: plan.id_device_plans}, function (findplanerr, planfound) {
+                erpGpsPlansColl.findOne({devicePlanId: plan.id_device_plans}, function (findplanerr, planfound) {
                     if (findplanerr) {
                         planCallBack(findplanerr);
                     } else if (planfound) {
                         planCallBack('plan added already');
                     } else {
-                        var planDoc = new DevicePlansColl({
+                        var planDoc = new erpGpsPlansColl({
                             devicePlanId: plan.id_device_plans,
                             franchiseId: plan.id_franchise,
                             planName: plan.plan_name,
@@ -579,7 +579,7 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                                 })
                             },
                             planId: function (planIdCallback) {
-                                DevicePlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
+                                erpGpsPlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
                                     planIdCallback(planiderr, planid._id);
                                 });
                             }
@@ -831,9 +831,13 @@ Events.prototype.getEmployeeData = function (request, callback) {
                             id_admin: employee.id_admin,
                             id_franchise: employee.id_franchise,
                             id_admin_role: employee.id_admin_role,
+                            firstName: employee.first_name,
+                            lastName: employee.last_name,
                             contactName: employee.first_name+' '+employee.last_name,
                             displayName: employee.first_name+' '+employee.last_name,
-                            location: employee.city,
+                            city: employee.city,
+                            state: employee.state,
+                            location: employee.city+' '+employee.state,
                             isActive: employee.status,
                             // createdAt: convertDate(employee.date_created),
                             // updatedAt: convertDate(employee.date_modified),

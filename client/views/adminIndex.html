@@ -54,6 +54,8 @@
                     <adminleft-menu label="Settings" ui-sref="settings.gpsSettings"></adminleft-menu>
                     <adminleft-menu label="Notifications" ui-sref="notifications.avaTrucks"></adminleft-menu>
                     <adminleft-menu label="Admin"></adminleft-menu>
+                    <adminleft-menu label="Set Notifications"></adminleft-menu>
+                    <adminleft-menu label="Admin" ui-sref="admin.administrators"></adminleft-menu>
                     <div class="clearfix"></div>
                 </div>
                 <div class="col-xs-12 col-sm-10 right-nav pall-zero">
@@ -64,14 +66,14 @@
     </div>
     <div class="clearfix"></div>
 </div>
-    <footer>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-xs-12 pall-zero text-center">
-                    Powered by easygaadi.com. All Rights Reserved.
-                </div>
+<footer>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-xs-12 pall-zero text-center">
+                Powered by easygaadi.com. All Rights Reserved.
             </div>
         </div>
+    </div>
 </footer>
 
 <!--bower scripts-->
@@ -87,8 +89,13 @@
 <script src="components/angular-cookies/angular-cookies.min.js"></script>
 <script src="components/angular-ui-select/dist/select.min.js"></script>
 <script src="components/underscore/underscore-min.js"></script>
-<script type="text/javascript" src="components/angularjs-dropdown-multiselect/dist/angularjs-dropdown-multiselect.min.js"></script>
+<<<<<<< 9245550aa58a684ec6d322a2146ccc0cb875259a
+<script type="text/javascript"
+        src="components/angularjs-dropdown-multiselect/dist/angularjs-dropdown-multiselect.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-sanitize.js"></script>
+=======
+<script type="text/javascript" src="components/angularjs-dropdown-multiselect/angularjs-dropdown-multiselect.min.js"></script>
+>>>>>>> Administrator Module
 
 <!--Routing adminApp.js File-->
 <script src="js/adminApp.js"></script>
@@ -100,14 +107,14 @@
 <script src="js/modules/admin/settingsModule.js"></script>
 <script src="js/modules/admin/devicesModule.js"></script>
 <script src="js/modules/admin/notificationModule.js"></script>
+<script src="js/modules/admin/administratorModule.js"></script>
 <!--Services-->
 <script src="js/services.js"></script>
 <script src="js/lib/bundles/ng-table.js"></script>
 <!--Directives-->
 <script src="js/directives/adminLeftNav.js"></script>
 <script src="js/directives/adminDatePicker.js"></script>
-
-
+</footer>
 </body>
 
 </html>

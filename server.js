@@ -87,13 +87,12 @@ app.use(function (req, res, next) {
     if (/^\/v1\//.test(req.url)) {
         next();
     } else {
-        if(req.host.indexOf('cpanel') != -1){
+         if(req.host.indexOf('cpanel') != -1){
             res.sendFile(__dirname + '/client/views/adminIndex.html');
         } else{
             res.sendFile(__dirname + '/client/views/index.html');
 
         }
-        // res.sendFile(__dirname + '/client/views/adminIndex.html');
     }
 });
 
