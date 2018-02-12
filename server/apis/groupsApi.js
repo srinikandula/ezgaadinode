@@ -423,25 +423,25 @@ Groups.prototype.loginByKeys = function (apiKey,secretKey,req,callback) {
         status: false,
         messages: []
     };
-    var globalAccess=false;
-    keysColl.findOne({apiKey:apiKey,secretKey:secretKey},function (err,result) {
+    var globalAccess=true;
+    keysColl.findOne({apiKey:apiKey,secretKey:secretKey},function (err,keyData) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Please try again');
             callback(retObj);
-        }else if(result){
-            globalAccess=result.globalAccess;
+        }else if(keyData){
+            var globalAccess=keyData.globalAccess;
             var groups=new Groups();
-            AccountsCollection.findOne({_id:ObjectId(result.accountId)},function (err,account) {
+            AccountsCollection.findOne({_id:ObjectId(keyData.accountId)},function (err,account) {
                 if(err){
                     retObj.status=false;
                     retObj.messages.push('Please try again');
                     callback(retObj);
                 }else{
-                    groups.login(account.userName,account.password,account.contactPhone,req,function (result) {
-                        if(result.status){
-                            result.globalAccess=globalAccess;
-                            callback(result);
+                    groups.login(account.userName,account.password,account.contactPhone,req,function (accData) {
+                        if(accData.status){
+                            accData.globalAccess=globalAccess;
+                            callback(accData);
                         }else{
                             retObj.status=false;
                             retObj.messages.push('Please try again');
@@ -449,7 +449,7 @@ Groups.prototype.loginByKeys = function (apiKey,secretKey,req,callback) {
                         }
                     })
                 }
-            })
+            });
         }   else{
             retObj.status=false;
             retObj.messages.push('Invalid API or Secret Key');

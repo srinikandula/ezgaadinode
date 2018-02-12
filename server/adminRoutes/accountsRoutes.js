@@ -39,6 +39,24 @@ AuthRouter.delete('/deleteAccount', function (req, res) {
     });
 });
 
+AuthRouter.get('/createKeyPair/:accountId/:globalAccess',function (req,res) {
+    Accounts.createKeys(req.params.accountId,req.params.globalAccess,req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getKeyPairsForAccount/:accountId',function (req,res) {
+    Accounts.getKeyPairsForAccount(req.params.accountId,req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.delete('/deleteKeyPair/:id/:accountId',function (req,res) {
+    Accounts.deleteKeyPair(req.params.id,req.params.accountId,req,function (result) {
+        res.send(result);
+    })
+})
+
 module.exports = {
     AuthRouter: AuthRouter
 };

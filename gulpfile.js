@@ -24,17 +24,33 @@ function getFolders(dir) {
 }
 
 gulp.task('minify-css', function () {
+    var folders = getFolders('./client/images/');
     var minify=gulp.src('./client/css/all.css') // path to your file
         .pipe(minifyCss())
         .pipe(gulp.dest('./client/dist/css/'));
 
-    var copyImages=gulp.src('./client/images/*')
+
+    var folderImages = folders.map(function(folder) {
+         gulp.src(path.join('./client/images/', folder, '/*'))
+             .pipe(gulp.dest('./client/dist/images/'+folder));
+    });
+
+    var copyImages = gulp.src(path.join('./client/images', '/*'))
         .pipe(gulp.dest('./client/dist/images'));
 
-    var copyFonts=gulp.src('./client/fonts/**/*')
+    var fontFolders = getFolders('./client/fonts/');
+
+    var folderFonts = fontFolders.map(function(folder) {
+        gulp.src(path.join('./client/fonts/', folder, '/*'))
+            .pipe(gulp.dest('./client/dist/fonts/'+folder));
+    });
+
+    var copyFonts = gulp.src(path.join('./client/fonts', '/*'))
         .pipe(gulp.dest('./client/dist/fonts'));
 
-    return merge(minify, copyImages,copyFonts);
+    var copyBootstrapFonts=gulp.src('./client/components/bootstrap/dist/fonts/*')
+        .pipe(gulp.dest('./client/dist/fonts'));
+    // return merge(minify, folderImages,copyImages,folderFonts,copyFonts);
 });
 
 gulp.task('merge-css',function () {

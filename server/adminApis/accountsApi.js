@@ -7,6 +7,8 @@ var pageLimits = require('./../config/pagination');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/adminConstants');
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var keysColl = require('./../models/schemas').keysColl;
+const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -405,5 +407,72 @@ Accounts.prototype.deleteAccount = function (req, callback) {
         });
     }
 }
+
+Accounts.prototype.createKeys=function (accountId,access,req,callback) {
+    var retObj={
+        status: false,
+        messages: []
+    };
+    var apiKey=new ObjectId();
+    var secretKey=uuidv1();
+    var data={accountId:accountId,apiKey:apiKey,secretKey:secretKey,globalAccess:access};
+    var keysData=new keysColl(data);
+    keysData.save(function (err,result) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Please try again');
+            analyticsService.create(req,serviceActions.cre_key_pair_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            callback(retObj);
+        }else {
+            retObj.status=true;
+            retObj.messages.push('Success');
+            retObj.results=result;
+            analyticsService.create(req,serviceActions.cre_key_pair,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            callback(retObj);
+        }
+    })
+};
+
+Accounts.prototype.getKeyPairsForAccount =function (accountId,req,callback) {
+    var retObj={
+        status: false,
+        messages: []
+    };
+    keysColl.find({accountId:accountId},function (err,keys) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Please try again');
+            analyticsService.create(req,serviceActions.get_acc_key_pairs_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push('Success');
+            retObj.results=keys;
+            analyticsService.create(req,serviceActions.get_acc_key_pairs,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            callback(retObj);
+        }
+    })
+
+};
+
+Accounts.prototype.deleteKeyPair = function (id,accountId,req,callback) {
+    var retObj={
+        status: false,
+        messages: []
+    };
+    keysColl.remove({_id:id},function (err) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Please try again');
+            analyticsService.create(req,serviceActions.del_key_pair_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push('Keypair deleted successfully');
+            analyticsService.create(req,serviceActions.del_key_pair,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            callback(retObj);
+        }
+    })
+};
 
 module.exports = new Accounts();

@@ -8,7 +8,6 @@ const ObjectId = mongoose.Types.ObjectId;
 var pageLimits = require('./../config/pagination');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
-var keysColl = require('./../models/schemas').keysColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 
 var Trips = require('./tripsApi');
@@ -16,8 +15,7 @@ var Expenses = require('./expensesApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
 var Trucks = require('./truckAPIs');
 var analyticsService=require('./../apis/analyticsApi');
-var serviceActions=require('./../constants/adminConstants');
-const uuidv1 = require('uuid/v1');
+var serviceActions=require('./../constants/constants');
 
 var Accounts = function () {
 };
@@ -738,49 +736,6 @@ Accounts.prototype.updateErpSettings = function (params,req, callback) {
             callback(retObj);
         }
     });
-
-};
-
-Accounts.prototype.createKeys=function (accountId,req,callback) {
-    var retObj={
-        status: false,
-        messages: []
-    };
-    var apiKey=new ObjectId();
-    var secretKey=uuidv1();
-    var data={accountId:accountId,apiKey:apiKey,secretKey:secretKey};
-    var keysData=new keysColl(data);
-    keysData.save(function (err,result) {
-        if(err){
-            retObj.status=false;
-            retObj.messages.push('Please try again');
-            callback(retObj);
-        }else {
-            retObj.status=true;
-            retObj.messages.push('Success');
-            retObj.results=result;
-            callback(retObj);
-        }
-    })
-};
-
-Accounts.prototype.getKeyPairsForAccount =function (accountId,req,callback) {
-    var retObj={
-        status: false,
-        messages: []
-    };
-    keysColl.find({accountId:accountId},function (err,keys) {
-        if(err){
-            retObj.status=false;
-            retObj.messages.push('Please try again');
-            callback(retObj);
-        }else{
-            retObj.status=true;
-            retObj.messages.push('Success');
-            retObj.results=keys;
-            callback(retObj);
-        }
-    })
 
 };
 

@@ -453,6 +453,13 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                             console.log("New device inserted");
                         }
                     });
+
+                    if(i===devices.length-1){
+                        retObj.status = true;
+                        retObj.messages.push('trucks are being loaded');
+                        callback(retObj);
+                    }
+                    //EventData.createTruckData(truckData,deviceData);
                 }
                 AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
                     for (var i = 0; i < accounts.length; i++) {
@@ -464,10 +471,6 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                         });
                     }
                 });
-                //EventData.createTruckData(truckData,deviceData);
-                retObj.status = true;
-                retObj.messages.push('trucks are being loaded');
-                callback(retObj);
             }
         }
     });
@@ -879,5 +882,147 @@ function convertDate(olddate) {
         return new Date(olddate);
     }
 }
+
+Events.prototype.getCompleteData = function (req,callback) {
+    var events=new Events();
+    async.series({
+        one: function(callBackOne) {
+            events.getAccountData(req, function (result1) {
+                console.log('1 Completed',result1);
+                if(result1.status){
+                    callBackOne(null,result1);
+                }else{
+                    callBackOne(result1,null);
+                }
+            })
+        },
+        two: function(callBackTwo){
+            events.createTruckFromEGTruck(req, function (result2) {
+                console.log('2 Completed',result2);
+                if(result2.status){
+                    callBackTwo(null,result2);
+                }else{
+                    callBackTwo(result2,null);
+                }
+            })
+        },
+        three:function (callBackThree) {
+            events.createTruckFromDevices(req,function (result) {
+                console.log('3 Completed',result);
+                if(result.status){
+                    callBackThree(null,result);
+                }else{
+                    callBackThree(result,null);
+                }
+            })
+        },
+        four:function (callBackFour) {
+            events.getDevicePlans(req,function (result) {
+                console.log('4 Completed',result);
+                if(result.status){
+                    callBackFour(null,result);
+                }else{
+                    callBackFour(result,null);
+                }
+            })
+        },
+        five:function (callBackFive) {
+            events.devicePlansHistory(req,function (result) {
+                console.log('5 Completed',result);
+                if(result.status){
+                    callBackFive(null,result);
+                }else{
+                    callBackFive(result,null);
+                }
+            })
+        },
+        six:function (callBackSix) {
+            events.getFranchise(req,function (result) {
+                console.log('6 Completed',result);
+                if(result.status){
+                    callBackSix(null,result);
+                }else{
+                    callBackSix(result,null);
+                }
+            })
+        },
+        seven:function (callBackSeven) {
+            events.getAdminRoles(req,function (result) {
+                console.log('7 Completed',result);
+                if(result.status){
+                    callBackSeven(null,result);
+                }else{
+                    callBackSeven(result,null);
+                }
+            })
+        },
+        /*eight:function (callBackEight) {
+            events.getAdminPermissions(req,function (result) {
+                console.log('8 Completed',result);
+                if(result.status){
+                    callBackEight(null,result);
+                }else{
+                    callBackEight(result,null);
+                }
+            })
+        },*/
+        nine:function (callBackNine) {
+            events.getEmployeeData(req,function (result) {
+                console.log('9 Completed',result);
+                if(result.status){
+                    callBackNine(null,result);
+                }else{
+                    callBackNine(result,null);
+                }
+            })
+        }
+    }, function(err,results) {
+        if(err){
+            callback({});
+        }else{
+            callback(results);
+            console.log(results);
+        }
+    });
+};
+
+Events.prototype.getAlternateContact = function (req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var accountDataQuery = "select accountID as userName,privateLabelName as alternatePhone from Account order by accountID";
+    pool.query(accountDataQuery, function (err, results) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.results = results;
+            for (var i = 0; i < retObj.results.length; i++) {
+                var AccountData = retObj.results[i];
+                AccountsColl.update({userName:AccountData.userName},{$set:{alternatePhone:AccountData.alternatePhone}},function (err,result) {
+                    if(err){
+                        retObj.status = false;
+                        retObj.messages.push('Error fetching data');
+                        retObj.messages.push(JSON.stringify(err));
+                        callback(retObj);
+                    }else{
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.results = results;
+                    }
+                });
+                if(i===retObj.results.length-1){
+                    retObj.count = retObj.results.length;
+                    callback(retObj);
+                }
+            }
+        }
+    });
+};
 
 module.exports = new Events();
