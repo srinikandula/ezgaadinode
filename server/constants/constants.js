@@ -302,7 +302,6 @@ const serviceActions = {
     device_count_err: 'DEVICE_COUNT_ERR',
     remove_device: 'REMOVE_DEVICE',
     remove_device_err: 'REMOVE_DEVICE_ERR',
-<<<<<<< 9245550aa58a684ec6d322a2146ccc0cb875259a
     get_device_plan_history_err: 'GET_DEVICE_PLAN_HISTORY_ERR',
     get_device_plan_history: 'GET_DEVICE_PLAN_HISTORY',
     get_truck_owners_list: 'GET_TRUCK_OWNERS_LIST',
@@ -316,12 +315,10 @@ const serviceActions = {
     count_load_types: 'COUNT_LOAD_TYPES',
     count_load_types_err: 'COUNT_LOAD_TYPES_ERR',
     count_truck_request: 'COUNT_TRUCK_REQUEST',
-    count_truck_request_err: 'COUNT_TRUCK_REQUEST_ERR'
-=======
+    count_truck_request_err: 'COUNT_TRUCK_REQUEST_ERR',
     dropdown_role: 'DROPDOWN_ROLE',
     dropdown_role_err: 'DROPDOWN_ROLE_ERR',
     dropdown_franchise: 'DROPDOWN_FRANCHISE',
     dropdown_franchise_err: 'DROPDOWN_FRANCHISE_ERR'
->>>>>>> Administrator Module
 };
 module.exports = serviceActions;

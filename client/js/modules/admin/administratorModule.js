@@ -2,136 +2,136 @@ app.factory('AdministratorService', ["$http", function ($http) {
     return {
         getEmployee: function (params, success, error) {
             $http({
-                url: '/v1/employees/getEmployee',
+                url: '/v1/cpanel/employees/getEmployee',
                 method: "GET",
                 params: params
             }).then(success, error)
         },
         addEmployee: function (params, success, error) {
             $http({
-                url: '/v1/employees/addEmployee',
+                url: '/v1/cpanel/employees/addEmployee',
                 method: "POST",
                 data: params,
             }).then(success, error)
         },
         getEmployeeDetails: function (params, success, error) {
             $http({
-                url: '/v1/employees/getEmployeeDetails',
+                url: '/v1/cpanel/employees/getEmployeeDetails',
                 method: "GET",
                 params: {employeeId: params}
             }).then(success, error)
         },
         updateEmployee: function (params, success, error) {
             $http({
-                url: '/v1/employees/updateEmployee',
+                url: '/v1/cpanel/employees/updateEmployee',
                 method: "PUT",
                 data: params,
             }).then(success, error)
         },
         deleteEmployee: function (params, success, error) {
             $http({
-                url: '/v1/employees/deleteEmployee',
+                url: '/v1/cpanel/employees/deleteEmployee',
                 method: "DELETE",
                 params: {employeeId: params}
             }).then(success, error)
         },
         countEmployee: function (success, error) {
             $http({
-                url: '/v1/employees/countEmployee',
+                url: '/v1/cpanel/employees/countEmployee',
                 method: "GET",
             }).then(success, error)
         },
         adminRolesDropDown: function (success, error) {
             $http({
-                url: '/v1/employees/adminRolesDropDown',
+                url: '/v1/cpanel/employees/adminRolesDropDown',
                 method: "GET",
             }).then(success, error)
         },
         franchiseDropDown: function (success, error) {
             $http({
-                url: '/v1/employees/franchiseDropDown',
+                url: '/v1/cpanel/employees/franchiseDropDown',
                 method: "GET",
             }).then(success, error)
         },
         getRole: function (params, success, error) {
             $http({
-                url: '/v1/employees/getRole',
+                url: '/v1/cpanel/employees/getRole',
                 method: "GET",
                 params: params
             }).then(success, error)
         },
         addRole: function (params, success, error) {
             $http({
-                url: '/v1/employees/addRole',
+                url: '/v1/cpanel/employees/addRole',
                 method: "POST",
                 data: params,
             }).then(success, error)
         },
         getRoleDetails: function (params, success, error) {
             $http({
-                url: '/v1/employees/getRoleDetails',
+                url: '/v1/cpanel/employees/getRoleDetails',
                 method: "GET",
                 params: {roleId: params}
             }).then(success, error)
         },
         updateRole: function (params, success, error) {
             $http({
-                url: '/v1/employees/updateRole',
+                url: '/v1/cpanel/employees/updateRole',
                 method: "PUT",
                 data: params,
             }).then(success, error)
         },
         deleteRole: function (params, success, error) {
             $http({
-                url: '/v1/employees/deleteRole',
+                url: '/v1/cpanel/employees/deleteRole',
                 method: "DELETE",
                 params: {roleId: params}
             }).then(success, error)
         },
         countRole: function (success, error) {
             $http({
-                url: '/v1/employees/countRole',
+                url: '/v1/cpanel/employees/countRole',
                 method: "GET",
             }).then(success, error)
         },
         getFranchise: function (params, success, error) {
             $http({
-                url: '/v1/employees/getFranchise',
+                url: '/v1/cpanel/employees/getFranchise',
                 method: "GET",
                 params: params
             }).then(success, error)
         },
         addFranchise: function (params, success, error) {
             $http({
-                url: '/v1/employees/addFranchise',
+                url: '/v1/cpanel/employees/addFranchise',
                 method: "POST",
                 data: params,
             }).then(success, error)
         },
         getFranchiseDetails: function (params, success, error) {
             $http({
-                url: '/v1/employees/getFranchiseDetails',
+                url: '/v1/cpanel/employees/getFranchiseDetails',
                 method: "GET",
                 params: {franchiseId: params}
             }).then(success, error)
         },
         updateFranchise: function (params, success, error) {
             $http({
-                url: '/v1/employees/updateFranchise',
+                url: '/v1/cpanel/employees/updateFranchise',
                 method: "PUT",
                 data: params,
             }).then(success, error)
         },
         deleteFranchise: function (params, success, error) {
             $http({
-                url: '/v1/employees/deleteFranchise',
+                url: '/v1/cpanel/employees/deleteFranchise',
                 method: "DELETE",
                 params: {franchiseId: params}
             }).then(success, error)
         },
         countFranchise: function (success, error) {
             $http({
-                url: '/v1/employees/countFranchise',
+                url: '/v1/cpanel/employees/countFranchise',
                 method: "GET",
             }).then(success, error)
         }

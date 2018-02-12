@@ -140,7 +140,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/editTruckRequest/:_id',
         templateUrl: 'views/partials/admin/orderProcess/editTruckRequest.html',
         data: {activeTab: 'orderprocess'},
-        params: { _id: null }
+        params: { _id: null },
         data: {activeTab: 'orderprocess'}
     }).state({
         name: 'settings',
