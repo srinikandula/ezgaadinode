@@ -35,8 +35,8 @@ var authMiddleware = require('./server/middleware/auth');
 
 app.set('port', config.port);
 // app.use(morgan('dev'));
-// app.use(express.static('client', {index: "/views/index.html"}));
-app.use(express.static('client', {index: "/views/adminIndex.html"}));
+app.use(express.static('client', {index: "/views/index.html"}));
+// app.use(express.static('client', {index: "/views/adminIndex.html"}));
 
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
@@ -87,12 +87,12 @@ app.use(function (req, res, next) {
     if (/^\/v1\//.test(req.url)) {
         next();
     } else {
-        // if(req.host.indexOf('cpanel') != -1){
+         if(req.host.indexOf('cpanel') != -1){
             res.sendFile(__dirname + '/client/views/adminIndex.html');
-        /*} else{
+        } else{
             res.sendFile(__dirname + '/client/views/index.html');
 
-        }*/
+        }
     }
 });
 

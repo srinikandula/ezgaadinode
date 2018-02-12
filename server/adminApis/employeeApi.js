@@ -14,15 +14,15 @@ var Employees = function () {
 
 /*Author : SVPrasadK*/
 /*Franchise Start*/
-Employees.prototype.countEmployee = function (req, callback) {
+Employees.prototype.countFranchise = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    AccountsColl.count({"type":"employee"},function (err, doc) {
+    franchiseColl.count({}, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting count');
-            analyticsService.create(req, serviceActions.count_employee_err, {
+            analyticsService.create(req, serviceActions.count_franchise_err, {
                 accountId: req.jwt.id,
                 success: false,
                 messages: retObj.messages
@@ -33,7 +33,7 @@ Employees.prototype.countEmployee = function (req, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = doc;
-            analyticsService.create(req, serviceActions.count_employee, {
+            analyticsService.create(req, serviceActions.count_franchise, {
                 accountId: req.id,
                 success: true
             }, function (response) {
@@ -49,7 +49,7 @@ Employees.prototype.getFranchise = function (req, callback) {
         messages: []
     };
     var condition = {};
-    var params = req.params;
+    var params = req.query;
 
     if (!params.page) {
         params.page = 1;
@@ -62,9 +62,9 @@ Employees.prototype.getFranchise = function (req, callback) {
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
         if (!params.contactName) {
-            condition = {accountId: req.jwt.accountId}
+            condition = {}
         } else {
-            condition = {accountId: req.jwt.accountId, status: {$regex: '.*' + params.status + '.*'}}
+            condition = {status: {$regex: '.*' + params.status + '.*'}}
         }
 
         async.parallel({
@@ -133,7 +133,7 @@ Employees.prototype.addFranchise = function (req, callback) {
     if (!franchiseInfo.account) {
         retObj.messages.push('Invalid Account');
     }
-    if (!franchiseInfo.mobile || !_.isNumber(franchiseInfo.mobile)) {
+    if (!franchiseInfo.mobile || !_.isNumber(parseInt(franchiseInfo.mobile))) {
         retObj.messages.push('Invalid Phone Number');
     }
     if (!franchiseInfo.email) {
@@ -232,7 +232,7 @@ Employees.prototype.getFranchiseDetails = function (req, callback) {
             if (err) {
                 retObj.messages.push('Error retrieving franchise');
                 analyticsService.create(req, serviceActions.get_franchise_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -244,7 +244,7 @@ Employees.prototype.getFranchiseDetails = function (req, callback) {
                 retObj.messages.push('Success');
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.get_franchise, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
                 }, function (response) {
@@ -253,7 +253,7 @@ Employees.prototype.getFranchiseDetails = function (req, callback) {
             } else {
                 retObj.messages.push('Franchise with Id doesn\'t exist');
                 analyticsService.create(req, serviceActions.get_franchise_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -299,7 +299,7 @@ Employees.prototype.updateFranchise = function (req, callback) {
         callback(retObj);
     } else {
         franchiseColl.findOne({
-            _id: franchiseInfo.franchiseId,
+            _id: franchiseInfo._id,
         }, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Please Try Again');
@@ -313,7 +313,7 @@ Employees.prototype.updateFranchise = function (req, callback) {
                 callback(retObj);
             } else if (oldDoc) {
                 franchiseInfo.updatedBy = req.jwt.id;
-                franchiseColl.findOneAndUpdate({_id: franchiseInfo.franchiseId}, {$set: franchiseInfo}, function (err, doc) {
+                franchiseColl.findOneAndUpdate({_id: franchiseInfo._id}, {$set: franchiseInfo}, function (err, doc) {
                     if (err) {
                         retObj.messages.push('Error updating the franchise');
                         analyticsService.create(req, serviceActions.update_franchise_err, {
@@ -368,7 +368,7 @@ Employees.prototype.deleteFranchise = function (req, callback) {
         messages: []
     };
     var jwt = req.jwt;
-    var franchiseId = req.body.franchiseId;
+    var franchiseId = req.query.franchiseId;
     var condition = {};
     var giveAccess = false;
 
@@ -377,7 +377,7 @@ Employees.prototype.deleteFranchise = function (req, callback) {
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.delete_franchise_err, {
-            body: JSON.stringify(req.params),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -389,7 +389,7 @@ Employees.prototype.deleteFranchise = function (req, callback) {
             if (err) {
                 retObj.messages.push('Error deleting franchise');
                 analyticsService.create(req, serviceActions.delete_franchise_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -400,7 +400,7 @@ Employees.prototype.deleteFranchise = function (req, callback) {
                 retObj.status = false;
                 retObj.messages.push('Unauthorized access or Error deleting franchise');
                 analyticsService.create(req, serviceActions.delete_franchise_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -411,7 +411,7 @@ Employees.prototype.deleteFranchise = function (req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 analyticsService.create(req, serviceActions.delete_franchise, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
                 }, function (response) {
@@ -424,13 +424,42 @@ Employees.prototype.deleteFranchise = function (req, callback) {
 /*Franchise Stop*/
 /*Author : SVPrasadK*/
 /*Role Start*/
+Employees.prototype.countRole = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    adminRoleColl.count({}, function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting count');
+            analyticsService.create(req, serviceActions.count_role_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = doc;
+            analyticsService.create(req, serviceActions.count_role, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
 Employees.prototype.getRole = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var condition = {};
-    var params = req.params;
+    var params = req.query;
 
     if (!params.page) {
         params.page = 1;
@@ -443,9 +472,9 @@ Employees.prototype.getRole = function (req, callback) {
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
         if (!params.contactName) {
-            condition = {accountId: req.jwt.accountId}
+            condition = {}
         } else {
-            condition = {accountId: req.jwt.accountId, role: {$regex: '.*' + params.role + '.*'}}
+            condition = {role: {$regex: '.*' + params.role + '.*'}}
         }
 
         async.parallel({
@@ -510,6 +539,9 @@ Employees.prototype.addRole = function (req, callback) {
 
     if (!roleInfo.role) {
         retObj.messages.push('Invalid Role');
+    }
+    if (!roleInfo.status) {
+        retObj.messages.push('Invalid Status');
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_role_err, {
@@ -589,7 +621,7 @@ Employees.prototype.getRoleDetails = function (req, callback) {
 
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.get_role_err, {
-            body: JSON.stringify(req.params),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -601,7 +633,7 @@ Employees.prototype.getRoleDetails = function (req, callback) {
             if (err) {
                 retObj.messages.push('Error retrieving role');
                 analyticsService.create(req, serviceActions.get_role_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -613,7 +645,7 @@ Employees.prototype.getRoleDetails = function (req, callback) {
                 retObj.messages.push('Success');
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.get_role, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
                 }, function (response) {
@@ -622,7 +654,7 @@ Employees.prototype.getRoleDetails = function (req, callback) {
             } else {
                 retObj.messages.push('Role with Id doesn\'t exist');
                 analyticsService.create(req, serviceActions.get_role_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -641,13 +673,15 @@ Employees.prototype.updateRole = function (req, callback) {
     };
     var roleInfo = req.body;
 
-    if (!Utils.isValidObjectId(roleInfo.roleId)) {
+    if (!Utils.isValidObjectId(roleInfo._id)) {
         retObj.messages.push('Invalid role Id');
     }
     if (!roleInfo.role) {
         retObj.messages.push('Invalid Role');
     }
-
+    if (!roleInfo.status) {
+        retObj.messages.push('Invalid Status');
+    }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.update_role_err, {
             body: JSON.stringify(req.body),
@@ -659,7 +693,7 @@ Employees.prototype.updateRole = function (req, callback) {
         callback(retObj);
     } else {
         adminRoleColl.findOne({
-            _id: roleInfo.roleId,
+            _id: roleInfo._id,
         }, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Please Try Again');
@@ -673,7 +707,7 @@ Employees.prototype.updateRole = function (req, callback) {
                 callback(retObj);
             } else if (oldDoc) {
                 roleInfo.updatedBy = req.jwt.id;
-                adminRoleColl.findOneAndUpdate({_id: roleInfo.roleId}, {$set: roleInfo}, function (err, doc) {
+                adminRoleColl.findOneAndUpdate({_id: roleInfo._id}, {$set: roleInfo}, function (err, doc) {
                     if (err) {
                         retObj.messages.push('Error updating the role');
                         analyticsService.create(req, serviceActions.update_role_err, {
@@ -721,9 +755,98 @@ Employees.prototype.updateRole = function (req, callback) {
         });
     }
 };
+
+Employees.prototype.deleteRole = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var jwt = req.jwt;
+    var roleId = req.query.roleId;
+    var condition = {};
+    var giveAccess = false;
+
+    if (!Utils.isValidObjectId(roleId)) {
+        retObj.messages.push('Invalid role Id');
+    }
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.delete_role_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        adminRoleColl.remove({_id: roleId}, function (err, returnValue) {
+            if (err) {
+                retObj.messages.push('Error deleting role');
+                analyticsService.create(req, serviceActions.delete_role_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (returnValue.result.n === 0) {
+                retObj.status = false;
+                retObj.messages.push('Unauthorized access or Error deleting role');
+                analyticsService.create(req, serviceActions.delete_role_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                analyticsService.create(req, serviceActions.delete_role, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+}
 /*Role Stop*/
 /*Author : SVPrasadK*/
 /*Employee Start*/
+Employees.prototype.countEmployee = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    AccountsColl.count({"type": "employee"}, function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting count');
+            analyticsService.create(req, serviceActions.count_employee_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = doc;
+            analyticsService.create(req, serviceActions.count_employee, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
 Employees.prototype.getEmployee = function (req, callback) {
     var retObj = {
         status: false,
@@ -743,31 +866,26 @@ Employees.prototype.getEmployee = function (req, callback) {
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
         if (!params.role) {
-            condition = {"type":"employee"}
+            condition = {"type": "employee"}
         } else {
-            condition = {"type":"employee",role: {$regex: '.*' + params.role + '.*'}}
+            condition = {"type": "employee", role: {$regex: '.*' + params.role + '.*'}}
         }
 
         async.parallel({
             Employees: function (employeesCallback) {
                 AccountsColl
                     .find(condition)
+                    .populate({path: "adminRoleId", select: "role"})
                     .sort(sort)
                     .skip(skipNumber)
                     .limit(limit)
                     .lean()
                     .exec(function (err, employees) {
-                        Utils.populateNameInUsersColl(employees, "createdBy", function (response) {
-                            if (response.status) {
-                                employeesCallback(err, response.documents);
-                            } else {
-                                employeesCallback(err, null);
-                            }
-                        });
+                        employeesCallback(err, employees);
                     });
             },
             count: function (countCallback) {
-                AccountsColl.count({"type":"employee"},function (err, count) {
+                AccountsColl.count({"type": "employee"}, function (err, count) {
                     countCallback(err, count);
                 });
             }
@@ -807,7 +925,6 @@ Employees.prototype.addEmployee = function (req, callback) {
         messages: []
     };
     var employeeInfo = req.body;
-
     if (!employeeInfo.firstName || !_.isString(employeeInfo.firstName)) {
         retObj.messages.push('Invalid First Name');
     }
@@ -823,7 +940,7 @@ Employees.prototype.addEmployee = function (req, callback) {
     if (!employeeInfo.email) {
         retObj.messages.push('Invalid Email');
     }
-    if (!employeeInfo.contactPhone || !_.isNumber(employeeInfo.contactPhone)) {
+    if (!employeeInfo.contactPhone || !_.isNumber(parseInt(employeeInfo.contactPhone))) {
         retObj.messages.push('Invalid Phone Number');
     }
     if (!employeeInfo.adminRoleId) {
@@ -843,7 +960,7 @@ Employees.prototype.addEmployee = function (req, callback) {
         callback(retObj);
     }
     else {
-        AccountsColl.findOne({email: employeeInfo.email,type: "employee"}, function (err, oldDoc) {
+        AccountsColl.findOne({email: employeeInfo.email, type: "employee"}, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Error retrieving employee');
                 analyticsService.create(req, serviceActions.add_employee_err, {
@@ -912,7 +1029,7 @@ Employees.prototype.getEmployeeDetails = function (req, callback) {
 
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.get_employee_err, {
-            body: JSON.stringify(req.params),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -924,7 +1041,7 @@ Employees.prototype.getEmployeeDetails = function (req, callback) {
             if (err) {
                 retObj.messages.push('Error retrieving employee');
                 analyticsService.create(req, serviceActions.get_employee_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -936,7 +1053,7 @@ Employees.prototype.getEmployeeDetails = function (req, callback) {
                 retObj.messages.push('Success');
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.get_employee, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
                 }, function (response) {
@@ -945,7 +1062,7 @@ Employees.prototype.getEmployeeDetails = function (req, callback) {
             } else {
                 retObj.messages.push('Employee with Id doesn\'t exist');
                 analyticsService.create(req, serviceActions.get_employee_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -964,7 +1081,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
     };
     var employeeInfo = req.body;
 
-    if (!Utils.isValidObjectId(employeeInfo.employeeId)) {
+    if (!Utils.isValidObjectId(employeeInfo._id)) {
         retObj.messages.push('Invalid employee Id');
     }
     if (!employeeInfo.firstName || !_.isString(employeeInfo.firstName)) {
@@ -982,7 +1099,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
     if (!employeeInfo.email) {
         retObj.messages.push('Invalid Email');
     }
-    if (!employeeInfo.contactPhone || !_.isNumber(employeeInfo.contactPhone)) {
+    if (!employeeInfo.contactPhone || !_.isNumber(parseInt(employeeInfo.contactPhone))) {
         retObj.messages.push('Invalid Phone Number');
     }
     if (!employeeInfo.adminRoleId) {
@@ -1003,7 +1120,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
         callback(retObj);
     } else {
         AccountsColl.findOne({
-            _id: employeeInfo.employeeId,
+            _id: employeeInfo._id,
         }, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Please Try Again');
@@ -1019,7 +1136,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
                 employeeInfo.updatedBy = req.jwt.id;
                 employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
                 employeeInfo.userName = employeeInfo.email;
-                AccountsColl.findOneAndUpdate({_id: employeeInfo.employeeId}, {$set: employeeInfo}, function (err, doc) {
+                AccountsColl.findOneAndUpdate({_id: employeeInfo._id}, {$set: employeeInfo}, function (err, doc) {
                     if (err) {
                         retObj.messages.push('Error updating the employee');
                         analyticsService.create(req, serviceActions.update_employee_err, {
@@ -1074,7 +1191,7 @@ Employees.prototype.deleteEmployee = function (req, callback) {
         messages: []
     };
     var jwt = req.jwt;
-    var employeeId = req.body.employeeId;
+    var employeeId = req.query.employeeId;
     var condition = {};
     var giveAccess = false;
 
@@ -1083,7 +1200,7 @@ Employees.prototype.deleteEmployee = function (req, callback) {
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.delete_employee_err, {
-            body: JSON.stringify(req.params),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -1095,7 +1212,7 @@ Employees.prototype.deleteEmployee = function (req, callback) {
             if (err) {
                 retObj.messages.push('Error deleting employee');
                 analyticsService.create(req, serviceActions.delete_employee_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -1106,7 +1223,7 @@ Employees.prototype.deleteEmployee = function (req, callback) {
                 retObj.status = false;
                 retObj.messages.push('Unauthorized access or Error deleting employee');
                 analyticsService.create(req, serviceActions.delete_employee_err, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -1117,7 +1234,7 @@ Employees.prototype.deleteEmployee = function (req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 analyticsService.create(req, serviceActions.delete_employee, {
-                    body: JSON.stringify(req.params),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
                 }, function (response) {
@@ -1128,5 +1245,65 @@ Employees.prototype.deleteEmployee = function (req, callback) {
     }
 }
 /*Employee Stop*/
+
+/*Drop Down API Start*/
+Employees.prototype.adminRolesDropDown = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    adminRoleColl.find({}, {_id: 1, role: 1}, function (err, docs) {
+        if (err) {
+            retObj.messages.push('Error getting roles');
+            analyticsService.create(req, serviceActions.dropdown_role_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = docs;
+            analyticsService.create(req, serviceActions.dropdown_role, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
+Employees.prototype.franchiseDropDown = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    franchiseColl.find({}, {_id: 1, fullName: 1}, function (err, docs) {
+        if (err) {
+            retObj.messages.push('Error getting franchises');
+            analyticsService.create(req, serviceActions.dropdown_franchise_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = docs;
+            analyticsService.create(req, serviceActions.dropdown_franchise, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+/*Drop Down API Stop*/
 
 module.exports = new Employees();

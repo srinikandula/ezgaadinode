@@ -266,10 +266,10 @@ Utils.prototype.populateNameInExpenseColl = function (documents, fieldTopopulate
     });
 };
 
-Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, callback) {
+Utils.prototype.populateNameInRolesColl = function (documents, fieldToPopulate, callback) {
     var result = {};
-    var ids = _.pluck(documents, fieldTopopulate);
-    RolesColl.find({'_id': {$in: ids}}, {"roleName": 1}, function (err, names) {
+    var ids = _.pluck(documents, fieldToPopulate);
+    RolesColl.find({'_id': {$in: ids}}, {"role": 1}, function (err, names) {
         if (err) {
             result.status = false;
             result.message = 'Error retrieving Roles';
@@ -279,13 +279,13 @@ Utils.prototype.populateNameInRolesColl = function (documents, fieldTopopulate, 
             for (var i = 0; i < documents.length; i++) {
                 var item = documents[i];
                 var Roles = _.find(names, function (users) {
-                    if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                    if (item[fieldToPopulate]) return users._id.toString() === item[fieldToPopulate].toString();
                 });
                 if (Roles) {
                     if (!item.attrs) {
                         item.attrs = {};
                     }
-                    item.attrs.roleName = Roles.roleName;
+                    item.attrs.role = Roles.role;
                 }
             }
             result.status = true;

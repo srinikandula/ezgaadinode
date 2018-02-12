@@ -89,17 +89,17 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'services.editGpsDevice',
         url: '/editGpsDevice/:device',
         templateUrl: 'views/partials/admin/services/editGpsDevice.html',
-        data:{activeTab: 'services', device: false}
+        data: {activeTab: 'services', device: false}
     }).state({
         name: 'services.addDevice',
         url: '/addDevice',
         templateUrl: 'views/partials/admin/services/addDevice.html',
-        data:{activeTab: 'services', device: false}
+        data: {activeTab: 'services', device: false}
     }).state({
         name: 'services.transferDevice',
         url: '/transferDevice',
         templateUrl: 'views/partials/admin/services/transferDevice.html',
-        data:{activeTab: 'services', device: false}
+        data: {activeTab: 'services', device: false}
     }).state({
         name: 'services.deviceManagement',
         url: '/deviceManagement',
@@ -134,23 +134,24 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'orderprocess.createTruckRequest',
         url: '/createTruckRequest',
         templateUrl: 'views/partials/admin/orderProcess/createTruckRequest.html',
-        data: { activeTab: 'orderprocess    ' }
+        data: { activeTab: 'orderprocess' }
     }).state({
         name: 'orderprocess.editTruckRequest',
         url: '/editTruckRequest/:_id',
         templateUrl: 'views/partials/admin/orderProcess/editTruckRequest.html',
         data: {activeTab: 'orderprocess'},
         params: { _id: null }
+        data: {activeTab: 'orderprocess'}
     }).state({
         name: 'settings',
         url: '/settings',
         templateUrl: 'views/partials/admin/settings/settings.html',
-        data: { activeTab: 'settings' }
+        data: {activeTab: 'settings'}
     }).state({
         name: 'settings.gpsSettings',
         url: '/settings-gps',
         templateUrl: 'views/partials/admin/settings/gpsSettings.html',
-        data: { activeTab: 'settings' }
+        data: {activeTab: 'settings'}
     }).state({
         name: 'notifications',
         url: '/notifications',
@@ -187,28 +188,38 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/administrators/administrators.html',
         data: {activeTab: 'Admin'}
     }).state({
-        name: 'addUpdateEmployee',
+        name: 'admin.addUpdateEmployee',
         url: '/addUpdateEmployee/:employeeId',
         templateUrl: 'views/partials/admin/administrators/addUpdateEmployee.html',
         data: {activeTab: 'Admin'},
-        params: {
-            employeeId: null
-        }
+        params: {employeeId: null}
     }).state({
         name: 'admin.adminRoles',
         url: '/adminRoles',
         templateUrl: 'views/partials/admin/administrators/adminRoles.html',
         data: {activeTab: 'Admin'}
     }).state({
+        name: 'admin.addUpdateAdminRole',
+        url: '/addUpdateAdminRole/:roleId',
+        templateUrl: 'views/partials/admin/administrators/addUpdateAdminRole.html',
+        data: {activeTab: 'Admin'},
+        params: {roleId: null}
+    }).state({
         name: 'admin.adminLogHistory',
         url: '/adminLogHistory',
         templateUrl: 'views/partials/admin/administrators/adminLogHistory.html',
         data: {activeTab: 'Admin'}
     }).state({
-        name: 'admin.franchise',
-        url: '/franchise',
-        templateUrl: 'views/partials/admin/administrators/franchise.html',
+        name: 'admin.franchises',
+        url: '/franchises',
+        templateUrl: 'views/partials/admin/administrators/franchises.html',
         data: {activeTab: 'Admin'}
+    }).state({
+        name: 'admin.addUpdateFranchise',
+        url: '/addUpdateFranchise/:franchiseId',
+        templateUrl: 'views/partials/admin/administrators/addUpdateFranchise.html',
+        data: {activeTab: 'Admin'},
+        params: {franchiseId: null}
     });
 
     $urlRouterProvider.otherwise('/login');
