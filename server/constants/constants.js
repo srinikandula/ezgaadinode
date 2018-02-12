@@ -295,6 +295,8 @@ const serviceActions = {
     device_count:'DEVICE_COUNT',
     device_count_err:'DEVICE_COUNT_ERR',
     remove_device: 'REMOVE_DEVICE',
-    remove_device_err: 'REMOVE_DEVICE_ERR'
+    remove_device_err: 'REMOVE_DEVICE_ERR',
+    get_device_plan_history_err: 'GET_DEVICE_PLAN_HISTORY_ERR',
+    get_device_plan_history: 'GET_DEVICE_PLAN_HISTORY'
 };
 module.exports = serviceActions;

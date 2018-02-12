@@ -130,101 +130,6 @@ Devices.prototype.deleteDevice = function (req, callback) {
     });
 };
 
-Devices.prototype.addDevice = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.body;
-    if (!params.imei) {
-        retObj.messages.push("Please enter imei number");
-    }
-    if (!params.simPhoneNumber) {
-        retObj.messages.push("Please enter sim phone number");
-    }
-    if (!params.simNumber) {
-        retObj.messages.push("Please enter sim number");
-    }
-    if (!params.assignedTo) {
-        retObj.messages.push("Please assign an employee to the device");
-    }
-    if (retObj.messages.length > 0) {
-        analyticsService.create(req, serviceActions.add_device_err, {
-            body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
-        callback(retObj);
-    } else {
-        params.createdBy = req.jwt.id;
-        DevicesColl.findOne({imei: params.imei}, function (errgetdevice, getdevice) {
-            if (errgetdevice) {
-                retObj.messages.push("Unable to get decive, please try again");
-                analyticsService.create(req, serviceActions.add_device_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (getdevice) {
-                retObj.messages.push("Device already added");
-                analyticsService.create(req, serviceActions.add_device_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                AccountsColl.findOne({userName: 'accounts'}, function (erraccount, account) {
-                    if (erraccount) {
-                        retObj.messages.push("Unable to get accounts account");
-                        analyticsService.create(req, serviceActions.add_device_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else {
-                        params.accountId = account._id;
-                        var device = new DevicesColl(params);
-                        device.save(function (addDeviceErr, document) {
-                            if (addDeviceErr) {
-                                retObj.messages.push("Unable to save device, please try again");
-                                analyticsService.create(req, serviceActions.add_device_err, {
-                                    body: JSON.stringify(req.body),
-                                    accountId: req.jwt.id,
-                                    success: false,
-                                    messages: retObj.messages
-                                }, function (response) {
-                                });
-                                callback(retObj);
-                            } else {
-                                retObj.status = true;
-                                retObj.messages = "Device added successfully";
-                                analyticsService.create(req, serviceActions.add_device, {
-                                    body: JSON.stringify(req.body),
-                                    accountId: req.jwt.id,
-                                    success: true
-                                }, function (response) {
-                                });
-                                callback(retObj);
-                            }
-                        });
-                    }
-                });
-            }
-        });
-    }
-};
-
 Devices.prototype.assignDevice = function (req, callback) {
     var retObj = {
         status: false,
@@ -459,128 +364,6 @@ Devices.prototype.getDevices = function (req, callback) {
     });
 };
 
-Devices.prototype.addDevicePlan = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.body;
-    if (!params.accountId) {
-        retObj.messages.push("Please enter account id");
-    }
-    if (!params.deviceId) {
-        retObj.messages.push("Please enter device id");
-    }
-    if (!params.planId) {
-        retObj.messages.push("Please enter plan id");
-    }
-    if (!params.startTime) {
-        retObj.messages.push("Please enter startTime");
-    }
-    if (!params.amount) {
-        retObj.messages.push("Please enter amount");
-    }
-    if (retObj.messages.length > 0) {
-        analyticsService.create(req, serviceActions.add_Plan_to_device, {
-            body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
-        callback(retObj);
-    } else {
-        params.createdBy = req.jwt.id;
-        var fulldate = new Date();
-        fulldate.setMonth(fulldate.getMonth() + 1); //1 day
-        params.expiryTime = fulldate;
-        var planDoc = new AccountDevicePlanHistoryColl(params);
-        planDoc.save(function (errplansave, plansaved) {
-            if (errplansave) {
-                retObj.status = false;
-                retObj.messages = "Error adding plan to device";
-                analyticsService.create(req, serviceActions.add_Plan_to_device_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages = "Plan added to device successfully";
-                analyticsService.create(req, serviceActions.add_Plan_to_device_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        });
-    }
-};
-
-Devices.prototype.editDevicePlan = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.body;
-    if (!params.accountId) {
-        retObj.messages.push("Please enter account id");
-    }
-    if (!params.deviceId) {
-        retObj.messages.push("Please enter device id");
-    }
-    if (!params.truckId) {
-        retObj.messages.push("Please provide truck id");
-    }
-    if (!params.imei) {
-        retObj.messages.push("Please enter imei number");
-    }
-    if (!params.simPhoneNumber) {
-        retObj.messages.push("Please enter sim phone number");
-    }
-    if (!params.simNumber) {
-        retObj.messages.push("Please enter sim number");
-    }
-    if (retObj.messages.length > 0) {
-        analyticsService.create(req, serviceActions.edit_device_err, {
-            body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
-        callback(retObj);
-    } else {
-        DevicesColl.findOneAndUpdate({_id: params.deviceId}, params, function (errassign, assigned) {
-            if (errassign) {
-                retObj.messages.push("Unable to get device, please try again");
-                analyticsService.create(req, serviceActions.edit_device_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages = "Device updated successfully";
-                analyticsService.create(req, serviceActions.edit_device, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
-    }
-};
-
 Devices.prototype.getDevice = function (req, callback) {
     var retObj = {
         status: false,
@@ -718,5 +501,158 @@ Devices.prototype.getAllDevices = function (req, callback) {
     });
 };
 
+Devices.prototype.addDevicePlan = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body;
+    if (!params.accountId) {
+        retObj.messages.push("Please enter account id");
+    }
+    if (!params.deviceId) {
+        retObj.messages.push("Please enter device id");
+    }
+    if (!params.planId) {
+        retObj.messages.push("Please enter plan id");
+    }
+    if (!params.startTime) {
+        retObj.messages.push("Please enter startTime");
+    }
+    if (!params.amount) {
+        retObj.messages.push("Please enter amount");
+    }
+    if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.add_Plan_to_device, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        params.createdBy = req.jwt.id;
+        var fulldate = new Date();
+        fulldate.setMonth(fulldate.getMonth() + 1); //1 day
+        params.expiryTime = fulldate;
+        var planDoc = new AccountDevicePlanHistoryColl(params);
+        planDoc.save(function (errplansave, plansaved) {
+            if (errplansave) {
+                retObj.status = false;
+                retObj.messages = "Error adding plan to device";
+                analyticsService.create(req, serviceActions.add_Plan_to_device_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages = "Plan added to device successfully";
+                analyticsService.create(req, serviceActions.add_Plan_to_device_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Devices.prototype.editDevicePlan = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body;
+    if (!params.accountId) {
+        retObj.messages.push("Please enter account id");
+    }
+    if (!params.deviceId) {
+        retObj.messages.push("Please enter device id");
+    }
+    if (!params.truckId) {
+        retObj.messages.push("Please provide truck id");
+    }
+    if (!params.imei) {
+        retObj.messages.push("Please enter imei number");
+    }
+    if (!params.simPhoneNumber) {
+        retObj.messages.push("Please enter sim phone number");
+    }
+    if (!params.simNumber) {
+        retObj.messages.push("Please enter sim number");
+    }
+    if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.edit_device_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        DevicesColl.findOneAndUpdate({_id: params.deviceId}, params, function (errassign, assigned) {
+            if (errassign) {
+                retObj.messages.push("Unable to get device, please try again");
+                analyticsService.create(req, serviceActions.edit_device_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages = "Device updated successfully";
+                analyticsService.create(req, serviceActions.edit_device, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+Devices.prototype.getDevicePlanHistory = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    // console.log('check', req.params);
+    AccountDevicePlanHistoryColl.find({deviceId:req.params.deviceId}).populate('planId', {planName: 1, amount:1}).sort({creationTime: -1}).exec(function (errhistory, history) {
+        if(errhistory) {
+            retObj.messages.push("Unable to get device plan history, please try again");
+            analyticsService.create(req, serviceActions.get_device_plan_history_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages = "success";
+            retObj.devicePlanHistory = history;
+            analyticsService.create(req, serviceActions.get_device_plan_history, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+};
 
 module.exports = new Devices();
