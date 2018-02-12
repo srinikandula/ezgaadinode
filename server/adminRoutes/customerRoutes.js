@@ -10,6 +10,12 @@ AuthRouter.get('/getCustomerLeads', function(req, res) {
     })
 });
 
+AuthRouter.get('/totalCustomerLeads',function (req,res) {
+    CustomerLeads.totalCustomerLeads(req, function(result) {
+        res.send(result);
+    })
+});
+
 AuthRouter.post('/addCustomerLead',multipartyMiddleware, function(req, res) {
     CustomerLeads.addCustomerLead(req, function(result) {
         res.send(result);

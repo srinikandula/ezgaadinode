@@ -76,6 +76,35 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
 
 };
 
+CustomerLeads.prototype.totalCustomerLeads = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    CustomerLeadsColl.count(function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting customer leads count');
+            analyticsService.create(req, serviceActions.count_customer_leads_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_customer_leads, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
 CustomerLeads.prototype.addCustomerLead = function (req, callback) {
     var retObj = {
         status: false,
@@ -94,7 +123,7 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
     if (params.documentType && !req.files.files) {
         retObj.messages.push("Please select document");
     }
-    console.log(params.documentType && !req.files.files,params.documentType);
+    console.log(params.documentType && !req.files.files, params.documentType);
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_customer_lead_err, {
             body: JSON.stringify(req.body),
@@ -105,14 +134,14 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
         });
         callback(retObj);
     } else {
-        if(req.files.files){
-            Utils.uploadDocument(req.files.files[0],function (uploadResp) {
-                if(uploadResp.status){
+        if (req.files.files) {
+            Utils.uploadDocument(req.files.files[0], function (uploadResp) {
+                if (uploadResp.status) {
                     params.createdBy = req.jwt.id;
                     params.operatingRoutes = JSON.parse(params.operatingRoutes);
-                    params.documentFile=uploadResp.fileName;
-                    saveCustomerLead(req,params,callback);
-                }else{
+                    params.documentFile = uploadResp.fileName;
+                    saveCustomerLead(req, params, callback);
+                } else {
                     retObj.messages.push("Document uploading failed");
                     analyticsService.create(req, serviceActions.add_customer_lead_err, {
                         body: JSON.stringify(req.body),
@@ -124,10 +153,10 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
                     callback(retObj);
                 }
             })
-        }else{
+        } else {
             params.createdBy = req.jwt.id;
             params.operatingRoutes = JSON.parse(params.operatingRoutes);
-            saveCustomerLead(req,params,callback);
+            saveCustomerLead(req, params, callback);
         }
 
     }
@@ -135,8 +164,8 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
 
 };
 
-function saveCustomerLead(req,params,callback) {
-    var retObj={
+function saveCustomerLead(req, params, callback) {
+    var retObj = {
         status: false,
         messages: []
     }

@@ -1216,5 +1216,97 @@ Settings.prototype.deletePlan = function (req, callback) {
         });
     }
 }
+
 /*Plan End*/
+
+/*Counts started*/
+/*Author : Naresh d*/
+Settings.prototype.totalTruckTypes = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TrucksTypesColl.count(function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting truck types count');
+            analyticsService.create(req, serviceActions.count_truck_types_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_truck_types, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
+/*Author : Naresh d*/
+Settings.prototype.totalGoodsTypes = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    GoodsTypesColl.count(function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting goods types count');
+            analyticsService.create(req, serviceActions.count_goods_types_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_goods_types, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
+/*Author : Naresh d*/
+Settings.prototype.totalLoadsTypes = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    LoadTypesColl.count(function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting load types count');
+            analyticsService.create(req, serviceActions.count_load_types_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_load_types, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
 module.exports = new Settings();

@@ -9,6 +9,12 @@ AuthRouter.get('/getTruckTypes', function (req, res) {
     })
 });
 
+AuthRouter.get('/totalTruckTypes',function (req,res) {
+    Settings.totalTruckTypes(req, function (result) {
+        res.send(result);
+    })
+});
+
 AuthRouter.post('/addTruckType', function (req, res) {
     Settings.addTruckType(req, function (result) {
         res.send(result);
@@ -39,6 +45,12 @@ AuthRouter.get('/getGoodsTypes', function (req, res) {
     })
 });
 
+AuthRouter.get('/totalGoodsTypes',function (req,res) {
+    Settings.totalGoodsTypes(req, function (result) {
+        res.send(result);
+    })
+});
+
 AuthRouter.post('/addGoodsType', function (req, res) {
     Settings.addGoodsType(req, function (result) {
         res.send(result);
@@ -64,6 +76,12 @@ AuthRouter.get('/getGoodsTypeDetails', function (req, res) {
 });
 AuthRouter.get('/getLoadTypes', function (req, res) {
     Settings.getLoadTypes(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/totalLoadsTypes',function (req,res) {
+    Settings.totalLoadsTypes(req, function (result) {
         res.send(result);
     })
 });
