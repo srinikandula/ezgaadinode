@@ -41,7 +41,7 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
                 {
                     $project: {
                         createdBy: 1,
-                        customerType:1,
+                        customerType: 1,
                         source: 1,
                         destination: 1,
                         goodsType: 1,
@@ -52,15 +52,15 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
                         expectedPrice: 1,
                         trackingAvailable: 1,
                         insuranceAvailable: 1,
-                        customer:{
-                            $cond: {"if":'$customer', "then": "$customer", "else": "$customerLeadId"}
+                        customer: {
+                            $cond: {"if": '$customer', "then": "$customer", "else": "$customerLeadId"}
                         }
                     }
 
-                }, {"$sort": {createdAt: -1}}],function (err, docs) {
-                    truckRequestsCallback(err,docs);
+                }, {"$sort": {createdAt: -1}}], function (err, docs) {
+                truckRequestsCallback(err, docs);
 
-                })
+            })
         },
         count: function (countCallback) {
             TruckRequestColl.count({}, function (err, count) {
@@ -107,6 +107,36 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
     });
 };
 
+/*Author : Naresh d*/
+OrderProcess.prototype.totalTruckRequests = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TruckRequestColl.count(function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting truck request count');
+            analyticsService.create(req, serviceActions.count_truck_request_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_truck_request, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
 /*author : Naresh d*/
 OrderProcess.prototype.addTruckRequest = function (req, callback) {
     var retObj = {
@@ -120,7 +150,7 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
     if (!params.customerType) {
         retObj.messages.push("Please enter customer type");
     }
-    if (!params.truckDetails || !params.truckDetails.length>0 || !checkTruckDetails(params.truckDetails)) {
+    if (!params.truckDetails || !params.truckDetails.length > 0 || !checkTruckDetails(params.truckDetails)) {
         retObj.messages.push("Please enter truck details");
     }
     /*if (params.customerType === 'Registered' && !params.accountId) {
@@ -158,7 +188,7 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
 
 function checkTruckDetails(truckDetails) {
     for (var i = 0; i < truckDetails.length; i++) {
-        if (!truckDetails[i].source || !truckDetails[i].destination ) {
+        if (!truckDetails[i].source || !truckDetails[i].destination) {
             return false;
         }
         if (i === truckDetails.length - 1) {
@@ -257,13 +287,13 @@ OrderProcess.prototype.getTruckRequestDetails = function (req, callback) {
                 retObj.status = true;
                 retObj.messages = "Success";
                 retObj.data = doc;
-                if(doc.customerType==='Registered'){
-                    retObj.data.customerDetails=doc.accountId;
-                }else{
-                    retObj.data.customerDetails=doc.customerLeadId;
+                if (doc.customerType === 'Registered') {
+                    retObj.data.customerDetails = doc.accountId;
+                } else {
+                    retObj.data.customerDetails = doc.customerLeadId;
                 }
-                retObj.data.accountId="";
-                retObj.data.customerLeadId="";
+                retObj.data.accountId = "";
+                retObj.data.customerLeadId = "";
                 analyticsService.create(req, serviceActions.get_truck_request_details, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
