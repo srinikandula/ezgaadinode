@@ -5,6 +5,7 @@ var Groups = require('./../apis/groupsApi');
 var staticFilesRegex = /\.(html|css|ico|png|jpeg|jpg|js|eot|svg|ttf|woff|json)$/;
 
 function authMiddleware(req, res, next) {
+    console.log('url',req.url,req.url.startsWith('/v1/orderProcess'));
     var token = req.cookies.token || req.headers.token;
     if(staticFilesRegex.test(req.url)) {
         next();
@@ -16,8 +17,18 @@ function authMiddleware(req, res, next) {
                     if (err) {
                         res.status(401).send({status: false, message: 'Invalid token'})
                     } else  {
-                        req.jwt = decoded;
-                        next();
+                        if(req.url.startsWith('/v1/cpanel')){
+                            if(decoded.type==='employee'){
+                                req.jwt = decoded;
+                                next();
+                            }else{
+                                res.status(401).send({status: false, messages: ['Not Authorized']})
+                            }
+                        }else{
+                            req.jwt = decoded;
+                            next();
+
+                        }
                     }
                 });
             }else{
@@ -31,8 +42,19 @@ function authMiddleware(req, res, next) {
             if (err) {
                 res.status(401).send({status: false, message: 'Invalid token'})
             } else  {
-                req.jwt = decoded;
-                next();
+                if(req.url.startsWith('/v1/cpanel')){
+                    if(decoded.type==='employee'){
+                        req.jwt = decoded;
+                        next();
+                    }else{
+                        res.status(401).send({status: false, messages: ['Not Authorized']})
+                    }
+                }else{
+                    req.jwt = decoded;
+                    next();
+
+                }
+
             }
         });
     }

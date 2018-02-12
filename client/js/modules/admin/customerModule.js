@@ -2,23 +2,29 @@ app.factory('customerServices', function($http) {
     return {
         getCustomerLeads: function(params, success, error) {
             $http({
-                url: '/v1/customers/getCustomerLeads',
+                url: '/v1/cpanel/customers/getCustomerLeads',
                 method: "GET",
                 params: params
             }).then(success, error)
         },
         getCustomerLeadDetails: function(params, success, error) {
             $http({
-                url: '/v1/customers/getCustomerLeadDetails',
+                url: '/v1/cpanel/customers/getCustomerLeadDetails',
                 method: "GET",
                 params: { _id: params }
             }).then(success, error)
         },
         deleteCustomerLead: function(params, success, error) {
             $http({
-                url: '/v1/customers/deleteCustomerLead',
+                url: '/v1/cpanel/customers/deleteCustomerLead',
                 method: "DELETE",
                 params: { _id: params }
+            }).then(success, error)
+        },
+        getTruckOwners:function (success,error) {
+            $http({
+                url:'/v1/cpanel/customers/getTruckOwners',
+                method:"GET"
             }).then(success, error)
         }
     }
@@ -75,8 +81,10 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             loadPaymentPodDays: '',
             tdsDeclarationDoc: '',
             leadSource: '',
-            errorMessage: []
-        }
+            errorMessage: [],
+            file:""
+        };
+        $scope.files="";
     }
     //$scope.customerLead.contactPhone.push("");
     $scope.getCustomerLeadDetails = function() {
@@ -163,7 +171,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             });
         } else {
             if (!$scope.customerLead._id) {
-                var files = $scope.files;
+                var files = $scope.customerLead.file;
+                console.log('files',files);
                 Upload.upload({
                     url: '/v1/customers/addCustomerLead',
                     data: {
