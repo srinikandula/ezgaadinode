@@ -1,0 +1,24 @@
+<div ng-controller="NotificationCntrl">
+    <ul class="list-inline title-ul ">
+        <li class="pull-left name-head col-xs-6">Looking For Load</li>
+        <li class="col-xs-6 pull-right">
+            <div class="form-group col-xs-5 pull-right">
+                <select class="form-control">
+                    <option selected>All</option>
+                    <option>Valid</option>
+                    <option>Invalid</option>
+                </select>
+            </div>
+            <div class="input-group col-xs-7">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
+        <div class="clearfix"></div>
+
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="customerParams">
+
+
+    </table>
+</div>

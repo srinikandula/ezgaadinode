@@ -2,6 +2,7 @@
     <table class="table table-bordered table-responsive">
         <thead>
         <tr>
+            <th></th>
             <th>S No.</th>
             <th>IMEI No</th>
             <th>SIM No</th>
@@ -11,13 +12,23 @@
         </thead>
         <tbody>
         <tr ng-repeat="device in devicesToAdd">
-            <td><input type="checkbox"/>{{$index+1}}</td>
-            <td><input type="text" class="form-control custom-form-control" name="" placeholder="IMEI Number" ng-model="device.imei"/></td>
-            <td><input type="text" class="form-control custom-form-control" name="" placeholder="SIM No" ng-model="device.simPhoneNumber"/></td>
-            <td><input type="text" class="form-control custom-form-control" name="" placeholder="SIM ID" ng-model="device.simNumber"/></td>
             <td>
-                <a href="#" class="btn" ng-click="addDeviceRow()" ng-show="$index === devicesToAdd.length-1"><i class="fa fa-plus-square"></i></a>
-                <a href="#" class="btn" ng-click="removeDeviceRow($index)" ng-show="devicesToAdd.length > 1"><i class="fa fa-minus-square"></i></a>
+                <div class="checkbox mtb-0">
+                    <label>
+                        <input type="checkbox" value=""/>
+                        <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                    </label>
+                </div>
+            </td>
+            <td>{{$index+1}}</td>
+            <td><input type="text" class="form-control" placeholder="IMEI Number" ng-model="device.imei"/></td>
+            <td><input type="text" class="form-control" placeholder="SIM No" ng-model="device.simPhoneNumber"/></td>
+            <td><input type="text" class="form-control" placeholder="SIM ID" ng-model="device.simNumber"/></td>
+            <td>
+                <a href="#" class="btn" ng-click="addDeviceRow()" ng-show="$index === devicesToAdd.length-1">
+                    <i class="fa fa-plus-square"></i></a>
+                <a href="#" class="btn" ng-click="removeDeviceRow($index)" ng-show="$index < devicesToAdd.length-1">
+                    <i class="fa fa-minus-square"></i></a>
             </td>
         </tr>
         </tbody>
@@ -32,21 +43,23 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-sm-8 col-sm-offset-4">
-            <div ng-show="alreadyadded.length" ng-repeat="added in alreadyadded">{{added}} already added in database</div>
-            <div class="col-sm-5">
-                <p>Selected Devices to be Assigned to </p>
-            </div>
-            <div class="form-group col-sm-4">
-                <select class="form-control custom-form-control" ng-model="assignedTo">
-                    <option value="" selected>Select</option>
-                    <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}</option>
-                </select>
-            </div>
-            <div class="form-group col-sm-3">
-                <a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>
-                <a href="#" class="btn btn-primary" ng-click="addDevices()"> Submit</a>
-            </div>
+        <div ng-show="alreadyadded.length" ng-repeat="added in alreadyadded">{{added}} already added in database
         </div>
+        <ul class="list-inline pull-right">
+            <li><p>Selected Devices to be Assigned to </p></li>
+
+            <li class="form-group">
+                <select class="form-control" ng-model="assignedTo">
+                    <option value="" selected>Select</option>
+                    <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}
+                    </option>
+                </select>
+            </li>
+            <li>
+                <a href="#" class="btn btn-danger" ui-sref="services.gpsDevices"> Cancel</a>
+                <a href="#" class="btn btn-primary" ng-click="addDevices()"> Submit</a>
+            </li>
+        </ul>
+
     </div>
 </div>

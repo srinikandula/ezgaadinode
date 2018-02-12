@@ -85,7 +85,7 @@ app.factory('DeviceService', function ($http) {
     }
 });
 
-app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', function ($scope, DeviceService, Notification, NgTableParams) {
+app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', function ($scope, DeviceService, Notification, NgTableParams, $uibModal) {
     $scope.count = 0;
     $scope.getCount = function () {
         DeviceService.count(function (success) {
@@ -108,13 +108,11 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         };
         DeviceService.getDevices(pageable, function (response) {
             $scope.invalidCount = 0;
-            console.log(response.data);
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.devices;
                 $scope.currentPageOfDevices = response.data.devices;
                 // $scope.currentPageOfDevices[1].isDamaged = '1';
-                console.log('devices', $scope.currentPageOfDevices);
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
@@ -138,6 +136,14 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         });
     };
 
+    $scope.assignDevicesModal = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'assignDevicesModal.html',
+            controller: 'transferDevicesCrtl'
+        });
+
+    };
+
     $scope.deleteDevice = function (index) {
         // console.log(index);
         swal({
@@ -149,13 +155,13 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             cancelButtonColor: '#d33',
             confirmButtonText: 'Yes, delete the device'
         }).then(function (result) {
-            if(result.value) {
+            if (result.value) {
                 DeviceService.deleteDevice($scope.currentPageOfDevices[index]._id, function (success) {
-                    if(success.data.status) {
+                    if (success.data.status) {
                         $scope.init();
                         swal(
                             '',
-                            'Successfully removed' ,
+                            'Successfully removed',
                             'success'
                         );
                     }
@@ -212,6 +218,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
+
     getDevice();
 
     function getAccounts() {
@@ -222,16 +229,18 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
+
     getAccounts();
 
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.employees = success.data.employees;
                 // console.log($scope.employees);
             }
         });
     }
+
     getEmployees();
 
     $scope.getTrucksOfAccount = function () {
@@ -246,7 +255,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
 
     $scope.getSelectedTruckDetails = function () {
         // console.log($scope.deviceDetails.truckId);
-        if($scope.deviceDetails.truckId) {
+        if ($scope.deviceDetails.truckId) {
             var truck = _.find($scope.trucks, function (truck) {
                 return truck._id === $scope.deviceDetails.truckId;
             });
@@ -259,7 +268,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
 
     $scope.updateDevice = function () {
         // console.log($scope.deviceDetails);
-        if(!$scope.deviceDetails.accountId) {
+        if (!$scope.deviceDetails.accountId) {
             $scope.deviceDetails.error = 'Please select an account';
         } else {
             $scope.deviceDetails.error = '';
@@ -307,12 +316,13 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
 
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.employees = success.data.employees;
                 console.log($scope.employees);
             }
         });
     }
+
     getEmployees();
 
     $scope.addDeviceRow = function () {
@@ -333,25 +343,25 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
         $scope.errors = [];
         var params = $scope.devicesToAdd;
         console.log(params);
-        for(var i = 0;i < params.length-1;i++) {
-            for(var j = i+1;j < params.length;j++) {
-                if(params[i].imei === params[j].imei) {
+        for (var i = 0; i < params.length - 1; i++) {
+            for (var j = i + 1; j < params.length; j++) {
+                if (params[i].imei === params[j].imei) {
                     $scope.errors.push('Multiple devices cannot have same IMEI number');
                     return;
                 }
-                if(params[i].simPhoneNumber === params[j].simPhoneNumber) {
+                if (params[i].simPhoneNumber === params[j].simPhoneNumber) {
                     $scope.errors.push('Multiple devices cannot have same Sim PhoneNumber');
                     return;
                 }
-                if(params[i].simNumber === params[j].simNumber) {
+                if (params[i].simNumber === params[j].simNumber) {
                     $scope.errors.push('Multiple devices cannot have same Sim Number');
                     return;
                 }
             }
         }
-        if(!params[params.length-1].imei || !params[params.length-1].simPhoneNumber || !params[params.length-1].simNumber){
+        if (!params[params.length - 1].imei || !params[params.length - 1].simPhoneNumber || !params[params.length - 1].simNumber) {
             $scope.errors.push('please fill all the details');
-        } else if(!$scope.assignedTo) {
+        } else if (!$scope.assignedTo) {
             $scope.errors.push('please select an employeee');
         } else {
             $scope.errors = '';
@@ -369,20 +379,25 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
     };
 }]);
 
-app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {
+app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', '$uibModalInstance', function ($scope, DeviceService, Notification, $state, $uibModalInstance) {
+
+    $scope.closeAssignDevice = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
 
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.employees = success.data.employees;
                 console.log($scope.employees);
             }
         });
     }
+
     getEmployees();
     $scope.getAllDevices = function () {
         DeviceService.getAllDevices(function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.allDevices = success.data.devices;
                 console.log('adddevices', $scope.allDevices);
             }
@@ -398,19 +413,23 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
         externalIdProp: '_id',
         showCheckAll: false,
     };
+    $scope.customText = {buttonDefaultText: 'Select Devices'};
     // function init() {
-        $scope.selectedDevices = [];
+    $scope.selectedDevices = [];
     // } init();
 
     $scope.transferDevices = function () {
         console.log($scope.selectedDevices, $scope.assignedTo);
-        if($scope.selectedDevices.length < 1){
+        if ($scope.selectedDevices.length < 1) {
             $scope.error = 'please select devices';
-        } else if(!$scope.assignedTo) {
+        } else if (!$scope.assignedTo) {
             $scope.error = 'please select an employeee';
         } else {
             $scope.error = '';
-            DeviceService.transferDevices({devices: _.pluck($scope.selectedDevices, '_id'), assignedTo:$scope.assignedTo}, function (success) {
+            DeviceService.transferDevices({
+                devices: _.pluck($scope.selectedDevices, '_id'),
+                assignedTo: $scope.assignedTo
+            }, function (success) {
                 if (success.data.status) {
                     Notification.success({message: "Successfully transfered"});
                     $state.go('services.gpsDevices');

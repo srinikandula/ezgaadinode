@@ -2,7 +2,7 @@
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Customers Leads</li>
         <li class="pull-right">
-            <button class="btn btn-primary" ui-sref="createCustomer">Create New</button>
+            <button class="btn btn-primary" ui-sref="customers.createCustomer">Create New</button>
         </li>
         <li class="pull-right col-xs-2">
             <select class="form-control">
@@ -20,27 +20,13 @@
     </ul>
     <div class="clearfix"></div>
     <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="customerParams">
-        <thead>
-            <tr>
-                <th>S No</th>
-                <th>Customer Name</th>
-                <th>Type</th>
-                <th>Mobile</th>
-                <th>Reg Date</th>
-                <th>is Lead</th>
-                <th>ERP</th>
-                <th>GPS</th>
-                <th>Load</th>
-                <th>Lead Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
+
         <tbody>
             <tr ng-repeat="customer in customerLeads">
                 <td>{{$index+1}}</td>
                 <td data-title="'Customer Name'" sortable="'name'" class="clickable-item">{{customer.name}}</td>
-                <td data-title="'Lead Type'" sortable="'type'" class="clickable-item">{{customer.leadType}}</td>
-                <td data-title="'Mobile'" sortable="'mobile'" class="clickable-item">{{customer.contactPhone[0]}}</td>
+                <td data-title="'Lead Type'" sortable="'leadType'" class="clickable-item">{{customer.leadType}}</td>
+                <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">{{customer.contactPhone[0]}}</td>
                 <td data-title="'Date'" sortable="'date'" class="clickable-item">{{customer.createdAt | date:medium}}</td>
                 <td data-title="'Yes'" sortable="'yes'" class="clickable-item">Yes</td>
                 <td data-title="'ERP'" sortable="'erp'" class="clickable-item">{{customer.erp}}</td>
@@ -51,7 +37,7 @@
                         <option ng-repeat="item in leadStatus">{{item}}</option>
                     </select>
                 </td>
-                <td><a href="#" ui-sref="createCustomer({customerId:customer._id})">Edit</a>/<a href="#" ng-click="delCustomer(customer._id)">Delete</a></td>
+                <td><a href="#" ui-sref="customers.createCustomer({customerId:customer._id})">Edit</a>/<a href="#" ng-click="delCustomer(customer._id)">Delete</a></td>
             </tr>
         </tbody>
     </table>
