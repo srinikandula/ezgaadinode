@@ -91,6 +91,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 SettingServices.getPlan(pageable, function (success) {
                     if (success.data.status) {
                         $scope.planData = success.data.data;
+                        console.log("Welcome", $scope.planData);
                         tableParams.data = $scope.planData;
                         tableParams.total(parseInt(success.data.count));
                     } else {
