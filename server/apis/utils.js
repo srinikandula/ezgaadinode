@@ -16,6 +16,7 @@ var RolesColl = require('./../models/schemas').Roles;
 var DriversCollection = require('./../models/schemas').DriversColl;
 var TripsColl = require('./../models/schemas').TripCollection;
 var ExpenseMasterColl = require('./../models/schemas').expenseMasterColl;
+var fse = require('fs-extra');
 
 
 var Utils = function () {
@@ -465,6 +466,36 @@ Utils.prototype.getErpSettingsForTruckExpiry = function (erp) {
         }
     }
     return output;
-}
+};
+
+Utils.prototype.uploadDocument=function (file,callback) {
+    var retObj = {
+        false:true,
+        messages:[]
+    };
+    var fileName=new Date()-0+"_"+file.originalFilename;
+    fse.copy(file.path, './client/assets/documents/' + fileName, function (err) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Document uploading failed');
+            callback(retObj);
+        } else {
+            fse.remove(file.path, function (err) {
+                if (err) {
+                    retObj.status = false;
+                    retObj.messages.push('Document uploading failed');
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Document Added Successfully');
+                    retObj.fileName=fileName;
+                    callback(retObj);
+                }
+
+            });
+
+        }
+    })
+};
 
 module.exports = new Utils();

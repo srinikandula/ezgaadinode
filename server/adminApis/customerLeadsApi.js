@@ -5,10 +5,12 @@ const ObjectId = mongoose.Types.ObjectId;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var CustomerLeadsColl = require("../models/schemas").CustomerLeadsColl;
+var AccountsColl = require("../models/schemas").AccountsColl;
+var Utils = require('../apis/utils');
+var CustomerLeads = function () {
+};
 
-var CustomerLeads = function() {};
-
-CustomerLeads.prototype.getCustomerLeads = function(req, callback) {
+CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -16,23 +18,23 @@ CustomerLeads.prototype.getCustomerLeads = function(req, callback) {
     var params = req.query;
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : { createdAt: -1 };
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
-        customerLeads: function(customerLeadsCallback) {
-            CustomerLeadsColl.find({ "converted": false }).sort(sort)
+        customerLeads: function (customerLeadsCallback) {
+            CustomerLeadsColl.find({"converted": false}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                .exec(function(err, docs) {
+                .exec(function (err, docs) {
                     customerLeadsCallback(err, docs);
 
                 })
         },
-        count: function(countCallback) {
-            CustomerLeadsColl.count({}, function(err, count) {
+        count: function (countCallback) {
+            CustomerLeadsColl.count({}, function (err, count) {
                 countCallback(err, count);
             });
         }
-    }, function(err, results) {
+    }, function (err, results) {
         if (err) {
             console.log(err);
             retObj.messages.push("Please try again");
@@ -41,7 +43,8 @@ CustomerLeads.prototype.getCustomerLeads = function(req, callback) {
                 accountId: req.jwt.id,
                 success: false,
                 messages: retObj.messages
-            }, function(response) {});
+            }, function (response) {
+            });
             callback(retObj);
         } else {
 
@@ -54,7 +57,8 @@ CustomerLeads.prototype.getCustomerLeads = function(req, callback) {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.messages.push("No Customer leads found");
@@ -63,7 +67,8 @@ CustomerLeads.prototype.getCustomerLeads = function(req, callback) {
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             }
         }
@@ -71,7 +76,36 @@ CustomerLeads.prototype.getCustomerLeads = function(req, callback) {
 
 };
 
-CustomerLeads.prototype.addCustomerLead = function(req, callback) {
+CustomerLeads.prototype.totalCustomerLeads = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    CustomerLeadsColl.count(function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting customer leads count');
+            analyticsService.create(req, serviceActions.count_customer_leads_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_customer_leads, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
+CustomerLeads.prototype.addCustomerLead = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -86,47 +120,83 @@ CustomerLeads.prototype.addCustomerLead = function(req, callback) {
     if (!params.leadType) {
         retObj.messages.push("Please select lead type");
     }
+    if (params.documentType && !req.files.files) {
+        retObj.messages.push("Please select document");
+    }
+    console.log(params.documentType && !req.files.files, params.documentType);
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_customer_lead_err, {
             body: JSON.stringify(req.body),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
-        }, function(response) {});
+        }, function (response) {
+        });
         callback(retObj);
     } else {
-        params.createdBy = req.jwt.id;
-        params.operatingRoutes = JSON.parse(params.operatingRoutes);
-        var customerLead = new CustomerLeadsColl(params);
-        customerLead.save(function(err, doc) {
-            if (err) {
-                console.log('err', err)
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.add_customer_lead_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function(response) {});
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push("Customer lead added successfully");
-                retObj.data = doc;
-                analyticsService.create(req, serviceActions.get_customer_leads, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function(response) {});
-                callback(retObj);
-            }
-        })
+        if (req.files.files) {
+            Utils.uploadDocument(req.files.files[0], function (uploadResp) {
+                if (uploadResp.status) {
+                    params.createdBy = req.jwt.id;
+                    params.operatingRoutes = JSON.parse(params.operatingRoutes);
+                    params.documentFile = uploadResp.fileName;
+                    saveCustomerLead(req, params, callback);
+                } else {
+                    retObj.messages.push("Document uploading failed");
+                    analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            })
+        } else {
+            params.createdBy = req.jwt.id;
+            params.operatingRoutes = JSON.parse(params.operatingRoutes);
+            saveCustomerLead(req, params, callback);
+        }
+
     }
 
 
 };
 
-CustomerLeads.prototype.getCustomerLeadDetails = function(req, callback) {
+function saveCustomerLead(req, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    }
+    var customerLead = new CustomerLeadsColl(params);
+    customerLead.save(function (err, doc) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Customer lead added successfully");
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.get_customer_leads, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+}
+
+CustomerLeads.prototype.getCustomerLeadDetails = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -141,12 +211,13 @@ CustomerLeads.prototype.getCustomerLeadDetails = function(req, callback) {
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
-        }, function(response) {});
+        }, function (response) {
+        });
         callback(retObj);
     } else {
 
 
-        CustomerLeadsColl.findOne({ _id: params._id }, function(err, doc) {
+        CustomerLeadsColl.findOne({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_customer_lead_details_err, {
@@ -154,7 +225,8 @@ CustomerLeads.prototype.getCustomerLeadDetails = function(req, callback) {
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (doc) {
                 retObj.status = true;
@@ -164,7 +236,8 @@ CustomerLeads.prototype.getCustomerLeadDetails = function(req, callback) {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.messages.push("Customer details not found");
@@ -173,14 +246,15 @@ CustomerLeads.prototype.getCustomerLeadDetails = function(req, callback) {
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             }
         })
     }
 };
 
-CustomerLeads.prototype.updateCustomerLead = function(req, callback) {
+CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -202,8 +276,8 @@ CustomerLeads.prototype.updateCustomerLead = function(req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        CustomerLeadsColl.findOneAndUpdate({ _id: params._id }, { $set: params }, { new: true },
-            function(err, doc) {
+        CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
+            function (err, doc) {
                 if (err) {
                     console.log('ddd', err)
                     retObj.messages.push("Please try again");
@@ -212,7 +286,8 @@ CustomerLeads.prototype.updateCustomerLead = function(req, callback) {
                         accountId: req.jwt.id,
                         success: false,
                         messages: retObj.messages
-                    }, function(response) {});
+                    }, function (response) {
+                    });
                     callback(retObj);
                 } else if (doc) {
                     retObj.status = true;
@@ -222,7 +297,8 @@ CustomerLeads.prototype.updateCustomerLead = function(req, callback) {
                         body: JSON.stringify(req.body),
                         accountId: req.jwt.id,
                         success: true
-                    }, function(response) {});
+                    }, function (response) {
+                    });
                     callback(retObj);
                 } else {
                     retObj.messages.push("Customer lead not updated");
@@ -231,7 +307,8 @@ CustomerLeads.prototype.updateCustomerLead = function(req, callback) {
                         accountId: req.jwt.id,
                         success: false,
                         messages: retObj.messages
-                    }, function(response) {});
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
             })
@@ -239,7 +316,7 @@ CustomerLeads.prototype.updateCustomerLead = function(req, callback) {
 
 };
 
-CustomerLeads.prototype.deleteCustomerLead = function(req, callback) {
+CustomerLeads.prototype.deleteCustomerLead = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -254,10 +331,11 @@ CustomerLeads.prototype.deleteCustomerLead = function(req, callback) {
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
-        }, function(response) {});
+        }, function (response) {
+        });
         callback(retObj);
     } else {
-        CustomerLeadsColl.remove({ _id: params._id }, function(err, doc) {
+        CustomerLeadsColl.remove({_id: params._id}, function (err, doc) {
             console.log(doc.result);
             if (err) {
                 retObj.messages.push("please try again");
@@ -266,7 +344,8 @@ CustomerLeads.prototype.deleteCustomerLead = function(req, callback) {
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (doc && doc.result.n == 1) {
                 retObj.status = true;
@@ -275,7 +354,8 @@ CustomerLeads.prototype.deleteCustomerLead = function(req, callback) {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.messages.push("Customer lead not deleted");
@@ -284,7 +364,8 @@ CustomerLeads.prototype.deleteCustomerLead = function(req, callback) {
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
-                }, function(response) {});
+                }, function (response) {
+                });
                 callback(retObj);
             }
         })
@@ -293,5 +374,43 @@ CustomerLeads.prototype.deleteCustomerLead = function(req, callback) {
 
 };
 
+CustomerLeads.prototype.getTruckOwners = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    AccountsColl.find({type: 'account'}, function (err, docs) {
+        if (err) {
+            retObj.messages.push('Error retrieving truck owners');
+            analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (docs.length > 0) {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = docs;
+            analyticsService.create(req, serviceActions.get_truck_owners_list, {
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.messages.push('No truck owners found');
+            analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+};
 
 module.exports = new CustomerLeads();

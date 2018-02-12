@@ -29,6 +29,7 @@ coverage
 bower_components
 client/components
 client/dist
+client/assets
 
 # node-waf configuration
 .lock-wscript
@@ -67,3 +68,6 @@ typings/
 # MAC OS
 .DS_Store
 !/server/apis/truckAPIs.js
+
+#package-lock.json
+package-lock.json

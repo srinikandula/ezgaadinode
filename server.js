@@ -118,12 +118,12 @@ app.use('/v1/expense', Expense.AuthRouter);
 app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
-app.use('/v1/customers', Customers.AuthRouter);
-app.use('/v1/settings', Settings.AuthRouter);
-app.use('/v1/orderProcess', OrderProcess.AuthRouter);
-app.use('/v1/accounts', Accounts.AuthRouter);
-app.use('/v1/employees', Employees.AuthRouter);
-app.use('/v1/devices', Devices.AuthRouter);
+app.use('/v1/cpanel/customers', Customers.AuthRouter);
+app.use('/v1/cpanel/settings', Settings.AuthRouter);
+app.use('/v1/cpanel/orderProcess', OrderProcess.AuthRouter);
+app.use('/v1/cpanel/accounts', Accounts.AuthRouter);
+app.use('/v1/cpanel/employees', Employees.AuthRouter);
+app.use('/v1/cpanel/devices', Devices.AuthRouter);
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

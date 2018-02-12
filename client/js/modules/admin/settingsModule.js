@@ -2,7 +2,7 @@ app.factory('SettingServices', ['$http', function ($http) {
     return {
         addPlan: function (params, success, error) {
             $http({
-                url: '/v1/settings/addPlan',
+                url: '/v1/cpanel/settings/addPlan',
                 method: "POST",
                 data: params
             }).then(success, error)
@@ -16,27 +16,40 @@ app.factory('SettingServices', ['$http', function ($http) {
         },
         getPlanDetails: function (planId, success, error) {
             $http({
-                url: '/v1/settings/getPlanDetails',
+                url: '/v1/cpanel/settings/getPlanDetails',
                 method: "GET",
                 params: {gpsPlanId: planId}
             }).then(success, error)
         },
         updatePlan: function (params, success, error) {
             $http({
-                url: '/v1/settings/updatePlan',
+                url: '/v1/cpanel/settings/updatePlan',
                 method: "PUT",
                 data: params
             }).then(success, error)
         },
         deletePlan: function (planId, success, error) {
             $http({
-                url: '/v1/settings/deletePlan',
+                url: '/v1/cpanel/settings/deletePlan',
                 method: "DELETE",
                 params: {_id:planId}
+            }).then(success, error)
+        },
+        getTruckTypes: function (success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getTruckTypes',
+                method: "GET"
+            }).then(success, error)
+        },
+        getGoodsTypes:function (success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getGoodsTypes',
+                method: "GET"
             }).then(success, error)
         }
     }
 }]);
+
 
 app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTableParams', 'Notification', function ($scope, $uibModal, SettingServices, NgTableParams, Notification) {
     $scope.openPopup = function () {

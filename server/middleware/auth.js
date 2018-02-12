@@ -16,8 +16,18 @@ function authMiddleware(req, res, next) {
                     if (err) {
                         res.status(401).send({status: false, message: 'Invalid token'})
                     } else  {
-                        req.jwt = decoded;
-                        next();
+                        if(req.url.startsWith('/v1/cpanel')){
+                            if(decoded.type==='employee'){
+                                req.jwt = decoded;
+                                next();
+                            }else{
+                                res.status(401).send({status: false, messages: ['Not Authorized']})
+                            }
+                        }else{
+                            req.jwt = decoded;
+                            next();
+
+                        }
                     }
                 });
             }else{
@@ -31,8 +41,19 @@ function authMiddleware(req, res, next) {
             if (err) {
                 res.status(401).send({status: false, message: 'Invalid token'})
             } else  {
-                req.jwt = decoded;
-                next();
+                if(req.url.startsWith('/v1/cpanel')){
+                    if(decoded.type==='employee'){
+                        req.jwt = decoded;
+                        next();
+                    }else{
+                        res.status(401).send({status: false, messages: ['Not Authorized']})
+                    }
+                }else{
+                    req.jwt = decoded;
+                    next();
+
+                }
+
             }
         });
     }
