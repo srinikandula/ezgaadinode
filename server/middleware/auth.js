@@ -5,7 +5,6 @@ var Groups = require('./../apis/groupsApi');
 var staticFilesRegex = /\.(html|css|ico|png|jpeg|jpg|js|eot|svg|ttf|woff|json)$/;
 
 function authMiddleware(req, res, next) {
-    console.log('url',req.url,req.url.startsWith('/v1/orderProcess'));
     var token = req.cookies.token || req.headers.token;
     if(staticFilesRegex.test(req.url)) {
         next();
