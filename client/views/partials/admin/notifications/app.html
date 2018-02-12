@@ -1,0 +1,46 @@
+<div ng-controller="NotificationCntrl">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">App Notifications</li>
+        <li class="pull-right">
+            <button class="btn btn-primary" ng-click="addAppNtfcn()">Create New</button>
+        </li>
+        <div class="clearfix"></div>
+
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="customerParams">
+
+
+    </table>
+</div>
+
+
+<script type="text/ng-template" id="addAppNtfcn.html">
+
+    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
+
+
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Add App Notification</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="row">
+            <div class="form-group col-xs-6">
+                <input type="text" class="form-control" placeholder="Send To*"/>
+            </div>
+
+            <div class="form-group col-xs-6">
+                <input type="text" class="form-control" placeholder="Ignore*"/>
+            </div>
+            <div class="col-xs-12">
+                <textarea class="form-control" rows="5">Info*</textarea>
+            </div>
+        </div>
+
+    </div>
+    <div ng-show="error">{{error}}</div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="transferDevices()">Submit</button>
+        <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
+    </div>
+</script>

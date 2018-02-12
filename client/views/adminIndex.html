@@ -28,14 +28,14 @@
                 <div class="navbar-header">
                     <a class="navbar-brand logo" href="#"><img src="images/logo-login.png"> </a>
                 </div>
-                <ul class="nav navbar-nav navbar-right" ng-if="isLoggedIn()">
+                <ul class="nav navbar-nav navbar-right nav-admin" ng-if="isLoggedIn()">
                     <li class="profile-nav">
-                        <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown"><img src="images/user.png">{{displayName}}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <img src="images/user.png">{{displayName}}
                             <span class="caret"></span></a>
                         <ul class="dropdown-menu">
                             <li><a href="#" ui-sref="myProfile">My Profile</a></li>
                             <li><a href="#" ng-click="logout()">Logout</a></li>
-
                         </ul>
                     </li>
                 </ul>
@@ -50,15 +50,14 @@
                     <adminleft-menu label="Dashboard"></adminleft-menu>
                     <adminleft-menu label="Customers" ui-sref="customers.customersLead"></adminleft-menu>
                     <adminleft-menu label="Services" ui-sref="services.gpsAccounts"></adminleft-menu>
-                    <adminleft-menu label="Order Process" ui-sref="orderprocess.truckRequest"></adminleft-menu>
+                    <adminleft-menu label="OrderProcess" ui-sref="orderprocess.truckRequest"></adminleft-menu>
                     <adminleft-menu label="Settings" ui-sref="settings.gpsSettings"></adminleft-menu>
-                    <adminleft-menu label="Set Notifications"></adminleft-menu>
+                    <adminleft-menu label="Notifications" ui-sref="notifications.avaTrucks"></adminleft-menu>
                     <adminleft-menu label="Admin"></adminleft-menu>
                     <div class="clearfix"></div>
                 </div>
                 <div class="col-xs-12 col-sm-10 right-nav pall-zero">
                     <div ui-view></div>
-                    <div class="clearfix"></div>
                 </div>
             </div>
         </div>
@@ -100,6 +99,7 @@
 <script src="js/modules/admin/orderProcessModule.js"></script>
 <script src="js/modules/admin/settingsModule.js"></script>
 <script src="js/modules/admin/devicesModule.js"></script>
+<script src="js/modules/admin/notificationModule.js"></script>
 <!--Services-->
 <script src="js/services.js"></script>
 <script src="js/lib/bundles/ng-table.js"></script>

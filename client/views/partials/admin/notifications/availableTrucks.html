@@ -1,0 +1,87 @@
+<div ng-controller="NotificationCntrl">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">GPS Truck Notification</li>
+        <li class="pull-right">
+            <button class="btn btn-primary" ng-click="newGpsTruckNtfcn()">Create New</button>
+        </li>
+        <li class="pull-right col-xs-2">
+            <button class="btn btn-warning">Send Notification</button>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="customerParams">
+
+
+    </table>
+</div>
+
+
+<script type="text/ng-template" id="newGpsTruckNtfcn.html">
+
+    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
+    <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
+
+
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Add GPS Truck Notification</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Source City*" />
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="No of Trucks*" />
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Date Available*" />
+                </div>
+            </div>
+            <div class="col-xs-6">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Destination City*" />
+                </div>
+                <div class="form-group">
+                    <select class="form-control">
+                        <option selected>Truck Type*</option>
+                        <option></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Price*" />
+                </div>
+                <div class="form-group">
+                    <div class="form-group">
+                        <p class="smsenabled">Send To All*:</p>
+                        <ul class="list-inline">
+                            <li>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="all">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        Yes
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" name="all">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        No
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div ng-show="error">{{error}}</div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="transferDevices()">Submit</button>
+        <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
+    </div>
+</script>

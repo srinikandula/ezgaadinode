@@ -8,11 +8,6 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/adminLogin.html',
         data: {activeTab: 'login'}
     }).state({
-        name: 'adminHome',
-        url: '/adminHome',
-        templateUrl: 'views/partials/admin/adminHome.html',
-        data: {activeTab: 'adminHome'}
-    }).state({
         name: 'dashboard',
         url: '/dashboard',
         templateUrl: 'views/partials/admin/dashboard.html',
@@ -29,7 +24,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'customers'}
 
     }).state({
-        name: 'createCustomer',
+        name: 'customers.createCustomer',
         url: '/createCustomer/:customerId',
         templateUrl: 'views/partials/admin/customers/createCustomer.html',
         data: {activeTab: 'customers'},
@@ -79,7 +74,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/services/serviceDashboard.html',
         data: {activeTab: 'services'}
     }).state({
-        name: 'addNewAccount',
+        name: 'services.addNewAccount',
         url: '/addNewAccount',
         templateUrl: 'views/partials/admin/services/addNewAccount.html',
         data: {activeTab: 'services'}
@@ -125,7 +120,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'services'}
     }).state({
         name: 'orderprocess',
-        url: '/orderprocess',
+        url: '/orderProcess',
         templateUrl: 'views/partials/admin/orderProcess/orderProcess.html',
         data: {activeTab: 'orderprocess'}
     }).state({
@@ -144,10 +139,16 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/orderProcess/viewOrder.html',
         data: {activeTab: 'orderprocess'}
     }).state({
-        name: 'createTruckRequest',
+        name: 'orderprocess.createTruckRequest',
         url: '/createTruckRequest',
         templateUrl: 'views/partials/admin/orderProcess/createTruckRequest.html',
-        data: { activeTab: 'orderprocess' }
+        data: { activeTab: 'orderprocess    ' }
+    }).state({
+        name: 'orderprocess.editTruckRequest',
+        url: '/editTruckRequest/:_id',
+        templateUrl: 'views/partials/admin/orderProcess/editTruckRequest.html',
+        data: {activeTab: 'orderprocess'},
+        params: { _id: null }
     }).state({
         name: 'settings',
         url: '/settings',
@@ -159,13 +160,30 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/settings/gpsSettings.html',
         data: { activeTab: 'settings' }
     }).state({
-        name: 'orderprocess.editTruckRequest',
-        url: '/editTruckRequest/:_id',
-        templateUrl: 'views/partials/admin/orderProcess/editTruckRequest.html',
-        data: {activeTab: 'orderprocess'},
-        params: {
-            _id: null
-        }
+        name: 'notifications',
+        url: '/notifications',
+        templateUrl: 'views/partials/admin/notifications/notificationDashboard.html',
+        data: { activeTab: 'notification' }
+    }).state({
+        name: 'notifications.avaTrucks',
+        url: '/avaTrucks',
+        templateUrl: 'views/partials/admin/notifications/availableTrucks.html',
+        data: { activeTab: 'notification' }
+    }).state({
+        name: 'notifications.avaLoads',
+        url: '/avaLoads',
+        templateUrl: 'views/partials/admin/notifications/availableLoads.html',
+        data: { activeTab: 'notification' }
+    }).state({
+        name: 'notifications.app',
+        url: '/app',
+        templateUrl: 'views/partials/admin/notifications/app.html',
+        data: { activeTab: 'notification' }
+    }).state({
+        name: 'notifications.lookingForLoad',
+        url: '/lookingForLoad',
+        templateUrl: 'views/partials/admin/notifications/lookingForLoad.html',
+        data: { activeTab: 'notification' }
     });
 
     $urlRouterProvider.otherwise('/login');

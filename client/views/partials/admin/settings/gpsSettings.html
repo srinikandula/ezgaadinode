@@ -1,9 +1,9 @@
 <div ng-controller="settingsCtrl" ng-init="getPlanDetails()">
-    <p class="pull-left name-head">GPS Renewal Plans</p>
-    <div class="row mt-20">
-        <div class="col-sm-8 col-sm-offset-4">
-            <div class="row">
-                <div class="col-sm-6">
+    <div>
+        <p class="pull-left name-head">GPS Renewal Plans</p>
+        <div class="row mt-20">
+            <div class="col-sm-7 pull-right pall-zero">
+                <div class="col-sm-5">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Search">
                         <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
@@ -23,29 +23,19 @@
         </div>
     </div>
     <div class="clearfix"></div>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20"  ng-table="settingParams">
-        <thead>
-            <tr>
-                <th></th>
-                <th>S No.</th>
-                <th>Plan Name</th>
-                <th>Duration</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Edit / Delete</th>
-            </tr>
-        </thead>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="settingParams">
         <tbody>
         <tr ng-repeat="plan in planData">
-            <td align="center"><input type="checkbox"/></td>
-            <td>{{$index+1}}</td>
+            <td><input type="checkbox"/></td>
+            <td date-title="'S No'" class="clickable-item">{{$index+1}}</td>
             <td data-title="'Plan Name'" sortable="'planName'" class="clickable-item">{{plan.planName}}</td>
-            <td data-title="'Duration'" sortable="'durationInMonths'" class="clickable-item">{{plan.durationInMonths}}</td>
+            <td data-title="'Duration'" sortable="'durationInMonths'" class="clickable-item">{{plan.durationInMonths}}
+            </td>
             <td data-title="'Amount'" sortable="'amount'" class="clickable-item">{{plan.amount}}</td>
             <td data-title="'Status'" sortable="'status'" class="clickable-item">{{plan.status}}</td>
-            <td><a href="#" ng-click="editPlanPopup(plan._id)">Edit</a>/<a href="#" ng-click="delGpsPlan(plan._id)">Delete</a></td>
+            <td><a href="#" ng-click="editPlanPopup(plan._id)">Edit</a>/
+                <a href="#" ng-click="delGpsPlan(plan._id)">Delete</a></td>
         </tr>
-
         </tbody>
     </table>
     <script type="text/ng-template" id="addNewGPS.html">
@@ -57,22 +47,24 @@
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <input type="text" class="form-control" ng-model="gpsAddPlan.planName" placeholder="Plan Name *" />
+                        <input type="text" class="form-control" ng-model="gpsAddPlan.planName"
+                               placeholder="Plan Name *"/>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <input type="number" class="form-control" ng-model="gpsAddPlan.amount" placeholder="Amount *" />
+                        <input type="number" class="form-control" ng-model="gpsAddPlan.amount" placeholder="Amount *"/>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <input type="number" class="form-control" ng-model="gpsAddPlan.durationInMonths" placeholder="Duration in Months *" />
+                        <input type="number" class="form-control" ng-model="gpsAddPlan.durationInMonths"
+                               placeholder="Duration in Months *"/>
                     </div>
                 </div>
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <input type="hidden" class="form-control" ng-model="gpsAddPlan.type" placeholder="" />
+                        <input type="hidden" class="form-control" ng-model="gpsAddPlan.type" placeholder=""/>
                     </div>
                 </div>
                 <div class="col-sm-6">
@@ -101,10 +93,10 @@
                     </div>
                 </div>
                 <div class="col-sm-12 text-center">
-                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addGPSPlan()" />
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addGPSPlan()"/>
                 </div>
             </div>
         </div>
-
     </script>
 </div>
+

@@ -9,7 +9,7 @@ app.factory('SettingServices', ['$http', function ($http) {
         },
         getPlan: function (params, success, error) {
             $http({
-                url: '/v1/settings/getPlan',
+                url: '/v1/cpanel/settings/getPlan',
                 method: "GET",
                 params: params
             }).then(success, error)
@@ -91,6 +91,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 SettingServices.getPlan(pageable, function (success) {
                     if (success.data.status) {
                         $scope.planData = success.data.data;
+                        console.log("Welcome", $scope.planData);
                         tableParams.data = $scope.planData;
                         tableParams.total(parseInt(success.data.count));
                     } else {
