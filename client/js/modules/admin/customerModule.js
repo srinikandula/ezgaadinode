@@ -22,7 +22,7 @@ app.factory('customerServices', function($http) {
             }).then(success, error)
         }
     }
-})
+});
 
 app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$stateParams', 'customerServices', 'NgTableParams', function($scope, $state, Notification, Upload, $stateParams, customerServices, NgTableParams) {
 
@@ -82,6 +82,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     $scope.getCustomerLeadDetails = function() {
         if ($stateParams.customerId) {
             customerServices.getCustomerLeadDetails($stateParams.customerId, function(success) {
+
                 if (success.data.status) {
                     $scope.customerLead = success.data.data;
                 } else {
@@ -95,22 +96,22 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         } else {
             customerLeadsFunc();
         }
-    }
+    };
     $scope.addRoutes = function() {
         var routesObj = $scope.customerLead.operatingRoutes;
-        console.log(routesObj)
+        console.log(routesObj);
         if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
             //$scope.customerLead.errorMessage
             Notification.error('Enter Source and Destination');
         } else {
             routesObj.push({ source: '', destination: '' });
         }
-    }
+    };
 
     $scope.routeDel = function() {
         //$scope.showExtra = false;
         $scope.customerLead.operatingRoutes.splice($scope.customerLead.operatingRoutes, 1)
-    }
+    };
 
     $scope.addNumber = function() {
 
@@ -123,11 +124,11 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         }
         //console.log($scope.customerLead.contactPhone);
         //$scope.removeMark = true;
-    }
+    };
     $scope.removeNumber = function() {
         //$scope.showExtra = false;
         $scope.customerLead.contactPhone.splice($scope.customerLead.contactPhone, 1)
-    }
+    };
 
     function verifyMobNum() {
         for (var i = 0; i < $scope.customerLead.contactPhone.length; i++) {
@@ -206,7 +207,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                 });
             }
         }
-    }
+    };
 
     $scope.delCustomer = function(customerId) {
         swal({
