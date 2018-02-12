@@ -58,6 +58,14 @@
     cursor: pointer;
 }
 
+.mtb-0{
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+.window-custom .modal-dialog{
+    width: 800px !important;
+    margin: 30px auto !important;
+}
 @font-face {
     font-family: 'Gotham-Medium';
     src: url('../fonts/Gotham-Medium/Gotham-Medium.eot?#iefix') format('embedded-opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.otf') format('opentype'), url('../fonts/Gotham-Medium/Gotham-Medium.woff') format('woff'), url('../fonts/Gotham-Medium/Gotham-Medium.ttf') format('truetype'), url('../fonts/Gotham-Medium/Gotham-Medium.svg#Gotham-Medium') format('svg');
@@ -151,6 +159,9 @@ body {
 .logo {
     padding: 0 !important;
     height: 0 !important;
+}
+.nav-admin>li>a{
+    padding: 9px !important;
 }
 
 .custom-btn {

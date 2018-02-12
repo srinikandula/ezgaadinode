@@ -9,7 +9,7 @@ app.factory('SettingServices', ['$http', function ($http) {
         },
         getPlan: function (params, success, error) {
             $http({
-                url: '/v1/settings/getPlan',
+                url: '/v1/cpanel/settings/getPlan',
                 method: "GET",
                 params: params
             }).then(success, error)

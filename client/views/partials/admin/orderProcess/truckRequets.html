@@ -1,8 +1,8 @@
 <div ng-controller="orderProcessCtrl" ng-init="getTruckRequests()">
     <ul class="list-inline title-ul">
-        <li class="pull-left name-head">Customers Leads</li>
+        <li class="pull-left name-head">Truck Request</li>
         <li class="pull-right">
-            <button class="btn btn-primary" ui-sref="createTruckRequest">Create New</button>
+            <button class="btn btn-primary" ui-sref="orderprocess.createTruckRequest">Create New</button>
         </li>
         <li class="pull-right col-xs-2">
             <select class="form-control">
@@ -19,38 +19,31 @@
         </li>
     </ul>
     <div class="clearfix"></div>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="requestTruckParams">
-        <thead>
-        <tr>
-            <th>S No</th>
-            <th>Title</th>
-            <th>Customer Name</th>
-            <th>Type</th>
-            <th>Source</th>
-            <th>Destination</th>
-            <th>Truck Type</th>
-            <th>Goods Type</th>
-            <th>Expected Price</th>
-            <th>Approved</th>
-            <th>Status</th>
-            <th>Edit / Delete</th>
-        </tr>
-        </thead>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20"
+           ng-table="requestTruckParams">
         <tbody>
         <tr ng-repeat="truck in truckRequestsList">
             <td>{{$index+1}}</td>
-            <td data-title="'Title'" sortable="'name'" class="clickable-item">{{truck.customer[0].userName}},{{truck.customer[0].contactPhone}}</td>
-            <td data-title="'Customer Name'" sortable="'type'" class="clickable-item">{{truck.customer[0].userName}}</td>
+            <td data-title="'Title'" sortable="'name'" class="clickable-item">
+                {{truck.customer[0].userName}},{{truck.customer[0].contactPhone}}
+            </td>
+            <td data-title="'Customer Name'" sortable="'type'" class="clickable-item">
+                {{truck.customer[0].userName}}
+            </td>
             <td data-title="'Type'" sortable="'mobile'" class="clickable-item">{{truck.leadType}}</td>
             <td data-title="'Source'" sortable="'date'" class="clickable-item">{{truck.source}}</td>
             <td data-title="'Destination'" sortable="'yes'" class="clickable-item">{{truck.destination}}</td>
             <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item">{{truck.truckType}}</td>
             <td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item">{{truck.goodsType}}</td>
-            <td data-title="'Expected Price'" sortable="'goodsType'" class="clickable-item">{{truck.expectedPrice}}</td>
+            <td data-title="'Expected Price'" sortable="'goodsType'" class="clickable-item">
+                {{truck.expectedPrice}}
+            </td>
             <td data-title="'Approved'" sortable="'load'" class="clickable-item">{{truck.load}}</td>
             <td data-title="'Status'" sortable="'load'" class="clickable-item">{{truck.load}}</td>
 
-            <td><a href="#" ui-sref="orderprocess.editTruckRequest({_id:truck._id})">Edit</a>/<a href="#" ng-click="delCustomer(truck._id)">Delete</a></td>
+            <td><a href="#" ui-sref="orderprocess.editTruckRequest({_id:truck._id})">Edit</a>/<a href="#"
+                                                                                                 ng-click="delCustomer(truck._id)">Delete</a>
+            </td>
         </tr>
         </tbody>
     </table>

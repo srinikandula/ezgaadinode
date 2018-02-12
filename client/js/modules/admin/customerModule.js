@@ -257,7 +257,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             }
         }, {
             counts: [],
-            total: 100,
             getData: function(tableParams) {
 
                 var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting() };
@@ -267,7 +266,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                         $scope.customerLeads = success.data.data;
                         tableParams.data = $scope.customerLeads;
                         tableParams.total(parseInt(success.data.count));
-                        console.log(tableParams.total());
                     } else {
 
                         success.data.messages.forEach(function(message) {
@@ -286,3 +284,4 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
 
 }]);
+
