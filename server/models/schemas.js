@@ -610,6 +610,15 @@ var adminPermissionsSchema = mongoose.Schema({
     updatedBy: {type: ObjectId, ref: 'accounts'}
 }, {timestamps: String});
 
+
+var truckQuotesSchema = mongoose.Schema({
+    createdBy: { type: ObjectId, ref: 'accounts' },
+    accountId: {type: ObjectId, ref: 'accounts'},
+    truckRequestId:{type: ObjectId, ref: 'truckRequests'},
+    quote:Number,
+    comment:String
+}, { timestamps: String });
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
