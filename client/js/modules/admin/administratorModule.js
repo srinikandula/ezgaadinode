@@ -138,7 +138,7 @@ app.factory('AdministratorService', ["$http", function ($http) {
     }
 }]);
 
-app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'AdministratorService', 'Notification', 'NgTableParams', function ($scope, $state, $stateParams, AdministratorService, Notification, NgTableParams) {
+app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'AdministratorService', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, AdministratorService, Notification, NgTableParams, Upload) {
     /*EMPLOYEE START*/
     if ($stateParams.employeeId) {
         AdministratorService.getEmployeeDetails($stateParams.employeeId, function (success) {
@@ -169,6 +169,8 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         profilePic: '',
         isActive: undefined,
     }
+
+    $scope.files="";
 
     $scope.count = 0;
 

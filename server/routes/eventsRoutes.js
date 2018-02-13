@@ -260,9 +260,16 @@ OpenRouter.get('/get/completeData',function (request,res) {
 });
 
 OpenRouter.get('/get/alternateContact',function (req,res) {
-    Events.getAlternateContact(req,function (results) {
+    Events.getAlternateContact(req, function (results) {
         res.json(results);
     })
+});
+
+OpenRouter.get('/get/AccountOperatingRoutes', function (request, res) {
+    Events.getAccountOperatingRoutes(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
 });
 
 module.exports = {

@@ -10,6 +10,7 @@ var pool = mysql.createPool(config.mysql);
 var pool_crm = mysql.createPool(config.mysql_crm);
 var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
 var erpGpsPlansColl = require('./../models/schemas').erpGpsPlansColl;
@@ -866,6 +867,55 @@ Events.prototype.getEmployeeData = function (request, callback) {
                 } else {
                     retObj.status = true;
                     retObj.messages.push('Employees saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getAccountOperatingRoutes = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var AccountOperatingRoutesDataQuery = "SELECT accountID as id_account, source_city as source, source_state as sourceState, source_address as sourceAddress, source_lat as sourceLatitude, source_lng as sourceLongitude, destination_city as destination, destination_state as destinationState, destination_address as destinationAddress, destination_lat as destinationLatitude, destination_lng as destinationLongitude FROM AccountOperatingDestinations";
+    pool.query(AccountOperatingRoutesDataQuery, function (err, AccountOperatingRoutes) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(AccountOperatingRoutes, function (AccountOperatingRoute, AccountOperatingRoutesCallBack) {
+                OperatingRoutesColl.findOne({id_account: AccountOperatingRoute.id_account,source: AccountOperatingRoute.source,sourceState: AccountOperatingRoute.sourceState,sourceLatitude: AccountOperatingRoute.sourceLatitude,sourceLongitude: AccountOperatingRoute.sourceLongitude,destination: AccountOperatingRoute.destination,destinationState: AccountOperatingRoute.destinationState,destinationLatitude: AccountOperatingRoute.destinationLatitude,destinationLongitude: AccountOperatingRoute.destinationLongitude}, function (findAccountOperatingRoutesErr, AccountOperatingRoutesFound) {
+                    if (findAccountOperatingRoutesErr) {
+                        AccountOperatingRoutesCallBack(findAccountOperatingRoutesErr);
+                    } else if (AccountOperatingRoutesFound) {
+                        AccountOperatingRoutesCallBack(null, 'Account Operating Routes exists');
+                    } else {
+                        var AccountOperatingRoutesDoc = new OperatingRoutesColl(AccountOperatingRoute);
+                        AccountOperatingRoutesDoc.save(function (err    ) {
+                            AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                                for (var i = 0; i < accounts.length; i++) {
+                                    OperatingRoutesColl.update({'id_account': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, permission) {
+                                        console.log("Account is updated " + JSON.stringify(permission));
+                                    });
+                                }
+                            });
+                            AccountOperatingRoutesCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (AccountOperatingRoutesErr, AccountOperatingRoutesSaved) {
+                if (AccountOperatingRoutesErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(AccountOperatingRoutesErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Account Operating Routes saved successfully');
                     callback(retObj);
                 }
             });
