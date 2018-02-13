@@ -194,7 +194,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                     }
                 });
             } else {
-                var files = $scope.files;
+                var files = $scope.customerLead.file;
                 Upload.upload({
                     url: '/v1/customers/updateCustomerLead',
                     data: {

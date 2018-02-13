@@ -48,16 +48,37 @@ var accountSchema = new mongoose.Schema({
     profilePic: String,
     updatedBy: String,
     createdBy: String,
+    smsEnabled: {type: Boolean, default: true},
     isActive: {type: Boolean, default: true},
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
-    alternatePhone:String
+    alternatePhone:String,
+    companyName: String,
+    pincode: String,
 }, {
     timestamps: true
 });
+
+var operatingRoutesSchema = new mongoose.Schema({
+    accountId: {type: ObjectId,ref: 'accounts'},
+    id_account: String,
+    source: String,
+    sourceState: String,
+    sourceAddress: String,
+    sourceLatitude: String,
+    sourceLongitude: String,
+    destination: String,
+    destinationState: String,
+    destinationAddress: String,
+    destinationLatitude: String,
+    destinationLongitude: String,
+}, {
+    timestamps: true
+})
+
 var groupSchema = new mongoose.Schema({
     name: String,
     type: { type: Boolean, default: "account" },
@@ -607,6 +628,7 @@ var adminPermissionsSchema = mongoose.Schema({
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
+    OperatingRoutesColl: mongoose.model('OperatingRoutes', operatingRoutesSchema, 'OperatingRoutes'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
     ExpenseCostColl: mongoose.model('expense', expensesSchema, 'expense'),
