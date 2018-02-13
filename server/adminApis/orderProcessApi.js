@@ -5,6 +5,7 @@ const ObjectId = mongoose.Types.ObjectId;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var TruckRequestColl = require("../models/schemas").TruckRequestColl;
+var AccountsColl = require("../models/schemas").AccountsColl;
 
 var customerLeadsApi = require("./customerLeadsApi");
 var OrderProcess = function () {
@@ -439,5 +440,40 @@ OrderProcess.prototype.deleteTruckRequest = function (req, callback) {
 
 };
 
+/*author : Naresh d*/
+
+OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var condition = {};
+    if (!params.source) {
+        retObj.messages.push('please select source');
+        callback(retObj);
+    }
+    if (!params.destination) {
+        retObj.messages.push('please select destination');
+        callback(retObj);
+    }
+
+    if (params.truckType && params.trackingAvailable) {
+
+    } else if (params.truckType) {
+
+    } else if (params.trackingAvailable) {
+
+    }
+    AccountsColl.find({
+        operatingRoutes: {
+            $elemMatch: {
+                source: params.source,
+                destination: params.destination
+            }
+        }
+    })
+
+};
 
 module.exports = new OrderProcess();
