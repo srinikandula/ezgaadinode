@@ -1,31 +1,31 @@
-app.factory('OrderProcessServices',['$http', function ($http) {
+app.factory('OrderProcessServices', ['$http', function ($http) {
     return {
-        getTruckRequests: function (params,success, error) {
+        getTruckRequests: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/orderProcess/getTruckRequests',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        addTruckRequest:function (data,success, error) {
+        addTruckRequest: function (data, success, error) {
             $http({
                 url: '/v1/cpanel/orderProcess/addTruckRequest',
                 method: "POST",
-                data:data
+                data: data
             }).then(success, error)
         },
-        getTruckRequestDetails:function (params,success, error) {
+        getTruckRequestDetails: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/orderProcess/getTruckRequestDetails',
                 method: "GET",
-                params:{_id:params}
+                params: {_id: params}
             }).then(success, error)
         }
 
     }
 }]);
 
-app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','customerServices','Notification','OrderProcessServices','NgTableParams','$stateParams', function ($scope, $state,SettingServices,customerServices,Notification,OrderProcessServices,NgTableParams,$stateParams) {
+app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'customerServices', 'Notification', 'OrderProcessServices', 'NgTableParams', '$stateParams', function ($scope, $state, SettingServices, customerServices, Notification, OrderProcessServices, NgTableParams, $stateParams) {
 
     $scope.cancel = function () {
         $state.go('customers.customersLead');
@@ -38,7 +38,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','custom
         isCustomHeaderOpen: false,
         isFirstOpen: true,
     };
-    $scope.initializeTruckRequest=function () {
+    $scope.initializeTruckRequest = function () {
         $scope.truckRequest = {
             customer: "",
             customerType: "",
@@ -69,57 +69,59 @@ app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','custom
                 $scope.truckTypesList=success.data.data;
             }else{
                 $scope.truckTypesList=[];
+
             }
 
-        },function (error) {
+        }, function (error) {
 
         });
-        SettingServices.getGoodsTypes({},function (success) {
-            if(success.data.status){
-                $scope.goodsTypesList=success.data.data;
-            }else{
-                $scope.goodsTypesList=[];
+
+        SettingServices.getGoodsTypes(function (success) {
+            if (success.data.status) {
+                $scope.goodsTypesList = success.data.data;
+            } else {
+                $scope.goodsTypesList = [];
             }
 
-        },function (error) {
+        }, function (error) {
 
         });
 
         customerServices.getTruckOwners(function (success) {
-            if(success.data.status){
-                $scope.truckOwnersList=success.data.data;
-            }else{
-                $scope.goodsTypesList=[];
+            if (success.data.status) {
+                $scope.truckOwnersList = success.data.data;
+            } else {
+                $scope.goodsTypesList = [];
             }
 
-        },function (error) {
+        }, function (error) {
 
         });
     };
-    $scope.initializeEditTruckRequest=function () {
+    $scope.initializeEditTruckRequest = function () {
 
         $scope.initializeTruckRequest();
-        if($stateParams._id){
-            OrderProcessServices.getTruckRequestDetails($stateParams._id,function (success) {
-                if(success.data.status){
-                    $scope.truckRequest=success.data.data;
-                }else{
-                    success.data.messages.forEach(function(message) {
+        if ($stateParams._id) {
+            OrderProcessServices.getTruckRequestDetails($stateParams._id, function (success) {
+                if (success.data.status) {
+                    $scope.truckRequest = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
                         Notification.error(message);
                     });
                 }
-            },function (error) {
+            }, function (error) {
 
             })
-        }else{
+        } else {
             Notification.error("Please try again");
         }
     };
-    $scope.addTripDetails=function () {
-        var trcuckDetails=$scope.truckRequest.truckDetails[$scope.truckRequest.truckDetails.length-1];
-        if(!trcuckDetails.source || !trcuckDetails.destination){
-            swal("Please fill mandatory truck details","","info");
-        }else{
+    $scope.addTripDetails = function () {
+        var trcuckDetails = $scope.truckRequest.truckDetails[$scope.truckRequest.truckDetails.length - 1];
+        if (!trcuckDetails.source || !trcuckDetails.destination) {
+            swal("Please fill mandatory truck details", "", "info");
+        } else {
             $scope.truckRequest.truckDetails.push({
                 source: "",
                 destination: "",
@@ -135,65 +137,65 @@ app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','custom
         }
 
     };
-    
-    $scope.removeTruckDetails=function (index) {
+
+    $scope.removeTruckDetails = function (index) {
         $scope.truckRequest.truckDetail.splice(index, 1);
     };
 
     function checkTruckDetails() {
-        for(var i=0;i<$scope.truckRequest.truckDetails.length;i++){
-            if(!$scope.truckRequest.truckDetails[i].source || !$scope.truckRequest.truckDetails[i].destination){
+        for (var i = 0; i < $scope.truckRequest.truckDetails.length; i++) {
+            if (!$scope.truckRequest.truckDetails[i].source || !$scope.truckRequest.truckDetails[i].destination) {
                 return false;
             }
-            if(i===$scope.truckRequest.truckDetails.length-1){
+            if (i === $scope.truckRequest.truckDetails.length - 1) {
                 return true;
             }
         }
     }
 
-    $scope.addTruckRequest=function () {
+    $scope.addTruckRequest = function () {
         var params = $scope.truckRequest;
         params.messages = [];
-        if(!params.customerType){
+        if (!params.customerType) {
             params.messages.push("Please select customer type");
         }
-        if(params.customerType==="Registered" && !params.customer){
+        if (params.customerType === "Registered" && !params.customer) {
             params.messages.push("Please select customer");
         }
-        if(params.customerType==="UnRegistered" && !params.name){
+        if (params.customerType === "UnRegistered" && !params.name) {
             params.messages.push("Please select name");
         }
-        if(params.customerType==="UnRegistered" && !params.contactPhone){
+        if (params.customerType === "UnRegistered" && !params.contactPhone) {
             params.messages.push("Please select customer");
         }
 
-        if(!checkTruckDetails){
+        if (!checkTruckDetails) {
             params.messages.push("Please enter mandatory truck details")
         }
         if (params.messages.length > 0) {
-            params.messages.forEach(function(message) {
+            params.messages.forEach(function (message) {
                 Notification.error(message);
             });
         } else {
-            params.customer=params.customer._id;
-            OrderProcessServices.addTruckRequest(params,function (success) {
-                if(success.data.status){
-                    success.data.messages.forEach(function(message) {
+            params.customer = params.customer._id;
+            OrderProcessServices.addTruckRequest(params, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
                         Notification.success(message);
                     });
                     $state.go("orderprocess.truckRequest");
-                }else{
-                    success.data.messages.forEach(function(message) {
+                } else {
+                    success.data.messages.forEach(function (message) {
                         Notification.error(message);
                     });
                 }
-            },function (error) {
+            }, function (error) {
 
             })
         }
     };
 
-    $scope.getTruckRequests=function () {
+    $scope.getTruckRequests = function () {
         $scope.requestTruckParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -202,32 +204,50 @@ app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','custom
             }
         }, {
             counts: [],
-            getData: function(tableParams) {
+            total: 100,
+            getData: function (tableParams) {
 
-                var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting() };
+                var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
 
-                OrderProcessServices.getTruckRequests(pageable, function(success) {
+                OrderProcessServices.getTruckRequests(pageable, function (success) {
 
                     if (success.data.status) {
                         $scope.truckRequestsList = success.data.data;
                         tableParams.data = $scope.truckRequestsList;
                         tableParams.total(parseInt(success.data.count));
                     } else {
-                        success.data.messages.forEach(function(message) {
-                            Notification.error({ message: message });
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({message: message});
                         });
                     }
-                }, function(error) {
-                    error.data.messages.forEach(function(message) {
-                        Notification.error({ message: message });
+                }, function (error) {
+                    error.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
                     });
                 });
             }
 
         });
+    };
+
+    $scope.searchSource = function () {
+        var input = document.getElementById('searchSource');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+        function () {
+            var place = autocomplete.getPlace();
+            var lat = place.geometry.location.lat();
+            var long = place.geometry.location.lng();
+            console.log("city", place.address_components["0"].long_name);
+            console.log("state", place.address_components["1"].long_name);
+            console.log('address',place.formatted_address);
+            console.log("lat", lat);
+            console.log("long", long);
+
+
+        });
     }
-
-
 
 
 }]);
