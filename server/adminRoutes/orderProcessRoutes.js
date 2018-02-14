@@ -32,6 +32,12 @@ AuthRouter.get('/getTruckRequestDetails',function (req,res) {
     })
 });
 
+AuthRouter.get('/searchTrucksForRequest',function (req,res) {
+    OrderProcess.searchTrucksForRequest(req,function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

@@ -6,6 +6,8 @@ var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var TruckRequestColl = require("../models/schemas").TruckRequestColl;
 var AccountsColl = require("../models/schemas").AccountsColl;
+var OperatingRoutesColl = require("../models/schemas").OperatingRoutesColl;
+var TrucksColl = require("../models/schemas").TrucksColl;
 
 var customerLeadsApi = require("./customerLeadsApi");
 var OrderProcess = function () {
@@ -458,19 +460,62 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
         callback(retObj);
     }
 
-    if (params.truckType && params.trackingAvailable) {
+    /*if (params.truckType && params.trackingAvailable) {
 
     } else if (params.truckType) {
 
     } else if (params.trackingAvailable) {
 
-    }
-    AccountsColl.find({
-        operatingRoutes: {
-            $elemMatch: {
-                source: params.source,
-                destination: params.destination
-            }
+    }*/
+
+    OperatingRoutesColl.find({
+        sourceAddress: params.source,
+        destinationAddress: {
+            $geoNear:
+                {
+                    near: {
+                        type: "Point",
+                        coordinates: params.destination
+                    },
+                    distanceField: "distance",
+                    maxDistance: 100,
+                    spherical: true
+                }
+        }
+    },{accountId:1} ,function (err, docs) {
+        console.log(docs.length);
+        if(err){
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        }else{
+            var accountIds=docs.map(function (doc) { return doc.accountId; });
+            TrucksColl.aggregate({$match: {accountId:{$in:accountIds}}},
+                {
+                    "$lookup": {
+                        "from": "accounts",
+                        "localField": "accountId",
+                        "foreignField": "_id",
+                        "as": "accountId"
+                    }
+                }, {"$unwind": "$accountId"}, {
+                    $group: {
+                        _id: "$accountId",
+                        count: {$sum: 1}
+                    }
+                }, {"$sort": {createdAt: -1}},function (err,trucks) {
+                if(err){
+                    retObj.messages.push("Please try again");
+                    callback(retObj);
+                }else if(trucks.length>0){
+                    retObj.status=true;
+                    retObj.data=trucks;
+                    retObj.messages.push("success");
+                    callback(retObj);
+                }else{
+                    retObj.messages.push("No trucks found");
+                    callback(retObj);
+                }
+            })
         }
     })
 

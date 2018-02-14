@@ -90,27 +90,31 @@
                 <div class="row">
                     <div class="col-sm-11">
                         <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" ng-model="truckRequest.source" name="fullName"  id="searchSource" ng-change="searchSource()"
+                            <input type="text" class="form-control" ng-model="truckRequest.source" name="source"  id="searchSource" ng-change="searchSource()"
                                    placeholder="Source *"/>
                         </div>
                         <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                            <input type="text" class="form-control" ng-model="truckRequest.destination" name="destination"  id="searchDestination" ng-change="searchDestination()"
                                    placeholder="Destination *"/>
                         </div>
                         <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
-                                   placeholder="Loading Charge *"/>
+                            <select class="form-control" ng-model="truckRequest.truckType">
+                                <option value="">Truck type</option>
+                                <option ng-repeat="truck in truckTypesList">{{truck.title}}</option>
+
+                            </select>
                         </div>
                         <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
-                                   placeholder="Loading Charge *"/>
+                            <select class="form-control" ng-model="truckRequest.trackingRequired">
+                                <option value="">Tracking required</option>
+                                <option value="yes">Yes</option>
+                                <option value="no">No</option>
+
+                            </select>
                         </div>
+
                         <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
-                                   placeholder="Loading Charge *"/>
-                        </div>
-                        <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.tonnage"
                                    placeholder="Tones *"/>
                         </div>
 
@@ -118,7 +122,7 @@
                     </div>
                     <div class="col-sm-1">
                         <div class="form-group">
-                            <button class="btn btn-info">Go</button>
+                            <button class="btn btn-info" ng-click="searchTrucksForRequest()">Go</button>
                         </div>
                     </div>
                 </div>
@@ -136,12 +140,12 @@
                             <td>Destination</td>
                             <td>ADd Info</td>
                         </tr>
-                        <tr ng-repeat="truck in trucksList">
+                        <tr ng-repeat="truck in availableTruckslist">
                             <td>{{$index+1}}</td>
-                            <td>Name</td>
-                            <td>Type</td>
-                            <td>Mobile</td>
-                            <td>No Of Trucks</td>
+                            <td>{{truck._id.userName}}</td>
+                            <td>{{truck._id.type}}</td>
+                            <td>{{truck._id.contactPhone}}</td>
+                            <td>{{truck.count}}</td>
                             <td>Company</td>
                             <td>Addess</td>
                             <td>Source</td>
