@@ -7,25 +7,11 @@ app.factory('AdministratorService', ["$http", function ($http) {
                 params: params
             }).then(success, error)
         },
-        addEmployee: function (params, success, error) {
-            $http({
-                url: '/v1/cpanel/employees/addEmployee',
-                method: "POST",
-                data: params,
-            }).then(success, error)
-        },
         getEmployeeDetails: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/employees/getEmployeeDetails',
                 method: "GET",
                 params: {employeeId: params}
-            }).then(success, error)
-        },
-        updateEmployee: function (params, success, error) {
-            $http({
-                url: '/v1/cpanel/employees/updateEmployee',
-                method: "PUT",
-                data: params,
             }).then(success, error)
         },
         deleteEmployee: function (params, success, error) {
@@ -101,25 +87,11 @@ app.factory('AdministratorService', ["$http", function ($http) {
                 params: params
             }).then(success, error)
         },
-        addFranchise: function (params, success, error) {
-            $http({
-                url: '/v1/cpanel/employees/addFranchise',
-                method: "POST",
-                data: params,
-            }).then(success, error)
-        },
         getFranchiseDetails: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/employees/getFranchiseDetails',
                 method: "GET",
                 params: {franchiseId: params}
-            }).then(success, error)
-        },
-        updateFranchise: function (params, success, error) {
-            $http({
-                url: '/v1/cpanel/employees/updateFranchise',
-                method: "PUT",
-                data: params,
             }).then(success, error)
         },
         deleteFranchise: function (params, success, error) {
@@ -168,17 +140,18 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         franchiseId: '',
         profilePic: '',
         isActive: undefined,
+        newProfilePic: '',
     }
 
-    $scope.files="";
-
     $scope.count = 0;
+
+    $scope.role = "";
 
     $scope.countEmployee = function () {
         AdministratorService.countEmployee(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                $scope.init();
+                $scope.init("");
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -189,7 +162,8 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            role: tableParams.role
         };
         AdministratorService.getEmployee(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -204,7 +178,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         });
     };
 
-    $scope.init = function () {
+    $scope.init = function (role) {
         $scope.employeeParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -215,6 +189,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             counts: [],
             total: $scope.count,
             getData: function (params) {
+                params.role = role;
                 loadTableData(params);
             }
         });
@@ -308,7 +283,24 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         }
         else {
             if ($stateParams.employeeId) {
-                AdministratorService.updateEmployee(params, function (success) {
+                Upload.upload({
+                    url: '/v1/cpanel/employees/updateEmployee',
+                    data: {
+                        files: [$scope.employee.newProfilePic]
+                    }, params: $scope.employee
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('admin.administrators');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+                /*AdministratorService.updateEmployee(params, function (success) {
                     if (success.data.status) {
                         Notification.success(success.data.messages[0]);
                         $state.go('admin.administrators');
@@ -317,9 +309,26 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
                             Notification.error(message);
                         });
                     }
-                });
+                });*/
             } else {
-                AdministratorService.addEmployee(params, function (success) {
+                Upload.upload({
+                    url: '/v1/cpanel/employees/addEmployee',
+                    data: {
+                        files: [$scope.employee.newProfilePic]
+                    }, params: $scope.employee
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('admin.administrators');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+                /*AdministratorService.addEmployee(params, function (success) {
                     if (success.data.status) {
                         Notification.success(success.data.messages[0]);
                         $state.go('admin.administrators');
@@ -328,7 +337,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
                             Notification.error(message);
                         });
                     }
-                });
+                });*/
             }
         }
     };
@@ -493,6 +502,8 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         gst: '',
         doj: '',
         status: undefined,
+        profilePic: '',
+        newProfilePic: '',
     }
 
     $scope.count = 0;
@@ -619,7 +630,24 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         }
         else {
             if ($stateParams.franchiseId) {
-                AdministratorService.updateFranchise(params, function (success) {
+                Upload.upload({
+                    url: '/v1/cpanel/employees/updateFranchise',
+                    data: {
+                        files: [$scope.franchise.newProfilePic]
+                    }, params: $scope.franchise
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('admin.franchises');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+                /*AdministratorService.updateFranchise(params, function (success) {
                     if (success.data.status) {
                         Notification.success(success.data.messages[0]);
                         $state.go('admin.franchises');
@@ -628,9 +656,26 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
                             Notification.error(message);
                         });
                     }
-                });
+                });*/
             } else {
-                AdministratorService.addFranchise(params, function (success) {
+                Upload.upload({
+                    url: '/v1/cpanel/employees/addFranchise',
+                    data: {
+                        files: [$scope.franchise.newProfilePic]
+                    }, params: $scope.franchise
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('admin.franchises');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+                /*AdministratorService.addFranchise(params, function (success) {
                     if (success.data.status) {
                         Notification.success(success.data.messages[0]);
                         $state.go('admin.franchises');
@@ -639,7 +684,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
                             Notification.error(message);
                         });
                     }
-                });
+                });*/
             }
         }
     };

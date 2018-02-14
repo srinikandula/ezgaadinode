@@ -894,8 +894,14 @@ Events.prototype.getAccountOperatingRoutes = function (request, callback) {
                     } else if (AccountOperatingRoutesFound) {
                         AccountOperatingRoutesCallBack(null, 'Account Operating Routes exists');
                     } else {
+                        AccountOperatingRoute.sourceLocation = {
+                            coordinates:[AccountOperatingRoute.sourceLongitude,AccountOperatingRoute.sourceLatitude]
+                        }
+                        AccountOperatingRoute.destinationLocation = {
+                            coordinates:[AccountOperatingRoute.destinationLongitude,AccountOperatingRoute.destinationLatitude]
+                        };
                         var AccountOperatingRoutesDoc = new OperatingRoutesColl(AccountOperatingRoute);
-                        AccountOperatingRoutesDoc.save(function (err    ) {
+                        AccountOperatingRoutesDoc.save(function (err) {
                             AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
                                 for (var i = 0; i < accounts.length; i++) {
                                     OperatingRoutesColl.update({'id_account': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, permission) {

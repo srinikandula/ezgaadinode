@@ -68,13 +68,17 @@ var operatingRoutesSchema = new mongoose.Schema({
     source: String,
     sourceState: String,
     sourceAddress: String,
-    sourceLatitude: String,
-    sourceLongitude: String,
+    sourceLocation: {
+        type: {type: String,default: "Point"},
+        coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    },
     destination: String,
     destinationState: String,
     destinationAddress: String,
-    destinationLatitude: String,
-    destinationLongitude: String,
+    destinationLocation: {
+        type: {type: String,default: "Point"},
+        coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    },
 }, {
     timestamps: true
 })
@@ -423,6 +427,7 @@ var erpGpsPlans = new mongoose.Schema({
     status: Boolean,
     amount: Number,
     remark: String,
+    plan: String,
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}
 }, {timestamps: String});
@@ -589,6 +594,7 @@ var franchiseSchema = mongoose.Schema({
     gst: String,
     doj: Date,
     status: Boolean,
+    profilePic: String,
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}
 }, {timestamps: true, versionKey: false});
@@ -628,7 +634,7 @@ var adminPermissionsSchema = mongoose.Schema({
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
-    OperatingRoutesColl: mongoose.model('OperatingRoutes', operatingRoutesSchema, 'OperatingRoutes'),
+    OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
     ExpenseCostColl: mongoose.model('expense', expensesSchema, 'expense'),

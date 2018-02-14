@@ -123,7 +123,6 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
     if (params.documentType && !req.files.files) {
         retObj.messages.push("Please select document");
     }
-    console.log(params.documentType && !req.files.files, params.documentType);
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_customer_lead_err, {
             body: JSON.stringify(req.body),
