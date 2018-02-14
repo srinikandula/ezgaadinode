@@ -69,14 +69,14 @@ var operatingRoutesSchema = new mongoose.Schema({
     sourceState: String,
     sourceAddress: String,
     sourceLocation: {
-        type: {type: String,default: "Point"},
+        'type': {type: String,default: "Point"},
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
     destination: String,
     destinationState: String,
     destinationAddress: String,
     destinationLocation: {
-        type: {type: String,default: "Point"},
+        'type': {type: String,default: "Point"},
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
 }, {

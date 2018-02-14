@@ -7,14 +7,14 @@
         </li>
         <li class="pull-right col-xs-2">
             <select class="form-control" ng-model="role2" ng-change="initRole(role2);">
-                <option>Select by Role</option>
+                <option value="" selected>Select by Role</option>
                 <option ng-repeat="adminRole in adminRoles">{{adminRole.role}}</option>
             </select>
         </li>
         <li class="col-xs-3 pull-right">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search">
-                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                <input type="text" class="form-control" placeholder="Search By Role" ng-model="role1">
+                <span class="input-group-addon" ng-click="initRole(role1);"><i class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>
         <div class="clearfix"></div>
@@ -33,7 +33,7 @@
             <td data-title="'Status'" sortable="'status'" class="clickable-item">
                 {{role.status?'Active':'Inactive'}}
             </td>
-            <td data-title="'Edit/Delete'" sortable="'role'" class="clickable-item">
+            <td data-title="'Edit/Delete'" sortable="'createdAt'" class="clickable-item">
                 <a href="#" ui-sref="admin.addUpdateAdminRole({roleId: role._id})">Edit</a> /
                 <a href="#" ng-click="deleteRole($index)">Delete</a>
             </td>
