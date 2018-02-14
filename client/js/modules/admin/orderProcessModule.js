@@ -202,7 +202,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','custom
             }
         }, {
             counts: [],
-            total: 100,
             getData: function(tableParams) {
 
                 var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting() };

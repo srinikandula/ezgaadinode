@@ -23,9 +23,9 @@
            ng-table="requestTruckParams">
         <tbody>
         <tr ng-repeat="truck in truckRequestsList">
-            <td>{{$index+1}}</td>
+            <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Title'" sortable="'name'" class="clickable-item">
-                {{truck.customer[0].userName}},{{truck.customer[0].contactPhone}}
+                {{truck.customer[0].userName}}<br>{{truck.customer[0].contactPhone}}
             </td>
             <td data-title="'Customer Name'" sortable="'type'" class="clickable-item">
                 {{truck.customer[0].userName}}
