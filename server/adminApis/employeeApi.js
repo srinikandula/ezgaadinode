@@ -125,7 +125,7 @@ Employees.prototype.addFranchise = function (req, callback) {
         status: false,
         messages: []
     };
-    var franchiseInfo = req.body;
+    var franchiseInfo = req.query;
 
     if (!franchiseInfo.fullName || !_.isString(franchiseInfo.fullName)) {
         retObj.messages.push('Invalid Full Name');
@@ -144,7 +144,7 @@ Employees.prototype.addFranchise = function (req, callback) {
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_franchise_err, {
-            body: JSON.stringify(req.body),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -153,59 +153,88 @@ Employees.prototype.addFranchise = function (req, callback) {
         callback(retObj);
     }
     else {
-        franchiseColl.findOne({mobile: franchiseInfo.mobile}, function (err, oldDoc) {
-            if (err) {
-                retObj.messages.push('Error retrieving franchise');
-                analyticsService.create(req, serviceActions.add_franchise_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (oldDoc) {
-                retObj.messages.push('Franchise already exists');
-                analyticsService.create(req, serviceActions.add_franchise_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                franchiseInfo.createdBy = req.jwt.id;
-                franchiseInfo.accountId = req.jwt.id;
-                (new franchiseColl(franchiseInfo)).save(function (err, doc) {
-                    if (err) {
-                        retObj.messages.push('Error saving franchise');
-                        analyticsService.create(req, serviceActions.add_franchise_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else {
-                        franchiseInfo.franchiseId = doc._id;
-                        retObj.status = true;
-                        retObj.messages.push('Success');
-                        retObj.data = doc;
-                        analyticsService.create(req, serviceActions.add_franchise, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }
-                });
-            }
-        });
+        if (req.files.files) {
+            Utils.uploadProfilePic(req.files.files[0], function (uploadResp) {
+                if (uploadResp.status) {
+                    franchiseInfo.createdBy = req.jwt.id;
+                    franchiseInfo.accountId = req.jwt.id;
+                    franchiseInfo.profilePic = uploadResp.fileName;
+                    saveFranchise(req, franchiseInfo, callback);
+                } else {
+                    retObj.messages.push("Document uploading failed");
+                    analyticsService.create(req, serviceActions.add_employee_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        } else {
+            franchiseInfo.createdBy = req.jwt.id;
+            franchiseInfo.accountId = req.jwt.id;
+            saveFranchise(req, franchiseInfo, callback);
+        }
     }
 };
+
+function saveFranchise(req, franchiseInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    franchiseColl.findOne({mobile: franchiseInfo.mobile}, function (err, oldDoc) {
+        if (err) {
+            retObj.messages.push('Error retrieving franchise');
+            analyticsService.create(req, serviceActions.add_franchise_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (oldDoc) {
+            retObj.messages.push('Franchise already exists');
+            analyticsService.create(req, serviceActions.add_franchise_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            (new franchiseColl(franchiseInfo)).save(function (err, doc) {
+                if (err) {
+                    retObj.messages.push('Error saving franchise');
+                    analyticsService.create(req, serviceActions.add_franchise_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else {
+                    franchiseInfo.franchiseId = doc._id;
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.data = doc;
+                    analyticsService.create(req, serviceActions.add_franchise, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        }
+    });
+}
 
 Employees.prototype.getFranchiseDetails = function (req, callback) {
     var retObj = {
@@ -270,7 +299,7 @@ Employees.prototype.updateFranchise = function (req, callback) {
         status: false,
         messages: []
     };
-    var franchiseInfo = req.body;
+    var franchiseInfo = req.query;
 
     if (!franchiseInfo.fullName || !_.isString(franchiseInfo.fullName)) {
         retObj.messages.push('Invalid Full Name');
@@ -278,7 +307,7 @@ Employees.prototype.updateFranchise = function (req, callback) {
     if (!franchiseInfo.account) {
         retObj.messages.push('Invalid Account');
     }
-    if (!franchiseInfo.mobile || !_.isNumber(franchiseInfo.mobile)) {
+    if (!franchiseInfo.mobile || !_.isNumber(parseInt(franchiseInfo.mobile))) {
         retObj.messages.push('Invalid Phone Number');
     }
     if (!franchiseInfo.email) {
@@ -290,7 +319,7 @@ Employees.prototype.updateFranchise = function (req, callback) {
 
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.update_franchise_err, {
-            body: JSON.stringify(req.body),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -298,69 +327,112 @@ Employees.prototype.updateFranchise = function (req, callback) {
         });
         callback(retObj);
     } else {
-        franchiseColl.findOne({
-            _id: franchiseInfo._id,
-        }, function (err, oldDoc) {
-            if (err) {
-                retObj.messages.push('Please Try Again');
-                analyticsService.create(req, serviceActions.update_franchise_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (oldDoc) {
-                franchiseInfo.updatedBy = req.jwt.id;
-                franchiseColl.findOneAndUpdate({_id: franchiseInfo._id}, {$set: franchiseInfo}, function (err, doc) {
-                    if (err) {
-                        retObj.messages.push('Error updating the franchise');
-                        analyticsService.create(req, serviceActions.update_franchise_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else if (doc) {
-                        retObj.status = true;
-                        retObj.messages.push('Success');
-                        retObj.data = doc;
-                        analyticsService.create(req, serviceActions.update_franchise, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else {
-                        retObj.messages.push('Franchise with Id doesn\'t exist');
-                        analyticsService.create(req, serviceActions.update_franchise_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }
-                });
-            } else {
-                retObj.messages.push('Franchise with Id doesn\'t exist');
-                analyticsService.create(req, serviceActions.update_franchise_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        });
+        if (req.files.files) {
+            Utils.removeProfilePic(franchiseInfo.profilePic, function (removeResp) {
+                if (removeResp.status) {
+                    Utils.uploadProfilePic(req.files.files[0], function (uploadResp) {
+                        if (uploadResp.status) {
+                            franchiseInfo.profilePic = uploadResp.fileName;
+                            franchiseInfo.updatedBy = req.jwt.id;
+                            updateFranchise(req, franchiseInfo, callback);
+                        } else {
+                            retObj.messages.push("Document uploading failed");
+                            analyticsService.create(req, serviceActions.add_employee_err, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
+                    });
+                } else {
+                    retObj.messages.push("Document Removing failed");
+                    analyticsService.create(req, serviceActions.add_employee_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        } else {
+            franchiseInfo.updatedBy = req.jwt.id;
+            updateFranchise(req, franchiseInfo, callback);
+        }
     }
 };
+
+function updateFranchise(req, franchiseInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    franchiseColl.findOne({
+        _id: franchiseInfo._id,
+    }, function (err, oldDoc) {
+        if (err) {
+            retObj.messages.push('Please Try Again');
+            analyticsService.create(req, serviceActions.update_franchise_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (oldDoc) {
+            franchiseColl.findOneAndUpdate({_id: franchiseInfo._id}, {$set: franchiseInfo}, function (err, doc) {
+                if (err) {
+                    retObj.messages.push('Error updating the franchise');
+                    analyticsService.create(req, serviceActions.update_franchise_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else if (doc) {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.data = doc;
+                    analyticsService.create(req, serviceActions.update_franchise, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else {
+                    retObj.messages.push('Franchise with Id doesn\'t exist');
+                    analyticsService.create(req, serviceActions.update_franchise_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        } else {
+            retObj.messages.push('Franchise with Id doesn\'t exist');
+            analyticsService.create(req, serviceActions.update_franchise_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+}
 
 Employees.prototype.deleteFranchise = function (req, callback) {
     var retObj = {
@@ -854,77 +926,88 @@ Employees.prototype.getEmployee = function (req, callback) {
     };
     var condition = {};
     var params = req.query;
-
     if (!params.page) {
         params.page = 1;
     }
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        var skipNumber = (params.page - 1) * params.size;
-        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-
         if (!params.role) {
-            condition = {"type": "employee"}
+            condition = {"type": "employee"};
+            getEmployee(req, condition, callback);
         } else {
-            condition = {"type": "employee", role: {$regex: '.*' + params.role + '.*'}}
+            adminRoleColl.find({role: {$regex: '.*' + params.role + '.*'}},function (err, docs) {
+                var roleIds=docs.map(function (doc) { return doc._id; });
+                condition = {"type": "employee", adminRoleId: {$in: roleIds}}
+                getEmployee(req, condition, callback);
+            });
         }
-
-        async.parallel({
-            Employees: function (employeesCallback) {
-                AccountsColl
-                    .find(condition)
-                    .populate({path: "adminRoleId", select: "role"})
-                    .sort(sort)
-                    .skip(skipNumber)
-                    .limit(limit)
-                    .lean()
-                    .exec(function (err, employees) {
-                        employeesCallback(err, employees);
-                    });
-            },
-            count: function (countCallback) {
-                AccountsColl.count({"type": "employee"}, function (err, count) {
-                    countCallback(err, count);
-                });
-            }
-        }, function (err, docs) {
-            if (err) {
-                retObj.messages.push('Error retrieving employee');
-                analyticsService.create(req, serviceActions.get_employee_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.count = docs.count;
-                retObj.accountId = req.jwt.id;
-                retObj.type = req.jwt.type;
-                retObj.data = docs.Employees;
-                analyticsService.create(req, serviceActions.get_employee, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        });
     }
 };
+
+function getEmployee(req, condition, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
+    async.parallel({
+        Employees: function (employeesCallback) {
+            AccountsColl
+                .find(condition)
+                .populate({path: "adminRoleId", select: "role"})
+                .sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                .lean()
+                .exec(function (err, employees) {
+                    employeesCallback(err, employees);
+                });
+        },
+        count: function (countCallback) {
+            AccountsColl.count({"type": "employee"}, function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, docs) {
+        if (err) {
+            retObj.messages.push('Error retrieving employee');
+            analyticsService.create(req, serviceActions.get_employee_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = docs.count;
+            retObj.accountId = req.jwt.id;
+            retObj.type = req.jwt.type;
+            retObj.data = docs.Employees;
+            analyticsService.create(req, serviceActions.get_employee, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+}
 
 Employees.prototype.addEmployee = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var employeeInfo = req.body;
+    var employeeInfo = req.query;
     if (!employeeInfo.firstName || !_.isString(employeeInfo.firstName)) {
         retObj.messages.push('Invalid First Name');
     }
@@ -951,7 +1034,7 @@ Employees.prototype.addEmployee = function (req, callback) {
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_employee_err, {
-            body: JSON.stringify(req.body),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -960,61 +1043,95 @@ Employees.prototype.addEmployee = function (req, callback) {
         callback(retObj);
     }
     else {
-        AccountsColl.findOne({email: employeeInfo.email, type: "employee"}, function (err, oldDoc) {
-            if (err) {
-                retObj.messages.push('Error retrieving employee');
-                analyticsService.create(req, serviceActions.add_employee_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (oldDoc) {
-                retObj.messages.push('Employee already exists');
-                analyticsService.create(req, serviceActions.add_employee_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                employeeInfo.createdBy = req.jwt.id;
-                employeeInfo.accountId = req.jwt.id;
-                employeeInfo.type = "employee";
-                employeeInfo.userName = employeeInfo.email;
-                (new AccountsColl(employeeInfo)).save(function (err, doc) {
-                    if (err) {
-                        retObj.messages.push('Error saving employee');
-                        analyticsService.create(req, serviceActions.add_employee_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else {
-                        employeeInfo.employeeId = doc._id;
-                        retObj.status = true;
-                        retObj.messages.push('Success');
-                        retObj.data = doc;
-                        analyticsService.create(req, serviceActions.add_employee, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }
-                });
-            }
-        });
+        if (req.files.files) {
+            Utils.uploadProfilePic(req.files.files[0], function (uploadResp) {
+                if (uploadResp.status) {
+                    employeeInfo.profilePic = uploadResp.fileName;
+                    employeeInfo.createdBy = req.jwt.id;
+                    employeeInfo.accountId = req.jwt.id;
+                    employeeInfo.type = "employee";
+                    employeeInfo.userName = employeeInfo.email;
+                    employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
+                    saveEmployee(req, employeeInfo, callback);
+                } else {
+                    retObj.messages.push("Document uploading failed");
+                    analyticsService.create(req, serviceActions.add_employee_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        } else {
+            employeeInfo.createdBy = req.jwt.id;
+            employeeInfo.accountId = req.jwt.id;
+            employeeInfo.type = "employee";
+            employeeInfo.userName = employeeInfo.email;
+            employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
+            saveEmployee(req, employeeInfo, callback);
+        }
     }
 };
+
+function saveEmployee(req, employeeInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    }
+
+    AccountsColl.findOne({email: employeeInfo.email, type: "employee"}, function (err, oldDoc) {
+        if (err) {
+            retObj.messages.push('Error retrieving employee');
+            analyticsService.create(req, serviceActions.add_employee_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (oldDoc) {
+            retObj.messages.push('Employee already exists');
+            analyticsService.create(req, serviceActions.add_employee_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            (new AccountsColl(employeeInfo)).save(function (err, doc) {
+                if (err) {
+                    retObj.messages.push('Error saving employee');
+                    analyticsService.create(req, serviceActions.add_employee_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else {
+                    employeeInfo.employeeId = doc._id;
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.data = doc;
+                    analyticsService.create(req, serviceActions.add_employee, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        }
+    });
+}
 
 Employees.prototype.getEmployeeDetails = function (req, callback) {
     var retObj = {
@@ -1079,7 +1196,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
         status: false,
         messages: []
     };
-    var employeeInfo = req.body;
+    var employeeInfo = req.query;
 
     if (!Utils.isValidObjectId(employeeInfo._id)) {
         retObj.messages.push('Invalid employee Id');
@@ -1111,7 +1228,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
 
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.update_employee_err, {
-            body: JSON.stringify(req.body),
+            body: JSON.stringify(req.query),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -1119,71 +1236,116 @@ Employees.prototype.updateEmployee = function (req, callback) {
         });
         callback(retObj);
     } else {
-        AccountsColl.findOne({
-            _id: employeeInfo._id,
-        }, function (err, oldDoc) {
-            if (err) {
-                retObj.messages.push('Please Try Again');
-                analyticsService.create(req, serviceActions.update_employee_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (oldDoc) {
-                employeeInfo.updatedBy = req.jwt.id;
-                employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
-                employeeInfo.userName = employeeInfo.email;
-                AccountsColl.findOneAndUpdate({_id: employeeInfo._id}, {$set: employeeInfo}, function (err, doc) {
-                    if (err) {
-                        retObj.messages.push('Error updating the employee');
-                        analyticsService.create(req, serviceActions.update_employee_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else if (doc) {
-                        retObj.status = true;
-                        retObj.messages.push('Success');
-                        retObj.data = doc;
-                        analyticsService.create(req, serviceActions.update_employee, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else {
-                        retObj.messages.push('Employee with Id doesn\'t exist');
-                        analyticsService.create(req, serviceActions.update_employee_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }
-                });
-            } else {
-                retObj.messages.push('Employee with Id doesn\'t exist');
-                analyticsService.create(req, serviceActions.update_employee_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        });
+        if (req.files.files) {
+            Utils.removeProfilePic(employeeInfo.profilePic, function (removeResp) {
+                if (removeResp.status) {
+                    Utils.uploadProfilePic(req.files.files[0], function (uploadResp) {
+                        if (uploadResp.status) {
+                            employeeInfo.profilePic = uploadResp.fileName;
+                            employeeInfo.updatedBy = req.jwt.id;
+                            employeeInfo.userName = employeeInfo.email;
+                            employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
+                            updateEmployee(req, employeeInfo, callback);
+                        } else {
+                            retObj.messages.push("Document uploading failed");
+                            analyticsService.create(req, serviceActions.add_employee_err, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
+                    });
+                } else {
+                    retObj.messages.push("Document Removing failed");
+                    analyticsService.create(req, serviceActions.add_employee_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        } else {
+            employeeInfo.updatedBy = req.jwt.id;
+            employeeInfo.userName = employeeInfo.email;
+            employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
+            updateEmployee(req, employeeInfo, callback);
+        }
     }
 };
+
+function updateEmployee(req, employeeInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    AccountsColl.findOne({
+        _id: employeeInfo._id,
+    }, function (err, oldDoc) {
+        if (err) {
+            retObj.messages.push('Please Try Again');
+            analyticsService.create(req, serviceActions.update_employee_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (oldDoc) {
+            AccountsColl.findOneAndUpdate({_id: employeeInfo._id}, {$set: employeeInfo}, function (err, doc) {
+                if (err) {
+                    retObj.messages.push('Error updating the employee');
+                    analyticsService.create(req, serviceActions.update_employee_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else if (doc) {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.data = doc;
+                    analyticsService.create(req, serviceActions.update_employee, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else {
+                    retObj.messages.push('Employee with Id doesn\'t exist');
+                    analyticsService.create(req, serviceActions.update_employee_err, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        } else {
+            retObj.messages.push('Employee with Id doesn\'t exist');
+            analyticsService.create(req, serviceActions.update_employee_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+}
 
 Employees.prototype.deleteEmployee = function (req, callback) {
     var retObj = {

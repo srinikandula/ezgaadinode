@@ -6,9 +6,9 @@
             <button class="btn btn-primary" ui-sref="admin.addUpdateAdminRole">Create New</button>
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control">
+            <select class="form-control" ng-model="role2" ng-change="initRole(role2);">
                 <option>Select by Role</option>
-                <option ng-repeat="adminRole in adminRoles" value="{{adminRole.role._id}}">{{adminRole.role}}</option>
+                <option ng-repeat="adminRole in adminRoles">{{adminRole.role}}</option>
             </select>
         </li>
         <li class="col-xs-3 pull-right">
@@ -17,7 +17,6 @@
                 <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>
-
         <div class="clearfix"></div>
     </ul>
     <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="roleParams">

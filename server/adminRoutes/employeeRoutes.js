@@ -2,6 +2,8 @@ var express = require('express');
 var AuthRouter = express.Router();
 var Employees = require('../adminApis/employeeApi');
 var logger = require('./../winston/logger')(module);
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 
 /*Author SVPrasadK*/
 /*Employee Start*/
@@ -17,7 +19,7 @@ AuthRouter.get('/getEmployee', function (req, res) {
     });
 });
 
-AuthRouter.post('/addEmployee', function (req, res) {
+AuthRouter.post('/addEmployee', multipartyMiddleware, function (req, res) {
     Employees.addEmployee(req, function (result) {
         res.json(result);
     });
@@ -29,7 +31,7 @@ AuthRouter.get('/getEmployeeDetails', function (req, res) {
     });
 });
 
-AuthRouter.put('/updateEmployee', function (req, res) {
+AuthRouter.post('/updateEmployee', multipartyMiddleware, function (req, res) {
     Employees.updateEmployee(req, function (result) {
         res.json(result);
     });
@@ -93,7 +95,7 @@ AuthRouter.get('/getFranchise', function (req, res) {
     });
 });
 
-AuthRouter.post('/addFranchise', function (req, res) {
+AuthRouter.post('/addFranchise', multipartyMiddleware, function (req, res) {
     Employees.addFranchise(req, function (result) {
         res.json(result);
     });
@@ -105,7 +107,7 @@ AuthRouter.get('/getFranchiseDetails', function (req, res) {
     });
 });
 
-AuthRouter.put('/updateFranchise', function (req, res) {
+AuthRouter.post('/updateFranchise', multipartyMiddleware, function (req, res) {
     Employees.updateFranchise(req, function (result) {
         res.json(result);
     });

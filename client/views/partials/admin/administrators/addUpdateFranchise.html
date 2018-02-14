@@ -24,7 +24,9 @@
                            ng-model="franchise.email" placeholder="Email"/>
                 </div>
                 <div class="form-group">
-                    <input type="file" class="form-control custom-form-control" ng-model="files"/>
+                    <input type="file" ngf-select class="form-control custom-form-control"
+                           ng-model="franchise.newProfilePic" name="profilePic" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}" />
+                    <img src="{{franchise.profilePic}}" ng-if="franchise.profilePic">
                 </div>
             </div>
             <div class="col-xs-12 col-sm-6">

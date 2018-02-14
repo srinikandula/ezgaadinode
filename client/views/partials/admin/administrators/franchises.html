@@ -6,11 +6,17 @@
             <button class="btn btn-primary" ui-sref="admin.addUpdateFranchise">Create New</button>
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control">
+            <select class="form-control" ng-model="franchise2" ng-change="initFranchise(role2);">
                 <option>Select</option>
                 <option ng-value="true">Enabled</option>
                 <option ng-value="false">Disabled</option>
             </select>
+        </li>
+        <li class="col-xs-3 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
         </li>
         <div class="clearfix"></div>
     </ul>
