@@ -20,6 +20,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "GET",
                 params: {_id: params}
             }).then(success, error)
+        },
+        searchTrucksForRequest:function (params,success,error) {
+            $http({
+                url:'/v1/cpanel/orderProcess/searchTrucksForRequest',
+                method:"GET",
+                params:params
+            }).then(success,error);
         }
 
     }
@@ -229,24 +236,58 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
         });
     };
-
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource'+index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckRequest.truckDetails[index].source = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination'+index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckRequest.truckDetails[index].destination = place.formatted_address;
+            });
+    };
     $scope.searchSource = function () {
         var input = document.getElementById('searchSource');
         var options = {};
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed',
-        function () {
-            var place = autocomplete.getPlace();
-            var lat = place.geometry.location.lat();
-            var long = place.geometry.location.lng();
-            console.log("city", place.address_components["0"].long_name);
-            console.log("state", place.address_components["1"].long_name);
-            console.log('address',place.formatted_address);
-            console.log("lat", lat);
-            console.log("long", long);
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckRequest.source = place.formatted_address;
+            });
+    };
+    $scope.searchDestination = function () {
+        var input = document.getElementById('searchDestination');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckRequest.destination = place.formatted_address;
+            });
+    }
+    $scope.searchTrucksForRequest=function () {
+        OrderProcessServices.searchTrucksForRequest({source:$scope.truckRequest.source,destination:$scope.truckRequest.destination},function (success) {
+        if(success.data.status){
+            $scope.availableTruckslist=success.data.data;
+        }else{
+            success.data.messages.forEach(function (message) {
+                Notification.error(message);
+            })
+        }
+        },function (error) {
 
-
-        });
+        })
     }
 
 
