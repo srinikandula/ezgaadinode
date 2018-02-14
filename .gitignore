@@ -30,6 +30,7 @@ bower_components
 client/components
 client/dist
 client/assets
+client/images/profile-pics
 
 # node-waf configuration
 .lock-wscript

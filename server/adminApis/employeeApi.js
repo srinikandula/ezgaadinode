@@ -61,12 +61,11 @@ Employees.prototype.getFranchise = function (req, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-        if (!params.contactName) {
+        if (!params.franchise) {
             condition = {}
         } else {
-            condition = {status: {$regex: '.*' + params.status + '.*'}}
+            condition = {$or: [{account: {$regex:'.*' + params.franchise + '.*'}},{status: params.franchise}]}
         }
-
         async.parallel({
             Franchises: function (franchisesCallback) {
                 franchiseColl
@@ -76,13 +75,7 @@ Employees.prototype.getFranchise = function (req, callback) {
                     .limit(limit)
                     .lean()
                     .exec(function (err, franchises) {
-                        Utils.populateNameInUsersColl(franchises, "createdBy", function (response) {
-                            if (response.status) {
-                                franchisesCallback(err, response.documents);
-                            } else {
-                                franchisesCallback(err, null);
-                            }
-                        });
+                        franchisesCallback(err, franchises);
                     });
             },
             count: function (countCallback) {
@@ -543,7 +536,7 @@ Employees.prototype.getRole = function (req, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-        if (!params.contactName) {
+        if (!params.role) {
             condition = {}
         } else {
             condition = {role: {$regex: '.*' + params.role + '.*'}}
@@ -558,13 +551,7 @@ Employees.prototype.getRole = function (req, callback) {
                     .limit(limit)
                     .lean()
                     .exec(function (err, roles) {
-                        Utils.populateNameInUsersColl(roles, "createdBy", function (response) {
-                            if (response.status) {
-                                rolesCallback(err, response.documents);
-                            } else {
-                                rolesCallback(err, null);
-                            }
-                        });
+                        rolesCallback(err, roles);
                     });
             },
             count: function (countCallback) {
@@ -936,8 +923,10 @@ Employees.prototype.getEmployee = function (req, callback) {
             condition = {"type": "employee"};
             getEmployee(req, condition, callback);
         } else {
-            adminRoleColl.find({role: {$regex: '.*' + params.role + '.*'}},function (err, docs) {
-                var roleIds=docs.map(function (doc) { return doc._id; });
+            adminRoleColl.find({role: {$regex: '.*' + params.role + '.*'}}, function (err, docs) {
+                var roleIds = docs.map(function (doc) {
+                    return doc._id;
+                });
                 condition = {"type": "employee", adminRoleId: {$in: roleIds}}
                 getEmployee(req, condition, callback);
             });
@@ -945,7 +934,7 @@ Employees.prototype.getEmployee = function (req, callback) {
     }
 };
 
-function getEmployee(req, condition, callback){
+function getEmployee(req, condition, callback) {
     var retObj = {
         status: false,
         messages: []

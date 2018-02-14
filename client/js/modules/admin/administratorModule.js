@@ -145,8 +145,6 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
 
     $scope.count = 0;
 
-    $scope.role = "";
-
     $scope.countEmployee = function () {
         AdministratorService.countEmployee(function (success) {
             if (success.data.status) {
@@ -170,7 +168,6 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.data;
-                $scope.count = response.data.count;
                 $scope.currentPageOfEmployees = response.data.data;
             } else {
                 Notification.error({message: response.data.messages[0]});
@@ -208,7 +205,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             if (result.value) {
                 AdministratorService.deleteEmployee($scope.currentPageOfEmployees[index]._id, function (success) {
                     if (success.data.status) {
-                        $scope.init();
+                        $scope.init("");
                         swal(
                             '',
                             'Successfully removed',
@@ -369,8 +366,8 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
     $scope.countRole = function () {
         AdministratorService.countRole(function (success) {
             if (success.data.status) {
-                $scope.count = success.data.count;
-                $scope.initRole();
+                $scope.roleCount = success.data.count;
+                $scope.initRole("");
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -381,14 +378,14 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            role: tableParams.role
         };
         AdministratorService.getRole(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.data;
-                $scope.count = response.data.count;
                 $scope.currentPageOfRoles = response.data.data;
             } else {
                 Notification.error({message: response.data.messages[0]});
@@ -396,7 +393,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         });
     };
 
-    $scope.initRole = function () {
+    $scope.initRole = function (role) {
         $scope.roleParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -407,6 +404,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             counts: [],
             total: $scope.roleCount,
             getData: function (params) {
+                params.role = role;
                 loadTableDataRole(params);
             }
         });
@@ -425,7 +423,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             if (result.value) {
                 AdministratorService.deleteRole($scope.currentPageOfRoles[index]._id, function (success) {
                     if (success.data.status) {
-                        $scope.initRole();
+                        $scope.initRole("");
                         swal(
                             '',
                             'Successfully removed',
@@ -506,13 +504,13 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         newProfilePic: '',
     }
 
-    $scope.count = 0;
+    $scope.franchiseCount = 0;
 
     $scope.countFranchise = function () {
         AdministratorService.countFranchise(function (success) {
             if (success.data.status) {
-                $scope.count = success.data.count;
-                $scope.initFranchise();
+                $scope.franchiseCount = success.data.count;
+                $scope.initFranchise("");
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -523,14 +521,14 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            franchise: tableParams.franchise
         };
         AdministratorService.getFranchise(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.data;
-                $scope.count = response.data.count;
                 $scope.currentPageOfFranchises = response.data.data;
             } else {
                 Notification.error({message: response.data.messages[0]});
@@ -538,7 +536,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         });
     };
 
-    $scope.initFranchise = function () {
+    $scope.initFranchise = function (franchise) {
         $scope.franchiseParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -547,8 +545,9 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             }
         }, {
             counts: [],
-            total: $scope.count,
+            total: $scope.franchiseCount,
             getData: function (params) {
+                params.franchise = franchise;
                 loadTableDataFranchise(params);
             }
         });
@@ -567,7 +566,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             if (result.value) {
                 AdministratorService.deleteFranchise($scope.currentPageOfFranchises[index]._id, function (success) {
                     if (success.data.status) {
-                        $scope.initFranchise();
+                        $scope.initFranchise("");
                         swal(
                             '',
                             'Successfully removed',
