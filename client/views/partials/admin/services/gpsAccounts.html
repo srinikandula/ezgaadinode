@@ -27,8 +27,8 @@
             <td data-title="'type'" sortable="'type'" class="clickable-item">
                 {{account.type}}
             </td>
-            <td data-title="'mobile'" sortable="'mobile'" class="clickable-item">
-                {{account.mobile}}
+            <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item">
+                {{account.contactPhone}}
             </td>
             <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
                 {{account.createdAt | date:'yyyy-MM-dd'}}
@@ -36,14 +36,14 @@
             <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
                 {{account.erpEnabled}}
             </td>
-            <td data-title="'LOAD'" sortable="'load'" class="clickable-item">
-                {{account.load}}
+            <td data-title="'LOAD'" sortable="'loadEnabled'" class="clickable-item">
+                {{account.loadEnabled}}
             </td>
             <td data-title="'Lead Status'" sortable="'status'" class="clickable-item">
                 Initiated
             </td>
             <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
-                <a href="#" ui-sref="services.editGpsDevice({device: device._id})">Edit /</a>
+                <a href="#" ui-sref="services.addNewAccount({accountId: account._id})">Edit /</a>
                 <a href="#" ng-click="deleteAccount($index)">Delete</a>
             </td>
         </tr>

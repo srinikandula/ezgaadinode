@@ -21,7 +21,7 @@ AuthRouter.post('/addAccount', function (req, res) {
     });
 });
 
-AuthRouter.get('/getAccountDetails', function (req, res) {
+AuthRouter.get('/getAccountDetails/:accountId', function (req, res) {
     Accounts.getAccountDetails(req, function (result) {
         res.json(result);
     });

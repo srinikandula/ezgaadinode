@@ -115,6 +115,14 @@ Accounts.prototype.addAccount = function (req, callback) {
         messages: []
     };
     var accountInfo = req.body;
+    var query = {};
+    if (!accountInfo._id) {
+        query = {_id: mongoose.Types.ObjectId()};
+        accountInfo.createdBy = req.jwt.id;
+    } else {
+        query = {_id: accountInfo._id}
+    }
+    accountInfo.updatedBy = req.jwt.id;
 
     if (!accountInfo.userName || !_.isString(accountInfo.userName)) {
         retObj.messages.push('Invalid User Name');
@@ -164,10 +172,8 @@ Accounts.prototype.addAccount = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                accountInfo.createdBy = req.jwt.id;
-                accountInfo.type = "account";
-                (new AccountsColl(accountInfo)).save(function (err, savedAcc) {
-                    if (err) {
+                AccountsColl.update(query, accountInfo, {upsert: true}, function (errSaved, saved) {
+                    if(errSaved) {
                         console.log(err);
                         retObj.messages.push('Error saving account');
                         analyticsService.create(req, serviceActions.add_account_err, {
@@ -179,11 +185,8 @@ Accounts.prototype.addAccount = function (req, callback) {
                         });
                         callback(retObj);
                     } else {
-                        accountInfo.accountId = savedAcc._id;
-                        accountInfo.type = "account";
                         retObj.status = true;
                         retObj.messages.push('Success');
-                        retObj.data=savedAcc;
                         analyticsService.create(req, serviceActions.add_account, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -203,8 +206,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
         status: false,
         messages: []
     };
-    var accountId = req.query.accountId;
-
+    var accountId = req.params.accountId;
     if (!Utils.isValidObjectId(accountId)) {
         retObj.messages.push('Invalid accountId');
     }
@@ -233,7 +235,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
             } else if (account) {
                 retObj.status = true;
                 retObj.messages.push('Success');
-                retObj.data = account;
+                retObj.accountDetails = account;
                 analyticsService.create(req, serviceActions.get_account_details, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,

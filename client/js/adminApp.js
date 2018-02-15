@@ -67,9 +67,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'services'}
     }).state({
         name: 'services.addNewAccount',
-        url: '/addNewAccount',
+        url: '/addNewAccount/:accountId',
         templateUrl: 'views/partials/admin/services/addNewAccount.html',
-        data: {activeTab: 'services'}
+        data: {activeTab: 'services'},
+        params: {accountId: null}
     }).state({
         name: 'services.gpsAccounts',
         url: '/gpsAccounts',
@@ -89,12 +90,13 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'services.editGpsDevice',
         url: '/editGpsDevice/:device',
         templateUrl: 'views/partials/admin/services/editGpsDevice.html',
-        data: {activeTab: 'services', device: false}
+        data: {activeTab: 'services'},
+        params: {device: null}
     }).state({
         name: 'services.addDevice',
         url: '/addDevice',
         templateUrl: 'views/partials/admin/services/addDevice.html',
-        data: {activeTab: 'services', device: false}
+        data: {activeTab: 'services'}
     }).state({
         name: 'services.transferDevice',
         url: '/transferDevice',
@@ -140,8 +142,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/editTruckRequest/:_id',
         templateUrl: 'views/partials/admin/orderProcess/editTruckRequest.html',
         data: {activeTab: 'orderprocess'},
-        params: { _id: null },
-        data: {activeTab: 'orderprocess'}
+        params: { _id: null }
     }).state({
         name: 'settings',
         url: '/settings',

@@ -19,6 +19,12 @@ app.factory('AccountService', ['$http', function ($http) {
                 method: "GET",
                 params: pageable
             }).then(success, error)
+        },
+        getAccountDetails: function (accountId, success, error) {
+            $http({
+                url: '/v1/cpanel/accounts/getAccountDetails/' + accountId,
+                method: "GET"
+            }).then(success, error)
         }
     }
 }]);
@@ -76,7 +82,7 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
     };
 }]);
 
-app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', function ($scope, $stateParams, AccountService, Notification) {
+app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', function ($scope, $stateParams, AccountService, Notification, $state) {
     $scope.accountDetails = {
         userName: '',
         contactName: '',
@@ -111,10 +117,18 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
     };
 
     if($stateParams.accountId) {
-        $scope.getAccountDetails();
+        AccountService.getAccountDetails($stateParams.accountId, function (success) {
+            console.log(success.data);
+            if(success.data.status) {
+                $scope.accountDetails = success.data.accountDetails;
+                console.log('accountDetails', $scope.accountDetails);
+            } else {
+                Notification.error({message: 'unable to get account details'});
+            }
+        });
     }
 
-    $scope.addAccount = function () {
+    $scope.addOrUpdateAccount = function () {
         var params = $scope.accountDetails;
         params.errors = [];
         if(!params.userName) {
@@ -138,6 +152,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
                 console.log(success.data);
                 if(success.data.status) {
                     Notification.success({message: "Successfully added"});
+                    $state.go('services.gpsAccounts');
                 } else {
                     params.errors = success.data.messages;
                 }
