@@ -38,11 +38,6 @@ AuthRouter.get('/getTruckTypeDetails', function (req, res) {
         res.send(result);
     })
 });
-AuthRouter.get('/countTruckType', function (req, res) {
-    Settings.countTruckType(req, function (result) {
-        res.send(result);
-    });
-});
 
 AuthRouter.get('/getGoodsTypes', function (req, res) {
     Settings.getGoodsTypes(req, function (result) {
