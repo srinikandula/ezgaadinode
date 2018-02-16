@@ -32,13 +32,14 @@ app.factory('SettingServices', ['$http', function ($http) {
             $http({
                 url: '/v1/cpanel/settings/deletePlan',
                 method: "DELETE",
-                params: {_id:planId}
+                params: {_id: planId}
             }).then(success, error)
         },
-        planCount: function ( success, error) {
+        planCount: function (plan, success, error) {
             $http({
                 url: '/v1/cpanel/settings/planCount',
                 method: "GET",
+                params: {plan: plan}
             }).then(success, error)
         },
         addTruckType: function (params, success, error) {
@@ -59,7 +60,7 @@ app.factory('SettingServices', ['$http', function ($http) {
             $http({
                 url: '/v1/cpanel/settings/getTruckTypeDetails',
                 method: "GET",
-                params: {_id : truckId}
+                params: {_id: truckId}
             }).then(success, error)
         },
         updateTruckType: function (params, success, error) {
@@ -73,19 +74,95 @@ app.factory('SettingServices', ['$http', function ($http) {
             $http({
                 url: '/v1/cpanel/settings/deleteTruckType',
                 method: "DELETE",
-                params: {_id:planId}
+                params: {_id: planId}
             }).then(success, error)
         },
-        countTruckType: function ( success, error) {
+        totalTruckTypes: function (success, error) {
             $http({
-                url: '/v1/cpanel/settings/countTruckType',
+                url: '/v1/cpanel/settings/totalTruckTypes',
                 method: "GET",
             }).then(success, error)
         },
-        getGoodsTypes:function (success, error) {
+        addLoadType: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/addLoadType',
+                method: "POST",
+                data: params
+            }).then(success, error)
+        },
+        getLoadTypes: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getLoadTypes',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        getLoadTypeDetails: function (truckId, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getLoadTypeDetails',
+                method: "GET",
+                params: {_id: truckId}
+            }).then(success, error)
+        },
+        updateLoadType: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/updateLoadType',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
+        deleteLoadType: function (loadId, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/deleteLoadType',
+                method: "DELETE",
+                params: {_id: loadId}
+            }).then(success, error)
+        },
+        totalLoadsTypes: function (success, error) {
+            $http({
+                url: '/v1/cpanel/settings/totalLoadsTypes',
+                method: "GET",
+            }).then(success, error)
+        },
+        addGoodsType: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/addGoodsType',
+                method: "POST",
+                data: params
+            }).then(success, error)
+        },
+        getGoodsTypes: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/settings/getGoodsTypes',
-                method: "GET"
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        getGoodsTypeDetails: function (truckId, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getGoodsTypeDetails',
+                method: "GET",
+                params: {_id: truckId}
+            }).then(success, error)
+        },
+        updateGoodsType: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/updateGoodsType',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
+        deleteGoodsType: function (goodsId, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/deleteGoodsType',
+                method: "DELETE",
+                params: {_id: goodsId}
+            }).then(success, error)
+        },
+        totalGoodsTypes: function (success, error) {
+            $http({
+                url: '/v1/cpanel/settings/totalGoodsTypes',
+                method: "GET",
             }).then(success, error)
         }
     }
@@ -94,38 +171,50 @@ app.factory('SettingServices', ['$http', function ($http) {
 
 app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTableParams', 'Notification', function ($scope, $uibModal, SettingServices, NgTableParams, Notification) {
 
-   // GPS Renewal Plans(Gettings Plans, pagenation, Sorting, Deleting)
+// GPS and ERP Renewal Plans(Gettings Plans, pagenation, Sorting, Deleting)
 
-    $scope.saveGPSRenewalPlan = function () {
+    $scope.saveRenewalPlan = function () {
         var modalInstance = $uibModal.open({
-            templateUrl: 'addNewGPS.html',
+            templateUrl: 'addNewGPSandERP.html',
             controller: 'settingsModalCtrl',
             size: 'md',
+            backdrop: 'static',
+            keyboard: false,
             resolve: {
                 modelData: function () {
                     return {}
                 }
             }
         });
+        modalInstance.result.then(function (data) {
+            $scope.getErpPlanCount(data.plan);
+        }, function () {
+        });
     };
     $scope.editPlanPopup = function (id) {
         var modalInstance = $uibModal.open({
-            templateUrl: 'addNewGPS.html',
+            templateUrl: 'addNewGPSandERP.html',
             controller: 'settingsModalCtrl',
             size: 'md',
+            backdrop: 'static',
+            keyboard: false,
             resolve: {
                 modelData: function () {
                     return {data: id}
                 }
             }
         });
+        modalInstance.result.then(function (data) {
+            $scope.getErpPlanCount(data.plan);
+        }, function () {
+        });
     };
     $scope.count = 0;
-    $scope.getGpsPlanCount = function () {
-        SettingServices.planCount(function (success) {
+    $scope.getGpsPlanCount = function (plan) {
+        SettingServices.planCount(plan, function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                $scope.initGPSPlan();
+                $scope.initGPSPlan(plan);
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
@@ -133,28 +222,38 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             }
         });
     };
-    $scope.getGpsPlanCount();
-
+    $scope.getErpPlanCount = function (plan) {
+        SettingServices.planCount(plan, function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initGPSPlan(plan);
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
     var loadGPSTableData = function (tableParams) {
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            plan: tableParams.plan
         };
         SettingServices.getPlan(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
                 tableParams.total(response.data.count);
+
                 tableParams.data = response.data.data;
                 $scope.currentPageOfgpsPlans = response.data.data;
-                console.log("currentPageOfgpsPlans", $scope.currentPageOfgpsPlans);
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
         });
     };
-
-    $scope.initGPSPlan = function () {
+    $scope.initGPSPlan = function (plan) {
         $scope.settingParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -165,11 +264,12 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             counts: [],
             total: $scope.count,
             getData: function (params) {
+                params.plan = plan;
                 loadGPSTableData(params);
             }
         });
     };
-    $scope.delGpsPlan = function(planId) {
+    $scope.delGpsPlan = function (planId, plan) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -180,38 +280,44 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-                SettingServices.deletePlan(planId, function(success) {
+                SettingServices.deletePlan(planId, function (success) {
                     if (success.data.status) {
                         swal(
                             'Deleted!',
                             success.data.messages[0],
                             'success'
                         );
-                        $scope.getGpsPlanCount();
+                        $scope.getGpsPlanCount(plan);
                     } else {
-                        success.data.messages.forEach(function(message) {
+                        success.data.messages.forEach(function (message) {
                             Notification.error(message);
                         });
                     }
-                }, function(err) {
+                }, function (err) {
 
                 });
             }
         });
     };
 
-    // Trcusk Types (Gettings Truck Types, pagenation, Sorting, Deleting)
+// Trcusk Types (Gettings Truck Types, pagenation, Sorting, Deleting)
 
     $scope.saveTruckType = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'addNewTruckType.html',
             controller: 'settingsModalCtrl',
             size: 'md',
+            backdrop: 'static',
+            keyboard: false,
             resolve: {
                 modelData: function () {
                     return {}
                 }
             }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getTruckTypeCount();
+        }, function () {
         });
     };
     $scope.editTruckType = function (truckId) {
@@ -219,17 +325,23 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             templateUrl: 'addNewTruckType.html',
             controller: 'settingsModalCtrl',
             size: 'md',
+            backdrop: 'static',
+            keyboard: false,
             resolve: {
                 modelData: function () {
                     return {data: truckId}
                 }
             }
         });
+        modalInstance.result.then(function (data) {
+            $scope.getTruckTypeCount();
+        }, function () {
+        });
     };
     $scope.getTruckTypeCount = function () {
-        SettingServices.countTruckType(function (success) {
+        SettingServices.totalTruckTypes(function (success) {
             if (success.data.status) {
-                $scope.count = success.data.count;
+                $scope.count = success.data.data;
                 $scope.initTruckType();
             } else {
                 success.data.messages.forEach(function (message) {
@@ -238,8 +350,6 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             }
         });
     };
-    $scope.getTruckTypeCount();
-
     var loadTruckTypeTableData = function (tableParams) {
         var pageable = {
             page: tableParams.page(),
@@ -257,7 +367,6 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             }
         });
     };
-
     $scope.initTruckType = function () {
         $scope.truckTypeParams = new NgTableParams({
             page: 1, // show first page
@@ -273,9 +382,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             }
         });
     };
-
-
-    $scope.delTruckType = function(truckId) {
+    $scope.delTruckType = function (truckId) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -286,7 +393,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-                SettingServices.deleteTruckType(truckId, function(success) {
+                SettingServices.deleteTruckType(truckId, function (success) {
                     if (success.data.status) {
                         swal(
                             'Deleted!',
@@ -295,57 +402,286 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                         );
                         $scope.getTruckTypeCount();
                     } else {
-                        success.data.messages.forEach(function(message) {
+                        success.data.messages.forEach(function (message) {
                             Notification.error(message);
                         });
                     }
-                }, function(err) {
+                }, function (err) {
 
                 });
             }
         });
     };
+
+// Load Types (Gettings Load types, pagenation, Sorting, Deleting)
+
+    $scope.saveLoadType = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewLoadType.html',
+            controller: 'settingsModalCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {}
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getLoadTypeCount();
+        }, function () {
+        });
+    };
+    $scope.editLoadType = function (truckId) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewLoadType.html',
+            controller: 'settingsModalCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {data: truckId}
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getLoadTypeCount();
+        }, function () {
+        });
+    };
+    $scope.getLoadTypeCount = function () {
+        SettingServices.totalLoadsTypes(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.initLoadType();
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    var loadTypeTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting()
+        };
+        SettingServices.getLoadTypes(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfLoadTypes = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+    $scope.initLoadType = function () {
+        $scope.loadTypeParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTypeTableData(params);
+            }
+        });
+    };
+    $scope.delLoadType = function (loadId) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                SettingServices.deleteLoadType(loadId, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.getLoadTypeCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    };
+
+// Goods Types (Gettings goods types, pagenation, Sorting, Deleting)
+
+    $scope.saveGoodsType = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewGoodsType.html',
+            controller: 'settingsModalCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {}
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getGoodsTypeCount();
+        }, function () {
+        });
+    };
+    $scope.editGoodsType = function (truckId) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewGoodsType.html',
+            controller: 'settingsModalCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {data: truckId}
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getGoodsTypeCount();
+        }, function () {
+        });
+    };
+    $scope.getGoodsTypeCount = function () {
+        SettingServices.totalGoodsTypes(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.initGoodsType();
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    var goodsTypeTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting()
+        };
+        SettingServices.getGoodsTypes(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfGoodsTypes = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+    $scope.initGoodsType = function () {
+        $scope.goodsTypeParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                goodsTypeTableData(params);
+            }
+        });
+    };
+    $scope.delGoodsType = function (goodsId) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                SettingServices.deleteGoodsType(goodsId, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.getGoodsTypeCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    };
+
+
 }]);
+
 
 app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'Notification', 'SettingServices', 'modelData', function ($scope, $state, $uibModalInstance, Notification, SettingServices, modelData) {
 
     $scope.cancel = function () {
-        $uibModalInstance.dismiss('cancel');
+        $uibModalInstance.close();
     };
 
-// GPS Renewal Plan Adding or Updating
+
+// GPS and ERP Renewal Plan Adding or Updating
 
     function gpsAddFunc() {
-        $scope.gpsAddPlan = {
+        $scope.addRenewalPlan = {
             planName: '',
             amount: '',
             durationInMonths: '',
-            type: 'gps',
+            plan: '',
             status: undefined,
             errorMessage: []
         };
     }
+    $scope.initGPSandERPPlan = function () {
+        if (modelData.data) {
+            SettingServices.getPlanDetails(modelData.data, function (success) {
+                if (success.data.status) {
+                    $scope.addRenewalPlan = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
 
-   $scope.initGPSPlan=function () {
-       if (modelData.data) {
-           SettingServices.getPlanDetails(modelData.data, function (success) {
-               if (success.data.status) {
-                   $scope.gpsAddPlan = success.data.data;
-               } else {
-                   success.data.messages.forEach(function (message) {
-                       Notification.error(message);
-                   });
-               }
-           }, function (error) {
-
-           })
-       } else {
-           gpsAddFunc();
-       }
-   };
-
-    $scope.addGPSPlan = function () {
-        var params = $scope.gpsAddPlan;
+            })
+        } else {
+            gpsAddFunc();
+        }
+    };
+    $scope.addGPSPlan = function (plan) {
+        $scope.addRenewalPlan.plan = plan;
+        var params = $scope.addRenewalPlan;
         params.errorMessage = [];
         if (!params.planName) {
             params.errorMessage.push('Enter your Plan Name');
@@ -371,7 +707,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
-                        gpsAddFunc();
+                        $uibModalInstance.close({plan: params.plan});
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
@@ -385,7 +721,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
-                        $scope.cancel();
+                        $uibModalInstance.close({plan: params.plan})
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
@@ -410,7 +746,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
             errorMessage: []
         };
     }
-    $scope.initTruckType=function () {
+    $scope.initTruckType = function () {
         if (modelData.data) {
             SettingServices.getTruckTypeDetails(modelData.data, function (success) {
                 if (success.data.status) {
@@ -427,8 +763,6 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
             truckTypeAddFun();
         }
     };
-
-
     $scope.addorUpdateTruckType = function () {
         var params = $scope.truckType;
         params.errorMessage = [];
@@ -441,9 +775,9 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
         if (!params.mileage) {
             params.errorMessage.push('Please enter Vehicle Mileage');
         }
-        // if (params.status === undefined) {
-        //     params.errorMessage.push('Please select status');
-        // }
+        if (params.status === undefined) {
+            params.errorMessage.push('Please select status');
+        }
         if (params.errorMessage.length > 0) {
             params.errorMessage.forEach(function (message) {
                 Notification.error(message);
@@ -456,7 +790,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
-                        truckTypeAddFun();
+                        $uibModalInstance.close({status: true, message: success.data.message});
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
@@ -470,7 +804,153 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
-                        $scope.cancel();
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (error) {
+
+                })
+            }
+
+        }
+    };
+
+// Load Types adding and Updating
+
+    function loadTypeAddFun() {
+        $scope.loadType = {
+            title: '',
+            status: undefined,
+            errorMessage: []
+        };
+    }
+    $scope.initLoadType = function () {
+        if (modelData.data) {
+            SettingServices.getLoadTypeDetails(modelData.data, function (success) {
+                if (success.data.status) {
+                    $scope.loadType = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        } else {
+            loadTypeAddFun();
+        }
+    };
+    $scope.addorUpdateLoadType = function () {
+        var params = $scope.loadType;
+        params.errorMessage = [];
+        if (!params.title) {
+            params.errorMessage.push('Enter your Title');
+        }
+        if (params.status === undefined) {
+            params.errorMessage.push('Please select status');
+        }
+        if (params.errorMessage.length > 0) {
+            params.errorMessage.forEach(function (message) {
+                Notification.error(message);
+            });
+            loadTypeAddFun();
+        } else {
+            if (params._id) {
+                SettingServices.updateLoadType(params, function (success) {
+                    if (success.data.status) {
+                        Notification.success(success.data.messages);
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+            else {
+                SettingServices.addLoadType(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({ status: true, message: success.data.message });
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (error) {
+
+                })
+            }
+
+        }
+    };
+
+// Goods Types adding and Updating
+
+    function goodsTypeAddFun() {
+        $scope.goodsType = {
+            title: '',
+            status: undefined,
+            errorMessage: []
+        };
+    }
+    $scope.initGoodsType = function () {
+        if (modelData.data) {
+            SettingServices.getGoodsTypeDetails(modelData.data, function (success) {
+                if (success.data.status) {
+                    $scope.goodsType = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        } else {
+            goodsTypeAddFun();
+        }
+    };
+    $scope.addorUpdateGoodsType = function () {
+        var params = $scope.goodsType;
+        params.errorMessage = [];
+        if (!params.title) {
+            params.errorMessage.push('Enter your Title');
+        }
+        if (params.status === undefined) {
+            params.errorMessage.push('Please select status');
+        }
+        if (params.errorMessage.length > 0) {
+            params.errorMessage.forEach(function (message) {
+                Notification.error(message);
+            });
+            loadTypeAddFun();
+        } else {
+            if (params._id) {
+                SettingServices.updateGoodsType(params, function (success) {
+                    if (success.data.status) {
+                        Notification.success(success.data.messages);
+                        $uibModalInstance.close({ status: true, message: success.data.message });
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+            else {
+                SettingServices.addGoodsType(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({ status: true, message: success.data.message });
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);

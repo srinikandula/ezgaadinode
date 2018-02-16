@@ -456,3 +456,47 @@ footer {
     position: relative;
     z-index: 10000; /* The select2 dropdown has a z-index of 9999 */
 }
+.table>caption+thead>tr:first-child>td, .table>caption+thead>tr:first-child>th, .table>colgroup+thead>tr:first-child>td, .table>colgroup+thead>tr:first-child>th, .table>thead:first-child>tr:first-child>td, .table>thead:first-child>tr:first-child>th {
+    border-top: 0;
+    padding: 10px;
+    background: #3e2f2f;
+    color: #fff;
+    font-weight: bold;
+}
+.ng-table th.sortable.sort-desc .sort-indicator:after{
+    border-bottom: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #fff !important;
+    visibility: visible;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    filter: alpha(opacity=60);
+    -khtml-opacity: 0.6;
+    -moz-opacity: 0.6;
+    opacity: 0.6;
+}
+.ng-table th.sortable .sort-indicator:before {
+    margin-top: 2px;
+    border-bottom: none;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid #fff !important;
+}
+.ng-table th.sortable .sort-indicator:after, .ng-table th.sortable .sort-indicator:before {
+    content: "";
+    border-width: 0 4px 4px;
+    border-style: solid;
+    border-color: #fff transparent !important;
+    visibility: visible;
+    right: 5px;
+    top: 50%;
+    position: absolute;
+    opacity: .3;
+    margin-top: -4px;
+}
+.edit_icon, .delete_icon{
+    font-size: 16px;
+    padding: 5px;
+}
