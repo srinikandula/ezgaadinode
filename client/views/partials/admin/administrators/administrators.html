@@ -6,15 +6,15 @@
             <button class="btn btn-primary" ui-sref="admin.addUpdateEmployee">Create New</button>
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control" ng-model="role2" ng-change="init(role2);">
+            <select class="form-control" ng-model="role1" ng-change="init(role1);">
                 <option value="" selected>Select by Role</option>
                 <option ng-repeat="adminRole in adminRoles">{{adminRole.role}}</option>
             </select>
         </li>
         <li class="col-xs-3 pull-right">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search By Role" ng-model="role1">
-                <span class="input-group-addon" ng-click="init(role1);"><i class="glyphicon glyphicon-search"></i></span>
+                <input type="text" class="form-control" placeholder="Search" ng-model="employee1">
+                <span class="input-group-addon" ng-click="searchByEmployee(employee1);"><i class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>
         <div class="clearfix"></div>
@@ -43,9 +43,9 @@
                 {{employee.adminRoleId.role}}
             </td>
             <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{employee.isActive?'Active':'Inactive'}}
+                {{employee.isActive?'Enabled':'Disabled'}}
             </td>
-            <td data-title="'Edit/Delete'" sortable="'contactPhone'" class="clickable-item">
+            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
                 <a href="#" ui-sref="admin.addUpdateEmployee({employeeId: employee._id})">Edit</a> /
                 <a href="#" ng-click="deleteEmployee($index)">Delete</a>
             </td>

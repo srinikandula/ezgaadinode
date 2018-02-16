@@ -61,11 +61,22 @@ Employees.prototype.getFranchise = function (req, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-        if (!params.franchise) {
-            condition = {}
-        } else {
-            condition = {$or: [{account: {$regex:'.*' + params.franchise + '.*'}, status: params.franchise}]}
+        if (params.franchise) {
+            condition = {
+                $or:
+                    [
+                        {"fullName": new RegExp(params.franchise, "gi")},
+                        {"account": new RegExp(params.franchise, "gi")},
+                        // {"mobile": new RegExp(parseFloat(params.franchise),"gi")},
+                        {"landLine": new RegExp(params.franchise, "gi")},
+                        {"city": new RegExp(params.franchise, "gi")},
+                        {"state": new RegExp(params.franchise, "gi")},
+                    ]
+            };
+        } else if (params.status) {
+            condition = {"status": params.status}
         }
+
         async.parallel({
             Franchises: function (franchisesCallback) {
                 franchiseColl
@@ -911,7 +922,7 @@ Employees.prototype.getEmployee = function (req, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
+    var condition = {"type": "employee"};
     var params = req.query;
     if (!params.page) {
         params.page = 1;
@@ -919,17 +930,35 @@ Employees.prototype.getEmployee = function (req, callback) {
     if (retObj.messages.length) {
         callback(retObj);
     } else {
-        if (!params.role) {
-            condition = {"type": "employee"};
-            getEmployee(req, condition, callback);
-        } else {
-            adminRoleColl.find({role: {$regex: '.*' + params.role + '.*'}}, function (err, docs) {
+        if (params.employee || params.role) {
+            adminRoleColl.find({$or: [{role: {$regex: '.*' + params.role + '.*'}}, {role: {$regex: '.*' + params.employee + '.*'}}]}, function (err, docs) {
                 var roleIds = docs.map(function (doc) {
                     return doc._id;
                 });
-                condition = {"type": "employee", adminRoleId: {$in: roleIds}}
-                getEmployee(req, condition, callback);
+
+                if (params.employee) {
+                    condition = {
+                        $and: [{"type": "employee"}, {
+                            $or:
+                                [
+                                    {"firstName": new RegExp(params.employee, "gi")},
+                                    {"lastName": new RegExp(params.employee, "gi")},
+                                    // {"contactPhone": new RegExp(parseFloat(params.employee),"gi")},
+                                    {"email": new RegExp(params.employee, "gi")},
+                                    {"city": new RegExp(params.employee, "gi")},
+                                    {"state": new RegExp(params.employee, "gi")},
+                                    {"adminRoleId": {$in: roleIds}},
+                                ]
+                        }]
+                    };
+                    getEmployee(req, condition, callback);
+                } else if (params.role) {
+                    condition = {"type": "employee", adminRoleId: {$in: roleIds}}
+                    getEmployee(req, condition, callback);
+                }
             });
+        } else {
+            getEmployee(req, condition, callback);
         }
     }
 };
