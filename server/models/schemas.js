@@ -124,8 +124,10 @@ var truckSchema = new mongoose.Schema({
     attrs: {latestLocation: {}},
     // latestLocation:{type:ObjectId,ref:'devicePositions'},
     deviceId: String,
-    lookingForLoad: {type: Boolean, default: false},
-}, {timestamps: true});
+    lookingForLoad: { type: Boolean, default: false },
+    isIdle:Boolean,
+    isStopped:Boolean
+}, { timestamps: true });
 
 var tripSchema = new mongoose.Schema({
     date: Date,
