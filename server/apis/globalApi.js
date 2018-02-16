@@ -1,4 +1,6 @@
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
 
 var globalApis = function () {
 };
@@ -14,17 +16,20 @@ globalApis.prototype.getContactInfo  = function (accountId,access,req,callback) 
             if(err){
                 retObj.status=false;
                 retObj.messages.push('Please try again');
+                analyticsService.create(req,serviceActions.get_contact_info_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }else{
                 retObj.status=true;
                 retObj.messages.push('Success');
                 retObj.results=accDetails;
+                analyticsService.create(req,serviceActions.get_contact_info,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             }
         })
     }else{
         retObj.status=false;
         retObj.messages.push('Not Authorized');
+        analyticsService.create(req,serviceActions.get_contact_info_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     }
 };
