@@ -78,6 +78,9 @@ Settings.prototype.addTruckType = function (req, callback) {
     if (!params.mileage) {
         retObj.messages.push("Please enter mileage");
     }
+    if (params.status === undefined) {
+        retObj.messages.push('Select Status');
+    }
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_truck_type_err, {
             body: JSON.stringify(req.body),
@@ -292,23 +295,6 @@ Settings.prototype.deleteTruckType = function (req, callback) {
 
 };
 
-Settings.prototype.countTruckType = function (req, callback) {
-    var result = {};
-    TrucksTypesColl.count({}, function (err, data) {
-        if (err) {
-            result.status = false;
-            result.message = 'Error getting count';
-            callback(result);
-        } else {
-            result.status = true;
-            result.message = 'Success';
-            result.count = data;
-            callback(result);
-        }
-    })
-};
-
-
 /*author : Naresh d*/
 Settings.prototype.getGoodsTypes = function (req, callback) {
     var retObj = {
@@ -367,6 +353,9 @@ Settings.prototype.addGoodsType = function (req, callback) {
     var params = req.body;
     if (!params.title) {
         retObj.messages.push("Please enter goods type");
+    }
+    if (params.status === undefined) {
+        retObj.messages.push("Please Select Status");
     }
 
     if (retObj.messages.length > 0) {
@@ -545,7 +534,7 @@ Settings.prototype.deleteGoodsType = function (req, callback) {
         });
         callback(retObj);
     } else {
-        TrucksTypesColl.remove({_id: params._id}, function (err, doc) {
+        GoodsTypesColl.remove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_goods_type_err, {
@@ -641,6 +630,9 @@ Settings.prototype.addLoadType = function (req, callback) {
     var params = req.body;
     if (!params.title) {
         retObj.messages.push("Please enter load type");
+    }
+    if (params.status === undefined) {
+        retObj.messages.push("Please Select Status");
     }
 
     if (retObj.messages.length > 0) {
@@ -819,7 +811,7 @@ Settings.prototype.deleteLoadType = function (req, callback) {
         });
         callback(retObj);
     } else {
-        TrucksTypesColl.remove({_id: params._id}, function (err, doc) {
+        LoadTypesColl.remove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_load_type_err, {
@@ -878,9 +870,9 @@ Settings.prototype.getPlan = function (req, callback) {
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
         if (!params.planName) {
-            condition = {accountId: req.jwt.accountId}
+            condition = {accountId: req.jwt.accountId, plan:params.plan}
         } else {
-            condition = {accountId: req.jwt.accountId, fullName: {$regex: '.*' + params.planName + '.*'}}
+            condition = {accountId: req.jwt.accountId, plan:params.plan, fullName: {$regex: '.*' + params.planName + '.*'}}
         }
         async.parallel({
             gpsPlans: function (gpsPlansCallback) {
@@ -941,7 +933,6 @@ Settings.prototype.addPlan = function (req, callback) {
         messages: []
     };
     var planInfo = req.body;
-    console.log('planinfo: ', planInfo);
     if (!planInfo.planName || !_.isString(planInfo.planName)) {
         retObj.messages.push('Invalid Plan Name');
     }
@@ -965,8 +956,7 @@ Settings.prototype.addPlan = function (req, callback) {
         callback(retObj);
     }
     else {
-        console.log('else');
-        erpGpsPlansColl.findOne({planName: planInfo.planName}, function (err, oldDoc) {
+        erpGpsPlansColl.findOne({planName: planInfo.planName, plan: planInfo.plan}, function (err, oldDoc) {
             if (err) {
                 retObj.messages.push('Error retrieving gps plan');
                 analyticsService.create(req, serviceActions.add_plan_err, {
@@ -991,7 +981,6 @@ Settings.prototype.addPlan = function (req, callback) {
                 planInfo.createdBy = req.jwt.id;
                 planInfo.accountId = req.jwt.id;
                 (new erpGpsPlansColl(planInfo)).save(function (err, doc) {
-                    console.log('vdsvn', err, doc);
                     if (err) {
                         retObj.messages.push('Error saving plan');
                         analyticsService.create(req, serviceActions.add_plan_err, {
@@ -1005,7 +994,7 @@ Settings.prototype.addPlan = function (req, callback) {
                     } else {
                         planInfo.planId = doc._id;
                         retObj.status = true;
-                        retObj.messages.push('Success');
+                        retObj.messages.push('GPS Plan added successfully');
                         retObj.data = doc;
                         analyticsService.create(req, serviceActions.add_plan, {
                             body: JSON.stringify(req.body),
@@ -1137,7 +1126,7 @@ Settings.prototype.updatePlan = function (req, callback) {
                         callback(retObj);
                     } else if (doc) {
                         retObj.status = true;
-                        retObj.messages.push('Success');
+                        retObj.messages.push('GPS Plan Updated successfully');
                         retObj.data = doc;
                         analyticsService.create(req, serviceActions.update_plan, {
                             body: JSON.stringify(req.body),
@@ -1220,7 +1209,7 @@ Settings.prototype.deletePlan = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.status = true;
-                retObj.messages.push('Success');
+                retObj.messages.push('GPS Plan deleted successfully');
                 analyticsService.create(req, serviceActions.delete_plan, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
@@ -1235,17 +1224,20 @@ Settings.prototype.deletePlan = function (req, callback) {
 
 
 Settings.prototype.planCount = function (req, callback) {
-    var result = {};
-    erpGpsPlansColl.count({}, function (err, data) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    erpGpsPlansColl.count({plan:req.query.plan}, function (err, data) {
         if (err) {
-            result.status = false;
-            result.message = 'Error getting count';
-            callback(result);
+            retObj.status = false;
+            retObj.messages.push('Error getting count');
+            callback(retObj);
         } else {
-            result.status = true;
-            result.message = 'Success';
-            result.count = data;
-            callback(result);
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.count = data;
+            callback(retObj);
         }
     })
 };

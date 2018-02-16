@@ -1,6 +1,6 @@
-<div ng-controller="settingsCtrl" ng-init="getTruckTypeCount();">
+<div ng-controller="settingsCtrl" ng-init="getLoadTypeCount();">
     <div>
-        <p class="pull-left name-head">Truck Type</p>
+        <p class="pull-left name-head">Load Type</p>
         <div class="row mt-20">
             <div class="col-sm-7 pull-right pall-zero">
                 <div class="col-sm-5">
@@ -17,54 +17,41 @@
                     </select>
                 </div>
                 <div class="col-sm-2">
-                    <button class="btn btn-primary" ng-click="saveTruckType()">Add New</button>
+                    <button class="btn btn-primary" ng-click="saveLoadType()">Add New</button>
                 </div>
             </div>
         </div>
     </div>
     <div class="clearfix"></div>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center" ng-table="truckTypeParams">
-        <tr ng-repeat="plan in currentPageOftruckTypes">
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center" ng-table="loadTypeParams">
+        <tr ng-repeat="type in currentPageOfLoadTypes">
             <td><input type="checkbox"/></td>
             <td data-title="'S No'">{{$index+1}}</td>
-            <td data-title="'Title'" sortable="'title'" class="clickable-item">{{plan.title}}</td>
-            <td data-title="'Tonnage'" sortable="'tonnes'" class="clickable-item">{{plan.tonnes}}
-            </td>
-            <td data-title="'Mileage'" sortable="'mileage'" class="clickable-item">{{plan.mileage}}</td>
-            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{plan.status}}</td>
+            <td data-title="'Title'" sortable="'title'" class="clickable-item">{{type.title}}</td>
+            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{type.status}}</td>
             <td data-title="'Action'">
-                <a href="#" class="edit_icon" ng-click="editTruckType(plan._id)">
+                <a href="#" ng-click="editLoadType(type._id)" class="edit_icon">
                     <span class="glyphicon glyphicon-pencil"></span>
                 </a>
-                <a href="#" class="delete_icon" ng-click="delTruckType(plan._id)">
+                <a href="#" ng-click="delLoadType(type._id)" class="delete_icon">
                     <span class="glyphicon glyphicon-trash"></span>
                 </a></td>
         </tr>
     </table>
-    <script type="text/ng-template" id="addNewTruckType.html">
-        <div class="modal-header" ng-init="initTruckType()">
-            <h3 class="modal-title" id="modal-title">New Truck Type</h3>
+    <script type="text/ng-template" id="addNewLoadType.html">
+        <div class="modal-header" ng-init="initLoadType()">
+            <h3 class="modal-title" id="modal-title">New Load Type</h3>
             <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
         </div>
         <div class="modal-body" id="modal-body">
             <div class="row">
                 <div class="col-sm-6">
                     <div class="form-group">
-                        <input type="text" class="form-control" ng-model="truckType.title"
+                        <input type="text" class="form-control" ng-model="loadType.title"
                                placeholder="Title *"/>
                     </div>
                 </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <input type="number" class="form-control" ng-model="truckType.tonnes" placeholder="Tonnes*"/>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="form-group">
-                        <input type="number" class="form-control" ng-model="truckType.mileage"
-                               placeholder="Mileage*"/>
-                    </div>
-                </div>
+
                 <div class="col-sm-6">
                     <div class="form-group">
                         <p class="smsenabled">Status</p>
@@ -72,7 +59,7 @@
                             <li>
                                 <div class="radio">
                                     <label class="pl-0">
-                                        <input type="radio" ng-model="truckType.status" ng-value="true" name="status">
+                                        <input type="radio" ng-model="loadType.status" ng-value="true" name="status">
                                         <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                         Enable
                                     </label>
@@ -81,7 +68,7 @@
                             <li>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" ng-model="truckType.status" ng-value="false" name="status">
+                                        <input type="radio" ng-model="loadType.status" ng-value="false" name="status">
                                         <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                         Disable
                                     </label>
@@ -91,7 +78,7 @@
                     </div>
                 </div>
                 <div class="col-sm-12 text-center">
-                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addorUpdateTruckType()"/>
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addorUpdateLoadType()"/>
                 </div>
             </div>
         </div>

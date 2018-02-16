@@ -153,9 +153,24 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/settings/gpsSettings.html',
         data: {activeTab: 'settings'}
     }).state({
+        name: 'settings.erpSettings',
+        url: '/settings-erp',
+        templateUrl: 'views/partials/admin/settings/erpSettings.html',
+        data: {activeTab: 'settings'}
+    }).state({
         name: 'settings.truckTypes',
         url: '/truckTypes',
         templateUrl: 'views/partials/admin/settings/truckTypes.html',
+        data: {activeTab: 'settings'}
+    }).state({
+        name: 'settings.loadTypes',
+        url: '/loadTypes',
+        templateUrl: 'views/partials/admin/settings/loadTypes.html',
+        data: {activeTab: 'settings'}
+    }).state({
+        name: 'settings.goodsType',
+        url: '/goodsType',
+        templateUrl: 'views/partials/admin/settings/goodsType.html',
         data: {activeTab: 'settings'}
     }).state({
         name: 'notifications',
@@ -230,7 +245,19 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $urlRouterProvider.otherwise('/login');
 });
 
+app.config(['NotificationProvider', '$httpProvider',function (NotificationProvider, $httpProvider) {
+    NotificationProvider.setOptions({
+        delay: 3000,
+        startTop: 150,
+        startRight: 500,
+        verticalSpacing: 20,
+        horizontalSpacing: 20,
+        positionX: 'center',
+        positionY: 'bottom'
+    });
 
+
+}]);
 app.run(function ($transitions, $rootScope) {
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
