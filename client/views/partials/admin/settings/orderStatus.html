@@ -1,0 +1,121 @@
+<div ng-controller="settingsCtrl" ng-init="getOrderStatusCount()">
+    <div>
+        <p class="pull-left name-head">Order Status</p>
+        <div class="row mt-20">
+            <div class="col-sm-7 pull-right pall-zero">
+                <div class="col-sm-5">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <select class="form-control">
+                        <option value="" selected>Select</option>
+                        <option>Enabled</option>
+                        <option>Disabled</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-primary" ng-click="saveOrderStatus()">Add New</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clearfix"></div>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+           ng-table="orderStatusParams">
+        <tr ng-repeat="type in currentPageOfOrderStatus">
+            <td><input type="checkbox"/></td>
+            <td data-title="'S No'">{{$index+1}}</td>
+            <td data-title="'Title'" sortable="'title'" class="clickable-item">{{type.title}}</td>
+            <td data-title="'Release Truck'" sortable="'releaseTruck'" class="clickable-item">{{type.releaseTruck}}</td>
+            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{type.status}}</td>
+            <td data-title="'Action'">
+                <a href="#" ng-click="editOrderStatus(type._id)" class="edit_icon">
+                    <span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="delOrderStatus(type._id)" class="delete_icon">
+                    <span class="glyphicon glyphicon-trash"></span></a></td>
+        </tr>
+        <tr ng-if="!currentPageOfOrderStatus || currentPageOfOrderStatus.length === 0">
+            <td colspan="8">No Order Status exist.</td>
+        </tr>
+    </table>
+    <script type="text/ng-template" id="addNewOrderStatus.html">
+        <div class="modal-header" ng-init="initOrderStatus()">
+            <h3 class="modal-title" id="modal-title">New Order Status</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control" ng-model="orderStatus.title"
+                               placeholder="Title *"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <p class="smsenabled">Release Truck *:</p>
+                        <ul class="list-inline">
+                            <li>
+                                <div class="radio">
+                                    <label class="pl-0">
+                                        <input type="radio" ng-model="orderStatus.releaseTruck" ng-value="true"
+                                               name="releaseTruck">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        Yes
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" ng-model="orderStatus.releaseTruck" ng-value="false"
+                                               name="releaseTruck">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        No
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <p class="smsenabled">Status :</p>
+                        <ul class="list-inline">
+                            <li>
+                                <div class="radio">
+                                    <label class="pl-0">
+                                        <input type="radio" ng-model="orderStatus.status" ng-value="true" name="status">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        Enable
+                                    </label>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="radio">
+                                    <label>
+                                        <input type="radio" ng-model="orderStatus.status" ng-value="false"
+                                               name="status">
+                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                        Disable
+                                    </label>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 text-center">
+                <input type="button" class="btn btn-primary" value="Submit" ng-click="addorUpdateOrderStatus()"/>
+            </div>
+            <div class="clearfix"></div>
+
+        </div>
+    </script>
+</div>
+

@@ -361,6 +361,18 @@ const serviceActions = {
     get_acc_key_pairs:'GET_ACC_KEY_PAIRS',
     get_acc_key_pairs_err:'GET_ACC_KEY_PAIRS_ERR',
     get_contact_info:'GET_CONTACT_INFO',
-    get_contact_info_err:'GET_CONTACT_INFO_ERR'
+    get_contact_info_err:'GET_CONTACT_INFO_ERR',
+    count_order_status_err: 'COUNT_ORDER_STATUS_ERR',
+    count_order_status:'COUNT_ORDER_STATUS',
+    add_order_status_err: 'ADD_ORDER-STATUS-ERR',
+    add_order_status: 'ADD_ORDER-STATUS',
+    get_order_status_err: 'GET_ORDER-STATUS-ERR',
+    get_order_status: 'GET_ORDER-STATUS',
+    get_order_status_details_err: 'GET_ORDER_STATUS_DETAILS_ERR',
+    get_order_status_details: 'GET_ORDER_STATUS_DETAILS',
+    update_order_status_err: 'UPDATE_ORDER_STATUS_ERR',
+    update_order_status: 'UPDATE_ORDER_STATUS',
+    delete_order_status_err: 'DELETE_ORDER_STATUS_ERR',
+    delete_order_status: 'DELETE_ORDER_STATUS'
 };
 module.exports = serviceActions;

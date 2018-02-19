@@ -522,7 +522,7 @@ var loadTypesSchema = mongoose.Schema({
 var orderStatusSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     title: String,
-    releaseTruck:String,
+    releaseTruck:Boolean,
     status: Boolean
 }, {timestamps: String});
 

@@ -173,6 +173,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/settings/goodsType.html',
         data: {activeTab: 'settings'}
     }).state({
+        name: 'settings.orderStatus',
+        url: '/orderStatus',
+        templateUrl: 'views/partials/admin/settings/orderStatus.html',
+        data: {activeTab: 'settings'}
+    }).state({
         name: 'notifications',
         url: '/notifications',
         templateUrl: 'views/partials/admin/notifications/notificationDashboard.html',
