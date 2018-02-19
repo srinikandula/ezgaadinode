@@ -33,5 +33,7 @@ const serviceActions= {
     get_erp_settings_err:'GET_ERP_SETTINGS_ERR',
     update_erp_settings:'UPDATE_ERP_SETTINGS',
     update_erp_settings_err:'UPDATE_ERP_SETTINGS_ERR',
+    remove_operating_route:'REMOVE_OPERATING_ROUTE',
+    add_operating_route:'ADD_OPERATING_ROUTE',
 };
 module.exports=serviceActions;

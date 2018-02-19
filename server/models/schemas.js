@@ -79,9 +79,9 @@ var operatingRoutesSchema = new mongoose.Schema({
         'type': {type: String,default: "Point"},
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
-}, {
-    timestamps: true
-})
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {timestamps: true});
 
 var groupSchema = new mongoose.Schema({
     name: String,

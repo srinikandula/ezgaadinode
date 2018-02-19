@@ -73,14 +73,16 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {accountId: null}
     }).state({
         name: 'services.gpsAccounts',
-        url: '/gpsAccounts',
+        url: '/gpsAccounts/:type',
         templateUrl: 'views/partials/admin/services/gpsAccounts.html',
-        data: {activeTab: 'services'}
+        data: {activeTab: 'services'},
+        params: {type: 'gps'}
     }).state({
         name: 'services.erpAccounts',
-        url: '/erpAccounts',
+        url: '/erpAccounts/:type',
         templateUrl: 'views/partials/admin/services/erpAccounts.html',
-        data: {activeTab: 'services'}
+        data: {activeTab: 'services'},
+        params: {type: 'erp'}
     }).state({
         name: 'services.gpsDevices',
         url: '/gpsDevices',

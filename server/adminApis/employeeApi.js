@@ -64,7 +64,7 @@ Employees.prototype.getFranchise = function (req, callback) {
         if (!params.franchise) {
             condition = {}
         } else {
-            condition = {$or: [{account: {$regex:'.*' + params.franchise + '.*'}},{status: params.franchise}]}
+            condition = {$or: [{account: {$regex:'.*' + params.franchise + '.*'}, status: params.franchise}]}
         }
         async.parallel({
             Franchises: function (franchisesCallback) {

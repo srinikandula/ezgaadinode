@@ -8,6 +8,7 @@ var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/adminConstants');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var keysColl = require('./../models/schemas').keysColl;
+var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -20,7 +21,13 @@ Accounts.prototype.totalAccounts = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountsColl.count({gpsEnabled: true}, function (err, doc) {
+    var query = {};
+    if(req.params.type === 'gps') {
+        query = {gpsEnabled: true};
+    } else {
+        query = {erpEnabled: true}
+    }
+    AccountsColl.count(query, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting count');
             analyticsService.create(req, serviceActions.count_accounts_err, {
@@ -49,7 +56,7 @@ Accounts.prototype.getAccounts = function (req, callback) {
         status: false,
         messages: []
     };
-    var params = req.params;
+    var params = req.query;
 
     if (!params.page) {
         params.page = 1;
@@ -58,11 +65,16 @@ Accounts.prototype.getAccounts = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    var query = {gpsEnabled: true};
+    var query = {};
+    if(params.type === 'gps') {
+        query = {gpsEnabled: true};
+    } else {
+        query = {erpEnabled: true}
+    }
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
-                .find(query)
+                .find(query).populate('createdBy', {userName: 1})
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
@@ -109,12 +121,87 @@ Accounts.prototype.getAccounts = function (req, callback) {
     });
 };
 
+Accounts.prototype.checkAvailablity = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var query = {userName: {$regex: "/\b"+req.params.userName+"\b/i"}, _id: {$nin:[req.jwt.id]}}; //{$or: [{userName: new RegExp(req.params.userName, "i"), _id: {$nin:[req.jwt.id]}}]}
+    AccountsColl.findOne(query, function (erruser, user) {
+        if(erruser) {
+            retObj.messages.push('Error checking availability');
+            analyticsService.create(req, serviceActions.add_account_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if(user) {
+            retObj.messages.push('Username already exists');
+            analyticsService.create(req, serviceActions.add_account_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Username available');
+            analyticsService.create(req, serviceActions.add_account_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+};
+
+Accounts.prototype.deleteRoute = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    // console.log(req.params);
+    OperatingRoutesColl.remove({_id: req.params.id}, function (err, removed) {
+        if(err) {
+            retObj.messages.push('unable to remove operating route');
+            analyticsService.create(req, serviceActions.remove_operating_route, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('operating route removed');
+            analyticsService.create(req, serviceActions.remove_operating_route, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    });
+};
+
 Accounts.prototype.addAccount = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var accountInfo = req.body;
+    var accountInfo = req.body.account;
+    var routes = req.body.routes;
     var query = {};
     if (!accountInfo._id) {
         query = {_id: mongoose.Types.ObjectId()};
@@ -150,28 +237,29 @@ Accounts.prototype.addAccount = function (req, callback) {
         callback(retObj);
     }
     else {
-        AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
-            if (err) {
-                retObj.messages.push('Error fetching account');
-                analyticsService.create(req, serviceActions.add_account_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (account) {
-                retObj.messages.push('Account with same userName already exists');
-                analyticsService.create(req, serviceActions.add_account_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
+        // AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
+        //     console.log(!!account, accountInfo._id, !!accountInfo._id, accountInfo._id !== account._id.toString());
+        //     if (err) {
+        //         retObj.messages.push('Error fetching account');
+        //         analyticsService.create(req, serviceActions.add_account_err, {
+        //             body: JSON.stringify(req.body),
+        //             accountId: req.jwt.id,
+        //             success: false,
+        //             messages: retObj.messages
+        //         }, function (response) {
+        //         });
+        //         callback(retObj);
+        //     } else if (account && accountInfo._id && accountInfo._id !== account._id.toString()) {
+        //         retObj.messages.push('Account with same userName already exists');
+        //         analyticsService.create(req, serviceActions.add_account_err, {
+        //             body: JSON.stringify(req.body),
+        //             accountId: req.jwt.id,
+        //             success: false,
+        //             messages: retObj.messages
+        //         }, function (response) {
+        //         });
+        //         callback(retObj);
+        //     } else {
                 AccountsColl.update(query, accountInfo, {upsert: true}, function (errSaved, saved) {
                     if(errSaved) {
                         console.log(err);
@@ -185,19 +273,52 @@ Accounts.prototype.addAccount = function (req, callback) {
                         });
                         callback(retObj);
                     } else {
-                        retObj.status = true;
-                        retObj.messages.push('Success');
-                        analyticsService.create(req, serviceActions.add_account, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: true
-                        }, function (response) {
+                        async.map(routes, function (route, asynCallback) {
+                            var routeQuery = {};
+                            if(route._id) {
+                                routeQuery._id = route._id;
+                            } else {
+                                routeQuery = {_id: mongoose.Types.ObjectId()};
+                                route.createdBy = req.jwt.id;
+                            }
+                            route.updatedBy = req.jwt.id;
+                            delete route.__v;
+                            OperatingRoutesColl.update(routeQuery, route, {upsert: true}, function (errroute, routeSaved) {
+                                if(errroute) {
+                                    console.log(errroute);
+                                    retObj.messages.push('Error adding/updating route');
+                                    asynCallback(errroute);
+                                } else {
+                                    asynCallback(null, 'saved');
+                                }
+                            });
+                        }, function (errasync, async) {
+                            if(errasync) {
+                                retObj.messages.push('Error adding/updating routes');
+                                analyticsService.create(req, serviceActions.add_account_err, {
+                                    body: JSON.stringify(req.body),
+                                    accountId: req.jwt.id,
+                                    success: false,
+                                    messages: retObj.messages
+                                }, function (response) {
+                                });
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages.push('Success');
+                                analyticsService.create(req, serviceActions.add_account, {
+                                    body: JSON.stringify(req.body),
+                                    accountId: req.jwt.id,
+                                    success: true
+                                }, function (response) {
+                                });
+                                callback(retObj);
+                            }
                         });
-                        callback(retObj);
                     }
                 });
-            }
-        });
+            // }
+        // });
     }
 };
 
@@ -221,35 +342,50 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
         });
         callback(retObj);
     } else {
-        AccountsColl.findOne({"_id": ObjectId(accountId)}, function (err, account) {
-            if (err) {
-                retObj.messages.push('Error retrieving account');
+        async.parallel({
+            accountInfo: function (accountsInfoCallback) {
+                AccountsColl.findOne({"_id": ObjectId(accountId)}, function (err, account) {
+                    if(err) {
+                        retObj.messages.push('Error retrieving account');
+                        accountsInfoCallback(err);
+                    } else if(account) {
+                        retObj.messages.push('Successfully retrieved account');
+                        accountsInfoCallback(null, account);
+                    } else {
+                        retObj.messages.push('Account with Id doesn\'t exist');
+                        accountsInfoCallback('Account with Id doesn\'t exist');
+                    }
+                });
+            },
+            operatingRoutes: function (routesCallback) {
+                OperatingRoutesColl.find({accountId: ObjectId(accountId)}, function (errroutes, routes) {
+                    if(errroutes) {
+                        retObj.messages.push('Error retrieving routes');
+                        routesCallback(errroutes);
+                    } else {
+                        retObj.messages.push('Successfully retrieved routes');
+                        routesCallback(null, routes);
+                    }
+                });
+            }
+        }, function (errdetails, accountDetails) {
+            if(errdetails) {
                 analyticsService.create(req, serviceActions.get_account_details_err, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (account) {
-                retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.accountDetails = account;
-                analyticsService.create(req, serviceActions.get_account_details, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: true
                 }, function (response) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages.push('Account with Id doesn\'t exist');
-                analyticsService.create(req, serviceActions.get_account_details_err, {
+                retObj.status = true;
+                retObj.accountDetails = accountDetails.accountInfo;
+                retObj.accountRoutes = accountDetails.operatingRoutes;
+                analyticsService.create(req, serviceActions.get_account_details, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
+                    success: true
                 }, function (response) {
                 });
                 callback(retObj);

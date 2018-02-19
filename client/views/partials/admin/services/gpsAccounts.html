@@ -33,14 +33,17 @@
             <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
                 {{account.createdAt | date:'yyyy-MM-dd'}}
             </td>
+            <td data-title="'Sold By'" sortable="'createdBy.userName'" class="clickable-item">
+                {{account.createdBy.userName | date:'yyyy-MM-dd'}}
+            </td>
             <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
                 {{account.erpEnabled}}
             </td>
             <td data-title="'LOAD'" sortable="'loadEnabled'" class="clickable-item">
                 {{account.loadEnabled}}
             </td>
-            <td data-title="'Lead Status'" sortable="'status'" class="clickable-item">
-                Initiated
+            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                {{account.isActive}}
             </td>
             <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
                 <a href="#" ui-sref="services.addNewAccount({accountId: account._id})">Edit /</a>
