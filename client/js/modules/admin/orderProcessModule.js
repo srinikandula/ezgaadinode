@@ -64,7 +64,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','custom
                 insuranceAvailable: ""
             }]
         };
-        SettingServices.getTruckTypes(function (success) {
+        SettingServices.getTruckTypes({},function (success) {
             if(success.data.status){
                 $scope.truckTypesList=success.data.data;
             }else{
@@ -74,7 +74,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','custom
         },function (error) {
 
         });
-        SettingServices.getGoodsTypes(function (success) {
+        SettingServices.getGoodsTypes({},function (success) {
             if(success.data.status){
                 $scope.goodsTypesList=success.data.data;
             }else{

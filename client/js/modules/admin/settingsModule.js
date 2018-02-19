@@ -1,4 +1,4 @@
-app.factory('SettingServices', ['$http', function ($http) {
+app.factory('SettingServices', ['$http', function ($http)   {
     return {
         addPlan: function (params, success, error) {
             $http({
@@ -170,6 +170,23 @@ app.factory('SettingServices', ['$http', function ($http) {
 
 
 app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTableParams', 'Notification', function ($scope, $uibModal, SettingServices, NgTableParams, Notification) {
+
+// Check All
+
+    $scope.checkAll=function () {
+        console.log('calll',$scope.checkAllStatus)
+
+        $scope.currentPageOfgpsPlans.forEach(function (plan) {
+            if($scope.checkAllStatus){
+
+                plan.checkStatus=true;
+
+            }else{
+                plan.checkStatus=false;
+
+            }
+        })
+    };
 
 // GPS and ERP Renewal Plans(Gettings Plans, pagenation, Sorting, Deleting)
 

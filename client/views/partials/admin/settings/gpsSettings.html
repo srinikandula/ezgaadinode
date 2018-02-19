@@ -23,10 +23,14 @@
         </div>
     </div>
     <div class="clearfix"></div>
+    <input type="checkbox" ng-change="checkAll()" ng-model="checkAllStatus" checked="checked" />
     <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
-           ng-table="settingParams">
+           ng-table="settingParams" >
+
         <tr ng-repeat="plan in currentPageOfgpsPlans">
-            <td><input type="checkbox"/></td>
+            <td header="'checkbox.html'">
+                <input type="checkbox" ng-model="plan.checkStatus" checked="checked" />
+            </td>
             <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Plan Name'" sortable="'planName'" class="clickable-item">{{plan.planName}}</td>
             <td data-title="'Duration in Months'" sortable="'durationInMonths'" class="clickable-item">
@@ -108,5 +112,9 @@
             </div>
         </div>
     </script>
+
 </div>
 
+<script type="text/ng-template" id="checkbox.html">
+    <input type="checkbox"  ng-change="checkAll()" ng-model="checkAllStatus" checked="checked" />
+</script>

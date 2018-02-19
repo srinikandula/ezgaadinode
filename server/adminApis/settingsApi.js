@@ -8,6 +8,7 @@ var erpGpsPlansColl = require('../models/schemas').erpGpsPlansColl;
 var TrucksTypesColl = require("../models/schemas").TrucksTypesColl;
 var LoadTypesColl = require("../models/schemas").LoadTypesColl;
 var GoodsTypesColl = require("../models/schemas").GoodsTypesColl;
+var orderStatusColl = require("../models/schemas").OrderStatusColl;
 var Utils = require("../apis/utils");
 
 var Settings = function () {
@@ -1334,4 +1335,59 @@ Settings.prototype.totalLoadsTypes = function (req, callback) {
         }
     })
 };
+
+
+
+
+/*author : Naresh d*/
+Settings.prototype.getOrderStatus = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    TrucksTypesColl.find({}).sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .exec(function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_truck_types_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.messages = "Success";
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_truck_types, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages = "No truck types found";
+                analyticsService.create(req, serviceActions.get_truck_types_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+};
+
+
+
 module.exports = new Settings();

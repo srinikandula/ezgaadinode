@@ -41,6 +41,9 @@
                     <span class="glyphicon glyphicon-trash"></span>
                 </a></td>
         </tr>
+        <tr ng-if="!currentPageOfgpsPlans || currentPageOfgpsPlans.length === 0">
+            <td colspan="8">No ERP Plans exist.</td>
+        </tr>
     </table>
     <script type="text/ng-template" id="addNewGPSandERP.html">
         <div ng-init="initGPSandERPPlan();">

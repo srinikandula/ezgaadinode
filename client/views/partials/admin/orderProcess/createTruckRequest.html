@@ -21,17 +21,19 @@
                     </div>
                     <div class="col-xs-12 col-sm-6"
                          ng-show=" truckRequest.customerType=='Registered' || truckRequest.customerType=='' ">
-                        <div class="form-group select-box col-xs-6">
-
+                        <div class="form-group select-box">
                             <ui-select ng-model="truckRequest.customer" theme="select2"
                                        style="min-width: 390px;"
                                        title="Customer *" append-to-body="true">
-                                <ui-select-match placeholder="Customer *" class="form-control custom-form-control">
+                                    <ui-select-match placeholder="Customer *" class="form-control custom-form-control">
                                     {{$select.selected.userName || userName}}
                                 </ui-select-match>
                                 <ui-select-choices
                                         repeat="truck in truckOwnersList | propsFilter: {userName: $select.search}">
-                                    <div ng-bind-html="truck.userName | highlight: $select.search"></div>
+                                   <b> <div ng-bind-html="truck.userName | highlight: $select.search"></div></b>
+                                    <small>
+                                        Mobile: {{truck.contactPhone || '---'}}
+                                    </small>
                                 </ui-select-choices>
                             </ui-select>
 
@@ -120,9 +122,10 @@
                     </div>
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
-                            <select ng-options="g.type as g.type for g in goodsTypesList" class="form-control"
+                            <select class="form-control"
                                     ng-model="truck.goodsType">
                                 <option value="">Goods type</option>
+                                <option ng-repeat="goodsType in goodsTypesList">{{goodsType.title}}</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -133,10 +136,11 @@
                     </div>
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
-
-                            <select ng-options="t.title as t.title for t in truckTypesList" class="form-control"
+                            <select  class="form-control"
                                     ng-model="truck.truckType">
                                 <option value="">Truck type</option>
+                                <option ng-repeat="truckTypes in truckTypesList">{{truckTypes.title}}/{{truckTypes.tonnes}}Tons</option>
+
                             </select>
                         </div>
                         <div class="form-group">
