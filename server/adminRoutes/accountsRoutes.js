@@ -3,7 +3,7 @@ var AuthRouter = express.Router();
 var Accounts = require('../adminApis/accountsApi');
 var logger = require('./../winston/logger')(module);
 
-AuthRouter.get('/totalAccounts', function (req, res) {
+AuthRouter.get('/count/:type', function (req, res) {
     Accounts.totalAccounts(req, function (result) {
         res.send(result);
     });
@@ -15,13 +15,25 @@ AuthRouter.get('/getAccounts', function (req, res) {
     });
 });
 
+AuthRouter.get('/checkAvailablity/:userName', function (req, res) {
+    Accounts.checkAvailablity(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/deleteRoute/:id', function (req, res) {
+    Accounts.deleteRoute(req, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.post('/addAccount', function (req, res) {
     Accounts.addAccount(req, function (result) {
         res.json(result);
     });
 });
 
-AuthRouter.get('/getAccountDetails', function (req, res) {
+AuthRouter.get('/getAccountDetails/:accountId', function (req, res) {
     Accounts.getAccountDetails(req, function (result) {
         res.json(result);
     });

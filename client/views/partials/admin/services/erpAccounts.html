@@ -1,136 +1,57 @@
-<ul class="list-inline title-ul">
-    <li class="pull-left name-head">ERP Accounts</li>
+<div ng-controller="accountsListCrtl">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">ERP Accounts</li>
 
-    <li class="pull-right col-xs-2">
-        <select class="form-control">
-            <option>Select</option>
-            <option>Trucks</option>
-            <option>Non Trucks</option>
-            <option>Both</option>
-            <option>SMS Enabled</option>
-            <option>SMS Disabled</option>
-            <option>Status Enabled</option>
-            <option>Status Disbaled</option>
-        </select>
-    </li>
-    <div class="clearfix"></div>
-</ul>
-<table class="table table-bordered table-responsive mt-20 text-center">
-    <thead>
-    <tr>
-        <th>S No</th>
-        <th>ID</th>
-        <th>Customer Name</th>
-        <th>Mobile</th>
-        <th>Reg Date</th>
-        <th>Sold by</th>
-        <th>ERP</th>
-        <th>Payment</th>
-        <th>Plan Expiry</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Sai</td>
-        <td>Yes</td>
-        <td>
+        <li class="pull-right col-xs-2">
             <select class="form-control">
-                <option>Pending</option>
-                <option>Collected</option>
-                <option>Deposited</option>
-                <option>Confirmed</option>
+                <option>Select</option>
+                <option>Trucks</option>
+                <option>Non Trucks</option>
+                <option>Both</option>
+                <option>SMS Enabled</option>
+                <option>SMS Disabled</option>
+                <option>Status Enabled</option>
+                <option>Status Disbaled</option>
             </select>
-        </td>
-        <td>12/05/2019</td>
-        <td>Enable</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Sai</td>
-        <td>Yes</td>
-        <td>
-            <select class="form-control">
-                <option>Pending</option>
-                <option>Collected</option>
-                <option>Deposited</option>
-                <option>Confirmed</option>
-            </select>
-        </td>
-        <td>12/05/2019</td>
-        <td>Enable</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Sai</td>
-        <td>Yes</td>
-        <td>
-            <select class="form-control">
-                <option>Pending</option>
-                <option>Collected</option>
-                <option>Deposited</option>
-                <option>Confirmed</option>
-            </select>
-        </td>
-        <td>12/05/2019</td>
-        <td>Enable</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Sai</td>
-        <td>Yes</td>
-        <td>
-            <select class="form-control">
-                <option>Pending</option>
-                <option>Collected</option>
-                <option>Deposited</option>
-                <option>Confirmed</option>
-            </select>
-        </td>
-        <td>12/05/2019</td>
-        <td>Enable</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Sai</td>
-        <td>Yes</td>
-        <td>
-            <select class="form-control">
-                <option>Pending</option>
-                <option>Collected</option>
-                <option>Deposited</option>
-                <option>Confirmed</option>
-            </select>
-        </td>
-        <td>12/05/2019</td>
-        <td>Enable</td>
-        <td>Edit/Delete</td>
-    </tr>
-    </tbody>
-</table>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="accountParams">
+        <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
+            <td data-title="'ID'" sortable="'id'" class="clickable-item">
+                {{account.id}}
+            </td>
+            <td data-title="'Customer Name'" sortable="'contactName'" class="clickable-item">
+                {{account.contactName}}
+            </td>
+            <td data-title="'type'" sortable="'type'" class="clickable-item">
+                {{account.type}}
+            </td>
+            <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item">
+                {{account.contactPhone}}
+            </td>
+            <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
+                {{account.createdAt | date:'yyyy-MM-dd'}}
+            </td>
+            <td data-title="'Sold By'" sortable="'createdBy.userName'" class="clickable-item">
+                {{account.createdBy.userName | date:'yyyy-MM-dd'}}
+            </td>
+            <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
+                {{account.erpEnabled}}
+            </td>
+            <td data-title="'LOAD'" sortable="'loadEnabled'" class="clickable-item">
+                {{account.loadEnabled}}
+            </td>
+            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                {{account.isActive}}
+            </td>
+            <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
+                <a href="#" ui-sref="services.addNewAccount({accountId: account._id})">Edit /</a>
+                <a href="#" ng-click="deleteAccount($index)">Delete</a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfDevices || currentPageOfDevices.length === 0">
+            <td colspan="8">No drivers Records exist.</td>
+        </tr>
+    </table>
+</div>

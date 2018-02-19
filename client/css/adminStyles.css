@@ -393,6 +393,10 @@ footer {
 
 .account-rotues span {
     display: inline-block;
+    /*position: absolute;*/
+    /*right: 0;*/
+    /*bottom: 17px;*/
+    /*font-size: 20px;*/
 }
 
 .plans li {

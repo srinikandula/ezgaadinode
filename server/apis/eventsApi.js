@@ -287,6 +287,7 @@ Events.prototype.getAccountData = function (request, callback) {
                 var AccountData = retObj.results[i];
                 if (!AccountData.contactPhone || AccountData.contactPhone.trim().length == 0 || isNaN(AccountData.contactPhone)) {
                     delete AccountData.contactPhone;
+                    AccountData.gpsEnabled = true;
                 }
                 EventData.createAccountData(AccountData)
             }

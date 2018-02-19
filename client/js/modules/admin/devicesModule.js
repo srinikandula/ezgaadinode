@@ -78,7 +78,7 @@ app.factory('DeviceService', function ($http) {
         },
         getEmployees: function (success, error) {
             $http({
-                url: '/v1/cpanel/admin/getEmployees',
+                url: '/v1/admin/getEmployees',
                 method: "GET"
             }).then(success, error)
         }

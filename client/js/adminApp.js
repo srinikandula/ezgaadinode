@@ -1,4 +1,4 @@
-var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies','ui.select','angularjs-dropdown-multiselect','ngSanitize']);
+var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies','ui.select','angularjs-dropdown-multiselect', 'ngSanitize']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
@@ -67,19 +67,22 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'services'}
     }).state({
         name: 'services.addNewAccount',
-        url: '/addNewAccount',
+        url: '/addNewAccount/:accountId',
         templateUrl: 'views/partials/admin/services/addNewAccount.html',
-        data: {activeTab: 'services'}
+        data: {activeTab: 'services'},
+        params: {accountId: null}
     }).state({
         name: 'services.gpsAccounts',
-        url: '/gpsAccounts',
+        url: '/gpsAccounts/:type',
         templateUrl: 'views/partials/admin/services/gpsAccounts.html',
-        data: {activeTab: 'services'}
+        data: {activeTab: 'services'},
+        params: {type: 'gps'}
     }).state({
         name: 'services.erpAccounts',
-        url: '/erpAccounts',
+        url: '/erpAccounts/:type',
         templateUrl: 'views/partials/admin/services/erpAccounts.html',
-        data: {activeTab: 'services'}
+        data: {activeTab: 'services'},
+        params: {type: 'erp'}
     }).state({
         name: 'services.gpsDevices',
         url: '/gpsDevices',
@@ -89,12 +92,13 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         name: 'services.editGpsDevice',
         url: '/editGpsDevice/:device',
         templateUrl: 'views/partials/admin/services/editGpsDevice.html',
-        data: {activeTab: 'services', device: false}
+        data: {activeTab: 'services'},
+        params: {device: null}
     }).state({
         name: 'services.addDevice',
         url: '/addDevice',
         templateUrl: 'views/partials/admin/services/addDevice.html',
-        data: {activeTab: 'services', device: false}
+        data: {activeTab: 'services'}
     }).state({
         name: 'services.transferDevice',
         url: '/transferDevice',
@@ -140,8 +144,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         url: '/editTruckRequest/:_id',
         templateUrl: 'views/partials/admin/orderProcess/editTruckRequest.html',
         data: {activeTab: 'orderprocess'},
-        params: { _id: null },
-        data: {activeTab: 'orderprocess'}
+        params: { _id: null }
     }).state({
         name: 'settings',
         url: '/settings',

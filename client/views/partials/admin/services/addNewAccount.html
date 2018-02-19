@@ -1,4 +1,4 @@
-<div class="col-xs-12 newCust" ng-controller="customerCtrl">
+<div class="col-xs-12 newCust" ng-controller="accountsAddEditCrtl">
     <h4>GPS / ERP Account</h4>
     <div class="col-xs-12">
 
@@ -11,35 +11,36 @@
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="accountId"
-                                   placeholder="Account Id*"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Username*"
+                                   ng-model="accountDetails.userName" ng-change="checkAvailablity()"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="fullName"
-                                   placeholder="Full Name*"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Full Name*"
+                                   ng-model="accountDetails.contactName"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="mobile"
-                                   placeholder="Mobile*"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Mobile*"
+                                   ng-model="accountDetails.contactPhone"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <select class="form-control custom-form-control">
-                                <option>Truck Owner</option>
+                            <select class="form-control custom-form-control" ng-model="accountDetails.type">
+                                <option value="" selected>Type*</option>
+                                <option>TruckOwner</option>
                                 <option>Manufacturer</option>
-                                <option>Commission Agent</option>
+                                <option>CommissionAgent</option>
                                 <option>Transporter</option>
                                 <option>GPS</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="password"
-                                   placeholder="Password*"/>
+                            <input type="password" class="form-control custom-form-control" placeholder="Password*"
+                                   ng-model="accountDetails.password"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="email"
-                                   placeholder="Email"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Email"
+                                   ng-model="accountDetails.email"/>
                         </div>
                     </div>
                 </div>
@@ -53,25 +54,26 @@
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="companyName"
-                                   placeholder="Company Name"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Company Name"
+                                   ng-model="accountDetails.companyName"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="address"
-                                   placeholder="Address"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Address"
+                                   ng-model="accountDetails.contactAddress"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="city" placeholder="City"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="City"
+                                   ng-model="accountDetails.city"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="state"
-                                   placeholder="State"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="State"
+                                   ng-model="accountDetails.state"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="pincode"
-                                   placeholder="Pincode"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Pincode"
+                                   ng-model="accountDetails.pincode"/>
                         </div>
                     </div>
                 </div>
@@ -89,7 +91,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="">
+                                            <input type="checkbox" value="" ng-model="accountDetails.gpsEnabled">
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             ERP
                                         </label>
@@ -98,7 +100,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="">
+                                            <input type="checkbox" value="" ng-model="accountDetails.erpEnabled">
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             GPS
                                         </label>
@@ -107,7 +109,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="">
+                                            <input type="checkbox" value="" ng-model="accountDetails.loadEnabled" disabled>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             LOAD
                                         </label>
@@ -117,7 +119,7 @@
                         </div>
                         <div class="form-group">
                             <select class="form-control custom-form-control">
-                                <option>Vehicle Type*</option>
+                                <option value="" selected>Vehicle Type*</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -126,18 +128,18 @@
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="sms">
+                                            <input type="radio" name="sms" ng-value="true" ng-model="accountDetails.smsEnabled">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            ERP
+                                            Enable
                                         </label>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="sms">
+                                            <input type="radio" name="sms" ng-value="false" ng-model="accountDetails.smsEnabled">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            GPS
+                                            Disable
                                         </label>
                                     </div>
                                 </li>
@@ -149,18 +151,18 @@
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="active">
+                                            <input type="radio" name="active" ng-value="true" ng-model="accountDetails.isActive">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            ERP
+                                            Enable
                                         </label>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="active">
+                                            <input type="radio" name="active" ng-value="false" ng-model="accountDetails.isActive">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            GPS
+                                            Disable
                                         </label>
                                     </div>
                                 </li>
@@ -169,17 +171,37 @@
 
                     </div>
                     <div class="col-xs-12 col-sm-6 account-rotues">
+                        <div class="row">
+                            <p>Operating Routes</p>
+                            <a href="#" ng-click="addRoute()"><i class="fa fa-plus-square" aria-hidden="true"></i></a>
+                            <!--<span><i class="fa fa-plus-minus" aria-hidden="true" ng-show="accountDetails.operatingRoutes.length"></i></span>-->
+                        </div>
+                        <div class="clearfix"></div>
+                        <div ng-repeat="route in operatingRoutes">
+                            <div class="form-group col-xs-5">
+                                <input id="{{$index}}s" type="text" class="form-control" placeholder="Source" ng-model="route.sourceAddress" ng-change="getLonLat($index, 'source')"/>
+                            </div>
+                            <div class="form-group col-xs-5">
+                                <input id="{{$index}}d" type="text" class="form-control" placeholder="Destination" ng-model="route.destinationAddress" ng-change="getLonLat($index, 'destination')"/>
+                            </div>
+                            <!--<div class="form-group col-xs-1">-->
+                                <!--<a href="#" ng-click="addRoute()"><i class="fa fa-plus-square" aria-hidden="true" ng-show="$index === accountDetails.operatingRoutes.length-1"></i></a>-->
+                            <!--</div>-->
+                            <div class="form-group col-xs-1">
+                                <a href="#" ng-click="deleteRoute($index)"><i class="fa fa-minus-square" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--<div class="col-xs-12 col-sm-6 account-rotues">
                         <p>Operating Routes</p>
                         <span><i class="fa fa-plus-square" aria-hidden="true"></i></span>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="source"
-                                   placeholder="Source"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Source"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="destination"
-                                   placeholder="Destination"/>
+                            <input type="text" class="form-control custom-form-control" placeholder="Destination"/>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
 
             </div>
@@ -248,9 +270,18 @@
             </div>
         </uib-accordion>
 
+        <div class="col-sm-4 col-xs-push-4 margin-top-20">
+            <div class="alert alert-danger" role="alert" ng-show="accountDetails.errors.length">
+                <!--<strong>{{truck.error}}</strong>-->
+                <ul>
+                    <li ng-repeat="error in accountDetails.errors">{{error}}</li>
+                </ul>
+            </div>
+        </div>
+
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ui-sref="services.gpsAccounts">Cancel</a>
-            <a href="#" class="btn btn-primary">Submit</a>
+            <a href="#" class="btn btn-primary" ng-click="addOrUpdateAccount()">Submit</a>
 
         </div>
     </div>
