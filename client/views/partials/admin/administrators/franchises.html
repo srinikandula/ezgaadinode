@@ -43,9 +43,9 @@
             <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
                 {{franchise.status?'Enabled':'Disabled'}}
             </td>
-            <td data-title="'Edit/Delete'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="admin.addUpdateFranchise({franchiseId: franchise._id})">Edit</a> /
-                <a href="#" ng-click="deleteFranchise($index)">Delete</a>
+            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
+                <a href="#" ui-sref="admin.addUpdateFranchise({franchiseId: franchise._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="deleteFranchise($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
         <tr ng-if="!currentPageOfFranchises || currentPageOfFranchises.length === 0">

@@ -46,8 +46,8 @@
                 {{employee.isActive?'Enabled':'Disabled'}}
             </td>
             <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="admin.addUpdateEmployee({employeeId: employee._id})">Edit</a> /
-                <a href="#" ng-click="deleteEmployee($index)">Delete</a>
+                <a href="#" ui-sref="admin.addUpdateEmployee({employeeId: employee._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="deleteEmployee($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
         <tr ng-if="!currentPageOfEmployees || currentPageOfEmployees.length === 0">
