@@ -1,4 +1,4 @@
-app.factory('SettingServices', ['$http', function ($http) {
+app.factory('SettingServices', ['$http', function ($http)   {
     return {
         addPlan: function (params, success, error) {
             $http({
@@ -164,12 +164,71 @@ app.factory('SettingServices', ['$http', function ($http) {
                 url: '/v1/cpanel/settings/totalGoodsTypes',
                 method: "GET",
             }).then(success, error)
-        }
+        },
+        addOrderStatus: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/addOrderStatus',
+                method: "POST",
+                data: params
+            }).then(success, error)
+        },
+        getOrderStatus: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getOrderStatus',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        totalOrderStatus: function (success, error) {
+            $http({
+                url: '/v1/cpanel/settings/totalOrderStatus',
+                method: "GET",
+            }).then(success, error)
+        },
+        getOrderStatusDetails: function (orderId, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getOrderStatusDetails',
+                method: "GET",
+                params: {_id: orderId}
+            }).then(success, error)
+        },
+        updateOrderStatus: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/updateOrderStatus',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
+        deleteOrderStatus: function (orderId, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/deleteOrderStatus',
+                method: "DELETE",
+                params: {_id: orderId}
+            }).then(success, error)
+        },
+
     }
 }]);
 
 
 app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTableParams', 'Notification', function ($scope, $uibModal, SettingServices, NgTableParams, Notification) {
+
+// Check All
+
+    $scope.checkAll=function () {
+        console.log('calll',$scope.checkAllStatus)
+
+        $scope.currentPageOfgpsPlans.forEach(function (plan) {
+            if($scope.checkAllStatus){
+
+                plan.checkStatus=true;
+
+            }else{
+                plan.checkStatus=false;
+
+            }
+        })
+    };
 
 // GPS and ERP Renewal Plans(Gettings Plans, pagenation, Sorting, Deleting)
 
@@ -639,6 +698,118 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
         });
     };
 
+// Order Status (Getting order status, pagenation, Sorting, Deleting)
+
+    $scope.saveOrderStatus = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewOrderStatus.html',
+            controller: 'settingsModalCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {}
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getOrderStatusCount();
+        }, function () {
+        });
+    };
+    $scope.editOrderStatus = function (truckId) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewOrderStatus.html',
+            controller: 'settingsModalCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {data: truckId}
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getOrderStatusCount();
+        }, function () {
+        });
+    };
+    $scope.getOrderStatusCount = function () {
+        SettingServices.totalOrderStatus(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.initOrderStatus();
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    var orderStatusTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting()
+        };
+        SettingServices.getOrderStatus(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfOrderStatus = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+    $scope.initOrderStatus = function () {
+        $scope.orderStatusParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                orderStatusTableData(params);
+            }
+        });
+    };
+    $scope.delOrderStatus = function (goodsId) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                SettingServices.deleteOrderStatus(goodsId, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.getOrderStatusCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    };
 
 }]);
 
@@ -946,6 +1117,85 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
             }
             else {
                 SettingServices.addGoodsType(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({ status: true, message: success.data.message });
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (error) {
+
+                })
+            }
+
+        }
+    };
+
+// Order Status adding and Updating
+
+    function orderStatusAddFun() {
+        $scope.orderStatus = {
+            title: '',
+            releaseTruck:undefined,
+            status: undefined,
+            errorMessage: []
+        };
+    }
+    $scope.initOrderStatus = function () {
+        if (modelData.data) {
+            SettingServices.getOrderStatusDetails(modelData.data, function (success) {
+                if (success.data.status) {
+                    $scope.orderStatus = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        } else {
+            goodsTypeAddFun();
+        }
+    };
+    $scope.addorUpdateOrderStatus = function () {
+        var params = $scope.orderStatus;
+        params.errorMessage = [];
+        if (!params.title) {
+            params.errorMessage.push('Enter your Title');
+        }
+        if (params.status === undefined) {
+            params.errorMessage.push('Please select Release Truck');
+        }
+        if (params.status === undefined) {
+            params.errorMessage.push('Please select status');
+        }
+        if (params.errorMessage.length > 0) {
+            params.errorMessage.forEach(function (message) {
+                Notification.error(message);
+            });
+            loadTypeAddFun();
+        } else {
+            if (params._id) {
+                SettingServices.updateOrderStatus(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                       $uibModalInstance.close({ status: true, message: success.data.message });
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+            else {
+                SettingServices.addOrderStatus(params, function (success) {
                     if (success.data.status) {
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);

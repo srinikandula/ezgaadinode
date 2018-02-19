@@ -227,6 +227,7 @@ function saveTruckRequest(req, callback) {
         })
     }, function (err) {
         if (err) {
+            console.log("err", err);
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.add_truck_request_err, {
                 body: JSON.stringify(req.body),

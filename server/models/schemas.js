@@ -519,6 +519,13 @@ var loadTypesSchema = mongoose.Schema({
     status: Boolean
 }, {timestamps: String});
 
+var orderStatusSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    title: String,
+    releaseTruck:Boolean,
+    status: Boolean
+}, {timestamps: String});
+
 var truckRequestSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     customer: {type: ObjectId, ref: 'accounts'},
@@ -623,6 +630,7 @@ module.exports = {
     TrucksTypesColl: mongoose.model('trucksTypes', trucksTypesSchema, 'trucksTypes'),
     GoodsTypesColl: mongoose.model('goodsTypes', goodsTypesSchema, 'goodsTypes'),
     LoadTypesColl: mongoose.model('loadTypes', loadTypesSchema, 'loadTypes'),
+    OrderStatusColl: mongoose.model('orderStatus', orderStatusSchema, 'orderStatus'),
     TruckRequestColl: mongoose.model('truckRequests', truckRequestSchema, 'truckRequests'),
     CustomerTypesColl: mongoose.model('customerTypes', customerTypesSchema, 'customerTypes'),
     franchiseColl: mongoose.model('franchise', franchiseSchema, 'franchise'),

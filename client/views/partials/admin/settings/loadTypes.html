@@ -37,6 +37,9 @@
                     <span class="glyphicon glyphicon-trash"></span>
                 </a></td>
         </tr>
+        <tr ng-if="!currentPageOfLoadTypes || currentPageOfLoadTypes.length === 0">
+            <td colspan="8">No Load Types exist.</td>
+        </tr>
     </table>
     <script type="text/ng-template" id="addNewLoadType.html">
         <div class="modal-header" ng-init="initLoadType()">

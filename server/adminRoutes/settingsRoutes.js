@@ -147,6 +147,43 @@ AuthRouter.get('/planCount', function (req, res) {
     });
 });
 
+/* Sravan : Order Status Routes   */
+
+AuthRouter.get('/getOrderStatus', function (req, res) {
+    Settings.getOrderStatus(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/totalOrderStatus',function (req,res) {
+    Settings.totalOrderStatus(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.post('/addOrderStatus', function (req, res) {
+    Settings.addOrderStatus(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.put('/updateOrderStatus', function (req, res) {
+    Settings.updateOrderStatus(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.delete('/deleteOrderStatus', function (req, res) {
+    Settings.deleteOrderStatus(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getOrderStatusDetails', function (req, res) {
+    Settings.getOrderStatusDetails(req, function (result) {
+        res.send(result);
+    })
+});
 module.exports = {
     AuthRouter: AuthRouter
 };

@@ -36,6 +36,9 @@
                 <a href="#" ng-click="delGoodsType(type._id)" class="delete_icon">
                     <span class="glyphicon glyphicon-trash"></span></a></td>
         </tr>
+        <tr ng-if="!currentPageOfGoodsTypes || currentPageOfGoodsTypes.length === 0">
+            <td colspan="8">No Goods Types exist.</td>
+        </tr>
     </table>
     <script type="text/ng-template" id="addNewGoodsType.html">
         <div class="modal-header" ng-init="initGoodsType()">

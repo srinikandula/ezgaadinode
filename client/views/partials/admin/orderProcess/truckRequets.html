@@ -19,31 +19,39 @@
         </li>
     </ul>
     <div class="clearfix"></div>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20"
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
            ng-table="requestTruckParams">
         <tbody>
         <tr ng-repeat="truck in truckRequestsList">
-            <td data-title="'S No'">{{$index+1}}</td>
-            <td data-title="'Title'" sortable="'name'" class="clickable-item">
+            <!--<td data-title="'S No'" class="col-sm-1">{{$index+1}}</td>-->
+            <td data-title="'Title'" sortable="'name'" class="clickable-item col-sm-1">
                 {{truck.customer[0].userName}}<br>{{truck.customer[0].contactPhone}}
             </td>
-            <td data-title="'Customer Name'" sortable="'type'" class="clickable-item">
+            <td data-title="'Customer Name'" sortable="'type'" class="clickable-item col-sm-1">
                 {{truck.customer[0].userName}}
             </td>
-            <td data-title="'Type'" sortable="'mobile'" class="clickable-item">{{truck.leadType}}</td>
-            <td data-title="'Source'" sortable="'date'" class="clickable-item">{{truck.source}}</td>
-            <td data-title="'Destination'" sortable="'yes'" class="clickable-item">{{truck.destination}}</td>
-            <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item">{{truck.truckType}}</td>
-            <td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item">{{truck.goodsType}}</td>
-            <td data-title="'Expected Price'" sortable="'goodsType'" class="clickable-item">
+            <td data-title="'Type'" sortable="'mobile'" class="clickable-item col-sm-1">{{truck.leadType}}</td>
+            <td data-title="'Source'" sortable="'date'" class="clickable-item col-sm-1">{{truck.source}}</td>
+            <td data-title="'Destination'" sortable="'yes'" class="clickable-item col-sm-1">{{truck.destination}}</td>
+            <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item col-sm-1">{{truck.truckType}}</td>
+            <td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item col-sm-1">{{truck.goodsType}}</td>
+            <td data-title="'Estimated Price'" sortable="'goodsType'" class="clickable-item col-sm-1">
                 {{truck.expectedPrice}}
             </td>
-            <td data-title="'Approved'" sortable="'load'" class="clickable-item">{{truck.load}}</td>
-            <td data-title="'Status'" sortable="'load'" class="clickable-item">{{truck.load}}</td>
+            <td data-title="'Approved'" sortable="'load'" class="clickable-item col-sm-1">{{truck.load}}</td>
+            <td data-title="'Status'" sortable="'load'" class="clickable-item col-sm-1">{{truck.load}}</td>
 
-            <td><a href="#" ui-sref="orderprocess.editTruckRequest({_id:truck._id})">Edit</a>/<a href="#"
-                                                                                                 ng-click="delCustomer(truck._id)">Delete</a>
+            <td data-title="'Action'" class="col-sm-1">
+                <a href="#" ui-sref="orderprocess.editTruckRequest({_id:truck._id})" class="edit_icon">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+                <a href="#" ng-click="delCustomer(truck._id)" class="delete_icon">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
             </td>
+        </tr>
+        <tr ng-if="!truckRequestsList || truckRequestsList.length === 0">
+            <td colspan="8">No Trucks exist.</td>
         </tr>
         </tbody>
     </table>
