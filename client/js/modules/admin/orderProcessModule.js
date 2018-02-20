@@ -21,13 +21,49 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 params: {_id: params}
             }).then(success, error)
         },
-        searchTrucksForRequest:function (params,success,error) {
+        searchTrucksForRequest: function (params, success, error) {
             $http({
-                url:'/v1/cpanel/orderProcess/searchTrucksForRequest',
-                method:"GET",
-                params:params
-            }).then(success,error);
+                url: '/v1/cpanel/orderProcess/searchTrucksForRequest',
+                method: "GET",
+                params: params
+            }).then(success, error);
+        },
+        getTruckRequestQuotes: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getTruckRequestQuotes',
+                method: "GET",
+                params: {truckRequestId: params}
+            }).then(success, error);
+        },
+        addTruckRequestQuote: function (data, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/addTruckRequestQuote',
+                method: "POST",
+                data: data
+            }).then(success, error);
+        },
+        getLoadBookingDetails: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getLoadBookingDetails',
+                method: "GET",
+                params: {truckRequestId: params}
+            }).then(success, error);
+        },
+        getTrucksAndDriversByAccountId: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getTrucksAndDriversByAccountId',
+                method: "GET",
+                params: {_id: params}
+            }).then(success, error);
+        },
+        loadBookingForTruckRequest: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/loadBookingForTruckRequest',
+                method: "POST",
+                data: params
+            }).then(success, error);
         }
+
 
     }
 }]);
@@ -112,6 +148,18 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             OrderProcessServices.getTruckRequestDetails($stateParams._id, function (success) {
                 if (success.data.status) {
                     $scope.truckRequest = success.data.data;
+                    $scope.quote = {
+                        truckRequestId: $stateParams._id,
+                        quote: "",
+                        comment: "",
+                        messages: []
+                    };
+                    $scope.quotesList = [];
+                    if($scope.truckRequest.customerType==='Registered'){
+                        $scope.customer=$scope.truckRequest.customer;
+                    }else{
+                        $scope.customer=$scope.truckRequest.customerLeadId;
+                    }
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -162,6 +210,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
     $scope.addTruckRequest = function () {
         var params = $scope.truckRequest;
+        console.log('params.customerType === "UnRegistered" && !params.name',params.customerType ,params.name);
         params.messages = [];
         if (!params.customerType) {
             params.messages.push("Please select customer type");
@@ -170,7 +219,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.messages.push("Please select customer");
         }
         if (params.customerType === "UnRegistered" && !params.name) {
-            params.messages.push("Please select name");
+            params.messages.push("Please select name1");
         }
         if (params.customerType === "UnRegistered" && !params.contactPhone) {
             params.messages.push("Please select customer");
@@ -184,7 +233,9 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 Notification.error(message);
             });
         } else {
-            params.customer = params.customer._id;
+            if(params.customerType === "Registered"){
+                params.customer = params.customer._id;
+            }
             OrderProcessServices.addTruckRequest(params, function (success) {
                 if (success.data.status) {
                     success.data.messages.forEach(function (message) {
@@ -237,7 +288,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         });
     };
     $scope.addSearchSource = function (index) {
-        var input = document.getElementById('searchSource'+index);
+        var input = document.getElementById('searchSource' + index);
         var options = {};
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed',
@@ -247,7 +298,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             });
     };
     $scope.addSearchDestination = function (index) {
-        var input = document.getElementById('searchDestination'+index);
+        var input = document.getElementById('searchDestination' + index);
         var options = {};
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed',
@@ -273,22 +324,168 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.truckRequest.destination = place.formatted_address;
+                $scope.truckRequest.destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+                console.log('palece', $scope.truckRequest.destinationLocation);
+
             });
-    }
-    $scope.searchTrucksForRequest=function () {
-        OrderProcessServices.searchTrucksForRequest({source:$scope.truckRequest.source,destination:$scope.truckRequest.destination},function (success) {
-        if(success.data.status){
-            $scope.availableTruckslist=success.data.data;
-        }else{
-            success.data.messages.forEach(function (message) {
-                Notification.error(message);
-            })
-        }
-        },function (error) {
+    };
+    $scope.searchTrucksForRequest = function () {
+        OrderProcessServices.searchTrucksForRequest({
+            source: $scope.truckRequest.source,
+            destination: $scope.truckRequest.destinationLocation
+        }, function (success) {
+            if (success.data.status) {
+                $scope.availableTruckslist = success.data.data;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                })
+            }
+        }, function (error) {
 
         })
-    }
+    };
+    $scope.getTruckRequestQuotes = function () {
+        OrderProcessServices.getTruckRequestQuotes($stateParams._id, function (success) {
+            if (success.data.status) {
+                $scope.quotesList = success.data.data;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                })
+            }
+        }, function (error) {
+
+        })
+    };
+    $scope.addTruckRequestQuote = function () {
+        var params = $scope.quote;
+        params.messages = [];
+        if (!params.quote) {
+            params.messages.push("Please enter quote");
+        }
+        if (!params.comment) {
+            params.messages.push("Please enter comment");
+
+        }
+        if (!params.accountId) {
+            params.messages.push("Please select customer");
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            })
+        } else {
+            OrderProcessServices.addTruckRequestQuote(params, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
+                        Notification.success(message);
+                    });
+                    $scope.quotesList.push(success.data.data);
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    })
+                }
+            }, function (error) {
+
+            })
+        }
+    };
+
+    $scope.loadBookingForTruckRequest = function () {
+        var params = $scope.loadBooking;
+        params.messages = [];
+        if (!params.registrationNo) {
+            params.messages.push("Please select truck");
+        }
+        if (!params.freightAmount) {
+            retObj.messages.push("Please enter amount");
+        }
+        if (!params.tripLane) {
+            params.messages.push("Please enter pickup point");
+        }
+        if (!params.accountId) {
+            params.messages.push("Please select truck provider");
+        }
+        if (!params.driverId) {
+            params.messages.push("Please select driver");
+        }
+        if (!params.date) {
+            params.messages.push("Please select pickup date");
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message)
+            })
+        } else {
+            params.truckRequestId = $stateParams._id;
+            OrderProcessServices.loadBookingForTruckRequest(params, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
+                        Notification.success(message)
+                    });
+                    params.truckRequestId = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message)
+                    })
+                }
+            }, function (error) {
+
+            })
+
+        }
+    };
+    $scope.loadBookingStatus = false;
+    $scope.getLoadBookingDetails = function () {
+        console.log('truckRequest',$scope.customer);
+        if (!$scope.loadBookingStatus) {
+            console.log('loading...');
+            $scope.getTruckRequestQuotes();
+            $scope.loadBookingStatus = true;
+            OrderProcessServices.getLoadBookingDetails($stateParams._id, function (success) {
+                if (success.data.status) {
+                    $scope.loadBooking = success.data.data;
+                    $scope.getTrucksAndDriversByAccountId();
+                } else {
+                    $scope.loadBooking = {
+                        registrationNo: "",
+                        driverId: "",
+                        date: "",
+                        tripLane: "",
+                        accountId: "",
+                        tripLane: "",
+                        date: "",
+                        freightAmount: ""
+
+
+                    }
+
+                }
+            }, function (error) {
+
+            })
+        }
+    };
+    $scope.getTrucksAndDriversByAccountId = function () {
+        if ($scope.loadBooking.accountId) {
+
+            OrderProcessServices.getTrucksAndDriversByAccountId($scope.loadBooking.accountId, function (success) {
+                if (success.data.status) {
+                    $scope.loadBooking.trucksList = success.data.data.trucksList;
+                    $scope.loadBooking.driversList = success.data.data.driversList;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    })
+                }
+            }, function (error) {
+
+            })
+        }
+    };
+
 
 
 }]);

@@ -859,7 +859,7 @@ Trips.prototype.sendEmail = function (jwt, data,req, callback) {
  */
 
 Trips.prototype.findTotalRevenue = function (erpSettingsCondition,req, callback) {
-    console.log('JWT ',erpSettingsCondition);
+    //console.log('JWT ',erpSettingsCondition);
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now
@@ -1049,7 +1049,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
 
                 function (err, totalFreight) {
-                    console.log('error1', err);
+                   // console.log('error1', err);
                     callback(err, totalFreight);
                 });
         },

@@ -139,18 +139,9 @@ const serviceActions = {
     share_party_payment_det_by_email_err: 'SHARE_PARTY_PAYMENT_DET_BY_EMAIL_ERR',
     dwnld_party_payment_det: 'DWNLD_PARTY_PAYMENT_DET',
     dwnld_party_payment_det_err: 'DWNLD_PARTY_PAYMENT_DET_ERR',
-    add_role: 'ADD_ROLE',
-    add_role_err: 'ADD_ROLE_ERR',
-    get_roles: 'GET_ROLES',
     get_roles_err: 'GET_ROLES_ERR',
     get_all_roles: 'GET_ALL_ROLES',
     get_all_roles_err: 'GET_ALL_ROLES_ERR',
-    get_role: 'GET_ROLE',
-    get_role_err: 'GET_ROLE_ERR',
-    update_role: 'UPDATE_ROLE',
-    update_role_err: 'UPDATE_ROLE_ERR',
-    delete_role: 'DELETE_ROLE',
-    delete_role_err: 'DELETE_ROLE_ERR',
     add_trip: 'ADD_TRIP',
     add_trip_err: 'ADD_TRIP_ERR',
     account_trips: 'ACCOUNT_TRIPS',
@@ -377,6 +368,18 @@ const serviceActions = {
     get_notifications_err:'GET_NOTIFICATIONS_ERR',
     get_notifications: 'GET_NOTIFICATIONS',
     count_notifications_err: 'COUNT_NOTIFICATIONS_ERR',
-    count_notifications: 'COUNT_NOTIFICATIONS'
+    count_notifications: 'COUNT_NOTIFICATIONS',
+    add_truck_request_quote:'ADD_TRUCK_REQUEST_QUOTE',
+    add_truck_request_quote_err:'ADD_TRUCK_REQUEST_QUOTE_ERR',
+    edit_truck_request_quote:'EDIT_TRUCK_REQUEST_QUOTE',
+    edit_truck_request_quote_err:'EDIT_TRUCK_REQUEST_QUOTE_ERR',
+    delete_truck_request_quote:'DELETE_TRUCK_REQUEST_QUOTE',
+    delete_truck_request_quote_err:'DELETE_TRUCK_REQUEST_QUOTE_ERR',
+    get_truck_request_quotes:'GET_TRUCK_REQUEST_QUOTES',
+    get_truck_request_quotes_err:'GET_TRUCK_REQUEST_QUOTES_ERR',
+    add_load_booking_for_truck_request:'ADD_LOAD_BOOKING_FOR_TRUCK_REQUEST',
+    add_load_booking_for_truck_request_err:'ADD_LOAD_BOOKING_FOR_TRUCK_REQUEST_ERR',
+
+
 };
 module.exports = serviceActions;
