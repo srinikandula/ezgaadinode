@@ -15,7 +15,7 @@ let userData = new User({
     "userName": "ramarao",
     "password": "9999999999",
     "contactPhone": 9999999999,
-    "type": "admin"
+    "type": "employee"
 });
 let headerData = {"token": token};
 

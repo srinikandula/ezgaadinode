@@ -8,20 +8,21 @@
   "mongo": {
     "url": "mongodb://localhost/testeasygaadi"
   },
-  "port": 3300,
+  "port": 3000,
   "mysql": {
-    "connectionLimit": 10,
-    "host": "localhost",
+    "port": 3306,
+    "connectionLimit": 100,
+    "host": "13.127.20.40",
     "user": "root",
-    "password": "root",
+    "password": "098ioplkjbNm",
     "database": "gts"
   },
   "mysql_crm": {
     "port": 3306,
     "connectionLimit": 100,
-    "host": "localhost",
+    "host": "13.127.20.40",
     "user": "root",
-    "password": "root",
+    "password": "098ioplkjbNm",
     "database": "easygaadi_crm"
   },
   "msg91": {
@@ -34,8 +35,16 @@
     "port": 465,
     "secure": true,
     "auth": {
-        "user": "easygaadinode@gmail.com",
-        "pass": "easygaadi123"
+      "user": "easygaadinode@gmail.com",
+      "pass": "easygaadi123"
     }
-}
+  },
+  "googleAuth": {
+    "clientID": "981881296801-e30gs5ebcm6k4rip9q7a0e8nehp5j07c.apps.googleusercontent.com",
+    "clientSecret": "C97qjf-_9Q6KRrUYM_s6pFha",
+    "callbackURL": "http://localhost:2000/login/google/return"
+  },
+  "bodyParserLimit": "50mb",
+  "googleSecretKeyLimit": 3,
+  "devicePositionsArchiveLimit": 14
 }
