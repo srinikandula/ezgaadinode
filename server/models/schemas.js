@@ -149,8 +149,9 @@ var tripSchema = new mongoose.Schema({
     createdBy: String,
     paymentHistory: [],
     attrs: {},
-    share: {type: Boolean, default: false}
-}, {timestamps: true});
+    share: { type: Boolean, default: false },
+    truckRequestId:{type:ObjectId,ref:'truckRequests'}
+}, { timestamps: true });
 
 var partySchema = new mongoose.Schema({
     name: String,
@@ -646,5 +647,6 @@ module.exports = {
     CustomerTypesColl: mongoose.model('customerTypes', customerTypesSchema, 'customerTypes'),
     franchiseColl: mongoose.model('franchise', franchiseSchema, 'franchise'),
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
-    adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions')
+    adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions'),
+    TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes')
 };

@@ -38,6 +38,42 @@ AuthRouter.get('/searchTrucksForRequest',function (req,res) {
     })
 });
 
+AuthRouter.post('/addTruckRequestQuote',function (req,res) {
+    OrderProcess.addTruckRequestQuote(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getTruckRequestQuotes',function (req,res) {
+    OrderProcess.getTruckRequestQuotes(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.post('/loadBookingForTruckRequest',function (req,res) {
+    OrderProcess.loadBookingForTruckRequest(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getLoadBookingDetails',function (req,res) {
+    OrderProcess.getLoadBookingDetails(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getTrucksAndDriversByAccountId',function (req,res) {
+    OrderProcess.getTrucksAndDriversByAccountId(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.post('/saveLoadBooking',function (req,res) {
+   OrderProcess.saveLoadBooking(req,function (result) {
+       res.send(result);
+   })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
