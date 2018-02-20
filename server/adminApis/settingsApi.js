@@ -21,10 +21,25 @@ Settings.prototype.getTruckTypes = function (req, callback) {
         messages: []
     };
     var params = req.query;
+    var condition = {};
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    TrucksTypesColl.find({}).sort(sort)
+
+    if (params.trucksType) {
+        condition = {
+            $or:
+                [
+                    {"title": new RegExp(params.trucksType, "gi")},
+                    //{"tonnes": new RegExp(params.trucksType, "gi")},
+                    // {"mileage": new RegExp(parseFloat(params.trucksType),"gi")},
+                ]
+        };
+    } else if (params.status) {
+        condition = {"status": params.status}
+    }
+
+    TrucksTypesColl.find(condition).sort(sort)
         .skip(skipNumber)
         .limit(limit)
         .exec(function (err, docs) {
@@ -40,7 +55,7 @@ Settings.prototype.getTruckTypes = function (req, callback) {
                 callback(retObj);
             } else if (docs.length > 0) {
                 retObj.status = true;
-                retObj.messages = "Success";
+                retObj.messages.push("Success");
                 retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_truck_types, {
                     body: JSON.stringify(req.query),
@@ -50,7 +65,8 @@ Settings.prototype.getTruckTypes = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages = "No truck types found";
+                retObj.messages.push("No truck types found");
+                retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_truck_types_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -303,10 +319,23 @@ Settings.prototype.getGoodsTypes = function (req, callback) {
         messages: []
     };
     var params = req.query;
+    var condition = {};
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    GoodsTypesColl.find({}).sort(sort)
+
+    if (params.goodsType) {
+        condition = {
+            $or:
+                [
+                    {"title": new RegExp(params.goodsType, "gi")},
+                ]
+        };
+    } else if (params.status) {
+        condition = {"status": params.status}
+    }
+
+    GoodsTypesColl.find(condition).sort(sort)
         .skip(skipNumber)
         .limit(limit)
         .exec(function (err, docs) {
@@ -322,7 +351,7 @@ Settings.prototype.getGoodsTypes = function (req, callback) {
                 callback(retObj);
             } else if (docs.length > 0) {
                 retObj.status = true;
-                retObj.messages = "Success";
+                retObj.messages.push("Success");
                 retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_goods_types, {
                     body: JSON.stringify(req.query),
@@ -332,7 +361,8 @@ Settings.prototype.getGoodsTypes = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages = "No goods types found";
+                retObj.messages.push("No goods types found");
+                retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_goods_types_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -579,11 +609,24 @@ Settings.prototype.getLoadTypes = function (req, callback) {
         status: false,
         messages: []
     };
+    var condition = {};
     var params = req.query;
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    LoadTypesColl.find({}).sort(sort)
+
+    if (params.loadsType) {
+        condition = {
+            $or:
+                [
+                    {"title": new RegExp(params.loadsType, "gi")},
+                ]
+        };
+    } else if (params.status) {
+        condition = {"status": params.status}
+    }
+
+    LoadTypesColl.find(condition).sort(sort)
         .skip(skipNumber)
         .limit(limit)
         .exec(function (err, docs) {
@@ -599,7 +642,7 @@ Settings.prototype.getLoadTypes = function (req, callback) {
                 callback(retObj);
             } else if (docs.length > 0) {
                 retObj.status = true;
-                retObj.messages = "Success";
+                retObj.messages.push("Success");
                 retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_load_types, {
                     body: JSON.stringify(req.query),
@@ -609,7 +652,8 @@ Settings.prototype.getLoadTypes = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages = "No load types found";
+                retObj.messages.push("No load types found");
+                retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_load_types_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -870,11 +914,21 @@ Settings.prototype.getPlan = function (req, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-        if (!params.planName) {
-            condition = {accountId: req.jwt.accountId, plan:params.plan}
+        if (params.planName) {
+            condition = {
+                $or:
+                    [
+                        {"planName": new RegExp(params.planName, "gi")},
+                        //{"durationInMonths": new RegExp(params.planName, "gi")},
+                        // {"amount": new RegExp(parseFloat(params.planName),"gi")},
+                    ],plan:params.plan
+            };
+        } else if (params.status) {
+            condition = {plan:params.plan,"status": params.status}
         } else {
-            condition = {accountId: req.jwt.accountId, plan:params.plan, fullName: {$regex: '.*' + params.planName + '.*'}}
+            condition = {plan:params.plan}
         }
+
         async.parallel({
             gpsPlans: function (gpsPlansCallback) {
                 erpGpsPlansColl
@@ -1400,10 +1454,24 @@ Settings.prototype.getOrderStatus = function (req, callback) {
         messages: []
     };
     var params = req.query;
+    var condition = {};
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    orderStatusColl.find({}).sort(sort)
+
+    if (params.orderStatus) {
+        condition = {
+            $or:
+                [
+                    {"title": new RegExp(params.orderStatus, "gi")},
+                    //{"releaseTruck": new RegExp(params.orderStatus, "gi")},
+                ]
+        };
+    } else if (params.status) {
+        condition = {"status": params.status}
+    }
+
+    orderStatusColl.find(condition).sort(sort)
         .skip(skipNumber)
         .limit(limit)
         .exec(function (err, docs) {
@@ -1419,7 +1487,7 @@ Settings.prototype.getOrderStatus = function (req, callback) {
                 callback(retObj);
             } else if (docs.length > 0) {
                 retObj.status = true;
-                retObj.messages = "Success";
+                retObj.messages.push("Success");
                 retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_order_status, {
                     body: JSON.stringify(req.query),
@@ -1429,7 +1497,8 @@ Settings.prototype.getOrderStatus = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages = "No Order Status found";
+                retObj.messages.push("No Order Status found");
+                retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_order_status_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
