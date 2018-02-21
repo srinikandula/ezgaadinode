@@ -27,7 +27,7 @@
                                        title="Customer *" append-to-body="true">
 
                                 <ui-select-match placeholder="Customer *" class="form-control custom-form-control">
-                                    {{$select || userName}}
+                                    {{$select.selected.userName || userName}}
                                 </ui-select-match>
                                 <ui-select-choices
                                         repeat="truck in truckOwnersList | propsFilter: {userName: $select.search}">

@@ -11,9 +11,12 @@ var TrucksColl = require("../models/schemas").TrucksColl;
 var DriversColl = require("../models/schemas").DriversColl;
 var TruckRequestQuoteColl = require("../models/schemas").TruckRequestQuoteColl;
 var TripCollection = require("../models/schemas").TripCollection;
+var TruckRequestCommentsColl = require("../models/schemas").TruckRequestCommentsColl;
 
 
 var customerLeadsApi = require("./customerLeadsApi");
+var Utils = require("./../apis/utils");
+
 var OrderProcess = function () {
 };
 /*author : Naresh d*/
@@ -627,7 +630,7 @@ OrderProcess.prototype.getTruckRequestQuotes = function (req, callback) {
                 callback(retObj);
             } else if (docs.length > 0) {
                 retObj.status = true;
-                retObj.messages = "Success";
+                retObj.messages.push("Success");
                 retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_truck_request_quotes, {
                     body: JSON.stringify(req.query),
@@ -637,7 +640,7 @@ OrderProcess.prototype.getTruckRequestQuotes = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages = "No truck request quotes found";
+                retObj.messages.push("No truck request quotes found");
                 analyticsService.create(req, serviceActions.get_truck_request_quotes_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
@@ -658,7 +661,15 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
         status: false,
         messages: []
     };
+    var query = {};
     var params = req.body;
+    if (!params._id) {
+        query = {_id: mongoose.Types.ObjectId()};
+        params.createdBy = req.jwt.id;
+    } else {
+        query = {_id: params._id}
+    }
+    params.updatedBy = req.jwt.id;
     if (!params.registrationNo) {
         retObj.messages.push("Please select truck");
     }
@@ -683,8 +694,7 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        var trip = new TripCollection(params);
-        trip.save(function (err, doc) {
+        TripCollection.update(query, params, {upsert: true}, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_load_booking_for_truck_request_err, {
@@ -727,14 +737,34 @@ OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
         TripCollection.findOne({truckRequestId: params.truckRequestId}, function (err, doc) {
             if (err) {
                 retObj.message.push("Please try again");
+                analyticsService.create(req, serviceActions.get_load_booking_details_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (doc) {
                 retObj.status = true;
                 retObj.message = "success";
                 retObj.data = doc;
+                analyticsService.create(req, serviceActions.get_load_booking_details, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.message.push("Load booking not available");
+                analyticsService.create(req, serviceActions.get_load_booking_details_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         })
@@ -771,46 +801,201 @@ OrderProcess.prototype.getTrucksAndDriversByAccountId = function (req, callback)
         }, function (err, result) {
             if (err) {
                 retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_trucks_and_drivers_by_accountId_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.data = result;
+                analyticsService.create(req, serviceActions.get_trucks_and_drivers_by_accountId, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             }
         })
     }
 };
 
-/*OrderProcess.prototype.saveLoadBooking = function (req, callback) {
+OrderProcess.prototype.addTruckRequestComment = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var params = req.body;
-    if (!params.accountId) {
-        retObj.messages.push("Please select customer");
+    if (!params.truckRequestId || !ObjectId.isValid(params.truckRequestId)) {
+        retObj.messages.push("Invalid truck request");
     }
-    if (!params.registrationNo) {
-        retObj.messages.push("Please select truck");
+    if (!params.status) {
+        retObj.messages.push("Please enter status");
     }
-    if (!params.driverId) {
-        retObj.messages.push("please select driver");
-    }
+
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        var trip = new TripCollection(params);
-        trip.save(function (err, doc) {
+        var truckReqComment = new TruckRequestCommentsColl(params);
+        truckReqComment.save(function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.add_truck_request_comment_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
-                retObj.status = true;
-                retObj.messages.push("Load booking completed successfully");
-                retObj.data=doc;
-                callback(retObj);
+                if(params.notifiedStatus==='YES'){
+                    var customer={};
+                    TruckRequestColl.findOne({_id:params.truckRequestId}).populate('customer').populate('customerLeadId').exec(function (err,truckReq) {
+                        if(err){
+                            retObj.messages.push("Please try again");
+                            callback(retObj);
+                        }else if(truckReq){
+                            if(truckReq.customerType==='Registered'){
+                                customer=truckReq.customer;
+                            }else{
+                                customer=truckReq.customerLeadId
+                            }
+                            console.log("customer",customer);
+                            retObj.status = true;
+                            retObj.messages.push("Comment added successfully");
+                            retObj.data = doc;
+                            analyticsService.create(req, serviceActions.add_truck_request_comment, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }else{
+                            retObj.messages.push("Please try again");
+                            callback(retObj);
+                        }
+
+                    });
+                }else{
+                    retObj.status = true;
+                    retObj.messages.push("Comment added successfully");
+                    retObj.data = doc;
+                    analyticsService.create(req, serviceActions.add_truck_request_comment, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+
+                }
+
+
             }
         })
     }
-};*/
+};
+
+
+OrderProcess.prototype.getTruckRequestComments = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.truckRequestId || !ObjectId.isValid(params.truckRequestId)) {
+        retObj.messages.push("Invalid truck request");
+    }
+    if (retObj.messages.length > 0) {
+      callback(retObj);
+    } else {
+
+        TruckRequestCommentsColl.find({truckRequestId:params.truckRequestId},function (err,docs) {
+            if(err){
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_truck_request_comments_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }else if(docs.length>0){
+                retObj.status=true;
+                retObj.messages.push("Success");
+                retObj.data=docs;
+                analyticsService.create(req, serviceActions.get_truck_request_comments, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }else{
+                retObj.data=docs;
+                retObj.messages.push("Comments not found");
+                analyticsService.create(req, serviceActions.get_truck_request_comments_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+
+    }
+};
+
+OrderProcess.prototype.updateTruckRequestDetails=function (req,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+  var params=req.body;
+  if(!params._id || !ObjectId.isValid(params._id)){
+      retObj.messages.push("Invalid truck request");
+  }
+  if(retObj.messages.length>0){
+      callback(retObj);
+  }else{
+      var body=Utils.removeEmptyFields(params);
+      TruckRequestColl.update({_id:params._id},body,function (err,doc) {
+          if(err){
+              retObj.messages.push("Please try again");
+              callback(retObj);
+          }else if(doc){
+              retObj.status=true;
+              retObj.messages.push("truck request details saved successfully");
+              analyticsService.create(req, serviceActions.update_truck_request, {
+                  body: JSON.stringify(req.body),
+                  accountId: req.jwt.id,
+                  success: true
+              }, function (response) {
+              });
+              callback(retObj);
+          }else{
+              retObj.messages.push("Please try again");
+              analyticsService.create(req, serviceActions.update_truck_request_err, {
+                  body: JSON.stringify(req.query),
+                  accountId: req.jwt.id,
+                  success: false,
+                  messages: retObj.messages
+              }, function (response) {
+              });
+              callback(retObj);
+          }
+      })
+  }
+
+
+};
 module.exports = new OrderProcess();

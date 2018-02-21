@@ -18,7 +18,8 @@
                                    placeholder="Destination Address *"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.expectedPrice"
+                            <input type="text" class="form-control" name="fullName"
+                                   ng-model="truckRequest.expectedPrice"
                                    placeholder="Expected Price"/>
                         </div>
                         <div class="form-group">
@@ -47,33 +48,37 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <select ng-options="t.title as t.title for t in truckTypesList" class="form-control"
-                                    ng-model="truckRequest.truckType">
+                            <select  class="form-control"
+                                    ng-model="truckRequest.trackingRequired">
                                 <option value="">Trucking Required</option>
+                                <option>YES</option>
+                                <option>NO</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.loadingCharge"
                                    placeholder="Loading Charge *"/>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.name"
+                            <input type="text" class="form-control" name="fullName" ng-model="truckRequest.unloadingCharge"
                                    placeholder="Unloading Charge *"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-4">
                         <div class="form-group">
-                            <select ng-options="t.title as t.title for t in truckTypesList" class="form-control"
-                                    ng-model="truck.truckType">
+                            <select class="form-control"
+                                    ng-model="truckRequest.insuranceRequired">
                                 <option value="">Insurance required</option>
+                                <option>YES</option>
+                                <option>NO</option>
                             </select>
                         </div>
 
                         <div class="form-group">
-                            <textarea class="form-control" placeholder="comment"></textarea>
+                            <textarea class="form-control" ng-model="truckRequest.comment" placeholder="comment"></textarea>
                         </div>
                         <div class="form-group">
-                            <textarea class="form-control" placeholder="push message"></textarea>
+                            <textarea class="form-control" ng-model="truckRequest.pushMessage" placeholder="push message"></textarea>
 
                         </div>
                     </div>
@@ -90,11 +95,13 @@
                 <div class="row">
                     <div class="col-sm-11">
                         <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" ng-model="truckRequest.sourceSearch" name="source"  id="searchSource" ng-change="searchSource()"
+                            <input type="text" class="form-control" ng-model="truckRequest.sourceSearch" name="source"
+                                   id="searchSource" ng-change="searchSource()"
                                    placeholder="Source *"/>
                         </div>
                         <div class="form-group col-sm-2">
-                            <input type="text" class="form-control" ng-model="truckRequest.destinationSearch" name="destination"  id="searchDestination" ng-change="searchDestination()"
+                            <input type="text" class="form-control" ng-model="truckRequest.destinationSearch"
+                                   name="destination" id="searchDestination" ng-change="searchDestination()"
                                    placeholder="Destination *"/>
                         </div>
                         <div class="form-group col-sm-2">
@@ -146,18 +153,78 @@
                             <td>{{truck.acc._id.type}}</td>
                             <td>{{truck.acc._id.contactPhone}}</td>
                             <td>{{truck.acc.count}}</td>
-                            <td>Company</td>
-                            <td>Addess</td>
+                            <td>{{truck.acc.company || "NA"}}</td>
+                            <td>{{truck.acc.address || "NA"}}</td>
                             <td>{{truck.sourceAddress}}</td>
                             <td>{{truck.destinationAddress}}</td>
-                            <td>ADd Info</td>
+                            <td>Add Info</td>
+                        </tr>
+                    </table>
+                </div>
+
+            </div>
+            <div uib-accordion-group class="panel-default" ng-click="getTruckRequestComments()">
+                <uib-accordion-heading>
+                    Comments <i class="pull-right glyphicon"
+                                ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !is-open}"></i>
+                </uib-accordion-heading>
+
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="form-group col-sm-2">
+                            <input type="checkbox" ng-model="comment.notifiedStatus"
+                                   ng-true-value="'YES'" ng-false-value="'NO'">Notify
+                        </div>
+                        <div class="form-group col-sm-3">
+
+                            <select ng-model="comment.status" class="form-control">
+                                <option value="">Select status</option>
+                                <option>New</option>
+                                <option>Processing Query</option>
+                                <option>Raised Quotes</option>
+                                <option>Booked</option>
+                                <option>Denied</option>
+                                <option>Booking Requested</option>
+                                <option>Accepted Booking</option>
+
+                            </select>
+
+                        </div>
+                        <div class="form-group col-sm-3">
+                            <input type="text" class="form-control" name="comment" ng-model="comment.comment"
+                                   placeholder="Comment"/>
+                        </div>
+                        <div class="form-group col-sm-3">
+                            <button class="btn btn-info" ng-click="addTruckRequestComment()">Submit</button>
+                        </div>
+
+
+                    </div>
+
+                </div>
+                <div class="row col-sm-12">
+                    <table class="table table-bordered table-hover">
+                        <tr>
+                            <td>S.No</td>
+                            <td>Date</td>
+                            <td>status</td>
+                            <td>Comment</td>
+                            <td>Notify Status</td>
+
+                        </tr>
+                        <tr ng-repeat="comment in commentList">
+                            <td>{{$index+1}}</td>
+                            <td>{{comment.createdAt | date:'medium'}}</td>
+                            <td>{{comment.status}}</td>
+                            <td>{{comment.comment}}</td>
+                            <td>{{comment.notifiedStatus}}</td>
                         </tr>
                     </table>
                 </div>
 
             </div>
             <div uib-accordion-group class="panel-default" ng-click="getTruckRequestQuotes()">
-                <uib-accordion-heading >
+                <uib-accordion-heading>
                     Quotes <i class="pull-right glyphicon"
                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !is-open}"></i>
                 </uib-accordion-heading>
@@ -166,7 +233,9 @@
                     <div class="col-sm-12">
                         <div class="form-group col-sm-3">
                             <select ng-model="quote.accountId" class="form-control">
-                                <option ng-repeat="truck in availableTruckslist"  value="{{truck.acc._id._id}}">{{truck.acc._id.userName}}</option>
+                                <option ng-repeat="truck in availableTruckslist" value="{{truck.acc._id._id}}">
+                                    {{truck.acc._id.userName}}
+                                </option>
                             </select>
 
                         </div>
@@ -193,6 +262,7 @@
                             <td>Contact</td>
                             <td>Quote</td>
                             <td>Comment</td>
+                            <td>Accept</td>
 
                         </tr>
                         <tr ng-repeat="quote in quotesList">
@@ -200,14 +270,17 @@
                             <td>{{quote.accountId.userName+','+quote.accountId.contactPhone}}</td>
                             <td>{{quote.quote}}</td>
                             <td>{{quote.comment}}</td>
-
+                            <td>
+                                <button class="btn btn-info" ng-click="acceptQuote(quote.accountId)">Accept</button>
+                            </td>
                         </tr>
                     </table>
                 </div>
 
             </div>
 
-            <div uib-accordion-group class="panel-default" is-open="status.open" ng-click="getLoadBookingDetails(); $event.stopPropagation();">
+            <div uib-accordion-group class="panel-default" is-open="status.open"
+                 ng-click="getLoadBookingDetails(); $event.stopPropagation();">
                 <uib-accordion-heading>
                     Load Booking <i class="pull-right glyphicon"
                                     ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
@@ -216,26 +289,48 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group col-sm-4">
-                            <select class="form-control" ng-model="loadBooking.accountId" ng-change="getTrucksAndDriversByAccountId();">
-                                <option value="">Customer</option>
-                                <option ng-repeat="quote in quotesList" value="{{quote.accountId._id}}">{{quote.accountId.userName}}</option>
+                            <!--  <select class="form-control" ng-model="loadBooking.accountId" ng-change="getTrucksAndDriversByAccountId();">
+                                  <option value="">Customer</option>
+                                  <option ng-repeat="quote in quotesList" value="{{quote.accountId._id}}">{{quote.accountId.userName}}</option>
 
-                            </select>
+                              </select>-->
+                            <ui-select ng-model="loadBooking.customer" ng-change="getTrucksAndDriversByAccountId();"
+                                       theme="select2"
+                                       style="min-width: 390px;"
+                                       title="Customer *" append-to-body="true">
+
+                                <ui-select-match placeholder="Customer *" class="form-control custom-form-control">
+                                    {{$select.selected.userName || userName}}
+                                </ui-select-match>
+                                <ui-select-choices
+                                        repeat="truck in truckOwnersList | propsFilter: {userName: $select.search}">
+                                    <b>
+                                        <div ng-bind-html="truck.userName | highlight: $select.search"></div>
+                                    </b>
+                                    <small>
+                                        Mobile: {{truck.contactPhone || '---'}}
+                                    </small>
+                                </ui-select-choices>
+                            </ui-select>
 
                         </div>
                         <div class="form-group col-sm-4">
 
-                            <select class="form-control"  ng-model="loadBooking.registrationNo" >
+                            <select class="form-control" ng-model="loadBooking.registrationNo">
                                 <option value="">Select truck</option>
-                                <option ng-repeat="truck in loadBooking.trucksList" value="{{truck._id}}">{{truck.registrationNo}}</option>
+                                <option ng-repeat="truck in loadBooking.trucksList" value="{{truck._id}}">
+                                    {{truck.registrationNo}}
+                                </option>
 
                             </select>
                         </div>
                         <div class="form-group col-sm-4">
 
-                            <select class="form-control"  ng-model="loadBooking.driverId" >
+                            <select class="form-control" ng-model="loadBooking.driverId">
                                 <option value="">Select Driver</option>
-                                <option ng-repeat="driver in loadBooking.driversList" value="{{driver._id}}">{{driver.fullName}}</option>
+                                <option ng-repeat="driver in loadBooking.driversList" value="{{driver._id}}">
+                                    {{driver.fullName}}
+                                </option>
 
                             </select>
                         </div>
@@ -243,16 +338,16 @@
                     </div>
                     <div class="col-sm-12">
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="loadBooking.tripLane"
+                            <input type="text" class="form-control" ng-model="loadBooking.tripLane"
                                    placeholder="Pickup point"/>
                         </div>
                         <div class="form-group col-sm-4">
 
-                            <admin-date-picker  ng-model="loadBooking.date" placeholder="'Date Required *'"
+                            <admin-date-picker ng-model="loadBooking.date" placeholder="'Date Required *'"
                                                class="'form-control'"></admin-date-picker>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="loadBooking.freightAmount"
+                            <input type="text" class="form-control" ng-model="loadBooking.freightAmount"
                                    placeholder="Amount"/>
                         </div>
 
@@ -279,50 +374,50 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.userName"
+                            <input type="text" class="form-control" ng-model="customer.userName"
                                    placeholder="Customer Id "/>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.email"
+                            <input type="text" class="form-control" ng-model="customer.email"
                                    placeholder="Email"/>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.name"
+                            <input type="text" class="form-control" ng-model="customer.name"
                                    placeholder="Company"/>
                         </div>
 
                     </div>
                     <div class="col-sm-12">
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.contactPhone"
+                            <input type="text" class="form-control" ng-model="customer.contactPhone"
                                    placeholder="Mobile "/>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.name"
+                            <input type="text" class="form-control" ng-model="customer.name"
                                    placeholder="Address"/>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.name"
+                            <input type="text" class="form-control" ng-model="customer.name"
                                    placeholder="City"/>
                         </div>
 
                     </div>
                     <div class="col-sm-12">
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.contactPhone"
+                            <input type="text" class="form-control" ng-model="customer.contactPhone"
                                    placeholder="Password "/>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.name"
+                            <input type="text" class="form-control" ng-model="customer.name"
                                    placeholder="Office Number"/>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="customer.state"
+                            <input type="text" class="form-control" ng-model="customer.state"
                                    placeholder="State"/>
                         </div>
 
                     </div>
-                    <div class="col-sm-12">
+                   <!-- <div class="col-sm-12">
                         <div class="form-group col-sm-4">
 
                             <p>Enable Sms/Email Ads</p>
@@ -372,13 +467,13 @@
                             </ul>
                         </div>
                         <div class="form-group col-sm-4">
-                            <input type="text" class="form-control"  ng-model="truckRequest.name"
+                            <input type="text" class="form-control" ng-model="truckRequest.name"
                                    placeholder="Customer Id "/>
                         </div>
 
 
                     </div>
-
+-->
 
                 </div>
 
@@ -390,7 +485,7 @@
 
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
-            <a href="#" class="btn btn-primary" ng-click="updateRequestTruck()">Submit</a>
+            <a href="#" class="btn btn-primary" ng-click="updateTruckRequestDetails()">Submit</a>
 
         </div>
     </div>
