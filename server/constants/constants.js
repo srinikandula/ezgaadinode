@@ -373,6 +373,28 @@ const serviceActions = {
     update_order_status_err: 'UPDATE_ORDER_STATUS_ERR',
     update_order_status: 'UPDATE_ORDER_STATUS',
     delete_order_status_err: 'DELETE_ORDER_STATUS_ERR',
-    delete_order_status: 'DELETE_ORDER_STATUS'
+    delete_order_status: 'DELETE_ORDER_STATUS',
+    add_truck_request_quote:'ADD_TRUCK_REQUEST_QUOTE',
+    add_truck_request_quote_err:'ADD_TRUCK_REQUEST_QUOTE_ERR',
+    edit_truck_request_quote:'EDIT_TRUCK_REQUEST_QUOTE',
+    edit_truck_request_quote_err:'EDIT_TRUCK_REQUEST_QUOTE_ERR',
+    delete_truck_request_quote:'DELETE_TRUCK_REQUEST_QUOTE',
+    delete_truck_request_quote_err:'DELETE_TRUCK_REQUEST_QUOTE_ERR',
+    get_truck_request_quotes:'GET_TRUCK_REQUEST_QUOTES',
+    get_truck_request_quotes_err:'GET_TRUCK_REQUEST_QUOTES_ERR',
+    add_load_booking_for_truck_request:'ADD_LOAD_BOOKING_FOR_TRUCK_REQUEST',
+    add_load_booking_for_truck_request_err:'ADD_LOAD_BOOKING_FOR_TRUCK_REQUEST_ERR',
+    get_load_booking_details:'GET_LOAD_BOOKING_DETAILS',
+    get_load_booking_details_err:'GET_LOAD_BOOKING_DETAILS_ERR',
+    get_trucks_and_drivers_by_accountId:'GET_TRUCKS_AND_DRIVERS_BY_ACCOUNTID',
+    get_trucks_and_drivers_by_accountId_err:'GET_TRUCKS_AND_DRIVERS_BY_ACCOUNTID_ERR',
+    add_truck_request_comment:'ADD_TRUCK_REQUEST_COMMENT',
+    add_truck_request_comment_err:'ADD_TRUCK_REQUEST_COMMENT_ERR',
+    get_truck_request_comments:'GET_TRUCK_REQUEST_COMMENTS',
+    get_truck_request_comments_err:'GET_TRUCK_REQUEST_COMMENTS_ERR',
+    update_truck_request:'UPDATE_TRUCK_REQUEST_DETAILS',
+    update_truck_request_err:'UPDATE_TRUCK_REQUEST_DETAILS_ERR',
+
+
 };
 module.exports = serviceActions;
