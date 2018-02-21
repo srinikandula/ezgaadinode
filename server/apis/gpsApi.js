@@ -108,7 +108,7 @@ function savePositionDoc(position, callback) {
                                 two:function (aCallbackTwo) {
                                     var retObj1={status:false,
                                         messages:[]};
-                                    TrucksColl.update({deviceId:positionDoc.deviceId},{$set:{isIdle:isIdle,isStopped:isStopped,"attrs.latestLocation":positionDoc}},function (err,result) {
+                                    TrucksColl.update({deviceId:positionDoc.deviceId},{$set:{isIdle:isIdle,isStopped:isStopped,"attrs.latestLocation":positionDoc}},function (err,truckResult) {
                                         if(err){
                                             retObj1.status=false;
                                             retObj1.messages.push('Error updating truck status');
