@@ -279,6 +279,16 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             paymentsId: null
         }
     }).state({
+        name: 'trackView',
+        url: '/gps/trackView/:truckNo',
+        templateUrl: 'views/partials/gps/trackView.html',
+        data: {activeTab: 'gpsReports'},
+        params: {
+            truckNo:null,
+            access: 'open',
+            paymentsId: null
+        }
+    }).state({
         name: 'groupMap',
         url: '/groupMap',
         templateUrl: 'views/partials/groupMap.html',

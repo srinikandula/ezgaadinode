@@ -58,7 +58,13 @@ OpenRouter.get('/findDeviceStatus/:deviceId',function (req,res) {
     gps.findDeviceStatus(req.params.deviceId,req,function (results) {
         res.send(results);
     })
-})
+});
+
+OpenRouter.get('/gpsTrackingByTruck/:truckId/:startDate/:endDate',function (req,res) {
+    gps.gpsTrackingByTruck(req.params.truckId,req.params.startDate,req.params.endDate,req,function (results) {
+        res.send(results);
+    })
+});
 
 /*OpenRouter.get('/moveDevicePositions', function (rew, res) {
     gps.moveDevicePositions(function (result) {
