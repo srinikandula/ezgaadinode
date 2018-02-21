@@ -52,7 +52,7 @@ var accountSchema = new mongoose.Schema({
     isActive: {type: Boolean, default: true},
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
-    loadEnabled: {type: Boolean, default: false},
+    loadEnabled: {type: Boolean, default: true},
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
     alternatePhone:String,
@@ -573,6 +573,15 @@ var adminRoleSchema = mongoose.Schema({
     id_franchise: Number,
     franchiseId: {type: ObjectId, ref: 'franchise'},
     role: String,
+    permissions: {
+      moduleName: String,
+      sectionName: String,
+      view: Boolean,
+      listAll: Boolean,
+      add: Boolean,
+      edit: Boolean,
+      delete: Boolean
+    },
     status: Boolean,
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}

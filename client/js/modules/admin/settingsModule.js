@@ -216,8 +216,6 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
 // Check All
 
     $scope.checkAll=function () {
-        console.log('calll',$scope.checkAllStatus)
-
         $scope.currentPageOfgpsPlans.forEach(function (plan) {
             if($scope.checkAllStatus){
 
@@ -298,7 +296,9 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            plan: tableParams.plan
+            plan: tableParams.plan,
+            status: tableParams.status,
+            planName: tableParams.planName
         };
         SettingServices.getPlan(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -359,6 +359,26 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
         });
     };
 
+    $scope.searchByPlan = function (plan, status, planName) {
+        $scope.settingParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.plan = plan;
+                params.status = status;
+                params.planName = planName;
+                loadGPSTableData(params);
+            }
+        });
+    };
+
+
 // Trcusk Types (Gettings Truck Types, pagenation, Sorting, Deleting)
 
     $scope.saveTruckType = function () {
@@ -413,7 +433,9 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            trucksType: tableParams.trucksType
         };
         SettingServices.getTruckTypes(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -422,6 +444,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 tableParams.data = response.data.data;
                 $scope.currentPageOftruckTypes = response.data.data;
             } else {
+                $scope.currentPageOftruckTypes = response.data.data;
                 Notification.error({message: response.data.messages[0]});
             }
         });
@@ -468,6 +491,24 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 }, function (err) {
 
                 });
+            }
+        });
+    };
+
+    $scope.searchByTrucksType = function (status, trucksType) {
+        $scope.truckTypeParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                params.trucksType = trucksType;
+                loadTruckTypeTableData(params);
             }
         });
     };
@@ -526,7 +567,9 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            loadsType: tableParams.loadsType
         };
         SettingServices.getLoadTypes(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -535,6 +578,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 tableParams.data = response.data.data;
                 $scope.currentPageOfLoadTypes = response.data.data;
             } else {
+                $scope.currentPageOfLoadTypes = response.data.data;
                 Notification.error({message: response.data.messages[0]});
             }
         });
@@ -581,6 +625,24 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 }, function (err) {
 
                 });
+            }
+        });
+    };
+
+    $scope.searchByLoadsType = function (status, loadsType) {
+        $scope.loadTypeParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                params.loadsType = loadsType;
+                loadTypeTableData(params);
             }
         });
     };
@@ -639,7 +701,9 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            goodsType: tableParams.goodsType
         };
         SettingServices.getGoodsTypes(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -648,6 +712,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 tableParams.data = response.data.data;
                 $scope.currentPageOfGoodsTypes = response.data.data;
             } else {
+                $scope.currentPageOfGoodsTypes = response.data.data;
                 Notification.error({message: response.data.messages[0]});
             }
         });
@@ -694,6 +759,24 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 }, function (err) {
 
                 });
+            }
+        });
+    };
+
+    $scope.searchByGoodsType = function (status, goodsType) {
+        $scope.goodsTypeParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                params.goodsType = goodsType;
+                goodsTypeTableData(params);
             }
         });
     };
@@ -752,16 +835,21 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            orderStatus: tableParams.orderStatus
         };
-        SettingServices.getOrderStatus(pageable, function (response) {
+        SettingServices.getOrderStatus(pageable, function (success) {
             $scope.invalidCount = 0;
-            if (response.data.status) {
-                tableParams.total(response.data.count);
-                tableParams.data = response.data.data;
-                $scope.currentPageOfOrderStatus = response.data.data;
+            if (success.data.status) {
+                tableParams.total(success.data.count);
+                tableParams.data = success.data.data;
+                $scope.currentPageOfOrderStatus = success.data.data;
             } else {
-                Notification.error({message: response.data.messages[0]});
+                $scope.currentPageOfOrderStatus = success.data.data;
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
             }
         });
     };
@@ -807,6 +895,24 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 }, function (err) {
 
                 });
+            }
+        });
+    };
+
+    $scope.searchByOrderStatus = function (status, orderStatus) {
+        $scope.orderStatusParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                params.orderStatus = orderStatus;
+                orderStatusTableData(params);
             }
         });
     };

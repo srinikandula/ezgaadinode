@@ -5,15 +5,15 @@
             <div class="col-sm-7 pull-right pall-zero">
                 <div class="col-sm-5">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Search" ng-model="trucksType1">
+                        <span class="input-group-addon" ng-click="searchByTrucksType('',trucksType1);"><i class="glyphicon glyphicon-search"></i></span>
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <select class="form-control">
-                        <option value="" selected>Select</option>
-                        <option>Enabled</option>
-                        <option>Disabled</option>
+                    <select class="form-control" ng-model="status1" ng-change="searchByTrucksType(status1,'');">
+                        <option value="" selected>Select by Status</option>
+                        <option ng-value="true">Enabled</option>
+                        <option ng-value="false">Disabled</option>
                     </select>
                 </div>
                 <div class="col-sm-2">
@@ -32,7 +32,7 @@
             <td data-title="'Tonnage'" sortable="'tonnes'" class="clickable-item">{{plan.tonnes}}
             </td>
             <td data-title="'Mileage'" sortable="'mileage'" class="clickable-item">{{plan.mileage}}</td>
-            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{plan.status}}</td>
+            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{plan.status?'Enabled':'Disabled'}}</td>
             <td data-title="'Action'">
                 <a href="#" class="edit_icon" ng-click="editTruckType(plan._id)">
                     <span class="glyphicon glyphicon-pencil"></span>

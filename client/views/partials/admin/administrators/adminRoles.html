@@ -33,9 +33,9 @@
             <td data-title="'Status'" sortable="'status'" class="clickable-item">
                 {{role.status?'Active':'Inactive'}}
             </td>
-            <td data-title="'Edit/Delete'" sortable="'createdAt'" class="clickable-item">
-                <a href="#" ui-sref="admin.addUpdateAdminRole({roleId: role._id})">Edit</a> /
-                <a href="#" ng-click="deleteRole($index)">Delete</a>
+            <td data-title="'Action'" sortable="'createdAt'" class="clickable-item">
+                <a href="#" ui-sref="admin.addUpdateAdminRole({roleId: role._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="deleteRole($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
         <tr ng-if="!currentPageOfRoles || currentPageOfRoles.length === 0">

@@ -161,7 +161,8 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            role: tableParams.role
+            role: tableParams.role,
+            employee: tableParams.employee
         };
         AdministratorService.getEmployee(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -337,6 +338,23 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
                 });*/
             }
         }
+    };
+
+    $scope.searchByEmployee = function (employee) {
+        $scope.employeeParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.employee = employee;
+                loadTableData(params);
+            }
+        });
     };
     /*EMPLOYEE END*/
 
@@ -522,6 +540,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
+            status: tableParams.status,
             franchise: tableParams.franchise
         };
         AdministratorService.getFranchise(pageable, function (response) {
@@ -536,7 +555,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         });
     };
 
-    $scope.initFranchise = function (franchise) {
+    $scope.initFranchise = function (status) {
         $scope.franchiseParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -547,7 +566,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             counts: [],
             total: $scope.franchiseCount,
             getData: function (params) {
-                params.franchise = franchise;
+                params.status = status;
                 loadTableDataFranchise(params);
             }
         });
@@ -577,34 +596,6 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
             }
         });
     }
-
-    $scope.adminRolesDropDown = function () {
-        AdministratorService.adminRolesDropDown(function (success) {
-            if (success.data.status) {
-                $scope.adminRoles = success.data.data;
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        }, function (error) {
-
-        });
-    };
-
-    $scope.franchiseDropDown = function () {
-        AdministratorService.franchiseDropDown(function (success) {
-            if (success.data.status) {
-                $scope.franchises = success.data.data;
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                });
-            }
-        }, function (error) {
-
-        });
-    };
 
     $scope.addUpdateFranchise = function () {
         var params = $scope.franchise;
@@ -686,6 +677,23 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
                 });*/
             }
         }
+    };
+
+    $scope.searchByFranchise = function (franchise) {
+        $scope.franchiseParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.franchiseCount,
+            getData: function (params) {
+                params.franchise = franchise;
+                loadTableDataFranchise(params);
+            }
+        });
     };
     /*FRANCHISE END*/
 }]);

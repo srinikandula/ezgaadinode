@@ -272,6 +272,41 @@ OpenRouter.get('/get/AccountOperatingRoutes', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/trucksType', function (request, res) {
+    Events.getTrucksTypeData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/goodsType', function (request, res) {
+    Events.getGoodsTypeData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/loadsType', function (request, res) {
+    Events.getLoadsTypeData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/orderStatus', function (request, res) {
+    Events.getOrderStatusData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/gpsPlan', function (request, res) {
+    Events.getGPSPlanData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

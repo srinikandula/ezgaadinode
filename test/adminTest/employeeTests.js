@@ -57,7 +57,7 @@ describe('UserTests', () => {
         */
         it('Retrieving Empty Franchise Information', (done) => {
             chai.request(server)
-                .get('/v1/employees/getFranchise')
+                .get('/v1/cpanel/employees/getFranchise')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -70,34 +70,17 @@ describe('UserTests', () => {
         * Test the /POST route Adding Franchise Information Success
         */
         it('Adding Franchise Information', (done) => {
-            let FranchiseData = {
-                "fullName": "Easygaadi",
-                "account": "Easygaadi",
-                "mobile": 9874563210,
-                "landLine": "040225588",
-                "email": "easygaadi@easyggadi.com",
-                "city": "Hyd",
-                "state": "Telangana",
-                "address": "HYD",
-                "company": "EASYGAADI",
-                "bankDetails": "HDFC",
-                "panCard": "asdfg1234h",
-                "gst": "qwerty123456",
-                "doj": new Date(),
-                "status": true
-            };
             franchiseColl.remove({}, function (error, result) {
                 chai.request(server)
-                    .post('/v1/employees/addFranchise')
+                    .post('/v1/cpanel/employees/addFranchise?account=kvsr&address=RJY&bankDetails=&city=RJY&company=KVSR&doj=2018-02-18T18:30:00.000Z&email=svprasadk@mtwlabs.com&fullName=kvsr&gst=&landLine=9948333962&mobile=9948333962&newProfilePic={"$ngfName":"2.jpg","$ngfOrigSize":38536}&panCard=&profilePic=&state=AP&status=true')
                     .set(headerData)
-                    .send(FranchiseData)
                     .end((err, res) => {
                         expect(err).to.be.null;
                         res.body.should.have.property('messages').eql(['Success']);
                         res.body.should.have.property('data');
-                        res.body.data.should.have.property('fullName').eql('Easygaadi');
-                        res.body.data.should.have.property('account').eql('Easygaadi');
-                        res.body.data.should.have.property('mobile').eql(9874563210);
+                        res.body.data.should.have.property('fullName').eql('kvsr');
+                        res.body.data.should.have.property('account').eql('kvsr');
+                        res.body.data.should.have.property('mobile').eql(9948333962);
                         franchiseId = res.body.data._id;
                         done();
                     });
@@ -108,7 +91,7 @@ describe('UserTests', () => {
         */
         it('Retrieving Franchise Information', (done) => {
             chai.request(server)
-                .get('/v1/employees/getFranchise')
+                .get('/v1/cpanel/employees/getFranchise')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -121,26 +104,9 @@ describe('UserTests', () => {
         * Test the /POST route Adding Franchise with same credentials Information Success
         */
         it('Adding Franchise with same credentials Information', (done) => {
-            let FranchiseData = {
-                "fullName": "Easygaadi",
-                "account": "Easygaadi",
-                "mobile": 9874563210,
-                "landLine": "040225588",
-                "email": "easygaadi@easyggadi.com",
-                "city": "Hyd",
-                "state": "Telangana",
-                "address": "HYD",
-                "company": "EASYGAADI",
-                "bankDetails": "HDFC",
-                "panCard": "asdfg1234h",
-                "gst": "qwerty123456",
-                "doj": new Date(),
-                "status": true
-            };
             chai.request(server)
-                .post('/v1/employees/addFranchise')
+                .post('/v1/cpanel/employees/addFranchise?account=kvsr&address=RJY&bankDetails=&city=RJY&company=KVSR&doj=2018-02-18T18:30:00.000Z&email=svprasadk@mtwlabs.com&fullName=kvsr&gst=&landLine=9948333962&mobile=9948333962&newProfilePic={"$ngfName":"2.jpg","$ngfOrigSize":38536}&panCard=&profilePic=&state=AP&status=true')
                 .set(headerData)
-                .send(FranchiseData)
                 .end((err, res) => {
                     res.body.should.have.property('messages').eql(['Franchise already exists']);
                     done();
@@ -151,28 +117,11 @@ describe('UserTests', () => {
         * Test the /PUT route Updating Franchise Information Success
         */
         it('Updating Franchise Information Success', (done) => {
-            let FranchiseData = {
-                "fullName": "Easygaadi1",
-                "account": "Easygaadi1",
-                "mobile": 9874563211,
-                "landLine": "040225588",
-                "email": "easygaadi@easyggadi.com",
-                "city": "Hyd",
-                "state": "Telangana",
-                "address": "HYD",
-                "company": "EASYGAADI",
-                "bankDetails": "HDFC",
-                "panCard": "asdfg1234h",
-                "gst": "qwerty123456",
-                "doj": new Date(),
-                "status": true,
-                "franchiseId": franchiseId
-            };
             chai.request(server)
-                .put('/v1/employees/updateFranchise')
-                .send(FranchiseData)
+                .post('/v1/cpanel/employees/updateFranchise?_id=5a8acd09a8da7948ea667e46&account=kvsr&accountId=5a7d443bd98f005af311e2fa&address=RJY&bankDetails=&city=RJY&company=KVSR&createdAt=2018-02-19T13:11:37.335Z&createdBy=5a7d443bd98f005af311e2fa&doj=2018-02-18T18:30:00.000Z&email=svprasadk@mtwlabs.com&fullName=kvsr&gst=&landLine=9948333962&mobile=9948333962&panCard=&profilePic=images/profile-pics/1519045897327_2.jpg&state=AP&status=true&updatedAt=2018-02-19T13:11:37.335Z')
                 .set(headerData)
                 .end((err, res) => {
+                    console.log('we534',res.body);
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -184,28 +133,11 @@ describe('UserTests', () => {
         * Test the /PUT route Updating Franchise Information Failure
         */
         it('Updating Franchise Information Failure', (done) => {
-            let FranchiseData = {
-                "fullName": "Easygaadi1",
-                "account": "Easygaadi1",
-                "mobile": 9874563211,
-                "landLine": "040225588",
-                "email": "easygaadi@easyggadi.com",
-                "city": "Hyd",
-                "state": "Telangana",
-                "address": "HYD",
-                "company": "EASYGAADI",
-                "bankDetails": "HDFC",
-                "panCard": "asdfg1234h",
-                "gst": "qwerty123456",
-                "doj": new Date(),
-                "status": true,
-                "franhiseId": ""
-            };
             chai.request(server)
-                .put('/v1/employees/updateFranchise')
-                .send(FranchiseData)
+                .post('/v1/cpanel/employees/updateFranchise?_id=&account=kvsr&accountId=5a7d443bd98f005af311e2fa&address=RJY&bankDetails=&city=RJY&company=KVSR&createdAt=2018-02-19T13:11:37.335Z&createdBy=5a7d443bd98f005af311e2fa&doj=2018-02-18T18:30:00.000Z&email=svprasadk@mtwlabs.com&fullName=kvsr&gst=&landLine=9948333962&mobile=9948333962&panCard=&profilePic=images/profile-pics/1519045897327_2.jpg&state=AP&status=true&updatedAt=2018-02-19T13:11:37.335Z')
                 .set(headerData)
                 .end((err, res) => {
+                    console.log('we534',res.body);
                     expect(err).to.be.null;
                     res.should.have.status(200);
                     res.body.should.be.a('object');
@@ -221,7 +153,7 @@ describe('UserTests', () => {
                 "franchiseId": franchiseId
             };
             chai.request(server)
-                .delete('/v1/employees/deleteFranchise')
+                .delete('/v1/cpanel/employees/deleteFranchise')
                 .send(FranchiseData)
                 .set(headerData)
                 .end((err, res) => {
@@ -237,7 +169,7 @@ describe('UserTests', () => {
         */
         it('Retrieving Empty Role Information', (done) => {
             chai.request(server)
-                .get('/v1/employees/getRole')
+                .get('/v1/cpanel/employees/getRole')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -271,7 +203,7 @@ describe('UserTests', () => {
             };
             franchiseColl.remove({}, function (error, result) {
                 chai.request(server)
-                    .post('/v1/employees/addFranchise')
+                    .post('/v1/cpanel/employees/addFranchise')
                     .set(headerData)
                     .send(FranchiseData)
                     .end((err, res) => {
@@ -285,7 +217,7 @@ describe('UserTests', () => {
                         };
                         adminRoleColl.remove({}, function (error, result) {
                             chai.request(server)
-                                .post('/v1/employees/addRole')
+                                .post('/v1/cpanel/employees/addRole')
                                 .set(headerData)
                                 .send(RoleData)
                                 .end((err, res) => {
@@ -305,7 +237,7 @@ describe('UserTests', () => {
         */
         it('Retrieving Role Information', (done) => {
             chai.request(server)
-                .get('/v1/employees/getRole')
+                .get('/v1/cpanel/employees/getRole')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -325,7 +257,7 @@ describe('UserTests', () => {
                 "status": true,
             };
             chai.request(server)
-                .post('/v1/employees/addRole')
+                .post('/v1/cpanel/employees/addRole')
                 .set(headerData)
                 .send(RoleData)
                 .end((err, res) => {
@@ -345,7 +277,7 @@ describe('UserTests', () => {
                 "roleId": roleId
             };
             chai.request(server)
-                .put('/v1/employees/updateRole')
+                .put('/v1/cpanel/employees/updateRole')
                 .send(RoleData)
                 .set(headerData)
                 .end((err, res) => {
@@ -367,7 +299,7 @@ describe('UserTests', () => {
                 "roleId": ""
             };
             chai.request(server)
-                .put('/v1/employees/updateRole')
+                .put('/v1/cpanel/employees/updateRole')
                 .send(RoleData)
                 .set(headerData)
                 .end((err, res) => {
@@ -383,7 +315,7 @@ describe('UserTests', () => {
         */
         it('Retrieving Empty Employee Information', (done) => {
             chai.request(server)
-                .get('/v1/employees/getEmployee')
+                .get('/v1/cpanel/employees/getEmployee')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -408,7 +340,8 @@ describe('UserTests', () => {
             };
             User.remove({}, function (error, result) {
                 chai.request(server)
-                    .post('/v1/employees/addEmployee')
+                    .post('/v1/cpanel/employees/addEmployee')
+                //http://cpanel.localhost.com/v1/cpanel/employees/addEmployee?adminRoleId=5a8ac7e9e70896447987df63&city=hyd&confirmPassword=123&contactAddress=hyd&contactPhone=9876543210&email=test@gmail.com&firstName=test&franchiseId=5a8ac7dfe70896447987df59&isActive=true&lastName=t&newProfilePic={"$ngfName":"3.png","$ngfOrigSize":161321}&password=123&profilePic=&state=tel
                     .set(headerData)
                     .send(EmployeeData)
                     .end((err, res) => {
@@ -428,7 +361,7 @@ describe('UserTests', () => {
         */
         it('Retrieving Employee Information', (done) => {
             chai.request(server)
-                .get('/v1/employees/getEmployee')
+                .get('/v1/cpanel/employees/getEmployee')
                 .set(headerData)
                 .end((err, res) => {
                     res.should.have.status(200);
@@ -453,7 +386,7 @@ describe('UserTests', () => {
                 "franchiseId": franchiseId
             };
             chai.request(server)
-                .post('/v1/employees/addEmployee')
+                .post('/v1/cpanel/employees/addEmployee')
                 .set(headerData)
                 .send(EmployeeData)
                 .end((err, res) => {
@@ -478,7 +411,7 @@ describe('UserTests', () => {
                 "employeeId": employeeId
             };
             chai.request(server)
-                .put('/v1/employees/updateEmployee')
+                .put('/v1/cpanel/employees/updateEmployee')
                 .send(EmployeeData)
                 .set(headerData)
                 .end((err, res) => {
@@ -505,7 +438,7 @@ describe('UserTests', () => {
                 "employeeId": ""
             };
             chai.request(server)
-                .put('/v1/employees/updateEmployee')
+                .put('/v1/cpanel/employees/updateEmployee')
                 .send(EmployeeData)
                 .set(headerData)
                 .end((err, res) => {
@@ -524,7 +457,7 @@ describe('UserTests', () => {
                 "employeeId": employeeId
             };
             chai.request(server)
-                .delete('/v1/employees/deleteEmployee')
+                .delete('/v1/cpanel/employees/deleteEmployee')
                 .send(EmployeeData)
                 .set(headerData)
                 .end((err, res) => {

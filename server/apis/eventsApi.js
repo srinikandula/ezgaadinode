@@ -21,6 +21,10 @@ var serviceActions = require('./../constants/constants');
 var franchiseColl = require('./../models/schemas').franchiseColl;
 var adminRoleColl = require('./../models/schemas').adminRoleColl;
 var adminPermissionsColl = require('./../models/schemas').adminPermissionsColl;
+var TrucksTypesColl = require('./../models/schemas').TrucksTypesColl;
+var GoodsTypesColl = require('./../models/schemas').GoodsTypesColl;
+var LoadTypesColl = require('./../models/schemas').LoadTypesColl;
+var OrderStatusColl = require('./../models/schemas').OrderStatusColl;
 
 Events.prototype.getEventData = function (accountId, startDate, endDate, request, callback) {
     var retObj = {};
@@ -285,6 +289,7 @@ Events.prototype.getAccountData = function (request, callback) {
             retObj.results = results;
             for (var i = 0; i < retObj.results.length; i++) {
                 var AccountData = retObj.results[i];
+                AccountData.gpsEnabled = true;
                 if (!AccountData.contactPhone || AccountData.contactPhone.trim().length == 0 || isNaN(AccountData.contactPhone)) {
                     delete AccountData.contactPhone;
                     AccountData.gpsEnabled = true;
@@ -505,7 +510,8 @@ Events.prototype.getDevicePlans = function (request, callback) {
                             durationInMonths: plan.duration_in_months,
                             amount: plan.amount,
                             status: plan.status,
-                            remark: plan.remark
+                            remark: plan.remark,
+                            plan: "gps"
                         });
                         planDoc.save(function (err) {
                             planCallBack(err, 'saved');
@@ -1024,7 +1030,7 @@ Events.prototype.getCompleteData = function (req,callback) {
             })
         },*/
         nine:function (callBackNine) {
-            events.getEmployeeData(req,function (result) {
+            events.getTrucksTypeData(req,function (result) {
                 console.log('9 Completed',result);
                 if(result.status){
                     callBackNine(null,result);
@@ -1078,6 +1084,204 @@ Events.prototype.getAlternateContact = function (req,callback) {
                     callback(retObj);
                 }
             }
+        }
+    });
+};
+
+Events.prototype.getTrucksTypeData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var status = false;
+    var trucksTypeDataQuery = "select * from eg_truck_type";
+    pool_crm.query(trucksTypeDataQuery, function (err, trucksTypes) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(trucksTypes, function (trucksType, trucksTypeCallBack) {
+                TrucksTypesColl.findOne({title: trucksType.title,tonnes: trucksType.tonnes,mileage: trucksType.mileage}, function (findTrucksTypeErr, trucksTypeFound) {
+                    if (findTrucksTypeErr) {
+                        trucksTypeCallBack(findTrucksTypeErr);
+                    } else if (trucksTypeFound) {
+                        trucksTypeCallBack(null, 'Trucks Type exists');
+                    } else {
+                        if(trucksType.status === 1) {
+                            status = true;
+                        }
+                        var trucksTypeDoc = new TrucksTypesColl({
+                            title: trucksType.title,
+                            tonnes: trucksType.tonnes,
+                            mileage: trucksType.mileage,
+                            status: status,
+                        });
+                        trucksTypeDoc.save(function (err) {
+                            trucksTypeCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (trucksTypeErr, trucksTypeSaved) {
+                if (trucksTypeErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(trucksTypeErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Trucks Type saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getGoodsTypeData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var status = false;
+    var goodsTypeDataQuery = "select * from eg_goods_type";
+    pool_crm.query(goodsTypeDataQuery, function (err, goodsTypes) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(goodsTypes, function (goodsType, goodsTypeCallBack) {
+                GoodsTypesColl.findOne({title: goodsType.title}, function (findGoodsTypeErr, goodsTypeFound) {
+                    if (findGoodsTypeErr) {
+                        goodsTypeCallBack(findGoodsTypeErr);
+                    } else if (goodsTypeFound) {
+                        goodsTypeCallBack(null, 'GoodsType exists');
+                    } else {
+                        if(goodsType.status === 1) {
+                            status = true;
+                        }
+                        var goodsTypeDoc = new GoodsTypesColl({
+                            title: goodsType.title,
+                            status: status,
+                        });
+                        goodsTypeDoc.save(function (err) {
+                            goodsTypeCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (goodsTypeErr, goodsTypeSaved) {
+                if (goodsTypeErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(goodsTypeErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Goods Type saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getLoadsTypeData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var status = false;
+    var loadTypeDataQuery = "select * from eg_load_type";
+    pool_crm.query(loadTypeDataQuery, function (err, loadsType) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(loadsType, function (loadType, loadTypeCallBack) {
+                LoadTypesColl.findOne({title: loadType.title}, function (findLoadTypeErr, loadTypeFound) {
+                    if (findLoadTypeErr) {
+                        loadTypeCallBack(findLoadTypeErr);
+                    } else if (loadTypeFound) {
+                        loadTypeCallBack(null, 'Loads Type exists');
+                    } else {
+                        if(loadType.status === 1) {
+                            status = true;
+                        }
+                        var loadTypeDoc = new LoadTypesColl({
+                            title: loadType.title,
+                            status: status,
+                        });
+                        loadTypeDoc.save(function (err) {
+                            loadTypeCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (loadTypeErr, loadTypeSaved) {
+                if (loadTypeErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(loadTypeErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Loads Type saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getOrderStatusData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var status = false;
+    var orderStatusDataQuery = "select * from eg_order_status";
+    pool_crm.query(orderStatusDataQuery, function (err, orderStatus) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(orderStatus, function (orderStatus, orderStatusCallBack) {
+                OrderStatusColl.findOne({title: orderStatus.title}, function (findLoadTypeErr, orderStatusFound) {
+                    if (findLoadTypeErr) {
+                        orderStatusCallBack(findLoadTypeErr);
+                    } else if (orderStatusFound) {
+                        orderStatusCallBack(null, 'Order Status exists');
+                    } else {
+                        if(orderStatus.status === 1) {
+                            status = true;
+                        }
+                        var orderStatusDoc = new OrderStatusColl({
+                            title: orderStatus.title,
+                            status: status,
+                        });
+                        orderStatusDoc.save(function (err) {
+                            orderStatusCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (orderStatusErr, orderStatusSaved) {
+                if (orderStatusErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(orderStatusErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Order Status saved successfully');
+                    callback(retObj);
+                }
+            });
         }
     });
 };

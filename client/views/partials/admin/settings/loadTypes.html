@@ -5,15 +5,15 @@
             <div class="col-sm-7 pull-right pall-zero">
                 <div class="col-sm-5">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                        <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+                        <input type="text" class="form-control" placeholder="Search" ng-model="loadsType1">
+                        <span class="input-group-addon" ng-click="searchByLoadsType('',loadsType1);"><i class="glyphicon glyphicon-search"></i></span>
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <select class="form-control">
-                        <option value="" selected>Select</option>
-                        <option>Enabled</option>
-                        <option>Disabled</option>
+                    <select class="form-control" ng-model="status1" ng-change="searchByLoadsType(status1,'');">
+                        <option value="" selected>Select by Status</option>
+                        <option ng-value="true">Enabled</option>
+                        <option ng-value="false">Disabled</option>
                     </select>
                 </div>
                 <div class="col-sm-2">
@@ -28,7 +28,7 @@
             <td><input type="checkbox"/></td>
             <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Title'" sortable="'title'" class="clickable-item">{{type.title}}</td>
-            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{type.status}}</td>
+            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{type.status?'Enabled':'Disabled'}}</td>
             <td data-title="'Action'">
                 <a href="#" ng-click="editLoadType(type._id)" class="edit_icon">
                     <span class="glyphicon glyphicon-pencil"></span>

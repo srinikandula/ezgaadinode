@@ -6,7 +6,7 @@
             <button class="btn btn-primary" ui-sref="admin.addUpdateFranchise">Create New</button>
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control" ng-model="franchise2" ng-change="initFranchise(franchise2);">
+            <select class="form-control" ng-model="status1" ng-change="initFranchise(status1);">
                 <option value="" selected>Select by Status</option>
                 <option ng-value="true">Enabled</option>
                 <option ng-value="false">Disabled</option>
@@ -14,8 +14,8 @@
         </li>
         <li class="col-xs-3 pull-right">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search By Account" ng-model="franchise1">
-                <span class="input-group-addon" ng-click="initFranchise(franchise1);"><i class="glyphicon glyphicon-search"></i></span>
+                <input type="text" class="form-control" placeholder="Search" ng-model="franchise1">
+                <span class="input-group-addon" ng-click="searchByFranchise(franchise1);"><i class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>
         <div class="clearfix"></div>
@@ -43,9 +43,9 @@
             <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
                 {{franchise.status?'Enabled':'Disabled'}}
             </td>
-            <td data-title="'Edit/Delete'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="admin.addUpdateFranchise({franchiseId: franchise._id})">Edit</a> /
-                <a href="#" ng-click="deleteFranchise($index)">Delete</a>
+            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
+                <a href="#" ui-sref="admin.addUpdateFranchise({franchiseId: franchise._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="deleteFranchise($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
         <tr ng-if="!currentPageOfFranchises || currentPageOfFranchises.length === 0">
