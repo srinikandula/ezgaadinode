@@ -62,8 +62,28 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "POST",
                 data: params
             }).then(success, error);
+        },
+        addTruckRequestComment: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/addTruckRequestComment',
+                method: "POST",
+                data: params
+            }).then(success, error);
+        },
+        getTruckRequestComments:function (params,success,error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getTruckRequestComments',
+                method: "GET",
+                params: {truckRequestId: params}
+            }).then(success, error);
+        },
+        updateTruckRequestDetails:function (params,success,error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/updateTruckRequestDetails',
+                method: "PUT",
+                data: params
+            }).then(success, error);
         }
-
 
     }
 }]);
@@ -94,6 +114,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             city: "",
             state: "",
             pinCode: "",
+            loadingCharge:"",
+            unloadingCharge:"",
+            pushMessage:"",
+            trackingRequired: "",
+            insuranceRequired:"",
             truckDetails: [{
                 source: "",
                 destination: "",
@@ -107,11 +132,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 insuranceAvailable: ""
             }]
         };
-        SettingServices.getTruckTypes({},function (success) {
-            if(success.data.status){
-                $scope.truckTypesList=success.data.data;
-            }else{
-                $scope.truckTypesList=[];
+        SettingServices.getTruckTypes({}, function (success) {
+            if (success.data.status) {
+                $scope.truckTypesList = success.data.data;
+            } else {
+                $scope.truckTypesList = [];
 
             }
 
@@ -140,14 +165,33 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }, function (error) {
 
         });
+
+
     };
     $scope.initializeEditTruckRequest = function () {
+        $scope.loadBooking = {
+            registrationNo: "",
+            driverId: "",
+            date: "",
+            tripLane: "",
+            accountId: "",
+            tripLane: "",
+            date: "",
+            freightAmount: "",
+            customer: ""
+        };
+        $scope.comment = {
+            status: undefined,
+            comment: ""
+        };
 
         $scope.initializeTruckRequest();
         if ($stateParams._id) {
             OrderProcessServices.getTruckRequestDetails($stateParams._id, function (success) {
                 if (success.data.status) {
                     $scope.truckRequest = success.data.data;
+                    $scope.truckRequest.date = new Date($scope.truckRequest.date);
+
                     $scope.quote = {
                         truckRequestId: $stateParams._id,
                         quote: "",
@@ -155,10 +199,10 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                         messages: []
                     };
                     $scope.quotesList = [];
-                    if($scope.truckRequest.customerType==='Registered'){
-                        $scope.customer=$scope.truckRequest.customer;
-                    }else{
-                        $scope.customer=$scope.truckRequest.customerLeadId;
+                    if ($scope.truckRequest.customerType === 'Registered') {
+                        $scope.customer = $scope.truckRequest.customer;
+                    } else {
+                        $scope.customer = $scope.truckRequest.customerLeadId;
                     }
                 } else {
                     success.data.messages.forEach(function (message) {
@@ -210,7 +254,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
     $scope.addTruckRequest = function () {
         var params = $scope.truckRequest;
-        console.log('params.customerType === "UnRegistered" && !params.name',params.customerType ,params.name);
+        console.log('params.customerType === "UnRegistered" && !params.name', params.customerType, params.name);
         params.messages = [];
         if (!params.customerType) {
             params.messages.push("Please select customer type");
@@ -233,7 +277,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 Notification.error(message);
             });
         } else {
-            if(params.customerType === "Registered"){
+            if (params.customerType === "Registered") {
                 params.customer = params.customer._id;
             }
             OrderProcessServices.addTruckRequest(params, function (success) {
@@ -439,14 +483,13 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
     };
     $scope.loadBookingStatus = false;
     $scope.getLoadBookingDetails = function () {
-        console.log('truckRequest',$scope.customer);
         if (!$scope.loadBookingStatus) {
-            console.log('loading...');
             $scope.getTruckRequestQuotes();
             $scope.loadBookingStatus = true;
             OrderProcessServices.getLoadBookingDetails($stateParams._id, function (success) {
                 if (success.data.status) {
                     $scope.loadBooking = success.data.data;
+                    $scope.loadBooking.date = new Date($scope.loadBooking.date);
                     $scope.getTrucksAndDriversByAccountId();
                 } else {
                     $scope.loadBooking = {
@@ -458,8 +501,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                         tripLane: "",
                         date: "",
                         freightAmount: ""
-
-
                     }
 
                 }
@@ -469,12 +510,18 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }
     };
     $scope.getTrucksAndDriversByAccountId = function () {
-        if ($scope.loadBooking.accountId) {
+
+
+        if ($scope.loadBooking.customer) {
+            $scope.loadBooking.accountId = $scope.loadBooking.customer._id;
 
             OrderProcessServices.getTrucksAndDriversByAccountId($scope.loadBooking.accountId, function (success) {
                 if (success.data.status) {
                     $scope.loadBooking.trucksList = success.data.data.trucksList;
                     $scope.loadBooking.driversList = success.data.data.driversList;
+                    $scope.loadBooking.registrationNo = undefined;
+                    $scope.loadBooking.driverId = undefined;
+
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -486,6 +533,71 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }
     };
 
+    $scope.acceptQuote = function (quote) {
+        $scope.loadBooking.customer = quote;
+        $scope.getTrucksAndDriversByAccountId();
+    };
+    $scope.getTruckRequestComments = function () {
+        OrderProcessServices.getTruckRequestComments($stateParams._id, function (success) {
+            if (success.data.status) {
+                $scope.commentList = success.data.data;
+            }
+        }, function (error) {
+
+        })
+    };
+    $scope.addTruckRequestComment = function () {
+        var params = $scope.comment;
+        params.messages = [];
+        if (!params.status) {
+            params.messages.push("Please select status");
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            })
+        } else {
+            params.truckRequestId=$stateParams._id;
+            OrderProcessServices.addTruckRequestComment(params, function (success) {
+                if (success.data.status) {
+                    $scope.commentList.push(success.data.data);
+                    $scope.comment = {
+                        status: undefined,
+                        comment: ""
+                    };
+                    success.data.messages.forEach(function (message) {
+                        Notification.success(message);
+                    })
+
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    })
+                }
+            }, function (error) {
+
+            })
+
+        }
+
+    };
+    $scope.updateTruckRequestDetails=function () {
+      console.log("truck request",$scope.truckRequest);
+      OrderProcessServices.updateTruckRequestDetails($scope.truckRequest,function (success) {
+          if(success.data.status){
+              success.data.messages.forEach(function (message) {
+                  Notification.success(message);
+              })
+
+          }else{
+              success.data.messages.forEach(function (message) {
+                  Notification.error(message);
+              })
+          }
+      },function (error) {
+
+      })
+    }
 
 
 }]);

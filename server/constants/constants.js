@@ -379,7 +379,16 @@ const serviceActions = {
     get_truck_request_quotes_err:'GET_TRUCK_REQUEST_QUOTES_ERR',
     add_load_booking_for_truck_request:'ADD_LOAD_BOOKING_FOR_TRUCK_REQUEST',
     add_load_booking_for_truck_request_err:'ADD_LOAD_BOOKING_FOR_TRUCK_REQUEST_ERR',
-
+    get_load_booking_details:'GET_LOAD_BOOKING_DETAILS',
+    get_load_booking_details_err:'GET_LOAD_BOOKING_DETAILS_ERR',
+    get_trucks_and_drivers_by_accountId:'GET_TRUCKS_AND_DRIVERS_BY_ACCOUNTID',
+    get_trucks_and_drivers_by_accountId_err:'GET_TRUCKS_AND_DRIVERS_BY_ACCOUNTID_ERR',
+    add_truck_request_comment:'ADD_TRUCK_REQUEST_COMMENT',
+    add_truck_request_comment_err:'ADD_TRUCK_REQUEST_COMMENT_ERR',
+    get_truck_request_comments:'GET_TRUCK_REQUEST_COMMENTS',
+    get_truck_request_comments_err:'GET_TRUCK_REQUEST_COMMENTS_ERR',
+    update_truck_request:'UPDATE_TRUCK_REQUEST_DETAILS',
+    update_truck_request_err:'UPDATE_TRUCK_REQUEST_DETAILS_ERR',
 
 };
 module.exports = serviceActions;
