@@ -119,6 +119,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             pushMessage:"",
             trackingRequired: "",
             insuranceRequired:"",
+            status:undefined,
             truckDetails: [{
                 source: "",
                 destination: "",
@@ -490,6 +491,9 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 if (success.data.status) {
                     $scope.loadBooking = success.data.data;
                     $scope.loadBooking.date = new Date($scope.loadBooking.date);
+                    $scope.loadBooking.customer={
+                        _id:$scope.loadBooking.accountId
+                    };
                     $scope.getTrucksAndDriversByAccountId();
                 } else {
                     $scope.loadBooking = {
@@ -560,7 +564,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.truckRequestId=$stateParams._id;
             OrderProcessServices.addTruckRequestComment(params, function (success) {
                 if (success.data.status) {
-                    $scope.commentList.push(success.data.data);
+                    $scope.commentList.unshift(success.data.data);
+                    $scope.truckRequest.status=success.data.data.status;
                     $scope.comment = {
                         status: undefined,
                         comment: ""
@@ -582,7 +587,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
     };
     $scope.updateTruckRequestDetails=function () {
-      console.log("truck request",$scope.truckRequest);
       OrderProcessServices.updateTruckRequestDetails($scope.truckRequest,function (success) {
           if(success.data.status){
               success.data.messages.forEach(function (message) {
