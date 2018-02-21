@@ -74,6 +74,24 @@ AuthRouter.post('/saveLoadBooking',function (req,res) {
    })
 });
 
+AuthRouter.post('/addTruckRequestComment',function (req,res) {
+    OrderProcess.addTruckRequestComment(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getTruckRequestComments',function (req,res) {
+    OrderProcess.getTruckRequestComments(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.put('/updateTruckRequestDetails',function (req,res) {
+    OrderProcess.updateTruckRequestDetails(req,function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

@@ -542,9 +542,12 @@ var truckRequestSchema = mongoose.Schema({
     pickupPoint: String,
     comment: String,
     expectedPrice: Number,
-    trackingAvailable: String,
-    insuranceAvailable: String,
-    customerLeadId: {type: ObjectId, ref: 'customerLeads'}
+    trackingRequired: String,
+    insuranceRequired: String,
+    customerLeadId: {type: ObjectId, ref: 'customerLeads'},
+    loadingCharge:Number,
+    unloadingCharge:Number,
+    pushMessage:String
 
 }, {timestamps: String});
 
@@ -611,6 +614,15 @@ var truckQuotesSchema = mongoose.Schema({
     comment: String
 }, {timestamps: String});
 
+var truckRequestCommentSchema=mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    truckRequestId: {type: ObjectId, ref: 'truckRequests'},
+    status: String,
+    comment: String,
+    notifiedStatus:{type:String,default:"NO"}
+}, {timestamps: String});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -648,5 +660,6 @@ module.exports = {
     franchiseColl: mongoose.model('franchise', franchiseSchema, 'franchise'),
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
     adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions'),
-    TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes')
+    TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes'),
+    TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments')
 };

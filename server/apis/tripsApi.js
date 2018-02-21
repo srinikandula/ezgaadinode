@@ -81,7 +81,7 @@ function shareTripDetails(tripDetails, trip, callback) {
                                 status: true,
                                 tripId: trip._id,
                                 message: "success"
-                            }
+                            };
                             if (partyData.isSms) {
 
                                 var smsParams = {
@@ -95,7 +95,7 @@ function shareTripDetails(tripDetails, trip, callback) {
                                     "Tonnage :" + tripDetails.tonnage + ",\n" +
                                     "Rate:" + tripDetails.rate + ",\n" +
                                     "Amount:" + tripDetails.freightAmount
-                                }
+                                };
                                 SmsService.sendSMS(smsParams, function (smsResponse) {
                                     if (smsResponse.status) {
                                         if (partyData.isEmail) {
