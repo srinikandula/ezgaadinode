@@ -16,7 +16,7 @@ app.factory('groupMapService',['$http','$cookies', function ($http, $cookies) {
     }
 }]);
 
-app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsService', function ($scope, $state,groupMapService,GpsService) {
+app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsService','$compile', function ($scope, $state,groupMapService,GpsService,$compile) {
 
     var locations = [];
     var regNos=[];
@@ -56,14 +56,23 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
                 },*/
                 map: map
             });
-            google.maps.event.addListener(marker, 'click', (function(marker, i) {
+
+            // var content = '<span> <b>Truck Reg No:</b> '+regNos[i]+'</span><br><span><b> Truck Type: </b> '+truckTypes[i]+'</span><br>'; //'<span> Truck No: ' + regNos[i]+'</span>'+'<span> Truck Type :'+truckTypes[i]+'</span>';
+            var functionContent = '<div>'+'<center><span> <b>Truck Reg No:</b> '+regNos[i]+'</span><br><span><b> Truck Type: </b> '+truckTypes[i]+'</span><br>'+'<a ng-click="track(' + i + ')" class="btn btn-danger">Track</a></center></div>';
+            var compiledContent = $compile(functionContent)($scope);
+            google.maps.event.addListener(marker, 'click', (function(marker, i,content) {
                 return function() {
-                    infowindow.setContent(regNos[i]+"<br>"+truckTypes[i]);
+                    infowindow.setContent(content);
                     infowindow.open(map, marker);
                 }
-            })(marker, i));
+            })(marker, i,compiledContent[0], $scope));
         }
     };
+
+    $scope.track = function (truckNo) {
+        $state.go('trackView',{truckNo:regNos[truckNo]});          // console.log(truckNo);
+    };
+
     $scope.gpsTrackingByMapView();
     // setTimeout(function () {$scope.loadData();}, 40);
 

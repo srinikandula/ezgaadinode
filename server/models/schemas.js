@@ -317,9 +317,11 @@ var devicePositions = new mongoose.Schema({
         totalDistance: Number,
         motion: Number
     },
-    address: String
-    // isViewed : Boolean
-}, {timestamps: true, versionKey: false});
+    address: String,
+    isIdle:Boolean,
+    isStopped:Boolean
+        // isViewed : Boolean
+}, { timestamps: true, versionKey: false });
 
 var archivedDevicePositions = new mongoose.Schema({
     // _id: ObjectId,
