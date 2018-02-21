@@ -549,7 +549,8 @@ var truckRequestSchema = mongoose.Schema({
     customerLeadId: {type: ObjectId, ref: 'customerLeads'},
     loadingCharge:Number,
     unloadingCharge:Number,
-    pushMessage:String
+    pushMessage:String,
+    status:{type:String,default:'New'}
 
 }, {timestamps: String});
 

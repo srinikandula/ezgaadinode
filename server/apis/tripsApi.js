@@ -83,7 +83,6 @@ function shareTripDetails(tripDetails, trip, callback) {
                                 message: "success"
                             };
                             if (partyData.isSms) {
-
                                 var smsParams = {
                                     contact: partyData.contact,
                                     message: "Hi " + partyData.name + ",\n" +
