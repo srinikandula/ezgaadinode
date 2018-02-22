@@ -41,9 +41,14 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     ];
 
     $scope.status = {
-        isCustomHeaderOpen: false,
-        isFirstOpen: true,
+        isOpen: true,
+        isOpenOne: true,
+        isOpenTwo: true,
+        isOpenthree: true,
+        isOpenFour: true,
+        isOpenFive: true,
     };
+
 
     $scope.leadType = ['Truck Owner', 'Manufacturer', 'Commission Agent', 'Transporter', 'Factory Owners']
     $scope.yrsInService = ['2018', '2017', '2016'];

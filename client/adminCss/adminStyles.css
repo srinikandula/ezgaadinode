@@ -2,6 +2,9 @@
 .pall-zero {
     padding: 0 !important;
 }
+.mb-zero{
+    margin:0 !important;
+}
 
 .mt-5 {
     margin-top: 5px;
