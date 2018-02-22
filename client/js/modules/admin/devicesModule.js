@@ -172,6 +172,11 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
 
 app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$stateParams', '$filter', '$state', function ($scope, DeviceService, Notification, NgTableParams, $stateParams, $filter, $state) {
 
+    $scope.status = {
+        isOpen: true,
+        isOpenOne: true
+    }
+
     $scope.deviceDetails = {
         accountId: '',
         deviceId: '',

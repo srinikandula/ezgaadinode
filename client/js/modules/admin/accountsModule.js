@@ -93,6 +93,14 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
 }]);
 
 app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', function ($scope, $stateParams, AccountService, Notification, $state) {
+
+    $scope.status = {
+        isOpen: true,
+        isOpenOne: true,
+        isOpenTwo: true,
+        isOpenThre: true,
+    };
+
     $scope.accountDetails = {
         userName: '',
         contactName: '',
