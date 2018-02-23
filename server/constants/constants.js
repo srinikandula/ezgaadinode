@@ -394,6 +394,15 @@ const serviceActions = {
     get_truck_request_comments_err:'GET_TRUCK_REQUEST_COMMENTS_ERR',
     update_truck_request:'UPDATE_TRUCK_REQUEST_DETAILS',
     update_truck_request_err:'UPDATE_TRUCK_REQUEST_DETAILS_ERR',
+    delete_truck_request:"DELETE_TRUCK_REQUEST",
+    delete_truck_request_err:"DELETE_TRUCK_REQUEST_ERR",
+    add_truck_request:"ADD_TRUCK_REQUEST",
+    add_truck_request_err:"ADD_TRUCK_REQUEST_ERR",
+    get_truck_request_details:"GET_TRUCK_REQUEST_DETAILS",
+    get_truck_request_details_err:"GET_TRUCK_REQUEST_DETAILS_ERR",
+    get_total_truck_owners:"GET_TOTAL_TRUCK_OWNERS",
+    get_total_truck_owners_err:"GET_TOTAL_TRUCK_OWNERS_ERR",
+
 
 
 };

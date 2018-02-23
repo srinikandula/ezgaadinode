@@ -13,15 +13,9 @@
                             <input type="text" class="form-control custom-form-control" name="fullName"
                                    ng-model="customerLead.name" placeholder="Full Name *"/>
                         </div>
-                        <div class="form-group pos-relative"
-                             ng-repeat="mobile in customerLead.contactPhone track by $index">
-                            <input type="text" class="form-control custom-form-control" name="mobile"
-                                   ng-model="customerLead.contactPhone[$index]" ng-pattern="/^[0-9]/"
-                                   placeholder="Mobile {{$index+1}} *"/>
-                            <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
-                                                                             ng-click="removeNumber()"></i></span>
-                            <span class="plus-pos" ng-show="$index == 0"><i class="fa fa-plus-square" aria-hidden="true"
-                                                                            ng-click="addNumber()"></i></span>
+                        <div class="form-group">
+                            <input type="text" class="form-control custom-form-control" name="contactPhone"
+                                   ng-model="customerLead.contactPhone" placeholder="Contact phone*"/>
                         </div>
 
                     </div>
@@ -38,41 +32,25 @@
                         </div>
                     </div>
                 </div>
-
-            </div>
-            <div uib-accordion-group class="panel-default">
-                <uib-accordion-heading>
-                    Address <i class="pull-right glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-                </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="companyName"
-                                   ng-model="customerLead.companyName" placeholder="Company Name"/>
+
+                        <div class="form-group pos-relative"
+                             ng-repeat="mobile in customerLead.alternatePhone track by $index">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   ng-model="customerLead.alternatePhone[$index]" ng-pattern="/^[0-9]/"
+                                   placeholder="Mobile {{$index+1}} *"/>
+                            <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
+                                                                             ng-click="removeNumber()"></i></span>
+                            <span class="plus-pos" ng-show="$index == 0"><i class="fa fa-plus-square" aria-hidden="true"
+                                                                            ng-click="addNumber()"></i></span>
                         </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="address"
-                                   ng-model="customerLead.address" placeholder="Address"/>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="city"
-                                   ng-model="customerLead.city" placeholder="City"/>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="state"
-                                   ng-model="customerLead.state" placeholder="State"/>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="pincode"
-                                   ng-model="customerLead.pinCode" placeholder="Pincode"/>
-                        </div>
+
                     </div>
                 </div>
 
             </div>
+
             <div uib-accordion-group class="panel-default">
                 <uib-accordion-heading>
                     Service Info <i class="pull-right glyphicon"
@@ -180,30 +158,30 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="company"
-                                   ng-model="customerLead.companyName2" placeholder="Company"/>
+                            <input type="text" class="form-control custom-form-control" name="companyName"
+                                   ng-model="customerLead.companyName" placeholder="Company Name"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control custom-form-control" name="address"
-                                   ng-model="customerLead.companyAddress" placeholder="Address"/>
+                                   ng-model="customerLead.address" placeholder="Address"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control custom-form-control" name="city"
-                                   ng-model="customerLead.companyCity" placeholder="City"/>
+                                   ng-model="customerLead.city" placeholder="City"/>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
                             <input type="text" class="form-control custom-form-control" name="state"
-                                   ng-model="customerLead.companyState" placeholder="State"/>
+                                   ng-model="customerLead.state" placeholder="State"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control custom-form-control" name="pincode"
-                                   ng-model="customerLead.companyPin" placeholder="Pincode"/>
+                                   ng-model="customerLead.pinCode" placeholder="Pincode"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control custom-form-control" name="officeNumber"
-                                   ng-model="customerLead.companyPhone" placeholder="Office Number"/>
+                                   ng-model="customerLead.officeNumber" placeholder="Office Number"/>
                         </div>
                     </div>
                 </div>
