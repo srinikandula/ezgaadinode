@@ -484,7 +484,6 @@ CustomerLeads.prototype.convertCustomerLead=function (req,callback) {
                   retObj.messages.push("Please try again");
                   callback(retObj);
               }else if(customerLead){
-
               }else{
                   retObj.messages.push("Customer lead not updated");
                   callback(retObj);

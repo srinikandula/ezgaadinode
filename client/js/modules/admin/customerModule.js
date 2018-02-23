@@ -58,7 +58,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
     function customerLeadsFunc() {
         $scope.customerLead = {
-            name: '',
+            userName: '',
             contactPhone:'',
             alternatePhone:[''],
             email: '',
@@ -68,9 +68,9 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             city: '',
             state: '',
             pinCode: '',
-            erp: undefined,
-            gps: undefined,
-            load: undefined,
+            gpsEnabled: undefined,
+            erpEnabled: undefined,
+            loadEnabled:undefined,
             yrsInService: '',
             operatingRoutes: [{ source: '', destination: '' }],
             customerProofs: '',

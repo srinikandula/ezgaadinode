@@ -11,7 +11,7 @@
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
                             <input type="text" class="form-control custom-form-control" name="fullName"
-                                   ng-model="customerLead.name" placeholder="Full Name *"/>
+                                   ng-model="customerLead.userName" placeholder="Full Name *"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control custom-form-control" name="contactPhone"
@@ -75,7 +75,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="customerLead.erp"/>
+                                            <input type="checkbox" value="" ng-model="customerLead.gpsEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             ERP
                                         </label>
@@ -84,7 +84,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="customerLead.gps"/>
+                                            <input type="checkbox" value="" ng-model="customerLead.erpEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             GPS
                                         </label>
@@ -93,7 +93,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="customerLead.load"/>
+                                            <input type="checkbox" value="" ng-model="customerLead.loadEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             LOAD
                                         </label>

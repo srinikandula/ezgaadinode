@@ -25,6 +25,7 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
+    userId:String,
     contactPhone: Number,
     password: String,
     email: String,
@@ -447,7 +448,7 @@ var customerTypesSchema = mongoose.Schema({
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
-    name: String,
+    userName: String,
     contactPhone: Number,
     alternatePhone:[Number],
     email: String,
@@ -459,9 +460,9 @@ var customerLeadsSchema = mongoose.Schema({
     state: String,
     pinCode: String,
     officeNumber: Number,
-    erp: {type: Boolean, default: false},
-    gps: {type: Boolean, default: false},
-    load: {type: Boolean, default: false},
+    gpsEnabled: {type: Boolean, default: false},
+    erpEnabled: {type: Boolean, default: false},
+    loadEnabled:{type: Boolean, default: false},
     yearInService: Number,
     operatingRoutes: [{source: String, destination: String}],
     documentType: String,
