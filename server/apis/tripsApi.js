@@ -81,9 +81,8 @@ function shareTripDetails(tripDetails, trip, callback) {
                                 status: true,
                                 tripId: trip._id,
                                 message: "success"
-                            }
+                            };
                             if (partyData.isSms) {
-
                                 var smsParams = {
                                     contact: partyData.contact,
                                     message: "Hi " + partyData.name + ",\n" +
@@ -95,7 +94,7 @@ function shareTripDetails(tripDetails, trip, callback) {
                                     "Tonnage :" + tripDetails.tonnage + ",\n" +
                                     "Rate:" + tripDetails.rate + ",\n" +
                                     "Amount:" + tripDetails.freightAmount
-                                }
+                                };
                                 SmsService.sendSMS(smsParams, function (smsResponse) {
                                     if (smsResponse.status) {
                                         if (partyData.isEmail) {
@@ -859,7 +858,7 @@ Trips.prototype.sendEmail = function (jwt, data,req, callback) {
  */
 
 Trips.prototype.findTotalRevenue = function (erpSettingsCondition,req, callback) {
-    console.log('JWT ',erpSettingsCondition);
+    //console.log('JWT ',erpSettingsCondition);
     async.parallel({
         tripFreightTotal: function (callback) {
             //it is not working now
@@ -1049,7 +1048,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
                 {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
 
                 function (err, totalFreight) {
-                    console.log('error1', err);
+                   // console.log('error1', err);
                     callback(err, totalFreight);
                 });
         },
