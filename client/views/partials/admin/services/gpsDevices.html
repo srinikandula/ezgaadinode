@@ -84,13 +84,15 @@
                 <div ng-dropdown-multiselect=""
                      options="allDevices"
                      selected-model="selectedDevices"
-                     extra-settings="selected_baseline_settings" class="col-sm-4" translation-texts="customText">
+                     extra-settings="selected_baseline_settings" class="col-sm-4 col-xs-12" translation-texts="customText">
                 </div>
-                <select class="form-control custom-form-control" ng-model="assignedTo" class ="col-xs-7">
+                <div class="col-sm-7 col-xs-12">
+                <select class="form-control" ng-model="assignedTo">
                     <option value="" selected>Transfer To</option>
                     <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}
                     </option>
                 </select>
+                </div>
             </div>
             <div ng-show="error">{{error}}</div>
         </div>

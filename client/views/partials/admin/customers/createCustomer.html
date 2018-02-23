@@ -9,13 +9,27 @@
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="fullName"
-                                   ng-model="customerLead.userName" placeholder="Full Name *"/>
+                                   ng-model="customerLead.userName"/>
+                            <label class="focus-effect-for-input">User Name*</label>
                         </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" name="contactPhone"
-                                   ng-model="customerLead.contactPhone" placeholder="Contact phone*"/>
+
+                        <div class="form-group pos-relative styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   ng-model="customerLead.contactPhone" ng-pattern="/^[0-9]/"/>
+                            <label class="focus-effect-for-input">Mobile*</label>
+                        </div>
+                        <div class="form-group pos-relative styling-input-list"
+                             ng-repeat="mobile in customerLead.alternatePhone track by $index">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   ng-model="customerLead.alternatePhone[$index]" ng-pattern="/^[0-9]/">
+                            <label class="focus-effect-for-input">Alternate Mobile*</label>
+
+                            <span class="plus-pos" ng-show="$index >= 1">
+                                <i class="fa fa-times-circle clr-red" ng-click="removeNumber($index)"></i></span>
+                            <span class="plus-pos" ng-show="$index == 0">
+                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addNumber()"></i></span>
                         </div>
 
                     </div>
@@ -26,44 +40,19 @@
                                 <option ng-repeat="type in leadType" value="{{type}}">{{type}}</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="email"
-                                   ng-model="customerLead.email" placeholder="Email"/>
+                                   ng-model="customerLead.email"/>
+                            <label class="focus-effect-for-input">Email</label>
                         </div>
                     </div>
                 </div>
 
             </div>
         </uib-accordion>
-        <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
-                <uib-accordion-heading>
-                    Address <i class="pull-right glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
-                </uib-accordion-heading>
-                <div class="row">
-                    <div class="col-xs-12 col-sm-6">
 
-                        <div class="form-group pos-relative"
-                             ng-repeat="mobile in customerLead.alternatePhone track by $index">
-                            <input type="text" class="form-control custom-form-control" name="mobile"
-                                   ng-model="customerLead.alternatePhone[$index]" ng-pattern="/^[0-9]/"
-                                   placeholder="Mobile {{$index+1}} *"/>
-                            <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
-                                                                             ng-click="removeNumber()"></i></span>
-                            <span class="plus-pos" ng-show="$index == 0"><i class="fa fa-plus-square" aria-hidden="true"
-                                                                            ng-click="addNumber()"></i></span>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-        </uib-accordion>
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpenthree">
-
-            <div uib-accordion-group class="panel-default">
                 <uib-accordion-heading>
                     Service Info <i class="pull-right glyphicon"
                                     ng-class="{'glyphicon-chevron-down': status.isOpenthree, 'glyphicon-chevron-right': !status.isOpenthree}"></i>
@@ -104,7 +93,8 @@
                         <div class="form-group">
                             <!-- <date-picker id="date" ban-future="'banFutureDate'" ng-model="expenseDetails.date" placeholder="'Service Date*'" class="'custom-form-control'"></date-picker> -->
                             <div class="form-group">
-                                <select class="form-control custom-form-control" ng-model="customerLead.yrsInService">
+                                <select class="form-control custom-form-control"
+                                        ng-model="customerLead.yrsInService">
                                     <option value="" selected>Years in Service</option>
                                     <option ng-repeat="years in yrsInService" value="{{years}}">{{years}}</option>
                                 </select>
@@ -122,17 +112,18 @@
                             <h4>Operating Routes</h4>
                             <div class="pos-relative"
                                  ng-repeat="routes in customerLead.operatingRoutes track by $index">
-                                <span class="plus-pos" ng-show="$index == 0"><i class="fa fa-plus-square"
-                                                                                aria-hidden="true"
-                                                                                ng-click="addRoutes()"></i></span>
-
-                                <div class="form-group">
-                                    <input type="text" class="form-control custom-form-control" ng-model="routes.source"
-                                           name="source" placeholder="Source"/>
-                                </div>
-                                <div class="form-group ">
+                                <span class="plus-pos" ng-show="$index == 0">
+                                    <i class="fa fa-plus-square" aria-hidden="true" ng-click="addRoutes()"></i></span>
+                                <div class="form-group styling-input-list">
                                     <input type="text" class="form-control custom-form-control"
-                                           ng-model="routes.destination" name="destination" placeholder="Destination"/>
+                                           ng-model="routes.source"
+                                           name="source"/>
+                                    <label class="focus-effect-for-input">Source</label>
+                                </div>
+                                <div class="form-group styling-input-list">
+                                    <input type="text" class="form-control custom-form-control"
+                                           ng-model="routes.destination" name="destination"/>
+                                    <label class="focus-effect-for-input">Destination</label>
                                 </div>
                                 <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
                                                                                  ng-click="routeDel()"></i></span>
@@ -171,31 +162,37 @@
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="companyName"
-                                   ng-model="customerLead.companyName" placeholder="Company Name"/>
+                                   ng-model="customerLead.companyName"/>
+                            <label class="focus-effect-for-input">Company</label>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="address"
-                                   ng-model="customerLead.address" placeholder="Address"/>
+                                   ng-model="customerLead.address"/>
+                            <label class="focus-effect-for-input">Address</label>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="city"
-                                   ng-model="customerLead.city" placeholder="City"/>
+                                   ng-model="customerLead.city"/>
+                            <label class="focus-effect-for-input">City</label>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="state"
-                                   ng-model="customerLead.state" placeholder="State"/>
+                                   ng-model="customerLead.state"/>
+                            <label class="focus-effect-for-input">State</label>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="pincode"
-                                   ng-model="customerLead.pinCode" placeholder="Pincode"/>
+                                   ng-model="customerLead.pinCode"/>
+                            <label class="focus-effect-for-input">Pincode</label>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="officeNumber"
-                                   ng-model="customerLead.officeNumber" placeholder="Office Number"/>
+                                   ng-model="customerLead.officeNumber"/>
+                            <label class="focus-effect-for-input">office Number</label>
                         </div>
                     </div>
                 </div>
@@ -216,30 +213,37 @@
                                 <option ng-repeat="payType in paymentType" value="{{payType}}">{{payType}}</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="payPrecent"
-                                   ng-model="customerLead.loadPaymentToPayPercent"
-                                   placeholder="Load Payment To pay Percent"/>
+                                   ng-model="customerLead.loadPaymentToPayPercent"/>
+                            <label class="focus-effect-for-input">Load Payment To pay Percent</label>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="tds"
-                                   ng-model="customerLead.tdsDeclarationDoc" placeholder="Tds Declaration Doc"/>
+                                   ng-model="customerLead.tdsDeclarationDoc"/>
+                            <label class="focus-effect-for-input">TDS Declaration Doc</label>
+
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="advancePercent"
-                                   ng-model="customerLead.loadPaymentAdvancePercent"
-                                   placeholder="Load Payment Advance Percent"/>
+                                   ng-model="customerLead.loadPaymentAdvancePercent"/>
+                            <label class="focus-effect-for-input">Load Payment Advance Percent</label>
+
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="podDays"
-                                   ng-model="customerLead.loadPaymentPodDays" placeholder="Load Payment Pod Days"/>
+                                   ng-model="customerLead.loadPaymentPodDays"/>
+                            <label class="focus-effect-for-input">Load Payment POD days</label>
+
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="leadSource"
-                                   ng-model="customerLead.leadSource" placeholder="Lead Source"/>
+                                   ng-model="customerLead.leadSource"/>
+                            <label class="focus-effect-for-input">lead Source</label>
+
                         </div>
                     </div>
                 </div>
