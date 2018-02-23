@@ -139,9 +139,9 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         //console.log($scope.customerLead.contactPhone);
         //$scope.removeMark = true;
     };
-    $scope.removeNumber = function() {
+    $scope.removeNumber = function(index) {
         //$scope.showExtra = false;
-        $scope.customerLead.alternatePhone.splice($scope.customerLead.alternatePhone, 1)
+        $scope.customerLead.alternatePhone.splice(index, 1)
     };
 
     function verifyMobNum() {

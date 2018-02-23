@@ -105,8 +105,12 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         'Request for Approval'];
 
     $scope.status = {
-        isFirstOpen: true,
-        isSecondOpen: true,
+        isOpen: true,
+        isOpenOne: true,
+        isOpenTwo: true,
+        isOpenThree: true,
+        isOpenFour: true,
+        isOpenFive: true,
     };
     $scope.initializeTruckRequest = function () {
         $scope.truckRequest = {

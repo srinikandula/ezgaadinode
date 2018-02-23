@@ -2,10 +2,10 @@
     <h4>Truck Request</h4>
     <div class="col-xs-12">
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+            <div uib-accordion-group class="panel-default" is-open="status.isOpen">
                 <uib-accordion-heading>
                     Details <i class="pull-right glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
+                               ng-class="{'glyphicon-chevron-down': status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
@@ -14,7 +14,6 @@
                                 <option value="">Customer Type</option>
                                 <option>Registered</option>
                                 <option>UnRegistered</option>
-
                             </select>
                         </div>
 
@@ -26,12 +25,14 @@
                                        style="min-width: 390px;"
                                        title="Customer *" append-to-body="true">
 
-                                <ui-select-match placeholder="Customer *" class="form-control custom-form-control">
+                                <ui-select-match placeholder="Customer *" class="form-control order-form-control">
                                     {{$select.selected.userName || userName}}
                                 </ui-select-match>
                                 <ui-select-choices
                                         repeat="truck in truckOwnersList | propsFilter: {userName: $select.search}">
-                                   <b> <div ng-bind-html="truck.userName | highlight: $select.search"></div></b>
+                                    <b>
+                                        <div ng-bind-html="truck.userName | highlight: $select.search"></div>
+                                    </b>
                                     <small>
                                         Mobile: {{truck.contactPhone || '---'}}
                                     </small>
@@ -41,10 +42,10 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6" ng-show="truckRequest.customerType=='UnRegistered' ">
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="fullName"
-                                   ng-model="truckRequest.name"
-                                   placeholder="Full Name *"/>
+                                   ng-model="truckRequest.name"/>
+                            <label class="focus-effect-for-input">Full Name*</label>
                         </div>
                     </div>
                 </div>
@@ -90,10 +91,10 @@
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isSecondOpen">
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
                 <uib-accordion-heading>
                     Truck Details <i class="pull-right glyphicon"
-                                     ng-class="{'glyphicon-chevron-down': status.isSecondOpen, 'glyphicon-chevron-right': !status.isSecondOpen}"></i>
+                                     ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
                 </uib-accordion-heading>
                 <div class="text-right mb-10">
                     <button class="btn btn-primary btn-sm" ng-click="addTripDetails()">Add</button>
@@ -105,7 +106,8 @@
                     <div class="col-xs-12 col-sm-3 ">
                         <div class="form-group">
                             <input type="text" class="form-control " name="source" ng-model="truck.source"
-                                   id="searchSource{{$index}}" ng-change="addSearchSource($index)"                  placeholder="Source"/>
+                                   id="searchSource{{$index}}" ng-change="addSearchSource($index)"
+                                   placeholder="Source"/>
                         </div>
                         <div class="form-group">
                             <admin-date-picker id="date" ng-model="truck.date" placeholder="'Date Time Required *'"
@@ -116,7 +118,8 @@
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
                             <input type="text" class="form-control " name="state" ng-model="truck.destination"
-                                   id="searchDestination{{$index}}" ng-change="addSearchDestination($index)"             placeholder="Destination"/>
+                                   id="searchDestination{{$index}}" ng-change="addSearchDestination($index)"
+                                   placeholder="Destination"/>
                         </div>
                         <div class="form-group">
                             <input type="text" class="form-control " name="pincode" ng-model="truck.aa"
@@ -139,10 +142,12 @@
                     </div>
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
-                            <select  class="form-control"
+                            <select class="form-control"
                                     ng-model="truck.truckType">
                                 <option value="">Truck type</option>
-                                <option ng-repeat="truckTypes in truckTypesList">{{truckTypes.title}}/{{truckTypes.tonnes}}Tons</option>
+                                <option ng-repeat="truckTypes in truckTypesList">
+                                    {{truckTypes.title}}/{{truckTypes.tonnes}}Tons
+                                </option>
 
                             </select>
                         </div>
