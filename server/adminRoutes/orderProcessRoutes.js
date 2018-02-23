@@ -14,14 +14,8 @@ AuthRouter.post('/addTruckRequest', function (req, res) {
     })
 });
 
-AuthRouter.put('/updateCustomerLead', function (req, res) {
-    OrderProcess.updateCustomerLead(req,function (result) {
-        res.send(result);
-    })
-});
-
-AuthRouter.delete('/deleteCustomerLead', function (req, res) {
-    OrderProcess.deleteCustomerLead(req,function (result) {
+AuthRouter.delete('/deleteTruckRequest', function (req, res) {
+    OrderProcess.deleteTruckRequest(req,function (result) {
         res.send(result);
     })
 });

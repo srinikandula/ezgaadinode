@@ -25,10 +25,11 @@
         <tr ng-repeat="truck in truckRequestsList">
             <!--<td data-title="'S No'" class="col-sm-1">{{$index+1}}</td>-->
             <td data-title="'Title'" sortable="'name'" class="clickable-item col-sm-1">
-                {{truck.customer[0].userName}}<br>{{truck.customer[0].contactPhone}}
+                {{truck.customer[0].userName || truck.customer[0].name}}<br>{{truck.customer[0].contactPhone}}
+
             </td>
             <td data-title="'Customer Name'" sortable="'type'" class="clickable-item col-sm-1">
-                {{truck.customer[0].userName}}
+                {{truck.customer[0].userName || truck.customer[0].name}}
             </td>
             <td data-title="'Type'" sortable="'mobile'" class="clickable-item col-sm-1">{{truck.leadType}}</td>
             <td data-title="'Source'" sortable="'date'" class="clickable-item col-sm-1">{{truck.source}}</td>
@@ -39,13 +40,13 @@
                 {{truck.expectedPrice}}
             </td>
             <td data-title="'Approved'" sortable="'load'" class="clickable-item col-sm-1">{{truck.load}}</td>
-            <td data-title="'Status'" sortable="'load'" class="clickable-item col-sm-1">{{truck.load}}</td>
+            <td data-title="'Status'" sortable="'Status'" class="clickable-item col-sm-1">{{truck.status || 'NA'}}</td>
 
             <td data-title="'Action'" class="col-sm-1">
                 <a href="#" ui-sref="orderprocess.editTruckRequest({_id:truck._id})" class="edit_icon">
                     <span class="glyphicon glyphicon-pencil"></span>
                 </a>
-                <a href="#" ng-click="delCustomer(truck._id)" class="delete_icon">
+                <a href="#" ng-click="deleteTruckRequest(truck._id)" class="delete_icon">
                     <span class="glyphicon glyphicon-trash"></span>
                 </a>
             </td>

@@ -83,6 +83,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "PUT",
                 data: params
             }).then(success, error);
+        },
+        deleteTruckRequest:function (params,success,error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/deleteTruckRequest',
+                method: "DELETE",
+                params: {_id: params}
+            }).then(success, error);
         }
 
     }
@@ -601,7 +608,36 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
       },function (error) {
 
       })
-    }
+    };
 
+    $scope.deleteTruckRequest=function (id) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                OrderProcessServices.deleteTruckRequest(id,function (success) {
+                    if(success.data.status){
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $scope.getTruckRequests();
+                    }else{
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        })
+                    }
+                },function (err) {
+
+                })
+            }
+        });
+
+    }
 
 }]);

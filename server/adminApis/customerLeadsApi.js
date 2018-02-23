@@ -21,7 +21,7 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
-            CustomerLeadsColl.find({"converted": false}).sort(sort)
+            CustomerLeadsColl.find({"status":{$eq:null}}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -30,13 +30,12 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            CustomerLeadsColl.count({}, function (err, count) {
+            CustomerLeadsColl.count({"status":""}, function (err, count) {
                 countCallback(err, count);
             });
         }
     }, function (err, results) {
         if (err) {
-            console.log(err);
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.get_customer_leads_err, {
                 body: JSON.stringify(req.body),
@@ -114,15 +113,13 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
     if (!params.name) {
         retObj.messages.push("Please enter name");
     }
-    if (!params.contactPhone || !params.contactPhone.length > 0) {
+    if (!params.contactPhone || typeof parseInt(params.contactPhone)==='NaN' || params.contactPhone.length!=10) {
         retObj.messages.push("Please enter contact number");
     }
     if (!params.leadType) {
         retObj.messages.push("Please select lead type");
     }
-    if (params.documentType && !req.files.files) {
-        retObj.messages.push("Please select document");
-    }
+
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_customer_lead_err, {
             body: JSON.stringify(req.body),
@@ -154,7 +151,10 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
             })
         } else {
             params.createdBy = req.jwt.id;
-            params.operatingRoutes = JSON.parse(params.operatingRoutes);
+            if(params.operatingRoutes){
+                params.operatingRoutes = JSON.parse(params.operatingRoutes);
+
+            }
             saveCustomerLead(req, params, callback);
         }
 
@@ -167,7 +167,7 @@ function saveCustomerLead(req, params, callback) {
     var retObj = {
         status: false,
         messages: []
-    }
+    };
     var customerLead = new CustomerLeadsColl(params);
     customerLead.save(function (err, doc) {
         if (err) {
@@ -259,6 +259,7 @@ CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
         messages: []
     };
     var params = req.query;
+    console.log('gfysd',params.contactPhone , typeof parseInt(params.contactPhone) , (params.contactPhone.length!=10 && typeof params.contactPhone===String));
     params.operatingRoutes = JSON.parse(params.operatingRoutes);
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid customer lead");
@@ -266,7 +267,7 @@ CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
     if (!params.name) {
         retObj.messages.push("Please enter name");
     }
-    if (!params.contactPhone || !params.contactPhone.length > 0) {
+    if (!params.contactPhone || typeof parseInt(params.contactPhone)==='NaN' || (params.contactPhone.length!=10 && typeof params.contactPhone===String)) {
         retObj.messages.push("Please enter contact number");
     }
     if (!params.leadType) {
@@ -278,7 +279,6 @@ CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
         CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
             function (err, doc) {
                 if (err) {
-                    console.log('ddd', err)
                     retObj.messages.push("Please try again");
                     analyticsService.create(req, serviceActions.update_customer_lead_err, {
                         body: JSON.stringify(req.query),
@@ -412,4 +412,86 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
     });
 };
 
+CustomerLeads.prototype.getTotalTruckOwners=function (req,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+  AccountsColl.count({type: 'account'},function (err,count) {
+    if(err){
+        retObj.messages.push("Please try again");
+        analyticsService.create(req, serviceActions.get_total_truck_owners_err, {
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    }else{
+        retObj.status=true;
+        retObj.messages.push('Success');
+        retObj.count=count;
+        analyticsService.create(req, serviceActions.get_total_truck_owners, {
+            accountId: req.jwt.id,
+            success: true
+        }, function (response) {
+        });
+        callback(retObj);
+    }
+  })
+};
+
+CustomerLeads.prototype.convertCustomerLead=function (req,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+  var params=req.body;
+  if(!params.status){
+      retObj.messages.push("Please select status type");
+  }
+  if(!params._id || !ObjectId.isValid(params._id)){
+      retObj.messages.push("Invalid customer lead");
+  }
+  if(!params.comment){
+    retObj.messages.push("Please enter comment");
+  }
+
+  if(retObj.messages.length>0){
+      callback(retObj);
+  }else{
+      if(params.status==='Rejected'){
+          CustomerLeadsColl.findOneAndUpdate({_id:params._id},{
+              status:params.status,
+              comment:params.comment
+          },function (err,customerLead) {
+              if(err){
+                  retObj.messages.push("Please try again");
+                  callback(retObj);
+              }else if(customerLead){
+                  retObj.status=true;
+                  retObj.messages.push("Customer lead updated successfully");
+                  callback(retObj);
+              }else{
+                  retObj.messages.push("Customer lead not updated");
+                  callback(retObj);
+              }
+          })
+
+      }else{
+          CustomerLeadsColl.findOne({_id:params._id},function (err,customerLead) {
+              if(err){
+                  retObj.messages.push("Please try again");
+                  callback(retObj);
+              }else if(customerLead){
+
+              }else{
+                  retObj.messages.push("Customer lead not updated");
+                  callback(retObj);
+              }
+          })
+      }
+  }
+
+};
 module.exports = new CustomerLeads();

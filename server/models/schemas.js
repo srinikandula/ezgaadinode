@@ -58,6 +58,7 @@ var accountSchema = new mongoose.Schema({
     alternatePhone: String,
     companyName: String,
     pincode: String,
+    role: String
 }, {
     timestamps: true
 });
@@ -447,10 +448,11 @@ var customerTypesSchema = mongoose.Schema({
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     name: String,
-    contactPhone: [Number],
+    contactPhone: Number,
+    alternatePhone:[Number],
     email: String,
     leadType: String,
-    converted: {type: Boolean, default: false},
+    status:String,
     companyName: String,
     address: String,
     city: String,
@@ -469,7 +471,8 @@ var customerLeadsSchema = mongoose.Schema({
     loadPaymentAdvancePercent: Number,
     loadPaymentPodDays: Number,
     tdsDeclarationDoc: String,
-    leadSource: String
+    leadSource: String,
+    comment:String
 }, {timestamps: String});
 
 var accountDevicePlanHistory = new mongoose.Schema({
@@ -659,7 +662,7 @@ module.exports = {
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl: mongoose.model('analytics', analyticsSchema, 'analytics'),
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
-    CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeadsSchema'),
+    CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeads'),
     AccountDevicePlanHistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl: mongoose.model('apiSecretKeys', keysSchema, 'apiSecretKeys'),

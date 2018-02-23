@@ -46,6 +46,19 @@ AuthRouter.get('/getTruckOwners',function (req,res) {
     })
 });
 
+AuthRouter.get('/getTotalTruckOwners',function (req,res) {
+   CustomerLeads.getTotalTruckOwners(req,function (result) {
+       res.send(result);
+   })
+});
+
+AuthRouter.post('/convertCustomerLead',function (req,res) {
+   CustomerLeads.convertCustomerLead(req,function (result) {
+       res.send(result);
+   })
+});
+
+
 module.exports = {
     AuthRouter: AuthRouter
 };

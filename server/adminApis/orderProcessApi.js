@@ -65,8 +65,9 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
                         trackingAvailable: 1,
                         insuranceAvailable: 1,
                         customer: {
-                            $cond: {"if": '$customer', "then": "$customer", "else": "$customerLeadId"}
-                        }
+                            $cond: {"if": {$eq:['$customerType','Registered']} ,"then": "$customer", "else": "$customerLeadId"}
+                        },
+                        status:1
                     }
 
                 }, {"$sort": {createdAt: -1}}], function (err, docs) {
@@ -125,7 +126,7 @@ OrderProcess.prototype.totalTruckRequests = function (req, callback) {
         status: false,
         messages: []
     };
-    TruckRequestColl.count(function (err, doc) {
+    TruckRequestColl.count({},function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting truck request count');
             analyticsService.create(req, serviceActions.count_truck_request_err, {
@@ -185,13 +186,15 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
         if (params.customerType === 'Registered') {
             saveTruckRequest(req, callback);
         } else if (params.customerType === 'UnRegistered') {
-            params.leadType = "Truck Owner";
-
+            params.leadType = "Transporter";
+            req.query=params;
+            req.files={files:false};
             customerLeadsApi.addCustomerLead(req, function (custLeadResp) {
+                console.log('status',custLeadResp.messages[0],custLeadResp.data._id);
                 if (!custLeadResp.status) {
                     callback(custLeadResp);
                 } else {
-                    params.customerLeadId = custLeadResp.data._id;
+                    params.customerLeadId =custLeadResp.data._id ;
                     saveTruckRequest(req, callback);
                 }
 
@@ -232,7 +235,9 @@ function saveTruckRequest(req, callback) {
         params.expectedPrice = truckDetails.expectedPrice;
         params.trackingAvailable = truckDetails.trackingAvailable;
         params.insuranceAvailable = truckDetails.insuranceAvailable;
+        params=Utils.removeEmptyFields(params)
         var truckRequest = new TruckRequestColl(params);
+
         truckRequest.save(function (err, doc) {
             if (err) {
 
@@ -243,7 +248,7 @@ function saveTruckRequest(req, callback) {
         })
     }, function (err) {
         if (err) {
-            console.log("err", err);
+            console.log("err==", err);
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.add_truck_request_err, {
                 body: JSON.stringify(req.body),
@@ -371,7 +376,7 @@ OrderProcess.prototype.updateTruckRequest = function (req, callback) {
                     callback(retObj);
                 } else if (doc) {
                     retObj.status = true;
-                    retObj.messages = "Customer lead updated successfully";
+                    retObj.messages.push("Customer lead updated successfully");
                     retObj.data = doc;
                     analyticsService.create(req, serviceActions.get_customer_leads, {
                         body: JSON.stringify(req.body),
@@ -490,20 +495,20 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
                     type: "Point",
                     coordinates: coordinates
                 },
-                $maxDistance: 150000,
+                $centerSphere: 150000,
                 spherical: true
 
             }
         }
 
-    }).lean().exec(function (err, docs) {
-        console.log(err, docs.length);
+    }).lean().exec(function (err, operatingRoutes) {
+        console.log(err, operatingRoutes.length);
         if (err) {
             retObj.messages.push("Please try again");
             callback(retObj);
-        } else if (docs.length > 0) {
+        } else if (operatingRoutes.length > 0) {
 
-            var accountIds = docs.map(function (doc) {
+            var accountIds = operatingRoutes.map(function (doc) {
                 return doc.accountId;
             });
             TrucksColl.aggregate({$match: {accountId: {$in: accountIds}}},
@@ -524,10 +529,10 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
                         retObj.messages.push("Please try again");
                         callback(retObj);
                     } else if (trucks.length > 0) {
-                        docs.forEach(function (doc) {
-                            doc.acc = trucks.filter(function (item) {
-                                if (doc.accountId && item._id._id) {
-                                    return doc.accountId.toString() === item._id._id.toString();
+                        operatingRoutes.forEach(function (operatingRoute) {
+                            operatingRoute.acc = trucks.filter(function (truck) {
+                                if (operatingRoute.accountId && truck._id._id) {
+                                    return operatingRoute.accountId.toString() === truck._id._id.toString();
                                 } else {
                                     return false
                                 }

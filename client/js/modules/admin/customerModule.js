@@ -50,16 +50,17 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     };
 
 
-    $scope.leadType = ['Truck Owner', 'Manufacturer', 'Commission Agent', 'Transporter', 'Factory Owners']
+    $scope.leadType = ['Truck Owner', 'Manufacturer', 'Commission Agent', 'Transporter', 'Factory Owners'];
     $scope.yrsInService = ['2018', '2017', '2016'];
-    $scope.serviceTeam = ['Marketing Team', 'Cold Calls', 'Existing Customer', 'Self Generater', 'Employee', 'Partner', 'Public Relations', 'Direct Mail', 'Conference', 'Trade Show', 'Website', 'Word of mouth', 'Other']
+    $scope.serviceTeam = ['Marketing Team', 'Cold Calls', 'Existing Customer', 'Self Generater', 'Employee', 'Partner', 'Public Relations', 'Direct Mail', 'Conference', 'Trade Show', 'Website', 'Word of mouth', 'Other'];
     $scope.customerProofs = ['Aadhar Card', 'Passport'];
     $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
 
     function customerLeadsFunc() {
         $scope.customerLead = {
             name: '',
-            contactPhone: [''],
+            contactPhone:'',
+            alternatePhone:[''],
             email: '',
             leadType: '',
             companyName: '',
@@ -128,19 +129,19 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
     $scope.addNumber = function() {
 
-        if (!$scope.customerLead.contactPhone[$scope.customerLead.contactPhone.length - 1]) {
+        if (!$scope.customerLead.alternatePhone[$scope.customerLead.alternatePhone.length - 1]) {
             //$scope.customerLead.errorMessage
             //routesLoop()
-            Notification.error('Enter Mobile Number');
+            Notification.error('Enter Alternate Number');
         } else {
-            $scope.customerLead.contactPhone.push('');
+            $scope.customerLead.alternatePhone.push('');
         }
         //console.log($scope.customerLead.contactPhone);
         //$scope.removeMark = true;
     };
     $scope.removeNumber = function() {
         //$scope.showExtra = false;
-        $scope.customerLead.contactPhone.splice($scope.customerLead.contactPhone, 1)
+        $scope.customerLead.alternatePhone.splice($scope.customerLead.alternatePhone, 1)
     };
 
     function verifyMobNum() {
@@ -161,7 +162,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         if (!params.name) {
             params.errorMessage.push('Enter Your Full Name');
         }
-        if (!verifyMobNum()) {
+        if (!params.contactPhone || typeof parseInt(params.contactPhone)==='NaN' || (params.contactPhone.length!=10 && typeof params.contactPhone===String)) {
             params.errorMessage.push('Enter Mobile Number');
         }
         if (!params.leadType) {
@@ -180,7 +181,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                 var files = $scope.customerLead.file;
                 console.log('files',files);
                 Upload.upload({
-                    url: '/v1/customers/addCustomerLead',
+                    url: '/v1/cpanel/customers/addCustomerLead',
                     data: {
                         files: [files]
                     },
@@ -201,7 +202,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             } else {
                 var files = $scope.customerLead.file;
                 Upload.upload({
-                    url: '/v1/customers/updateCustomerLead',
+                    url: '/v1/cpanel/customers/updateCustomerLead',
                     data: {
                         files: [files]
                     },
@@ -265,6 +266,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             getData: function(tableParams) {
 
                 var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting() };
+                console.log('sdcbsscp[isa');
                 customerServices.getCustomerLeads(pageable, function(success) {
                     if (success.data.status) {
 
@@ -284,7 +286,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             }
 
         });
-        $scope.customerParams.reload();
+       // $scope.customerParams.reload();
     }
 
 
