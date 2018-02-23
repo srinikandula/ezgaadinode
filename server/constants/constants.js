@@ -373,6 +373,10 @@ const serviceActions = {
     update_order_status_err: 'UPDATE_ORDER_STATUS_ERR',
     update_order_status: 'UPDATE_ORDER_STATUS',
     delete_order_status_err: 'DELETE_ORDER_STATUS_ERR',
-    delete_order_status: 'DELETE_ORDER_STATUS'
+    delete_order_status: 'DELETE_ORDER_STATUS',
+    get_notifications_err:'GET_NOTIFICATIONS_ERR',
+    get_notifications: 'GET_NOTIFICATIONS',
+    count_notifications_err: 'COUNT_NOTIFICATIONS_ERR',
+    count_notifications: 'COUNT_NOTIFICATIONS'
 };
 module.exports = serviceActions;

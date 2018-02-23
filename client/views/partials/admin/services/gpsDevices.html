@@ -55,12 +55,16 @@
                 {{device.isDamaged == '0' && 'working' || 'Not working'}}
             </td>
             <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
-                <a href="#" ui-sref="services.editGpsDevice({device: device._id})">Edit /</a>
-                <a href="#" ng-click="deleteDevice($index)">Delete</a>
+                <a href="#" ui-sref="services.editGpsDevice({device: device._id})" class="edit_icon">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+                <a href="#" ng-click="deleteDevice($index)" class="delete_icon">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
             </td>
         </tr>
         <tr ng-if="!currentPageOfDevices || currentPageOfDevices.length === 0">
-            <td colspan="8">No drivers Records exist.</td>
+            <td colspan="8">No GPS Devices exist.</td>
         </tr>
     </table>
 </div>

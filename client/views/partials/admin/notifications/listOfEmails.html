@@ -1,0 +1,18 @@
+<div ng-controller="NotificationCntrl" ng-init="initNoti();getNotiCount();">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">List of Email Notifications</li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+           ng-table="emailParams">
+        <tr ng-repeat="type in currentPageOfEmails">
+            <td data-title="'Content'" sortable="'content'" class="clickable-item col-xs-6">{{type.content}}</td>
+            <td data-title="'Status'" sortable="'message'" class="clickable-item">{{type.status}}</td>
+        </tr>
+        <tr ng-if="!currentPageOfEmails || currentPageOfEmails.length === 0">
+            <td colspan="8">No Emails exist.</td>
+        </tr>
+    </table>
+</div>
+
+

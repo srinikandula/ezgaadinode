@@ -5,7 +5,7 @@
             <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
                 <uib-accordion-heading>
                     Details <i class="pull-right glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                               ng-class="{'glyphicon-chevron-down': status.isFirstOpen, 'glyphicon-chevron-right': !status.isFirstOpen}"></i>
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
@@ -87,10 +87,12 @@
 
 
             </div>
-            <div uib-accordion-group class="panel-default">
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isSecondOpen">
                 <uib-accordion-heading>
                     Truck Details <i class="pull-right glyphicon"
-                                     ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                                     ng-class="{'glyphicon-chevron-down': status.isSecondOpen, 'glyphicon-chevron-right': !status.isSecondOpen}"></i>
                 </uib-accordion-heading>
                 <div class="text-right mb-10">
                     <button class="btn btn-primary btn-sm" ng-click="addTripDetails()">Add</button>

@@ -2,6 +2,9 @@
 .pall-zero {
     padding: 0 !important;
 }
+.mb-zero{
+    margin:0 !important;
+}
 
 .mt-5 {
     margin-top: 5px;
@@ -256,6 +259,11 @@ body {
 
 .newCust {
     padding: 25px;
+    /* background-color: #ccc; */
+    border-radius: 10px;
+    -webkit-box-shadow: -8px 11px 33px -4px rgba(150,164,168,1);
+    -moz-box-shadow: -8px 11px 33px -4px rgba(150,164,168,1);
+    box-shadow: -3px 0px 20px -5px rgba(150,164,168,1);
 }
 
 .pos-relative {

@@ -111,6 +111,18 @@ app.factory('AdministratorService', ["$http", function ($http) {
 }]);
 
 app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'AdministratorService', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, AdministratorService, Notification, NgTableParams, Upload) {
+
+    $scope.status = {
+        isOpen: true,
+        isOpenOne: true,
+        isOpenthree: true,
+        isOpenFour: true,
+        isOpenFive: true,
+        isOpenSix: true,
+        isOpenSev: true,
+        isOpenEig: true,
+    };
+
     /*EMPLOYEE START*/
     if ($stateParams.employeeId) {
         AdministratorService.getEmployeeDetails($stateParams.employeeId, function (success) {

@@ -28,15 +28,15 @@ app.factory('OrderProcessServices',['$http', function ($http) {
 app.controller('orderProcessCtrl', ['$scope', '$state','SettingServices','customerServices','Notification','OrderProcessServices','NgTableParams','$stateParams', function ($scope, $state,SettingServices,customerServices,Notification,OrderProcessServices,NgTableParams,$stateParams) {
 
     $scope.cancel = function () {
-        $state.go('customers.customersLead');
+        $state.go('orderprocess.truckRequest');
     };
 
     $scope.leadStatus = ['Initiate', 'Duplicate', 'Junk Lead', 'Language Barrier', 'Callback', 'Not interested',
         'Request for Approval'];
 
     $scope.status = {
-        isCustomHeaderOpen: false,
         isFirstOpen: true,
+        isSecondOpen: true,
     };
     $scope.initializeTruckRequest=function () {
         $scope.truckRequest = {

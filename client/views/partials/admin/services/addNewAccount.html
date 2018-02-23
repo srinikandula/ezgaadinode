@@ -3,10 +3,10 @@
     <div class="col-xs-12">
 
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isFirstOpen">
+            <div uib-accordion-group class="panel-default" is-open="status.isOpen">
                 <uib-accordion-heading>
                     User Information <i class="pull-right glyphicon"
-                                        ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                                        ng-class="{'glyphicon-chevron-down':status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-6">
@@ -46,10 +46,12 @@
                 </div>
 
             </div>
-            <div uib-accordion-group class="panel-default">
+            </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open ="status.isOpenOne">
                 <uib-accordion-heading>
                     Address <i class="pull-right glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                               ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-6">
@@ -79,10 +81,12 @@
                 </div>
 
             </div>
-            <div uib-accordion-group class="panel-default">
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenTwo">
                 <uib-accordion-heading>
                     Service Info <i class="pull-right glyphicon"
-                                    ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                                    ng-class="{'glyphicon-chevron-down': status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-6">
@@ -205,10 +209,12 @@
                 </div>
 
             </div>
-            <div uib-accordion-group class="panel-default">
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenThre">
                 <uib-accordion-heading>
                     Add Plans <i class="pull-right glyphicon"
-                                 ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                                 ng-class="{'glyphicon-chevron-down': status.isOpenThre, 'glyphicon-chevron-right': !status.isOpenThre}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12">
                     <ul class="list-inline plans">

@@ -206,6 +206,16 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/notifications/lookingForLoad.html',
         data: {activeTab: 'notification'}
     }).state({
+        name: 'notifications.listOfEmails',
+        url: '/listOfEmails',
+        templateUrl: 'views/partials/admin/notifications/listOfEmails.html',
+        data: {activeTab: 'notification'}
+    }).state({
+        name: 'notifications.listOfSms',
+        url: '/listOfSms',
+        templateUrl: 'views/partials/admin/notifications/listOfSms.html',
+        data: {activeTab: 'notification'}
+    }).state({
         name: 'admin',
         url: '/admin',
         templateUrl: 'views/partials/admin/administrators/administratorMenu.html',
