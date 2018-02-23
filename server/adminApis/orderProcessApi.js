@@ -5,8 +5,20 @@ const ObjectId = mongoose.Types.ObjectId;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var TruckRequestColl = require("../models/schemas").TruckRequestColl;
+var AccountsColl = require("../models/schemas").AccountsColl;
+var OperatingRoutesColl = require("../models/schemas").OperatingRoutesColl;
+var TrucksColl = require("../models/schemas").TrucksColl;
+var DriversColl = require("../models/schemas").DriversColl;
+var TruckRequestQuoteColl = require("../models/schemas").TruckRequestQuoteColl;
+var TripCollection = require("../models/schemas").TripCollection;
+var TruckRequestCommentsColl = require("../models/schemas").TruckRequestCommentsColl;
+
 
 var customerLeadsApi = require("./customerLeadsApi");
+var Utils = require("./../apis/utils");
+var emailService = require('./../apis/mailerApi');
+var SmsService = require('./../apis/smsApi');
+
 var OrderProcess = function () {
 };
 /*author : Naresh d*/
@@ -53,8 +65,9 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
                         trackingAvailable: 1,
                         insuranceAvailable: 1,
                         customer: {
-                            $cond: {"if": '$customer', "then": "$customer", "else": "$customerLeadId"}
-                        }
+                            $cond: {"if": {$eq:['$customerType','Registered']} ,"then": "$customer", "else": "$customerLeadId"}
+                        },
+                        status:1
                     }
 
                 }, {"$sort": {createdAt: -1}}], function (err, docs) {
@@ -113,7 +126,7 @@ OrderProcess.prototype.totalTruckRequests = function (req, callback) {
         status: false,
         messages: []
     };
-    TruckRequestColl.count(function (err, doc) {
+    TruckRequestColl.count({},function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting truck request count');
             analyticsService.create(req, serviceActions.count_truck_request_err, {
@@ -144,11 +157,15 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    if (!params.customer) {
-        retObj.messages.push("Please enter customer name");
-    }
+
     if (!params.customerType) {
         retObj.messages.push("Please enter customer type");
+    }
+    if (params.customerType === "Registered" && !params.customer) {
+        retObj.messages.push("Please select customer");
+    }
+    if (params.customerType === "UnRegistered" && !params.name) {
+        retObj.messages.push("Please select name1");
     }
     if (!params.truckDetails || !params.truckDetails.length > 0 || !checkTruckDetails(params.truckDetails)) {
         retObj.messages.push("Please enter truck details");
@@ -169,13 +186,15 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
         if (params.customerType === 'Registered') {
             saveTruckRequest(req, callback);
         } else if (params.customerType === 'UnRegistered') {
-            params.leadType = "Truck Owner";
-
+            params.leadType = "Transporter";
+            req.query=params;
+            req.files={files:false};
             customerLeadsApi.addCustomerLead(req, function (custLeadResp) {
+                console.log('status',custLeadResp.messages[0],custLeadResp.data._id);
                 if (!custLeadResp.status) {
                     callback(custLeadResp);
                 } else {
-                    params.customerLeadId = custLeadResp.data._id;
+                    params.customerLeadId =custLeadResp.data._id ;
                     saveTruckRequest(req, callback);
                 }
 
@@ -216,7 +235,9 @@ function saveTruckRequest(req, callback) {
         params.expectedPrice = truckDetails.expectedPrice;
         params.trackingAvailable = truckDetails.trackingAvailable;
         params.insuranceAvailable = truckDetails.insuranceAvailable;
+        params=Utils.removeEmptyFields(params)
         var truckRequest = new TruckRequestColl(params);
+
         truckRequest.save(function (err, doc) {
             if (err) {
 
@@ -227,7 +248,7 @@ function saveTruckRequest(req, callback) {
         })
     }, function (err) {
         if (err) {
-            console.log("err", err);
+            console.log("err==", err);
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.add_truck_request_err, {
                 body: JSON.stringify(req.body),
@@ -273,7 +294,7 @@ OrderProcess.prototype.getTruckRequestDetails = function (req, callback) {
         });
         callback(retObj);
     } else {
-        TruckRequestColl.findOne({_id: params._id}).populate("accountId").populate("customerLeadId").lean().exec(function (err, doc) {
+        TruckRequestColl.findOne({_id: params._id}).populate("customer").populate("customerLeadId").lean().exec(function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_truck_request_details_err, {
@@ -355,7 +376,7 @@ OrderProcess.prototype.updateTruckRequest = function (req, callback) {
                     callback(retObj);
                 } else if (doc) {
                     retObj.status = true;
-                    retObj.messages = "Customer lead updated successfully";
+                    retObj.messages.push("Customer lead updated successfully");
                     retObj.data = doc;
                     analyticsService.create(req, serviceActions.get_customer_leads, {
                         body: JSON.stringify(req.body),
@@ -439,5 +460,648 @@ OrderProcess.prototype.deleteTruckRequest = function (req, callback) {
 
 };
 
+/*author : Naresh d*/
 
+OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var condition = {};
+    if (!params.source) {
+        retObj.messages.push('please select source');
+        callback(retObj);
+    }
+    if (!params.destination) {
+        retObj.messages.push('please select destination');
+        callback(retObj);
+    }
+
+    /*if (params.truckType && params.trackingAvailable) {
+
+    } else if (params.truckType) {
+
+    } else if (params.trackingAvailable) {
+
+    }*/
+    var coordinates = [parseFloat(params.destination[0]), parseFloat(params.destination[1])];
+    console.log('sicug', params.source);
+    OperatingRoutesColl.find({
+        sourceAddress: {$regex: '.*' + params.source + '.*'},
+        destinationLocation: {
+            $near: {
+                $geometry: {
+                    type: "Point",
+                    coordinates: coordinates
+                },
+                $centerSphere: 150000,
+                spherical: true
+
+            }
+        }
+
+    }).lean().exec(function (err, operatingRoutes) {
+        console.log(err, operatingRoutes.length);
+        if (err) {
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else if (operatingRoutes.length > 0) {
+
+            var accountIds = operatingRoutes.map(function (doc) {
+                return doc.accountId;
+            });
+            TrucksColl.aggregate({$match: {accountId: {$in: accountIds}}},
+                {
+                    "$lookup": {
+                        "from": "accounts",
+                        "localField": "accountId",
+                        "foreignField": "_id",
+                        "as": "accountId"
+                    }
+                }, {"$unwind": "$accountId"}, {
+                    $group: {
+                        _id: "$accountId",
+                        count: {$sum: 1}
+                    }
+                }, {"$sort": {createdAt: -1}}, function (err, trucks) {
+                    if (err) {
+                        retObj.messages.push("Please try again");
+                        callback(retObj);
+                    } else if (trucks.length > 0) {
+                        operatingRoutes.forEach(function (operatingRoute) {
+                            operatingRoute.acc = trucks.filter(function (truck) {
+                                if (operatingRoute.accountId && truck._id._id) {
+                                    return operatingRoute.accountId.toString() === truck._id._id.toString();
+                                } else {
+                                    return false
+                                }
+
+
+                            })[0];
+                        });
+                        retObj.status = true;
+                        retObj.data = docs;
+                        retObj.messages.push("success");
+                        callback(retObj);
+                    } else {
+                        retObj.messages.push("No trucks found");
+                        callback(retObj);
+                    }
+                })
+        } else {
+            retObj.messages.push("No trucks found");
+            callback(retObj);
+        }
+    })
+
+};
+
+/*author : Naresh d*/
+OrderProcess.prototype.addTruckRequestQuote = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var params = req.body;
+
+    if (!params.quote) {
+        retObj.messages.push("Please enter quote");
+    }
+    if (!params.comment) {
+        retObj.messages.push("Please enter comment");
+
+    }
+    if (!params.accountId) {
+        retObj.messages.push("Please select customer");
+    }
+    if (!params.truckRequestId) {
+        retObj.messages.push("Invalid truck request");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        params.createdBy = req.jwt.id;
+        var truckRequestQuote = new TruckRequestQuoteColl(params);
+        truckRequestQuote.save(function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.add_truck_request_quote_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push("Quote added successfully");
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.add_truck_request_quote, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+/*author : Naresh d*/
+OrderProcess.prototype.getTruckRequestQuotes = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.truckRequestId || !ObjectId.isValid(params.truckRequestId)) {
+        retObj.messages.push("Please select valid truck request");
+    }
+    if (retObj.messages.length) {
+        callback(retObj)
+    } else {
+        TruckRequestQuoteColl.find({truckRequestId: params.truckRequestId}).populate({path: "accountId"}).exec(function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_truck_request_quotes_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.messages.push("Success");
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_truck_request_quotes, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("No truck request quotes found");
+                analyticsService.create(req, serviceActions.get_truck_request_quotes_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+
+    }
+};
+
+/*author : Naresh d*/
+OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var query = {};
+    var params = req.body;
+    if (!params._id) {
+        query = {_id: mongoose.Types.ObjectId()};
+        params.createdBy = req.jwt.id;
+    } else {
+        query = {_id: params._id}
+    }
+    params.updatedBy = req.jwt.id;
+    if (!params.registrationNo) {
+        retObj.messages.push("Please select truck");
+    }
+    if (!params.freightAmount) {
+        retObj.messages.push("Please enter amount");
+    }
+    if (!params.tripLane) {
+        retObj.messages.push("Please enter pickup point");
+    }
+    if (!params.accountId || !ObjectId.isValid(params.accountId)) {
+        retObj.messages.push("Please select truck provider");
+    }
+    if (!params.driverId) {
+        retObj.messages.push("Please select driver");
+    }
+    if (!params.date) {
+        retObj.messages.push("Please select pickup date");
+    }
+    if (!params.truckRequestId) {
+        retObj.messages.push("Invalid truck request");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        TripCollection.update(query, params, {upsert: true}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.add_load_booking_for_truck_request_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push("Load booked successfully");
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.add_load_booking_for_truck_request, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+                async.parallel({
+                    truckRequest: function (truckReqCallback) {
+                        TruckRequestColl.findOne({_id: params.truckRequestId}).populate('customer').populate('customerLeadId').exec(function (err, truckReq) {
+                            truckReqCallback(err, truckReq);
+                        });
+                    },
+                    tripDetails: function (tripCallback) {
+                        TripCollection.findOne({truckRequestId: params.truckRequestId}).populate('driverId').populate('accountId').exec(function (err, tripDoc) {
+                            tripCallback(err, tripDoc);
+                        })
+                    }
+                }, function (err, result) {
+                    if (err) {
+
+                    } else {
+                        if (result.truckRequest.customerType === 'Registered') {
+                            customer = result.truckRequest.customer;
+
+                        } else {
+                            customer = result.truckRequest.customerLeadId
+                        }
+                        if (customer.contactPhone) {
+                            var smsParams = {
+                                contact: customer.contactPhone,
+                                message: 'Hi ' + customer.userName + '\n' +
+                                'your truck request from ' + result.truckRequest.source + ' to ' + result.truckRequest.destination + ' \n truck number:' + result.tripDetails.registrationNo + ' \n Driver Name:' + result.tripDetails.driverId.fullName+' \n driver number:'+result.tripDetails.driverId.mobile
+                            };
+                            SmsService.sendSMS(smsParams, function (smsResp) {
+                                console.log(smsResp);
+                            })
+
+                        }
+                        if (customer.email) {
+                            var emailparams = {
+                                templateName: 'truckRequestTripDetails',
+                                subject: "Easygaadi truck request details",
+                                to: customer.email,
+                                data: {
+
+                                    "name": customer.userName,
+                                    "source": result.truckRequest.source,
+                                    "destination": result.truckRequest.destination,
+                                    "registraionNo": result.tripDetails.registrationNo,
+                                    "driver": result.tripDetails.driverId.fullName,
+                                    "driverMobile":result.tripDetails.driverId.mobile
+                                }//dataToEmail.tripsReport
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                console.log(emailResponse);
+                            })
+
+                        }
+                    }
+                });
+            }
+        })
+    }
+
+};
+
+OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        message: []
+    };
+    var params = req.query;
+    if (!params.truckRequestId || !ObjectId.isValid(params.truckRequestId)) {
+        retObj.message.push("Invalid truck request");
+    }
+    if (retObj.message.length > 0) {
+        callback(retObj);
+    } else {
+        TripCollection.findOne({truckRequestId: params.truckRequestId}, function (err, doc) {
+            if (err) {
+                retObj.message.push("Please try again");
+                analyticsService.create(req, serviceActions.get_load_booking_details_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc) {
+                retObj.status = true;
+                retObj.message.push("success");
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.get_load_booking_details, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.message.push("Load booking not available");
+                analyticsService.create(req, serviceActions.get_load_booking_details_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+
+    }
+
+
+};
+
+OrderProcess.prototype.getTrucksAndDriversByAccountId = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Please select customer");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        async.parallel({
+            trucksList: function (trucksCallback) {
+                TrucksColl.find({accountId: params._id}, function (err, trucks) {
+                    trucksCallback(err, trucks);
+                })
+            },
+            driversList: function (driversCallback) {
+                DriversColl.find({accountId: params._id}, function (err, drivers) {
+                    driversCallback(err, drivers);
+                })
+            }
+        }, function (err, result) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_trucks_and_drivers_by_accountId_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.data = result;
+                analyticsService.create(req, serviceActions.get_trucks_and_drivers_by_accountId, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+OrderProcess.prototype.addTruckRequestComment = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body;
+    if (!params.truckRequestId || !ObjectId.isValid(params.truckRequestId)) {
+        retObj.messages.push("Invalid truck request");
+    }
+    if (!params.status) {
+        retObj.messages.push("Please enter status");
+    }
+
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        var truckReqComment = new TruckRequestCommentsColl(params);
+        truckReqComment.save(function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.add_truck_request_comment_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                TruckRequestColl.update({_id: params.truckRequestId}, {status: params.status}, function (err, updateDoc) {
+                    if (err) {
+                        retObj.messages.push("Please try again");
+                        analyticsService.create(req, serviceActions.add_truck_request_comment_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        if (params.notifiedStatus === 'YES') {
+                            var customer = {};
+
+                            retObj.status = true;
+                            retObj.messages.push("Comment added successfully");
+                            retObj.data = doc;
+                            analyticsService.create(req, serviceActions.add_truck_request_comment, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                            TruckRequestColl.findOne({_id: params.truckRequestId}).populate('customer').populate('customerLeadId').exec(function (err, truckReq) {
+                                if (err) {
+                                    retObj.messages.push("Please try again");
+                                    callback(retObj);
+                                } else if (truckReq) {
+                                    if (truckReq.customerType === 'Registered') {
+                                        customer = truckReq.customer;
+
+                                    } else {
+                                        customer = truckReq.customerLeadId
+                                    }
+                                    if (customer.contactPhone) {
+                                        var smsParams = {
+                                            contact: customer.contactPhone,
+                                            message: 'Hi ' + customer.userName + '\n' +
+                                            'your truck request from ' + truckReq.source + ' to ' + truckReq.destination + ' \n status:' + params.status + ' \n comment:' + params.comment
+                                        };
+                                        SmsService.sendSMS(smsParams, function (smsResp) {
+                                            console.log(smsResp);
+                                        })
+
+                                    }
+                                    if (customer.email) {
+                                        var emailparams = {
+                                            templateName: 'truckRequestComment',
+                                            subject: "Easygaadi truck request details",
+                                            to: customer.email,
+                                            data: {
+
+                                                "name": customer.userName,
+                                                "source": truckReq.source,
+                                                "destination": truckReq.destination,
+                                                "status": params.status,
+                                                "comment": params.comment
+                                            }//dataToEmail.tripsReport
+                                        };
+                                        emailService.sendEmail(emailparams, function (emailResponse) {
+                                            console.log(emailResponse);
+                                        })
+
+                                    }
+
+
+                                } else {
+                                    retObj.messages.push("Please try again");
+                                    callback(retObj);
+                                }
+
+                            });
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push("Comment added successfully");
+                            retObj.data = doc;
+                            analyticsService.create(req, serviceActions.add_truck_request_comment, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+
+                        }
+                    }
+                });
+            }
+        })
+    }
+};
+
+
+OrderProcess.prototype.getTruckRequestComments = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.truckRequestId || !ObjectId.isValid(params.truckRequestId)) {
+        retObj.messages.push("Invalid truck request");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+
+        TruckRequestCommentsColl.find({truckRequestId: params.truckRequestId}).sort({createdAt: -1}).exec(function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_truck_request_comments_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.messages.push("Success");
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_truck_request_comments, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.data = docs;
+                retObj.messages.push("Comments not found");
+                analyticsService.create(req, serviceActions.get_truck_request_comments_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+
+    }
+};
+
+OrderProcess.prototype.updateTruckRequestDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid truck request");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        var body = Utils.removeEmptyFields(params);
+        TruckRequestColl.update({_id: params._id}, body, function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else if (doc) {
+                retObj.status = true;
+                retObj.messages.push("truck request details saved successfully");
+                analyticsService.create(req, serviceActions.update_truck_request, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.update_truck_request_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+
+
+};
 module.exports = new OrderProcess();

@@ -285,7 +285,6 @@ app.run(function ($transitions, $rootScope) {
 app.filter('propsFilter', function () {
     return function (items, props) {
         var out = [];
-
         if (angular.isArray(items)) {
             var keys = Object.keys(props);
 

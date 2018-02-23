@@ -24,14 +24,14 @@
         <tbody>
         <tr ng-repeat="customer in customerLeads">
             <td>{{$index+1}}</td>
-            <td data-title="'Customer Name'" sortable="'name'" class="clickable-item">{{customer.name}}</td>
+            <td data-title="'Customer Name'" sortable="'name'" class="clickable-item">{{customer.userName}}</td>
             <td data-title="'Lead Type'" sortable="'leadType'" class="clickable-item">{{customer.leadType}}</td>
             <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">{{customer.contactPhone[0]}}</td>
             <td data-title="'Reg Date'" sortable="'date'" class="clickable-item">{{customer.createdAt | date:medium}}</td>
             <td data-title="'Yes'" sortable="'yes'" class="clickable-item">Yes</td>
-            <td data-title="'ERP'" sortable="'erp'" class="clickable-item">{{customer.erp}}</td>
-            <td data-title="'GPS'" sortable="'gps'" class="clickable-item">{{customer.gps}}</td>
-            <td data-title="'Load'" sortable="'load'" class="clickable-item">{{customer.load}}</td>
+            <td data-title="'ERP'" sortable="'erp'" class="clickable-item">{{customer.erpEnabled}}</td>
+            <td data-title="'GPS'" sortable="'gps'" class="clickable-item">{{customer.gpsEnabled}}</td>
+            <td data-title="'Load'" sortable="'load'" class="clickable-item">{{customer.loadEnabled}}</td>
             <td class="col-xs-2" data-title="'Lead Status'" >
                 <select class="form-control">
                     <option ng-repeat="item in leadStatus">{{item}}</option>
@@ -46,6 +46,7 @@
                 </a>
             </td>
         </tr>
+
         </tbody>
     </table>
 </div>

@@ -25,6 +25,7 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
+    userId:String,
     contactPhone: Number,
     password: String,
     email: String,
@@ -55,33 +56,36 @@ var accountSchema = new mongoose.Schema({
     loadEnabled: {type: Boolean, default: true},
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
-    alternatePhone:String,
+    alternatePhone: String,
     companyName: String,
     pincode: String,
+    role: String
 }, {
     timestamps: true
 });
 
 var operatingRoutesSchema = new mongoose.Schema({
-    accountId: {type: ObjectId,ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
     id_account: String,
     source: String,
     sourceState: String,
     sourceAddress: String,
     sourceLocation: {
-        'type': {type: String,default: "Point"},
+        'type': {type: String, default: "Point"},
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
     destination: String,
     destinationState: String,
     destinationAddress: String,
     destinationLocation: {
-        'type': {type: String,default: "Point"},
+        'type': {type: String, default: "Point"},
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}
-}, {timestamps: true});
+}, {
+    timestamps: true
+});
 
 var groupSchema = new mongoose.Schema({
     name: String,
@@ -124,10 +128,10 @@ var truckSchema = new mongoose.Schema({
     attrs: {latestLocation: {}},
     // latestLocation:{type:ObjectId,ref:'devicePositions'},
     deviceId: String,
-    lookingForLoad: { type: Boolean, default: false },
-    isIdle:Boolean,
-    isStopped:Boolean
-}, { timestamps: true });
+    lookingForLoad: {type: Boolean, default: false},
+    isIdle: Boolean,
+    isStopped: Boolean
+}, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
     date: Date,
@@ -147,8 +151,9 @@ var tripSchema = new mongoose.Schema({
     createdBy: String,
     paymentHistory: [],
     attrs: {},
-    share: {type: Boolean, default: false}
-}, {timestamps: true});
+    share: { type: Boolean, default: false },
+    truckRequestId:{type:ObjectId,ref:'truckRequests'}
+}, { timestamps: true });
 
 var partySchema = new mongoose.Schema({
     name: String,
@@ -409,7 +414,7 @@ var loadRequestSchema = new mongoose.Schema({
     },
     {
         timestamps: true, versionKey:
-            false
+        false
     }
 );
 
@@ -443,20 +448,21 @@ var customerTypesSchema = mongoose.Schema({
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
-    name: String,
-    contactPhone: [Number],
+    userName: String,
+    contactPhone: Number,
+    alternatePhone:[Number],
     email: String,
     leadType: String,
-    converted: {type: Boolean, default: false},
+    status:String,
     companyName: String,
     address: String,
     city: String,
     state: String,
     pinCode: String,
     officeNumber: Number,
-    erp: {type: Boolean, default: false},
-    gps: {type: Boolean, default: false},
-    load: {type: Boolean, default: false},
+    gpsEnabled: {type: Boolean, default: false},
+    erpEnabled: {type: Boolean, default: false},
+    loadEnabled:{type: Boolean, default: false},
     yearInService: Number,
     operatingRoutes: [{source: String, destination: String}],
     documentType: String,
@@ -466,7 +472,8 @@ var customerLeadsSchema = mongoose.Schema({
     loadPaymentAdvancePercent: Number,
     loadPaymentPodDays: Number,
     tdsDeclarationDoc: String,
-    leadSource: String
+    leadSource: String,
+    comment:String
 }, {timestamps: String});
 
 var accountDevicePlanHistory = new mongoose.Schema({
@@ -524,7 +531,7 @@ var loadTypesSchema = mongoose.Schema({
 var orderStatusSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     title: String,
-    releaseTruck:Boolean,
+    releaseTruck: Boolean,
     status: Boolean
 }, {timestamps: String});
 
@@ -541,9 +548,13 @@ var truckRequestSchema = mongoose.Schema({
     pickupPoint: String,
     comment: String,
     expectedPrice: Number,
-    trackingAvailable: String,
-    insuranceAvailable: String,
-    customerLeadId: {type: ObjectId, ref: 'customerLeads'}
+    trackingRequired: String,
+    insuranceRequired: String,
+    customerLeadId: {type: ObjectId, ref: 'customerLeads'},
+    loadingCharge:Number,
+    unloadingCharge:Number,
+    pushMessage:String,
+    status:{type:String,default:'New'}
 
 }, {timestamps: String});
 
@@ -610,6 +621,24 @@ var adminPermissionsSchema = mongoose.Schema({
     updatedBy: {type: ObjectId, ref: 'accounts'}
 }, {timestamps: String});
 
+
+var truckQuotesSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    truckRequestId: {type: ObjectId, ref: 'truckRequests'},
+    quote: Number,
+    comment: String
+}, {timestamps: String});
+
+var truckRequestCommentSchema=mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    truckRequestId: {type: ObjectId, ref: 'truckRequests'},
+    status: String,
+    comment: String,
+    notifiedStatus:{type:String,default:"NO"}
+}, {timestamps: String});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -634,7 +663,7 @@ module.exports = {
     LoadRequestColl: mongoose.model('loadRequests', loadRequestSchema, 'LoadRequests'),
     analyticsColl: mongoose.model('analytics', analyticsSchema, 'analytics'),
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
-    CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeadsSchema'),
+    CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeads'),
     AccountDevicePlanHistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl: mongoose.model('apiSecretKeys', keysSchema, 'apiSecretKeys'),
@@ -646,5 +675,7 @@ module.exports = {
     CustomerTypesColl: mongoose.model('customerTypes', customerTypesSchema, 'customerTypes'),
     franchiseColl: mongoose.model('franchise', franchiseSchema, 'franchise'),
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
-    adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions')
+    adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions'),
+    TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes'),
+    TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments')
 };
