@@ -123,6 +123,7 @@ body {
     height: 75px;
     margin: 0 !important;
     border-bottom: 1px solid #CCCCCC !important;
+    box-shadow: -2px 0px 20px -2px rgba(150,164,168,1);
 }
 
 .admin-login {
@@ -293,8 +294,8 @@ body {
 .date-pick {
     cursor: pointer;
     position: absolute;
-    right: 36%;
-    top: 5px;
+    right: 10px;
+    top: 7px;
 }
 
 .routes {
@@ -646,7 +647,10 @@ footer {
     color: #ffffff;
 }
 
-
+.top-border{
+    border-top: 1px solid #21345d;
+    padding-top: 10px;
+}
 /* Responsive Design */
 
 @media only screen and (max-width: 767px) {
