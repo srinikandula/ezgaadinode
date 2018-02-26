@@ -58,6 +58,23 @@ AuthRouter.post('/convertCustomerLead',function (req,res) {
    })
 });
 
+AuthRouter.post('/getTruckOwnerDetails',function (req,res) {
+    CustomerLeads.getTruckOwnerDetails(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.put('/updateTruckOwnerDetails',function (req,res) {
+   CustomerLeads.updateTruckOwnerDetails(req,function (result) {
+       res.send(result);
+   })
+});
+
+AuthRouter.delete('/deleteTruckOwner',function (req,res) {
+    CustomerLeads.deleteTruckOwner(req,function (result) {
+        res.send(result);
+    })
+});
 
 module.exports = {
     AuthRouter: AuthRouter

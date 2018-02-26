@@ -159,7 +159,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         var params = $scope.customerLead;
         params.errorMessage = [];
 
-        if (!params.name) {
+        if (!params.userName) {
             params.errorMessage.push('Enter Your Full Name');
         }
         if (!params.contactPhone || typeof parseInt(params.contactPhone)==='NaN' || (params.contactPhone.length!=10 && typeof params.contactPhone===String)) {
