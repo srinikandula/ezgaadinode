@@ -1286,4 +1286,53 @@ Events.prototype.getOrderStatusData = function (request, callback) {
     });
 };
 
+Events.prototype.getCustomersData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var status = false;
+    var customerDataQuery = "select * from eg_customer";
+    pool_crm.query(customerDataQuery, function (err, customers) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(customers, function (customer, customerCallBack) {
+                AccountsColl.findOne({title: customer.title}, function (findLoadTypeErr, customerFound) {
+                    if (findLoadTypeErr) {
+                        customerCallBack(findLoadTypeErr);
+                    } else if (customerFound) {
+                        customerCallBack(null, 'Customer exists');
+                    } else {
+                        if(customer.status === 1) {
+                            status = true;
+                        }
+                        var customerDoc = new AccountsColl({
+                            title: customer.title,
+                            status: status,
+                        });
+                        customerDoc.save(function (err) {
+                            customerCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (customerErr, customerSaved) {
+                if (customerErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(customerErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Customer saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
 module.exports = new Events();
