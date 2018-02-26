@@ -300,8 +300,8 @@ OpenRouter.get('/get/orderStatus', function (request, res) {
     });
 });
 
-OpenRouter.get('/get/gpsPlan', function (request, res) {
-    Events.getGPSPlanData(request,function(results){
+OpenRouter.get('/get/customers', function (request, res) {
+    Events.getCustomersData(request,function(results){
         //console.log(results);
         res.json(results);
     });
