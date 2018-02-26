@@ -25,7 +25,7 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
-    userId:String,
+    userId:{type: String,unique: true},
     contactPhone: Number,
     password: String,
     email: String,
@@ -59,7 +59,16 @@ var accountSchema = new mongoose.Schema({
     alternatePhone: String,
     companyName: String,
     pincode: String,
-    role: String
+    role: String,
+    documentType: String,
+    documentFile: String,
+    paymentType: String,
+    loadPaymentToPayPercent: Number,
+    loadPaymentAdvancePercent: Number,
+    loadPaymentPodDays: Number,
+    tdsDeclarationDoc: String,
+    yearInService:Number,
+    leadSource:String,
 }, {
     timestamps: true
 });
@@ -472,8 +481,9 @@ var customerLeadsSchema = mongoose.Schema({
     loadPaymentAdvancePercent: Number,
     loadPaymentPodDays: Number,
     tdsDeclarationDoc: String,
-    leadSource: String,
-    comment:String
+    comment:String,
+    leadSource:String,
+    noOfTrucks:Number
 }, {timestamps: String});
 
 var accountDevicePlanHistory = new mongoose.Schema({

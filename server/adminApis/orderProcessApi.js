@@ -422,7 +422,6 @@ OrderProcess.prototype.deleteTruckRequest = function (req, callback) {
         callback(retObj);
     } else {
         TruckRequestColl.remove({_id: params._id}, function (err, doc) {
-            console.log(doc.result);
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_truck_request_err, {
