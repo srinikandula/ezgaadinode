@@ -1,101 +1,59 @@
-
-<ul class="list-inline title-ul">
-    <li class="pull-left name-head">Transporters</li>
-    <li class="pull-right col-xs-2">
-        <select class="form-control">
-            <option>Select</option>
-            <option>Enabled</option>
-            <option>Disabled</option>
-            <option>GPS Users</option>
-            <option>ERP Users</option>
-            <option>All Services</option>
-            <option>Load Requested</option>
-        </select>
-    </li>
-    <div class="clearfix"></div>
-</ul>
-<div class="clearfix"></div>
-<table class="table table-bordered table-responsive mt-20">
-    <thead>
-    <tr>
-        <th>S No</th>
-        <th>ID</th>
-        <th>Customer Name</th>
-        <th>Company</th>
-        <th>Mobile</th>
-        <th>Reg Date</th>
-        <th>No of Loads</th>
-        <th>ERP</th>
-        <th>GPS</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>10/12/2017</td>
-        <td>10</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>10/12/2017</td>
-        <td>10</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>10/12/2017</td>
-        <td>10</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>10/12/2017</td>
-        <td>10</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>10/12/2017</td>
-        <td>10</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    </tbody>
-</table>
+<div ng-controller="transporterCtrl" ng-init="countTransporter()">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Transporters
+        </li>
+        <li class="pull-right col-xs-2">
+            <select class="form-control">
+                <option>Select</option>
+                <option>Enabled</option>
+                <option>Disabled</option>
+                <option>GPS Users</option>
+                <option>ERP Users</option>
+                <option>All Services</option>
+                <option>Load Requested</option>
+            </select>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="transporterParams">
+        <tr ng-repeat="transporter in currentPageOfTransporters" style="text-align: center;">
+            <td data-title="'S.No'">
+                {{$index+1}}
+            </td>
+            <td data-title="'ID'" sortable="'userId'" class="clickable-item">
+                {{transporter.userId || '--'}}
+            </td>
+            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
+                {{transporter.firstName || '--'}}
+            </td>
+            <td data-title="'Company'" sortable="'companyName'" class="clickable-item">
+                {{transporter.companyName || '--'}}
+            </td>
+            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                {{transporter.contactPhone || '--'}}
+            </td>
+            <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
+                {{transporter.createdAt | date:'dd-MM-yyyy' || '--'}}
+            </td>
+            <td data-title="'No of Loads'" sortable="'noOfLoads'" class="clickable-item">
+                {{transporter.noOfLoads || '0'}}
+            </td>
+            <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
+                {{transporter.erpEnabled?'Enabled':'Disabled' || '--'}}
+            </td>
+            <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
+                {{transporter.gpsEnabled?'Enabled':'Disabled' || '--'}}
+            </td>
+            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                {{transporter.isActive?'Enabled':'Disabled' || '--'}}
+            </td>
+            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
+                <a href="#" ui-sref="customers.addUpdateTransporter({transporterId: transporter._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="deleteTransporter($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfTransporters || currentPageOfTransporters.length === 0">
+            <td colspan="8">No Transporters Records exist.</td>
+        </tr>
+    </table>
+</div>

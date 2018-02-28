@@ -33,7 +33,7 @@ function authMiddleware(req, res, next) {
                 res.status(401).send({status: false, message: 'Invalid token'})
             } else  {
                 if(req.url.startsWith('/v1/cpanel')){
-                    if(decoded.type==='employee'){
+                    if(decoded.role==='employee'){
                         req.jwt = decoded;
                         next();
                     }else{

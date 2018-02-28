@@ -25,7 +25,7 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
-    userId:{type: String,unique: true},
+    userId: String,
     contactPhone: Number,
     password: String,
     email: String,
@@ -56,7 +56,7 @@ var accountSchema = new mongoose.Schema({
     loadEnabled: {type: Boolean, default: true},
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
-    alternatePhone: String,
+    alternatePhone: [],
     companyName: String,
     pincode: String,
     role: String,
@@ -69,6 +69,17 @@ var accountSchema = new mongoose.Schema({
     tdsDeclarationDoc: String,
     yearInService:Number,
     leadSource:String,
+    officeNumber: String,
+    noOfRegTrucks: Number,
+    noOfTrucks: Number,
+    registrationNo: [],
+    isLead: {type: Boolean, default: false},
+    leadType: {type: Boolean, default: false},
+    leadStatus: {type: Boolean, default: false},
+    createdAt: Date,
+    updatedAt: Date,
+    smsEnabled: {type: Boolean, default: false},
+    emailEnabled: {type: Boolean, default: false}
 }, {
     timestamps: true
 });
@@ -457,10 +468,17 @@ var customerTypesSchema = mongoose.Schema({
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
+    assignedTo: {type: ObjectId, ref: 'accounts'},
+    id_franchise: Number,
+    userId: String,
+    gps_account_id: String,
+    accountId: {type: ObjectId, ref: 'accounts'},
     userName: String,
+    password: String,
     contactPhone: Number,
     alternatePhone:[Number],
     email: String,
+    isLead: Boolean,
     leadType: String,
     status:String,
     companyName: String,
@@ -483,7 +501,12 @@ var customerLeadsSchema = mongoose.Schema({
     tdsDeclarationDoc: String,
     comment:String,
     leadSource:String,
-    noOfTrucks:Number
+    noOfTrucks:Number,
+    createdAt: Date,
+    updatedAt: Date,
+    leadStatus: String,
+    isActive: {type: Boolean, default: false},
+    fuelCardApplied: {type: Boolean, default: false},
 }, {timestamps: String});
 
 var accountDevicePlanHistory = new mongoose.Schema({

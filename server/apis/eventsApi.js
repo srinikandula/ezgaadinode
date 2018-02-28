@@ -25,6 +25,7 @@ var TrucksTypesColl = require('./../models/schemas').TrucksTypesColl;
 var GoodsTypesColl = require('./../models/schemas').GoodsTypesColl;
 var LoadTypesColl = require('./../models/schemas').LoadTypesColl;
 var OrderStatusColl = require('./../models/schemas').OrderStatusColl;
+var CustomerLeadsColl = require('./../models/schemas').CustomerLeadsColl;
 
 Events.prototype.getEventData = function (accountId, startDate, endDate, request, callback) {
     var retObj = {};
@@ -838,7 +839,6 @@ Events.prototype.getEmployeeData = function (request, callback) {
                             contactPhone: employee.phone,
                             password: "12345678",
                             email: employee.email,
-                            type: "employee",
                             id_admin: employee.id_admin,
                             id_franchise: employee.id_franchise,
                             id_admin_role: employee.id_admin_role,
@@ -850,6 +850,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
                             state: employee.state,
                             location: employee.city+' '+employee.state,
                             isActive: employee.status,
+                            role: 'employee',
                             // createdAt: convertDate(employee.date_created),
                             // updatedAt: convertDate(employee.date_modified),
                         });
@@ -1285,5 +1286,241 @@ Events.prototype.getOrderStatusData = function (request, callback) {
         }
     });
 };
+
+Events.prototype.getCustomerLeadsData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var alternatePhone = [];
+    var approved = '';
+    var customerLeadsDataQuery = "select * from eg_customer c,eg_customer_lead cl where cl.id_customer=c.id_customer and cl.lead_status<>'Junk Lead' and (c.islead=1 or c.type='G')";
+
+    pool_crm.query(customerLeadsDataQuery, function (err, customerLeads) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(customerLeads, function (customerLead, customerLeadCallBack) {
+                CustomerLeadsColl.findOne({email: customerLead.email}, function (findCustomerLeadErr, customerLeadFound) {
+                    if (findCustomerLeadErr) {
+                        customerLeadCallBack(findCustomerLeadErr);
+                    } else if (customerLeadFound) {
+                        customerLeadCallBack('Customer Lead exists');
+                    } else {
+                        if(customerLead.alt_mobile_1) {
+                            alternatePhone.push(customerLead.alt_mobile_1);
+                        }
+                        if(customerLead.alt_mobile_2) {
+                            alternatePhone.push(customerLead.alt_mobile_2);
+                        }
+                        if(customerLead.alt_mobile_3) {
+                            alternatePhone.push(customerLead.alt_mobile_3);
+                        }
+
+                        if(customerLead.approved) {
+                            approved = 'Accepted';
+                        }
+                        if(customerLead.approved) {
+                            approved = 'Rejected';
+                        }
+                        var customerLeadDoc = new CustomerLeadsColl({
+                            id_franchise: customerLead.id_franchise,
+                            userId: customerLead.idprefix,
+                            gps_account_id: customerLead.gps_account_id,
+                            isLead: customerLead.islead,
+                            leadType: customerLead.type,
+                            userName: customerLead.fullname,
+                            contactPhone: customerLead.contactPhone,
+                            alternatePhone: alternatePhone,
+                            email: customerLead.email,
+                            yearInService: customerLead.year_in_service,
+                            password: '1234',
+                            noOfTrucks: customerLead.no_of_vechiles,
+                            loadEnabled: customerLead.load_required,
+                            gpsEnabled: customerLead.gps_required,
+                            paymentType: customerLead.payment_type,
+                            companyName: customerLead.company,
+                            address: customerLead.address,
+                            city: customerLead.city,
+                            state: customerLead.state,
+                            pinCode: customerLead.pincode,
+                            officeNumber: customerLead.landline,
+                            isActive: customerLead.status,
+                            status: approved,
+                            fuelCardApplied: customerLead.applied_fule_card,
+                            loadPaymentAdvancePercent: customerLead.load_payment_advance_percent,
+                            loadPaymentToPayPercent: customerLead.load_payment_topay_percent,
+                            loadPaymentPodDays: customerLead.load_payment_pod_days,
+                            leadStatus: customerLead.lead_status,
+                            leadSource: customerLead.lead_source,
+                            createdAt: convertDate(customerLead.date_created),
+                            updatedAt: convertDate(customerLead.date_modified),
+                        });
+                        customerLeadDoc.save(function (err) {
+                            AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                                for (var i = 0; i < accounts.length; i++) {
+                                    CustomerLeadsColl.update({'gps_account_id': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, customerLead) {
+                                        console.log("Account is updated " + JSON.stringify(customerLead));
+                                    });
+                                }
+                            });
+                            customerLeadCallBack(err, 'saved');
+                        })
+                    }
+                });
+            }, function (customerLeadErr, customerLeadSaved) {
+                if (customerLeadErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(customerLeadErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Customer Lead saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
+Events.prototype.getCustomerData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var alternatePhone = [];
+    var approved = '';
+    var role = '';
+    var smsEnabled = '';
+    var emailEnabled = '';
+    var roleType = ['Truck Owner', 'Guest', 'Commission Agent', 'Transporter', 'Factory Owners'];
+    var customerDataQuery = "select * from eg_customer";
+
+    pool_crm.query(customerDataQuery, function (err, customers) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(customers, function (customer, customerCallBack) {
+                AccountsColl.findOne({fullName: customer.fullname}, function (findCustomerErr, customerFound) {
+                    if (findCustomerErr) {
+                        customerCallBack(findCustomerErr);
+                    } else if (customerFound) {
+                        customerCallBack('Customer exists');
+                    } else {
+                        alternatePhone = [];
+                        if (customer.alt_mobile_1) {
+                            alternatePhone.push(customer.alt_mobile_1);
+                        }
+                        if (customer.alt_mobile_2) {
+                            alternatePhone.push(customer.alt_mobile_2);
+                        }
+                        if (customer.alt_mobile_3) {
+                            alternatePhone.push(customer.alt_mobile_3);
+                        }
+
+                        if (customer.approved) {
+                            approved = 'Accepted';
+                        }
+                        if (customer.approved) {
+                            approved = 'Rejected';
+                        }
+
+                        if(customer.type === 'T') {
+                            role = 'Truck Owner';
+                        } else if(customer.type === 'TR') {
+                            role = 'Transporter';
+                        } else if(customer.type === 'C') {
+                            role = 'Commission Agent';
+                        } else if(customer.type === 'L') {
+                            role = 'Factory Owners';
+                        } else if(customer.type === 'G') {
+                            role = 'Guest';
+                        }
+
+                        if(customer.enable_sms_email_ads === 0) {
+                            smsEnabled = false;
+                            emailEnabled = false;
+                        } else if(customer.enable_sms_email_ads === 1) {
+                            smsEnabled = true;
+                            emailEnabled = true;
+                        } else if(customer.enable_sms_email_ads === 2) {
+                            smsEnabled = false;
+                            emailEnabled = true;
+                        } else if(customer.enable_sms_email_ads === 3) {
+                            smsEnabled = true;
+                            emailEnabled = false;
+                        }
+                        var customerDoc = new AccountsColl({
+                            userName: customer.mobile,
+                            id_franchise: customer.id_franchise,
+                            userId: customer.idprefix,
+                            firstName: customer.fullname,
+                            contactPhone: customer.mobile,
+                            alternatePhone: alternatePhone,
+                            email: customer.email,
+                            companyName: customer.company,
+                            contactAddress: customer.address,
+                            city: customer.city,
+                            state: customer.state,
+                            pinCode: customer.pincode,
+                            officeNumber: customer.landline,
+                            password: '1234',
+                            erpEnabled: customer.erp_required,
+                            gpsEnabled: customer.gps_required,
+                            loadEnabled: customer.load_required,
+                            yearInService: customer.year_in_service,
+                            paymentType: customer.payment_type,
+                            loadPaymentToPayPercent: customer.load_payment_topay_percent,
+                            loadPaymentAdvancePercent: customer.load_payment_advance_percent,
+                            loadPaymentPodDays: customer.load_payment_pod_days,
+                            leadSource: customer.lead_source,
+                            noOfRegTrucks: customer.no_of_vechiles,
+                            noOfTrucks: customer.no_of_vechiles,
+                            //registrationNo: registrationNo,
+                            isLead: customer.islead,
+                            leadType: customer.type,
+                            isActive: customer.status,
+                            leadStatus: customer.lead_status,
+                            createdAt: convertDate(customer.date_created),
+                            updatedAt: convertDate(customer.date_modified),
+                            smsEnabled: smsEnabled,
+                            emailEnabled: emailEnabled,
+                            role: role
+                        });
+                        customerDoc.save(function (err) {
+                            AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                                for (var i = 0; i < accounts.length; i++) {
+                                    AccountsColl.update({'userName': accounts[i].userName,role:{$ne:{$in:roleType}}}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, customer) {
+                                        console.log("Account is updated " + JSON.stringify(customer));
+                                        alternatePhone = [];
+                                    });
+                                }
+                            });
+                        });
+                        customerCallBack(err, 'saved');
+                    }
+                });
+            }, function (customerErr, customerSaved) {
+                if (customerErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(customerErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Customer saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+}
 
 module.exports = new Events();
