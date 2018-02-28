@@ -94,6 +94,13 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
 
 app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', function ($scope, $stateParams, AccountService, Notification, $state) {
 
+    $scope.pageTitle = "Add New GPS / ERP Account";
+
+    if($stateParams.accountId){
+        $scope.pageTitle = "Edit GPS / ERP Account";
+    }
+
+
     $scope.status = {
         isOpen: true,
         isOpenOne: true,

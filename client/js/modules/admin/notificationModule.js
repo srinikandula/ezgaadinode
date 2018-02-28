@@ -1,5 +1,46 @@
 app.factory('NotificationServices', ['$http', function ($http) {
     return {
+        addGpsTruckNtfn: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/addGpsTruckNtfn',
+                method: 'POST',
+                data: params
+            }).then(success, error)
+        },
+        getGpsTruckNtfn: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/getGpsTruckNtfn',
+                method: 'GET',
+                params: params
+            }).then(success, error)
+        },
+        getGpsTruckNtfnDetails: function (id, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/getGpsTruckNtfnDetails',
+                method: 'GET',
+                params: {ntfnId: id}
+            }).then(success, error)
+        },
+        updateGpsTruckNtfn: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/updateGpsTruckNtfn',
+                method: 'PUT',
+                data: params
+            }).then(success, error)
+        },
+        deleteTruckNtfn: function (id, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/deleteTruckNtfn',
+                method: 'DELETE',
+                params: {_id: id}
+            }).then(success, error)
+        },
+        countOfTruckNtfns: function (success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/countOfTruckNtfns',
+                method: "GET",
+            }).then(success, error)
+        },
         getNotifications: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/notifications/getNotifications',
@@ -18,7 +59,9 @@ app.factory('NotificationServices', ['$http', function ($http) {
 }]);
 
 
-app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationServices', 'NgTableParams', 'Notification', 'SettingServices', function ($scope, $uibModal, NotificationServices, NgTableParams, Notification , SettingServices) {
+app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationServices', 'NgTableParams', 'Notification', 'SettingServices', function ($scope, $uibModal, NotificationServices, NgTableParams, Notification, SettingServices) {
+
+    /* Getting GPS Trcuk Notifications and Deleting */
 
     $scope.newGpsTruckNtfcn = function () {
         var modalInstance = $uibModal.open({
@@ -26,17 +69,131 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
             controller: 'addNtfnCtrl',
             windowClass: 'window-custom',
             backdrop: 'static',
-            keyboard: false
+            keyboard: false,
+            resolve : {
+                modalData: function () {
+                    return{}
+                }
+            }
+        });
+        modalInstance.result.then(function () {
+            $scope.getTruckNtfnCount();
+        }, function () {
         });
     };
+
+    $scope.editGpsTruckNtfn = function (id) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'newGpsTruckNtfcn.html',
+            controller: 'addNtfnCtrl',
+            windowClass: 'window-custom',
+            backdrop: 'static',
+            keyboard: false,
+            resolve : {
+                modalData: function () {
+                    return{data : id}
+                }
+            }
+        });
+        modalInstance.result.then(function () {
+             $scope.getTruckNtfnCount();
+        }, function () {
+        });
+    };
+    $scope.getTruckNtfnCount = function () {
+        NotificationServices.countOfTruckNtfns(function (response) {
+            if (response.data.status) {
+                $scope.count = response.data.data;
+                $scope.initTruckNtfns();
+            } else {
+                response.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    var truckNtfnsTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+        };
+        NotificationServices.getGpsTruckNtfn(pageable, function (success) {
+            $scope.invalidCount = 0;
+            if (success.data.status) {
+                tableParams.total(success.data.count);
+                tableParams.data = success.data.data;
+                $scope.currentPageOfTruckNtfns = success.data.data;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    $scope.initTruckNtfns = function () {
+        $scope.truckNtfnsparams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                truckNtfnsTableData(params);
+            }
+        });
+    };
+    $scope.delTruckNtfn = function (id) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                NotificationServices.deleteTruckNtfn(id, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.getTruckNtfnCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    };
+
+
     $scope.newGpsLoadNtfcn = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'newGpsLoadNtfcn.html',
             controller: 'addNtfnCtrl',
             windowClass: 'window-custom',
             backdrop: 'static',
-            keyboard: false
-
+            keyboard: false,
+            resolve : {
+                modalData: function () {
+                    return{}
+                }
+            }
+       });
+        modalInstance.result.then(function (data) {
+            $scope.getOrderStatusCount();
+        }, function () {
         });
     };
     $scope.addAppNtfcn = function () {
@@ -99,11 +256,10 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
         });
     };
 
-
 }]);
 
 
-app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices', function ($scope, $uibModalInstance, SettingServices) {
+app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices', 'Notification', 'NotificationServices','modalData',  function ($scope, $uibModalInstance, SettingServices, Notification, NotificationServices, modalData) {
 
     $scope.closeGPS = function () {
         $uibModalInstance.dismiss('cancel');
@@ -127,4 +283,91 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
             }
         });
     }
+
+
+    /* ------------ Available Trucks Notification adding or Updating----Sravan -------------*/
+
+    $scope.addGpsTruckNtfn =  {
+        sourceCity:'',
+        destinationCity: '',
+        numOfTrucks: '',
+        dateAvailable:'',
+        truckType:'',
+        sendToAll:undefined,
+    }
+
+    $scope.initGPSTruckNotification = function () {
+        if (modalData.data) {
+            NotificationServices.getGpsTruckNtfnDetails(modalData.data, function (success) {
+                if (success.data.status) {
+                    $scope.addGpsTruckNtfn = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });``
+                }
+            }, function (error) {
+
+            })
+        } else {
+        }
+    };
+
+    $scope.addOrUpdateTruckNtfn = function () {
+        var params = $scope.addGpsTruckNtfn;
+        params.errors = [];
+        if (!params.sourceCity) {
+            params.errors.push("Invalid Source City");
+        }
+        if (!params.destinationCity) {
+            params.errors.push("Invalid Destination City");
+        }
+        if (!params.numOfTrucks) {
+            params.errors.push("Please select Number of Trucks");
+        }
+        if (!params.dateAvailable) {
+            params.errors.push("Please select Available Dates");
+        }
+        if (!params.truckType) {
+            params.errors.push("Please select Truck Type");
+        }
+        if (params.sendToAll === undefined) {
+            params.errors.push("Select Send To All")
+        }
+        if (params.errors.length > 0) {
+            params.errors.forEach(function (message) {
+                Notification.error(message);
+            });
+        }
+        else{
+            if (params._id) {
+                NotificationServices.updateGpsTruckNtfn(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }else{
+                NotificationServices.addGpsTruckNtfn(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+        }
+    }
+
 }]);

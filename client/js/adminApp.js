@@ -186,13 +186,13 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/notifications/notificationDashboard.html',
         data: { activeTab: 'notification' }
     }).state({
-        name: 'notifications.avaTrucks',
-        url: '/avaTrucks',
+        name: 'notifications.availableTrucks',
+        url: '/availableTrucks',
         templateUrl: 'views/partials/admin/notifications/availableTrucks.html',
         data: { activeTab: 'notification' }
     }).state({
-        name: 'notifications.avaLoads',
-        url: '/avaLoads',
+        name: 'notifications.availableLoads',
+        url: '/availableLoads',
         templateUrl: 'views/partials/admin/notifications/availableLoads.html',
         data: { activeTab: 'notification' }
     }).state({

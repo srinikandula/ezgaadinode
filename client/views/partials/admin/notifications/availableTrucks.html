@@ -1,4 +1,4 @@
-<div ng-controller="NotificationCntrl">
+<div ng-controller="NotificationCntrl" ng-init="getTruckNtfnCount();">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">GPS Truck Notification</li>
         <li class="pull-right">
@@ -9,12 +9,33 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="customerParams">
-
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center" ng-table="truckNtfnsparams">
+        <tr ng-repeat="plan in currentPageOfTruckNtfns">
+            <td><input type="checkbox"/></td>
+            <td data-title="'S No'">{{$index+1}}</td>
+            <td data-title="'Source'" sortable="'sourceCity'" class="clickable-item">{{plan.sourceCity}}</td>
+            <td data-title="'Destination'" sortable="'destination'" class="clickable-item">{{plan.destinationCity}}</td>
+            <td data-title="'No Of Trucks'" sortable="'numOfTrucks'" class="clickable-item">{{plan.numOfTrucks}}</td>
+            <td data-title="'Price'" sortable="'price'" class="clickable-item">{{plan.price}}</td>
+            <td data-title="'Date Available'" sortable="'dateAvailable'" class="clickable-item">{{plan.dateAvailable}}</td>
+            <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">{{plan.createdAt | date:'dd-MM-yyyy hh:mm:ss'}}</td>
+            <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item">{{plan.truckType}}</td>
+            <td data-title="'Send To'" sortable="'sendToAll'" class="clickable-item">{{plan.sendToAll}}</td>
+            <td data-title="'Action'">
+                <a href="#" class="edit_icon" ng-click="editGpsTruckNtfn(plan._id)">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+                <a href="#" ng-click="delTruckNtfn(plan._id)" class="delete_icon">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a></td>
+        </tr>
+        <tr ng-if="!currentPageOfTruckNtfns || currentPageOfTruckNtfns.length === 0">
+            <td colspan="8">No Truck Notifications exist.</td>
+        </tr>
 
     </table>
 
-<script type="text/ng-template" id="newGpsTruckNtfcn.html">
+<script type="text/ng-template" id="newGpsTruckNtfcn.html" >
 
     <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
     <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
@@ -22,31 +43,36 @@
     <div class="modal-header">
         <h3 class="modal-title" id="modal-title">Add GPS Truck Notification</h3>
     </div>
-    <div class="modal-body" id="modal-body">
+    <div class="modal-body" id="modal-body" ng-init="initGPSTruckNotification();">
         <div class="row">
             <div class="col-xs-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Source City*" />
+                <div class="form-group styling-input-list">
+                    <input type="text" class="form-control order-form-control" ng-model="addGpsTruckNtfn.sourceCity"/>
+                    <label class="order-effect-for-input">Source City *</label>
                 </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="No of Trucks*" />
+                <div class="form-group styling-input-list">
+                    <input type="number" class="form-control order-form-control" ng-model="addGpsTruckNtfn.numOfTrucks" />
+                    <label class="order-effect-for-input">No of Trucks*</label>
                 </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Date Available*" />
+                <div class="form-group styling-input-list">
+                    <input type="text" class="form-control order-form-control"  ng-model="addGpsTruckNtfn.dateAvailable" />
+                    <label class="order-effect-for-input">Date Available*</label>
                 </div>
             </div>
             <div class="col-xs-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Destination City*" />
+                <div class="form-group styling-input-list">
+                    <input type="text" class="form-control order-form-control" ng-model="addGpsTruckNtfn.destinationCity" />
+                    <label class="order-effect-for-input">Destination City *</label>
                 </div>
                 <div class="form-group" ng-init="getTruckTypes();">
-                    <select class="form-control">
-                        <option selected>Truck Type*</option>
+                    <select class="form-control order-form-control" ng-model="addGpsTruckNtfn.truckType">
+                        <option selected value="">Truck Type*</option>
                         <option ng-repeat="trucks in getTruckTypes">{{trucks.title}}</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Price*" />
+                <div class="form-group styling-input-list">
+                    <input type="number" class="form-control order-form-control" ng-model="addGpsTruckNtfn.price"/>
+                    <label class="order-effect-for-input">Price *</label>
                 </div>
                 <div class="form-group">
                     <div class="form-group">
@@ -55,7 +81,7 @@
                             <li>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="all">
+                                        <input type="radio" name="all" ng-value="true" ng-model="addGpsTruckNtfn.sendToAll">
                                         <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                         Yes
                                     </label>
@@ -64,7 +90,7 @@
                             <li>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="all">
+                                        <input type="radio" name="all" ng-value="false" ng-model="addGpsTruckNtfn.sendToAll">
                                         <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                         No
                                     </label>
@@ -75,10 +101,10 @@
                 </div>
             </div>
         </div>
-        <div ng-show="error">{{error}}</div>
+        <div ng-show="errors">{{errors}}</div>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="transferDevices()">Submit</button>
+        <button class="btn btn-primary" type="button" ng-click="addOrUpdateTruckNtfn()">Submit</button>
         <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
     </div>
 </script>

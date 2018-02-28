@@ -649,6 +649,20 @@ var truckRequestCommentSchema=mongoose.Schema({
     notifiedStatus:{type:String,default:"NO"}
 }, {timestamps: String});
 
+var truckNotificationSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    sourceCity : String,
+    destinationCity: String,
+    numOfTrucks : Number,
+    dateAvailable: String,
+    truckType : String,
+    price:Number,
+    sendToAll: Boolean
+}, {timestamps: String})
+
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -687,5 +701,6 @@ module.exports = {
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
     adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions'),
     TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes'),
-    TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments')
+    TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments'),
+    TruckNotificationColl:mongoose.model('truckNotification',truckNotificationSchema,'truckNotification')
 };

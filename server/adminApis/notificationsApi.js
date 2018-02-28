@@ -5,6 +5,7 @@ const ObjectId = mongoose.Types.ObjectId;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var NotificationColl = require("../models/schemas").NotificationColl;
+var TruckNotificationColl = require("../models/schemas").TruckNotificationColl;
 var Utils = require("../apis/utils");
 
 var Notifications = function () {
@@ -79,7 +80,6 @@ Notifications.prototype.totalNumOfNotifications = function (req, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.data = doc;
-            console.log("Couht", retObj.data);
             analyticsService.create(req, serviceActions.count_notifications, {
                 accountId: req.id,
                 success: true
@@ -89,6 +89,349 @@ Notifications.prototype.totalNumOfNotifications = function (req, callback) {
         }
     })
 };
+/* author : Sravan G */
+Notifications.prototype.addGpsTruckNtfn = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body;
+    if (!params.sourceCity) {
+        retObj.messages.push("Please enter Source");
+    }
+    if (!params.destinationCity) {
+        retObj.messages.push("Please enter Destination");
+    }
+    if (!params.numOfTrucks) {
+        retObj.messages.push("Please enter Number of Trucks");
+    }
+    if (!params.dateAvailable) {
+        retObj.messages.push("Please enter Date");
+    }
+    if (params.sendToAll === undefined) {
+        retObj.messages.push('Select Send To All');
+    }
+    if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.add_gps_truck_ntfn_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        params.createdBy = req.jwt.id;
+        var truckType = new TruckNotificationColl(params);
+
+        truckType.save(function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.add_gps_truck_ntfn_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push("Truck Notification added successfully");
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.add_gps_truck_ntfn, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+/* Author : Sravan G*/
+Notifications.prototype.getGpsTruckNtfn = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    TruckNotificationColl.find({}).sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .exec(function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_gps_truck_ntfn_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.messages = "Success";
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_gps_truck_ntfn, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages = "No truck Notifications found";
+                analyticsService.create(req, serviceActions.get_gps_truck_ntfn_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+};
+
+/*author : Sravan G*/
+Notifications.prototype.countOfTruckNtfns = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TruckNotificationColl.count(function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting Truck Notification Count');
+            analyticsService.create(req, serviceActions.count_truck_notifications_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_truck_notifications, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
+/*author : Sravan G*/
+Notifications.prototype.getGpsTruckNtfnDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var ntfnId = req.query.ntfnId;
+
+    if (!Utils.isValidObjectId(ntfnId)) {
+        retObj.messages.push('Invalid Truck Notification id');
+    }
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.get_gps_truck_ntfn_details_err, {
+            body: JSON.stringify(req.params),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        TruckNotificationColl.findOne({"_id": ObjectId(ntfnId)}, function (err, doc) {
+            if (err) {
+                retObj.messages.push('Error retrieving Truck Notification');
+                analyticsService.create(req, serviceActions.get_gps_truck_ntfn_details_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.get_gps_truck_ntfn_details, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push('Truck Notificatoin with Id doesn\'t exist');
+                analyticsService.create(req, serviceActions.get_gps_truck_ntfn_details_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+};
+
+
+Notifications.prototype.updateGpsTruckNtfn = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var truckNtfnInfo = req.body;
+    console.log("Truck Info", truckNtfnInfo);
+
+    if (!Utils.isValidObjectId(truckNtfnInfo._id)) {
+        retObj.messages.push('Invalid gps plan Id');
+    }
+
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.update_gps_truck_ntfn_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        TruckNotificationColl.findOne({
+            _id: truckNtfnInfo._id,
+        }, function (err, oldDoc) {
+            if (err) {
+                retObj.messages.push('Please Try Again');
+                analyticsService.create(req, serviceActions.update_gps_truck_ntfn_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (oldDoc) {
+                truckNtfnInfo.updatedBy = req.jwt.id;
+                TruckNotificationColl.findOneAndUpdate({_id: truckNtfnInfo._id}, {$set: truckNtfnInfo}, function (err, doc) {
+                    if (err) {
+                        retObj.messages.push('Error updating the GPS Truck Notification');
+                        analyticsService.create(req, serviceActions.update_plan_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else if (doc) {
+                        retObj.status = true;
+                        retObj.messages.push('GPS Truck Notification Updated successfully');
+                        retObj.data = doc;
+                        analyticsService.create(req, serviceActions.update_gps_truck_ntfn, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.messages.push('GPS Truck Notification with Id doesn\'t exist');
+                        analyticsService.create(req, serviceActions.update_gps_truck_ntfn_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                });
+            } else {
+                retObj.messages.push('GPS Truck Notification with Id doesn\'t exist');
+                analyticsService.create(req, serviceActions.update_gps_truck_ntfn_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+};
+
+Notifications.prototype.deleteTruckNtfn = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var truckNtfnId = req.query._id;
+
+    if (!Utils.isValidObjectId(truckNtfnId)) {
+        retObj.messages.push('Invalid GPS Truck Notification ID');
+    }
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.delete_gps_truck_ntfn_err, {
+            body: JSON.stringify(req.params),
+            gpsPlanId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        TruckNotificationColl.remove({_id: truckNtfnId}, function (err, returnValue) {
+            if (err) {
+                retObj.messages.push('Error deleting GPS Truck Notification');
+                analyticsService.create(req, serviceActions.delete_gps_truck_ntfn_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (returnValue.result.n === 0) {
+                retObj.status = false;
+                retObj.messages.push('Unauthorized access or Error deleting in GPS Truck Notification');
+                analyticsService.create(req, serviceActions.delete_gps_truck_ntfn_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('GPS Truck Notification deleted successfully');
+                analyticsService.create(req, serviceActions.delete_gps_truck_ntfn, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+}
 
 module.exports = new Notifications();
 

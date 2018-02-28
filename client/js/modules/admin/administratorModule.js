@@ -112,6 +112,7 @@ app.factory('AdministratorService', ["$http", function ($http) {
 
 app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'AdministratorService', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, AdministratorService, Notification, NgTableParams, Upload) {
 
+    $scope.employeeTitle ="Add Employee";
     $scope.status = {
         isOpen: true,
         isOpenOne: true,
@@ -125,6 +126,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
 
     /*EMPLOYEE START*/
     if ($stateParams.employeeId) {
+        $scope.employeeTitle ="Edit Employee";
         AdministratorService.getEmployeeDetails($stateParams.employeeId, function (success) {
             if (success.data.status) {
                 $scope.employee = success.data.data;
@@ -371,7 +373,9 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
     /*EMPLOYEE END*/
 
     /*ROLE START*/
+    $scope.roleTitle ="Add Role";
     if ($stateParams.roleId) {
+        $scope.roleTitle ="Edit Role"
         AdministratorService.getRoleDetails($stateParams.roleId, function (success) {
             if (success.data.status) {
                 $scope.role = success.data.data;
@@ -501,7 +505,9 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
     };
 
     /*FRANCHISE START*/
+    $scope.franchiseTitle = "Add Franchise Details";
     if ($stateParams.franchiseId) {
+        $scope.franchiseTitle = "Edit Franchise Details";
         AdministratorService.getFranchiseDetails($stateParams.franchiseId, function (success) {
             if (success.data.status) {
                 $scope.franchise = success.data.data;

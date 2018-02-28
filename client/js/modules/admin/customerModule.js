@@ -32,6 +32,12 @@ app.factory('customerServices', function($http) {
 
 app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$stateParams', 'customerServices', 'NgTableParams', function($scope, $state, Notification, Upload, $stateParams, customerServices, NgTableParams) {
 
+    $scope.pageTitle = "Create Customer Leads";
+
+    if ($stateParams.customerId) {
+        $scope.pageTitle = "Edit Customer Leads";
+    }
+
     $scope.cancel = function() {
         $state.go('customers.customersLead');
     };

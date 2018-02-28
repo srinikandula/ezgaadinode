@@ -926,8 +926,8 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
         $uibModalInstance.close();
     };
 
-
 // GPS and ERP Renewal Plan Adding or Updating
+    $scope.pageTitle = "New Renewal Plans";
 
     function gpsAddFunc() {
         $scope.addRenewalPlan = {
@@ -941,13 +941,14 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     }
     $scope.initGPSandERPPlan = function () {
         if (modelData.data) {
+            $scope.pageTitle = "Edit Renewal Plans";
             SettingServices.getPlanDetails(modelData.data, function (success) {
                 if (success.data.status) {
                     $scope.addRenewalPlan = success.data.data;
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
-                    });
+                    });``
                 }
             }, function (error) {
 
@@ -1013,7 +1014,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     };
 
 // Truck Types adding and Updating
-
+    $scope.truckTitle = "New Truck Type";
     function truckTypeAddFun() {
         $scope.truckType = {
             title: '',
@@ -1025,6 +1026,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     }
     $scope.initTruckType = function () {
         if (modelData.data) {
+            $scope.truckTitle = "Edit Truck Type";
             SettingServices.getTruckTypeDetails(modelData.data, function (success) {
                 if (success.data.status) {
                     $scope.truckType = success.data.data;
@@ -1096,7 +1098,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     };
 
 // Load Types adding and Updating
-
+    $scope.loadTitle = "New Load Type";
     function loadTypeAddFun() {
         $scope.loadType = {
             title: '',
@@ -1106,6 +1108,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     }
     $scope.initLoadType = function () {
         if (modelData.data) {
+            $scope.loadTitle = "Edit Load Type";
             SettingServices.getLoadTypeDetails(modelData.data, function (success) {
                 if (success.data.status) {
                     $scope.loadType = success.data.data;
@@ -1169,7 +1172,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     };
 
 // Goods Types adding and Updating
-
+    $scope.goodsTitle = "New Goods Type";
     function goodsTypeAddFun() {
         $scope.goodsType = {
             title: '',
@@ -1179,6 +1182,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     }
     $scope.initGoodsType = function () {
         if (modelData.data) {
+            $scope.goodsTitle = "Edit Goods Type";
             SettingServices.getGoodsTypeDetails(modelData.data, function (success) {
                 if (success.data.status) {
                     $scope.goodsType = success.data.data;
@@ -1242,7 +1246,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     };
 
 // Order Status adding and Updating
-
+    $scope.orderTitle = "New Order Status";
     function orderStatusAddFun() {
         $scope.orderStatus = {
             title: '',
@@ -1253,6 +1257,7 @@ app.controller('settingsModalCtrl', ['$scope', '$state', '$uibModalInstance', 'N
     }
     $scope.initOrderStatus = function () {
         if (modelData.data) {
+            $scope.orderTitle = "Edit Order Status";
             SettingServices.getOrderStatusDetails(modelData.data, function (success) {
                 if (success.data.status) {
                     $scope.orderStatus = success.data.data;
