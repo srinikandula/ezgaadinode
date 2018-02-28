@@ -1,103 +1,55 @@
-
-<ul class="list-inline title-ul">
-    <li class="pull-left name-head">Commission Agent</li>
-    <li class="pull-right col-xs-2">
-        <select class="form-control">
-            <option>Select</option>
-            <option>Enabled</option>
-            <option>Disabled</option>
-        </select>
-    </li>
-    <div class="clearfix"></div>
-</ul>
-<div class="clearfix"></div>
-<table class="table table-bordered table-responsive mt-20">
-    <thead>
-    <tr>
-        <th>S No</th>
-        <th>ID</th>
-        <th>Customer Name</th>
-        <th>Company</th>
-        <th>Upload</th>
-        <th>Mobile</th>
-        <th>Reg Date</th>
-        <th>No of Loads</th>
-        <th>No of Trucks</th>
-        <th>SMS/Email</th>
-        <th>Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>MTW Labs</td>
-        <td>Click Here</td>
-        <td>9618485858</td>
-        <td>10/15/2017</td>
-        <td>10</td>
-        <td>8</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>MTW Labs</td>
-        <td>Click Here</td>
-        <td>9618485858</td>
-        <td>10/15/2017</td>
-        <td>10</td>
-        <td>8</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>MTW Labs</td>
-        <td>Click Here</td>
-        <td>9618485858</td>
-        <td>10/15/2017</td>
-        <td>10</td>
-        <td>8</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>MTW Labs</td>
-        <td>Click Here</td>
-        <td>9618485858</td>
-        <td>10/15/2017</td>
-        <td>10</td>
-        <td>8</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>MTW Labs</td>
-        <td>Click Here</td>
-        <td>9618485858</td>
-        <td>10/15/2017</td>
-        <td>10</td>
-        <td>8</td>
-        <td>Yes</td>
-        <td>Enabled</td>
-        <td>Edit/Delete</td>
-    </tr>
-    </tbody>
-</table>
+<div ng-controller="transporterCtrl" ng-init="countCommissionAgent()">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Commission Agents
+        </li>
+        <li class="pull-right col-xs-2">
+            <select class="form-control">
+                <option>Select</option>
+                <option>Enabled</option>
+                <option>Disabled</option>
+            </select>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="transporterParams">
+        <tr ng-repeat="transporter in currentPageOfCommissionAgents" style="text-align: center;">
+            <td data-title="'S.No'">
+                {{$index+1}}
+            </td>
+            <td data-title="'ID'" sortable="'firstName'" class="clickable-item">
+                {{transporter.firstName}}
+            </td>
+            <td data-title="'Customer Name'" sortable="'lastName'" class="clickable-item">
+                {{transporter.lastName}}
+            </td>
+            <td data-title="'Company'" sortable="'contactPhone'" class="clickable-item">
+                {{transporter.contactPhone}}
+            </td>
+            <td data-title="'Mobile'" sortable="'email'" class="clickable-item">
+                {{transporter.email}}
+            </td>
+            <td data-title="'Reg Date'" sortable="'city'" class="clickable-item">
+                {{transporter.city}}
+            </td>
+            <td data-title="'No of Loads'" sortable="'state'" class="clickable-item">
+                {{transporter.state}}
+            </td>
+            <td data-title="'ERP'" sortable="'isActive'" class="clickable-item">
+                {{transporter.isActive?'Enabled':'Disabled'}}
+            </td>
+            <td data-title="'GPS'" sortable="'isActive'" class="clickable-item">
+                {{transporter.isActive?'Enabled':'Disabled'}}
+            </td>
+            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                {{transporter.isActive?'Enabled':'Disabled'}}
+            </td>
+            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
+                <a href="#" ui-sref="admin.addUpdateCommissionAgent({transporterId: transporter._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="deleteCommissionAgent($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfCommissionAgents || currentPageOfCommissionAgents.length === 0">
+            <td colspan="8">No Commission Agents Records exist.</td>
+        </tr>
+    </table>
+</div>
