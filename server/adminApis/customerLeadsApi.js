@@ -841,7 +841,7 @@ CustomerLeads.prototype.deleteTruckOwner=function (req,callback) {
   };
   var params=req.query;
   if(!params._id || !ObjectId.isValid(params._id)){
-      retObj.messages.length("Invalid truck owner");
+      retObj.messages.push("Invalid truck owner");
   }
 
   if(retObj.messages.length>0){
@@ -890,7 +890,7 @@ CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.length("Invalid truck owner");
+        retObj.messages.push("Invalid truck owner");
     }
 
     if (retObj.messages.length > 0) {
@@ -969,37 +969,64 @@ CustomerLeads.prototype.getTransporter = function (req, callback) {
         messages: []
     };
 
-    AccountsColl.find({type: 'account', role: 'Transporter'}, function (err, docs) {
-        if (err) {
-            retObj.messages.push('Error retrieving transporters');
-            analyticsService.create(req, serviceActions.get_transporter_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        } else if (docs.length > 0) {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.data = docs;
-            analyticsService.create(req, serviceActions.get_transporter, {
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
-            callback(retObj);
-        } else {
-            retObj.messages.push('No transporters found');
-            analyticsService.create(req, serviceActions.get_transporter_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        }
-    });
+    var condition = {};
+    var params = req.query;
+
+    if (!params.page) {
+        params.page = 1;
+    }
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
+        async.parallel({
+            Transporters: function (transportersCallback) {
+                AccountsColl
+                    .find({role: 'Transporter'})
+                    .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, transporters) {
+                        transportersCallback(err, transporters);
+                    });``
+            },
+            count: function (countCallback) {
+                AccountsColl.count({role: 'Transporter'},function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, docs) {
+            if (err) {
+                retObj.messages.push('Error retrieving transporter');
+                analyticsService.create(req, serviceActions.get_transporter_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = docs.count;
+                retObj.accountId = req.jwt.id;
+                retObj.userType = req.jwt.type;
+                retObj.data = docs.Transporters;
+                analyticsService.create(req, serviceActions.get_transporter, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
 };
 
 CustomerLeads.prototype.getTransporterDetails = function (req, callback) {
@@ -1008,13 +1035,13 @@ CustomerLeads.prototype.getTransporterDetails = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+    if (!params.transporterId || !ObjectId.isValid(params.transporterId)) {
         retObj.messages.push("Invalid transporter");
     }
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({_id: params._id}, function (err, doc) {
+        AccountsColl.findOne({_id: params.transporterId}, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_transporter_details_err, {
@@ -1058,7 +1085,7 @@ CustomerLeads.prototype.updateTransporter = function (req, callback) {
         message: []
     };
     var params = req.body;
-    if (!params._id) {
+    if (!params.transporterId) {
         retObj.message.push('Please try again,Invalid transporter');
     }
     if (!params.userName) {
@@ -1071,7 +1098,7 @@ CustomerLeads.prototype.updateTransporter = function (req, callback) {
         callback(retObj);
     } else {
         params = Utils.removeEmptyFields(params);
-        AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
+        AccountsColl.findOneAndUpdate({_id: params.transporterId}, params, function (err, doc) {
             if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.update_transporter_err, {
@@ -1153,14 +1180,14 @@ CustomerLeads.prototype.deleteTransporter = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.length("Invalid transporter");
+    if (!params.transporterId || !ObjectId.isValid(params.transporterId)) {
+        retObj.messages.push("Invalid transporter");
     }
 
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+        AccountsColl.findOneAndRemove({_id: params.transporterId}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_transporter_err, {
@@ -1203,7 +1230,7 @@ CustomerLeads.prototype.countCommissionAgent = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountsColl.count({type: 'account', role: 'Commission Agent'}, function (err, count) {
+    AccountsColl.count({role: 'Commission Agent'}, function (err, count) {
         if (err) {
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.count_commission_agent_err, {
@@ -1233,7 +1260,7 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
         messages: []
     };
 
-    AccountsColl.find({type: 'account', role: 'Commission Agent'}, function (err, docs) {
+    AccountsColl.find({role: 'Commission Agent'}, function (err, docs) {
         if (err) {
             retObj.messages.push('Error retrieving transporters');
             analyticsService.create(req, serviceActions.get_commission_agent_err, {
@@ -1254,7 +1281,7 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
             });
             callback(retObj);
         } else {
-            retObj.messages.push('No transporters found');
+            retObj.messages.push('No commission agent found');
             analyticsService.create(req, serviceActions.get_commission_agent_err, {
                 accountId: req.jwt.id,
                 success: false,
@@ -1273,7 +1300,7 @@ CustomerLeads.prototype.getCommissionAgentDetails = function (req, callback) {
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.push("Invalid transporter");
+        retObj.messages.push("Invalid commission agent");
     }
     if (retObj.messages.length > 0) {
         callback(retObj);
@@ -1418,13 +1445,13 @@ CustomerLeads.prototype.deleteCommissionAgent = function (req, callback) {
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.length("Invalid commission agent");
+        retObj.messages.push("Invalid commission agent");
     }
 
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+        AccountsColl.remove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_commission_agent_err, {
@@ -1467,7 +1494,7 @@ CustomerLeads.prototype.countFactoryOwner = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountsColl.count({type: 'account', role: 'Factory Owners'}, function (err, count) {
+    AccountsColl.count({role: 'Factory Owners'}, function (err, count) {
         if (err) {
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.count_factory_owner_err, {
@@ -1497,7 +1524,7 @@ CustomerLeads.prototype.getFactoryOwner = function (req, callback) {
         messages: []
     };
 
-    AccountsColl.find({type: 'account', role: 'Factory Owners'}, function (err, docs) {
+    AccountsColl.find({role: 'Factory Owners'}, function (err, docs) {
         if (err) {
             retObj.messages.push('Error retrieving factory owner');
             analyticsService.create(req, serviceActions.get_factory_owner_err, {
@@ -1682,13 +1709,13 @@ CustomerLeads.prototype.deleteFactoryOwner = function (req, callback) {
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.length("Invalid factory owner");
+        retObj.messages.push("Invalid factory owner");
     }
 
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+        AccountsColl.remove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_factory_owner_err, {
@@ -1731,7 +1758,7 @@ CustomerLeads.prototype.countGuest = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountsColl.count({type: 'account', role: 'Guest'}, function (err, count) {
+    AccountsColl.count({role: 'Guest'}, function (err, count) {
         if (err) {
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.count_guest_err, {
@@ -1761,7 +1788,7 @@ CustomerLeads.prototype.getGuest = function (req, callback) {
         messages: []
     };
 
-    AccountsColl.find({type: 'account', role: 'Guest'}, function (err, docs) {
+    AccountsColl.find({role: 'Guest'}, function (err, docs) {
         if (err) {
             retObj.messages.push('Error retrieving guest');
             analyticsService.create(req, serviceActions.get_guest_err, {
@@ -1946,13 +1973,13 @@ CustomerLeads.prototype.deleteGuest = function (req, callback) {
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.length("Invalid guest");
+        retObj.messages.push("Invalid guest");
     }
 
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+        AccountsColl.remove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_guest_err, {
@@ -1988,6 +2015,5 @@ CustomerLeads.prototype.deleteGuest = function (req, callback) {
     }
 };
 /*Guest End*/
->>>>>>> pull request
 
 module.exports = new CustomerLeads();

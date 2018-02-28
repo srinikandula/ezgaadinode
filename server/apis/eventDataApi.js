@@ -141,6 +141,7 @@ EventData.prototype.createAccountData = function (accountData, callback) {
         status: false,
         messages: []
     };
+    accountData.role = 'account';
     var accountDoc = new AccountsColl(accountData);
     AccountsColl.find({"userName": accountData.userName}, function (error, accountFound) {
         if (!accountFound || accountFound.length === 0) {
@@ -172,6 +173,7 @@ EventData.prototype.createAccountGroupData = function (accountGroupData, callbac
         status: false,
         messages: []
     };
+    accountGroupData.role = 'group';
     var accountGroupDoc = new AccountsColl(accountGroupData);
     accountGroupDoc.save(accountGroupData, function (err, newDoc) {
         if (err) {

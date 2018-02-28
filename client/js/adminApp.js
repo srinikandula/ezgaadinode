@@ -36,30 +36,66 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/customers/truckOwners.html',
         data: {activeTab: 'customers'}
     }).state({
+        name: 'customers.addUpdateTruckOwner',
+        url: '/addUpdateTruckOwner/:truckOwnerId',
+        templateUrl: 'views/partials/admin/customers/addUpdateTruckOwner.html',
+        data: {activeTab: 'customers'},
+        params: {transporterId: null}
+    }).state({
         name: 'customers.transporters',
         url: '/transporters',
         templateUrl: 'views/partials/admin/customers/transporters.html',
         data: {activeTab: 'customers'}
+    }).state({
+        name: 'customers.addUpdateTransporter',
+        url: '/addUpdateTransporter/:transporterId',
+        templateUrl: 'views/partials/admin/customers/addUpdateTransporter.html',
+        data: {activeTab: 'customers'},
+        params: {transporterId: null}
     }).state({
         name: 'customers.commissionAgent',
         url: '/commissionAgent',
         templateUrl: 'views/partials/admin/customers/commissionAgent.html',
         data: {activeTab: 'customers'}
     }).state({
+        name: 'customers.addUpdateCommissionAgent',
+        url: '/CommissionAgent/:commissionAgentId',
+        templateUrl: 'views/partials/admin/customers/CommissionAgent.html',
+        data: {activeTab: 'customers'},
+        params: {commissionAgentId: null}
+    }).state({
         name: 'customers.factoryOwners',
         url: '/factoryOwners',
         templateUrl: 'views/partials/admin/customers/factoryOwners.html',
         data: {activeTab: 'customers'}
+    }).state({
+        name: 'customers.addUpdateFactoryOwner',
+        url: '/addUpdateFactoryOwner/:factoryOwnerId',
+        templateUrl: 'views/partials/admin/customers/addUpdateFactoryOwner.html',
+        data: {activeTab: 'customers'},
+        params: {factoryOwnerId: null}
     }).state({
         name: 'customers.guest',
         url: '/guest',
         templateUrl: 'views/partials/admin/customers/guest.html',
         data: {activeTab: 'customers'}
     }).state({
+        name: 'customers.addUpdateGuest',
+        url: '/addUpdateGuest/:guestId',
+        templateUrl: 'views/partials/admin/customers/addUpdateGuest.html',
+        data: {activeTab: 'customers'},
+        params: {guestId: null}
+    }).state({
         name: 'customers.restOfAll',
         url: '/restOfAll',
         templateUrl: 'views/partials/admin/customers/restOfAll.html',
         data: {activeTab: 'customers'}
+    }).state({
+        name: 'customers.addUpdateRestOfAll',
+        url: '/addUpdateRestOfAll/:restOfAllId',
+        templateUrl: 'views/partials/admin/customers/addUpdateRestOfAll.html',
+        data: {activeTab: 'customers'},
+        params: {guestId: null}
     }).state({
         name: 'services',
         url: '/services',

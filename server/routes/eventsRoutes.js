@@ -300,8 +300,15 @@ OpenRouter.get('/get/orderStatus', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/customerLeads', function (request, res) {
+    Events.getCustomerLeadsData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 OpenRouter.get('/get/customers', function (request, res) {
-    Events.getCustomersData(request,function(results){
+    Events.getCustomerData(request,function(results){
         //console.log(results);
         res.json(results);
     });
