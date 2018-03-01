@@ -2098,6 +2098,18 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     position: relative;
     z-index: 10000; /* The select2 dropdown has a z-index of 9999 */
 }
+
+.labels {
+    color: black;
+    background-color: white;
+    font-family: "Lucida Grande", "Arial", sans-serif;
+    font-size: 10px;
+    text-align: center;
+    font-weight: bold;
+    width: 65px;
+    white-space: nowrap;
+}
+
 /*.ui-select-choices-row:hover{*/
  /*background-color: #eee !important;*/
 /*}*/

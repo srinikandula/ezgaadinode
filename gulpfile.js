@@ -120,22 +120,26 @@ gulp.task('merge-modules', function() {
     var tasks = folders.map(function(folder) {
         return gulp.src(path.join(scriptsPath, folder, '/**/*.js'))
         // concat into foldername.js
+            .pipe(sourcemaps.init())
             .pipe(concat(folder + '.js'))
             // write to output
             .pipe(gulp.dest('./client/dist/js/'))
             // minify
+            .pipe(rename(folder + '.min.js'))
             .pipe(uglify())
             // rename to folder.min.js
-            .pipe(rename(folder + '.min.js'))
+            .pipe(sourcemaps.write('./'))
             // write to output again
             .pipe(gulp.dest('./client/dist/js/'));
     });
 
     var root = gulp.src(path.join(scriptsPath, '/*.js'))
+        .pipe(sourcemaps.init())
         .pipe(concat('main.js'))
         .pipe(gulp.dest('./client/dist/js/'))
+        .pipe(rename('main.min.js'))
     .pipe(uglify())
-    .pipe(rename('main.min.js'))
+        .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./client/dist/js/'));
 
     return merge(tasks, root);

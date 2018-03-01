@@ -49,7 +49,7 @@ AuthRouter.get('/addInitialCounters',function (req,res) {
 });
 
 AuthRouter.get('/getDeviceTrucks',function (req,res) {
-    gps.getDeviceTrucks(req,function (results) {
+    gps.getDeviceTrucks(req.body.globalAccess,req,function (results) {
         res.send(results);
     })
 });
@@ -60,9 +60,21 @@ OpenRouter.get('/findDeviceStatus/:deviceId',function (req,res) {
     })
 });
 
-AuthRouter.get('/gpsTrackingByTruck/:truckId/:startDate/:endDate',function (req,res) {
+OpenRouter.get('/gpsTrackingByTruck/:truckId/:startDate/:endDate',function (req,res) {
     gps.gpsTrackingByTruck(req.params.truckId,req.params.startDate,req.params.endDate,req,function (results) {
         res.send(results);
+    })
+});
+
+AuthRouter.get('/downloadReport/:truckId/:startDate/:endDate',function (req,res) {
+    gps.downloadReport(req.params.truckId,req.params.startDate,req.params.endDate,req,function (results) {
+        if(results.status){
+            console.log('Success ');
+            res.xls('tripReport'+new Date().toLocaleDateString()+'.xlsx', results.data);
+        }else{
+            console.log('Error');
+            res.send(results);
+        }
     })
 });
 

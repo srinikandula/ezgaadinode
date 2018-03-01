@@ -11,7 +11,12 @@ var archivedDevicePositions = require('./../models/schemas').archivedDevicePosit
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
-
+var GoogleMapsAPI=require('googlemaps');
+var googlemapsConfig= {
+    key: 'AIzaSyC3JuGIZkNVnzrOthyMWEWf3zA0J-aui0M',
+    secure: true // use https
+};
+var googlemaps=new GoogleMapsAPI(googlemapsConfig);
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
 
@@ -403,25 +408,57 @@ Gps.prototype.moveDevicePositions = function (callback) {
     });
 };
 
-Gps.prototype.getDeviceTrucks = function (req,callback) {
+Gps.prototype.getDeviceTrucks = function (access,req,callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    TrucksColl.find({deviceId:{$exists:true},accountId:{$exists:true},userName:{$nin:['accounts']}},{"attrs.latestLocation":1,accountId:1,registrationNo:1,truckType:1,tracking_available:1},function (err,results) {
-        if(err){
-            retObj.status=false;
-            retObj.messages.push('Error fetching data');
-            analyticsService.create(req,serviceActions.get_truck_locations_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
-            callback(retObj);
-        }else{
-            retObj.status=true;
-            retObj.messages.push('success');
-            retObj.results=results;
-            analyticsService.create(req,serviceActions.get_truck_locations,{accountId:req.jwt.id,success:true},function(response){ });
-            callback(retObj);
-        }
-    })
+
+    if(access) {
+        TrucksColl.find({
+            deviceId: {$exists: true},
+            accountId: {$exists: true},
+            userName: {$nin: ['accounts']}
+        }, {
+            "attrs.latestLocation": 1,
+            accountId: 1,
+            registrationNo: 1,
+            truckType: 1,
+            tracking_available: 1
+        }, function (err, results) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push('Error fetching data');
+                analyticsService.create(req, serviceActions.get_truck_locations_err, {
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('success');
+                retObj.results = results;
+                analyticsService.create(req, serviceActions.get_truck_locations, {
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }else{
+        retObj.status=false;
+        retObj.messages.push('Not Authorized');
+        analyticsService.create(req, serviceActions.get_truck_locations_err, {
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    }
 };
 
 Gps.prototype.findDeviceStatus = function (deviceId,req,callback) {
@@ -549,16 +586,50 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
             GpsColl.find({
                 deviceId: truckDetails.deviceId,
                 createdAt: {$gte: startDate, $lte: endDate}
-            }).sort({createdAt: -1}).exec(function (err, positions) {
+            }).sort({createdAt: 1}).exec(function (err, positions) {
                 if(err){
                     retObj.status=false;
                     retObj.messages.push('Error fetching truck positions');
                     callback(retObj);
                 }else{
-                    retObj.status=true;
-                    retObj.messages.push('Success');
-                    retObj.results=positions;
-                    callback(retObj);
+                    archivedDevicePositions.find({deviceId: truckDetails.deviceId,
+                        createdAt: {$gte: startDate, $lte: endDate}}).sort({createdAt: 1}).exec(function (err, archivedPositions) {
+                            if(err){
+                                retObj.status=false;
+                                retObj.messages.push('Error fetching truck positions');
+                                callback(retObj);
+                            }else{
+                                positions=positions.concat(archivedPositions);
+                                var origins=positions[0].location.coordinates[1]+','+positions[0].location.coordinates[0];
+                                var destinations=positions[positions.length-1].location.coordinates[1]+','+positions[positions.length-1].location.coordinates[0];
+                                var distance;
+                                var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length-1].createdAt.getTime());
+                                var diffDays = timeDiff / (1000 * 3600 * 24);
+                                var averageSpeed=_.pluck(positions,'speed');
+                                var sum=0,counter=0;
+                                for(var i=0;i<averageSpeed.length;i++){
+                                    if(Number(averageSpeed[i])!==0.0) {
+                                        sum = sum + Number(averageSpeed[i]);
+                                        counter++;
+                                    }
+                                }
+                                averageSpeed=(sum/counter);
+                                googlemaps.distance({origins:origins,destinations:destinations},function (err,result) {
+                                    distance=result.rows[0].elements[0].distance.text;
+                                    if(result){
+                                        retObj.status=true;
+                                        retObj.messages.push('Success');
+                                        retObj.results={positions:positions,distanceTravelled:distance,timeTravelled:(diffDays*24),averageSpeed:averageSpeed};
+                                        callback(retObj);
+                                    }else{
+                                        retObj.status=false;
+                                        retObj.messages.push('Error finding distance');
+                                        callback(retObj);
+                                    }
+                                });
+
+                            }
+                    });
                 }
             });
         }else{
@@ -567,6 +638,47 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
             callback(retObj);
         }
     });
+};
+
+Gps.prototype.downloadReport = function (truckId,startDate,endDate,req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    var gps=new Gps();
+    gps.gpsTrackingByTruck(truckId,startDate,endDate,req,function (result) {
+        if(result.status){
+            var output = [];
+            for(var i=0;i<result.results.length;i++){
+                var status;
+                if(result.results[i].isStopped){
+                    status='Stopped'
+                }else if(result.results[i].isIdle){
+                    status='Idle'
+                }else{
+                    status='Moving'
+                }
+                output.push({
+                    Date:result.results[i].createdAt,
+                    Status:status,
+                    Address:result.results[i].address,
+                    Speed:result.results[i].speed
+                });
+                if (i === result.results.length - 1) {
+                    retObj.status = true;
+                    output.push({
+                        Date:result.results[i].createdAt,
+                        Status:status,
+                        Address:result.results[i].address,
+                        Speed:result.results[i].speed
+                    });
+                    retObj.data = output;
+                    callback(retObj);
+                }
+            }
+        }else{
+            callback(result);
+        }
+    })
 };
 
 module.exports = new Gps();

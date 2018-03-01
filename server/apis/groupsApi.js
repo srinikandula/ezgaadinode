@@ -423,21 +423,21 @@ Groups.prototype.loginByKeys = function (apiKey,secretKey,req,callback) {
         status: false,
         messages: []
     };
-    var globalAccess=true;
+    var globalAccess=false;
     keysColl.findOne({apiKey:apiKey,secretKey:secretKey},function (err,keyData) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Please try again');
             callback(retObj);
         }else if(keyData){
-            var globalAccess=keyData.globalAccess;
+            globalAccess=keyData.globalAccess;
             var groups=new Groups();
             AccountsCollection.findOne({_id:ObjectId(keyData.accountId)},function (err,account) {
                 if(err){
                     retObj.status=false;
                     retObj.messages.push('Please try again');
                     callback(retObj);
-                }else{
+                }else if(account){
                     groups.login(account.userName,account.password,account.contactPhone,req,function (accData) {
                         if(accData.status){
                             accData.globalAccess=globalAccess;
@@ -448,6 +448,10 @@ Groups.prototype.loginByKeys = function (apiKey,secretKey,req,callback) {
                             callback(retObj);
                         }
                     })
+                }else{
+                    retObj.status=false;
+                    retObj.messages.push('Invalid API or Secret Key');
+                    callback(retObj);
                 }
             });
         }   else{
