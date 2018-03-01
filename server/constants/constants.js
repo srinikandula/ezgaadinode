@@ -461,7 +461,17 @@ const serviceActions = {
     delete_operating_route_err:'DELETE_OPERATING_ROUTE_ERR',
     get_employees_list:'GET_EMPLOYEES_LIST',
     get_employees_list_err:'GET_EMPLOYEES_LIST_ERR',
-
-
+    add_load_ntfn_err: "ADD_LOAD_NTFN_ERR",
+    add_load_ntfn: "ADD_LOAD_NTFN",
+    get_load_ntfn_err: "GET_LOAD_NTFN_ERR",
+    get_load_ntfn: "GET_LOAD_NTFN",
+    count_load_notifications_err: 'COUNT_LOAD_NOTIFICATIONS_ERR',
+    count_load_notifications: 'COUNT_LOAD_NOTIFICATIONS',
+    get_load_ntfn_details_err: 'GET_LOAD_NTFN_DETAILS_ERR',
+    get_load_ntfn_details: 'GET_LOAD_NTFN_DETAILS',
+    update_load_ntfn_err: 'UPDATE_LOAD_NTFN_ERR',
+    update_load_ntfn:'UPDATE_LOAD_NTFN',
+    delete_load_ntfn_err:'DELETE_LOAD_NTFN_ERR',
+    delete_load_ntfn:'DELETE_LOAD_NTFN'
 };
 module.exports = serviceActions;

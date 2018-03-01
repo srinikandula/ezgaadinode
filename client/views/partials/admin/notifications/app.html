@@ -8,28 +8,40 @@
 
     </ul>
     <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="customerParams">
-
+        <tr ng-repeat="plan in currentPageOfLoadNtfns">
+            <td><input type="checkbox"/></td>
+            <td data-title="'S No'">{{$index+1}}</td>
+            <td data-title="'Action'">
+                <a href="#" class="edit_icon" ng-click="editLoadNtfn(plan._id)">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+                <a href="#" ng-click="delLoadNtfn(plan._id)" class="delete_icon">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a></td>
+        </tr>
+        <tr ng-if="!currentPageOfLoadNtfns || currentPageOfLoadNtfns.length === 0">
+            <td colspan="8">No Load Notifications exist.</td>
+        </tr>
 
     </table>
-</div>
+
 
 
 <script type="text/ng-template" id="addAppNtfcn.html">
-
-    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
-
 
     <div class="modal-header">
         <h3 class="modal-title" id="modal-title">Add App Notification</h3>
     </div>
     <div class="modal-body" id="modal-body">
         <div class="row">
-            <div class="form-group col-xs-6">
-                <input type="text" class="form-control" placeholder="Send To*"/>
+            <div class="form-group styling-input-list col-xs-6">
+                <input type="text" class="form-control order-form-control" ng-model="appNotification.sednTo"/>
+                <label class="order-effect-for-input">Send To*</label>
             </div>
 
-            <div class="form-group col-xs-6">
-                <input type="text" class="form-control" placeholder="Ignore*"/>
+            <div class="form-group col-xs-6 styling-input-list">
+                <input type="text" class="form-control order-form-control" ng-model="appNotification.sednTo"/>
+                <label class="order-effect-for-input">Ignore*</label>
             </div>
             <div class="col-xs-12">
                 <textarea class="form-control" rows="5">Info*</textarea>
@@ -44,3 +56,4 @@
         <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
     </div>
 </script>
+</div>

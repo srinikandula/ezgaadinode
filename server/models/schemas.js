@@ -689,6 +689,19 @@ var trafficManagerSchema = new mongoose.Schema({
 }, {
     timestamps: true, versionKey: false
 });
+var LoadNotificationSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    sourceCity : String,
+    destinationCity: String,
+    dateAvailable: String,
+    truckType : String,
+    goodsType : String,
+    price:Number,
+    message: String,
+    sendToAll: Boolean
+}, {timestamps: String})
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -730,5 +743,6 @@ module.exports = {
     TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes'),
     TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments'),
     TruckNotificationColl:mongoose.model('truckNotification',truckNotificationSchema,'truckNotification'),
-    trafficManagerColl:mongoose.model('trafficManager',trafficManagerSchema,'trafficManager')
+    trafficManagerColl:mongoose.model('trafficManager',trafficManagerSchema,'trafficManager'),
+    LoadNotificationColl:mongoose.model('loadNotification',LoadNotificationSchema,'loadNotification')
 };

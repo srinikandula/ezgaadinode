@@ -1,69 +1,90 @@
-<div ng-controller="NotificationCntrl">
+<div ng-controller="NotificationCntrl" ng-init="getLoadNtfnCount();">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">GPS Load Notification</li>
         <li class="pull-right">
-            <button class="btn btn-primary" ng-click="newGpsLoadNtfcn()">Create New</button>
+            <button class="btn btn-primary" ng-click="newLoadNtfn()">Create New</button>
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-table="customerParams">
-
-
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+           ng-table="loadNtfnsparams">
+        <tr ng-repeat="plan in currentPageOfLoadNtfns">
+            <td><input type="checkbox"/></td>
+            <td data-title="'S No'">{{$index+1}}</td>
+            <td data-title="'Source'" sortable="'sourceCity'" class="clickable-item">{{plan.sourceCity}}</td>
+            <td data-title="'Destination'" sortable="'destination'" class="clickable-item">{{plan.destinationCity}}</td>
+            <td data-title="'Price'" sortable="'price'" class="clickable-item">{{plan.price}}</td>
+            <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item">{{plan.truckType}}</td>
+            <td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item">{{plan.goodsType}}</td>
+            <td data-title="'Message'" sortable="'message'" class="clickable-item">{{plan.message || '----'}}</td>
+            <td data-title="'Date Available'" sortable="'dateAvailable'" class="clickable-item">{{plan.dateAvailable}}
+            </td>
+            <td data-title="'Send To'" sortable="'sendToAll'" class="clickable-item">{{plan.sendToAll}}</td>
+            <td data-title="'Action'">
+                <a href="#" class="edit_icon" ng-click="editLoadNtfn(plan._id)">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+                <a href="#" ng-click="delLoadNtfn(plan._id)" class="delete_icon">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a></td>
+        </tr>
+        <tr ng-if="!currentPageOfLoadNtfns || currentPageOfLoadNtfns.length === 0">
+            <td colspan="8">No Load Notifications exist.</td>
+        </tr>
     </table>
-</div>
+        <script type="text/ng-template" id="newGpsLoadNtfcn.html">
 
-
-<script type="text/ng-template" id="newGpsLoadNtfcn.html">
-
-    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
-    <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
-
-
-    <div class="modal-header">
-        <h3 class="modal-title" id="modal-title">Add Load Notification</h3>
-    </div>
-    <div class="modal-body" id="modal-body">
-        <div class="row">
-            <div class="col-xs-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Source City*" />
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">{{loadTitle}}</h3>
+        </div>
+        <div class="modal-body" id="modal-body" ng-init="initLoadNotification();">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="loadNotification.sourceCity"/>
+                        <label class="order-effect-for-input">Source City*</label>
+                    </div>
+                    <div class="form-group styling-input-list" ng-init="getTruckTypes();">
+                        <select class="form-control order-form-control" ng-model="loadNotification.truckType">
+                            <option ng-repeat="trucks in getTruckTypes">{{trucks.title}}</option>
+                        </select>
+                        <label class="order-effect-for-input">Truck Type</label>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="loadNotification.dateAvailable"/>
+                        <label class="order-effect-for-input">Date Available*</label>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <textarea class="form-control" ng-model="loadNotification.message"></textarea>
+                        <label class="focus-effect-for-input">Message</label>
+                    </div>
                 </div>
-                <div class="form-group" ng-init="getTruckTypes();">
-                    <select class="form-control">
-                        <option selected>Truck Type*</option>
-                        <option ng-repeat="trucks in getTruckTypes">{{trucks.title}}</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Date Available*" />
-                </div>
-                <div class="form-group">
-                    <textarea class="form-control">
-
-                    </textarea>
-                </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Destination City*" />
-                </div>
-                <div class="form-group" ng-init="getGoodsTypes();">
-                    <select class="form-control">
-                        <option selected>Goods Type*</option>
-                        <option ng-repeat="goods in getGoodsTypes">{{goods.title}}</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Price*" />
-                </div>
-                <div class="form-group">
+                <div class="col-xs-6">
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="loadNotification.destinationCity"/>
+                        <label class="order-effect-for-input">Destination City*</label>
+                    </div>
+                    <div class="form-group styling-input-list" ng-init="getGoodsTypes();">
+                        <select class="form-control order-form-control" ng-model="loadNotification.goodsType">
+                            <option ng-repeat="goods in getGoodsTypes">{{goods.title}}</option>
+                        </select>
+                        <label class="order-effect-for-input">Goods Type</label>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <input type="number" class="form-control order-form-control" ng-model="loadNotification.price"/>
+                        <label class="order-effect-for-input">Price*</label>
+                    </div>
                     <div class="form-group">
                         <p class="smsenabled">Send To All*:</p>
                         <ul class="list-inline">
                             <li>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="all">
+                                        <input type="radio" name="all" ng-value="true"
+                                               ng-model="loadNotification.sendToAll">
                                         <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                         Yes
                                     </label>
@@ -72,7 +93,8 @@
                             <li>
                                 <div class="radio">
                                     <label>
-                                        <input type="radio" name="all">
+                                        <input type="radio" name="all" ng-value="false"
+                                               ng-model="loadNotification.sendToAll">
                                         <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                         No
                                     </label>
@@ -82,21 +104,11 @@
                     </div>
                 </div>
             </div>
-            <!--<div ng-dropdown-multiselect=""-->
-            <!--options="allDevices"-->
-            <!--selected-model="selectedDevices"-->
-            <!--extra-settings="selected_baseline_settings" class="col-sm-4" translation-texts="customText">-->
-            <!--</div>-->
-            <!--<select class="form-control custom-form-control" ng-model="assignedTo" class ="col-xs-7">-->
-            <!--<option value="" selected>Transfer To</option>-->
-            <!--<option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}-->
-            <!--</option>-->
-            <!--</select>-->
+            <div ng-show="error">{{error}}</div>
         </div>
-        <div ng-show="error">{{error}}</div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="transferDevices()">Submit</button>
-        <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
-    </div>
-</script>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="addOrUpdateLoadNtfn()">Submit</button>
+            <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
+        </div>
+    </script>
+</div>
