@@ -66,20 +66,24 @@ var accountSchema = new mongoose.Schema({
     loadPaymentToPayPercent: Number,
     loadPaymentAdvancePercent: Number,
     loadPaymentPodDays: Number,
-    tdsDeclarationDoc: String,
+    tdsDeclarationDoc: Number,
     yearInService:Number,
-    leadSource:String,
+    leadSource:Number,
     officeNumber: String,
     noOfRegTrucks: Number,
     noOfTrucks: Number,
     registrationNo: [],
     isLead: {type: Boolean, default: false},
-    leadType: {type: Boolean, default: false},
+    leadType: String,
     leadStatus: {type: Boolean, default: false},
     createdAt: Date,
     updatedAt: Date,
-    smsEnabled: {type: Boolean, default: false},
-    emailEnabled: {type: Boolean, default: false}
+    smsEmailAds: Number,
+    bankName: String,
+    bankIfscCode: String,
+    bankAccNo: String,
+    bankBranch: String,
+    rating: String
 }, {
     timestamps: true
 });
@@ -102,9 +106,10 @@ var operatingRoutesSchema = new mongoose.Schema({
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
     createdBy: {type: ObjectId, ref: 'accounts'},
-    updatedBy: {type: ObjectId, ref: 'accounts'}
+    updatedBy: {type: ObjectId, ref: 'accounts'},
+    truckType: {type: ObjectId, ref: 'trucksTypes'},
 }, {
-    timestamps: true
+    timestamps: true, versionKey: false
 });
 
 var groupSchema = new mongoose.Schema({
@@ -564,8 +569,8 @@ var loadTypesSchema = mongoose.Schema({
 var orderStatusSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     title: String,
-    releaseTruck: Boolean,
-    status: Boolean
+    releaseTruck: {type: Boolean, default: false},
+    status: {type: Boolean, default: false}
 }, {timestamps: String});
 
 var truckRequestSchema = mongoose.Schema({
@@ -672,6 +677,17 @@ var truckRequestCommentSchema=mongoose.Schema({
     notifiedStatus:{type:String,default:"NO"}
 }, {timestamps: String});
 
+var trafficManagerSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    fullName: String,
+    mobile: Number  ,
+    city: String,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {
+    timestamps: true, versionKey: false
+});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -710,5 +726,6 @@ module.exports = {
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
     adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions'),
     TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes'),
-    TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments')
+    TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments'),
+    trafficManagerColl:mongoose.model('trafficManager',trafficManagerSchema,'trafficManager')
 };
