@@ -181,7 +181,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     $scope.leadType = ['Truck Owner', 'Manufacturer', 'Commission Agent', 'Transporter', 'Factory Owners'];
     $scope.yrsInService = ['2018', '2017', '2016'];
     $scope.serviceTeam = ['Marketing Team', 'Cold Calls', 'Existing Customer', 'Self Generater', 'Employee', 'Partner', 'Public Relations', 'Direct Mail', 'Conference', 'Trade Show', 'Website', 'Word of mouth', 'Other'];
-    $scope.customerProofs = ['Aadhar Card', 'Passport'];
+    $scope.documentType = ['Aadhar Card', 'Passport'];
     $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
 
     function customerLeadsFunc() {
@@ -201,7 +201,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             loadEnabled: undefined,
             yrsInService: '',
             operatingRoutes: [{source: '', destination: ''}],
-            customerProofs: '',
+            documentType: '',
             files: '',
             companyName2: '',
             companyCity: '',
@@ -283,6 +283,27 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             }
         }
     }
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckRequest.truckDetails[index].source = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckRequest.truckDetails[index].destination = place.formatted_address;
+            });
+    };
 
     $scope.createLeads = function () {
         var params = $scope.customerLead;
@@ -429,7 +450,7 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
 
 /*Author SVPrasadK*/
 /*Transporter Start*/
-app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams', function ($scope, $state, $stateParams, customerServices,  Notification, NgTableParams) {
+app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
     $scope.status = {
         isOpen: true,
         isOpenTwo: true,
@@ -439,14 +460,31 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         isOpenSix: true,
         isOpenSev: true,
     };
-
+    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.yearInService = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003];
+    $scope.customerProofs = ['Aadhar Card', 'Passport'];
+    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
     $scope.title = "Add Transporter";
 
     if ($stateParams.transporterId) {
         $scope.title = "Edit Transporter";
-        customerServices.getTransporter($stateParams.transporterId, function (success) {
+        customerServices.getTransporterDetails($stateParams.transporterId, function (success) {
             if (success.data.status) {
-                $scope.transporter = success.data.data;
+                $scope.transporter = success.data.data.accountData;
+                $scope.transporter.confirmPassword = success.data.data.accountData.password;
+                $scope.transporter.newDocumentFile = '';
+                if($scope.transporter.alternatePhone.length === 0) {
+                    $scope.transporter.alternatePhone = [''];
+                }
+                $scope.transporter.operatingRoutes = success.data.data.operatingRoutesData;
+                if($scope.transporter.operatingRoutes.length === 0) {
+                    $scope.transporter.operatingRoutes = [{source: "",destination: "",truckType: ""}];
+                }
+                $scope.transporter.trafficManagers = success.data.data.trafficManagersData;
+                if($scope.transporter.trafficManagers.length === 0) {
+                    $scope.transporter.trafficManagers = [{fullName: "",mobile: "",city: ""}];
+                }
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -457,17 +495,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         });
     }
 
-    $scope.transporter = {
-        userId: '',
-        firstName: '',
-        companyName: '',
-        contactPhone: '',
-        createdAt: '',
-        noOfLoads: '',
-        gpsEnabled: '',
-        erpEnabled: '',
-        isActive: undefined,
-    };
+    $scope.files = "";
 
     $scope.count = 0;
 
@@ -544,42 +572,125 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         });
     }
 
+    $scope.addNumber = function () {
+        if (!$scope.transporter.alternatePhone[$scope.transporter.alternatePhone.length - 1]) {
+            Notification.error('Enter Alternate Number');
+        } else {
+            $scope.transporter.alternatePhone.push('');
+        }
+    };
+    $scope.removeNumber = function (index) {
+        $scope.transporter.alternatePhone.splice(index, 1)
+    };
+
+    function verifyMobNum() {
+        for (var i = 0; i < $scope.transporter.contactPhone.length; i++) {
+            if (!$scope.transporter.contactPhone[i]) {
+                return false;
+            }
+            if (i === $scope.transporter.contactPhone.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.addOperatingRoute = function () {
+        var routesObj = $scope.transporter.operatingRoutes;
+        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination || !routesObj[routesObj.length - 1].truckType) {
+            Notification.error('Enter Source, Destination and Truck Type');
+        } else {
+            routesObj.push({source: '', destination: '', truckType: ''});
+        }
+    };
+    $scope.deleteOperatingRoute = function (index) {
+        $scope.transporter.operatingRoutes.splice(index, 1)
+    };
+
+    $scope.addTrafficManager = function () {
+        var trafficManagersObj = $scope.transporter.trafficManagers;
+        if (!trafficManagersObj[trafficManagersObj.length - 1].fullName || !trafficManagersObj[trafficManagersObj.length - 1].mobile || !trafficManagersObj[trafficManagersObj.length - 1].city) {
+            Notification.error('Enter Full Name, Mobile and City');
+        } else {
+            trafficManagersObj.push({fullName: '', mobile: '', city: ''});
+        }
+    };
+
+    $scope.deleteTrafficManager = function (index) {
+        $scope.transporter.trafficManagers.splice(index, 1)
+    };
+
+    $scope.getTruckTypes = function () {
+        SettingServices.getTruckTypes({}, function (response) {
+            if (response.data.status) {
+                $scope.getTruckTypes = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    }
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.transporter.operatingRoutes[index].source = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.transporter.operatingRoutes[index].destination = place.formatted_address;
+            });
+    };
+
+    $scope.cancel = function () {
+        $state.go('customers.transporters');
+    };
+
     $scope.addUpdateTransporter = function () {
         var params = $scope.transporter;
 
+        if (!params.leadType || !_.isString(params.leadType)) {
+            Notification.error('Please Select Customer Type');
+        }
         if (!params.firstName || !_.isString(params.firstName)) {
-            Notification.error('Invalid First Name');
+            Notification.error('Please Provide Full Name');
         }
-        if (!params.lastName || !_.isString(params.lastName)) {
-            Notification.error('Invalid Last Name');
-        }
-        if (!params.password) {
-            Notification.error('Invalid Password');
-        }
-        if (!params.confirmPassword) {
-            Notification.error('Invalid Confirm Password');
-        }
-        if (params.password !== params.confirmPassword) {
-            Notification.error('Password not match');
-        }
-        if (!params.email) {
-            Notification.error('Invalid Email');
-        }
-        if (!params.contactPhone || !_.isNumber(parseInt(params.contactPhone))) {
-            Notification.error('Invalid Phone Number');
-        }
-        if (!params.adminRoleId) {
-            Notification.error('Invalid Role');
-        }
-        if (!params.franchiseId) {
-            Notification.error('Invalid Franchise');
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
         }
         if (params.isActive === undefined) {
             Notification.error('Invalid Status');
         }
         else {
             if ($stateParams.transporterId) {
-                customerServices.updateTransporter(params, function (success) {
+                console.log('$scope.transporter',$scope.transporter)
+                Upload.upload({
+                    url: '/v1/cpanel/customers/updateTransporter',
+                    method: "POST",
+                    data: {
+                        files: [$scope.transporter.newDocumentFile]
+                    }, params: $scope.transporter
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('customers.transporters');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+                /*customerServices.updateTransporter(params, function (success) {
                     if (success.data.status) {
                         Notification.success(success.data.messages[0]);
                         $state.go('customers.transporters');
@@ -588,7 +699,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                             Notification.error(message);
                         });
                     }
-                });
+                });*/
             } else {
 
             }

@@ -22,7 +22,7 @@ AuthRouter.post('/addCustomerLead', multipartyMiddleware, function (req, res) {
     })
 });
 
-AuthRouter.post('/updateCustomerLead', function (req, res) {
+AuthRouter.put('/updateCustomerLead', function (req, res) {
     CustomerLeads.updateCustomerLead(req, function (result) {
         res.send(result);
     })
@@ -64,16 +64,10 @@ AuthRouter.get('/getTruckOwnerDetails', function (req, res) {
     })
 });
 
-AuthRouter.put('/updateTruckOwnerDetails',function (req,res) {
-   CustomerLeads.updateTruckOwnerDetails(req,function (result) {
+AuthRouter.put('/updateTruckOwner',function (req,res) {
+   CustomerLeads.updateTruckOwner(req,function (result) {
        res.send(result);
    })
-});
-
-AuthRouter.put('/updateTruckOwnerDetails', function (req, res) {
-    CustomerLeads.updateTruckOwnerDetails(req, function (result) {
-        res.send(result);
-    })
 });
 
 AuthRouter.delete('/deleteTruckOwner', function (req, res) {
@@ -102,7 +96,7 @@ AuthRouter.get('/getTransporterDetails', function (req, res) {
     });
 });
 
-AuthRouter.post('/updateTransporter', function (req, res) {
+AuthRouter.post('/updateTransporter', multipartyMiddleware, function (req, res) {
     CustomerLeads.updateTransporter(req, function (result) {
         res.json(result);
     });
@@ -134,7 +128,7 @@ AuthRouter.get('/getCommissionAgentDetails', function (req, res) {
     });
 });
 
-AuthRouter.post('/updateCommissionAgent', function (req, res) {
+AuthRouter.put('/updateCommissionAgent', function (req, res) {
     CustomerLeads.updateCommissionAgent(req, function (result) {
         res.json(result);
     });
@@ -166,7 +160,7 @@ AuthRouter.get('/getFactoryOwnerDetails', function (req, res) {
     });
 });
 
-AuthRouter.post('/updateFactoryOwner', function (req, res) {
+AuthRouter.put('/updateFactoryOwner', function (req, res) {
     CustomerLeads.updateFactoryOwner(req, function (result) {
         res.json(result);
     });
@@ -198,7 +192,7 @@ AuthRouter.get('/getGuestDetails', function (req, res) {
     });
 });
 
-AuthRouter.post('/updateGuest', function (req, res) {
+AuthRouter.put('/updateGuest', function (req, res) {
     CustomerLeads.updateGuest(req, function (result) {
         res.json(result);
     });

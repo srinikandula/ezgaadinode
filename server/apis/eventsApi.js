@@ -1244,7 +1244,7 @@ Events.prototype.getOrderStatusData = function (request, callback) {
         messages: []
     };
     var status = false;
-    var orderStatusDataQuery = "select * from eg_order_status";
+    var orderStatusDataQuery = "select title,release_truck as releaseTruck,status from eg_order_status";
     pool_crm.query(orderStatusDataQuery, function (err, orderStatus) {
         if (err) {
             retObj.status = false;
@@ -1259,13 +1259,7 @@ Events.prototype.getOrderStatusData = function (request, callback) {
                     } else if (orderStatusFound) {
                         orderStatusCallBack(null, 'Order Status exists');
                     } else {
-                        if(orderStatus.status === 1) {
-                            status = true;
-                        }
-                        var orderStatusDoc = new OrderStatusColl({
-                            title: orderStatus.title,
-                            status: status,
-                        });
+                        var orderStatusDoc = new OrderStatusColl(orderStatus);
                         orderStatusDoc.save(function (err) {
                             orderStatusCallBack(err, 'saved');
                         })
@@ -1360,7 +1354,7 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                             updatedAt: convertDate(customerLead.date_modified),
                         });
                         customerLeadDoc.save(function (err) {
-                            AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                            AccountsColl.find({}, {"userName": 1,"role":"account"}, function (err, accounts) {
                                 for (var i = 0; i < accounts.length; i++) {
                                     CustomerLeadsColl.update({'gps_account_id': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, customerLead) {
                                         console.log("Account is updated " + JSON.stringify(customerLead));
@@ -1396,7 +1390,6 @@ Events.prototype.getCustomerData = function (request, callback) {
     var approved = '';
     var role = '';
     var smsEnabled = '';
-    var emailEnabled = '';
     var roleType = ['Truck Owner', 'Guest', 'Commission Agent', 'Transporter', 'Factory Owners'];
     var customerDataQuery = "select * from eg_customer";
 
@@ -1444,7 +1437,7 @@ Events.prototype.getCustomerData = function (request, callback) {
                             role = 'Guest';
                         }
 
-                        if(customer.enable_sms_email_ads === 0) {
+                        /*if(customer.enable_sms_email_ads === 0) {
                             smsEnabled = false;
                             emailEnabled = false;
                         } else if(customer.enable_sms_email_ads === 1) {
@@ -1456,7 +1449,7 @@ Events.prototype.getCustomerData = function (request, callback) {
                         } else if(customer.enable_sms_email_ads === 3) {
                             smsEnabled = true;
                             emailEnabled = false;
-                        }
+                        }*/
                         var customerDoc = new AccountsColl({
                             userName: customer.mobile,
                             id_franchise: customer.id_franchise,
@@ -1490,12 +1483,11 @@ Events.prototype.getCustomerData = function (request, callback) {
                             leadStatus: customer.lead_status,
                             createdAt: convertDate(customer.date_created),
                             updatedAt: convertDate(customer.date_modified),
-                            smsEnabled: smsEnabled,
-                            emailEnabled: emailEnabled,
+                            smsEmailAds: customer.enable_sms_email_ads,
                             role: role
                         });
                         customerDoc.save(function (err) {
-                            AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
+                            AccountsColl.find({"role":"account"}, {"userName": 1}, function (err, accounts) {
                                 for (var i = 0; i < accounts.length; i++) {
                                     AccountsColl.update({'userName': accounts[i].userName,role:{$ne:{$in:roleType}}}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, customer) {
                                         console.log("Account is updated " + JSON.stringify(customer));
