@@ -18,8 +18,8 @@
     </ul>
     <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="accountParams">
         <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
-            <td data-title="'ID'" sortable="'id'" class="clickable-item">
-                {{account.id}}
+            <td data-title="'S No'">
+                {{$index+1}}
             </td>
             <td data-title="'Customer Name'" sortable="'contactName'" class="clickable-item">
                 {{account.contactName}}
@@ -37,13 +37,13 @@
                 {{account.createdBy.userName | date:'yyyy-MM-dd'}}
             </td>
             <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
-                {{account.erpEnabled}}
+                {{account.erpEnabled?'Enabled':'Disabled'}}
             </td>
             <td data-title="'LOAD'" sortable="'loadEnabled'" class="clickable-item">
-                {{account.loadEnabled}}
+                {{account.loadEnabled?'Enabled':'Disabled'}}
             </td>
             <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{account.isActive}}
+                {{account.isActive?'Enabled':'Disabled'}}
             </td>
             <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
                 <a href="#" ui-sref="services.addNewAccount({accountId: account._id})" class="edit_icon">

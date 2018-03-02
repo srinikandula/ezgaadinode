@@ -69,9 +69,9 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                         accountId: user._id,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
-                        type: user.type
+                        role: user.role
                     };
-                    if(user.type === "group") {
+                    if(user.role === "group") {
                         obj.accountId = user.accountId;
                     }
                     user.lastLogin=new Date();
@@ -99,7 +99,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                             retObj.loadEnabled = user.loadEnabled;
                                             retObj.editAccounts = user.editAccounts;
                                             retObj.profilePic = user.profilePic;
-                                            retObj.type = user.type;
+                                            retObj.role = user.role;
                                             callback(retObj);
                                         } else {
                                             var erpSettings = new ErpSettingsColl({accountId: user._id});
@@ -117,7 +117,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                                     retObj.loadEnabled = user.loadEnabled;
                                                     retObj.editAccounts = user.editAccounts;
                                                     retObj.profilePic = user.profilePic;
-                                                    retObj.type = user.type;
+                                                    retObj.role = user.role;
                                                     callback(retObj);
                                                 } else {
                                                     retObj.messages.push('Please try again');
@@ -349,7 +349,7 @@ Groups.prototype.googleLogin = function (userData, callback) {
                     // groupAccountId: user.accountId,
                     // userName: user.userName,        //username ??
                     // contactPhone: user.contactPhone,    //contact number??
-                    type: user.type
+                    role: user.role
                 }, config.jwt.secret, config.jwt.options, function (err, token, options) {
                     if (err) {
                         retObj.messages.push('Please try again');
@@ -364,7 +364,7 @@ Groups.prototype.googleLogin = function (userData, callback) {
                         retObj.loadEnabled = user.loadEnabled;
                         retObj.editAccounts = user.editAccounts;
                         retObj.profilePic = user.profilePic;
-                        retObj.type = user.type;
+                        retObj.role = user.role;
                         callback(retObj);
                     }
                 });
