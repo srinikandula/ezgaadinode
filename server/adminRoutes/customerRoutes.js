@@ -58,8 +58,8 @@ AuthRouter.post('/convertCustomerLead', function (req, res) {
     })
 });
 
-AuthRouter.get('/getTruckOwnerDetails', function (req, res) {
-    CustomerLeads.getTruckOwnerDetails(req, function (result) {
+AuthRouter.get('/getTruckOwnerDetails',function (req,res) {
+    CustomerLeads.getTruckOwnerDetails(req,function (result) {
         res.send(result);
     })
 });
