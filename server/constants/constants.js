@@ -405,6 +405,18 @@ const serviceActions = {
     update_truck_owner_details_err: "UPDATE_TRUCK_OWNER_DETAILS_ERR",
     delete_truck_owner:"DELETE_TRUCK_OWNER",
     delete_truck_owner_err:"DELETE_TRUCK_OWNER_ERR",
+    add_gps_truck_ntfn_err: "ADD_GPS_TRUCK_NTFN_ERR",
+    add_gps_truck_ntfn: "ADD_GPS_TRUCK_NTFN",
+    get_gps_truck_ntfn_err: "GET_GPS_TRUCK_NTFN_ERR",
+    get_gps_truck_ntfn: "GET_GPS_TRUCK_NTFN",
+    count_truck_notifications_err: 'COUNT_TRUCK_NOTIFICATIONS_ERR',
+    count_truck_notifications: 'COUNT_TRUCK_NOTIFICATIONS',
+    get_gps_truck_ntfn_details_err: 'GET_GPS_TRUCK_NTFN_DETAILS_ERR',
+    get_gps_truck_ntfn_details: 'GET_GPS_TRUCK_NTFN_DETAILS',
+    update_gps_truck_ntfn_err: 'UPDATE_GPS_TRUCK_NTFN_ERR',
+    update_gps_truck_ntfn:'UPDATE_GPS_TRUCK_NTFN',
+    delete_gps_truck_ntfn_err:'DELETE_GPS_TRUCK_NTFN_ERR',
+    delete_gps_truck_ntfn:'DELETE_GPS_TRUCK_NTFN'
 
 };
 module.exports = serviceActions;
