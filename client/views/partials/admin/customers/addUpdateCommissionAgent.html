@@ -1,0 +1,323 @@
+<div class="col-xs-12 newCust" ng-controller="commissionAgentCtrl" ng-init="getTruckTypes();">
+    <h4>{{title}}</h4>
+    <div class="col-xs-12">
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpen">
+                <uib-accordion-heading>
+                    User Information <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down':status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h4 style="padding-left: 60px;">ID : {{commissionAgent.userId}}</h4>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="commissionAgent.leadType">
+                                <option ng-value="" selected>-- Select --</option>
+                                <option ng-repeat="type in leadType" ng-value="type.value">{{type.key}}</option>
+                            </select>
+                            <label class="focus-effect-for-input">Lead Type*</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="fullName"
+                                   ng-model="commissionAgent.firstName"/>
+                            <label class="focus-effect-for-input">Full Name*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group pos-relative styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   ng-model="commissionAgent.contactPhone" ng-pattern="/^[0-9]/"/>
+                            <label class="focus-effect-for-input">Mobile*</label>
+                        </div>
+                        <div class="form-group pos-relative styling-input-list"
+                             ng-repeat="mobile in commissionAgent.alternatePhone track by $index">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   ng-model="commissionAgent.alternatePhone[$index]" ng-pattern="/^[0-9]/">
+                            <label class="focus-effect-for-input">Alternate Mobile</label>
+
+                            <span class="plus-pos" ng-show="$index >= 1">
+                                <i class="fa fa-times-circle clr-red" ng-click="removeNumber($index)"></i></span>
+                            <span class="plus-pos" ng-show="$index == 0">
+                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addNumber()"></i></span>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="email"
+                                   ng-model="commissionAgent.email"/>
+                            <label class="focus-effect-for-input">Email</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenTwo">
+                <uib-accordion-heading>
+                    Address <i class="pull-right glyphicon"
+                               ng-class="{'glyphicon-chevron-down':status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="companyName"
+                                   ng-model="commissionAgent.companyName"/>
+                            <label class="focus-effect-for-input">Company Name</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="contactAddress"
+                                   ng-model="commissionAgent.contactAddress"/>
+                            <label class="focus-effect-for-input">Address</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="city"
+                                   ng-model="commissionAgent.city"/>
+                            <label class="focus-effect-for-input">city</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group pos-relative styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="state"
+                                   ng-model="commissionAgent.state"/>
+                            <label class="focus-effect-for-input">State</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="pincode"
+                                   ng-model="commissionAgent.pincode"/>
+                            <label class="focus-effect-for-input">Pincode</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenThree">
+                <uib-accordion-heading>
+                    Set Password <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down':status.isOpenThree, 'glyphicon-chevron-right': !status.isOpenThree}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="password"
+                                   ng-model="commissionAgent.password"/>
+                            <label class="focus-effect-for-input">Password</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group pos-relative styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="confirmPassword"
+                                   ng-model="commissionAgent.confirmPassword"/>
+                            <label class="focus-effect-for-input">Confirm Password</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenFour">
+                <uib-accordion-heading>
+                    Service Info <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': status.isOpenFour, 'glyphicon-chevron-right': !status.isOpenFour}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="noOfTrucks"
+                                   ng-model="commissionAgent.noOfTrucks"/>
+                            <label class="focus-effect-for-input">No Of Vehicles</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="commissionAgent.yearInService">
+                                <option ng-value="" selected>-- Select --</option>
+                                <option ng-repeat="years in yearInService" ng-value="years">{{years}}</option>
+                            </select>
+                            <label class="focus-effect-for-input">Year In Service</label>
+                        </div>
+                        <div class="form-group">
+                            <p class="smsenabled">Status*:</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="isActive" ng-value="true"
+                                                   ng-model="commissionAgent.isActive"
+                                                   checked>
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Enable
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="isActive" ng-value="false"
+                                                   ng-model="commissionAgent.isActive">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Disable
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="routes">
+                            <h4>Operating Routes</h4>
+                            <div class="form-group pos-relative styling-input-list"
+                                 ng-repeat="operatingRoute in commissionAgent.operatingRoutes track by $index">
+                                <div class="form-group styling-input-list">
+                                    <input type="text" class="form-control custom-form-control" name="source"
+                                           ng-model="operatingRoute.source" id="searchSource{{$index}}"
+                                           ng-change="addSearchSource($index)"/>
+                                    <label class="focus-effect-for-input">Source</label>
+                                </div>
+                                <div class="form-group styling-input-list">
+                                    <input type="text" class="form-control custom-form-control" name="destination"
+                                           ng-model="operatingRoute.destination" id="searchDestination{{$index}}"
+                                           ng-change="addSearchDestination($index)"/>
+                                    <label class="focus-effect-for-input">Destination</label>
+                                </div>
+                                <span class="plus-pos" ng-show="$index >= 1">
+                                <i class="fa fa-times-circle clr-red" ng-click="deleteOperatingRoute($index)"></i></span>
+                                <span class="plus-pos" ng-show="$index == 0">
+                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addOperatingRoute()"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenFive">
+                <uib-accordion-heading>
+                    Upload Customer Docs <i class="pull-right glyphicon"
+                                            ng-class="{'glyphicon-chevron-down': status.isOpenFive, 'glyphicon-chevron-right': !status.isOpenFive}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="commissionAgent.documentType">
+                                <option value="" selected>Select ID Proof</option>
+                                <option ng-repeat="proofs in documentType" ng-value="proofs">{{proofs}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <input type="file" ngf-select class="form-control custom-form-control"
+                                   ng-model="commissionAgent.newDocumentFile" name="documentFile" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}" />
+                            <img src="{{commissionAgent.documentFile}}" ng-if="commissionAgent.documentFile">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenSix">
+                <uib-accordion-heading>
+                    Bank Account Info <i class="pull-right glyphicon"
+                                         ng-class="{'glyphicon-chevron-down': status.isOpenSix, 'glyphicon-chevron-right': !status.isOpenSix}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="bankName"
+                                   ng-model="commissionAgent.bankName"/>
+                            <label class="focus-effect-for-input">Bank Name</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="bankIfscCode"
+                                   ng-model="commissionAgent.bankIfscCode"/>
+                            <label class="focus-effect-for-input">Bank IFSC Code</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="commissionAgent.smsEmailAds">
+                                <option ng-value="" selected>-- Select --</option>
+                                <option ng-repeat="smsEmailAd in smsEmailAds" ng-value="smsEmailAd.value">
+                                    {{smsEmailAd.key}}
+                                </option>
+                            </select>
+                            <label class="focus-effect-for-input">Enable SMS/Email Ads</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="bankAccNo"
+                                   ng-model="commissionAgent.bankAccNo"/>
+                            <label class="focus-effect-for-input">Bank Account No</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="bankBranch"
+                                   ng-model="commissionAgent.bankBranch"/>
+                            <label class="focus-effect-for-input">Bank Branch</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="rating"
+                                   ng-model="commissionAgent.rating"/>
+                            <label class="focus-effect-for-input">Rating</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenSev">
+                <uib-accordion-heading>
+                    Payment Details <i class="pull-right glyphicon"
+                                       ng-class="{'glyphicon-chevron-down': status.isOpenSev, 'glyphicon-chevron-right': !status.isOpenSev}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="commissionAgent.paymentType">
+                                <option value="" selected>Payment Type</option>
+                                <option ng-repeat="payType in paymentType" value="{{payType}}">{{payType}}</option>
+                            </select>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="number" class="form-control custom-form-control" name="payPrecent"
+                                   ng-model="commissionAgent.loadPaymentToPayPercent"/>
+                            <label class="focus-effect-for-input">Load Payment To pay Percent</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="number" class="form-control custom-form-control" name="tds"
+                                   ng-model="commissionAgent.tdsDeclarationDoc"/>
+                            <label class="focus-effect-for-input">TDS Declaration Doc</label>
+
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="number" class="form-control custom-form-control" name="advancePercent"
+                                   ng-model="commissionAgent.loadPaymentAdvancePercent"/>
+                            <label class="focus-effect-for-input">Load Payment Advance Percent</label>
+
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="number" class="form-control custom-form-control" name="podDays"
+                                   ng-model="commissionAgent.loadPaymentPodDays"/>
+                            <label class="focus-effect-for-input">Load Payment POD days</label>
+
+                        </div>
+
+                        <div class="form-group styling-input-list">
+                            <input type="number" class="form-control custom-form-control" name="leadSource"
+                                   ng-model="commissionAgent.leadSource"/>
+                            <label class="focus-effect-for-input">lead Source</label>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </uib-accordion>
+        <div class="col-xs-12 save-btns">
+            <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+            <a href="#" class="btn btn-primary" ng-click="addUpdateCommissionAgent()">Submit</a>
+        </div>
+    </div>
+</div>

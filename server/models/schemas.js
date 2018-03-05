@@ -25,7 +25,7 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
-    userId:{type: String,unique: true},
+    userId: String,
     contactPhone: Number,
     password: String,
     email: String,
@@ -56,7 +56,7 @@ var accountSchema = new mongoose.Schema({
     loadEnabled: {type: Boolean, default: true},
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
-    alternatePhone: String,
+    alternatePhone: [],
     companyName: String,
     pincode: String,
     role: String,
@@ -66,9 +66,24 @@ var accountSchema = new mongoose.Schema({
     loadPaymentToPayPercent: Number,
     loadPaymentAdvancePercent: Number,
     loadPaymentPodDays: Number,
-    tdsDeclarationDoc: String,
+    tdsDeclarationDoc: Number,
     yearInService:Number,
-    leadSource:String,
+    leadSource:Number,
+    officeNumber: String,
+    noOfRegTrucks: Number,
+    noOfTrucks: Number,
+    registrationNo: [],
+    isLead: {type: Boolean, default: false},
+    leadType: String,
+    leadStatus: {type: Boolean, default: false},
+    createdAt: Date,
+    updatedAt: Date,
+    smsEmailAds: Number,
+    bankName: String,
+    bankIfscCode: String,
+    bankAccNo: String,
+    bankBranch: String,
+    rating: String
 }, {
     timestamps: true
 });
@@ -91,9 +106,10 @@ var operatingRoutesSchema = new mongoose.Schema({
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
     createdBy: {type: ObjectId, ref: 'accounts'},
-    updatedBy: {type: ObjectId, ref: 'accounts'}
+    updatedBy: {type: ObjectId, ref: 'accounts'},
+    truckType: {type: ObjectId, ref: 'trucksTypes'},
 }, {
-    timestamps: true
+    timestamps: true, versionKey: false
 });
 
 var groupSchema = new mongoose.Schema({
@@ -457,10 +473,17 @@ var customerTypesSchema = mongoose.Schema({
 
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
+    assignedTo: {type: ObjectId, ref: 'accounts'},
+    id_franchise: Number,
+    userId: String,
+    gps_account_id: String,
+    accountId: {type: ObjectId, ref: 'accounts'},
     userName: String,
+    password: String,
     contactPhone: Number,
     alternatePhone:[Number],
     email: String,
+    isLead: Boolean,
     leadType: String,
     status:String,
     companyName: String,
@@ -483,7 +506,12 @@ var customerLeadsSchema = mongoose.Schema({
     tdsDeclarationDoc: String,
     comment:String,
     leadSource:String,
-    noOfTrucks:Number
+    noOfTrucks:Number,
+    createdAt: Date,
+    updatedAt: Date,
+    leadStatus: String,
+    isActive: {type: Boolean, default: false},
+    fuelCardApplied: {type: Boolean, default: false},
 }, {timestamps: String});
 
 var accountDevicePlanHistory = new mongoose.Schema({
@@ -541,8 +569,8 @@ var loadTypesSchema = mongoose.Schema({
 var orderStatusSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     title: String,
-    releaseTruck: Boolean,
-    status: Boolean
+    releaseTruck: {type: Boolean, default: false},
+    status: {type: Boolean, default: false}
 }, {timestamps: String});
 
 var truckRequestSchema = mongoose.Schema({
@@ -662,6 +690,16 @@ var truckNotificationSchema = mongoose.Schema({
     sendToAll: Boolean
 }, {timestamps: String})
 
+var trafficManagerSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    fullName: String,
+    mobile: Number  ,
+    city: String,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {
+    timestamps: true, versionKey: false
+});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -702,5 +740,6 @@ module.exports = {
     adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions'),
     TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes'),
     TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments'),
-    TruckNotificationColl:mongoose.model('truckNotification',truckNotificationSchema,'truckNotification')
+    TruckNotificationColl:mongoose.model('truckNotification',truckNotificationSchema,'truckNotification'),
+    trafficManagerColl:mongoose.model('trafficManager',trafficManagerSchema,'trafficManager')
 };

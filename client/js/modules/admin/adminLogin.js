@@ -38,7 +38,7 @@ app.controller('adminNavCtrl', ['$scope', 'CommonServices', '$state', '$cookies'
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
                     $cookies.put('token', success.data.token);
-                    $cookies.put('type', success.data.type);
+                    $cookies.put('role', success.data.role);
                     $cookies.put('userName', success.data.userName);
                     $cookies.put('editAccounts', success.data.editAccounts);
                     $cookies.put('profilePic', success.data.profilePic);
@@ -85,9 +85,9 @@ app.controller('AdminLoginCtrl', ['$scope', 'CommonServices', '$state', '$cookie
         if (!params.errors.length) {
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
-                    if (success.data.type === 'employee') {
+                    if (success.data.role === 'employee') {
                         $cookies.put('token', success.data.token);
-                        $cookies.put('type', success.data.type);
+                        $cookies.put('role', success.data.role);
                         $cookies.put('userName', success.data.userName);
                         $cookies.put('editAccounts', success.data.editAccounts);
                         $cookies.put('profilePic', success.data.profilePic);
