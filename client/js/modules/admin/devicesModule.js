@@ -302,7 +302,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getDevicePlanHistory($stateParams.device, function (success) {
             if(success.data.status) {
                 $scope.devicePlanHistory = success.data.devicePlanHistory;
-                console.log('history', $scope.devicePlanHistory);
+                // console.log('history', $scope.devicePlanHistory);
             } else {
                 Notification.error({message: "unable to get plan history"})
             }
@@ -322,7 +322,7 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
                 $scope.employees = success.data.employees;
-                console.log($scope.employees);
+                // console.log($scope.employees);
             }
         });
     }
@@ -346,7 +346,7 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
     $scope.addDevices = function () {
         $scope.errors = [];
         var params = $scope.devicesToAdd;
-        console.log(params);
+        //console.log(params);
         for (var i = 0; i < params.length - 1; i++) {
             for (var j = i + 1; j < params.length; j++) {
                 if (params[i].imei === params[j].imei) {

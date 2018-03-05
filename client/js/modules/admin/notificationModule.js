@@ -348,8 +348,10 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
         }, function () {
         });
     };
-    // getting Email and SMS Notifications
 
+
+
+    // getting Email and SMS Notifications
     $scope.count = 0;
 
     $scope.getNotiCount = function () {
@@ -428,7 +430,7 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
     }
 
 
-    /* ------------ Available Trucks Notification adding or Updating----Sravan -------------*/
+    /* ------------  Trucks Notification adding or Updating----Sravan -------------*/
 
     $scope.truckNtfnTitle = "Add GPS Truck Notification";
 
@@ -518,7 +520,7 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
         }
     }
 
-    /* ------------ Available Load Notification adding or Updating----Sravan -------------*/
+    /* ------------  Load Notification adding or Updating----Sravan -------------*/
 
     $scope.loadTitle = "Add Load Notification";
 
@@ -611,4 +613,48 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
         }
     }
 
+    /* ------------ App Notification adding or Updating----Sravan -------------*/
+
+    $scope.appTitle = "Add app Notification";
+
+    $scope.appNotification = {
+        sendTo :'',
+        ignore :'',
+        info: ''
+    }
+    
+    $scope.addOrUpdateAppNtfn = function () {
+        var params = $scope.appNotification;
+        if(!params.sendTo){
+            params.errors.push("Please enter send to");
+        }
+        if(!params.info){
+            params.errors.push("Please enter information");
+        }
+        if (params.errors.length > 0) {
+            params.errors.forEach(function (message) {
+                Notification.error(message);
+            });
+        }else {
+            if(params._id){
+                console.log("Welcomwe");
+            }else{
+                NotificationServices.addAppNtfn(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+
+
+        }
+        
+    }
 }]);
