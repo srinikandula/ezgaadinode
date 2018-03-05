@@ -671,13 +671,13 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         }
         else {
             if ($stateParams.transporterId) {
-                console.log('$scope.transporter',$scope.transporter)
                 Upload.upload({
                     url: '/v1/cpanel/customers/updateTransporter',
                     method: "POST",
                     data: {
-                        files: [$scope.transporter.newDocumentFile]
-                    }, params: $scope.transporter
+                        files: [$scope.transporter.newDocumentFile],
+                        content: $scope.transporter
+                    }
                 }).then(function (success) {
                     if (success.data.status) {
                         success.data.messages.forEach(function (message) {
@@ -690,16 +690,6 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                         });
                     }
                 });
-                /*customerServices.updateTransporter(params, function (success) {
-                    if (success.data.status) {
-                        Notification.success(success.data.messages[0]);
-                        $state.go('customers.transporters');
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error(message);
-                        });
-                    }
-                });*/
             } else {
 
             }
@@ -727,6 +717,246 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
 
 /*Author SVPrasadK*/
 /*Commision Agent Start*/
+app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
+    $scope.status = {
+        isOpen: true,
+        isOpenTwo: true,
+        isOpenThree: true,
+        isOpenFour: true,
+        isOpenFive: true,
+        isOpenSix: true,
+        isOpenSev: true,
+    };
+    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.yearInService = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003];
+    $scope.customerProofs = ['Aadhar Card', 'Passport'];
+    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
+    $scope.title = "Add commission Agent";
+
+    if ($stateParams.commissionAgentId) {
+        $scope.title = "Edit Commission Agent";
+        customerServices.getCommissionAgentDetails($stateParams.commissionAgentId, function (success) {
+            if (success.data.status) {
+                $scope.commissionAgent = success.data.data.accountData;
+                $scope.commissionAgent.confirmPassword = success.data.data.accountData.password;
+                $scope.commissionAgent.newDocumentFile = '';
+                if($scope.commissionAgent.alternatePhone.length === 0) {
+                    $scope.commissionAgent.alternatePhone = [''];
+                }
+                $scope.commissionAgent.operatingRoutes = success.data.data.operatingRoutesData;
+                if($scope.commissionAgent.operatingRoutes.length === 0) {
+                    $scope.commissionAgent.operatingRoutes = [{source: "",destination: "",truckType: ""}];
+                }
+                $scope.commissionAgent.trafficManagers = success.data.data.trafficManagersData;
+                if($scope.commissionAgent.trafficManagers.length === 0) {
+                    $scope.commissionAgent.trafficManagers = [{fullName: "",mobile: "",city: ""}];
+                }
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.files = "";
+
+    $scope.count = 0;
+
+    $scope.countCommissionAgent = function () {
+        customerServices.countCommissionAgent(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initCommissionAgent("");
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            role: tableParams.role,
+            commissionAgent: tableParams.commissionAgent
+        };
+        customerServices.getCommissionAgent(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfCommissionAgents = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initCommissionAgent = function (role) {
+        $scope.commissionAgentParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.role = role;
+                loadTableData(params);
+            }
+        });
+    };
+
+    $scope.deleteCommissionAgent = function (index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete the commission agent'
+        }).then(function (result) {
+            if (result.value) {
+                customerServices.deleteCommissionAgent($scope.currentPageOfCommissionAgents[index]._id, function (success) {
+                    if (success.data.status) {
+                        $scope.initCommissionAgent("");
+                        swal(
+                            '',
+                            'Successfully removed',
+                            'success'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+    $scope.addNumber = function () {
+        if (!$scope.commissionAgent.alternatePhone[$scope.commissionAgent.alternatePhone.length - 1]) {
+            Notification.error('Enter Alternate Number');
+        } else {
+            $scope.commissionAgent.alternatePhone.push('');
+        }
+    };
+    $scope.removeNumber = function (index) {
+        $scope.commissionAgent.alternatePhone.splice(index, 1)
+    };
+
+    function verifyMobNum() {
+        for (var i = 0; i < $scope.commissionAgent.contactPhone.length; i++) {
+            if (!$scope.commissionAgent.contactPhone[i]) {
+                return false;
+            }
+            if (i === $scope.commissionAgent.contactPhone.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.addOperatingRoute = function () {
+        var routesObj = $scope.commissionAgent.operatingRoutes;
+        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
+            Notification.error('Enter Source and Destination');
+        } else {
+            routesObj.push({source: '', destination: ''});
+        }
+    };
+    $scope.deleteOperatingRoute = function (index) {
+        $scope.commissionAgent.operatingRoutes.splice(index, 1)
+    };
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.commissionAgent.operatingRoutes[index].source = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.commissionAgent.operatingRoutes[index].destination = place.formatted_address;
+            });
+    };
+
+    $scope.cancel = function () {
+        $state.go('customers.commissionAgents');
+    };
+
+    $scope.addUpdateCommissionAgent = function () {
+        var params = $scope.commissionAgent;
+
+        if (!params.leadType || !_.isString(params.leadType)) {
+            Notification.error('Please Select Customer Type');
+        }
+        if (!params.firstName || !_.isString(params.firstName)) {
+            Notification.error('Please Provide Full Name');
+        }
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
+        }
+        if (params.isActive === undefined) {
+            Notification.error('Invalid Status');
+        }
+        else {
+            if ($stateParams.commissionAgentId) {
+                Upload.upload({
+                    url: '/v1/cpanel/customers/updateCommissionAgent',
+                    method: "POST",
+                    data: {
+                        files: [$scope.commissionAgent.newDocumentFile],
+                        content: $scope.commissionAgent
+                    }
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('customers.commissionAgents');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            } else {
+
+            }
+        }
+    };
+
+    $scope.searchBycommissionAgent = function (commissionAgent) {
+        $scope.commissionAgentParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.commissionAgent = commissionAgent;
+                loadTableData(params);
+            }
+        });
+    };
+}]);
 /*Commision Agent End*/
 
 /*Author SVPrasadK*/

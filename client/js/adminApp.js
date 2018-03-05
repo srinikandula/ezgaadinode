@@ -59,8 +59,8 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'customers'}
     }).state({
         name: 'customers.addUpdateCommissionAgent',
-        url: '/CommissionAgent/:commissionAgentId',
-        templateUrl: 'views/partials/admin/customers/CommissionAgent.html',
+        url: '/addUpdateCommissionAgent/:commissionAgentId',
+        templateUrl: 'views/partials/admin/customers/addUpdateCommissionAgent.html',
         data: {activeTab: 'customers'},
         params: {commissionAgentId: null}
     }).state({

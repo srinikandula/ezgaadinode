@@ -770,14 +770,14 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else if(doc){
-                if(params.operatingRoutes.length>0){
-                    async.map(params.operatingRoutes,function (route, routeCallback) {
-                        var query={};
-                        if(!route._id){
+            } else if (doc) {
+                if (params.operatingRoutes.length > 0) {
+                    async.map(params.operatingRoutes, function (route, routeCallback) {
+                        var query = {};
+                        if (!route._id) {
                             query = {_id: mongoose.Types.ObjectId()};
                             route.createdBy = req.jwt.id;
-                            route.accountId=params._id;
+                            route.accountId = params._id;
                         } else {
                             query = {_id: route._id}
                         }
@@ -835,53 +835,53 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
 
 };
 
-CustomerLeads.prototype.deleteTruckOwner=function (req,callback) {
-  var retObj={
-      status:false,
-      messages:[]
-  };
-  var params=req.query;
-  if(!params._id || !ObjectId.isValid(params._id)){
-      retObj.messages.push("Invalid truck owner");
-  }
+CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid truck owner");
+    }
 
-  if(retObj.messages.length>0){
-      callback(retObj);
-  }else{
-      AccountsColl.findOneAndRemove({_id:params._id},function (err,doc) {
-          if (err) {
-              retObj.messages.push("please try again");
-              analyticsService.create(req, serviceActions.delete_truck_owner_err, {
-                  body: JSON.stringify(req.query),
-                  accountId: req.jwt.id,
-                  success: false,
-                  messages: retObj.messages
-              }, function (response) {
-              });
-              callback(retObj);
-          } else if (doc && doc.result.n == 1) {
-              retObj.status = true;
-              retObj.messages.push("Truck owner deleted successfully");
-              analyticsService.create(req, serviceActions.delete_truck_owner, {
-                  body: JSON.stringify(req.query),
-                  accountId: req.jwt.id,
-                  success: true
-              }, function (response) {
-              });
-              callback(retObj);
-          } else {
-              retObj.messages.push("Truck owner not deleted");
-              analyticsService.create(req, serviceActions.delete_truck_owner_err, {
-                  body: JSON.stringify(req.query),
-                  accountId: req.jwt.id,
-                  success: false,
-                  messages: retObj.messages
-              }, function (response) {
-              });
-              callback(retObj);
-          }
-      })
-  }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("please try again");
+                analyticsService.create(req, serviceActions.delete_truck_owner_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc && doc.result.n == 1) {
+                retObj.status = true;
+                retObj.messages.push("Truck owner deleted successfully");
+                analyticsService.create(req, serviceActions.delete_truck_owner, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Truck owner not deleted");
+                analyticsService.create(req, serviceActions.delete_truck_owner_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
 };
 
 CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
@@ -993,10 +993,11 @@ CustomerLeads.prototype.getTransporter = function (req, callback) {
                     .lean()
                     .exec(function (err, transporters) {
                         transportersCallback(err, transporters);
-                    });``
+                    });
+                ``
             },
             count: function (countCallback) {
-                AccountsColl.count({role: 'Transporter'},function (err, count) {
+                AccountsColl.count({role: 'Transporter'}, function (err, count) {
                     countCallback(err, count);
                 });
             }
@@ -1044,22 +1045,22 @@ CustomerLeads.prototype.getTransporterDetails = function (req, callback) {
         callback(retObj);
     } else {
         async.parallel({
-            accountData : function(accountDataCallback){
+            accountData: function (accountDataCallback) {
                 AccountsColl.findOne({_id: params.transporterId}, function (err, doc) {
                     accountDataCallback(err, doc);
                 });
             },
-            operatingRoutesData : function(operatingRoutesDataCallback){
+            operatingRoutesData: function (operatingRoutesDataCallback) {
                 OperatingRoutesColl.find({accountId: params.transporterId}, function (err, doc) {
                     operatingRoutesDataCallback(err, doc);
                 });
             },
-            trafficManagersData : function(trafficManagersDataCallback){
+            trafficManagersData: function (trafficManagersDataCallback) {
                 trafficManagerColl.find({accountId: params.transporterId}, function (err, doc) {
                     trafficManagersDataCallback(err, doc);
                 });
             }
-        },function(err,result){
+        }, function (err, result) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_transporter_details_err, {
@@ -1102,8 +1103,7 @@ CustomerLeads.prototype.updateTransporter = function (req, callback) {
         status: false,
         messages: []
     };
-    var params = req.body;
-    console.log('body',req.body);
+    var params = req.body.content;
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid transporter');
     }
@@ -1160,7 +1160,7 @@ CustomerLeads.prototype.updateTransporter = function (req, callback) {
                 }
             });
         } else {
-            console.log('params ====>',params);
+            console.log('params ====>', params);
             params.updatedBy = req.jwt.id;
             updateTransporter(req, params, callback);
         }
@@ -1199,7 +1199,7 @@ function updateTransporter(req, params, callback) {
                     route.updatedBy = req.jwt.id;
                     delete route.__v;
                     OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
-                        if(err) {
+                        if (err) {
                             retObj.messages.push('Error adding/updating route');
                             routeCallback(err);
                         } else {
@@ -1231,7 +1231,7 @@ function updateTransporter(req, params, callback) {
                                 trafficManager.updatedBy = req.jwt.id;
                                 delete trafficManager.__v;
                                 trafficManagerColl.update(query, trafficManager, {upsert: true}, function (err, doc) {
-                                    if(err) {
+                                    if (err) {
                                         retObj.messages.push('Error adding/updating traffic manager');
                                         trafficManagerCallback(err);
                                     } else {
@@ -1385,37 +1385,65 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
         messages: []
     };
 
-    AccountsColl.find({role: 'Commission Agent'}, function (err, docs) {
-        if (err) {
-            retObj.messages.push('Error retrieving transporters');
-            analyticsService.create(req, serviceActions.get_commission_agent_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        } else if (docs.length > 0) {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.data = docs;
-            analyticsService.create(req, serviceActions.get_commission_agent, {
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
-            callback(retObj);
-        } else {
-            retObj.messages.push('No commission agent found');
-            analyticsService.create(req, serviceActions.get_commission_agent_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        }
-    });
+    var condition = {};
+    var params = req.query;
+
+    if (!params.page) {
+        params.page = 1;
+    }
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
+        async.parallel({
+            commissionAgents: function (commissionAgentsCallback) {
+                AccountsColl
+                    .find({role: 'Commission Agent'})
+                    .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, commissionAgents) {
+                        commissionAgentsCallback(err, commissionAgents);
+                    });
+                ``
+            },
+            count: function (countCallback) {
+                AccountsColl.count({role: 'Commission Agent'}, function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, docs) {
+            if (err) {
+                retObj.messages.push('Error retrieving commission agent');
+                analyticsService.create(req, serviceActions.get_commission_agent_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = docs.count;
+                retObj.accountId = req.jwt.id;
+                retObj.userType = req.jwt.type;
+                retObj.data = docs.commissionAgents;
+                analyticsService.create(req, serviceActions.get_commission_agent, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
 };
 
 CustomerLeads.prototype.getCommissionAgentDetails = function (req, callback) {
@@ -1424,16 +1452,33 @@ CustomerLeads.prototype.getCommissionAgentDetails = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+
+    if (!params.commissionAgentId || !ObjectId.isValid(params.commissionAgentId)) {
         retObj.messages.push("Invalid commission agent");
     }
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({_id: params._id}, function (err, doc) {
+        async.parallel({
+            accountData: function (accountDataCallback) {
+                AccountsColl.findOne({_id: params.commissionAgentId}, function (err, doc) {
+                    accountDataCallback(err, doc);
+                });
+            },
+            operatingRoutesData: function (operatingRoutesDataCallback) {
+                OperatingRoutesColl.find({accountId: params.commissionAgentId}, function (err, doc) {
+                    operatingRoutesDataCallback(err, doc);
+                });
+            },
+            trafficManagersData: function (trafficManagersDataCallback) {
+                trafficManagerColl.find({accountId: params.commissionAgentId}, function (err, doc) {
+                    trafficManagersDataCallback(err, doc);
+                });
+            }
+        }, function (err, result) {
             if (err) {
                 retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_commission_agent_err, {
+                analyticsService.create(req, serviceActions.get_commission_agent_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -1441,11 +1486,11 @@ CustomerLeads.prototype.getCommissionAgentDetails = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else if (doc) {
+            } else if (result) {
                 retObj.messages.push("Success");
-                retObj.data = doc;
+                retObj.data = result;
                 retObj.status = true;
-                analyticsService.create(req, serviceActions.get_commission_agent, {
+                analyticsService.create(req, serviceActions.get_commission_agent_details, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: true
@@ -1454,7 +1499,7 @@ CustomerLeads.prototype.getCommissionAgentDetails = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.messages.push("Commission Agent not found");
-                analyticsService.create(req, serviceActions.get_commission_agent_err, {
+                analyticsService.create(req, serviceActions.get_commission_agent_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -1463,7 +1508,7 @@ CustomerLeads.prototype.getCommissionAgentDetails = function (req, callback) {
                 });
                 callback(retObj);
             }
-        })
+        });
     }
 
 };
@@ -1473,48 +1518,40 @@ CustomerLeads.prototype.updateCommissionAgent = function (req, callback) {
         status: false,
         messages: []
     };
-    var params = req.body;
+    var params = req.body.content;
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid commission agent');
     }
-    if (!params.userName) {
-        retObj.messages.push("Please enter name");
+    if (!params.leadType) {
+        retObj.messages.push("Please Select Customer Type");
     }
-    if (!params.contactPhone) {
+    if (!params.firstName) {
+        retObj.messages.push("Please Provide Full Name");
+    }
+    if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
         retObj.messages.push("Please enter phone number");
     }
     if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.update_commission_agent_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
         params = Utils.removeEmptyFields(params);
-        AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.update_commission_agent_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (doc) {
-                if (params.operatingRoutes.length > 0) {
-                    async.map(params.operatingRoutes, function (route, routeCallback) {
-                        var query = {};
-                        if (!route._id) {
-                            query = {_id: mongoose.Types.ObjectId()};
-                            route.createdBy = req.jwt.id;
-                            route.accountId = params._id;
+        if (req.files.files) {
+            Utils.removeCustomerDoc(params.documentFile, function (removeResp) {
+                if (removeResp.status) {
+                    Utils.uploadCustomerDoc(req.files.files[0], function (uploadResp) {
+                        if (uploadResp.status) {
+                            params.documentFile = uploadResp.fileName;
+                            params.updatedBy = req.jwt.id;
+                            updateCommissionAgent(req, params, callback);
                         } else {
-                            query = {_id: route._id}
-                        }
-                        OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
-                            routeCallback(err);
-                        });
-                    }, function (err) {
-                        if (err) {
-                            retObj.messages.push("Please try again");
+                            retObj.messages.push("Document uploading failed");
                             analyticsService.create(req, serviceActions.update_commission_agent_err, {
                                 body: JSON.stringify(req.query),
                                 accountId: req.jwt.id,
@@ -1523,45 +1560,114 @@ CustomerLeads.prototype.updateCommissionAgent = function (req, callback) {
                             }, function (response) {
                             });
                             callback(retObj);
-                        } else {
-                            retObj.status = true;
-                            retObj.messages.push("Commission Agent updated successfully");
-                            analyticsService.create(req, serviceActions.update_commission_agent, {
-                                body: JSON.stringify(req.body),
-                                accountId: req.jwt.id,
-                                success: true
-                            }, function (response) {
-                            });
-                            callback(retObj);
                         }
-                    })
+                    });
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push("Commission Agent updated successfully");
-                    analyticsService.create(req, serviceActions.update_commission_agent, {
-                        body: JSON.stringify(req.body),
+                    retObj.messages.push("Document Removing failed");
+                    analyticsService.create(req, serviceActions.update_commission_agent_err, {
+                        body: JSON.stringify(req.query),
                         accountId: req.jwt.id,
-                        success: true
+                        success: false,
+                        messages: retObj.messages
                     }, function (response) {
                     });
                     callback(retObj);
                 }
+            });
+        } else {
+            console.log('params ====>', params);
+            params.updatedBy = req.jwt.id;
+            updateCommissionAgent(req, params, callback);
+        }
+    }
+
+};
+
+function updateCommissionAgent(req, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.update_commission_agent_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (doc) {
+            if (params.operatingRoutes.length > 0) {
+                async.map(params.operatingRoutes, function (route, routeCallback) {
+                    var query = {};
+                    if (!route._id) {
+                        query = {_id: mongoose.Types.ObjectId()};
+                        route.createdBy = req.jwt.id;
+                        route.accountId = params._id;
+                    } else {
+                        query = {_id: route._id}
+                    }
+                    route.updatedBy = req.jwt.id;
+                    delete route.__v;
+                    OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
+                        if (err) {
+                            retObj.messages.push('Error adding/updating route');
+                            routeCallback(err);
+                        } else {
+                            routeCallback(null, 'saved');
+                        }
+                    });
+                }, function (err) {
+                    if (err) {
+                        retObj.messages.push("Please try again");
+                        analyticsService.create(req, serviceActions.update_commission_agent_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push("Commission Agent updated successfully");
+                        analyticsService.create(req, serviceActions.update_commission_agent, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                })
             } else {
-                retObj.messages.push("Commission Agent not updated");
-                analyticsService.create(req, serviceActions.update_commission_agent_err, {
-                    body: JSON.stringify(req.query),
+                retObj.status = true;
+                retObj.messages.push("Commission Agent updated successfully");
+                analyticsService.create(req, serviceActions.update_commission_agent, {
+                    body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
+                    success: true
                 }, function (response) {
                 });
                 callback(retObj);
             }
-        })
-
-    }
-
-};
+        } else {
+            retObj.messages.push("Commission Agent not updated");
+            analyticsService.create(req, serviceActions.update_commission_agent_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+}
 
 CustomerLeads.prototype.deleteCommissionAgent = function (req, callback) {
     var retObj = {
@@ -1569,14 +1675,14 @@ CustomerLeads.prototype.deleteCommissionAgent = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+    if (!params.commissionAgentId || !ObjectId.isValid(params.commissionAgentId)) {
         retObj.messages.push("Invalid commission agent");
     }
 
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.remove({_id: params._id}, function (err, doc) {
+        AccountsColl.remove({_id: params.commissionAgentId}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_commission_agent_err, {

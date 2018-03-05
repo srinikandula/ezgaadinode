@@ -1,4 +1,4 @@
-<div ng-controller="transporterCtrl" ng-init="countCommissionAgent()">
+<div ng-controller="commissionAgentCtrl" ng-init="countCommissionAgent()">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Commission Agents
         </li>
@@ -6,45 +6,50 @@
             <select class="form-control">
                 <option>Select</option>
                 <option>Enabled</option>
-                <option>Disabled</option>
             </select>
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="transporterParams">
-        <tr ng-repeat="transporter in currentPageOfCommissionAgents" style="text-align: center;">
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="commissionAgentParams">
+        <tr ng-repeat="commissionAgent in currentPageOfCommissionAgents" style="text-align: center;">
             <td data-title="'S.No'">
                 {{$index+1}}
             </td>
-            <td data-title="'ID'" sortable="'firstName'" class="clickable-item">
-                {{transporter.firstName}}
+            <td data-title="'ID'" sortable="'userId'" class="clickable-item">
+                {{commissionAgent.userId || '--'}}
             </td>
-            <td data-title="'Customer Name'" sortable="'lastName'" class="clickable-item">
-                {{transporter.lastName}}
+            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
+                {{commissionAgent.firstName || '--'}}
             </td>
-            <td data-title="'Company'" sortable="'contactPhone'" class="clickable-item">
-                {{transporter.contactPhone}}
+            <td data-title="'Company'" sortable="'companyName'" class="clickable-item">
+                {{commissionAgent.companyName || '--'}}
             </td>
-            <td data-title="'Mobile'" sortable="'email'" class="clickable-item">
-                {{transporter.email}}
+            <td data-title="'Upload'">
+                <a ui-sref="">Click Here</a>
             </td>
-            <td data-title="'Reg Date'" sortable="'city'" class="clickable-item">
-                {{transporter.city}}
+            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                {{commissionAgent.contactPhone || '--'}}
             </td>
-            <td data-title="'No of Loads'" sortable="'state'" class="clickable-item">
-                {{transporter.state}}
+            <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
+                {{commissionAgent.createdAt | date:'dd-MM-yyyy' || '--'}}
             </td>
-            <td data-title="'ERP'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+            <td data-title="'No of Loads'" sortable="'noOfLoads'" class="clickable-item">
+                {{commissionAgent.noOfLoads || '0'}}
             </td>
-            <td data-title="'GPS'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+            <td data-title="'No of Trucks'" sortable="'noOfTrucks'" class="clickable-item">
+                {{commissionAgent.noOfTrucks || '0'}}
+            </td>
+            <td data-title="'SMS/Email'" sortable="'smsEmailAds'" class="clickable-item">
+                <span ng-show="commissionAgent.smsEmailAds === 0">NONE</span>
+                <span ng-show="commissionAgent.smsEmailAds === 1">BOTH</span>
+                <span ng-show="commissionAgent.smsEmailAds === 2">EMAIL</span>
+                <span ng-show="commissionAgent.smsEmailAds === 3">SMS</span>
             </td>
             <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+                {{commissionAgent.isActive?'Enabled':'Disabled' || '--'}}
             </td>
             <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="admin.addUpdateCommissionAgent({transporterId: transporter._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ui-sref="customers.addUpdateCommissionAgent({commissionAgentId: commissionAgent._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
                 <a href="#" ng-click="deleteCommissionAgent($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
