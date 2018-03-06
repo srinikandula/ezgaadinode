@@ -18,16 +18,11 @@ app.factory('groupMapService',['$http','$cookies', function ($http, $cookies) {
 
 app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsService','$compile', function ($scope, $state,groupMapService,GpsService,$compile) {
 
-    var locations = [];
-    var regNos=[];
-    var truckTypes=[];
+    var trucksData=[];
     $scope.gpsTrackingByMapView=function () {
         GpsService.gpsTrackingByMapView(function (success) {
             if (success.data.status) {
-                locations = success.data.data;
-                regNos=success.data.regNos;
-                truckTypes=success.data.truckTypes;
-                console.log(locations,regNos);
+                trucksData=success.data.data;
                 $scope.loadData();
 
             } else {
@@ -47,12 +42,13 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
         var infowindow = new google.maps.InfoWindow();
         var marker;
 
-        for (var i = 0; i< locations.length; i++) {
-            if (locations[i]) {
+        for (var i = 0; i< trucksData.length; i++) {
+            console.log(trucksData[i]);
+            if (Object.keys(trucksData[i]).indexOf('attrs')!==-1) {
                 var image = '/images/';
-                if (locations[i].isStopped) {
+                if (trucksData[i].attrs.latestLocation.isStopped) {
                     image = image + 'red_marker.svg';
-                } else if (locations[i].isIdle) {
+                } else if (trucksData[i].attrs.latestLocation.isIdle) {
                     image = image + 'orange_marker.svg';
                 } else {
                     image = image + 'green_marker.svg';
@@ -60,15 +56,14 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
                 var icon = {
                     url: image, // url
                     scaledSize: new google.maps.Size(50, 50),
-                    labelOrigin: new google.maps.Point(20, -2),
+                    labelOrigin: new google.maps.Point(20, -2)
                     // labelStyle:{background: '#fff'}
                 };
                 marker = new google.maps.Marker({
-                    // new google.maps.LatLng($scope.addBranchParams.loc.coordinates[1], $scope.addBranchParams.loc.coordinates[0/]);
-                    position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
+                    position: new google.maps.LatLng(trucksData[i].attrs.latestLocation.location.coordinates[1], trucksData[i].attrs.latestLocation.location.coordinates[0]),
                     icon: icon,
                     label: {
-                        text: regNos[i],
+                        text: trucksData[i].registrationNo,
                         color: "black",
                         fontSize: '12px',
                         labelClass: "labels"
@@ -76,8 +71,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
                     map: map
                 });
 
-                // var content = '<span> <b>Truck Reg No:</b> '+regNos[i]+'</span><br><span><b> Truck Type: </b> '+truckTypes[i]+'</span><br>'; //'<span> Truck No: ' + regNos[i]+'</span>'+'<span> Truck Type :'+truckTypes[i]+'</span>';
-                var functionContent = '<div>' + '<center><span> <b>Truck Reg No:</b> ' + regNos[i] + '</span><br><span><b> Truck Type: </b> ' + truckTypes[i] + '</span><br>' + '<a ng-click="track(' + i + ')" class="btn btn-danger">Track</a></center></div>';
+                var functionContent = '<div>' + '<center><span> <b>Truck Reg No:</b> ' + trucksData[i].registrationNo + '</span><br><span><b> Truck Type: </b> ' + trucksData[i].truckType + '</span><br>' + '<a ng-click="track(' + i + ')" class="btn btn-danger">Track</a></center></div>';
                 var compiledContent = $compile(functionContent)($scope);
                 google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
                     return function () {
@@ -90,7 +84,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
     };
 
     $scope.track = function (truckNo) {
-        $state.go('trackView',{truckNo:regNos[truckNo]});          // console.log(truckNo);
+        $state.go('trackView',{truckNo:trucksData[truckNo].registrationNo});          // console.log(truckNo);
     };
 
     $scope.gpsTrackingByMapView();

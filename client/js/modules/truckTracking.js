@@ -15,9 +15,9 @@ app.factory('truckTrackingService',['$http','$cookies', function ($http, $cookie
     }
 }]);
 
-app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingService','$stateParams', function ($scope, $state,truckTrackingService,$stateParams) {
+app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingService','$stateParams','Notification', function ($scope, $state,truckTrackingService,$stateParams,Notification) {
     $scope.truckTrackingParams={
-        regNo: 'HR38M1224',//$stateParams.truckNo,
+        regNo: $stateParams.truckNo,
         startDate:new Date(),
         endDate:new Date()
     };
@@ -120,7 +120,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                     }
                 }
             }else{
-
+                Notification.error({message:success.data.message});
             }
         },function (err) {
 
