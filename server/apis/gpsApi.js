@@ -360,7 +360,8 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
         } else if (trucksData) {
             var locations=_.pluck(_.pluck(trucksData,"attrs"),"latestLocation");
             var regNos=_.pluck(trucksData,'registrationNo');
-            var truckTypes=_.pluck(trucksData,'truckType')
+            var truckTypes=_.pluck(trucksData,'truckType');
+            console.log(locations);
             retObj.status = true;
             retObj.data = locations;
             retObj.regNos= regNos;

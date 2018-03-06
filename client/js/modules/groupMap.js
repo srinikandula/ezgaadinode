@@ -27,6 +27,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
                 locations = success.data.data;
                 regNos=success.data.regNos;
                 truckTypes=success.data.truckTypes;
+                console.log(locations,regNos);
                 $scope.loadData();
 
             } else {
@@ -47,42 +48,44 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
         var marker;
 
         for (var i = 0; i< locations.length; i++) {
-            var image='/images/';
-            if(locations[i].isStopped){
-                image=image+'red_marker.svg';
-            }else if(locations[i].isIdle){
-                image=image+'orange_marker.svg';
-            }else{
-                image=image+'green_marker.svg';
-            }
-            var icon = {
-                url: image, // url
-                scaledSize: new google.maps.Size(50, 50),
-                labelOrigin: new google.maps.Point(20, -2),
-                // labelStyle:{background: '#fff'}
-            };
-            marker = new google.maps.Marker({
-                // new google.maps.LatLng($scope.addBranchParams.loc.coordinates[1], $scope.addBranchParams.loc.coordinates[0/]);
-                position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
-                icon: icon,
-                label: {
-                    text: regNos[i],
-                    color: "black",
-                    fontSize: '12px',
-                    labelClass:"labels"
-                },
-                map: map
-            });
-
-            // var content = '<span> <b>Truck Reg No:</b> '+regNos[i]+'</span><br><span><b> Truck Type: </b> '+truckTypes[i]+'</span><br>'; //'<span> Truck No: ' + regNos[i]+'</span>'+'<span> Truck Type :'+truckTypes[i]+'</span>';
-            var functionContent = '<div>'+'<center><span> <b>Truck Reg No:</b> '+regNos[i]+'</span><br><span><b> Truck Type: </b> '+truckTypes[i]+'</span><br>'+'<a ng-click="track(' + i + ')" class="btn btn-danger">Track</a></center></div>';
-            var compiledContent = $compile(functionContent)($scope);
-            google.maps.event.addListener(marker, 'click', (function(marker, i,content) {
-                return function() {
-                    infowindow.setContent(content);
-                    infowindow.open(map, marker);
+            if (locations[i]) {
+                var image = '/images/';
+                if (locations[i].isStopped) {
+                    image = image + 'red_marker.svg';
+                } else if (locations[i].isIdle) {
+                    image = image + 'orange_marker.svg';
+                } else {
+                    image = image + 'green_marker.svg';
                 }
-            })(marker, i,compiledContent[0], $scope));
+                var icon = {
+                    url: image, // url
+                    scaledSize: new google.maps.Size(50, 50),
+                    labelOrigin: new google.maps.Point(20, -2),
+                    // labelStyle:{background: '#fff'}
+                };
+                marker = new google.maps.Marker({
+                    // new google.maps.LatLng($scope.addBranchParams.loc.coordinates[1], $scope.addBranchParams.loc.coordinates[0/]);
+                    position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
+                    icon: icon,
+                    label: {
+                        text: regNos[i],
+                        color: "black",
+                        fontSize: '12px',
+                        labelClass: "labels"
+                    },
+                    map: map
+                });
+
+                // var content = '<span> <b>Truck Reg No:</b> '+regNos[i]+'</span><br><span><b> Truck Type: </b> '+truckTypes[i]+'</span><br>'; //'<span> Truck No: ' + regNos[i]+'</span>'+'<span> Truck Type :'+truckTypes[i]+'</span>';
+                var functionContent = '<div>' + '<center><span> <b>Truck Reg No:</b> ' + regNos[i] + '</span><br><span><b> Truck Type: </b> ' + truckTypes[i] + '</span><br>' + '<a ng-click="track(' + i + ')" class="btn btn-danger">Track</a></center></div>';
+                var compiledContent = $compile(functionContent)($scope);
+                google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
+                    return function () {
+                        infowindow.setContent(content);
+                        infowindow.open(map, marker);
+                    }
+                })(marker, i, compiledContent[0], $scope));
+            }
         }
     };
 
