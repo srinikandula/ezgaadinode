@@ -59,7 +59,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
                 url: image, // url
                 scaledSize: new google.maps.Size(50, 50),
                 labelOrigin: new google.maps.Point(20, -2),
-                labelStyle:{background: '#fff'}
+                // labelStyle:{background: '#fff'}
             };
             marker = new google.maps.Marker({
                 // new google.maps.LatLng($scope.addBranchParams.loc.coordinates[1], $scope.addBranchParams.loc.coordinates[0/]);

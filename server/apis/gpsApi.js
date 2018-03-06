@@ -648,28 +648,29 @@ Gps.prototype.downloadReport = function (truckId,startDate,endDate,req,callback)
     gps.gpsTrackingByTruck(truckId,startDate,endDate,req,function (result) {
         if(result.status){
             var output = [];
-            for(var i=0;i<result.results.length;i++){
+            var positions=result.results.positions;
+            for(var i=0;i<positions.length;i++){
                 var status;
-                if(result.results[i].isStopped){
+                if(positions[i].isStopped){
                     status='Stopped'
-                }else if(result.results[i].isIdle){
+                }else if(positions[i].isIdle){
                     status='Idle'
                 }else{
                     status='Moving'
                 }
                 output.push({
-                    Date:result.results[i].createdAt,
+                    Date:positions[i].createdAt,
                     Status:status,
-                    Address:result.results[i].address,
-                    Speed:result.results[i].speed
+                    Address:positions[i].address,
+                    Speed:positions[i].speed
                 });
-                if (i === result.results.length - 1) {
+                if (i === positions.length - 1) {
                     retObj.status = true;
                     output.push({
-                        Date:result.results[i].createdAt,
+                        Date:positions[i].createdAt,
                         Status:status,
-                        Address:result.results[i].address,
-                        Speed:result.results[i].speed
+                        Address:positions[i].address,
+                        Speed:positions[i].speed
                     });
                     retObj.data = output;
                     callback(retObj);
