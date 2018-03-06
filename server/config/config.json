@@ -47,5 +47,5 @@
   "bodyParserLimit": "50mb",
   "googleSecretKeyLimit": 3,
   "devicePositionsArchiveLimit": 14,
-  "devicePositionsTopicName": ""
+  "devicePositionsTopicName": "devicePositions"
 }

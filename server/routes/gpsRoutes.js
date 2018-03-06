@@ -89,15 +89,15 @@ AuthRouter.get('/downloadReport/:truckId/:startDate/:endDate',function (req,res)
     });
 });*/
 
-var job = cronjob.schedule('0 0 0 * * *', function() {      //runs everyday midnight at 12AM.
+var job = cronjob.schedule('0 1,30 * * * *', function() {      //runs everyday midnight at 12AM.
     console.log('started');
     gps.moveDevicePositions(function (result) {
         console.log('moved');
         console.log(result.messages[0]);
     });
-    gps.addInitialCounters(function (result) {
+    /*gps.addInitialCounters(function (result) {
         console.log(result.messages[0]);
-    });
+    });*/
 });
 job.start();
 
