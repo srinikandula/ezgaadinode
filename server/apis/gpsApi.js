@@ -347,25 +347,21 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
+    var condition = {},projections={};
     if (jwt.type === "account") {
-        condition = {accountId: jwt.accountId, deviceId: {$ne: null},"attrs.latestLocation":{$exists:true}}
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null},"attrs.latestLocation":{$exists:true}};
+        projections={"attrs.latestLocation":1,registrationNo:1,truckType:1};
     } else {
-        condition = {accountId: jwt.id, deviceId: {$ne: null}}
+        condition = {accountId: jwt.id, deviceId: {$ne: null}};
+        projections={"attrs.latestLocation":1,registrationNo:1,truckType:1};
     }
-    TrucksColl.find(condition).exec(function (err, trucksData) {
+    TrucksColl.find(condition,projections).exec(function (err, trucksData) {
         if (err) {
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (trucksData) {
-            var locations=_.pluck(_.pluck(trucksData,"attrs"),"latestLocation");
-            var regNos=_.pluck(trucksData,'registrationNo');
-            var truckTypes=_.pluck(trucksData,'truckType');
-            console.log(locations);
             retObj.status = true;
-            retObj.data = locations;
-            retObj.regNos= regNos;
-            retObj.truckTypes=truckTypes;
+            retObj.data = trucksData;
             retObj.messages.push("success");
             callback(retObj);
         } else {
@@ -599,36 +595,49 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                 retObj.status=false;
                                 retObj.messages.push('Error fetching truck positions');
                                 callback(retObj);
-                            }else{
-                                positions=positions.concat(archivedPositions);
-                                var origins=positions[0].location.coordinates[1]+','+positions[0].location.coordinates[0];
-                                var destinations=positions[positions.length-1].location.coordinates[1]+','+positions[positions.length-1].location.coordinates[0];
-                                var distance;
-                                var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length-1].createdAt.getTime());
-                                var diffDays = timeDiff / (1000 * 3600 * 24);
-                                var averageSpeed=_.pluck(positions,'speed');
-                                var sum=0,counter=0;
-                                for(var i=0;i<averageSpeed.length;i++){
-                                    if(Number(averageSpeed[i])!==0.0) {
-                                        sum = sum + Number(averageSpeed[i]);
-                                        counter++;
+                            }else {
+                                positions = positions.concat(archivedPositions);
+                                if (positions.length>0) {
+                                    var origins = positions[0].location.coordinates[1] + ',' + positions[0].location.coordinates[0];
+                                    var destinations = positions[positions.length - 1].location.coordinates[1] + ',' + positions[positions.length - 1].location.coordinates[0];
+                                    var distance;
+                                    var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
+                                    var diffDays = timeDiff / (1000 * 3600 * 24);
+                                    var averageSpeed = _.pluck(positions, 'speed');
+                                    var sum = 0, counter = 0;
+                                    for (var i = 0; i < averageSpeed.length; i++) {
+                                        if (Number(averageSpeed[i]) !== 0.0) {
+                                            sum = sum + Number(averageSpeed[i]);
+                                            counter++;
+                                        }
                                     }
+                                    averageSpeed = (sum / counter);
+                                    googlemaps.distance({
+                                        origins: origins,
+                                        destinations: destinations
+                                    }, function (err, result) {
+                                        distance = result.rows[0].elements[0].distance.text;
+                                        if (result) {
+                                            retObj.status = true;
+                                            retObj.messages.push('Success');
+                                            retObj.results = {
+                                                positions: positions,
+                                                distanceTravelled: distance,
+                                                timeTravelled: (diffDays * 24),
+                                                averageSpeed: averageSpeed
+                                            };
+                                            callback(retObj);
+                                        } else {
+                                            retObj.status = false;
+                                            retObj.messages.push('Error finding distance');
+                                            callback(retObj);
+                                        }
+                                    });
+                                }else{
+                                    retObj.status = false;
+                                    retObj.messages.push('No records found for that period');
+                                    callback(retObj);
                                 }
-                                averageSpeed=(sum/counter);
-                                googlemaps.distance({origins:origins,destinations:destinations},function (err,result) {
-                                    distance=result.rows[0].elements[0].distance.text;
-                                    if(result){
-                                        retObj.status=true;
-                                        retObj.messages.push('Success');
-                                        retObj.results={positions:positions,distanceTravelled:distance,timeTravelled:(diffDays*24),averageSpeed:averageSpeed};
-                                        callback(retObj);
-                                    }else{
-                                        retObj.status=false;
-                                        retObj.messages.push('Error finding distance');
-                                        callback(retObj);
-                                    }
-                                });
-
                             }
                     });
                 }
