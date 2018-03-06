@@ -113,6 +113,8 @@ function savePositionDoc(position, callback) {
                                 two:function (aCallbackTwo) {
                                     var retObj1={status:false,
                                         messages:[]};
+                                    positionDoc.isIdle=isIdle;
+                                    positionDoc.isStopped=isStopped;
                                     TrucksColl.update({deviceId:positionDoc.deviceId},{$set:{isIdle:isIdle,isStopped:isStopped,"attrs.latestLocation":positionDoc}},function (err,truckResult) {
                                         if(err){
                                             retObj1.status=false;
@@ -120,9 +122,9 @@ function savePositionDoc(position, callback) {
                                             aCallbackTwo(err,retObj1);
                                         }else{
                                             // retObj.results={isStopped:isStopped,isIdle:isIdle};
-                                            result.isIdle=isIdle;
-                                            result.isStopped=isStopped;
-                                            var positionData=new GpsColl(result);
+                                            // result.isIdle=isIdle;
+                                            // result.isStopped=isStopped;
+                                            var positionData=new GpsColl(positionDoc);
                                             positionData.save(function (err) {
                                                 if(err){
                                                     retObj1.status=false;
@@ -362,6 +364,7 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
         } else if (trucksData) {
             retObj.status = true;
             retObj.data = trucksData;
+            console.log(trucksData);
             retObj.messages.push("success");
             callback(retObj);
         } else {
