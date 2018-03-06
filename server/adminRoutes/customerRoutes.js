@@ -22,7 +22,7 @@ AuthRouter.post('/addCustomerLead', multipartyMiddleware, function (req, res) {
     })
 });
 
-AuthRouter.put('/updateCustomerLead', function (req, res) {
+AuthRouter.post('/updateCustomerLead',multipartyMiddleware, function (req, res) {
     CustomerLeads.updateCustomerLead(req, function (result) {
         res.send(result);
     })
@@ -202,6 +202,12 @@ AuthRouter.delete('/deleteGuest', function (req, res) {
     CustomerLeads.deleteGuest(req, function (result) {
         res.send(result);
     });
+});
+
+AuthRouter.delete('/deleteOperatingRoutes',function (req,res) {
+   CustomerLeads.deleteOperatingRoutes(req,function (result) {
+       res.send(result);
+   })
 });
 /*Guest End*/
 

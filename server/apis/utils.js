@@ -469,34 +469,49 @@ Utils.prototype.getErpSettingsForTruckExpiry = function (erp) {
     return output;
 };
 
-Utils.prototype.uploadDocument = function (file, callback) {
+Utils.prototype.uploadDocuments = function (files, callback) {
     var retObj = {
         false: true,
-        messages: []
+        messages: [],
+        fileNames: []
     };
-    var fileName = new Date() - 0 + "_" + file.originalFilename;
-    fse.copy(file.path, './client/assets/documents/' + fileName, function (err) {
+
+    async.map(files, function (doc, fileCallback) {
+        var file=doc[0].file;
+        var fileName = new Date() - 0 + "_" + file.originalFilename;
+        fse.copy(file.path, './client/assets/documents/' + fileName, function (err) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push('Document uploading failed');
+                callback(retObj);
+            } else {
+                fse.remove(file.path, function (err) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.messages.push('Document uploading failed');
+                        fileCallback(true);
+                    } else {
+
+                        retObj.fileNames.push(fileName);
+                        fileCallback(false);
+                    }
+
+                });
+
+            }
+        })
+    }, function (err) {
         if (err) {
             retObj.status = false;
-            retObj.messages.push('Document uploading failed');
+            retObj.message.push("Document uploading failed");
             callback(retObj);
         } else {
-            fse.remove(file.path, function (err) {
-                if (err) {
-                    retObj.status = false;
-                    retObj.messages.push('Document uploading failed');
-                    callback(retObj);
-                } else {
-                    retObj.status = true;
-                    retObj.messages.push('Document Added Successfully');
-                    retObj.fileName = fileName;
-                    callback(retObj);
-                }
-
-            });
-
+            retObj.status = true;
+            retObj.messages.push('Documents Added Successfully');
+            callback(retObj);
         }
-    })
+    });
+
 };
 
 Utils.prototype.uploadProfilePic = function (file, callback) {
@@ -519,7 +534,7 @@ Utils.prototype.uploadProfilePic = function (file, callback) {
                 } else {
                     retObj.status = true;
                     retObj.messages.push('Document Added Successfully');
-                    retObj.fileName = 'images/profile-pics/'+fileName;
+                    retObj.fileName = 'images/profile-pics/' + fileName;
                     callback(retObj);
                 }
 
@@ -535,7 +550,7 @@ Utils.prototype.removeProfilePic = function (file, callback) {
         messages: []
     };
 
-    fse.remove('./client/'+file, function (err) {
+    fse.remove('./client/' + file, function (err) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Document removing failed');
@@ -569,7 +584,7 @@ Utils.prototype.uploadCustomerDoc = function (file, callback) {
                 } else {
                     retObj.status = true;
                     retObj.messages.push('Document Added Successfully');
-                    retObj.fileName = 'assets/documents/customer/'+fileName;
+                    retObj.fileName = 'assets/documents/customer/' + fileName;
                     callback(retObj);
                 }
 
@@ -585,7 +600,7 @@ Utils.prototype.removeCustomerDoc = function (file, callback) {
         messages: []
     };
 
-    fse.remove('./client/'+file, function (err) {
+    fse.remove('./client/' + file, function (err) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Document removing failed');

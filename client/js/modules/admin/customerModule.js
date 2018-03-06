@@ -149,6 +149,20 @@ app.factory('customerServices', function ($http) {
                 method: "GET",
             }).then(success, error)
         },
+        convertCustomerLead: function (data, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/convertCustomerLead',
+                method: "POST",
+                data: data
+            }).then(success, error)
+        },
+        deleteOperatingRoutes:function (paramas,success,error) {
+            $http({
+                url:'/v1/cpanel/customers/deleteOperatingRoutes',
+                method:"DELETE",
+                params:{_id:paramas}
+            }).then(success,error)
+        }
     }
 });
 
@@ -179,13 +193,14 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
 
     $scope.leadType = ['Truck Owner', 'Manufacturer', 'Commission Agent', 'Transporter', 'Factory Owners'];
-    $scope.yrsInService = ['2018', '2017', '2016'];
+    $scope.yrsInService = [2018, 2017, 2016,2015,2014,2013,2012,2011,2010,2009];
     $scope.serviceTeam = ['Marketing Team', 'Cold Calls', 'Existing Customer', 'Self Generater', 'Employee', 'Partner', 'Public Relations', 'Direct Mail', 'Conference', 'Trade Show', 'Website', 'Word of mouth', 'Other'];
     $scope.documentType = ['Aadhar Card', 'Passport'];
     $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
 
     function customerLeadsFunc() {
         $scope.customerLead = {
+            firstName: "",
             userName: '',
             contactPhone: '',
             alternatePhone: [''],
@@ -200,9 +215,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             erpEnabled: undefined,
             loadEnabled: undefined,
             yrsInService: '',
-            operatingRoutes: [{source: '', destination: ''}],
+            operatingRoutes: [{}],
             documentType: '',
-            files: '',
             companyName2: '',
             companyCity: '',
             companyPin: '',
@@ -210,13 +224,11 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             companyState: '',
             companyPhone: '',
             paymentType: '',
-            loadPaymentToPayPercent: '',
-            loadPaymentAdvancePercent: '',
-            loadPaymentPodDays: '',
-            tdsDeclarationDoc: '',
             leadSource: '',
             errorMessage: [],
-            file: ""
+            files: [{}],
+            status: undefined,
+            comment: ""
         };
         $scope.files = "";
     }
@@ -227,7 +239,14 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             customerServices.getCustomerLeadDetails($stateParams.customerId, function (success) {
 
                 if (success.data.status) {
-                    $scope.customerLead = success.data.data;
+                    $scope.customerLead = success.data.data.customerData;
+                    if(success.data.data.operatingRoutes.length>0){
+                        $scope.customerLead.operatingRoutes = success.data.data.operatingRoutes;
+                    }else{
+                        $scope.customerLead.operatingRoutes =[{}]
+                    }
+                    $scope.customerLead.files=[{}];
+
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -240,21 +259,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             customerLeadsFunc();
         }
     };
-    $scope.addRoutes = function () {
-        var routesObj = $scope.customerLead.operatingRoutes;
-        console.log(routesObj);
-        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
-            //$scope.customerLead.errorMessage
-            Notification.error('Enter Source and Destination');
-        } else {
-            routesObj.push({source: '', destination: ''});
-        }
-    };
-
-    $scope.routeDel = function () {
-        //$scope.showExtra = false;
-        $scope.customerLead.operatingRoutes.splice($scope.customerLead.operatingRoutes, 1)
-    };
 
     $scope.addNumber = function () {
 
@@ -265,8 +269,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         } else {
             $scope.customerLead.alternatePhone.push('');
         }
-        //console.log($scope.customerLead.contactPhone);
-        //$scope.removeMark = true;
+
     };
     $scope.removeNumber = function (index) {
         //$scope.showExtra = false;
@@ -309,40 +312,31 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         var params = $scope.customerLead;
         params.errorMessage = [];
 
-        if (!params.userName) {
+        if (!params.firstName) {
             params.errorMessage.push('Enter Your Full Name');
         }
         if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
             params.errorMessage.push('Enter Mobile Number');
         }
-        if (!params.leadType) {
-            params.errorMessage.push('Pleas Select Customer Type');
-        }
-
-        /* if ($scope.showExtra) {
-            params.errorMessage.push('Enter Second Mobile Number');
-        } */
         if (params.errorMessage.length > 0) {
             params.errorMessage.forEach(function (message) {
                 Notification.error(message);
             });
         } else {
             if (!$scope.customerLead._id) {
-                var files = $scope.customerLead.file;
-                console.log('files', files);
+                var files = $scope.customerLead.files;
                 Upload.upload({
                     url: '/v1/cpanel/customers/addCustomerLead',
                     data: {
-                        files: [files]
+                        files: [files],
+                        content: $scope.customerLead
                     },
-                    params: $scope.customerLead
                 }).then(function (success) {
                     if (success.data.status) {
-                        console.log(success.data.message);
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
-                        customerLeadsFunc();
+                        $state.go('customers.customersLead');
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
@@ -350,20 +344,19 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                     }
                 });
             } else {
-                var files = $scope.customerLead.file;
+                var files = $scope.customerLead.files;
                 Upload.upload({
                     url: '/v1/cpanel/customers/updateCustomerLead',
                     data: {
-                        files: [files]
-                    },
-                    params: $scope.customerLead
+                        files: [files],
+                        content: $scope.customerLead
+                    }
                 }).then(function (success) {
                     if (success.data.status) {
-                        console.log("success.data.messages", success.data.messages)
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
-                        customerLeadsFunc();
+                        $state.go('customers.customersLead');
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
@@ -386,12 +379,14 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         }).then((result) => {
             if (result.value) {
                 customerServices.deleteCustomerLead(customerId, function (success) {
+                    $state.go('customers.customersLead');
                     if (success.data.status) {
                         swal(
                             'Deleted!',
                             success.data.messages[0],
                             'success'
                         );
+                        $state.go('customers.customersLead');
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
@@ -425,7 +420,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                     } else {
 
                         success.data.messages.forEach(function (message) {
-                            //console.log({ message: message })
                             Notification.error({message: message});
                         });
                     }
@@ -436,21 +430,136 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
         });
         // $scope.customerParams.reload();
-    }
+    };
 
+    $scope.convertCustomerLead = function () {
+        var params = $scope.customerLead;
+        params.messages = [];
+        if (!params.status) {
+            params.messages.push("Please customer lead status");
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            });
+        } else {
+            customerServices.convertCustomerLead({
+                _id: params._id,
+                status: params.status,
+                comment: params.comment
+            }, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
+                        Notification.success({message: message});
+                    });
+                    $state.go("customers.customersLead");
+                } else {
+
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            }, function (error) {
+
+            })
+        }
+    };
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.customerLead.operatingRoutes[index].source = place.name;
+                $scope.customerLead.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.customerLead.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.customerLead.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.customerLead.operatingRoutes[index].destination = place.name;
+                $scope.customerLead.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.customerLead.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.customerLead.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+            });
+    };
+    $scope.addOperatingRoute = function () {
+        var routesObj = $scope.customerLead.operatingRoutes;
+        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
+            Notification.error('Enter Source and Destination');
+        } else {
+            routesObj.push({});
+        }
+    };
+    $scope.deleteOperatingRoute = function (index) {
+        if( $scope.customerLead.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.customerLead.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.customerLead.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.customerLead.operatingRoutes.splice(index, 1)
+
+        }
+    };
+    $scope.addDoc = function () {
+        if ($scope.customerLead.files[$scope.customerLead.files.length - 1].file) {
+            $scope.customerLead.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+        $scope.customerLead.files.splice(index, 1);
+    }
 
 }]);
 
 /*Author Naresh*/
 /*Truck Owners Start*/
-app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams', function ($scope, $state, $stateParams, customerServices,  Notification, NgTableParams) {
+app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams', function ($scope, $state, $stateParams, customerServices, Notification, NgTableParams) {
 
 }]);
 /*Truck Owners End*/
 
 /*Author SVPrasadK*/
 /*Transporter Start*/
-app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
+app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices, Notification, NgTableParams, Upload) {
     $scope.status = {
         isOpen: true,
         isOpenTwo: true,
@@ -460,10 +569,19 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         isOpenSix: true,
         isOpenSev: true,
     };
-    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.leadType = [{"key": "Truck Owner", "value": "T"}, {
+        "key": "Transporter",
+        "value": "TR"
+    }, {"key": "Commission Agent", "value": "C"}, {"key": "Factory Owners", "value": "L"}, {
+        "key": "Guest",
+        "value": "G"
+    }];
     $scope.yearInService = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003];
     $scope.customerProofs = ['Aadhar Card', 'Passport'];
-    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.smsEmailAds = [{"key": "None", "value": 0}, {"key": "SMS/Email", "value": 1}, {
+        "key": "Email Only",
+        "value": 2
+    }, {"key": "SMS Only", "value": 3}];
     $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
     $scope.title = "Add Transporter";
 
@@ -474,16 +592,16 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                 $scope.transporter = success.data.data.accountData;
                 $scope.transporter.confirmPassword = success.data.data.accountData.password;
                 $scope.transporter.newDocumentFile = '';
-                if($scope.transporter.alternatePhone.length === 0) {
+                if ($scope.transporter.alternatePhone.length === 0) {
                     $scope.transporter.alternatePhone = [''];
                 }
                 $scope.transporter.operatingRoutes = success.data.data.operatingRoutesData;
-                if($scope.transporter.operatingRoutes.length === 0) {
-                    $scope.transporter.operatingRoutes = [{source: "",destination: "",truckType: ""}];
+                if ($scope.transporter.operatingRoutes.length === 0) {
+                    $scope.transporter.operatingRoutes = [{source: "", destination: "", truckType: ""}];
                 }
                 $scope.transporter.trafficManagers = success.data.data.trafficManagersData;
-                if($scope.transporter.trafficManagers.length === 0) {
-                    $scope.transporter.trafficManagers = [{fullName: "",mobile: "",city: ""}];
+                if ($scope.transporter.trafficManagers.length === 0) {
+                    $scope.transporter.trafficManagers = [{fullName: "", mobile: "", city: ""}];
                 }
             } else {
                 success.data.messages.forEach(function (message) {
@@ -570,7 +688,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                 });
             }
         });
-    }
+    };
 
     $scope.addNumber = function () {
         if (!$scope.transporter.alternatePhone[$scope.transporter.alternatePhone.length - 1]) {
@@ -627,7 +745,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                 Notification.error({message: response.data.messages[0]});
             }
         });
-    }
+    };
 
     $scope.addSearchSource = function (index) {
         var input = document.getElementById('searchSource' + index);
@@ -717,7 +835,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
 
 /*Author SVPrasadK*/
 /*Commision Agent Start*/
-app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
+app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices, Notification, NgTableParams, Upload) {
     $scope.status = {
         isOpen: true,
         isOpenTwo: true,
@@ -727,10 +845,19 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         isOpenSix: true,
         isOpenSev: true,
     };
-    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.leadType = [{"key": "Truck Owner", "value": "T"}, {
+        "key": "Transporter",
+        "value": "TR"
+    }, {"key": "Commission Agent", "value": "C"}, {"key": "Factory Owners", "value": "L"}, {
+        "key": "Guest",
+        "value": "G"
+    }];
     $scope.yearInService = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003];
     $scope.customerProofs = ['Aadhar Card', 'Passport'];
-    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.smsEmailAds = [{"key": "None", "value": 0}, {"key": "SMS/Email", "value": 1}, {
+        "key": "Email Only",
+        "value": 2
+    }, {"key": "SMS Only", "value": 3}];
     $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
     $scope.title = "Add commission Agent";
 
@@ -741,16 +868,16 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
                 $scope.commissionAgent = success.data.data.accountData;
                 $scope.commissionAgent.confirmPassword = success.data.data.accountData.password;
                 $scope.commissionAgent.newDocumentFile = '';
-                if($scope.commissionAgent.alternatePhone.length === 0) {
+                if ($scope.commissionAgent.alternatePhone.length === 0) {
                     $scope.commissionAgent.alternatePhone = [''];
                 }
                 $scope.commissionAgent.operatingRoutes = success.data.data.operatingRoutesData;
-                if($scope.commissionAgent.operatingRoutes.length === 0) {
-                    $scope.commissionAgent.operatingRoutes = [{source: "",destination: "",truckType: ""}];
+                if ($scope.commissionAgent.operatingRoutes.length === 0) {
+                    $scope.commissionAgent.operatingRoutes = [{source: "", destination: "", truckType: ""}];
                 }
                 $scope.commissionAgent.trafficManagers = success.data.data.trafficManagersData;
-                if($scope.commissionAgent.trafficManagers.length === 0) {
-                    $scope.commissionAgent.trafficManagers = [{fullName: "",mobile: "",city: ""}];
+                if ($scope.commissionAgent.trafficManagers.length === 0) {
+                    $scope.commissionAgent.trafficManagers = [{fullName: "", mobile: "", city: ""}];
                 }
             } else {
                 success.data.messages.forEach(function (message) {
