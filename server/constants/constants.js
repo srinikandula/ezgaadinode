@@ -456,6 +456,9 @@ const serviceActions = {
     update_gps_truck_ntfn_err: 'UPDATE_GPS_TRUCK_NTFN_ERR',
     update_gps_truck_ntfn:'UPDATE_GPS_TRUCK_NTFN',
     delete_gps_truck_ntfn_err:'DELETE_GPS_TRUCK_NTFN_ERR',
-    delete_gps_truck_ntfn:'DELETE_GPS_TRUCK_NTFN'
+    delete_gps_truck_ntfn:'DELETE_GPS_TRUCK_NTFN',
+    delete_operating_route:'DELETE_OPERATING_ROUTE',
+    delete_operating_route_err:'DELETE_OPERATING_ROUTE_ERR',
+
 };
 module.exports = serviceActions;
