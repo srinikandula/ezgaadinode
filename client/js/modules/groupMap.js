@@ -45,15 +45,32 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
 
         var infowindow = new google.maps.InfoWindow();
         var marker;
+
         for (var i = 0; i< locations.length; i++) {
+            var image='/images/';
+            if(locations[i].isStopped){
+                image=image+'red_marker.svg';
+            }else if(locations[i].isIdle){
+                image=image+'orange_marker.svg';
+            }else{
+                image=image+'green_marker.svg';
+            }
+            var icon = {
+                url: image, // url
+                scaledSize: new google.maps.Size(50, 50),
+                labelOrigin: new google.maps.Point(20, -2),
+                // labelStyle:{background: '#fff'}
+            };
             marker = new google.maps.Marker({
                 // new google.maps.LatLng($scope.addBranchParams.loc.coordinates[1], $scope.addBranchParams.loc.coordinates[0/]);
                 position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
-                icon: "/images/Track_Vehicle_Red.png",
-                /*label: {
-                    text: locations[i].name,
-                    color: "black"
-                },*/
+                icon: icon,
+                label: {
+                    text: regNos[i],
+                    color: "black",
+                    fontSize: '12px',
+                    labelClass:"labels"
+                },
                 map: map
             });
 
