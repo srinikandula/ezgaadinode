@@ -474,6 +474,7 @@ var customerTypesSchema = mongoose.Schema({
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     assignedTo: {type: ObjectId, ref: 'accounts'},
+    firstName:String,
     id_franchise: Number,
     userId: String,
     gps_account_id: String,
@@ -496,9 +497,8 @@ var customerLeadsSchema = mongoose.Schema({
     erpEnabled: {type: Boolean, default: false},
     loadEnabled:{type: Boolean, default: false},
     yearInService: Number,
-    operatingRoutes: [{source: String, destination: String}],
     documentType: String,
-    documentFile: String,
+    documentFiles: [""],
     paymentType: String,
     loadPaymentToPayPercent: Number,
     loadPaymentAdvancePercent: Number,
@@ -509,7 +509,7 @@ var customerLeadsSchema = mongoose.Schema({
     noOfTrucks:Number,
     createdAt: Date,
     updatedAt: Date,
-    leadStatus: String,
+    leadStatus: {type: String, default: 'Initiated'},
     isActive: {type: Boolean, default: false},
     fuelCardApplied: {type: Boolean, default: false},
 }, {timestamps: String});

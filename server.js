@@ -40,7 +40,6 @@ app.set('port', config.port);
 app.use(express.static('client', {index: "/views/index.html"}));
 // app.use(express.static('client', {index: "/views/adminIndex.html"}));
 
-
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
 app.use(bodyParser.urlencoded({limit: config.bodyParserLimit, extended: true}));
 app.use(cookieParser());
