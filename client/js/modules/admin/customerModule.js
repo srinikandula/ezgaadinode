@@ -136,6 +136,13 @@ app.factory('customerServices', function ($http) {
                 params: {guestId: params}
             }).then(success, error)
         },
+        updateGuest: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/updateGuest',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
         deleteGuest: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/customers/deleteGuest',
@@ -631,7 +638,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            role: tableParams.role,
+            status: tableParams.status,
             transporter: tableParams.transporter
         };
         customerServices.getTransporter(pageable, function (response) {
@@ -646,7 +653,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         });
     };
 
-    $scope.initTransporter = function (role) {
+    $scope.initTransporter = function (status) {
         $scope.transporterParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -657,7 +664,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                params.role = role;
+                params.status = status;
                 loadTableData(params);
             }
         });
@@ -857,7 +864,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         "value": 2
     }, {"key": "SMS Only", "value": 3}];
     $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
-    $scope.title = "Add commission Agent";
+    $scope.title = "Add Commission Agent";
 
     if ($stateParams.commissionAgentId) {
         $scope.title = "Edit Commission Agent";
@@ -871,11 +878,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
                 }
                 $scope.commissionAgent.operatingRoutes = success.data.data.operatingRoutesData;
                 if ($scope.commissionAgent.operatingRoutes.length === 0) {
-                    $scope.commissionAgent.operatingRoutes = [{source: "", destination: "", truckType: ""}];
-                }
-                $scope.commissionAgent.trafficManagers = success.data.data.trafficManagersData;
-                if ($scope.commissionAgent.trafficManagers.length === 0) {
-                    $scope.commissionAgent.trafficManagers = [{fullName: "", mobile: "", city: ""}];
+                    $scope.commissionAgent.operatingRoutes = [{source: "",destination: ""}];
                 }
             } else {
                 success.data.messages.forEach(function (message) {
@@ -907,7 +910,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            role: tableParams.role,
+            status: tableParams.status,
             commissionAgent: tableParams.commissionAgent
         };
         customerServices.getCommissionAgent(pageable, function (response) {
@@ -922,7 +925,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         });
     };
 
-    $scope.initCommissionAgent = function (role) {
+    $scope.initCommissionAgent = function (status) {
         $scope.commissionAgentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -933,7 +936,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                params.role = role;
+                params.status = status;
                 loadTableData(params);
             }
         });
@@ -1065,7 +1068,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         }
     };
 
-    $scope.searchBycommissionAgent = function (commissionAgent) {
+    $scope.searchByCommissionAgent = function (commissionAgent) {
         $scope.commissionAgentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -1086,8 +1089,423 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
 
 /*Author SVPrasadK*/
 /*Factory Owner Start*/
+app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
+    $scope.status = {
+        isOpen: true,
+        isOpenTwo: true,
+        isOpenThree: true,
+        isOpenFour: true,
+        isOpenFive: true,
+        isOpenSix: true,
+        isOpenSev: true,
+    };
+    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.yearInService = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003];
+    $scope.customerProofs = ['Aadhar Card', 'Passport'];
+    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
+    $scope.title = "Add Factory Owner";
+
+    if ($stateParams.factoryOwnerId) {
+        $scope.title = "Edit Factory Owner";
+        customerServices.getFactoryOwnerDetails($stateParams.factoryOwnerId, function (success) {
+            if (success.data.status) {
+                $scope.factoryOwner = success.data.data.accountData;
+                $scope.factoryOwner.confirmPassword = success.data.data.accountData.password;
+                $scope.factoryOwner.newDocumentFile = '';
+                if($scope.factoryOwner.alternatePhone.length === 0) {
+                    $scope.factoryOwner.alternatePhone = [''];
+                }
+                $scope.factoryOwner.operatingRoutes = success.data.data.operatingRoutesData;
+                if($scope.factoryOwner.operatingRoutes.length === 0) {
+                    $scope.factoryOwner.operatingRoutes = [{source: "",destination: ""}];
+                }
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.files = "";
+
+    $scope.count = 0;
+
+    $scope.countFactoryOwner = function () {
+        customerServices.countFactoryOwner(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initFactoryOwner("");
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            factoryOwner: tableParams.factoryOwner
+        };
+        customerServices.getFactoryOwner(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfFactoryOwners = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initFactoryOwner = function (status) {
+        $scope.factoryOwnerParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                loadTableData(params);
+            }
+        });
+    };
+
+    $scope.deleteFactoryOwner = function (index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete the commission agent'
+        }).then(function (result) {
+            if (result.value) {
+                customerServices.deleteFactoryOwner($scope.currentPageOfFactoryOwners[index]._id, function (success) {
+                    if (success.data.status) {
+                        $scope.initFactoryOwner("");
+                        swal(
+                            '',
+                            'Successfully removed',
+                            'success'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+    $scope.addNumber = function () {
+        if (!$scope.factoryOwner.alternatePhone[$scope.factoryOwner.alternatePhone.length - 1]) {
+            Notification.error('Enter Alternate Number');
+        } else {
+            $scope.factoryOwner.alternatePhone.push('');
+        }
+    };
+    $scope.removeNumber = function (index) {
+        $scope.factoryOwner.alternatePhone.splice(index, 1)
+    };
+
+    function verifyMobNum() {
+        for (var i = 0; i < $scope.factoryOwner.contactPhone.length; i++) {
+            if (!$scope.factoryOwner.contactPhone[i]) {
+                return false;
+            }
+            if (i === $scope.factoryOwner.contactPhone.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.addOperatingRoute = function () {
+        var routesObj = $scope.factoryOwner.operatingRoutes;
+        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
+            Notification.error('Enter Source and Destination');
+        } else {
+            routesObj.push({source: '', destination: ''});
+        }
+    };
+    $scope.deleteOperatingRoute = function (index) {
+        $scope.factoryOwner.operatingRoutes.splice(index, 1)
+    };
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.factoryOwner.operatingRoutes[index].source = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.factoryOwner.operatingRoutes[index].destination = place.formatted_address;
+            });
+    };
+
+    $scope.cancel = function () {
+        $state.go('customers.factoryOwners');
+    };
+
+    $scope.addUpdateFactoryOwner = function () {
+        var params = $scope.factoryOwner;
+
+        if (!params.leadType || !_.isString(params.leadType)) {
+            Notification.error('Please Select Customer Type');
+        }
+        if (!params.firstName || !_.isString(params.firstName)) {
+            Notification.error('Please Provide Full Name');
+        }
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
+        }
+        if (params.isActive === undefined) {
+            Notification.error('Invalid Status');
+        }
+        else {
+            if ($stateParams.factoryOwnerId) {
+                Upload.upload({
+                    url: '/v1/cpanel/customers/updateFactoryOwner',
+                    method: "POST",
+                    data: {
+                        files: [$scope.factoryOwner.newDocumentFile],
+                        content: $scope.factoryOwner
+                    }
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('customers.factoryOwners');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            } else {
+
+            }
+        }
+    };
+
+    $scope.searchByFactoryOwner = function (factoryOwner) {
+        $scope.factoryOwnerParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.factoryOwner = factoryOwner;
+                loadTableData(params);
+            }
+        });
+    };
+}]);
 /*Factory Owner End*/
 
 /*Author SVPrasadK*/
 /*Guest Start*/
+app.controller('guestCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
+    $scope.status = {
+        isOpen: true,
+        isOpenTwo: true,
+        isOpenThree: true,
+    };
+    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.title = "Add Guest";
+
+    if ($stateParams.guestId) {
+        $scope.title = "Edit Guest";
+        customerServices.getGuestDetails($stateParams.guestId, function (success) {
+            if (success.data.status) {
+                $scope.guest = success.data.data;
+                if($scope.guest.alternatePhone.length === 0) {
+                    $scope.guest.alternatePhone = [''];
+                }
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.count = 0;
+
+    $scope.countGuest = function () {
+        customerServices.countGuest(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initGuest("");
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            guest: tableParams.guest
+        };
+        customerServices.getGuest(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfGuests = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initGuest = function (status) {
+        $scope.guestParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                loadTableData(params);
+            }
+        });
+    };
+
+    $scope.deleteGuest = function (index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete the commission agent'
+        }).then(function (result) {
+            if (result.value) {
+                customerServices.deleteGuest($scope.currentPageOfGuests[index]._id, function (success) {
+                    if (success.data.status) {
+                        $scope.initGuest("");
+                        swal(
+                            '',
+                            'Successfully removed',
+                            'success'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+    $scope.addNumber = function () {
+        if (!$scope.guest.alternatePhone[$scope.guest.alternatePhone.length - 1]) {
+            Notification.error('Enter Alternate Number');
+        } else {
+            $scope.guest.alternatePhone.push('');
+        }
+    };
+    $scope.removeNumber = function (index) {
+        $scope.guest.alternatePhone.splice(index, 1)
+    };
+
+    function verifyMobNum() {
+        for (var i = 0; i < $scope.guest.contactPhone.length; i++) {
+            if (!$scope.guest.contactPhone[i]) {
+                return false;
+            }
+            if (i === $scope.guest.contactPhone.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.cancel = function () {
+        $state.go('customers.guests');
+    };
+
+    $scope.addUpdateGuest = function () {
+        var params = $scope.guest;
+
+        if (!params.leadType || !_.isString(params.leadType)) {
+            Notification.error('Please Select Customer Type');
+        }
+        if (!params.firstName || !_.isString(params.firstName)) {
+            Notification.error('Please Provide Full Name');
+        }
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
+        }
+        if (params.isActive === undefined) {
+            Notification.error('Invalid Status');
+        }
+        else {
+            if ($stateParams.guestId) {
+                customerServices.updateGuest(params, function (success) {
+                    if (success.data.status) {
+                        Notification.success(success.data.messages[0]);
+                        $state.go('customers.guests');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            } else {
+
+            }
+        }
+    };
+
+    $scope.searchByGuest = function (guest) {
+        $scope.guestParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.guest = guest;
+                loadTableData(params);
+            }
+        });
+    };
+}]);
 /*Guest End*/

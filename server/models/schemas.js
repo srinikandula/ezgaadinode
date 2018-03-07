@@ -473,7 +473,7 @@ var customerLeadsSchema = mongoose.Schema({
     userId: String,
     gps_account_id: String,
     accountId: {type: ObjectId, ref: 'accounts'},
-    userName: String,
+    firstName: String,
     password: String,
     contactPhone: Number,
     alternatePhone:[Number],
@@ -501,6 +501,7 @@ var customerLeadsSchema = mongoose.Schema({
     leadStatus: {type: String, default: 'Initiated'},
     isActive: {type: Boolean, default: false},
     fuelCardApplied: {type: Boolean, default: false},
+    smsEmailAds: Number,
 }, {timestamps: String});
 
 var accountDevicePlanHistory = new mongoose.Schema({

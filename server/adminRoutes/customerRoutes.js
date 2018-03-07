@@ -128,7 +128,7 @@ AuthRouter.get('/getCommissionAgentDetails', function (req, res) {
     });
 });
 
-AuthRouter.put('/updateCommissionAgent', function (req, res) {
+AuthRouter.post('/updateCommissionAgent', multipartyMiddleware, function (req, res) {
     CustomerLeads.updateCommissionAgent(req, function (result) {
         res.json(result);
     });
@@ -160,7 +160,7 @@ AuthRouter.get('/getFactoryOwnerDetails', function (req, res) {
     });
 });
 
-AuthRouter.put('/updateFactoryOwner', function (req, res) {
+AuthRouter.post('/updateFactoryOwner', multipartyMiddleware, function (req, res) {
     CustomerLeads.updateFactoryOwner(req, function (result) {
         res.json(result);
     });

@@ -893,7 +893,7 @@ Employees.prototype.countEmployee = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountsColl.count({"type": "employee"}, function (err, doc) {
+    AccountsColl.count({"role": "employee"}, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting count');
             analyticsService.create(req, serviceActions.count_employee_err, {
@@ -922,7 +922,7 @@ Employees.prototype.getEmployee = function (req, callback) {
         status: false,
         messages: []
     };
-    var condition = {"type": "employee"};
+    var condition = {"role": "employee"};
     var params = req.query;
     if (!params.page) {
         params.page = 1;
@@ -938,7 +938,7 @@ Employees.prototype.getEmployee = function (req, callback) {
 
                 if (params.employee) {
                     condition = {
-                        $and: [{"type": "employee"}, {
+                        $and: [{"role": "employee"}, {
                             $or:
                                 [
                                     {"firstName": new RegExp(params.employee, "gi")},
@@ -953,7 +953,7 @@ Employees.prototype.getEmployee = function (req, callback) {
                     };
                     getEmployee(req, condition, callback);
                 } else if (params.role) {
-                    condition = {"type": "employee", adminRoleId: {$in: roleIds}}
+                    condition = {"role": "employee", adminRoleId: {$in: roleIds}}
                     getEmployee(req, condition, callback);
                 }
             });
@@ -987,7 +987,7 @@ function getEmployee(req, condition, callback) {
                 });
         },
         count: function (countCallback) {
-            AccountsColl.count({"type": "employee"}, function (err, count) {
+            AccountsColl.count({"role": "employee"}, function (err, count) {
                 countCallback(err, count);
             });
         }

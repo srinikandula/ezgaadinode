@@ -3,15 +3,20 @@
         <li class="pull-left name-head">Transporters
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control">
-                <option>Select</option>
-                <option>Enabled</option>
-                <option>Disabled</option>
-                <option>GPS Users</option>
-                <option>ERP Users</option>
-                <option>All Services</option>
-                <option>Load Requested</option>
+            <select class="form-control" ng-model="status1" ng-change="initTransporter(status1);">
+                <option value="" selected>Search by Status</option>
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+                <option value="gps">GPS Users</option>
+                <option value="erp">ERP Users</option>
+                <option value="both">All Services</option>
             </select>
+        </li>
+        <li class="col-xs-3 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="transporter1">
+                <span class="input-group-addon" ng-click="searchByTransporter(transporter1);"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
         </li>
         <div class="clearfix"></div>
     </ul>

@@ -58,9 +58,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'customers'},
         params: {transporterId: null}
     }).state({
-        name: 'customers.commissionAgent',
-        url: '/commissionAgent',
-        templateUrl: 'views/partials/admin/customers/commissionAgent.html',
+        name: 'customers.commissionAgents',
+        url: '/commissionAgents',
+        templateUrl: 'views/partials/admin/customers/commissionAgents.html',
         data: {activeTab: 'customers'}
     }).state({
         name: 'customers.addUpdateCommissionAgent',
@@ -80,9 +80,9 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'customers'},
         params: {factoryOwnerId: null}
     }).state({
-        name: 'customers.guest',
-        url: '/guest',
-        templateUrl: 'views/partials/admin/customers/guest.html',
+        name: 'customers.guests',
+        url: '/guests',
+        templateUrl: 'views/partials/admin/customers/guests.html',
         data: {activeTab: 'customers'}
     }).state({
         name: 'customers.addUpdateGuest',

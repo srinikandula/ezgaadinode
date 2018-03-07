@@ -1,55 +1,67 @@
-<div ng-controller="transporterCtrl" ng-init="countFactoryOwner()">
+<div ng-controller="factoryOwnerCtrl" ng-init="countFactoryOwner()">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Factory Owners
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control">
-                <option>Select</option>
-                <option>Enabled</option>
-                <option>Disabled</option>
+            <select class="form-control" ng-model="status1" ng-change="initFactoryOwner(status1);">
+                <option value="" selected>Search by Status</option>
+                <option ng-value="true">Enabled</option>
+                <option ng-value="false">Disabled</option>
             </select>
+        </li>
+        <li class="col-xs-3 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="factoryOwner1">
+                <span class="input-group-addon" ng-click="searchByFactoryOwner(factoryOwner1);"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="transporterParams">
-        <tr ng-repeat="transporter in currentPageOfFactoryOwners" style="text-align: center;">
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="factoryOwnerParams">
+        <tr ng-repeat="factoryOwner in currentPageOfFactoryOwners" style="text-align: center;">
             <td data-title="'S.No'">
                 {{$index+1}}
             </td>
-            <td data-title="'ID'" sortable="'firstName'" class="clickable-item">
-                {{transporter.firstName}}
+            <td data-title="'ID'" sortable="'userId'" class="clickable-item">
+                {{factoryOwner.userId || '--'}}
             </td>
-            <td data-title="'Customer Name'" sortable="'lastName'" class="clickable-item">
-                {{transporter.lastName}}
+            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
+                {{factoryOwner.firstName || '--'}}
             </td>
-            <td data-title="'Company'" sortable="'contactPhone'" class="clickable-item">
-                {{transporter.contactPhone}}
+            <td data-title="'Company'" sortable="'companyName'" class="clickable-item">
+                {{factoryOwner.companyName || '--'}}
             </td>
-            <td data-title="'Mobile'" sortable="'email'" class="clickable-item">
-                {{transporter.email}}
+            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                {{factoryOwner.contactPhone || '--'}}
             </td>
-            <td data-title="'Reg Date'" sortable="'city'" class="clickable-item">
-                {{transporter.city}}
+            <td data-title="'Email'" sortable="'email'" class="clickable-item">
+                {{factoryOwner.email || '--'}}
             </td>
-            <td data-title="'No of Loads'" sortable="'state'" class="clickable-item">
-                {{transporter.state}}
+            <td data-title="'City'" sortable="'city'" class="clickable-item">
+                {{factoryOwner.city || '--'}}
             </td>
-            <td data-title="'ERP'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+            <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
+                {{factoryOwner.createdAt | date:'dd-MM-yyyy' || '--'}}
             </td>
-            <td data-title="'GPS'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+            <td data-title="'No of Loads'" sortable="'noOfLoads'" class="clickable-item">
+                {{factoryOwner.noOfLoads || '0'}}
+            </td>
+            <td data-title="'SMS/Email'" sortable="'smsEmailAds'" class="clickable-item">
+                <span ng-show="factoryOwner.smsEmailAds === 0">NONE</span>
+                <span ng-show="factoryOwner.smsEmailAds === 1">BOTH</span>
+                <span ng-show="factoryOwner.smsEmailAds === 2">EMAIL</span>
+                <span ng-show="factoryOwner.smsEmailAds === 3">SMS</span>
             </td>
             <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+                {{factoryOwner.isActive?'Enabled':'Disabled' || '--'}}
             </td>
             <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="admin.addUpdateFactoryOwner({transporterId: transporter._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ui-sref="customers.addUpdateFactoryOwner({factoryOwnerId: factoryOwner._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
                 <a href="#" ng-click="deleteFactoryOwner($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
         <tr ng-if="!currentPageOfFactoryOwners || currentPageOfFactoryOwners.length === 0">
-            <td colspan="8">No Factory Owners Records exist.</td>
+            <td colspan="8">No Factory Owner Records exist.</td>
         </tr>
     </table>
 </div>

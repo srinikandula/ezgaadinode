@@ -123,6 +123,37 @@
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="" ng-model="transporter.gpsEnabled"/>
+                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                            ERP
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="" ng-model="transporter.erpEnabled"/>
+                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                            GPS
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input type="checkbox" value="" ng-model="transporter.loadEnabled"/>
+                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                            LOAD
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="noOfTrucks"
                                    ng-model="commissionAgent.noOfTrucks"/>
@@ -134,6 +165,15 @@
                                 <option ng-repeat="years in yearInService" ng-value="years">{{years}}</option>
                             </select>
                             <label class="focus-effect-for-input">Year In Service</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="commissionAgent.smsEmailAds">
+                                <option ng-value="" selected>-- Select --</option>
+                                <option ng-repeat="smsEmailAd in smsEmailAds" ng-value="smsEmailAd.value">
+                                    {{smsEmailAd.key}}
+                                </option>
+                            </select>
+                            <label class="focus-effect-for-input">Enable SMS/Email Ads</label>
                         </div>
                         <div class="form-group">
                             <p class="smsenabled">Status*:</p>
@@ -233,15 +273,6 @@
                                    ng-model="commissionAgent.bankIfscCode"/>
                             <label class="focus-effect-for-input">Bank IFSC Code</label>
                         </div>
-                        <div class="form-group styling-input-list">
-                            <select class="form-control custom-form-control" ng-model="commissionAgent.smsEmailAds">
-                                <option ng-value="" selected>-- Select --</option>
-                                <option ng-repeat="smsEmailAd in smsEmailAds" ng-value="smsEmailAd.value">
-                                    {{smsEmailAd.key}}
-                                </option>
-                            </select>
-                            <label class="focus-effect-for-input">Enable SMS/Email Ads</label>
-                        </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group styling-input-list">
@@ -254,17 +285,17 @@
                                    ng-model="commissionAgent.bankBranch"/>
                             <label class="focus-effect-for-input">Bank Branch</label>
                         </div>
-                        <div class="form-group styling-input-list">
+                        <!--<div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="rating"
                                    ng-model="commissionAgent.rating"/>
                             <label class="focus-effect-for-input">Rating</label>
-                        </div>
+                        </div>-->
                     </div>
                 </div>
 
             </div>
         </uib-accordion>
-        <uib-accordion>
+        <!--<uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpenSev">
                 <uib-accordion-heading>
                     Payment Details <i class="pull-right glyphicon"
@@ -314,7 +345,7 @@
                 </div>
 
             </div>
-        </uib-accordion>
+        </uib-accordion>-->
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
             <a href="#" class="btn btn-primary" ng-click="addUpdateCommissionAgent()">Submit</a>

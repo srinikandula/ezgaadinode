@@ -1,0 +1,148 @@
+<div class="col-xs-12 newCust" ng-controller="guestCtrl">
+    <h4>{{title}}</h4>
+    <div class="col-xs-12">
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpen">
+                <uib-accordion-heading>
+                    User Information <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down':status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <h4 style="padding-left: 60px;">ID : {{guest.userId}}</h4>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="guest.leadType">
+                                <option ng-value="" selected>-- Select --</option>
+                                <option ng-repeat="type in leadType" ng-value="type.value">{{type.key}}</option>
+                            </select>
+                            <label class="focus-effect-for-input">Lead Type*</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="fullName"
+                                   ng-model="guest.firstName"/>
+                            <label class="focus-effect-for-input">Full Name*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group pos-relative styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   ng-model="guest.contactPhone" ng-pattern="/^[0-9]/"/>
+                            <label class="focus-effect-for-input">Mobile*</label>
+                        </div>
+                        <div class="form-group pos-relative styling-input-list"
+                             ng-repeat="mobile in guest.alternatePhone track by $index">
+                            <input type="text" class="form-control custom-form-control" name="mobile"
+                                   ng-model="guest.alternatePhone[$index]" ng-pattern="/^[0-9]/">
+                            <label class="focus-effect-for-input">Alternate Mobile</label>
+
+                            <span class="plus-pos" ng-show="$index >= 1">
+                                <i class="fa fa-times-circle clr-red" ng-click="removeNumber($index)"></i></span>
+                            <span class="plus-pos" ng-show="$index == 0">
+                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addNumber()"></i></span>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="email"
+                                   ng-model="guest.email"/>
+                            <label class="focus-effect-for-input">Email</label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenTwo">
+                <uib-accordion-heading>
+                    Address <i class="pull-right glyphicon"
+                               ng-class="{'glyphicon-chevron-down':status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="companyName"
+                                   ng-model="guest.companyName"/>
+                            <label class="focus-effect-for-input">Company Name</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="contactAddress"
+                                   ng-model="guest.contactAddress"/>
+                            <label class="focus-effect-for-input">Address</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="city"
+                                   ng-model="guest.city"/>
+                            <label class="focus-effect-for-input">city</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group pos-relative styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="state"
+                                   ng-model="guest.state"/>
+                            <label class="focus-effect-for-input">State</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="pincode"
+                                   ng-model="guest.pincode"/>
+                            <label class="focus-effect-for-input">Pincode</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenThree">
+                <uib-accordion-heading>
+                    Service Info <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': status.isOpenThree, 'glyphicon-chevron-right': !status.isOpenThree}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group">
+                            <p class="smsenabled">Status*:</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="isActive" ng-value="true"
+                                                   ng-model="guest.isActive"
+                                                   checked>
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Enable
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="isActive" ng-value="false"
+                                                   ng-model="guest.isActive">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Disable
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="guest.smsEmailAds">
+                                <option ng-value="" selected>-- Select --</option>
+                                <option ng-repeat="smsEmailAd in smsEmailAds" ng-value="smsEmailAd.value">
+                                    {{smsEmailAd.key}}
+                                </option>
+                            </select>
+                            <label class="focus-effect-for-input">Enable SMS/Email Ads</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <div class="col-xs-12 save-btns">
+            <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+            <a href="#" class="btn btn-primary" ng-click="addUpdateGuest()">Submit</a>
+        </div>
+    </div>
+</div>
