@@ -228,6 +228,24 @@ AuthRouter.get('/removeDoc',function (req,res) {
     })
 });
 
+AuthRouter.get('/getRestOfAll', function (req, res) {
+    CustomerLeads.getRestOfAll(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getCountRestOfAll', function (req, res) {
+    CustomerLeads.getCountRestOfAll(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/deleteRestOfAllDetails',function (req,res) {
+    CustomerLeads.deleteRestOfAllDetails(req,function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
