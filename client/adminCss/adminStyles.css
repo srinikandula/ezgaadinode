@@ -1205,7 +1205,25 @@ disabled look for disabled choices in the results dropdown
 
 /* UI Select ends here */
 
-
+.tabs-title {
+    padding: 20px 0;
+}
+.tabs-title ul{
+    border-bottom: 0px !important;
+}
+.nav-tabs>li>a{
+    padding: 10px 35px !important;
+    border-radius: 25px !important;
+}
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
+    color: #fff !important;
+    cursor: default;
+    background-color: #000 !important;
+    border-radius: 25px !important;
+    padding: 10px 35px !important;
+    border: 0 !important;
+    font-weight: bold;
+}
 
 /* Responsive Design */
 

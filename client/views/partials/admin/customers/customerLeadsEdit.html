@@ -20,6 +20,7 @@
                             <div class="form-group styling-input-list">
                                 <input type="text" class="form-control custom-form-control" name="fullName"
                                        ng-model="customerLead.firstName"/>
+
                                 <label class="focus-effect-for-input">User Name*</label>
                             </div>
 
@@ -113,12 +114,11 @@
                                 </ul>
                             </div>
                             <div class="form-group">
-
                                 <div class="form-group">
-
-                                    <select class="form-control custom-form-control" ng-model="customerLead.yearInService">
-                                        <option ng-value="" selected>-- Select --</option>
-                                        <option ng-repeat="years in yrsInService" ng-value="years">{{years}}</option>
+                                    <select class="form-control custom-form-control"
+                                            ng-model="customerLead.yrsInService">
+                                        <option value="" selected>Years in Service</option>
+                                        <option ng-repeat="years in yrsInService" value="{{years}}">{{years}}</option>
                                     </select>
                                 </div>
                             </div>
@@ -175,6 +175,18 @@
                             </div>
                             <div ng-repeat="doc in customerLead.documentFiles">
                                 <img src="assets/documents/{{doc}}" width="100">
+                                <select class="form-control custom-form-control" ng-model="customerLead.documentType">
+                                    <option value="" selected>Select ID Proof</option>
+                                    <option ng-repeat="proofs in customerProofs" value="{{proofs}}">{{proofs}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" ngf-select class="form-control custom-form-control"
+                                       ng-model="customerLead.file"/>
+
+                                <!-- <div class="col-sm-4">
+                                    <input type="button" ng-click="uploadProof()" value="Upload" class="btn btn-success" />
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -186,6 +198,115 @@
                     <uib-accordion-heading>
                         Company Details <i class="pull-right glyphicon"
                                            ng-class="{'glyphicon-chevron-down': status.isOpenFour, 'glyphicon-chevron-right': !status.isOpenFour}"></i>
+                    </uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="companyName"
+                                       ng-model="customerLead.companyName"/>
+                                <label class="focus-effect-for-input">Company</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="address"
+                                       ng-model="customerLead.address"/>
+                                <label class="focus-effect-for-input">Address</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="city"
+                                       ng-model="customerLead.city"/>
+                                <label class="focus-effect-for-input">City</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="state"
+                                       ng-model="customerLead.state"/>
+                                <label class="focus-effect-for-input">State</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="pincode"
+                                       ng-model="customerLead.pinCode"/>
+                                <label class="focus-effect-for-input">Pincode</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="officeNumber"
+                                       ng-model="customerLead.officeNumber"/>
+                                <label class="focus-effect-for-input">office Number</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </uib-accordion>
+            <uib-accordion>
+                <div uib-accordion-group class="panel-default" is-open="status.isOpenFive">
+                    <uib-accordion-heading>
+                        Payment Details <i class="pull-right glyphicon"
+                                           ng-class="{'glyphicon-chevron-down': status.isOpenFive, 'glyphicon-chevron-right': !status.isOpenFive}"></i>
+                    </uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <select class="form-control custom-form-control" ng-model="customerLead.paymentType">
+                                    <option value="" selected>Payment Type</option>
+                                    <option ng-repeat="payType in paymentType" value="{{payType}}">{{payType}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="number" class="form-control custom-form-control" name="payPrecent"
+                                       ng-model="customerLead.loadPaymentToPayPercent"/>
+                                <label class="focus-effect-for-input">Load Payment To pay Percent</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="number" class="form-control custom-form-control" name="tds"
+                                       ng-model="customerLead.tdsDeclarationDoc"/>
+                                <label class="focus-effect-for-input">TDS Declaration Doc</label>
+
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="number" class="form-control custom-form-control" name="advancePercent"
+                                       ng-model="customerLead.loadPaymentAdvancePercent"/>
+                                <label class="focus-effect-for-input">Load Payment Advance Percent</label>
+
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="number" class="form-control custom-form-control" name="podDays"
+                                       ng-model="customerLead.loadPaymentPodDays"/>
+                                <label class="focus-effect-for-input">Load Payment POD days</label>
+
+                            </div>
+
+                            <div class="form-group styling-input-list">
+                                <input type="number" class="form-control custom-form-control" name="leadSource"
+                                       ng-model="customerLead.leadSource"/>
+                                <label class="focus-effect-for-input">lead Source</label>
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </uib-accordion>
+          <!--  <uib-accordion>
+                <div uib-accordion-group class="panel-default" is-open="status.isOpenFour">
+                    <uib-accordion-heading>
+                        Company Details <i class="pull-right glyphicon"
+                                           ng-class="{'glyphicon-chevron-down': status.isOpenFour, 'glyphicon-chevron-right': !status.isOpenFour}"></i>
+            <div class="col-xs-12 save-btns">
+                <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+                <a href="#" class="btn btn-primary" ng-click="createLeads()">Submit</a>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+        <div id="leads" class="tab-pane fade in  col-xs-12">
+            <uib-accordion>
+                <div uib-accordion-group class="panel-default" is-open="status.isOpen">
+                    <uib-accordion-heading>
+                        User Information <i class="pull-right glyphicon"
+                                            ng-class="{'glyphicon-chevron-down':status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
                     </uib-accordion-heading>
                     <div class="row">
                         <div class="col-xs-12 col-sm-6">
@@ -238,7 +359,7 @@
                 <h3>Post Lead Status /Comment</h3>
                 <div class="form-group styling-input-list">
                     <select class="form-control custom-form-control" ng-model="customerLead.status">
-                        <option value="" selected>--Select Lead Status--</option>
+                        <option value="" selected>&#45;&#45;Select Lead Status&#45;&#45;</option>
                         <option>Accept</option>
                         <option>Reject</option>
                     </select>
@@ -252,6 +373,151 @@
                     <button class="btn btn-primary"  ng-click="convertCustomerLead()">Submit</button>
                 </div>
             </div>
+=======
+                                <input type="text" class="form-control custom-form-control" name="fullName"
+                                       ng-model="customerLead.userName"/>
+                                <label class="focus-effect-for-input">User Name*</label>
+                            </div>
+
+                            <div class="form-group pos-relative styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="mobile"
+                                       ng-model="customerLead.contactPhone" ng-pattern="/^[0-9]/"/>
+                                <label class="focus-effect-for-input">Mobile*</label>
+                            </div>
+                            <div class="form-group pos-relative styling-input-list"
+                                 ng-repeat="mobile in customerLead.alternatePhone track by $index">
+                                <input type="text" class="form-control custom-form-control" name="mobile"
+                                       ng-model="customerLead.alternatePhone[$index]" ng-pattern="/^[0-9]/">
+                                <label class="focus-effect-for-input">Alternate Mobile*</label>
+
+                                <span class="plus-pos" ng-show="$index >= 1">
+                                <i class="fa fa-times-circle clr-red" ng-click="removeNumber($index)"></i></span>
+                                <span class="plus-pos" ng-show="$index == 0">
+                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addNumber()"></i></span>
+                            </div>
+
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <select class="form-control custom-form-control" ng-model="customerLead.leadType">
+                                    <option value="" selected>Select Type</option>
+                                    <option ng-repeat="type in leadType" value="{{type}}">{{type}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="email"
+                                       ng-model="customerLead.email"/>
+                                <label class="focus-effect-for-input">Email</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </uib-accordion>-->
+
+            <uib-accordion>
+                <div uib-accordion-group class="panel-default" is-open="status.isOpenthree">
+                    <uib-accordion-heading>
+                        Service Info <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': status.isOpenthree, 'glyphicon-chevron-right': !status.isOpenthree}"></i>
+                    </uib-accordion-heading>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <ul class="list-inline">
+                                    <li>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" value="" ng-model="customerLead.gpsEnabled"/>
+                                                <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                                ERP
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" value="" ng-model="customerLead.erpEnabled"/>
+                                                <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                                GPS
+                                            </label>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="checkbox">
+                                            <label>
+                                                <input type="checkbox" value="" ng-model="customerLead.loadEnabled"/>
+                                                <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                                LOAD
+                                            </label>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="form-group">
+                                <!-- <date-picker id="date" ban-future="'banFutureDate'" ng-model="expenseDetails.date" placeholder="'Service Date*'" class="'custom-form-control'"></date-picker> -->
+                                <div class="form-group">
+                                    <select class="form-control custom-form-control"
+                                            ng-model="customerLead.yrsInService">
+                                        <option value="" selected>Years in Service</option>
+                                        <option ng-repeat="years in yrsInService" value="{{years}}">{{years}}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <select class="form-control custom-form-control" ng-model="customerLead.serviceTeam">
+                                    <option value="" selected>Select</option>
+                                    <option ng-repeat="team in serviceTeam" value="{{team}}">{{team}}</option>
+
+                                </select>
+                            </div>
+                            <div class="routes">
+                                <h4>Operating Routes</h4>
+                                <div class="pos-relative"
+                                     ng-repeat="routes in customerLead.operatingRoutes track by $index">
+                                <span class="plus-pos" ng-show="$index == 0">
+                                    <i class="fa fa-plus-square" aria-hidden="true" ng-click="addRoutes()"></i></span>
+                                    <div class="form-group styling-input-list">
+                                        <input type="text" class="form-control custom-form-control"
+                                               ng-model="routes.source"
+                                               name="source"/>
+                                        <label class="focus-effect-for-input">Source</label>
+                                    </div>
+                                    <div class="form-group styling-input-list">
+                                        <input type="text" class="form-control custom-form-control"
+                                               ng-model="routes.destination" name="destination"/>
+                                        <label class="focus-effect-for-input">Destination</label>
+                                    </div>
+                                    <span class="plus-pos" ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
+                                                                                     ng-click="routeDel()"></i></span>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group">
+                                <p>Uploading Customer Documents</p>
+                            </div>
+                            <div class="form-group">
+                                <select class="form-control custom-form-control" ng-model="customerLead.documentType">
+                                    <option value="" selected>Select ID Proof</option>
+                                    <option ng-repeat="proofs in customerProofs" value="{{proofs}}">{{proofs}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <input type="file" ngf-select class="form-control custom-form-control"
+                                       ng-model="customerLead.file"/>
+
+                                <!-- <div class="col-sm-4">
+                                    <input type="button" ng-click="uploadProof()" value="Upload" class="btn btn-success" />
+                                </div> -->
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </uib-accordion>
         </div>
     </div>
 </div>

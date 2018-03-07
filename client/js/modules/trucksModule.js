@@ -316,12 +316,12 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                     $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
                     $scope.userId=success.data.userId;
                     $scope.userType=success.data.userType;
+
                     var selectedDriver = _.find($scope.drivers, function (driver) {
                         return driver._id.toString() === $scope.truck.driverId;
                     });
                     if (selectedDriver) {
                         $scope.driverName = selectedDriver.fullName;
-
                     }
 
                 } else {
