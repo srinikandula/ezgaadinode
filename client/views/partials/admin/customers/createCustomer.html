@@ -34,12 +34,12 @@
 
                     </div>
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="customerLead.leadType">
-                                <option value="" selected>Select Type</option>
-                                <option ng-repeat="type in leadType" value="{{type}}">{{type}}</option>
-                            </select>
-                        </div>
+                        <!--<div class="form-group">-->
+                        <!--<select class="form-control custom-form-control" ng-model="customerLead.leadType">-->
+                        <!--<option value="" selected>Select Type</option>-->
+                        <!--<option ng-repeat="type in leadType" value="{{type}}">{{type}}</option>-->
+                        <!--</select>-->
+                        <!--</div>-->
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="email"
                                    ng-model="customerLead.email"/>
@@ -108,6 +108,8 @@
 
                             </select>
                         </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
                         <div class="routes">
                             <h4>Operating Routes</h4>
                             <div class="form-group pos-relative styling-input-list"
@@ -126,30 +128,11 @@
                                 </div>
 
                                 <span class="plus-pos" ng-show="$index >= 1">
-                                <i class="fa fa-times-circle clr-red" ng-click="deleteOperatingRoute($index)"></i></span>
+                                <i class="fa fa-times-circle clr-red"
+                                   ng-click="deleteOperatingRoute($index)"></i></span>
                                 <span class="plus-pos" ng-show="$index == 0">
-                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addOperatingRoute()"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <p>Uploading Customer Documents</p>
-                        </div>
-
-
-                        <div ng-repeat="file in customerLead.files">
-
-                            <div class="form-group pos-relative">
-                                    <span class="plus-pos" ng-show="$index == 0">
-                                    <i class="fa fa-plus-square" aria-hidden="true" ng-click="addDoc()"></i></span>
-                                <input type="file" class="form-control custom-form-control"
-                                       ng-model="file.file" ngf-select ngf-pattern="'image/*'" ngf-accept="'image/*'" >
-
-                                <span class="plus-pos " ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
-                                                                                  ng-click="deleteDoc()"></i></span>
-
-
+                                <i class="fa fa-plus-square" aria-hidden="true"
+                                   ng-click="addOperatingRoute()"></i></span>
                             </div>
                         </div>
                     </div>
@@ -200,6 +183,33 @@
                     </div>
                 </div>
 
+            </div>
+        </uib-accordion>
+
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenFive">
+                <uib-accordion-heading>
+                    Documents <i class="pull-right glyphicon"
+                                 ng-class="{'glyphicon-chevron-down': status.isOpenFive, 'glyphicon-chevron-right': !status.isOpenFive}"></i>
+                </uib-accordion-heading>
+                <div class="col-xs-12 col-sm-6">
+                    <div class="form-group">
+                        <p>Upload Customer Documents</p>
+                    </div>
+                    <div ng-repeat="file in customerLead.files">
+                        <div class="form-group pos-relative">
+                                    <span class="plus-pos" ng-show="$index == 0">
+                                    <i class="fa fa-plus-square" aria-hidden="true" ng-click="addDoc()"></i></span>
+                            <input type="file" class="form-control custom-form-control"
+                                   ng-model="file.file" ngf-select ngf-pattern="'image/*'" ngf-accept="'image/*'">
+
+                            <span class="plus-pos " ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
+                                                                              ng-click="deleteDoc()"></i></span>
+
+
+                        </div>
+                    </div>
+                </div>
             </div>
         </uib-accordion>
 

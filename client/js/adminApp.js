@@ -29,7 +29,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'customers'}
     }).state({
         name: 'customers.customerLeadsEdit',
-        url: '/customerLeadsEdit/::customerId',
+        url: '/customerLeadsEdit/:customerId',
         templateUrl: 'views/partials/admin/customers/customerLeadsEdit.html',
         data: {activeTab: 'customers'},
         params: {

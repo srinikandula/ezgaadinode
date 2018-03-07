@@ -13,7 +13,7 @@ var Devices = function () {
 };
 
 Devices.prototype.addDevices = function (req, callback) {
-    console.log(req.body)
+    // console.log(req.body)
     var retObj = {
         status: false,
         messages: [],
@@ -306,7 +306,7 @@ Devices.prototype.getDevices = function (req, callback) {
         } else {
             // for (var i = 0; i < results.devices.length; i++) console.log(results.devices[i]._id);
             async.map(results.devices, function (device, asyncCallback) {
-                console.log('installed', device.imei, device.installedBy);
+                // console.log('installed', device.imei, device.installedBy);
                 async.parallel({
                     planhistory: function (planHistoryCallack) {
                         AccountDevicePlanHistoryColl.find({deviceId: device._id})
@@ -320,16 +320,16 @@ Devices.prototype.getDevices = function (req, callback) {
                             planHistoryCallack(errdeviceplan, 'success');
                         });
                     },
-                    employees: function (empoyeeCallback) {
+                    employees: function (employeeCallback) {
                         if(device.installedBy) {
                             AccountsColl.findOne({id_admin: device.installedBy}, function (erremployee, employee) {
                                 if(employee) {
                                     device.installedBy = employee.displayName;
                                 }
-                                empoyeeCallback(erremployee, 'success');
+                                employeeCallback(erremployee, 'success');
                             });
                         } else {
-                            empoyeeCallback(null, 'success');
+                            employeeCallback(null, 'success');
                         }
                     }
                 }, function (parallelCallback, success) {

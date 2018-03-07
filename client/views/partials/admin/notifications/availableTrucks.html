@@ -9,7 +9,8 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center" ng-table="truckNtfnsparams">
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+           ng-table="truckNtfnsparams">
         <tr ng-repeat="plan in currentPageOfTruckNtfns">
             <td><input type="checkbox"/></td>
             <td data-title="'S No'">{{$index+1}}</td>
@@ -17,8 +18,11 @@
             <td data-title="'Destination'" sortable="'destination'" class="clickable-item">{{plan.destinationCity}}</td>
             <td data-title="'No Of Trucks'" sortable="'numOfTrucks'" class="clickable-item">{{plan.numOfTrucks}}</td>
             <td data-title="'Price'" sortable="'price'" class="clickable-item">{{plan.price}}</td>
-            <td data-title="'Date Available'" sortable="'dateAvailable'" class="clickable-item">{{plan.dateAvailable}}</td>
-            <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">{{plan.createdAt | date:'dd-MM-yyyy hh:mm:ss'}}</td>
+            <td data-title="'Date Available'" sortable="'dateAvailable'" class="clickable-item">{{plan.dateAvailable}}
+            </td>
+            <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">{{plan.createdAt |
+                date:'dd-MM-yyyy hh:mm:ss'}}
+            </td>
             <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item">{{plan.truckType}}</td>
             <td data-title="'Send To'" sortable="'sendToAll'" class="clickable-item">{{plan.sendToAll}}</td>
             <td data-title="'Action'">
@@ -35,77 +39,80 @@
 
     </table>
 
-<script type="text/ng-template" id="newGpsTruckNtfcn.html" >
+    <script type="text/ng-template" id="newGpsTruckNtfcn.html">
 
-    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
-    <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
-
-    <div class="modal-header">
-        <h3 class="modal-title" id="modal-title">Add GPS Truck Notification</h3>
-    </div>
-    <div class="modal-body" id="modal-body" ng-init="initGPSTruckNotification();">
-        <div class="row">
-            <div class="col-xs-6">
-                <div class="form-group styling-input-list">
-                    <input type="text" class="form-control order-form-control" ng-model="addGpsTruckNtfn.sourceCity"/>
-                    <label class="order-effect-for-input">Source City *</label>
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">{{truckNtfnTitle}}</h3>
+        </div>
+        <div class="modal-body" id="modal-body" ng-init="initGPSTruckNotification();">
+            <div class="row">
+                <div class="col-xs-6">
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="addGpsTruckNtfn.sourceCity"/>
+                        <label class="order-effect-for-input">Source City *</label>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <input type="number" class="form-control order-form-control"
+                               ng-model="addGpsTruckNtfn.numOfTrucks"/>
+                        <label class="order-effect-for-input">No of Trucks*</label>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="addGpsTruckNtfn.dateAvailable"/>
+                        <label class="order-effect-for-input">Date Available*</label>
+                    </div>
                 </div>
-                <div class="form-group styling-input-list">
-                    <input type="number" class="form-control order-form-control" ng-model="addGpsTruckNtfn.numOfTrucks" />
-                    <label class="order-effect-for-input">No of Trucks*</label>
-                </div>
-                <div class="form-group styling-input-list">
-                    <input type="text" class="form-control order-form-control"  ng-model="addGpsTruckNtfn.dateAvailable" />
-                    <label class="order-effect-for-input">Date Available*</label>
-                </div>
-            </div>
-            <div class="col-xs-6">
-                <div class="form-group styling-input-list">
-                    <input type="text" class="form-control order-form-control" ng-model="addGpsTruckNtfn.destinationCity" />
-                    <label class="order-effect-for-input">Destination City *</label>
-                </div>
-                <div class="form-group" ng-init="getTruckTypes();">
-                    <select class="form-control order-form-control" ng-model="addGpsTruckNtfn.truckType">
-                        <option selected value="">Truck Type*</option>
-                        <option ng-repeat="trucks in getTruckTypes">{{trucks.title}}</option>
-                    </select>
-                </div>
-                <div class="form-group styling-input-list">
-                    <input type="number" class="form-control order-form-control" ng-model="addGpsTruckNtfn.price"/>
-                    <label class="order-effect-for-input">Price *</label>
-                </div>
-                <div class="form-group">
+                <div class="col-xs-6">
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="addGpsTruckNtfn.destinationCity"/>
+                        <label class="order-effect-for-input">Destination City *</label>
+                    </div>
+                    <div class="form-group styling-input-list" ng-init="getTruckTypes();">
+                        <select class="form-control order-form-control" ng-model="addGpsTruckNtfn.truckType">
+                            <option ng-repeat="trucks in getTruckTypes">{{trucks.title}}</option>
+                        </select>
+                        <label class="order-effect-for-input">Truck Type</label>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <input type="number" class="form-control order-form-control" ng-model="addGpsTruckNtfn.price"/>
+                        <label class="order-effect-for-input">Price *</label>
+                    </div>
                     <div class="form-group">
-                        <p class="smsenabled">Send To All*:</p>
-                        <ul class="list-inline">
-                            <li>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="all" ng-value="true" ng-model="addGpsTruckNtfn.sendToAll">
-                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                        Yes
-                                    </label>
-                                </div>
-                            </li>
-                            <li>
-                                <div class="radio">
-                                    <label>
-                                        <input type="radio" name="all" ng-value="false" ng-model="addGpsTruckNtfn.sendToAll">
-                                        <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                        No
-                                    </label>
-                                </div>
-                            </li>
-                        </ul>
+                        <div class="form-group">
+                            <p class="smsenabled">Send To All*:</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="all" ng-value="true"
+                                                   ng-model="addGpsTruckNtfn.sendToAll">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Yes
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="all" ng-value="false"
+                                                   ng-model="addGpsTruckNtfn.sendToAll">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            No
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
+            <div ng-show="errors">{{errors}}</div>
         </div>
-        <div ng-show="errors">{{errors}}</div>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="addOrUpdateTruckNtfn()">Submit</button>
-        <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
-    </div>
-</script>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="addOrUpdateTruckNtfn()">Submit</button>
+            <button class="btn btn-danger" type="button" ng-click="closeGPS()">Cancel</button>
+        </div>
+    </script>
 </div>

@@ -51,6 +51,42 @@ AuthRouter.get('/countOfTruckNtfns', function (req, res) {
     })
 });
 
+AuthRouter.post('/addLoadNtfn', function (req, res) {
+    Notifications.addLoadNtfn(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getLoadNtfn', function (req, res) {
+    Notifications.getLoadNtfn(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getLoadNtfnDetails', function (req, res) {
+    Notifications.getLoadNtfnDetails(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.put('/updateLoadNtfn', function (req, res) {
+    Notifications.updateLoadNtfn(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.delete('/deleteLoadNtfn', function (req, res) {
+    Notifications.deleteLoadNtfn(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/countOfLoadNtfns', function (req, res) {
+    Notifications.countOfLoadNtfns(req, function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

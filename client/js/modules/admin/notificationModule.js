@@ -53,7 +53,48 @@ app.factory('NotificationServices', ['$http', function ($http) {
                 url: '/v1/cpanel/notifications/totalNumOfNotifications',
                 method: "GET",
             }).then(success, error)
-        }
+        },
+        addLoadNtfn: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/addLoadNtfn',
+                method: 'POST',
+                data: params
+            }).then(success, error)
+        },
+        getLoadNtfn: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/getLoadNtfn',
+                method: 'GET',
+                params: params
+            }).then(success, error)
+        },
+        countOfLoadNtfns: function (success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/countOfLoadNtfns',
+                method: "GET",
+            }).then(success, error)
+        },
+        deleteLoadNtfn: function (id, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/deleteLoadNtfn',
+                method: 'DELETE',
+                params: {_id: id}
+            }).then(success, error)
+        },
+        getLoadNtfnDetails: function (id, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/getLoadNtfnDetails',
+                method: 'GET',
+                params: {ntfnId: id}
+            }).then(success, error)
+        },
+        updateLoadNtfn: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/notifications/updateLoadNtfn',
+                method: 'PUT',
+                data: params
+            }).then(success, error)
+        },
 
     }
 }]);
@@ -62,7 +103,6 @@ app.factory('NotificationServices', ['$http', function ($http) {
 app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationServices', 'NgTableParams', 'Notification', 'SettingServices', function ($scope, $uibModal, NotificationServices, NgTableParams, Notification, SettingServices) {
 
     /* Getting GPS Trcuk Notifications and Deleting */
-
     $scope.newGpsTruckNtfcn = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'newGpsTruckNtfcn.html',
@@ -70,9 +110,9 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
             windowClass: 'window-custom',
             backdrop: 'static',
             keyboard: false,
-            resolve : {
+            resolve: {
                 modalData: function () {
-                    return{}
+                    return {}
                 }
             }
         });
@@ -81,7 +121,6 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
         }, function () {
         });
     };
-
     $scope.editGpsTruckNtfn = function (id) {
         var modalInstance = $uibModal.open({
             templateUrl: 'newGpsTruckNtfcn.html',
@@ -89,14 +128,14 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
             windowClass: 'window-custom',
             backdrop: 'static',
             keyboard: false,
-            resolve : {
+            resolve: {
                 modalData: function () {
-                    return{data : id}
+                    return {data: id}
                 }
             }
         });
         modalInstance.result.then(function () {
-             $scope.getTruckNtfnCount();
+            $scope.getTruckNtfnCount();
         }, function () {
         });
     };
@@ -177,36 +216,142 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
         });
     };
 
-
-    $scope.newGpsLoadNtfcn = function () {
+    /* Getting Load Notifications and Deleting */
+    $scope.newLoadNtfn = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'newGpsLoadNtfcn.html',
             controller: 'addNtfnCtrl',
             windowClass: 'window-custom',
             backdrop: 'static',
             keyboard: false,
-            resolve : {
+            resolve: {
                 modalData: function () {
-                    return{}
+                    return {}
                 }
             }
-       });
+        });
         modalInstance.result.then(function (data) {
-            $scope.getOrderStatusCount();
+            $scope.getLoadNtfnCount();
         }, function () {
         });
     };
+    $scope.editLoadNtfn = function (id) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'newGpsLoadNtfcn.html',
+            controller: 'addNtfnCtrl',
+            windowClass: 'window-custom',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modalData: function () {
+                    return {data:id}
+                }
+            }
+        });
+        modalInstance.result.then(function () {
+            $scope.getLoadNtfnCount();
+        }, function () {
+        });
+    };
+    $scope.getLoadNtfnCount = function () {
+        NotificationServices.countOfLoadNtfns(function (response) {
+            if (response.data.status) {
+                $scope.count = response.data.data;
+                $scope.initLoadNtfns();
+            } else {
+                response.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    var loadNtfnsTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+        };
+        NotificationServices.getLoadNtfn(pageable, function (success) {
+            $scope.invalidCount = 0;
+            if (success.data.status) {
+                tableParams.total(success.data.count);
+                tableParams.data = success.data.data;
+                $scope.currentPageOfLoadNtfns = success.data.data;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    $scope.initLoadNtfns = function () {
+        $scope.loadNtfnsparams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadNtfnsTableData(params);
+            }
+        });
+    };
+    $scope.delLoadNtfn = function (id) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                NotificationServices.deleteLoadNtfn(id, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.getLoadNtfnCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    };
+
+
     $scope.addAppNtfcn = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'addAppNtfcn.html',
             controller: 'addNtfnCtrl',
             backdrop: 'static',
-            keyboard: false
-
+            keyboard: false,
+            resolve:{
+                modalData: function () {
+                    return{}
+                }
+            }
+        });
+        modalInstance.result.then(function () {
+            $scope.getAppNtfnCount();
+        }, function () {
         });
     };
-    // getting Email and SMS Notifications
 
+
+
+    // getting Email and SMS Notifications
     $scope.count = 0;
 
     $scope.getNotiCount = function () {
@@ -259,7 +404,7 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
 }]);
 
 
-app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices', 'Notification', 'NotificationServices','modalData',  function ($scope, $uibModalInstance, SettingServices, Notification, NotificationServices, modalData) {
+app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices', 'Notification', 'NotificationServices', 'modalData', function ($scope, $uibModalInstance, SettingServices, Notification, NotificationServices, modalData) {
 
     $scope.closeGPS = function () {
         $uibModalInstance.dismiss('cancel');
@@ -285,26 +430,31 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
     }
 
 
-    /* ------------ Available Trucks Notification adding or Updating----Sravan -------------*/
+    /* ------------  Trucks Notification adding or Updating----Sravan -------------*/
 
-    $scope.addGpsTruckNtfn =  {
-        sourceCity:'',
+    $scope.truckNtfnTitle = "Add GPS Truck Notification";
+
+    $scope.addGpsTruckNtfn = {
+        sourceCity: '',
         destinationCity: '',
         numOfTrucks: '',
-        dateAvailable:'',
-        truckType:'',
-        sendToAll:undefined,
+        dateAvailable: '',
+        truckType: '',
+        price: '',
+        sendToAll: undefined,
     }
 
     $scope.initGPSTruckNotification = function () {
         if (modalData.data) {
+            $scope.truckNtfnTitle = "Edit GPS Truck Notification";
             NotificationServices.getGpsTruckNtfnDetails(modalData.data, function (success) {
                 if (success.data.status) {
                     $scope.addGpsTruckNtfn = success.data.data;
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
-                    });``
+                    });
+                    ``
                 }
             }, function (error) {
 
@@ -339,7 +489,7 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
                 Notification.error(message);
             });
         }
-        else{
+        else {
             if (params._id) {
                 NotificationServices.updateGpsTruckNtfn(params, function (success) {
                     if (success.data.status) {
@@ -353,7 +503,7 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
                         });
                     }
                 })
-            }else{
+            } else {
                 NotificationServices.addGpsTruckNtfn(params, function (success) {
                     if (success.data.status) {
                         success.data.messages.forEach(function (message) {
@@ -370,4 +520,141 @@ app.controller('addNtfnCtrl', ['$scope', '$uibModalInstance', 'SettingServices',
         }
     }
 
+    /* ------------  Load Notification adding or Updating----Sravan -------------*/
+
+    $scope.loadTitle = "Add Load Notification";
+
+    $scope.loadNotification = {
+        sourceCity: '',
+        destinationCity: '',
+        goodsType: '',
+        truckType: '',
+        dateAvailable: '',
+        price: '',
+        message: '',
+        sendToAll: undefined,
+    }
+
+    $scope.initLoadNotification = function () {
+        if (modalData.data) {
+            $scope.loadTitle = "Edit Load Notification";
+            NotificationServices.getLoadNtfnDetails(modalData.data, function (success) {
+                if (success.data.status) {
+                    $scope.loadNotification = success.data.data;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        } else {
+        }
+    };
+
+    $scope.addOrUpdateLoadNtfn = function () {
+        var params = $scope.loadNotification;
+        params.errors = [];
+        if (!params.sourceCity) {
+            params.errors.push("Invalid Source City");
+        }
+        if (!params.destinationCity) {
+            params.errors.push("Invalid Destination City");
+        }
+        if (!params.dateAvailable) {
+            params.errors.push("Please select Available Dates");
+        }
+        if (!params.truckType) {
+            params.errors.push("Please select Truck Type");
+        }
+        if (!params.goodsType) {
+            params.errors.push("Please select Goods Type");
+        }
+        if (!params.price) {
+            params.errors.push("Please enter Price");
+        }
+        if (params.sendToAll === undefined) {
+            params.errors.push("Select Send To All")
+        }
+        if (params.errors.length > 0) {
+            params.errors.forEach(function (message) {
+                Notification.error(message);
+            });
+        }
+        else {
+            if (params._id) {
+                NotificationServices.updateLoadNtfn(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            } else {
+                NotificationServices.addLoadNtfn(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+        }
+    }
+
+    /* ------------ App Notification adding or Updating----Sravan -------------*/
+
+    $scope.appTitle = "Add app Notification";
+
+    $scope.appNotification = {
+        sendTo :'',
+        ignore :'',
+        info: ''
+    }
+    
+    $scope.addOrUpdateAppNtfn = function () {
+        var params = $scope.appNotification;
+        if(!params.sendTo){
+            params.errors.push("Please enter send to");
+        }
+        if(!params.info){
+            params.errors.push("Please enter information");
+        }
+        if (params.errors.length > 0) {
+            params.errors.forEach(function (message) {
+                Notification.error(message);
+            });
+        }else {
+            if(params._id){
+                console.log("Welcomwe");
+            }else{
+                NotificationServices.addAppNtfn(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+
+
+        }
+        
+    }
 }]);

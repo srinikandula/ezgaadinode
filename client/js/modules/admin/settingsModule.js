@@ -845,6 +845,7 @@ app.controller('settingsCtrl', ['$scope', '$uibModal', 'SettingServices', 'NgTab
                 tableParams.total(success.data.count);
                 tableParams.data = success.data.data;
                 $scope.currentPageOfOrderStatus = success.data.data;
+                console.log("$scope.currentPageOfOrderStatus", $scope.currentPageOfOrderStatus);
             } else {
                 $scope.currentPageOfOrderStatus = success.data.data;
                 success.data.messages.forEach(function (message) {
