@@ -565,6 +565,7 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
         messages: []
     };
     var params = req.body;
+
     if (!params.status) {
         retObj.messages.push("Please select status type");
     }
@@ -574,11 +575,19 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
     if (!params.comment) {
         retObj.messages.push("Please enter comment");
     }
-
+    if (params.status === 'Accepted' && !params.leadType) {
+        retObj.messages.push("Please select lead type");
+    }
+    if (params.status === 'Accepted' && !params.userName) {
+        retObj.messages.push("Please enter user name");
+    }
+    if (params.status === "Accepted" && !params.password) {
+        retObj.messages.push("Please enter password");
+    }
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        if (params.status === 'Reject') {
+        if (params.status === 'Rejected') {
             CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {
                 status: params.status,
                 comment: params.comment
@@ -654,8 +663,8 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                             callback(retObj);
                         } else if (customerLead) {
                             var accountParams = {
-                                _id: customerLead._id,
-                                userName: customerLead.userName,
+                                userName: params.userName,
+                                firstName: customerLead.firstName,
                                 contactPhone: customerLead.contactPhone,
                                 password: customerLead.contactPhone,
                                 email: customerLead.email,
@@ -684,9 +693,7 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                 leadSource: customerLead.leadSource
                             };
 
-                            generateUniqueUserId(customerLead.type, function (userIdResp) {
-                                console.log("converted");
-
+                            generateUniqueUserId(params.leadType, function (userIdResp) {
                                 if (!userIdResp.status) {
                                     analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
                                         body: JSON.stringify(req.body),
@@ -701,7 +708,7 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                     var account = new AccountsColl(accountParams);
                                     account.save(function (err, saveAcc) {
                                         if (err) {
-                                            retObj.messages("Please try again");
+                                            retObj.messages.push("Please try again");
                                             analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
                                                 body: JSON.stringify(req.body),
                                                 accountId: req.jwt.id,
@@ -711,15 +718,33 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                             });
                                             callback(retObj);
                                         } else {
-                                            retObj.status = true;
-                                            retObj.messages.push("Customer lead updated successfully");
-                                            analyticsService.create(req, serviceActions.change_customer_lead_status, {
-                                                body: JSON.stringify(req.body),
-                                                accountId: req.jwt.id,
-                                                success: true
-                                            }, function (response) {
+                                            OperatingRoutesColl.update(
+                                                {accountId:customerLead._id},
+                                                {accountId: saveAcc._id},
+                                                {multi: true},function (err,operRoutes) {
+                                                if(err){
+                                                    retObj.messages.push("Customer lead not updated");
+                                                    analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
+                                                        body: JSON.stringify(req.body),
+                                                        accountId: req.jwt.id,
+                                                        success: false,
+                                                        messages: retObj.messages
+                                                    }, function (response) {
+                                                    });
+                                                    callback(retObj);
+                                                }else{
+                                                    retObj.status = true;
+                                                    retObj.messages.push("Customer lead updated successfully");
+                                                    analyticsService.create(req, serviceActions.change_customer_lead_status, {
+                                                        body: JSON.stringify(req.body),
+                                                        accountId: req.jwt.id,
+                                                        success: true
+                                                    }, function (response) {
+                                                    });
+                                                    callback(retObj);
+                                                }
                                             });
-                                            callback(retObj);
+
                                         }
                                     })
 
@@ -762,16 +787,15 @@ function generateUniqueUserId(userType, callback) {
     } else if (userType === 'Factory Owners') {
         retObj.userId = "FO" + parseInt(Math.random() * 100000);
     }
+    console.log("hai...",userType,retObj.userId);
+
     AccountsColl.findOne({userId: retObj.userId}, function (err, doc) {
         if (err) {
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (doc) {
-            console.log('asd', doc);
             generateUniqueUserId(userType, callback);
         } else {
-            console.log("converted");
-
             retObj.status = true;
             callback(retObj);
         }

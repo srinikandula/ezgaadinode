@@ -246,17 +246,18 @@
                 <div class="form-group styling-input-list">
                     <select class="form-control custom-form-control" ng-model="customerLead.status">
                         <option value="" selected>--Select Lead Status--</option>
-                        <option>Accept</option>
-                        <option>Reject</option>
+                        <option value="Accepted">Accept</option>
+                        <option value="Rejected">Reject</option>
                     </select>
                 </div>
-                <div ng-show="customerLead.status === 'Accept'">
-                    <div class="form-group">
-                        <select class="form-control custom-form-control" ng-model="customerLead.leadType">
-                            <option value="" selected>--Select Type--</option>
-                            <option ng-repeat="type in leadType" value="{{type}}">{{type}}</option>
-                        </select>
-                    </div>
+                <div class="form-group">
+                    <select class="form-control custom-form-control" ng-model="customerLead.leadType">
+                        <option value="" selected>--Select Type--</option>
+                        <option ng-repeat="type in leadType" value="{{type}}">{{type}}</option>
+                    </select>
+                </div>
+                <div ng-show="customerLead.status === 'Accepted'">
+
                     <div class="form-group styling-input-list">
                         <input type="text" class="form-control custom-form-control" ng-model="customerLead.userName"/>
                         <label class="focus-effect-for-input">User Name</label>
@@ -277,8 +278,8 @@
                 <div class="form-group styling-input-list">
                     <select class="form-control custom-form-control" ng-model="customerLead.assginTo">
                         <option value="" selected>--Assign To--</option>
-                        <option>Accept</option>
-                        <option>Reject</option>
+                        <option value="Accepted">Accept</option>
+                        <option value="Rejected">Reject</option>
                     </select>
                 </div>
                 <div class="form-group styling-input-list">

@@ -448,13 +448,13 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         if (!params.status) {
             params.messages.push("Please Select Lead status");
         }
-        if (params.status === "Accept" && !params.leadType) {
+        if (params.status === "Accepted" && !params.leadType) {
             params.messages.push("Please Select Lead Type");
         }
-        if (params.status === "Accept" && !params.userName) {
+        if (params.status === "Accepted" && !params.userName) {
             params.messages.push("Please Enter User Name");
         }
-        if (params.status === "Accept" && !params.password) {
+        if (params.status === "Accepted" && !params.password) {
             params.messages.push("Please Enter Password");
         }
         if (params.messages.length > 0) {
@@ -465,7 +465,10 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             customerServices.convertCustomerLead({
                 _id: params._id,
                 status: params.status,
-                comment: params.comment
+                comment: params.comment,
+                userName:params.userName,
+                password:params.password,
+                leadType:params.leadType
             }, function (success) {
                 if (success.data.status) {
                     success.data.messages.forEach(function (message) {
