@@ -718,8 +718,9 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                     accountParams.userId = userIdResp.userId;
                                     var account = new AccountsColl(accountParams);
                                     account.save(function (err, saveAcc) {
+                                        console.log(err);
                                         if (err) {
-                                            retObj.messages("Please try again");
+                                            retObj.messages.push("Please try again");
                                             analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
                                                 body: JSON.stringify(req.body),
                                                 accountId: req.jwt.id,
@@ -785,7 +786,9 @@ function generateUniqueUserId(userType, callback) {
             callback(retObj);
         } else if (doc) {
             console.log('asd', doc);
-            generateUniqueUserId(userType, callback);
+            retObj.status = true;
+            callback(retObj);
+            //generateUniqueUserId(userType, callback);
         } else {
             console.log("converted");
 

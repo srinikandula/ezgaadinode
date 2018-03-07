@@ -23,18 +23,13 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/customers/customersLead.html',
         data: {activeTab: 'customers'}
     }).state({
-        name: 'customers.customerLeadsEdit',
-        url: '/customerLeadsEdit',
-        templateUrl: 'views/partials/admin/customers/customerLeadsEdit.html',
-        data: {activeTab: 'customers'}
-    }).state({
         name: 'customers.createCustomer',
         url: '/createCustomer',
         templateUrl: 'views/partials/admin/customers/createCustomer.html',
         data: {activeTab: 'customers'}
     }).state({
         name: 'customers.customerLeadsEdit',
-        url: '/customerLeadsEdit/::customerId',
+        url: '/customerLeadsEdit/:customerId',
         templateUrl: 'views/partials/admin/customers/customerLeadsEdit.html',
         data: {activeTab: 'customers'},
         params: {

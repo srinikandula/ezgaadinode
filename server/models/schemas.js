@@ -62,7 +62,7 @@ var accountSchema = new mongoose.Schema({
     role: String,
     documentFiles: String,
     yearInService:Number,
-    leadSource:Number,
+    leadSource:String,
     officeNumber: String,
     noOfRegTrucks: Number,
     noOfTrucks: Number,

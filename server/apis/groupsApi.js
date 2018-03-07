@@ -69,6 +69,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                         accountId: user._id,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
+                        type: user.role,
                         role: user.role
                     };
                     if(user.role === "group") {
@@ -99,6 +100,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                             retObj.loadEnabled = user.loadEnabled;
                                             retObj.editAccounts = user.editAccounts;
                                             retObj.profilePic = user.profilePic;
+                                            retObj.type = user.role;
                                             retObj.role = user.role;
                                             callback(retObj);
                                         } else {
@@ -117,6 +119,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                                     retObj.loadEnabled = user.loadEnabled;
                                                     retObj.editAccounts = user.editAccounts;
                                                     retObj.profilePic = user.profilePic;
+                                                    retObj.type = user.role;
                                                     retObj.role = user.role;
                                                     callback(retObj);
                                                 } else {

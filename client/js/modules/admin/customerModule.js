@@ -202,6 +202,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         $scope.customerLead = {
             firstName: "",
             userName: '',
+            password:'',
             contactPhone: '',
             alternatePhone: [''],
             email: '',
@@ -228,7 +229,12 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             errorMessage: [],
             files: [{}],
             status: undefined,
-            comment: ""
+            comment: "",
+            contactName:'',
+            contactMobile:'',
+            dateTime:'',
+            meetingAddress:''
+
         };
         $scope.files = "";
     }
@@ -416,9 +422,19 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
     $scope.convertCustomerLead = function () {
         var params = $scope.customerLead;
+        console.log("params", params);
         params.messages = [];
         if (!params.status) {
-            params.messages.push("Please customer lead status");
+            params.messages.push("Please Select Lead status");
+        }
+        if (params.status === "Accept" && !params.leadType) {
+            params.messages.push("Please Select Lead Type");
+        }
+        if (params.status === "Accept" && !params.userName) {
+            params.messages.push("Please Enter User Name");
+        }
+        if (params.status === "Accept" && !params.password) {
+            params.messages.push("Please Enter Password");
         }
         if (params.messages.length > 0) {
             params.messages.forEach(function (message) {

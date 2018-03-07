@@ -1224,6 +1224,17 @@ disabled look for disabled choices in the results dropdown
     border: 0 !important;
     font-weight: bold;
 }
+textarea.custom-form-control{
+    height:auto !important;
+    width: 80%;
+    margin: 0 auto;
+}
+.tab-content{
+    border: 1px solid #ccc;
+    clear: both;
+    padding: 20px 10px;
+    border-radius: 15px;
+}
 
 /* Responsive Design */
 
