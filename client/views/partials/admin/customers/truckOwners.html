@@ -1,4 +1,4 @@
-<div ng-controller="transporterCtrl" ng-init="countTruckOwner()">
+<div ng-controller="truckOwnerCtrl" ng-init="numOfTruckOwners()" >
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Truck Owners
         </li>
@@ -15,40 +15,42 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="transporterParams">
-        <tr ng-repeat="transporter in currentPageOfTruckOwners" style="text-align: center;">
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="truckOwnerParams">
+        <tr ng-repeat="owners in currentPageOfTruckOwners" style="text-align: center;">
             <td data-title="'S.No'">
                 {{$index+1}}
             </td>
-            <td data-title="'ID'" sortable="'firstName'" class="clickable-item">
-                {{transporter.firstName}}
+            <td data-title="'ID'" sortable="'userId'" class="clickable-item">
+                {{owners.userId}}
             </td>
-            <td data-title="'Customer Name'" sortable="'lastName'" class="clickable-item">
-                {{transporter.lastName}}
+            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
+                {{owners.firstName}}
             </td>
-            <td data-title="'Company'" sortable="'contactPhone'" class="clickable-item">
-                {{transporter.contactPhone}}
+            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                {{owners.contactPhone}}
             </td>
-            <td data-title="'Mobile'" sortable="'email'" class="clickable-item">
-                {{transporter.email}}
+            <!--<td data-title="'Email'" sortable="'email'" class="clickable-item">-->
+                <!--{{owners.email}}-->
+            <!--</td>-->
+            <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
+                {{owners.gpsEnabled?'YES':'NO'}}
             </td>
-            <td data-title="'Reg Date'" sortable="'city'" class="clickable-item">
-                {{transporter.city}}
+            <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
+                {{owners.erpEnabled?'YES':'NO'}}
             </td>
-            <td data-title="'No of Loads'" sortable="'state'" class="clickable-item">
-                {{transporter.state}}
+            <td data-title="'Load'" sortable="'loadEnabled'" class="clickable-item">
+                {{owners.loadEnabled ?'YES':'NO'}}
             </td>
-            <td data-title="'ERP'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+            <td data-title="'SMS/Email'" sortable="'smsEnabled'" class="clickable-item">
+                {{owners.smsEnabled ?'YES':'NO'}}
             </td>
-            <td data-title="'GPS'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
-            </td>
+
+
             <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled'}}
+                {{owners.isActive?'Enabled':'Disabled'}}
             </td>
             <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="admin.addUpdateTruckOwner({transporterId: transporter._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ui-sref="customers.editUpdateTruckOwner({truckownerId: owners._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
                 <a href="#" ng-click="deleteTruckOwner($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
