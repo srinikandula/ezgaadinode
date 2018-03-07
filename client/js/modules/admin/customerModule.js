@@ -163,11 +163,26 @@ app.factory('customerServices', function ($http) {
                 data: data
             }).then(success, error)
         },
-        deleteOperatingRoutes:function (paramas,success,error) {
+        deleteOperatingRoutes:function (params,success,error) {
             $http({
                 url:'/v1/cpanel/customers/deleteOperatingRoutes',
                 method:"DELETE",
-                params:{_id:paramas}
+                params:{_id:params}
+            }).then(success,error)
+        },
+        deleteTrafficManagers:function (params,success,error) {
+            $http({
+                url:'/v1/cpanel/customers/deleteTrafficManagers',
+                method:"DELETE",
+                params:{_id:params}
+            }).then(success,error)
+        },
+        removeDoc:function (params,success,error) {
+            console.log(params)
+            $http({
+                url:'/v1/cpanel/customers/removeDoc',
+                method:"DELETE",
+                params:params
             }).then(success,error)
         }
     }
@@ -243,7 +258,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             meetingAddress:''
 
         };
-        $scope.files = "";
     }
 
     //$scope.customerLead.contactPhone.push("");
@@ -602,12 +616,13 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                 }
                 $scope.transporter.operatingRoutes = success.data.data.operatingRoutesData;
                 if ($scope.transporter.operatingRoutes.length === 0) {
-                    $scope.transporter.operatingRoutes = [{source: "", destination: "", truckType: ""}];
+                    $scope.transporter.operatingRoutes = [{}];
                 }
                 $scope.transporter.trafficManagers = success.data.data.trafficManagersData;
                 if ($scope.transporter.trafficManagers.length === 0) {
-                    $scope.transporter.trafficManagers = [{fullName: "", mobile: "", city: ""}];
+                    $scope.transporter.trafficManagers = [{}];
                 }
+                $scope.transporter.files=[{}];
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -617,8 +632,6 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
 
         });
     }
-
-    $scope.files = "";
 
     $scope.count = 0;
 
@@ -725,8 +738,42 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             routesObj.push({source: '', destination: '', truckType: ''});
         }
     };
+
     $scope.deleteOperatingRoute = function (index) {
-        $scope.transporter.operatingRoutes.splice(index, 1)
+        if( $scope.transporter.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.transporter.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.transporter.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.transporter.operatingRoutes.splice(index, 1)
+
+        }
     };
 
     $scope.addTrafficManager = function () {
@@ -739,7 +786,39 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
     };
 
     $scope.deleteTrafficManager = function (index) {
-        $scope.transporter.trafficManagers.splice(index, 1)
+        if( $scope.transporter.trafficManagers[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteTrafficManagers($scope.transporter.trafficManagers[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.transporter.trafficManagers.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.transporter.trafficManagers.splice(index, 1)
+        }
     };
 
     $scope.getTruckTypes = function () {
@@ -759,7 +838,11 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.transporter.operatingRoutes[index].source = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].source = place.name;
+                $scope.transporter.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.transporter.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
             });
     };
     $scope.addSearchDestination = function (index) {
@@ -769,7 +852,10 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.transporter.operatingRoutes[index].destination = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].destination = place.name;
+                $scope.transporter.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.transporter.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
             });
     };
 
@@ -798,7 +884,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                     url: '/v1/cpanel/customers/updateTransporter',
                     method: "POST",
                     data: {
-                        files: [$scope.transporter.newDocumentFile],
+                        files: $scope.transporter.files,
                         content: $scope.transporter
                     }
                 }).then(function (success) {
@@ -835,6 +921,51 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             }
         });
     };
+
+    $scope.addDoc = function () {
+        if ($scope.transporter.files[$scope.transporter.files.length - 1].file) {
+            $scope.transporter.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+            $scope.transporter.files.splice(index, 1)
+    }
+
+    $scope.removeDoc = function (doc,index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                doc.transporterId = $stateParams.transporterId;
+                console.log(doc.transporterId)
+                customerServices.removeDoc(doc, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.transporter.documentFiles.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    }
 }]);
 /*Transporter End*/
 
@@ -878,8 +1009,9 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
                 }
                 $scope.commissionAgent.operatingRoutes = success.data.data.operatingRoutesData;
                 if ($scope.commissionAgent.operatingRoutes.length === 0) {
-                    $scope.commissionAgent.operatingRoutes = [{source: "",destination: ""}];
+                    $scope.commissionAgent.operatingRoutes = [{}];
                 }
+                $scope.commissionAgent.files=[{}];
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -998,7 +1130,40 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         }
     };
     $scope.deleteOperatingRoute = function (index) {
-        $scope.commissionAgent.operatingRoutes.splice(index, 1)
+        if( $scope.commissionAgent.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.commissionAgent.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.commissionAgent.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.commissionAgent.operatingRoutes.splice(index, 1)
+
+        }
     };
 
     $scope.addSearchSource = function (index) {
@@ -1008,7 +1173,11 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.commissionAgent.operatingRoutes[index].source = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].source = place.name;
+                $scope.commissionAgent.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.commissionAgent.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
             });
     };
     $scope.addSearchDestination = function (index) {
@@ -1018,7 +1187,10 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.commissionAgent.operatingRoutes[index].destination = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].destination = place.name;
+                $scope.commissionAgent.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.commissionAgent.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
             });
     };
 
@@ -1047,7 +1219,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
                     url: '/v1/cpanel/customers/updateCommissionAgent',
                     method: "POST",
                     data: {
-                        files: [$scope.commissionAgent.newDocumentFile],
+                        files: $scope.commissionAgent.files,
                         content: $scope.commissionAgent
                     }
                 }).then(function (success) {
@@ -1084,6 +1256,18 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
             }
         });
     };
+
+    $scope.addDoc = function () {
+        if ($scope.commissionAgent.files[$scope.commissionAgent.files.length - 1].file) {
+            $scope.commissionAgent.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+        $scope.commissionAgent.files.splice(index, 1);
+    }
 }]);
 /*Commision Agent End*/
 
@@ -1118,8 +1302,9 @@ app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'custome
                 }
                 $scope.factoryOwner.operatingRoutes = success.data.data.operatingRoutesData;
                 if($scope.factoryOwner.operatingRoutes.length === 0) {
-                    $scope.factoryOwner.operatingRoutes = [{source: "",destination: ""}];
+                    $scope.factoryOwner.operatingRoutes = [{}];
                 }
+                $scope.factoryOwner.files=[{}];
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -1238,7 +1423,40 @@ app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'custome
         }
     };
     $scope.deleteOperatingRoute = function (index) {
-        $scope.factoryOwner.operatingRoutes.splice(index, 1)
+        if( $scope.factoryOwner.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.factoryOwner.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.factoryOwner.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.factoryOwner.operatingRoutes.splice(index, 1)
+
+        }
     };
 
     $scope.addSearchSource = function (index) {
@@ -1248,7 +1466,11 @@ app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'custome
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.factoryOwner.operatingRoutes[index].source = place.formatted_address;
+                $scope.factoryOwner.operatingRoutes[index].source = place.name;
+                $scope.factoryOwner.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.factoryOwner.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.factoryOwner.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
             });
     };
     $scope.addSearchDestination = function (index) {
@@ -1258,7 +1480,10 @@ app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'custome
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.factoryOwner.operatingRoutes[index].destination = place.formatted_address;
+                $scope.factoryOwner.operatingRoutes[index].destination = place.name;
+                $scope.factoryOwner.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.factoryOwner.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.factoryOwner.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
             });
     };
 
@@ -1287,7 +1512,7 @@ app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'custome
                     url: '/v1/cpanel/customers/updateFactoryOwner',
                     method: "POST",
                     data: {
-                        files: [$scope.factoryOwner.newDocumentFile],
+                        files: $scope.factoryOwner.files,
                         content: $scope.factoryOwner
                     }
                 }).then(function (success) {
@@ -1324,6 +1549,18 @@ app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'custome
             }
         });
     };
+
+    $scope.addDoc = function () {
+        if ($scope.factoryOwner.files[$scope.factoryOwner.files.length - 1].file) {
+            $scope.factoryOwner.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+        $scope.factoryOwner.files.splice(index, 1);
+    }
 }]);
 /*Factory Owner End*/
 

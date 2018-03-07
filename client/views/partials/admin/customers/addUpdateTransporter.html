@@ -175,27 +175,32 @@
                             <div class="form-group pos-relative styling-input-list"
                                  ng-repeat="operatingRoute in transporter.operatingRoutes track by $index">
                                 <div class="form-group styling-input-list">
-                                <input type="text" class="form-control custom-form-control" name="source"
-                                       ng-model="operatingRoute.source" id="searchSource{{$index}}"
-                                       ng-change="addSearchSource($index)"/>
-                                <label class="focus-effect-for-input">Source</label>
+                                    <input type="text" class="form-control custom-form-control" name="source"
+                                           ng-model="operatingRoute.source" id="searchSource{{$index}}"
+                                           ng-change="addSearchSource($index)"/>
+                                    <label class="focus-effect-for-input">Source</label>
                                 </div>
                                 <div class="form-group styling-input-list">
-                                <input type="text" class="form-control custom-form-control" name="destination"
-                                       ng-model="operatingRoute.destination" id="searchDestination{{$index}}"
-                                       ng-change="addSearchDestination($index)"/>
-                                <label class="focus-effect-for-input">Destination</label>
+                                    <input type="text" class="form-control custom-form-control" name="destination"
+                                           ng-model="operatingRoute.destination" id="searchDestination{{$index}}"
+                                           ng-change="addSearchDestination($index)"/>
+                                    <label class="focus-effect-for-input">Destination</label>
                                 </div>
                                 <div class="form-group styling-input-list">
-                                <select class="form-control custom-form-control" ng-model="operatingRoute.truckType">
-                                    <option value="" selected>Truck Type</option>
-                                    <option ng-repeat="trucksType in getTruckTypes" value="{{trucksType._id}}">{{trucksType.title}}</option>
-                                </select>
+                                    <select class="form-control custom-form-control"
+                                            ng-model="operatingRoute.truckType">
+                                        <option value="" selected>Truck Type</option>
+                                        <option ng-repeat="trucksType in getTruckTypes" value="{{trucksType._id}}">
+                                            {{trucksType.title}}
+                                        </option>
+                                    </select>
                                 </div>
                                 <span class="plus-pos" ng-show="$index >= 1">
-                                <i class="fa fa-times-circle clr-red" ng-click="deleteOperatingRoute($index)"></i></span>
+                                <i class="fa fa-times-circle clr-red"
+                                   ng-click="deleteOperatingRoute($index)"></i></span>
                                 <span class="plus-pos" ng-show="$index == 0">
-                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addOperatingRoute()"></i></span>
+                                <i class="fa fa-plus-square" aria-hidden="true"
+                                   ng-click="addOperatingRoute()"></i></span>
                             </div>
                         </div>
                     </div>
@@ -273,9 +278,11 @@
                                     <label class="focus-effect-for-input">City</label>
                                 </div>
                                 <span class="plus-pos" ng-show="$index >= 1">
-                                <i class="fa fa-times-circle clr-red" ng-click="deleteTrafficManager($index)"></i></span>
+                                <i class="fa fa-times-circle clr-red"
+                                   ng-click="deleteTrafficManager($index)"></i></span>
                                 <span class="plus-pos" ng-show="$index == 0">
-                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addTrafficManager()"></i></span>
+                                <i class="fa fa-plus-square" aria-hidden="true"
+                                   ng-click="addTrafficManager()"></i></span>
                             </div>
                         </div>
                     </div>
@@ -291,18 +298,22 @@
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="transporter.documentType">
-                                <option value="" selected>Select ID Proof</option>
-                                <option ng-repeat="proofs in documentType" ng-value="proofs">{{proofs}}</option>
-                            </select>
+                        <div ng-repeat="file in transporter.files">
+                            <div class="form-group pos-relative">
+                                    <span class="plus-pos" ng-show="$index == 0">
+                                    <i class="fa fa-plus-square" aria-hidden="true" ng-click="addDoc()"></i></span>
+                                <input type="file" class="form-control custom-form-control"
+                                       ng-model="file.file" ngf-select ngf-pattern="'image/*'" ngf-accept="'image/*'">
+
+                                <span class="plus-pos " ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
+                                                                                  ng-click="deleteDoc($index)"></i></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <input type="file" ngf-select class="form-control custom-form-control"
-                                   ng-model="transporter.newDocumentFile" name="documentFile" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}" />
-                            <img src="{{transporter.documentFile}}" ng-if="transporter.documentFile">
+                        <div>
+                            <span class="delfile" ng-repeat="doc in transporter.documentFiles"><img src="assets/documents/{{doc}}" width="100">
+                            <span class="plus-pos ">
+                                <i class="fa fa-times-circle clr-red"
+                                                                              ng-click="removeDoc(doc,$index)"></i></span></span>
                         </div>
                     </div>
                 </div>

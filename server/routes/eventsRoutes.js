@@ -321,13 +321,6 @@ OpenRouter.get('/get/junkLeads', function (request, res) {
     });
 });
 
-OpenRouter.get('/get/deviceManagement', function (request, res) {
-    Events.getdeviceManagementData(request,function(results){
-        //console.log(results);
-        res.json(results);
-    });
-});
-
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

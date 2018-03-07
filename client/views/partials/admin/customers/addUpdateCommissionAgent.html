@@ -128,7 +128,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="transporter.gpsEnabled"/>
+                                            <input type="checkbox" value="" ng-model="commissionAgent.gpsEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             ERP
                                         </label>
@@ -137,7 +137,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="transporter.erpEnabled"/>
+                                            <input type="checkbox" value="" ng-model="commissionAgent.erpEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             GPS
                                         </label>
@@ -146,7 +146,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="transporter.loadEnabled"/>
+                                            <input type="checkbox" value="" ng-model="commissionAgent.loadEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             LOAD
                                         </label>
@@ -237,18 +237,19 @@
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="commissionAgent.documentType">
-                                <option value="" selected>Select ID Proof</option>
-                                <option ng-repeat="proofs in documentType" ng-value="proofs">{{proofs}}</option>
-                            </select>
+                        <div ng-repeat="file in commissionAgent.files">
+                            <div class="form-group pos-relative">
+                                    <span class="plus-pos" ng-show="$index == 0">
+                                    <i class="fa fa-plus-square" aria-hidden="true" ng-click="addDoc()"></i></span>
+                                <input type="file" class="form-control custom-form-control"
+                                       ng-model="file.file" ngf-select ngf-pattern="'image/*'" ngf-accept="'image/*'">
+
+                                <span class="plus-pos " ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
+                                                                                  ng-click="deleteDoc()"></i></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <input type="file" ngf-select class="form-control custom-form-control"
-                                   ng-model="commissionAgent.newDocumentFile" name="documentFile" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}" />
-                            <img src="{{commissionAgent.documentFile}}" ng-if="commissionAgent.documentFile">
+                        <div ng-repeat="doc in commissionAgent.documentFiles">
+                            <img src="assets/documents/{{doc}}" width="100">
                         </div>
                     </div>
                 </div>

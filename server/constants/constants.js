@@ -472,6 +472,8 @@ const serviceActions = {
     update_load_ntfn_err: 'UPDATE_LOAD_NTFN_ERR',
     update_load_ntfn:'UPDATE_LOAD_NTFN',
     delete_load_ntfn_err:'DELETE_LOAD_NTFN_ERR',
-    delete_load_ntfn:'DELETE_LOAD_NTFN'
+    delete_load_ntfn:'DELETE_LOAD_NTFN',
+    delete_traffic_manager:'DELETE_TRAFFIC_MANAGER',
+    delete_traffic_manager_err:'DELETE_TRAFFIC_MANAGER_ERR',
 };
 module.exports = serviceActions;

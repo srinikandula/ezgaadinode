@@ -205,9 +205,15 @@ AuthRouter.delete('/deleteGuest', function (req, res) {
 });
 /*Guest End*/
 AuthRouter.delete('/deleteOperatingRoutes',function (req,res) {
-   CustomerLeads.deleteOperatingRoutes(req,function (result) {
-       res.send(result);
-   })
+    CustomerLeads.deleteOperatingRoutes(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.delete('/deleteTrafficManager',function (req,res) {
+    CustomerLeads.deleteTrafficManager(req,function (result) {
+        res.send(result);
+    })
 });
 
 AuthRouter.get('/getEmployeesList',function (req,res) {
@@ -216,6 +222,11 @@ AuthRouter.get('/getEmployeesList',function (req,res) {
    })
 });
 
+AuthRouter.get('/removeDoc',function (req,res) {
+    CustomerLeads.removeDoc(req,function (result) {
+        res.send()
+    })
+});
 
 module.exports = {
     AuthRouter: AuthRouter
