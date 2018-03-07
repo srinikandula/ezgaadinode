@@ -479,6 +479,7 @@ Utils.prototype.uploadDocuments = function (files, callback) {
     async.map(files, function (doc, fileCallback) {
         var file=doc[0].file;
         var fileName = new Date() - 0 + "_" + file.originalFilename;
+
         fse.copy(file.path, './client/assets/documents/' + fileName, function (err) {
             if (err) {
                 retObj.status = false;

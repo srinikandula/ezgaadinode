@@ -459,6 +459,9 @@ const serviceActions = {
     delete_gps_truck_ntfn:'DELETE_GPS_TRUCK_NTFN',
     delete_operating_route:'DELETE_OPERATING_ROUTE',
     delete_operating_route_err:'DELETE_OPERATING_ROUTE_ERR',
+    get_employees_list:'GET_EMPLOYEES_LIST',
+    get_employees_list_err:'GET_EMPLOYEES_LIST_ERR',
+
 
 };
 module.exports = serviceActions;

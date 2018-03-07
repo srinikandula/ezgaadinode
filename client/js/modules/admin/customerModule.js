@@ -245,6 +245,9 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                     }else{
                         $scope.customerLead.operatingRoutes =[{}]
                     }
+                    if( $scope.customerLead.alternatePhone.length===0){
+                        $scope.customerLead.alternatePhone =[""]
+                    }
                     $scope.customerLead.files=[{}];
 
                 } else {
@@ -286,27 +289,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             }
         }
     }
-
-    $scope.addSearchSource = function (index) {
-        var input = document.getElementById('searchSource' + index);
-        var options = {};
-        var autocomplete = new google.maps.places.Autocomplete(input, options);
-        google.maps.event.addListener(autocomplete, 'place_changed',
-            function () {
-                var place = autocomplete.getPlace();
-                $scope.truckRequest.truckDetails[index].source = place.formatted_address;
-            });
-    };
-    $scope.addSearchDestination = function (index) {
-        var input = document.getElementById('searchDestination' + index);
-        var options = {};
-        var autocomplete = new google.maps.places.Autocomplete(input, options);
-        google.maps.event.addListener(autocomplete, 'place_changed',
-            function () {
-                var place = autocomplete.getPlace();
-                $scope.truckRequest.truckDetails[index].destination = place.formatted_address;
-            });
-    };
 
     $scope.createLeads = function () {
         var params = $scope.customerLead;
@@ -379,14 +361,14 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         }).then((result) => {
             if (result.value) {
                 customerServices.deleteCustomerLead(customerId, function (success) {
-                    $state.go('customers.customersLead');
+
                     if (success.data.status) {
                         swal(
                             'Deleted!',
                             success.data.messages[0],
                             'success'
                         );
-                        $state.go('customers.customersLead');
+                        $scope.getCustomerLeads();
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
