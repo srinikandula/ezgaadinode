@@ -496,8 +496,16 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         status: false,
         messages: []
     };
+    var params = req.query;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
-    AccountsColl.find({type: 'account', role: 'Truck Owner'}, function (err, docs) {
+    AccountsColl.find({type: 'account', role: 'Truck Owner'})
+        .sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .exec( function (err, docs) {
         if (err) {
             retObj.messages.push('Error retrieving truck owners');
             analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
@@ -530,7 +538,7 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
     });
 };
 
-CustomerLeads.prototype.getTotalTruckOwners = function (req, callback) {
+CustomerLeads.prototype.countTruckOwners = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -814,7 +822,18 @@ CustomerLeads.prototype.getTruckOwnerDetails = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({_id: params._id}, function (err, doc) {
+        async.parallel({
+            truckOwnerData: function (accountDataCallback) {
+                AccountsColl.findOne({_id: params._id}, function (err, doc) {
+                    accountDataCallback(err, doc);
+                });
+            },
+            operatingRoutes: function (operatingRoutesDataCallback) {
+                OperatingRoutesColl.find({accountId: params._id}, function (err, doc) {
+                    operatingRoutesDataCallback(err, doc);
+                });
+            }
+        }, function (err, result) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_truck_owner_details_err, {
@@ -825,9 +844,9 @@ CustomerLeads.prototype.getTruckOwnerDetails = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else if (doc) {
+            } else if (result) {
                 retObj.messages.push("Success");
-                retObj.data = doc;
+                retObj.data = result;
                 retObj.status = true;
                 analyticsService.create(req, serviceActions.get_truck_owner_details, {
                     body: JSON.stringify(req.body),
@@ -837,7 +856,7 @@ CustomerLeads.prototype.getTruckOwnerDetails = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages.push("Truck owner not found");
+                retObj.messages.push("Truck owners not found");
                 analyticsService.create(req, serviceActions.get_truck_owner_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
@@ -847,7 +866,7 @@ CustomerLeads.prototype.getTruckOwnerDetails = function (req, callback) {
                 });
                 callback(retObj);
             }
-        })
+        });
     }
 
 };
@@ -870,8 +889,51 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        params = Utils.removeEmptyFields(params);
-        AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
+
+        if (params.alternatePhone[params.alternatePhone.length - 1] === "") {
+            params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
+        }
+        if (!params.operatingRoutes) {
+            params.operatingRoutes = [];
+        }
+        if (req.files.files) {
+            Utils.uploadDocuments(req.files.files, function (uploadResp) {
+                if (uploadResp.status) {
+                    if (!req.body.content.documentFiles) {
+                        req.body.content.documentFiles = [];
+                    }
+                    console.log("req.body.content.documentFiles",req.body.content.documentFiles,uploadResp.fileNames);
+                    req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
+
+                    updateTruckOwner(req, callback);
+                } else {
+                    retObj.messages.push("Document uploading failed");
+                    analyticsService.create(req, serviceActions.update_customer_lead_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            })
+        } else {
+            updateTruckOwner(req, callback);
+        }
+    }
+
+};
+
+function updateTruckOwner(req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body.content;
+    Utils.removeEmptyFields(params);
+    AccountsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
+        function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.update_truck_owner_details_err, {
@@ -943,9 +1005,9 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
             }
         })
 
-    }
+    };
 
-};
+
 
 CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
     var retObj = {

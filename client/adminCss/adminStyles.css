@@ -299,7 +299,7 @@ body {
 }
 
 .routes h4 {
-    margin: 15px 24% 25px 0;
+    margin: 15px 0 21px 0;
     display: inline-block;
     font-weight: bold;
 }
@@ -574,7 +574,7 @@ footer {
     z-index: 2;
 }
 
- .order-form-control:not([disabled]):focus ~ .order-effect-for-input {
+.order-form-control:not([disabled]):focus ~ .order-effect-for-input {
     /*whsOnd:not([disabled]):focus~.AxOyFc*/
     transform: scale(.9) translateY(-20px);
     left: 0px;
@@ -672,7 +672,7 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
     padding: 0 0 0 8px;
     overflow: hidden;
     position: relative;
-width: 85% !important;
+    width: 85% !important;
     border: 1px solid #aaa;
     white-space: nowrap;
     line-height: 26px;
@@ -878,7 +878,7 @@ width: 85% !important;
     width: 74% !important;
 
 }
-    .select2-dropdown-open.select2-drop-above .select2-choice,
+.select2-dropdown-open.select2-drop-above .select2-choice,
 .select2-dropdown-open.select2-drop-above .select2-choices {
     border: 1px solid #5897fb;
     border-top-color: transparent;
@@ -1248,8 +1248,8 @@ textarea.custom-form-control{
         position: static !important;
     }
     .right-nav{
-    left: 15px !important;
-     }
+        left: 15px !important;
+    }
 }
 
 

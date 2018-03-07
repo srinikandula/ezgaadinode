@@ -41,11 +41,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/customers/truckOwners.html',
         data: {activeTab: 'customers'}
     }).state({
-        name: 'customers.addUpdateTruckOwner',
-        url: '/addUpdateTruckOwner/:truckOwnerId',
-        templateUrl: 'views/partials/admin/customers/addUpdateTruckOwner.html',
+        name: 'customers.editUpdateTruckOwner',
+        url: '/editUpdateTruckOwner/:truckownerId',
+        templateUrl: 'views/partials/admin/customers/editUpdateTruckOwner.html',
         data: {activeTab: 'customers'},
-        params: {transporterId: null}
+        params: {truckownerId: null}
     }).state({
         name: 'customers.transporters',
         url: '/transporters',

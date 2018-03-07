@@ -21,15 +21,16 @@ app.factory('customerServices', function ($http) {
                 params: {_id: params}
             }).then(success, error)
         },
-        getTruckOwners: function (success, error) {
+        getTruckOwners: function (pageble, success, error) {
             $http({
                 url: '/v1/cpanel/customers/getTruckOwners',
-                method: "GET"
+                method: "GET",
+                params: pageble
             }).then(success, error)
         },
-        getTruckOwnersDetails: function (params, success, error) {
+        getTruckOwnerDetails: function (params, success, error) {
             $http({
-                url: '/v1/cpanel/customers/getTruckOwnersDetails',
+                url: '/v1/cpanel/customers/getTruckOwnerDetails',
                 method: "GET",
                 params: {_id: params}
             }).then(success, error)
@@ -39,6 +40,13 @@ app.factory('customerServices', function ($http) {
                 url: '/v1/cpanel/customers/deleteTruckOwners',
                 method: "DELETE",
                 params: {_id: params}
+            }).then(success, error)
+        },
+
+        countTruckOwners: function (success, error) {
+            $http({
+                url: '/v1/cpanel/customers/countTruckOwners',
+                method: "GET",
             }).then(success, error)
         },
         getTransporter: function (params, success, error) {
@@ -337,7 +345,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                 Upload.upload({
                     url: '/v1/cpanel/customers/addCustomerLead',
                     data: {
-                        files: [files],
+                        files: files,
                         content: $scope.customerLead
                     },
                 }).then(function (success) {
@@ -572,11 +580,233 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
 }]);
 
-/*Author Naresh*/
+/*Author Sravan*/
 /*Truck Owners Start*/
-app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams', function ($scope, $state, $stateParams, customerServices, Notification, NgTableParams) {
+app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams','Upload', function ($scope, $state, $stateParams, customerServices, Notification, NgTableParams, Upload) {
+    $scope.status = {
+        isOpen: true,
+        isOpenTwo: true,
+        isOpenThree: true,
+        isOpenFour: true,
+        isOpenFive: true,
+        isOpenSix: true,
+        isOpenSev: true,
+    };
 
+    $scope.title = "Edit Truck Owner";
+
+    if ($stateParams.truckownerId) {
+        customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
+            if (success.data.status) {
+                $scope.truckOwner = success.data.data.truckOwnerData;
+                console.log("$scope.truckOwner", $scope.truckOwner);
+                $scope.truckOwner.confirmPassword = success.data.data.truckOwnerData.password;
+                $scope.truckOwner.newDocumentFile = '';
+                if ($scope.truckOwner.alternatePhone.length === 0) {
+                    $scope.truckOwner.alternatePhone = [''];
+                }
+                $scope.truckOwner.operatingRoutes = success.data.data.operatingRoutes;
+                if ($scope.truckOwner.operatingRoutes.length === 0) {
+                    $scope.truckOwner.operatingRoutes = [{}];
+                }
+                if($scope.truckOwner.yearInService === 0){
+                    $scope.truckOwner.yearInService = "";
+                }
+                $scope.truckOwner.files = [{}];
+
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.leadType = [{
+        "key": "Truck Owner",
+        "value": "T"}, {
+        "key": "Transporter",
+        "value": "TR"
+    }, {"key": "Commission Agent", "value": "C"}, {"key": "Factory Owners", "value": "L"}, {
+        "key": "Guest",
+        "value": "G"
+    }];
+
+    $scope.yearInService = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003];
+
+    $scope.addNumber = function () {
+        if (!$scope.truckOwner.alternatePhone[$scope.truckOwner.alternatePhone.length - 1]) {
+            Notification.error('Enter Alternate Number');
+        } else {
+            $scope.truckOwner.alternatePhone.push('');
+        }
+    };
+    $scope.removeNumber = function (index) {
+        $scope.truckOwner.alternatePhone.splice(index, 1)
+    };
+
+    function verifyMobNum() {
+        for (var i = 0; i < $scope.truckOwner.contactPhone.length; i++) {
+            if (!$scope.truckOwner.contactPhone[i]) {
+                return false;
+            }
+            if (i === $scope.truckOwner.contactPhone.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.addOperatingRoute = function () {
+        var routesObj = $scope.truckOwner.operatingRoutes;
+        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
+            Notification.error('Enter Source, Destination');
+        } else {
+            routesObj.push({source: '', destination: ''});
+        }
+    };
+    $scope.deleteOperatingRoute = function (index) {
+        $scope.truckOwner.operatingRoutes.splice(index, 1)
+    };
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckOwner.operatingRoutes[index].source = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckOwner.operatingRoutes[index].destination = place.formatted_address;
+            });
+    };
+    // $scope.getTruckTypes = function () {
+    //     SettingServices.getTruckTypes({}, function (response) {
+    //         if (response.data.status) {
+    //             $scope.getTruckTypes = response.data.data;
+    //         } else {
+    //             Notification.error({message: response.data.messages[0]});
+    //         }
+    //     });
+    // };
+
+    $scope.cancel = function () {
+        $state.go('customers.truckOwners');
+    };
+
+    $scope.files = "";
+
+    $scope.count = 0;
+
+    $scope.numOfTruckOwners = function () {
+        customerServices.countTruckOwners(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initTruckOwner();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            role: tableParams.role,
+            //transporter: tableParams.transporter
+        };
+        customerServices.getTruckOwners(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfTruckOwners = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initTruckOwner = function (role) {
+        $scope.truckOwnerParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.role = role;
+                loadTableData(params);
+            }
+        });
+    };
+
+    $scope.updateTruckOwner = function () {
+        var params = $scope.truckOwner;
+
+        if (!params.leadType || !_.isString(params.leadType)) {
+            Notification.error('Please Select Customer Type');
+        }
+        if (!params.firstName || !_.isString(params.firstName)) {
+            Notification.error('Please Provide Full Name');
+        }
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
+        }
+        else {
+            if ($scope.truckOwner._id) {
+                Upload.upload({
+                    url: '/v1/cpanel/customers/updateTruckOwner',
+                    method: "POST",
+                    data: {
+                        files: $scope.truckOwner.files,
+                        content: $scope.truckOwner
+                    }
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('customers.truckOwner');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            } else {
+
+            }
+        }
+    };
+    $scope.addDoc = function () {
+        if ($scope.truckOwner.files[$scope.truckOwner.files.length - 1].file) {
+            $scope.truckOwner.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+        $scope.truckOwner.files.splice(index, 1);
+    }
 }]);
+
 /*Truck Owners End*/
 
 /*Author SVPrasadK*/

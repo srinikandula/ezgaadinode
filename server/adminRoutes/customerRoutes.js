@@ -46,8 +46,8 @@ AuthRouter.get('/getTruckOwners', function (req, res) {
     })
 });
 
-AuthRouter.get('/getTotalTruckOwners', function (req, res) {
-    CustomerLeads.getTotalTruckOwners(req, function (result) {
+AuthRouter.get('/countTruckOwners', function (req, res) {
+    CustomerLeads.countTruckOwners(req, function (result) {
         res.send(result);
     })
 });
@@ -64,7 +64,7 @@ AuthRouter.get('/getTruckOwnerDetails',function (req,res) {
     })
 });
 
-AuthRouter.put('/updateTruckOwner',function (req,res) {
+AuthRouter.post('/updateTruckOwner',multipartyMiddleware,function (req,res) {
    CustomerLeads.updateTruckOwner(req,function (result) {
        res.send(result);
    })
