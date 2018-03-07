@@ -19,7 +19,8 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     $scope.truckTrackingParams={
         regNo: $stateParams.truckNo,
         startDate:new Date(),
-        endDate:new Date()
+        endDate:new Date(),
+        showOnlyStops:false
     };
 
     var map,marker=[],markerIndex=0;
@@ -48,6 +49,44 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
             marker[i].setMap(map);
         }
     }
+
+    $scope.renderStops= function () {
+        if($scope.truckTrackingParams.showOnlyStops) {
+            if (flightPath) {
+                flightPath.setMap(null);
+                setMapOnAll(null);
+                marker = [];
+                markerIndex = 0;
+            }
+            var icon = {
+                url: '/images/' + 'red.svg', // url
+                scaledSize: new google.maps.Size(35, 35),
+            };
+            var flightPathCoordinates=[];
+            for (var i = 0; i < locations.length; i++) {
+                if (locations[i].isStopped||locations[i].isIdle) {
+                    flightPathCoordinates.push({lat:locations[i].location.coordinates[1],lng: locations[i].location.coordinates[0]})
+                    marker[markerIndex] = new google.maps.Marker({
+                        position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
+                        icon: icon,
+                        map: map
+                    });
+                    markerIndex++;
+                }
+                if(i===locations.length-1){
+                    flightPath = new google.maps.Polyline({
+                        path: flightPathCoordinates,
+                        geodesic: true,
+                        strokeColor: '#393',
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                    });
+                    map.setCenter(flightPathCoordinates[0]);
+                    flightPath.setMap(map);
+                }
+            }
+        }
+    };
 
     $scope.getTruckPositions=function () {
         $scope.truckTrackingParams.startDate.setHours(0);
