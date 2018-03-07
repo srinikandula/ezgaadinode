@@ -60,19 +60,10 @@ var accountSchema = new mongoose.Schema({
     companyName: String,
     pincode: String,
     role: String,
-    documentType: String,
-    documentFiles: [],
-    paymentType: String,
-    loadPaymentToPayPercent: Number,
-    loadPaymentAdvancePercent: Number,
-    loadPaymentPodDays: Number,
-    tdsDeclarationDoc: Number,
-    yearInService:Number,
-    leadSource:String,
+    documentFiles: [String],
+    yearInService: Number,
+    leadSource: String,
     officeNumber: String,
-    noOfRegTrucks: Number,
-    noOfTrucks: Number,
-    registrationNo: [],
     isLead: {type: Boolean, default: false},
     leadType: String,
     leadStatus: {type: Boolean, default: false},
@@ -82,8 +73,7 @@ var accountSchema = new mongoose.Schema({
     bankName: String,
     bankIfscCode: String,
     bankAccNo: String,
-    bankBranch: String,
-    rating: String
+    bankBranch: String
 }, {
     timestamps: true
 });
@@ -176,9 +166,9 @@ var tripSchema = new mongoose.Schema({
     createdBy: String,
     paymentHistory: [],
     attrs: {},
-    share: { type: Boolean, default: false },
-    truckRequestId:{type:ObjectId,ref:'truckRequests'}
-}, { timestamps: true });
+    share: {type: Boolean, default: false},
+    truckRequestId: {type: ObjectId, ref: 'truckRequests'}
+}, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
     name: String,
@@ -348,10 +338,10 @@ var devicePositions = new mongoose.Schema({
         motion: Number
     },
     address: String,
-    isIdle:Boolean,
-    isStopped:Boolean
-        // isViewed : Boolean
-}, { timestamps: true, versionKey: false });
+    isIdle: Boolean,
+    isStopped: Boolean
+    // isViewed : Boolean
+}, {timestamps: true, versionKey: false});
 
 var archivedDevicePositions = new mongoose.Schema({
     // _id: ObjectId,
@@ -474,18 +464,16 @@ var customerTypesSchema = mongoose.Schema({
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     assignedTo: {type: ObjectId, ref: 'accounts'},
+    firstName: String,
     id_franchise: Number,
-    userId: String,
     gps_account_id: String,
     accountId: {type: ObjectId, ref: 'accounts'},
-    firstName: String,
-    password: String,
     contactPhone: Number,
-    alternatePhone:[Number],
+    alternatePhone: [Number],
     email: String,
     isLead: Boolean,
     leadType: String,
-    status:String,
+    status: String,
     companyName: String,
     address: String,
     city: String,
@@ -494,13 +482,13 @@ var customerLeadsSchema = mongoose.Schema({
     officeNumber: Number,
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
-    loadEnabled:{type: Boolean, default: false},
+    loadEnabled: {type: Boolean, default: false},
     yearInService: Number,
     documentType: String,
     documentFiles: [""],
-    comment:String,
-    leadSource:String,
-    noOfTrucks:Number,
+    comment: String,
+    leadSource: String,
+    noOfTrucks: Number,
     createdAt: Date,
     updatedAt: Date,
     leadStatus: {type: String, default: 'Initiated'},
@@ -584,10 +572,10 @@ var truckRequestSchema = mongoose.Schema({
     trackingRequired: String,
     insuranceRequired: String,
     customerLeadId: {type: ObjectId, ref: 'customerLeads'},
-    loadingCharge:Number,
-    unloadingCharge:Number,
-    pushMessage:String,
-    status:{type:String,default:'New'}
+    loadingCharge: Number,
+    unloadingCharge: Number,
+    pushMessage: String,
+    status: {type: String, default: 'New'}
 
 }, {timestamps: String});
 
@@ -620,13 +608,13 @@ var adminRoleSchema = mongoose.Schema({
     franchiseId: {type: ObjectId, ref: 'franchise'},
     role: String,
     permissions: {
-      moduleName: String,
-      sectionName: String,
-      view: Boolean,
-      listAll: Boolean,
-      add: Boolean,
-      edit: Boolean,
-      delete: Boolean
+        moduleName: String,
+        sectionName: String,
+        view: Boolean,
+        listAll: Boolean,
+        add: Boolean,
+        edit: Boolean,
+        delete: Boolean
     },
     status: Boolean,
     createdBy: {type: ObjectId, ref: 'accounts'},
@@ -663,32 +651,32 @@ var truckQuotesSchema = mongoose.Schema({
     comment: String
 }, {timestamps: String});
 
-var truckRequestCommentSchema=mongoose.Schema({
+var truckRequestCommentSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     accountId: {type: ObjectId, ref: 'accounts'},
     truckRequestId: {type: ObjectId, ref: 'truckRequests'},
     status: String,
     comment: String,
-    notifiedStatus:{type:String,default:"NO"}
+    notifiedStatus: {type: String, default: "NO"}
 }, {timestamps: String});
 
 var truckNotificationSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'},
     accountId: {type: ObjectId, ref: 'accounts'},
-    sourceCity : String,
+    sourceCity: String,
     destinationCity: String,
-    numOfTrucks : Number,
+    numOfTrucks: Number,
     dateAvailable: String,
-    truckType : String,
-    price:Number,
+    truckType: String,
+    price: Number,
     sendToAll: Boolean
 }, {timestamps: String})
 
 var trafficManagerSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     fullName: String,
-    mobile: Number  ,
+    mobile: Number,
     city: String,
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'}
@@ -699,12 +687,12 @@ var LoadNotificationSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     updatedBy: {type: ObjectId, ref: 'accounts'},
     accountId: {type: ObjectId, ref: 'accounts'},
-    sourceCity : String,
+    sourceCity: String,
     destinationCity: String,
     dateAvailable: String,
-    truckType : String,
-    goodsType : String,
-    price:Number,
+    truckType: String,
+    goodsType: String,
+    price: Number,
     message: String,
     sendToAll: Boolean
 }, {timestamps: String})
@@ -746,9 +734,9 @@ module.exports = {
     franchiseColl: mongoose.model('franchise', franchiseSchema, 'franchise'),
     adminRoleColl: mongoose.model('adminRoles', adminRoleSchema, 'adminRoles'),
     adminPermissionsColl: mongoose.model('adminPermissions', adminPermissionsSchema, 'adminPermissions'),
-    TruckRequestQuoteColl:mongoose.model('truckRequestQuotes',truckQuotesSchema,'truckRequestQuotes'),
-    TruckRequestCommentsColl:mongoose.model('truckRequestComments',truckRequestCommentSchema,'truckRequestComments'),
-    TruckNotificationColl:mongoose.model('truckNotification',truckNotificationSchema,'truckNotification'),
-    trafficManagerColl:mongoose.model('trafficManager',trafficManagerSchema,'trafficManager'),
-    LoadNotificationColl:mongoose.model('loadNotification',LoadNotificationSchema,'loadNotification')
+    TruckRequestQuoteColl: mongoose.model('truckRequestQuotes', truckQuotesSchema, 'truckRequestQuotes'),
+    TruckRequestCommentsColl: mongoose.model('truckRequestComments', truckRequestCommentSchema, 'truckRequestComments'),
+    TruckNotificationColl: mongoose.model('truckNotification', truckNotificationSchema, 'truckNotification'),
+    trafficManagerColl: mongoose.model('trafficManager', trafficManagerSchema, 'trafficManager'),
+    LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification')
 };
