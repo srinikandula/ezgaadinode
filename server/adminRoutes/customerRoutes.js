@@ -203,13 +203,19 @@ AuthRouter.delete('/deleteGuest', function (req, res) {
         res.send(result);
     });
 });
-
+/*Guest End*/
 AuthRouter.delete('/deleteOperatingRoutes',function (req,res) {
    CustomerLeads.deleteOperatingRoutes(req,function (result) {
        res.send(result);
    })
 });
-/*Guest End*/
+
+AuthRouter.get('/getEmployeesList',function (req,res) {
+   CustomerLeads.getEmployeesList(req,function (result) {
+       res.send()
+   })
+});
+
 
 module.exports = {
     AuthRouter: AuthRouter
