@@ -49,8 +49,8 @@ function savePositionDoc(position, callback) {
                             retObj.messages.push('Error fetching settings data');
                             callback(retObj);
                         }else{
-                            var idealTime=20;
-                            var stopTime=60;
+                            var idealTime=5;
+                            var stopTime=10;
                             var currentDate=new Date();
                             var isIdle=false;
                             var isStopped=false;

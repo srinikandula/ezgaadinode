@@ -26,54 +26,93 @@
         </div>
         <div class="clearfix"></div>
         <div class="row mt-20">
-        <div class="col-xs-9">
-            <div>
-                <div  id="map" style="width: 100%; height: 500px;"></div>
+            <div class="col-xs-9">
+                <div>
+                    <div  id="map" style="width: 100%; height: 500px;"></div>
+                </div>
             </div>
-        </div>
-        <div class="col-xs-3">
-            <div class="row mt-20">
-            <label>Truck Reg No :</label>
-            <label>{{truckTrackingParams.regNo}} </label>
-            </div>
-            <div class="row">
-            <label>Start Date</label>
-            <date-picker class="'textfield'" ban-future="'banFutureDate'" ng-model="truckTrackingParams.startDate"></date-picker>
-            </div>
-            <div class="row">
-            <label>End Date</label>
-            <date-picker class="'textfield'" ban-future="'banFutureDate'" ng-model="truckTrackingParams.endDate"></date-picker>
-            </div>
-            <!--<center>-->
-                <input type="button" ng-click="getTruckPositions()" class="btn btn-danger mt-20" value="Track"/>
-                <input type="button" ng-click="animate()" class="btn btn-danger mt-20" value="Play"/>
-                <input type="button" ng-click="stopAnimation()" class="btn btn-danger mt-20" value="Stop"/>
-                <input type="button" ng-click="downloadReport()" class="btn btn-danger mt-20" value="Download">
-            <!--</center>-->
+            <div class="col-xs-3">
+                <div class="row mt-10">
+                    <label>Truck Reg No :</label>
+                    <label>{{truckTrackingParams.regNo}} </label>
+                </div>
+                <div class="row">
+                    <label>Start Date</label>
+                    <date-picker class="'textfield'" ban-future="'banFutureDate'" ng-model="truckTrackingParams.startDate"></date-picker>
+                </div>
+                <div class="row">
+                    <label>End Date</label>
+                    <date-picker class="'textfield'" ban-future="'banFutureDate'" ng-model="truckTrackingParams.endDate"></date-picker>
+                </div>
+                <!--<center>-->
+                <div class="row">
 
-            <div class="mt-10 text-center" ng-show="distance">
-                <label>Distance Travelled :</label> <label>{{distance}} </label>
+                    <input type="button" ng-click="getTruckPositions()" class="btn btn-danger mt-20" value="Track"/>
+                    <input type="button" ng-click="animate()" class="btn btn-danger mt-20" value="Play"/>
+                    <input type="button" ng-click="stopAnimation()" class="btn btn-danger mt-20" value="Stop"/>
+                    <input type="button" ng-click="downloadReport()" class="btn btn-danger mt-20" value="Download">
+                    <div class="checkbox" ng-show="distance">
+                        <label>
+                            <input type="checkbox" ng-change="renderStops()" ng-model="truckTrackingParams.showOnlyStops">
+                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                            : Only Stops
+                        </label>
+                    </div>
+                </div>
+                <!--</center>-->
+
+                <div class="mt-20">
+                    <ul class="list-group" ng-show="distance">
+                        <li class="list-group-item">
+                            <strong>Summary </strong>
+                        </li>
+
+                        <li class="list-group-item">
+                            Distance Travelled : <b>{{distance}}</b>
+                        </li>
+
+                        <li class="list-group-item">
+                            Average Speed : <b>{{averageSpeed | number : 2}}</b>
+                        </li>
+
+                        <li class="list-group-item">
+                            Total Time : <b>{{timeTravelled | number : 2}}</b>
+                        </li>
+                    </ul>
+                </div>
+
+                <!--<div class="mt-10 text-center" ng-show="distance">-->
+                <!--<label>Distance Travelled :</label> <label>{{distance}} </label>-->
+                <!--</div>-->
+
+                <!--<div class="mt-10 text-center" ng-show="distance">-->
+                <!--<label>Average Speed :</label> <label>{{averageSpeed}} </label>-->
+                <!--</div>-->
+
+                <!--<div class="mt-10 text-center" ng-show="distance">-->
+                <!--<label>Total Time :</label> <label>{{timeTravelled}} </label>-->
+                <!--</div>-->
+
+
+                <!--<label>Legends</label>-->
+
+                <div class="mt-10">
+                    <ul class="list-group" ng-show="distance">
+
+                        <li class="list-group-item">
+                            <label>                         Pushpin Legend
+                            </label>
+                        </li>
+
+                        <li class="list-group-item">
+                    <img height="25" width="25" src="/images/green_marker.svg"> <label> - Start Position </label>
+                        </li>
+                        <li class="list-group-item">
+                    <img height="25" width="25" src="/images/red_marker.svg"> <label> - End Position </label>
+                        </li>
+                    </ul>
+                </div>
             </div>
-
-            <div class="mt-10 text-center" ng-show="distance">
-                <label>Average Speed :</label> <label>{{averageSpeed}} </label>
-            </div>
-
-            <div class="mt-10 text-center" ng-show="distance">
-                <label>Total Time :</label> <label>{{timeTravelled}} </label>
-            </div>
-
-
-            <!--<label>Legends</label>-->
-
-            <div class="mt-20 text-center">
-                <img height="25" width="25" src="/images/green_marker.svg"> <label> - Start Position </label>
-            </div>
-            <div class="mt-10 text-center">
-                <img height="25" width="25" src="/images/red_marker.svg"> <label> - End Position </label>
-            </div>
-
-        </div>
         </div>
     </div>
 </div>
