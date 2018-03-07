@@ -1229,11 +1229,16 @@ textarea.custom-form-control{
     width: 80%;
     margin: 0 auto;
 }
-.tab-content{
+.tab-content {
     border: 1px solid #ccc;
     clear: both;
     padding: 20px 10px;
     border-radius: 15px;
+}
+.delfile {
+    position: relative;
+    left: 0px;
+    top: 0px;
 }
 
 /* Responsive Design */

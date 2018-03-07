@@ -1,0 +1,67 @@
+<div ng-controller="guestCtrl" ng-init="countGuest()">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Guests
+        </li>
+        <li class="pull-right col-xs-2">
+            <select class="form-control" ng-model="status1" ng-change="initGuest(status1);">
+                <option value="" selected>Search by Status</option>
+                <option ng-value="true">Enabled</option>
+                <option ng-value="false">Disabled</option>
+            </select>
+        </li>
+        <li class="col-xs-3 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="guest1">
+                <span class="input-group-addon" ng-click="searchByGuest(guest1);"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="guestParams">
+        <tr ng-repeat="guest in currentPageOfGuests" style="text-align: center;">
+            <td data-title="'S.No'">
+                {{$index+1}}
+            </td>
+            <td data-title="'ID'" sortable="'userId'" class="clickable-item">
+                {{guest.userId || '--'}}
+            </td>
+            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
+                {{guest.firstName || '--'}}
+            </td>
+            <td data-title="'Company'" sortable="'companyName'" class="clickable-item">
+                {{guest.companyName || '--'}}
+            </td>
+            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                {{guest.contactPhone || '--'}}
+            </td>
+            <td data-title="'Email'" sortable="'email'" class="clickable-item">
+                {{guest.email || '--'}}
+            </td>
+            <td data-title="'City'" sortable="'city'" class="clickable-item">
+                {{guest.city || '--'}}
+            </td>
+            <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
+                {{guest.createdAt | date:'dd-MM-yyyy' || '--'}}
+            </td>
+            <td data-title="'No of Loads'" sortable="'noOfLoads'" class="clickable-item">
+                {{guest.noOfLoads || '0'}}
+            </td>
+            <td data-title="'SMS/Email'" sortable="'smsEmailAds'" class="clickable-item">
+                <span ng-show="guest.smsEmailAds === 0">NONE</span>
+                <span ng-show="guest.smsEmailAds === 1">BOTH</span>
+                <span ng-show="guest.smsEmailAds === 2">EMAIL</span>
+                <span ng-show="guest.smsEmailAds === 3">SMS</span>
+            </td>
+            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                {{guest.isActive?'Enabled':'Disabled' || '--'}}
+            </td>
+            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
+                <a href="#" ui-sref="customers.addUpdateGuest({guestId: guest._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" ng-click="deleteGuest($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfGuests || currentPageOfGuests.length === 0">
+            <td colspan="8">No Guest Records exist.</td>
+        </tr>
+    </table>
+</div>

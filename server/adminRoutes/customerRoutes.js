@@ -128,7 +128,7 @@ AuthRouter.get('/getCommissionAgentDetails', function (req, res) {
     });
 });
 
-AuthRouter.put('/updateCommissionAgent', function (req, res) {
+AuthRouter.post('/updateCommissionAgent', multipartyMiddleware, function (req, res) {
     CustomerLeads.updateCommissionAgent(req, function (result) {
         res.json(result);
     });
@@ -160,7 +160,7 @@ AuthRouter.get('/getFactoryOwnerDetails', function (req, res) {
     });
 });
 
-AuthRouter.put('/updateFactoryOwner', function (req, res) {
+AuthRouter.post('/updateFactoryOwner', multipartyMiddleware, function (req, res) {
     CustomerLeads.updateFactoryOwner(req, function (result) {
         res.json(result);
     });
@@ -205,9 +205,15 @@ AuthRouter.delete('/deleteGuest', function (req, res) {
 });
 /*Guest End*/
 AuthRouter.delete('/deleteOperatingRoutes',function (req,res) {
-   CustomerLeads.deleteOperatingRoutes(req,function (result) {
-       res.send(result);
-   })
+    CustomerLeads.deleteOperatingRoutes(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.delete('/deleteTrafficManager',function (req,res) {
+    CustomerLeads.deleteTrafficManager(req,function (result) {
+        res.send(result);
+    })
 });
 
 AuthRouter.get('/getEmployeesList',function (req,res) {
@@ -216,6 +222,11 @@ AuthRouter.get('/getEmployeesList',function (req,res) {
    })
 });
 
+AuthRouter.get('/removeDoc',function (req,res) {
+    CustomerLeads.removeDoc(req,function (result) {
+        res.send()
+    })
+});
 
 module.exports = {
     AuthRouter: AuthRouter

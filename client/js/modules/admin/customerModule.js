@@ -136,6 +136,13 @@ app.factory('customerServices', function ($http) {
                 params: {guestId: params}
             }).then(success, error)
         },
+        updateGuest: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/updateGuest',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
         deleteGuest: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/customers/deleteGuest',
@@ -156,11 +163,26 @@ app.factory('customerServices', function ($http) {
                 data: data
             }).then(success, error)
         },
-        deleteOperatingRoutes:function (paramas,success,error) {
+        deleteOperatingRoutes:function (params,success,error) {
             $http({
                 url:'/v1/cpanel/customers/deleteOperatingRoutes',
                 method:"DELETE",
-                params:{_id:paramas}
+                params:{_id:params}
+            }).then(success,error)
+        },
+        deleteTrafficManagers:function (params,success,error) {
+            $http({
+                url:'/v1/cpanel/customers/deleteTrafficManagers',
+                method:"DELETE",
+                params:{_id:params}
+            }).then(success,error)
+        },
+        removeDoc:function (params,success,error) {
+            console.log(params)
+            $http({
+                url:'/v1/cpanel/customers/removeDoc',
+                method:"DELETE",
+                params:params
             }).then(success,error)
         }
     }
@@ -236,7 +258,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             meetingAddress:''
 
         };
-        $scope.files = "";
     }
 
     //$scope.customerLead.contactPhone.push("");
@@ -595,12 +616,13 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                 }
                 $scope.transporter.operatingRoutes = success.data.data.operatingRoutesData;
                 if ($scope.transporter.operatingRoutes.length === 0) {
-                    $scope.transporter.operatingRoutes = [{source: "", destination: "", truckType: ""}];
+                    $scope.transporter.operatingRoutes = [{}];
                 }
                 $scope.transporter.trafficManagers = success.data.data.trafficManagersData;
                 if ($scope.transporter.trafficManagers.length === 0) {
-                    $scope.transporter.trafficManagers = [{fullName: "", mobile: "", city: ""}];
+                    $scope.transporter.trafficManagers = [{}];
                 }
+                $scope.transporter.files=[{}];
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -610,8 +632,6 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
 
         });
     }
-
-    $scope.files = "";
 
     $scope.count = 0;
 
@@ -631,7 +651,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            role: tableParams.role,
+            status: tableParams.status,
             transporter: tableParams.transporter
         };
         customerServices.getTransporter(pageable, function (response) {
@@ -646,7 +666,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         });
     };
 
-    $scope.initTransporter = function (role) {
+    $scope.initTransporter = function (status) {
         $scope.transporterParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -657,7 +677,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                params.role = role;
+                params.status = status;
                 loadTableData(params);
             }
         });
@@ -718,8 +738,42 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             routesObj.push({source: '', destination: '', truckType: ''});
         }
     };
+
     $scope.deleteOperatingRoute = function (index) {
-        $scope.transporter.operatingRoutes.splice(index, 1)
+        if( $scope.transporter.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.transporter.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.transporter.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.transporter.operatingRoutes.splice(index, 1)
+
+        }
     };
 
     $scope.addTrafficManager = function () {
@@ -732,7 +786,39 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
     };
 
     $scope.deleteTrafficManager = function (index) {
-        $scope.transporter.trafficManagers.splice(index, 1)
+        if( $scope.transporter.trafficManagers[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteTrafficManagers($scope.transporter.trafficManagers[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.transporter.trafficManagers.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.transporter.trafficManagers.splice(index, 1)
+        }
     };
 
     $scope.getTruckTypes = function () {
@@ -752,7 +838,11 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.transporter.operatingRoutes[index].source = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].source = place.name;
+                $scope.transporter.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.transporter.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
             });
     };
     $scope.addSearchDestination = function (index) {
@@ -762,7 +852,10 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.transporter.operatingRoutes[index].destination = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].destination = place.name;
+                $scope.transporter.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.transporter.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.transporter.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
             });
     };
 
@@ -791,7 +884,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
                     url: '/v1/cpanel/customers/updateTransporter',
                     method: "POST",
                     data: {
-                        files: [$scope.transporter.newDocumentFile],
+                        files: $scope.transporter.files,
                         content: $scope.transporter
                     }
                 }).then(function (success) {
@@ -828,6 +921,51 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             }
         });
     };
+
+    $scope.addDoc = function () {
+        if ($scope.transporter.files[$scope.transporter.files.length - 1].file) {
+            $scope.transporter.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+            $scope.transporter.files.splice(index, 1)
+    }
+
+    $scope.removeDoc = function (doc,index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                doc.transporterId = $stateParams.transporterId;
+                console.log(doc.transporterId)
+                customerServices.removeDoc(doc, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.transporter.documentFiles.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    }
 }]);
 /*Transporter End*/
 
@@ -857,7 +995,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         "value": 2
     }, {"key": "SMS Only", "value": 3}];
     $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
-    $scope.title = "Add commission Agent";
+    $scope.title = "Add Commission Agent";
 
     if ($stateParams.commissionAgentId) {
         $scope.title = "Edit Commission Agent";
@@ -871,12 +1009,9 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
                 }
                 $scope.commissionAgent.operatingRoutes = success.data.data.operatingRoutesData;
                 if ($scope.commissionAgent.operatingRoutes.length === 0) {
-                    $scope.commissionAgent.operatingRoutes = [{source: "", destination: "", truckType: ""}];
+                    $scope.commissionAgent.operatingRoutes = [{}];
                 }
-                $scope.commissionAgent.trafficManagers = success.data.data.trafficManagersData;
-                if ($scope.commissionAgent.trafficManagers.length === 0) {
-                    $scope.commissionAgent.trafficManagers = [{fullName: "", mobile: "", city: ""}];
-                }
+                $scope.commissionAgent.files=[{}];
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -907,7 +1042,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            role: tableParams.role,
+            status: tableParams.status,
             commissionAgent: tableParams.commissionAgent
         };
         customerServices.getCommissionAgent(pageable, function (response) {
@@ -922,7 +1057,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         });
     };
 
-    $scope.initCommissionAgent = function (role) {
+    $scope.initCommissionAgent = function (status) {
         $scope.commissionAgentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -933,7 +1068,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                params.role = role;
+                params.status = status;
                 loadTableData(params);
             }
         });
@@ -995,7 +1130,40 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         }
     };
     $scope.deleteOperatingRoute = function (index) {
-        $scope.commissionAgent.operatingRoutes.splice(index, 1)
+        if( $scope.commissionAgent.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.commissionAgent.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.commissionAgent.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.commissionAgent.operatingRoutes.splice(index, 1)
+
+        }
     };
 
     $scope.addSearchSource = function (index) {
@@ -1005,7 +1173,11 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.commissionAgent.operatingRoutes[index].source = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].source = place.name;
+                $scope.commissionAgent.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.commissionAgent.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
             });
     };
     $scope.addSearchDestination = function (index) {
@@ -1015,7 +1187,10 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.commissionAgent.operatingRoutes[index].destination = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].destination = place.name;
+                $scope.commissionAgent.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.commissionAgent.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.commissionAgent.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
             });
     };
 
@@ -1044,7 +1219,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
                     url: '/v1/cpanel/customers/updateCommissionAgent',
                     method: "POST",
                     data: {
-                        files: [$scope.commissionAgent.newDocumentFile],
+                        files: $scope.commissionAgent.files,
                         content: $scope.commissionAgent
                     }
                 }).then(function (success) {
@@ -1065,7 +1240,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         }
     };
 
-    $scope.searchBycommissionAgent = function (commissionAgent) {
+    $scope.searchByCommissionAgent = function (commissionAgent) {
         $scope.commissionAgentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -1081,13 +1256,493 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
             }
         });
     };
+
+    $scope.addDoc = function () {
+        if ($scope.commissionAgent.files[$scope.commissionAgent.files.length - 1].file) {
+            $scope.commissionAgent.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+        $scope.commissionAgent.files.splice(index, 1);
+    }
 }]);
 /*Commision Agent End*/
 
 /*Author SVPrasadK*/
 /*Factory Owner Start*/
+app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
+    $scope.status = {
+        isOpen: true,
+        isOpenTwo: true,
+        isOpenThree: true,
+        isOpenFour: true,
+        isOpenFive: true,
+        isOpenSix: true,
+        isOpenSev: true,
+    };
+    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.yearInService = [2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006, 2005, 2004, 2003];
+    $scope.customerProofs = ['Aadhar Card', 'Passport'];
+    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.paymentType = ['Cheque', 'NEFT', 'Cash'];
+    $scope.title = "Add Factory Owner";
+
+    if ($stateParams.factoryOwnerId) {
+        $scope.title = "Edit Factory Owner";
+        customerServices.getFactoryOwnerDetails($stateParams.factoryOwnerId, function (success) {
+            if (success.data.status) {
+                $scope.factoryOwner = success.data.data.accountData;
+                $scope.factoryOwner.confirmPassword = success.data.data.accountData.password;
+                $scope.factoryOwner.newDocumentFile = '';
+                if($scope.factoryOwner.alternatePhone.length === 0) {
+                    $scope.factoryOwner.alternatePhone = [''];
+                }
+                $scope.factoryOwner.operatingRoutes = success.data.data.operatingRoutesData;
+                if($scope.factoryOwner.operatingRoutes.length === 0) {
+                    $scope.factoryOwner.operatingRoutes = [{}];
+                }
+                $scope.factoryOwner.files=[{}];
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.files = "";
+
+    $scope.count = 0;
+
+    $scope.countFactoryOwner = function () {
+        customerServices.countFactoryOwner(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initFactoryOwner("");
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            factoryOwner: tableParams.factoryOwner
+        };
+        customerServices.getFactoryOwner(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfFactoryOwners = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initFactoryOwner = function (status) {
+        $scope.factoryOwnerParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                loadTableData(params);
+            }
+        });
+    };
+
+    $scope.deleteFactoryOwner = function (index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete the commission agent'
+        }).then(function (result) {
+            if (result.value) {
+                customerServices.deleteFactoryOwner($scope.currentPageOfFactoryOwners[index]._id, function (success) {
+                    if (success.data.status) {
+                        $scope.initFactoryOwner("");
+                        swal(
+                            '',
+                            'Successfully removed',
+                            'success'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+    $scope.addNumber = function () {
+        if (!$scope.factoryOwner.alternatePhone[$scope.factoryOwner.alternatePhone.length - 1]) {
+            Notification.error('Enter Alternate Number');
+        } else {
+            $scope.factoryOwner.alternatePhone.push('');
+        }
+    };
+    $scope.removeNumber = function (index) {
+        $scope.factoryOwner.alternatePhone.splice(index, 1)
+    };
+
+    function verifyMobNum() {
+        for (var i = 0; i < $scope.factoryOwner.contactPhone.length; i++) {
+            if (!$scope.factoryOwner.contactPhone[i]) {
+                return false;
+            }
+            if (i === $scope.factoryOwner.contactPhone.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.addOperatingRoute = function () {
+        var routesObj = $scope.factoryOwner.operatingRoutes;
+        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
+            Notification.error('Enter Source and Destination');
+        } else {
+            routesObj.push({source: '', destination: ''});
+        }
+    };
+    $scope.deleteOperatingRoute = function (index) {
+        if( $scope.factoryOwner.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.factoryOwner.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.factoryOwner.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.factoryOwner.operatingRoutes.splice(index, 1)
+
+        }
+    };
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.factoryOwner.operatingRoutes[index].source = place.name;
+                $scope.factoryOwner.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.factoryOwner.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.factoryOwner.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.factoryOwner.operatingRoutes[index].destination = place.name;
+                $scope.factoryOwner.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.factoryOwner.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.factoryOwner.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+            });
+    };
+
+    $scope.cancel = function () {
+        $state.go('customers.factoryOwners');
+    };
+
+    $scope.addUpdateFactoryOwner = function () {
+        var params = $scope.factoryOwner;
+
+        if (!params.leadType || !_.isString(params.leadType)) {
+            Notification.error('Please Select Customer Type');
+        }
+        if (!params.firstName || !_.isString(params.firstName)) {
+            Notification.error('Please Provide Full Name');
+        }
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
+        }
+        if (params.isActive === undefined) {
+            Notification.error('Invalid Status');
+        }
+        else {
+            if ($stateParams.factoryOwnerId) {
+                Upload.upload({
+                    url: '/v1/cpanel/customers/updateFactoryOwner',
+                    method: "POST",
+                    data: {
+                        files: $scope.factoryOwner.files,
+                        content: $scope.factoryOwner
+                    }
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('customers.factoryOwners');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            } else {
+
+            }
+        }
+    };
+
+    $scope.searchByFactoryOwner = function (factoryOwner) {
+        $scope.factoryOwnerParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.factoryOwner = factoryOwner;
+                loadTableData(params);
+            }
+        });
+    };
+
+    $scope.addDoc = function () {
+        if ($scope.factoryOwner.files[$scope.factoryOwner.files.length - 1].file) {
+            $scope.factoryOwner.files.push({});
+        } else {
+            Notification.error("Please select file");
+        }
+    };
+
+    $scope.deleteDoc = function (index) {
+        $scope.factoryOwner.files.splice(index, 1);
+    }
+}]);
 /*Factory Owner End*/
 
 /*Author SVPrasadK*/
 /*Guest Start*/
+app.controller('guestCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'SettingServices', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, customerServices, SettingServices,  Notification, NgTableParams, Upload) {
+    $scope.status = {
+        isOpen: true,
+        isOpenTwo: true,
+        isOpenThree: true,
+    };
+    $scope.leadType = [{"key":"Truck Owner","value":"T"}, {"key":"Transporter","value":"TR"}, {"key":"Commission Agent","value":"C"}, {"key":"Factory Owners","value":"L"}, {"key":"Guest","value":"G"}];
+    $scope.smsEmailAds = [{"key":"None","value":0}, {"key":"SMS/Email","value":1}, {"key":"Email Only","value":2}, {"key":"SMS Only","value":3}];
+    $scope.title = "Add Guest";
+
+    if ($stateParams.guestId) {
+        $scope.title = "Edit Guest";
+        customerServices.getGuestDetails($stateParams.guestId, function (success) {
+            if (success.data.status) {
+                $scope.guest = success.data.data;
+                if($scope.guest.alternatePhone.length === 0) {
+                    $scope.guest.alternatePhone = [''];
+                }
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.count = 0;
+
+    $scope.countGuest = function () {
+        customerServices.countGuest(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initGuest("");
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            guest: tableParams.guest
+        };
+        customerServices.getGuest(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfGuests = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initGuest = function (status) {
+        $scope.guestParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                loadTableData(params);
+            }
+        });
+    };
+
+    $scope.deleteGuest = function (index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete the commission agent'
+        }).then(function (result) {
+            if (result.value) {
+                customerServices.deleteGuest($scope.currentPageOfGuests[index]._id, function (success) {
+                    if (success.data.status) {
+                        $scope.initGuest("");
+                        swal(
+                            '',
+                            'Successfully removed',
+                            'success'
+                        );
+                    }
+                });
+            }
+        });
+    }
+
+    $scope.addNumber = function () {
+        if (!$scope.guest.alternatePhone[$scope.guest.alternatePhone.length - 1]) {
+            Notification.error('Enter Alternate Number');
+        } else {
+            $scope.guest.alternatePhone.push('');
+        }
+    };
+    $scope.removeNumber = function (index) {
+        $scope.guest.alternatePhone.splice(index, 1)
+    };
+
+    function verifyMobNum() {
+        for (var i = 0; i < $scope.guest.contactPhone.length; i++) {
+            if (!$scope.guest.contactPhone[i]) {
+                return false;
+            }
+            if (i === $scope.guest.contactPhone.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.cancel = function () {
+        $state.go('customers.guests');
+    };
+
+    $scope.addUpdateGuest = function () {
+        var params = $scope.guest;
+
+        if (!params.leadType || !_.isString(params.leadType)) {
+            Notification.error('Please Select Customer Type');
+        }
+        if (!params.firstName || !_.isString(params.firstName)) {
+            Notification.error('Please Provide Full Name');
+        }
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
+        }
+        if (params.isActive === undefined) {
+            Notification.error('Invalid Status');
+        }
+        else {
+            if ($stateParams.guestId) {
+                customerServices.updateGuest(params, function (success) {
+                    if (success.data.status) {
+                        Notification.success(success.data.messages[0]);
+                        $state.go('customers.guests');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            } else {
+
+            }
+        }
+    };
+
+    $scope.searchByGuest = function (guest) {
+        $scope.guestParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.guest = guest;
+                loadTableData(params);
+            }
+        });
+    };
+}]);
 /*Guest End*/

@@ -60,7 +60,13 @@ var accountSchema = new mongoose.Schema({
     companyName: String,
     pincode: String,
     role: String,
-    documentFiles: String,
+    documentType: String,
+    documentFiles: [],
+    paymentType: String,
+    loadPaymentToPayPercent: Number,
+    loadPaymentAdvancePercent: Number,
+    loadPaymentPodDays: Number,
+    tdsDeclarationDoc: Number,
     yearInService:Number,
     leadSource:String,
     officeNumber: String,
@@ -468,12 +474,11 @@ var customerTypesSchema = mongoose.Schema({
 var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     assignedTo: {type: ObjectId, ref: 'accounts'},
-    firstName:String,
     id_franchise: Number,
     userId: String,
     gps_account_id: String,
     accountId: {type: ObjectId, ref: 'accounts'},
-    userName: String,
+    firstName: String,
     password: String,
     contactPhone: Number,
     alternatePhone:[Number],
@@ -501,6 +506,7 @@ var customerLeadsSchema = mongoose.Schema({
     leadStatus: {type: String, default: 'Initiated'},
     isActive: {type: Boolean, default: false},
     fuelCardApplied: {type: Boolean, default: false},
+    smsEmailAds: Number,
 }, {timestamps: String});
 
 var accountDevicePlanHistory = new mongoose.Schema({

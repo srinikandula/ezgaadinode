@@ -1,4 +1,4 @@
-<div class="col-xs-12 newCust" ng-controller="transporterCtrl" ng-init="getTruckTypes();">
+<div class="col-xs-12 newCust" ng-controller="factoryOwnerCtrl">
     <h4>{{title}}</h4>
     <div class="col-xs-12">
         <uib-accordion>
@@ -10,10 +10,10 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <h4 style="padding-left: 60px;">ID : {{transporter.userId}}</h4>
+                            <h4 style="padding-left: 60px;">ID : {{factoryOwner.userId}}</h4>
                         </div>
                         <div class="form-group styling-input-list">
-                            <select class="form-control custom-form-control" ng-model="transporter.leadType">
+                            <select class="form-control custom-form-control" ng-model="factoryOwner.leadType">
                                 <option ng-value="" selected>-- Select --</option>
                                 <option ng-repeat="type in leadType" ng-value="type.value">{{type.key}}</option>
                             </select>
@@ -21,20 +21,20 @@
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="fullName"
-                                   ng-model="transporter.firstName"/>
+                                   ng-model="factoryOwner.firstName"/>
                             <label class="focus-effect-for-input">Full Name*</label>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group pos-relative styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="mobile"
-                                   ng-model="transporter.contactPhone" ng-pattern="/^[0-9]/"/>
+                                   ng-model="factoryOwner.contactPhone" ng-pattern="/^[0-9]/"/>
                             <label class="focus-effect-for-input">Mobile*</label>
                         </div>
                         <div class="form-group pos-relative styling-input-list"
-                             ng-repeat="mobile in transporter.alternatePhone track by $index">
+                             ng-repeat="mobile in factoryOwner.alternatePhone track by $index">
                             <input type="text" class="form-control custom-form-control" name="mobile"
-                                   ng-model="transporter.alternatePhone[$index]" ng-pattern="/^[0-9]/">
+                                   ng-model="factoryOwner.alternatePhone[$index]" ng-pattern="/^[0-9]/">
                             <label class="focus-effect-for-input">Alternate Mobile</label>
 
                             <span class="plus-pos" ng-show="$index >= 1">
@@ -44,7 +44,7 @@
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="email"
-                                   ng-model="transporter.email"/>
+                                   ng-model="factoryOwner.email"/>
                             <label class="focus-effect-for-input">Email</label>
                         </div>
                     </div>
@@ -62,29 +62,29 @@
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="companyName"
-                                   ng-model="transporter.companyName"/>
+                                   ng-model="factoryOwner.companyName"/>
                             <label class="focus-effect-for-input">Company Name</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="contactAddress"
-                                   ng-model="transporter.contactAddress"/>
+                                   ng-model="factoryOwner.contactAddress"/>
                             <label class="focus-effect-for-input">Address</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="city"
-                                   ng-model="transporter.city"/>
+                                   ng-model="factoryOwner.city"/>
                             <label class="focus-effect-for-input">city</label>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group pos-relative styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="state"
-                                   ng-model="transporter.state"/>
+                                   ng-model="factoryOwner.state"/>
                             <label class="focus-effect-for-input">State</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="pincode"
-                                   ng-model="transporter.pincode"/>
+                                   ng-model="factoryOwner.pincode"/>
                             <label class="focus-effect-for-input">Pincode</label>
                         </div>
                     </div>
@@ -101,14 +101,14 @@
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="password"
-                                   ng-model="transporter.password"/>
+                                   ng-model="factoryOwner.password"/>
                             <label class="focus-effect-for-input">Password</label>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group pos-relative styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="confirmPassword"
-                                   ng-model="transporter.confirmPassword"/>
+                                   ng-model="factoryOwner.confirmPassword"/>
                             <label class="focus-effect-for-input">Confirm Password</label>
                         </div>
                     </div>
@@ -155,14 +155,19 @@
                             </ul>
                         </div>
                         <div class="form-group styling-input-list">
-                            <select class="form-control custom-form-control" ng-model="transporter.yearInService">
+                            <input type="text" class="form-control custom-form-control" name="noOfTrucks"
+                                   ng-model="factoryOwner.noOfTrucks"/>
+                            <label class="focus-effect-for-input">No Of Vehicles</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="factoryOwner.yearInService">
                                 <option ng-value="" selected>-- Select --</option>
                                 <option ng-repeat="years in yearInService" ng-value="years">{{years}}</option>
                             </select>
                             <label class="focus-effect-for-input">Year In Service</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <select class="form-control custom-form-control" ng-model="transporter.smsEmailAds">
+                            <select class="form-control custom-form-control" ng-model="factoryOwner.smsEmailAds">
                                 <option ng-value="" selected>-- Select --</option>
                                 <option ng-repeat="smsEmailAd in smsEmailAds" ng-value="smsEmailAd.value">
                                     {{smsEmailAd.key}}
@@ -170,10 +175,38 @@
                             </select>
                             <label class="focus-effect-for-input">Enable SMS/Email Ads</label>
                         </div>
+                        <div class="form-group">
+                            <p class="smsenabled">Status*:</p>
+                            <ul class="list-inline">
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="isActive" ng-value="true"
+                                                   ng-model="factoryOwner.isActive"
+                                                   checked>
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Enable
+                                        </label>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="radio">
+                                        <label>
+                                            <input type="radio" name="isActive" ng-value="false"
+                                                   ng-model="factoryOwner.isActive">
+                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
+                                            Disable
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6">
                         <div class="routes">
                             <h4>Operating Routes</h4>
                             <div class="form-group pos-relative styling-input-list"
-                                 ng-repeat="operatingRoute in transporter.operatingRoutes track by $index">
+                                 ng-repeat="operatingRoute in factoryOwner.operatingRoutes track by $index">
                                 <div class="form-group styling-input-list">
                                     <input type="text" class="form-control custom-form-control" name="source"
                                            ng-model="operatingRoute.source" id="searchSource{{$index}}"
@@ -186,108 +219,14 @@
                                            ng-change="addSearchDestination($index)"/>
                                     <label class="focus-effect-for-input">Destination</label>
                                 </div>
-                                <div class="form-group styling-input-list">
-                                    <select class="form-control custom-form-control"
-                                            ng-model="operatingRoute.truckType">
-                                        <option value="" selected>Truck Type</option>
-                                        <option ng-repeat="trucksType in getTruckTypes" value="{{trucksType._id}}">
-                                            {{trucksType.title}}
-                                        </option>
-                                    </select>
-                                </div>
                                 <span class="plus-pos" ng-show="$index >= 1">
-                                <i class="fa fa-times-circle clr-red"
-                                   ng-click="deleteOperatingRoute($index)"></i></span>
+                                <i class="fa fa-times-circle clr-red" ng-click="deleteOperatingRoute($index)"></i></span>
                                 <span class="plus-pos" ng-show="$index == 0">
-                                <i class="fa fa-plus-square" aria-hidden="true"
-                                   ng-click="addOperatingRoute()"></i></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <p class="smsenabled">Status*:</p>
-                            <ul class="list-inline">
-                                <li>
-                                    <div class="radio">
-                                        <label>
-                                            <input type="radio" name="isActive" ng-value="true"
-                                                   ng-model="transporter.isActive"
-                                                   checked>
-                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            Enable
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="radio">
-                                        <label>
-                                            <input type="radio" name="isActive" ng-value="false"
-                                                   ng-model="transporter.isActive">
-                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            Disable
-                                        </label>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="form-group">
-                            <p class="smsenabled">Approved*:</p>
-                            <ul class="list-inline">
-                                <li>
-                                    <div class="radio">
-                                        <label>
-                                            <input type="radio" name="leadStatus" ng-value="true"
-                                                   ng-model="transporter.leadStatus"
-                                                   checked>
-                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            Enable
-                                        </label>
-                                    </div>
-                                </li>
-                                <li>
-                                    <div class="radio">
-                                        <label>
-                                            <input type="radio" name="leadStatus" ng-value="false"
-                                                   ng-model="transporter.leadStatus">
-                                            <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
-                                            Disable
-                                        </label>
-                                    </div>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="routes">
-                            <h4>Traffic Managers</h4>
-                            <div class="form-group pos-relative styling-input-list"
-                                 ng-repeat="trafficManager in transporter.trafficManagers track by $index">
-                                <div class="form-group styling-input-list">
-                                    <input type="text" class="form-control custom-form-control"
-                                           ng-model="trafficManager.fullName"
-                                           name="fullName"/>
-                                    <label class="focus-effect-for-input">Full Name</label>
-                                </div>
-                                <div class="form-group styling-input-list">
-                                    <input type="text" class="form-control custom-form-control"
-                                           ng-model="trafficManager.mobile" name="mobile"/>
-                                    <label class="focus-effect-for-input">Mobile</label>
-                                </div>
-                                <div class="form-group styling-input-list">
-                                    <input type="text" class="form-control custom-form-control"
-                                           ng-model="trafficManager.city" name="city"/>
-                                    <label class="focus-effect-for-input">City</label>
-                                </div>
-                                <span class="plus-pos" ng-show="$index >= 1">
-                                <i class="fa fa-times-circle clr-red"
-                                   ng-click="deleteTrafficManager($index)"></i></span>
-                                <span class="plus-pos" ng-show="$index == 0">
-                                <i class="fa fa-plus-square" aria-hidden="true"
-                                   ng-click="addTrafficManager()"></i></span>
+                                <i class="fa fa-plus-square" aria-hidden="true" ng-click="addOperatingRoute()"></i></span>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </uib-accordion>
         <uib-accordion>
@@ -298,7 +237,7 @@
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
-                        <div ng-repeat="file in transporter.files">
+                        <div ng-repeat="file in factoryOwner.files">
                             <div class="form-group pos-relative">
                                     <span class="plus-pos" ng-show="$index == 0">
                                     <i class="fa fa-plus-square" aria-hidden="true" ng-click="addDoc()"></i></span>
@@ -306,14 +245,11 @@
                                        ng-model="file.file" ngf-select ngf-pattern="'image/*'" ngf-accept="'image/*'">
 
                                 <span class="plus-pos " ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
-                                                                                  ng-click="deleteDoc($index)"></i></span>
+                                                                                  ng-click="deleteDoc()"></i></span>
                             </div>
                         </div>
-                        <div>
-                            <span class="delfile" ng-repeat="doc in transporter.documentFiles"><img src="assets/documents/{{doc}}" width="100">
-                            <span class="plus-pos ">
-                                <i class="fa fa-times-circle clr-red"
-                                                                              ng-click="removeDoc(doc,$index)"></i></span></span>
+                        <div ng-repeat="doc in factoryOwner.documentFiles">
+                            <img src="assets/documents/{{doc}}" width="100">
                         </div>
                     </div>
                 </div>
@@ -330,29 +266,29 @@
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="bankName"
-                                   ng-model="transporter.bankName"/>
+                                   ng-model="factoryOwner.bankName"/>
                             <label class="focus-effect-for-input">Bank Name</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="bankIfscCode"
-                                   ng-model="transporter.bankIfscCode"/>
+                                   ng-model="factoryOwner.bankIfscCode"/>
                             <label class="focus-effect-for-input">Bank IFSC Code</label>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="bankAccNo"
-                                   ng-model="transporter.bankAccNo"/>
+                                   ng-model="factoryOwner.bankAccNo"/>
                             <label class="focus-effect-for-input">Bank Account No</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="bankBranch"
-                                   ng-model="transporter.bankBranch"/>
+                                   ng-model="factoryOwner.bankBranch"/>
                             <label class="focus-effect-for-input">Bank Branch</label>
                         </div>
                         <!--<div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="rating"
-                                   ng-model="transporter.rating"/>
+                                   ng-model="factoryOwner.rating"/>
                             <label class="focus-effect-for-input">Rating</label>
                         </div>-->
                     </div>
@@ -369,19 +305,19 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="transporter.paymentType">
+                            <select class="form-control custom-form-control" ng-model="factoryOwner.paymentType">
                                 <option value="" selected>Payment Type</option>
                                 <option ng-repeat="payType in paymentType" value="{{payType}}">{{payType}}</option>
                             </select>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="payPrecent"
-                                   ng-model="transporter.loadPaymentToPayPercent"/>
+                                   ng-model="factoryOwner.loadPaymentToPayPercent"/>
                             <label class="focus-effect-for-input">Load Payment To pay Percent</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="tds"
-                                   ng-model="transporter.tdsDeclarationDoc"/>
+                                   ng-model="factoryOwner.tdsDeclarationDoc"/>
                             <label class="focus-effect-for-input">TDS Declaration Doc</label>
 
                         </div>
@@ -389,20 +325,20 @@
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="advancePercent"
-                                   ng-model="transporter.loadPaymentAdvancePercent"/>
+                                   ng-model="factoryOwner.loadPaymentAdvancePercent"/>
                             <label class="focus-effect-for-input">Load Payment Advance Percent</label>
 
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="podDays"
-                                   ng-model="transporter.loadPaymentPodDays"/>
+                                   ng-model="factoryOwner.loadPaymentPodDays"/>
                             <label class="focus-effect-for-input">Load Payment POD days</label>
 
                         </div>
 
                         <div class="form-group styling-input-list">
                             <input type="number" class="form-control custom-form-control" name="leadSource"
-                                   ng-model="transporter.leadSource"/>
+                                   ng-model="factoryOwner.leadSource"/>
                             <label class="focus-effect-for-input">lead Source</label>
 
                         </div>
@@ -413,7 +349,7 @@
         </uib-accordion>-->
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
-            <a href="#" class="btn btn-primary" ng-click="addUpdateTransporter()">Submit</a>
+            <a href="#" class="btn btn-primary" ng-click="addUpdateFactoryOwner()">Submit</a>
         </div>
     </div>
 </div>

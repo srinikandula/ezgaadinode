@@ -131,12 +131,7 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
         });
         callback(retObj);
     } else {
-        if (params.alternatePhone[params.alternatePhone.length - 1] === "") {
-            params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
-        }
-        if (!params.operatingRoutes) {
-            params.operatingRoutes = [];
-        }
+
         if (req.files.files) {
             Utils.uploadDocuments(req.files.files, function (uploadResp) {
                 if (uploadResp.status) {
@@ -185,6 +180,7 @@ function saveCustomerLead(req, params, callback) {
             callback(retObj);
         } else {
             /* if there is any operatingRoutes added to operatingRoutes collection ,else return success */
+            console.log("params.operatingRoutes", params.operatingRoutes);
             if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (operatingRoute, routesCallback) {
                     operatingRoute.accountId = doc._id;
@@ -322,19 +318,10 @@ CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        if (params.alternatePhone[params.alternatePhone.length - 1] === "") {
-            params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
-        }
-        if (!params.operatingRoutes) {
-            params.operatingRoutes = [];
-        }
-
         if (req.files.files) {
             Utils.uploadDocuments(req.files.files, function (uploadResp) {
                 if (uploadResp.status) {
-                    if (!req.body.content.documentFiles) {
-                        req.body.content.documentFiles = [];
-                    }
+
                     req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
 
                     updateCustomerLead(req, callback);
@@ -587,16 +574,6 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
     if (!params.comment) {
         retObj.messages.push("Please enter comment");
     }
-    if (!params.leadType) {
-        retObj.messages.push("Please select lead type");
-    }
-    if (params.status === 'Accepted' && !params.userName) {
-        retObj.messages.push("Please enter user name");
-    }
-    if (params.status === "Accepted" && !params.password) {
-        retObj.messages.push("Please enter password");
-    }
-
 
     if (retObj.messages.length > 0) {
         callback(retObj);
@@ -604,8 +581,7 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
         if (params.status === 'Reject') {
             CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {
                 status: params.status,
-                comment: params.comment,
-                leadType: params.leadType
+                comment: params.comment
             }, function (err, customerLead) {
                 if (err) {
                     retObj.messages.push("Please try again");
@@ -679,10 +655,9 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                         } else if (customerLead) {
                             var accountParams = {
                                 _id: customerLead._id,
-                                userName: params.userName,
-                                firstName: customerLead.firstName,
+                                userName: customerLead.userName,
                                 contactPhone: customerLead.contactPhone,
-                                password: params.password,
+                                password: customerLead.contactPhone,
                                 email: customerLead.email,
                                 type: "account",
                                 accountId: customerLead._id,
@@ -697,13 +672,20 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                 alternatePhone: customerLead.alternatePhone,
                                 companyName: customerLead.companyName,
                                 pincode: customerLead.pinCode,
-                                role: params.leadType,
+                                role: customerLead.leadType,
+                                documentType: customerLead.documentType,
                                 documentFile: customerLead.documentFile,
+                                paymentType: customerLead.paymentType,
+                                loadPaymentToPayPercent: customerLead.loadPaymentToPayPercent,
+                                loadPaymentAdvancePercent: customerLead.loadPaymentAdvancePercent,
+                                loadPaymentPodDays: customerLead.loadPaymentPodDays,
+                                tdsDeclarationDoc: customerLead.tdsDeclarationDoc,
                                 yearInService: customerLead.yearInService,
                                 leadSource: customerLead.leadSource
                             };
 
                             generateUniqueUserId(customerLead.type, function (userIdResp) {
+                                console.log("converted");
 
                                 if (!userIdResp.status) {
                                     analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
@@ -718,9 +700,8 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                     accountParams.userId = userIdResp.userId;
                                     var account = new AccountsColl(accountParams);
                                     account.save(function (err, saveAcc) {
-                                        console.log(err);
                                         if (err) {
-                                            retObj.messages.push("Please try again");
+                                            retObj.messages("Please try again");
                                             analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
                                                 body: JSON.stringify(req.body),
                                                 accountId: req.jwt.id,
@@ -769,6 +750,7 @@ function generateUniqueUserId(userType, callback) {
         status: false,
         messages: []
     };
+    console.log("usertype", userType);
     if (userType === 'Truck Owner') {
         retObj.userId = "TO" + parseInt(Math.random() * 100000);
     } else if (userType === 'Manufacturer') {
@@ -786,9 +768,7 @@ function generateUniqueUserId(userType, callback) {
             callback(retObj);
         } else if (doc) {
             console.log('asd', doc);
-            retObj.status = true;
-            callback(retObj);
-            //generateUniqueUserId(userType, callback);
+            generateUniqueUserId(userType, callback);
         } else {
             console.log("converted");
 
@@ -853,7 +833,7 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
         status: false,
         messages: []
     };
-    var params = req.body.content;
+    var params = req.body;
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid truck owner');
     }
@@ -866,55 +846,12 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        if (params.alternatePhone[params.alternatePhone.length - 1] === "") {
-            params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
-        }
-        if (!params.operatingRoutes) {
-            params.operatingRoutes = [];
-        }
-
-        if (req.files.files) {
-            Utils.uploadDocuments(req.files.files, function (uploadResp) {
-                if (uploadResp.status) {
-                    if (!req.body.content.documentFiles) {
-                        req.body.content.documentFiles = [];
-                    }
-                    req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
-
-                    updateTruckOwner(req, callback);
-                } else {
-                    retObj.messages.push("Document uploading failed");
-                    analyticsService.create(req, serviceActions.update_customer_lead_err, {
-                        body: JSON.stringify(req.body),
-                        accountId: req.jwt.id,
-                        success: false,
-                        messages: retObj.messages
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                }
-            })
-        } else {
-            updateCustomerLead(req, callback);
-        }
-    }
-
-};
-
-function updateTruckOwner(req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.body.content;
-    Utils.removeEmptyFields(params);
-    AccountsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
-        function (err, doc) {
+        params = Utils.removeEmptyFields(params);
+        AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
             if (err) {
-                console.log(err);
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.update_truck_owner_details_err, {
-                    body: JSON.stringify(req.body.content),
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -932,15 +869,8 @@ function updateTruckOwner(req, callback) {
                         } else {
                             query = {_id: route._id}
                         }
-                        route.updatedBy = req.jwt.id;
-                        delete route.__v;
                         OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
-                            if (err) {
-                                retObj.messages.push('Error adding/updating route');
-                                routeCallback(err);
-                            } else {
-                                routeCallback(null, 'saved');
-                            }
+                            routeCallback(err);
                         });
                     }, function (err) {
                         if (err) {
@@ -955,9 +885,9 @@ function updateTruckOwner(req, callback) {
                             callback(retObj);
                         } else {
                             retObj.status = true;
-                            retObj.messages.push("CustomerLead updated successfully");
+                            retObj.messages.push("Truck owner updated successfully");
                             analyticsService.create(req, serviceActions.update_truck_owner_details, {
-                                body: JSON.stringify(req.body.content),
+                                body: JSON.stringify(req.body),
                                 accountId: req.jwt.id,
                                 success: true
                             }, function (response) {
@@ -968,19 +898,18 @@ function updateTruckOwner(req, callback) {
                 } else {
                     retObj.status = true;
                     retObj.messages.push("Truck owner updated successfully");
-                    analyticsService.create(req, serviceActions.update_customer_lead, {
-                        body: JSON.stringify(req.body.content),
+                    analyticsService.create(req, serviceActions.update_truck_owner_details, {
+                        body: JSON.stringify(req.body),
                         accountId: req.jwt.id,
                         success: true
                     }, function (response) {
                     });
                     callback(retObj);
                 }
-
             } else {
                 retObj.messages.push("Truck owner not updated");
-                analyticsService.create(req, serviceActions.update_customer_lead_err, {
-                    body: JSON.stringify(req.body.content),
+                analyticsService.create(req, serviceActions.update_truck_owner_details_err, {
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -989,7 +918,10 @@ function updateTruckOwner(req, callback) {
                 callback(retObj);
             }
         })
-}
+
+    }
+
+};
 
 CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
     var retObj = {
@@ -1004,7 +936,7 @@ CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.remove({_id: params._id}, function (err, doc) {
+        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_truck_owner_err, {
@@ -1039,7 +971,56 @@ CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
         })
     }
 };
-/*Truck */
+
+CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid truck owner");
+    }
+
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("please try again");
+                analyticsService.create(req, serviceActions.delete_truck_owner_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc && doc.result.n == 1) {
+                retObj.status = true;
+                retObj.messages.push("Truck owner deleted successfully");
+                analyticsService.create(req, serviceActions.delete_truck_owner, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Truck owner not deleted");
+                analyticsService.create(req, serviceActions.delete_truck_owner_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
 /*Author SVPrasadK*/
 /*Transporter Start*/
 CustomerLeads.prototype.countTransporter = function (req, callback) {
@@ -1090,10 +1071,41 @@ CustomerLeads.prototype.getTransporter = function (req, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
+        if (params.transporter) {
+            condition = {
+                $or:
+                    [
+                        {"userId": new RegExp(params.transporter, "gi")},
+                        {"fullName": new RegExp(params.transporter, "gi")},
+                        {"companyName": new RegExp(params.transporter, "gi")},
+                        // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                    ], role: 'Transporter'
+            };
+        } else if (params.status) {
+            console.log('status', params.status)
+            if (params.status === 'gps') {
+                condition = {role: 'Transporter', "gpsEnabled": true}
+            } else if (params.status === 'erp') {
+                condition = {role: 'Transporter', "erpEnabled": true}
+            } else if (params.status === 'both') {
+                condition = {
+                    $and:
+                        [
+                            {"gpsEnabled": true},
+                            {"erpEnabled": true},
+                        ], role: 'Transporter'
+                };
+            } else {
+                condition = {role: 'Transporter', "isActive": params.status}
+            }
+        } else {
+            condition = {role: 'Transporter'}
+        }
+
         async.parallel({
             Transporters: function (transportersCallback) {
                 AccountsColl
-                    .find({role: 'Transporter'})
+                    .find(condition)
                     .sort(sort)
                     .skip(skipNumber)
                     .limit(limit)
@@ -1101,10 +1113,9 @@ CustomerLeads.prototype.getTransporter = function (req, callback) {
                     .exec(function (err, transporters) {
                         transportersCallback(err, transporters);
                     });
-                ``
             },
             count: function (countCallback) {
-                AccountsColl.count({role: 'Transporter'}, function (err, count) {
+                AccountsColl.count(condition, function (err, count) {
                     countCallback(err, count);
                 });
             }
@@ -1211,6 +1222,7 @@ CustomerLeads.prototype.updateTransporter = function (req, callback) {
         messages: []
     };
     var params = req.body.content;
+
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid transporter');
     }
@@ -1235,27 +1247,17 @@ CustomerLeads.prototype.updateTransporter = function (req, callback) {
     } else {
         params = Utils.removeEmptyFields(params);
         if (req.files.files) {
-            Utils.removeCustomerDoc(params.documentFile, function (removeResp) {
-                if (removeResp.status) {
-                    Utils.uploadCustomerDoc(req.files.files[0], function (uploadResp) {
-                        if (uploadResp.status) {
-                            params.documentFile = uploadResp.fileName;
-                            params.updatedBy = req.jwt.id;
-                            updateTransporter(req, params, callback);
-                        } else {
-                            retObj.messages.push("Document uploading failed");
-                            analyticsService.create(req, serviceActions.update_transporter_err, {
-                                body: JSON.stringify(req.query),
-                                accountId: req.jwt.id,
-                                success: false,
-                                messages: retObj.messages
-                            }, function (response) {
-                            });
-                            callback(retObj);
-                        }
-                    });
+            Utils.uploadDocuments(req.files.files, function (uploadResp) {
+                if (uploadResp.status) {
+                    if (!req.body.content.documentFiles) {
+                        req.body.content.documentFiles = [];
+                    }
+                    // params.documentFile = uploadResp.fileName;
+                    req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
+                    req.body.content.updatedBy = req.jwt.id;
+                    updateTransporter(req, callback);
                 } else {
-                    retObj.messages.push("Document Removing failed");
+                    retObj.messages.push("Document uploading failed");
                     analyticsService.create(req, serviceActions.update_transporter_err, {
                         body: JSON.stringify(req.query),
                         accountId: req.jwt.id,
@@ -1267,20 +1269,25 @@ CustomerLeads.prototype.updateTransporter = function (req, callback) {
                 }
             });
         } else {
-            console.log('params ====>', params);
-            params.updatedBy = req.jwt.id;
-            updateTransporter(req, params, callback);
+            req.body.content.updatedBy = req.jwt.id;
+            updateTransporter(req, callback);
         }
     }
 
 };
 
-function updateTransporter(req, params, callback) {
+function updateTransporter(req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-
+    var params = req.body.content;
+    if (!params.operatingRoutes) {
+        params.operatingRoutes = [];
+    }
+    if (!params.trafficManagers) {
+        params.trafficManagers = [];
+    }
     AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
         if (err) {
             retObj.messages.push("Please try again");
@@ -1505,10 +1512,26 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
+        if (params.commissionAgent) {
+            condition = {
+                $or:
+                    [
+                        {"userId": new RegExp(params.commissionAgent, "gi")},
+                        {"fullName": new RegExp(params.commissionAgent, "gi")},
+                        {"companyName": new RegExp(params.commissionAgent, "gi")},
+                        // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                    ], role: 'Commission Agent'
+            };
+        } else if (params.status) {
+            condition = {role: 'Commission Agent', "isActive": params.status}
+        } else {
+            condition = {role: 'Commission Agent'}
+        }
+
         async.parallel({
             commissionAgents: function (commissionAgentsCallback) {
                 AccountsColl
-                    .find({role: 'Commission Agent'})
+                    .find(condition)
                     .sort(sort)
                     .skip(skipNumber)
                     .limit(limit)
@@ -1575,11 +1598,6 @@ CustomerLeads.prototype.getCommissionAgentDetails = function (req, callback) {
             operatingRoutesData: function (operatingRoutesDataCallback) {
                 OperatingRoutesColl.find({accountId: params.commissionAgentId}, function (err, doc) {
                     operatingRoutesDataCallback(err, doc);
-                });
-            },
-            trafficManagersData: function (trafficManagersDataCallback) {
-                trafficManagerColl.find({accountId: params.commissionAgentId}, function (err, doc) {
-                    trafficManagersDataCallback(err, doc);
                 });
             }
         }, function (err, result) {
@@ -1650,27 +1668,17 @@ CustomerLeads.prototype.updateCommissionAgent = function (req, callback) {
     } else {
         params = Utils.removeEmptyFields(params);
         if (req.files.files) {
-            Utils.removeCustomerDoc(params.documentFile, function (removeResp) {
-                if (removeResp.status) {
-                    Utils.uploadCustomerDoc(req.files.files[0], function (uploadResp) {
-                        if (uploadResp.status) {
-                            params.documentFile = uploadResp.fileName;
-                            params.updatedBy = req.jwt.id;
-                            updateCommissionAgent(req, params, callback);
-                        } else {
-                            retObj.messages.push("Document uploading failed");
-                            analyticsService.create(req, serviceActions.update_commission_agent_err, {
-                                body: JSON.stringify(req.query),
-                                accountId: req.jwt.id,
-                                success: false,
-                                messages: retObj.messages
-                            }, function (response) {
-                            });
-                            callback(retObj);
-                        }
-                    });
+            Utils.uploadDocuments(req.files.files, function (uploadResp) {
+                if (uploadResp.status) {
+                    if (!req.body.content.documentFiles) {
+                        req.body.content.documentFiles = [];
+                    }
+                    // params.documentFile = uploadResp.fileName;
+                    req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
+                    req.body.content.updatedBy = req.jwt.id;
+                    updateCommissionAgent(req, callback);
                 } else {
-                    retObj.messages.push("Document Removing failed");
+                    retObj.messages.push("Document uploading failed");
                     analyticsService.create(req, serviceActions.update_commission_agent_err, {
                         body: JSON.stringify(req.query),
                         accountId: req.jwt.id,
@@ -1682,20 +1690,22 @@ CustomerLeads.prototype.updateCommissionAgent = function (req, callback) {
                 }
             });
         } else {
-            console.log('params ====>', params);
-            params.updatedBy = req.jwt.id;
-            updateCommissionAgent(req, params, callback);
+            req.body.content.updatedBy = req.jwt.id;
+            updateCommissionAgent(req, callback);
         }
     }
 
 };
 
-function updateCommissionAgent(req, params, callback) {
+function updateCommissionAgent(req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-
+    var params = req.body.content;
+    if (!params.operatingRoutes) {
+        params.operatingRoutes = [];
+    }
     AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
         if (err) {
             retObj.messages.push("Please try again");
@@ -1862,37 +1872,82 @@ CustomerLeads.prototype.getFactoryOwner = function (req, callback) {
         messages: []
     };
 
-    AccountsColl.find({role: 'Factory Owners'}, function (err, docs) {
-        if (err) {
-            retObj.messages.push('Error retrieving factory owner');
-            analyticsService.create(req, serviceActions.get_factory_owner_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        } else if (docs.length > 0) {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.data = docs;
-            analyticsService.create(req, serviceActions.get_factory_owner, {
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
-            callback(retObj);
+    var condition = {};
+    var params = req.query;
+
+    if (!params.page) {
+        params.page = 1;
+    }
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
+        if (params.factoryOwner) {
+            condition = {
+                $or:
+                    [
+                        {"userId": new RegExp(params.factoryOwner, "gi")},
+                        {"fullName": new RegExp(params.factoryOwner, "gi")},
+                        {"companyName": new RegExp(params.factoryOwner, "gi")},
+                        // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                        {"email": new RegExp(params.factoryOwner, "gi")},
+                        {"city": new RegExp(params.factoryOwner, "gi")},
+                    ], role: 'Factory Owners'
+            };
+        } else if (params.status) {
+            condition = {role: 'Factory Owners', "isActive": params.status}
         } else {
-            retObj.messages.push('No factory owner found');
-            analyticsService.create(req, serviceActions.get_factory_owner_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
+            condition = {role: 'Factory Owners'}
         }
-    });
+
+        async.parallel({
+            factoryOwners: function (factoryOwnersCallback) {
+                AccountsColl
+                    .find(condition)
+                    .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, factoryOwners) {
+                        factoryOwnersCallback(err, factoryOwners);
+                    });
+            },
+            count: function (countCallback) {
+                AccountsColl.count({role: 'Factory Owners'}, function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, docs) {
+            if (err) {
+                retObj.messages.push('Error retrieving factory owner');
+                analyticsService.create(req, serviceActions.get_factory_owner_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = docs.count;
+                retObj.accountId = req.jwt.id;
+                retObj.userType = req.jwt.type;
+                retObj.data = docs.factoryOwners;
+                analyticsService.create(req, serviceActions.get_factory_owner, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
 };
 
 CustomerLeads.prototype.getFactoryOwnerDetails = function (req, callback) {
@@ -1901,16 +1956,28 @@ CustomerLeads.prototype.getFactoryOwnerDetails = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+
+    if (!params.factoryOwnerId || !ObjectId.isValid(params.factoryOwnerId)) {
         retObj.messages.push("Invalid factory owner");
     }
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({_id: params._id}, function (err, doc) {
+        async.parallel({
+            accountData: function (accountDataCallback) {
+                AccountsColl.findOne({_id: params.factoryOwnerId}, function (err, doc) {
+                    accountDataCallback(err, doc);
+                });
+            },
+            operatingRoutesData: function (operatingRoutesDataCallback) {
+                OperatingRoutesColl.find({accountId: params.factoryOwnerId}, function (err, doc) {
+                    operatingRoutesDataCallback(err, doc);
+                });
+            }
+        }, function (err, result) {
             if (err) {
                 retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_factory_owner_err, {
+                analyticsService.create(req, serviceActions.get_factory_owner_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -1918,11 +1985,11 @@ CustomerLeads.prototype.getFactoryOwnerDetails = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else if (doc) {
+            } else if (result) {
                 retObj.messages.push("Success");
-                retObj.data = doc;
+                retObj.data = result;
                 retObj.status = true;
-                analyticsService.create(req, serviceActions.get_factory_owner, {
+                analyticsService.create(req, serviceActions.get_factory_owner_details, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: true
@@ -1931,7 +1998,7 @@ CustomerLeads.prototype.getFactoryOwnerDetails = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.messages.push("Factory Owner not found");
-                analyticsService.create(req, serviceActions.get_factory_owner_err, {
+                analyticsService.create(req, serviceActions.get_factory_owner_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -1940,7 +2007,7 @@ CustomerLeads.prototype.getFactoryOwnerDetails = function (req, callback) {
                 });
                 callback(retObj);
             }
-        })
+        });
     }
 
 };
@@ -1950,95 +2017,148 @@ CustomerLeads.prototype.updateFactoryOwner = function (req, callback) {
         status: false,
         messages: []
     };
-    var params = req.body;
+    var params = req.body.content;
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid factory owner');
     }
-    if (!params.userName) {
-        retObj.messages.push("Please enter name");
+    if (!params.leadType) {
+        retObj.messages.push("Please Select Customer Type");
     }
-    if (!params.contactPhone) {
+    if (!params.firstName) {
+        retObj.messages.push("Please Provide Full Name");
+    }
+    if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
         retObj.messages.push("Please enter phone number");
     }
     if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.update_factory_owner_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
         params = Utils.removeEmptyFields(params);
-        AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.update_factory_owner_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (doc) {
-                if (params.operatingRoutes.length > 0) {
-                    async.map(params.operatingRoutes, function (route, routeCallback) {
-                        var query = {};
-                        if (!route._id) {
-                            query = {_id: mongoose.Types.ObjectId()};
-                            route.createdBy = req.jwt.id;
-                            route.accountId = params._id;
-                        } else {
-                            query = {_id: route._id}
-                        }
-                        OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
-                            routeCallback(err);
-                        });
-                    }, function (err) {
-                        if (err) {
-                            retObj.messages.push("Please try again");
-                            analyticsService.create(req, serviceActions.update_factory_owner_err, {
-                                body: JSON.stringify(req.query),
-                                accountId: req.jwt.id,
-                                success: false,
-                                messages: retObj.messages
-                            }, function (response) {
-                            });
-                            callback(retObj);
-                        } else {
-                            retObj.status = true;
-                            retObj.messages.push("Factory Owner updated successfully");
-                            analyticsService.create(req, serviceActions.update_factory_owner, {
-                                body: JSON.stringify(req.body),
-                                accountId: req.jwt.id,
-                                success: true
-                            }, function (response) {
-                            });
-                            callback(retObj);
-                        }
-                    })
+        if (req.files.files) {
+            Utils.uploadDocuments(req.files.files, function (uploadResp) {
+                if (uploadResp.status) {
+                    if (!req.body.content.documentFiles) {
+                        req.body.content.documentFiles = [];
+                    }
+                    // params.documentFile = uploadResp.fileName;
+                    req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
+                    req.body.content.updatedBy = req.jwt.id;
+                    updateFactoryOwner(req, callback);
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push("Factory Owner updated successfully");
-                    analyticsService.create(req, serviceActions.update_factory_owner, {
-                        body: JSON.stringify(req.body),
+                    retObj.messages.push("Document uploading failed");
+                    analyticsService.create(req, serviceActions.update_factory_owner_err, {
+                        body: JSON.stringify(req.query),
                         accountId: req.jwt.id,
-                        success: true
+                        success: false,
+                        messages: retObj.messages
                     }, function (response) {
                     });
                     callback(retObj);
                 }
+            });
+        } else {
+            req.body.content.updatedBy = req.jwt.id;
+            updateFactoryOwner(req, callback);
+        }
+    }
+
+};
+
+function updateFactoryOwner(req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body.content;
+    if (!params.operatingRoutes) {
+        params.operatingRoutes = [];
+    }
+    AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.update_factory_owner_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (doc) {
+            if (params.operatingRoutes.length > 0) {
+                async.map(params.operatingRoutes, function (route, routeCallback) {
+                    var query = {};
+                    if (!route._id) {
+                        query = {_id: mongoose.Types.ObjectId()};
+                        route.createdBy = req.jwt.id;
+                        route.accountId = params._id;
+                    } else {
+                        query = {_id: route._id}
+                    }
+                    route.updatedBy = req.jwt.id;
+                    delete route.__v;
+                    OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
+                        if (err) {
+                            retObj.messages.push('Error adding/updating route');
+                            routeCallback(err);
+                        } else {
+                            routeCallback(null, 'saved');
+                        }
+                    });
+                }, function (err) {
+                    if (err) {
+                        retObj.messages.push("Please try again");
+                        analyticsService.create(req, serviceActions.update_factory_owner_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push("Factory Owner updated successfully");
+                        analyticsService.create(req, serviceActions.update_factory_owner, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                })
             } else {
-                retObj.messages.push("Factory Owner not updated");
-                analyticsService.create(req, serviceActions.update_factory_owner_err, {
-                    body: JSON.stringify(req.query),
+                retObj.status = true;
+                retObj.messages.push("Factory Owner updated successfully");
+                analyticsService.create(req, serviceActions.update_factory_owner, {
+                    body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
+                    success: true
                 }, function (response) {
                 });
                 callback(retObj);
             }
-        })
-
-    }
-
-};
+        } else {
+            retObj.messages.push("Factory Owner not updated");
+            analyticsService.create(req, serviceActions.update_factory_owner_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+}
 
 CustomerLeads.prototype.deleteFactoryOwner = function (req, callback) {
     var retObj = {
@@ -2046,14 +2166,14 @@ CustomerLeads.prototype.deleteFactoryOwner = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+    if (!params.factoryOwnerId || !ObjectId.isValid(params.factoryOwnerId)) {
         retObj.messages.push("Invalid factory owner");
     }
 
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.remove({_id: params._id}, function (err, doc) {
+        AccountsColl.remove({_id: params.factoryOwnerId}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_factory_owner_err, {
@@ -2126,37 +2246,82 @@ CustomerLeads.prototype.getGuest = function (req, callback) {
         messages: []
     };
 
-    AccountsColl.find({role: 'Guest'}, function (err, docs) {
-        if (err) {
-            retObj.messages.push('Error retrieving guest');
-            analyticsService.create(req, serviceActions.get_guest_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        } else if (docs.length > 0) {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.data = docs;
-            analyticsService.create(req, serviceActions.get_guest, {
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
-            callback(retObj);
+    var condition = {};
+    var params = req.query;
+
+    if (!params.page) {
+        params.page = 1;
+    }
+    if (retObj.messages.length) {
+        callback(retObj);
+    } else {
+        var skipNumber = (params.page - 1) * params.size;
+        var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+        var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
+        if (params.guest) {
+            condition = {
+                $or:
+                    [
+                        {"userId": new RegExp(params.guest, "gi")},
+                        {"fullName": new RegExp(params.guest, "gi")},
+                        {"companyName": new RegExp(params.guest, "gi")},
+                        // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                        {"email": new RegExp(params.guest, "gi")},
+                        {"city": new RegExp(params.guest, "gi")},
+                    ], role: 'Guest'
+            };
+        } else if (params.status) {
+            condition = {role: 'Guest', "isActive": params.status}
         } else {
-            retObj.messages.push('No guest found');
-            analyticsService.create(req, serviceActions.get_guest_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
+            condition = {role: 'Guest'}
         }
-    });
+
+        async.parallel({
+            guests: function (guestsCallback) {
+                AccountsColl
+                    .find(condition)
+                    .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, guests) {
+                        guestsCallback(err, guests);
+                    });
+            },
+            count: function (countCallback) {
+                AccountsColl.count({role: 'Guest'}, function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        }, function (err, docs) {
+            if (err) {
+                retObj.messages.push('Error retrieving guest');
+                analyticsService.create(req, serviceActions.get_guest_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.count = docs.count;
+                retObj.accountId = req.jwt.id;
+                retObj.userType = req.jwt.type;
+                retObj.data = docs.guests;
+                analyticsService.create(req, serviceActions.get_guest, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
 };
 
 CustomerLeads.prototype.getGuestDetails = function (req, callback) {
@@ -2165,16 +2330,17 @@ CustomerLeads.prototype.getGuestDetails = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+
+    if (!params.guestId || !ObjectId.isValid(params.guestId)) {
         retObj.messages.push("Invalid guest");
     }
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOne({_id: params._id}, function (err, doc) {
+        AccountsColl.findOne({_id: params.guestId}, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_guest_err, {
+                analyticsService.create(req, serviceActions.get_guest_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -2186,7 +2352,7 @@ CustomerLeads.prototype.getGuestDetails = function (req, callback) {
                 retObj.messages.push("Success");
                 retObj.data = doc;
                 retObj.status = true;
-                analyticsService.create(req, serviceActions.get_guest, {
+                analyticsService.create(req, serviceActions.get_guest_details, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: true
@@ -2195,7 +2361,7 @@ CustomerLeads.prototype.getGuestDetails = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.messages.push("Guest not found");
-                analyticsService.create(req, serviceActions.get_guest_err, {
+                analyticsService.create(req, serviceActions.get_guest_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -2204,7 +2370,7 @@ CustomerLeads.prototype.getGuestDetails = function (req, callback) {
                 });
                 callback(retObj);
             }
-        })
+        });
     }
 
 };
@@ -2218,16 +2384,27 @@ CustomerLeads.prototype.updateGuest = function (req, callback) {
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid guest');
     }
-    if (!params.userName) {
-        retObj.messages.push("Please enter name");
+    if (!params.leadType) {
+        retObj.messages.push("Please Select Customer Type");
     }
-    if (!params.contactPhone) {
+    if (!params.firstName) {
+        retObj.messages.push("Please Provide Full Name");
+    }
+    if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
         retObj.messages.push("Please enter phone number");
     }
     if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.update_guest_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
         params = Utils.removeEmptyFields(params);
+        params.updatedBy = req.jwt.id;
         AccountsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
@@ -2240,53 +2417,15 @@ CustomerLeads.prototype.updateGuest = function (req, callback) {
                 });
                 callback(retObj);
             } else if (doc) {
-                if (params.operatingRoutes.length > 0) {
-                    async.map(params.operatingRoutes, function (route, routeCallback) {
-                        var query = {};
-                        if (!route._id) {
-                            query = {_id: mongoose.Types.ObjectId()};
-                            route.createdBy = req.jwt.id;
-                            route.accountId = params._id;
-                        } else {
-                            query = {_id: route._id}
-                        }
-                        OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
-                            routeCallback(err);
-                        });
-                    }, function (err) {
-                        if (err) {
-                            retObj.messages.push("Please try again");
-                            analyticsService.create(req, serviceActions.update_guest_err, {
-                                body: JSON.stringify(req.query),
-                                accountId: req.jwt.id,
-                                success: false,
-                                messages: retObj.messages
-                            }, function (response) {
-                            });
-                            callback(retObj);
-                        } else {
-                            retObj.status = true;
-                            retObj.messages.push("Guest updated successfully");
-                            analyticsService.create(req, serviceActions.update_guest, {
-                                body: JSON.stringify(req.body),
-                                accountId: req.jwt.id,
-                                success: true
-                            }, function (response) {
-                            });
-                            callback(retObj);
-                        }
-                    })
-                } else {
-                    retObj.status = true;
-                    retObj.messages.push("Guest updated successfully");
-                    analyticsService.create(req, serviceActions.update_guest, {
-                        body: JSON.stringify(req.body),
-                        accountId: req.jwt.id,
-                        success: true
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                }
+                retObj.status = true;
+                retObj.messages.push("Guest updated successfully");
+                analyticsService.create(req, serviceActions.update_guest, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
             } else {
                 retObj.messages.push("Guest not updated");
                 analyticsService.create(req, serviceActions.update_guest_err, {
@@ -2298,8 +2437,7 @@ CustomerLeads.prototype.updateGuest = function (req, callback) {
                 });
                 callback(retObj);
             }
-        })
-
+        });
     }
 
 };
@@ -2310,14 +2448,14 @@ CustomerLeads.prototype.deleteGuest = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+    if (!params.guestId || !ObjectId.isValid(params.guestId)) {
         retObj.messages.push("Invalid guest");
     }
 
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.remove({_id: params._id}, function (err, doc) {
+        AccountsColl.remove({_id: params.guestId}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_guest_err, {
@@ -2354,9 +2492,7 @@ CustomerLeads.prototype.deleteGuest = function (req, callback) {
 };
 /*Guest End*/
 
-/*
-Author :Naresh D
-Delete operating routes*/
+/*Delete operating routes*/
 CustomerLeads.prototype.deleteOperatingRoutes = function (req, callback) {
     var retObj = {
         status: false,
@@ -2406,48 +2542,120 @@ CustomerLeads.prototype.deleteOperatingRoutes = function (req, callback) {
     }
 };
 
-/*Author : Naresh D
-* Getting Employee list for dropdown*/
-CustomerLeads.prototype.getEmployeesList = function (req, callback) {
+/*Delete Traffic Manager*/
+CustomerLeads.prototype.deleteTrafficManagers = function (req, callback) {
     var retObj = {
         status: false,
-        message: []
+        messages: []
+
     };
-
-    AccountsColl.find({type: 'employee'}, function (err, docs) {
-        if (err) {
-            retObj.messages.push("please try again");
-            analyticsService.create(req, serviceActions.get_employees_list_err, {
-                body: JSON.stringify(req.query),
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-
-        } else if (docs.length > 0) {
-            retObj.message.push("Success");
-            analyticsService.create(req, serviceActions.get_employees_list, {
-                body: JSON.stringify(req.query),
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
-            retObj.data = docs;
-            callback(retObj);
-        } else {
-            retObj.message.push("No Employees found");
-            analyticsService.create(req, serviceActions.get_employees_list_err, {
-                body: JSON.stringify(req.query),
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        }
-    })
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid traffic manager");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        trafficManagerColl.remove({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("please try again");
+                analyticsService.create(req, serviceActions.delete_traffic_manager_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc && doc.result.n == 1) {
+                retObj.status = true;
+                retObj.messages.push("Traffic Manager deleted successfully");
+                analyticsService.create(req, serviceActions.delete_traffic_manager, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Traffic Manager not deleted");
+                analyticsService.create(req, serviceActions.delete_traffic_manager_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
 };
 
+
+/*Delete Documents*/
+CustomerLeads.prototype.removeDoc = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+
+    };
+    var params = req.query;
+    console.log('params',params)
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid document");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        console.log('params',params)
+        /*Utils.removeDoc(params._id, function (removeResp) {
+            if(removeResp){
+                AccountsColl.remove({_id: params._id}, function (err, doc) {
+                    if (err) {
+                        retObj.messages.push("please try again");
+                        analyticsService.create(req, serviceActions.delete_document_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else if (doc && doc.result.n == 1) {
+                        retObj.status = true;
+                        retObj.messages.push("Document deleted successfully");
+                        analyticsService.create(req, serviceActions.delete_document, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.messages.push("Document not deleted");
+                        analyticsService.create(req, serviceActions.delete_document_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                })
+            } else {
+                retObj.messages.push("Document not deleted");
+                analyticsService.create(req, serviceActions.delete_document_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });*/
+    }
+};
 module.exports = new CustomerLeads();

@@ -475,9 +475,8 @@ Utils.prototype.uploadDocuments = function (files, callback) {
         messages: [],
         fileNames: []
     };
-
     async.map(files, function (doc, fileCallback) {
-        var file=doc[0].file;
+        var file=doc.file;
         var fileName = new Date() - 0 + "_" + file.originalFilename;
 
         fse.copy(file.path, './client/assets/documents/' + fileName, function (err) {
@@ -608,7 +607,27 @@ Utils.prototype.removeCustomerDoc = function (file, callback) {
             callback(retObj);
         } else {
             retObj.status = true;
-            retObj.messages.push('Document Added Successfully');
+            retObj.messages.push('Document Removed Successfully');
+            callback(retObj);
+        }
+
+    });
+};
+
+Utils.prototype.removeDoc = function (file, callback) {
+    var retObj = {
+        false: true,
+        messages: []
+    };
+
+    fse.remove('./client/assets/documents/' + file, function (err) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Document removing failed');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Document Removed Successfully');
             callback(retObj);
         }
 

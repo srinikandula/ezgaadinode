@@ -654,7 +654,7 @@ Events.prototype.getFranchise = function (request, callback) {
             callback(retObj);
         } else {
             async.map(franchises, function (franchise, franchiseCallBack) {
-                franchiseColl.findOne({franchiseId: franchise.id_franchise}, function (findFranchiseErr, franchiseFound) {
+                franchiseColl.findOne({account: franchise.account}, function (findFranchiseErr, franchiseFound) {
                     if (findFranchiseErr) {
                         franchiseCallBack(findFranchiseErr);
                     } else if (franchiseFound) {
@@ -1320,13 +1320,14 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                         if(customerLead.approved) {
                             approved = 'Rejected';
                         }
+                        var id_customer = customerLead.id_customer;
                         var customerLeadDoc = new CustomerLeadsColl({
                             id_franchise: customerLead.id_franchise,
                             userId: customerLead.idprefix,
                             gps_account_id: customerLead.gps_account_id,
                             isLead: customerLead.islead,
                             leadType: customerLead.type,
-                            userName: customerLead.fullname,
+                            firstName: customerLead.fullname,
                             contactPhone: customerLead.contactPhone,
                             alternatePhone: alternatePhone,
                             email: customerLead.email,
@@ -1344,7 +1345,7 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                             officeNumber: customerLead.landline,
                             isActive: customerLead.status,
                             status: approved,
-                            fuelCardApplied: customerLead.applied_fule_card,
+                            fuelCardApplied: customerLead.applied_fuel_card,
                             loadPaymentAdvancePercent: customerLead.load_payment_advance_percent,
                             loadPaymentToPayPercent: customerLead.load_payment_topay_percent,
                             loadPaymentPodDays: customerLead.load_payment_pod_days,
@@ -1353,11 +1354,46 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                             createdAt: convertDate(customerLead.date_created),
                             updatedAt: convertDate(customerLead.date_modified),
                         });
-                        customerLeadDoc.save(function (err) {
-                            AccountsColl.find({}, {"userName": 1,"role":"account"}, function (err, accounts) {
-                                for (var i = 0; i < accounts.length; i++) {
-                                    CustomerLeadsColl.update({'gps_account_id': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, customerLead) {
-                                        console.log("Account is updated " + JSON.stringify(customerLead));
+                        customerLeadDoc.save(function (err, doc) {
+                            var CustomerOperatingRoutesDataQuery = "SELECT source_city as source, source_state as sourceState, source_address as sourceAddress, source_lat as sourceLatitude, source_lng as sourceLongitude, destination_city as destination, destination_state as destinationState, destination_address as destinationAddress, destination_lat as destinationLatitude, destination_lng as destinationLongitude FROM eg_customer_operating_destinations where id_customer="+id_customer;
+                            pool.query(CustomerOperatingRoutesDataQuery, function (err, CustomerOperatingRoutes) {
+                                if (err) {
+                                    retObj.status = false;
+                                    retObj.messages.push('Error fetching data');
+                                    retObj.messages.push(JSON.stringify(err));
+                                    callback(retObj);
+                                } else {
+                                    async.map(CustomerOperatingRoutes, function (CustomerOperatingRoute, CustomerOperatingRoutesCallBack) {
+                                        OperatingRoutesColl.findOne({accountId: doc._id,source: CustomerOperatingRoute.source,sourceState: CustomerOperatingRoute.sourceState,sourceLatitude: CustomerOperatingRoute.sourceLatitude,sourceLongitude: CustomerOperatingRoute.sourceLongitude,destination: CustomerOperatingRoute.destination,destinationState: CustomerOperatingRoute.destinationState,destinationLatitude: CustomerOperatingRoute.destinationLatitude,destinationLongitude: CustomerOperatingRoute.destinationLongitude}, function (findCustomerOperatingRoutesErr, CustomerOperatingRoutesFound) {
+                                            if (findCustomerOperatingRoutesErr) {
+                                                CustomerOperatingRoutesCallBack(findCustomerOperatingRoutesErr);
+                                            } else if (CustomerOperatingRoutesFound) {
+                                                CustomerOperatingRoutesCallBack(null, 'Customer Operating Routes exists');
+                                            } else {
+                                                CustomerOperatingRoute.sourceLocation = {
+                                                    coordinates:[CustomerOperatingRoute.sourceLongitude,CustomerOperatingRoute.sourceLatitude]
+                                                }
+                                                CustomerOperatingRoute.destinationLocation = {
+                                                    coordinates:[CustomerOperatingRoute.destinationLongitude,CustomerOperatingRoute.destinationLatitude]
+                                                };
+                                                CustomerOperatingRoute.accountId = doc._id;
+                                                var CustomerOperatingRoutesDoc = new OperatingRoutesColl(CustomerOperatingRoute);
+                                                CustomerOperatingRoutesDoc.save(function (err) {
+                                                    CustomerOperatingRoutesCallBack(err, 'saved');
+                                                })
+                                            }
+                                        });
+                                    }, function (CustomerOperatingRoutesErr, CustomerOperatingRoutesSaved) {
+                                        if (CustomerOperatingRoutesErr) {
+                                            retObj.status = false;
+                                            retObj.messages.push('Error saving data');
+                                            retObj.messages.push(JSON.stringify(CustomerOperatingRoutesErr));
+                                            callback(retObj);
+                                        } else {
+                                            retObj.status = true;
+                                            retObj.messages.push('Account Operating Routes saved successfully');
+                                            callback(retObj);
+                                        }
                                     });
                                 }
                             });
@@ -1401,7 +1437,7 @@ Events.prototype.getCustomerData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(customers, function (customer, customerCallBack) {
-                AccountsColl.findOne({fullName: customer.fullname}, function (findCustomerErr, customerFound) {
+                AccountsColl.findOne({firstName: customer.fullname}, function (findCustomerErr, customerFound) {
                     if (findCustomerErr) {
                         customerCallBack(findCustomerErr);
                     } else if (customerFound) {
@@ -1508,6 +1544,105 @@ Events.prototype.getCustomerData = function (request, callback) {
                 } else {
                     retObj.status = true;
                     retObj.messages.push('Customer saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+}
+
+Events.prototype.getJunkLeadsData = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var alternatePhone = [];
+    var approved = '';
+    var role = '';
+    var smsEnabled = '';
+    var junkLeadDataQuery = "SELECT * FROM eg_customer c,eg_customer_lead cl where c.id_customer=cl.id_customer and cl.lead_status = 'Junk Lead'";
+
+    pool_crm.query(junkLeadDataQuery, function (err, junkLeads) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(junkLeads, function (junkLead, junkLeadCallBack) {
+                AccountsColl.findOne({fullName: junkLead.fullname}, function (findJunkLeadErr, junkLeadFound) {
+                    if (findJunkLeadErr) {
+                        junkLeadCallBack(findJunkLeadErr);
+                    } else if (junkLeadFound) {
+                        junkLeadCallBack('Junk Lead exists');
+                    } else {
+                        alternatePhone = [];
+                        if (junkLead.alt_mobile_1) {
+                            alternatePhone.push(junkLead.alt_mobile_1);
+                        }
+                        if (junkLead.alt_mobile_2) {
+                            alternatePhone.push(junkLead.alt_mobile_2);
+                        }
+                        if (junkLead.alt_mobile_3) {
+                            alternatePhone.push(junkLead.alt_mobile_3);
+                        }
+
+                        if (junkLead.approved) {
+                            approved = 'Accepted';
+                        }
+                        if (junkLead.approved) {
+                            approved = 'Rejected';
+                        }
+
+                        var junkLeadDoc = new CustomerLeadsColl({
+                            id_franchise: junkLead.id_franchise,
+                            userId: junkLead.idprefix,
+                            gps_account_id: junkLead.gps_account_id,
+                            firstName: junkLead.fullname,
+                            password: '1234',
+                            contactPhone: junkLead.contactPhone,
+                            alternatePhone: alternatePhone,
+                            email: junkLead.email,
+                            isLead: junkLead.islead,
+                            leadType: junkLead.type,
+                            status: approved,
+                            companyName: junkLead.company,
+                            address: junkLead.address,
+                            city: junkLead.city,
+                            state: junkLead.state,
+                            pinCode: junkLead.pincode,
+                            officeNumber: junkLead.landline,
+                            gpsEnabled: junkLead.gps_required,
+                            erpEnabled: junkLead.erp_required,
+                            loadEnabled: junkLead.load_required,
+                            yearInService: junkLead.year_in_service,
+                            paymentType: junkLead.payment_type,
+                            loadPaymentToPayPercent: junkLead.load_payment_topay_percent,
+                            loadPaymentAdvancePercent: junkLead.load_payment_advance_percent,
+                            loadPaymentPodDays: junkLead.load_payment_pod_days,
+                            leadSource: junkLead.lead_source,
+                            noOfTrucks: junkLead.no_of_vechiles,
+                            createdAt: convertDate(junkLead.date_created),
+                            updatedAt: convertDate(junkLead.date_modified),
+                            leadStatus: junkLead.lead_status,
+                            isActive: junkLead.status,
+                            fuelCardApplied: junkLead.applied_fuel_card,
+                            smsEmailAds: junkLead.enable_sms_email_ads,
+                        });
+                        junkLeadDoc.save(function (err) {
+                            junkLeadCallBack(err, 'saved');
+                        });
+                    }
+                });
+            }, function (junkLeadErr, junkLeadSaved) {
+                if (junkLeadErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(junkLeadErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Junk Lead saved successfully');
                     callback(retObj);
                 }
             });
