@@ -253,6 +253,13 @@ OpenRouter.get('/get/employees', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/customers', function (request, res) {
+    Events.getCustomerData(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 OpenRouter.get('/get/completeData',function (request,res) {
     Events.getCompleteData(request,function (results) {
         res.json(results);
@@ -307,8 +314,8 @@ OpenRouter.get('/get/customerLeads', function (request, res) {
     });
 });
 
-OpenRouter.get('/get/customers', function (request, res) {
-    Events.getCustomerData(request,function(results){
+OpenRouter.get('/get/CustomerOperatingRoutes', function (request, res) {
+    Events.getCustomerOperatingRoutes(request,function(results){
         //console.log(results);
         res.json(results);
     });

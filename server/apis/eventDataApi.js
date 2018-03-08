@@ -141,7 +141,7 @@ EventData.prototype.createAccountData = function (accountData, callback) {
         status: false,
         messages: []
     };
-    accountData.role = 'account';
+    accountData.role = 'Truck Owner';
     var accountDoc = new AccountsColl(accountData);
     AccountsColl.find({"userName": accountData.userName}, function (error, accountFound) {
         if (!accountFound || accountFound.length === 0) {

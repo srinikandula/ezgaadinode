@@ -31,9 +31,6 @@ var accountSchema = new mongoose.Schema({
     email: String,
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
-    id_admin: Number,
-    id_franchise: Number,
-    id_admin_role: Number,
     adminRoleId: {type: ObjectId, ref: 'adminRoles'},
     franchiseId: {type: ObjectId, ref: 'franchise'},
     groupName: String,
@@ -81,7 +78,6 @@ var accountSchema = new mongoose.Schema({
 
 var operatingRoutesSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    id_account: String,
     source: String,
     sourceState: String,
     sourceAddress: String,
@@ -444,9 +440,6 @@ var analyticsSchema = mongoose.Schema({
 }, {timestamps: String});
 
 var erpGpsPlans = new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
-    devicePlanId: Number,
-    franchiseId: Number,
     planName: String,
     durationInMonths: Number,
     status: Boolean,
@@ -466,8 +459,7 @@ var customerLeadsSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     assignedTo: {type: ObjectId, ref: 'accounts'},
     firstName: String,
-    id_franchise: Number,
-    gps_account_id: String,
+    userId: String,
     accountId: {type: ObjectId, ref: 'accounts'},
     contactPhone: Number,
     alternatePhone: [Number],
@@ -489,7 +481,6 @@ var customerLeadsSchema = mongoose.Schema({
     documentFiles: [""],
     comment: String,
     leadSource: String,
-    noOfTrucks: Number,
     createdAt: Date,
     updatedAt: Date,
     leadStatus: {type: String, default: 'Initiated'},
@@ -581,13 +572,10 @@ var truckRequestSchema = mongoose.Schema({
 }, {timestamps: String});
 
 var franchiseSchema = mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
-    id_franchise: Number,
     fullName: String,
     account: String,
     mobile: Number,
     landLine: String,
-    email: String,
     city: String,
     state: String,
     address: String,
@@ -604,9 +592,6 @@ var franchiseSchema = mongoose.Schema({
 
 var adminRoleSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    adminRoleId: Number,
-    id_franchise: Number,
-    franchiseId: {type: ObjectId, ref: 'franchise'},
     role: String,
     permissions: {
         moduleName: String,
@@ -624,8 +609,6 @@ var adminRoleSchema = mongoose.Schema({
 
 var adminPermissionsSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    adminPermissionId: Number,
-    id_admin_role: Number,
     adminRoleId: {type: ObjectId, ref: 'adminRoles'},
     moduleName: String,
     fileName: String,
