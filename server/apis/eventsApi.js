@@ -462,7 +462,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                         }
                     });
 
-                    if(i===devices.length-1){
+                    if (i === devices.length - 1) {
                         retObj.status = true;
                         retObj.messages.push('trucks are being loaded');
                         callback(retObj);
@@ -489,7 +489,7 @@ Events.prototype.getDevicePlans = function (request, callback) {
         status: false,
         messages: []
     };
-    var devicePlanQuery = "select * from DevicePlans";
+    var devicePlanQuery = "select * from DevicePlans where id_franchise=1";
     pool.query(devicePlanQuery, function (err, plans) {
         if (err) {
             retObj.status = false;
@@ -498,15 +498,13 @@ Events.prototype.getDevicePlans = function (request, callback) {
             callback(retObj);
         } else {
             async.map(plans, function (plan, planCallBack) {
-                erpGpsPlansColl.findOne({devicePlanId: plan.id_device_plans}, function (findplanerr, planfound) {
+                erpGpsPlansColl.findOne({planName: plan.plan_name}, {durationInMonths: plan.duration_in_months}, {amount: plan.amount}, function (findplanerr, planfound) {
                     if (findplanerr) {
                         planCallBack(findplanerr);
                     } else if (planfound) {
                         planCallBack('plan added already');
                     } else {
                         var planDoc = new erpGpsPlansColl({
-                            devicePlanId: plan.id_device_plans,
-                            franchiseId: plan.id_franchise,
                             planName: plan.plan_name,
                             durationInMonths: plan.duration_in_months,
                             amount: plan.amount,
@@ -661,7 +659,6 @@ Events.prototype.getFranchise = function (request, callback) {
                         franchiseCallBack('franchise exists');
                     } else {
                         var franchiseDoc = new franchiseColl({
-                            franchiseId: franchise.id_franchise,
                             fullName: franchise.fullname,
                             account: franchise.account,
                             mobile: franchise.mobile,
@@ -704,7 +701,7 @@ Events.prototype.getAdminRoles = function (request, callback) {
         status: false,
         messages: []
     };
-    var adminRoleQuery = "select * from eg_admin_role";
+    var adminRoleQuery = "select * from eg_admin_role where id_franchise=1";
     pool_crm.query(adminRoleQuery, function (err, roles) {
         if (err) {
             retObj.status = false;
@@ -720,8 +717,6 @@ Events.prototype.getAdminRoles = function (request, callback) {
                         roleCallBack('role exists');
                     } else {
                         var roleDoc = new adminRoleColl({
-                            adminRoleId: role.id_admin_role,
-                            id_franchise: role.id_franchise,
                             role: role.role,
                             status: role.status,
                             createdAt: convertDate(role.date_created),
@@ -753,7 +748,7 @@ Events.prototype.getAdminPermissions = function (request, callback) {
         status: false,
         messages: []
     };
-    var adminPermissionsQuery = "select * from eg_admin_permissions";
+    var adminPermissionsQuery = "SELECT ap.*,ar.role FROM `eg_admin_permissions` ap,eg_admin_role ar where ap.id_admin_role=ar.id_admin_role";
     pool_crm.query(adminPermissionsQuery, function (err, permissions) {
         if (err) {
             retObj.status = false;
@@ -762,40 +757,38 @@ Events.prototype.getAdminPermissions = function (request, callback) {
             callback(retObj);
         } else {
             async.map(permissions, function (permission, permissionCallBack) {
-                adminPermissionsColl.findOne({adminPermissionId: permission.id_admin_role}, function (findPermissionErr, permissionFound) {
+                adminPermissionsColl.findOne({moduleName: permission.module_name}, {fileName: permission.file_name}, function (findPermissionErr, permissionFound) {
                     if (findPermissionErr) {
                         permissionCallBack(findPermissionErr);
                     } else if (permissionFound) {
                         permissionCallBack('permission exists');
                     } else {
-                        var permissionDoc = new adminPermissionsColl({
-                            adminPermissionId: permission.id_admin_permission,
-                            id_admin_role: permission.id_admin_role,
-                            moduleName: permission.module_name,
-                            fileName: permission.file_name,
-                            title: permission.title,
-                            listAll: permission.listall,
-                            view: permission.view,
-                            add: permission.add,
-                            edit: permission.edit,
-                            trash: permission.trash,
-                            fileSortOrder: permission.file_sort_order,
-                            moduleSortOrder: permission.module_sort_order,
-                            menuType: permission.menu_type,
-                            status: permission.status,
-                            createdAt: convertDate(permission.date_modified),
-                            updatedAt: convertDate(permission.date_modified),
-                        });
-                        permissionDoc.save(function (err) {
-                            adminRoleColl.find({}, {"adminRoleId": 1}, function (err, roles) {
-                                for (var i = 0; i < roles.length; i++) {
-                                    adminPermissionsColl.update({'id_admin_role': roles[i].adminRoleId}, {$set: {adminRoleId: roles[i]._id}}, {multi: true}, function (err, permission) {
-                                        console.log("Permission is updated " + JSON.stringify(permission));
-                                    });
-                                }
+                        adminRoleColl.findOne({"role": permission.role}, function (err, role) {
+                            var permissionData = {
+                                moduleName: permission.module_name,
+                                fileName: permission.file_name,
+                                title: permission.title,
+                                listAll: permission.listall,
+                                view: permission.view,
+                                add: permission.add,
+                                edit: permission.edit,
+                                trash: permission.trash,
+                                fileSortOrder: permission.file_sort_order,
+                                moduleSortOrder: permission.module_sort_order,
+                                menuType: permission.menu_type,
+                                status: permission.status,
+                                createdAt: convertDate(permission.date_modified),
+                                updatedAt: convertDate(permission.date_modified),
+                            }
+                            if (role) {
+                                permissionData.adminRoleId = role._id;
+                            }
+
+                            var permissionDoc = new adminPermissionsColl(permissionData);
+                            permissionDoc.save(function (err) {
+                                permissionCallBack(err, 'saved');
                             });
-                            permissionCallBack(err, 'saved');
-                        })
+                        });
                     }
                 });
             }, function (permissionErr, permissionSaved) {
@@ -819,7 +812,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
         status: false,
         messages: []
     };
-    var employeeDataQuery = "select * from eg_admin";
+    var employeeDataQuery = "SELECT a.*,ar.role FROM `eg_admin` a,eg_admin_role ar where a.id_admin_role=ar.id_admin_role and a.id_franchise=1";
     pool_crm.query(employeeDataQuery, function (err, employees) {
         if (err) {
             retObj.status = false;
@@ -834,36 +827,33 @@ Events.prototype.getEmployeeData = function (request, callback) {
                     } else if (employeeFound) {
                         employeeCallBack(null, 'Employee exists');
                     } else {
-                        var employeeDoc = new AccountsColl({
-                            userName: employee.email,
-                            contactPhone: employee.phone,
-                            password: "12345678",
-                            email: employee.email,
-                            id_admin: employee.id_admin,
-                            id_franchise: employee.id_franchise,
-                            id_admin_role: employee.id_admin_role,
-                            firstName: employee.first_name,
-                            lastName: employee.last_name,
-                            contactName: employee.first_name+' '+employee.last_name,
-                            displayName: employee.first_name+' '+employee.last_name,
-                            city: employee.city,
-                            state: employee.state,
-                            location: employee.city+' '+employee.state,
-                            isActive: employee.status,
-                            role: 'employee',
-                            // createdAt: convertDate(employee.date_created),
-                            // updatedAt: convertDate(employee.date_modified),
+                        adminRoleColl.findOne({"role": employee.role}, function (err, role) {
+                            var employeeData = {
+                                userName: employee.email,
+                                contactPhone: employee.phone,
+                                password: "12345678",
+                                email: employee.email,
+                                firstName: employee.first_name,
+                                lastName: employee.last_name,
+                                contactName: employee.first_name + ' ' + employee.last_name,
+                                displayName: employee.first_name + ' ' + employee.last_name,
+                                city: employee.city,
+                                state: employee.state,
+                                location: employee.city + ' ' + employee.state,
+                                isActive: employee.status,
+                                role: 'employee',
+                                createdAt: convertDate(employee.date_created),
+                                updatedAt: convertDate(employee.date_modified),
+                            }
+                            if (role) {
+                                employeeData.adminRoleId = role._id;
+                            }
+
+                            var employeeDoc = new AccountsColl(employeeData);
+                            employeeDoc.save(function (err) {
+                                employeeCallBack(err, 'saved');
+                            })
                         });
-                        employeeDoc.save(function (err) {
-                            adminRoleColl.find({}, {"adminRoleId": 1}, function (err, roles) {
-                                for (var i = 0; i < roles.length; i++) {
-                                    AccountsColl.update({'id_admin_role': roles[i].adminRoleId}, {$set: {adminRoleId: roles[i]._id}}, {multi: true}, function (err, permission) {
-                                        console.log("Account is updated " + JSON.stringify(permission));
-                                    });
-                                }
-                            });
-                            employeeCallBack(err, 'saved');
-                        })
                     }
                 });
             }, function (employeeErr, employeeSaved) {
@@ -896,29 +886,36 @@ Events.prototype.getAccountOperatingRoutes = function (request, callback) {
             callback(retObj);
         } else {
             async.map(AccountOperatingRoutes, function (AccountOperatingRoute, AccountOperatingRoutesCallBack) {
-                OperatingRoutesColl.findOne({id_account: AccountOperatingRoute.id_account,source: AccountOperatingRoute.source,sourceState: AccountOperatingRoute.sourceState,sourceLatitude: AccountOperatingRoute.sourceLatitude,sourceLongitude: AccountOperatingRoute.sourceLongitude,destination: AccountOperatingRoute.destination,destinationState: AccountOperatingRoute.destinationState,destinationLatitude: AccountOperatingRoute.destinationLatitude,destinationLongitude: AccountOperatingRoute.destinationLongitude}, function (findAccountOperatingRoutesErr, AccountOperatingRoutesFound) {
+                OperatingRoutesColl.findOne({
+                    source: AccountOperatingRoute.source,
+                    sourceState: AccountOperatingRoute.sourceState,
+                    sourceLatitude: AccountOperatingRoute.sourceLatitude,
+                    sourceLongitude: AccountOperatingRoute.sourceLongitude,
+                    destination: AccountOperatingRoute.destination,
+                    destinationState: AccountOperatingRoute.destinationState,
+                    destinationLatitude: AccountOperatingRoute.destinationLatitude,
+                    destinationLongitude: AccountOperatingRoute.destinationLongitude
+                }, function (findAccountOperatingRoutesErr, AccountOperatingRoutesFound) {
                     if (findAccountOperatingRoutesErr) {
                         AccountOperatingRoutesCallBack(findAccountOperatingRoutesErr);
                     } else if (AccountOperatingRoutesFound) {
                         AccountOperatingRoutesCallBack(null, 'Account Operating Routes exists');
                     } else {
-                        AccountOperatingRoute.sourceLocation = {
-                            coordinates:[AccountOperatingRoute.sourceLongitude,AccountOperatingRoute.sourceLatitude]
-                        }
-                        AccountOperatingRoute.destinationLocation = {
-                            coordinates:[AccountOperatingRoute.destinationLongitude,AccountOperatingRoute.destinationLatitude]
-                        };
-                        var AccountOperatingRoutesDoc = new OperatingRoutesColl(AccountOperatingRoute);
-                        AccountOperatingRoutesDoc.save(function (err) {
-                            AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
-                                for (var i = 0; i < accounts.length; i++) {
-                                    OperatingRoutesColl.update({'id_account': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, permission) {
-                                        console.log("Account is updated " + JSON.stringify(permission));
-                                    });
-                                }
-                            });
-                            AccountOperatingRoutesCallBack(err, 'saved');
-                        })
+                        AccountsColl.findOne({"userName": AccountOperatingRoute.id_account}, {"role": "account"}, function (err, account) {
+                            AccountOperatingRoute.sourceLocation = {
+                                coordinates: [AccountOperatingRoute.sourceLongitude, AccountOperatingRoute.sourceLatitude]
+                            }
+                            AccountOperatingRoute.destinationLocation = {
+                                coordinates: [AccountOperatingRoute.destinationLongitude, AccountOperatingRoute.destinationLatitude]
+                            };
+                            if (account) {
+                                AccountOperatingRoute.accountId = account._id;
+                            }
+                            var AccountOperatingRoutesDoc = new OperatingRoutesColl(AccountOperatingRoute);
+                            AccountOperatingRoutesDoc.save(function (err) {
+                                AccountOperatingRoutesCallBack(err, 'saved');
+                            })
+                        });
                     }
                 });
             }, function (AccountOperatingRoutesErr, AccountOperatingRoutesSaved) {
@@ -940,83 +937,83 @@ Events.prototype.getAccountOperatingRoutes = function (request, callback) {
 function convertDate(olddate) {
     if (!olddate) {
         return new Date();
-    } else if (olddate == "0000-00-00") {
+    } else if (olddate == "0000-00-00" || olddate == "0000-00-00 00:00:00") {
         return new Date();
     } else {
         return new Date(olddate);
     }
 }
 
-Events.prototype.getCompleteData = function (req,callback) {
-    var events=new Events();
+Events.prototype.getCompleteData = function (req, callback) {
+    var events = new Events();
     async.series({
-        one: function(callBackOne) {
+        one: function (callBackOne) {
             events.getAccountData(req, function (result1) {
-                console.log('1 Completed',result1);
-                if(result1.status){
-                    callBackOne(null,result1);
-                }else{
-                    callBackOne(result1,null);
+                console.log('1 Completed', result1);
+                if (result1.status) {
+                    callBackOne(null, result1);
+                } else {
+                    callBackOne(result1, null);
                 }
             })
         },
-        two: function(callBackTwo){
+        two: function (callBackTwo) {
             events.createTruckFromEGTruck(req, function (result2) {
-                console.log('2 Completed',result2);
-                if(result2.status){
-                    callBackTwo(null,result2);
-                }else{
-                    callBackTwo(result2,null);
+                console.log('2 Completed', result2);
+                if (result2.status) {
+                    callBackTwo(null, result2);
+                } else {
+                    callBackTwo(result2, null);
                 }
             })
         },
-        three:function (callBackThree) {
-            events.createTruckFromDevices(req,function (result) {
-                console.log('3 Completed',result);
-                if(result.status){
-                    callBackThree(null,result);
-                }else{
-                    callBackThree(result,null);
+        three: function (callBackThree) {
+            events.createTruckFromDevices(req, function (result) {
+                console.log('3 Completed', result);
+                if (result.status) {
+                    callBackThree(null, result);
+                } else {
+                    callBackThree(result, null);
                 }
             })
         },
-        four:function (callBackFour) {
-            events.getDevicePlans(req,function (result) {
-                console.log('4 Completed',result);
-                if(result.status){
-                    callBackFour(null,result);
-                }else{
-                    callBackFour(result,null);
+        four: function (callBackFour) {
+            events.getDevicePlans(req, function (result) {
+                console.log('4 Completed', result);
+                if (result.status) {
+                    callBackFour(null, result);
+                } else {
+                    callBackFour(result, null);
                 }
             })
         },
-        five:function (callBackFive) {
-            events.devicePlansHistory(req,function (result) {
-                console.log('5 Completed',result);
-                if(result.status){
-                    callBackFive(null,result);
-                }else{
-                    callBackFive(result,null);
+        five: function (callBackFive) {
+            events.devicePlansHistory(req, function (result) {
+                console.log('5 Completed', result);
+                if (result.status) {
+                    callBackFive(null, result);
+                } else {
+                    callBackFive(result, null);
                 }
             })
         },
-        six:function (callBackSix) {
-            events.getFranchise(req,function (result) {
-                console.log('6 Completed',result);
-                if(result.status){
-                    callBackSix(null,result);
-                }else{
-                    callBackSix(result,null);
+        six: function (callBackSix) {
+            events.getFranchise(req, function (result) {
+                console.log('6 Completed', result);
+                if (result.status) {
+                    callBackSix(null, result);
+                } else {
+                    callBackSix(result, null);
                 }
             })
         },
-        seven:function (callBackSeven) {
-            events.getAdminRoles(req,function (result) {
-                console.log('7 Completed',result);
-                if(result.status){
-                    callBackSeven(null,result);
-                }else{
-                    callBackSeven(result,null);
+        seven: function (callBackSeven) {
+            events.getAdminRoles(req, function (result) {
+                console.log('7 Completed', result);
+                if (result.status) {
+                    callBackSeven(null, result);
+                } else {
+                    callBackSeven(result, null);
                 }
             })
         },
@@ -1030,27 +1027,27 @@ Events.prototype.getCompleteData = function (req,callback) {
                 }
             })
         },*/
-        nine:function (callBackNine) {
-            events.getTrucksTypeData(req,function (result) {
-                console.log('9 Completed',result);
-                if(result.status){
-                    callBackNine(null,result);
-                }else{
-                    callBackNine(result,null);
+        nine: function (callBackNine) {
+            events.getTrucksTypeData(req, function (result) {
+                console.log('9 Completed', result);
+                if (result.status) {
+                    callBackNine(null, result);
+                } else {
+                    callBackNine(result, null);
                 }
             })
         }
-    }, function(err,results) {
-        if(err){
+    }, function (err, results) {
+        if (err) {
             callback({});
-        }else{
+        } else {
             callback(results);
             console.log(results);
         }
     });
 };
 
-Events.prototype.getAlternateContact = function (req,callback) {
+Events.prototype.getAlternateContact = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1068,19 +1065,19 @@ Events.prototype.getAlternateContact = function (req,callback) {
             retObj.results = results;
             for (var i = 0; i < retObj.results.length; i++) {
                 var AccountData = retObj.results[i];
-                AccountsColl.update({userName:AccountData.userName},{$set:{alternatePhone:AccountData.alternatePhone}},function (err,result) {
-                    if(err){
+                AccountsColl.update({userName: AccountData.userName}, {$set: {alternatePhone: AccountData.alternatePhone}}, function (err, result) {
+                    if (err) {
                         retObj.status = false;
                         retObj.messages.push('Error fetching data');
                         retObj.messages.push(JSON.stringify(err));
                         callback(retObj);
-                    }else{
+                    } else {
                         retObj.status = true;
                         retObj.messages.push('Success');
                         retObj.results = results;
                     }
                 });
-                if(i===retObj.results.length-1){
+                if (i === retObj.results.length - 1) {
                     retObj.count = retObj.results.length;
                     callback(retObj);
                 }
@@ -1104,13 +1101,17 @@ Events.prototype.getTrucksTypeData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(trucksTypes, function (trucksType, trucksTypeCallBack) {
-                TrucksTypesColl.findOne({title: trucksType.title,tonnes: trucksType.tonnes,mileage: trucksType.mileage}, function (findTrucksTypeErr, trucksTypeFound) {
+                TrucksTypesColl.findOne({
+                    title: trucksType.title,
+                    tonnes: trucksType.tonnes,
+                    mileage: trucksType.mileage
+                }, function (findTrucksTypeErr, trucksTypeFound) {
                     if (findTrucksTypeErr) {
                         trucksTypeCallBack(findTrucksTypeErr);
                     } else if (trucksTypeFound) {
                         trucksTypeCallBack(null, 'Trucks Type exists');
                     } else {
-                        if(trucksType.status === 1) {
+                        if (trucksType.status === 1) {
                             status = true;
                         }
                         var trucksTypeDoc = new TrucksTypesColl({
@@ -1161,7 +1162,7 @@ Events.prototype.getGoodsTypeData = function (request, callback) {
                     } else if (goodsTypeFound) {
                         goodsTypeCallBack(null, 'GoodsType exists');
                     } else {
-                        if(goodsType.status === 1) {
+                        if (goodsType.status === 1) {
                             status = true;
                         }
                         var goodsTypeDoc = new GoodsTypesColl({
@@ -1210,7 +1211,7 @@ Events.prototype.getLoadsTypeData = function (request, callback) {
                     } else if (loadTypeFound) {
                         loadTypeCallBack(null, 'Loads Type exists');
                     } else {
-                        if(loadType.status === 1) {
+                        if (loadType.status === 1) {
                             status = true;
                         }
                         var loadTypeDoc = new LoadTypesColl({
@@ -1298,33 +1299,31 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(customerLeads, function (customerLead, customerLeadCallBack) {
-                CustomerLeadsColl.findOne({email: customerLead.email}, function (findCustomerLeadErr, customerLeadFound) {
+                CustomerLeadsColl.findOne({firstName: customerLead.fullname}, {leadType: customerLead.type}, function (findCustomerLeadErr, customerLeadFound) {
                     if (findCustomerLeadErr) {
                         customerLeadCallBack(findCustomerLeadErr);
                     } else if (customerLeadFound) {
                         customerLeadCallBack('Customer Lead exists');
                     } else {
-                        if(customerLead.alt_mobile_1) {
+                        if (customerLead.alt_mobile_1) {
                             alternatePhone.push(customerLead.alt_mobile_1);
                         }
-                        if(customerLead.alt_mobile_2) {
+                        if (customerLead.alt_mobile_2) {
                             alternatePhone.push(customerLead.alt_mobile_2);
                         }
-                        if(customerLead.alt_mobile_3) {
+                        if (customerLead.alt_mobile_3) {
                             alternatePhone.push(customerLead.alt_mobile_3);
                         }
 
-                        if(customerLead.approved) {
+                        if (customerLead.approved) {
                             approved = 'Accepted';
                         }
-                        if(customerLead.approved) {
+                        if (customerLead.approved) {
                             approved = 'Rejected';
                         }
                         var id_customer = customerLead.id_customer;
-                        var customerLeadDoc = new CustomerLeadsColl({
-                            id_franchise: customerLead.id_franchise,
+                        var customerLeadData = {
                             userId: customerLead.idprefix,
-                            gps_account_id: customerLead.gps_account_id,
                             isLead: customerLead.islead,
                             leadType: customerLead.type,
                             firstName: customerLead.fullname,
@@ -1333,7 +1332,6 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                             email: customerLead.email,
                             yearInService: customerLead.year_in_service,
                             password: '1234',
-                            noOfTrucks: customerLead.no_of_vechiles,
                             loadEnabled: customerLead.load_required,
                             gpsEnabled: customerLead.gps_required,
                             paymentType: customerLead.payment_type,
@@ -1346,59 +1344,23 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                             isActive: customerLead.status,
                             status: approved,
                             fuelCardApplied: customerLead.applied_fuel_card,
-                            loadPaymentAdvancePercent: customerLead.load_payment_advance_percent,
-                            loadPaymentToPayPercent: customerLead.load_payment_topay_percent,
-                            loadPaymentPodDays: customerLead.load_payment_pod_days,
                             leadStatus: customerLead.lead_status,
                             leadSource: customerLead.lead_source,
                             createdAt: convertDate(customerLead.date_created),
                             updatedAt: convertDate(customerLead.date_modified),
-                        });
-                        customerLeadDoc.save(function (err, doc) {
-                            var CustomerOperatingRoutesDataQuery = "SELECT source_city as source, source_state as sourceState, source_address as sourceAddress, source_lat as sourceLatitude, source_lng as sourceLongitude, destination_city as destination, destination_state as destinationState, destination_address as destinationAddress, destination_lat as destinationLatitude, destination_lng as destinationLongitude FROM eg_customer_operating_destinations where id_customer="+id_customer;
-                            pool.query(CustomerOperatingRoutesDataQuery, function (err, CustomerOperatingRoutes) {
-                                if (err) {
-                                    retObj.status = false;
-                                    retObj.messages.push('Error fetching data');
-                                    retObj.messages.push(JSON.stringify(err));
-                                    callback(retObj);
-                                } else {
-                                    async.map(CustomerOperatingRoutes, function (CustomerOperatingRoute, CustomerOperatingRoutesCallBack) {
-                                        OperatingRoutesColl.findOne({accountId: doc._id,source: CustomerOperatingRoute.source,sourceState: CustomerOperatingRoute.sourceState,sourceLatitude: CustomerOperatingRoute.sourceLatitude,sourceLongitude: CustomerOperatingRoute.sourceLongitude,destination: CustomerOperatingRoute.destination,destinationState: CustomerOperatingRoute.destinationState,destinationLatitude: CustomerOperatingRoute.destinationLatitude,destinationLongitude: CustomerOperatingRoute.destinationLongitude}, function (findCustomerOperatingRoutesErr, CustomerOperatingRoutesFound) {
-                                            if (findCustomerOperatingRoutesErr) {
-                                                CustomerOperatingRoutesCallBack(findCustomerOperatingRoutesErr);
-                                            } else if (CustomerOperatingRoutesFound) {
-                                                CustomerOperatingRoutesCallBack(null, 'Customer Operating Routes exists');
-                                            } else {
-                                                CustomerOperatingRoute.sourceLocation = {
-                                                    coordinates:[CustomerOperatingRoute.sourceLongitude,CustomerOperatingRoute.sourceLatitude]
-                                                }
-                                                CustomerOperatingRoute.destinationLocation = {
-                                                    coordinates:[CustomerOperatingRoute.destinationLongitude,CustomerOperatingRoute.destinationLatitude]
-                                                };
-                                                CustomerOperatingRoute.accountId = doc._id;
-                                                var CustomerOperatingRoutesDoc = new OperatingRoutesColl(CustomerOperatingRoute);
-                                                CustomerOperatingRoutesDoc.save(function (err) {
-                                                    CustomerOperatingRoutesCallBack(err, 'saved');
-                                                })
-                                            }
-                                        });
-                                    }, function (CustomerOperatingRoutesErr, CustomerOperatingRoutesSaved) {
-                                        if (CustomerOperatingRoutesErr) {
-                                            retObj.status = false;
-                                            retObj.messages.push('Error saving data');
-                                            retObj.messages.push(JSON.stringify(CustomerOperatingRoutesErr));
-                                            callback(retObj);
-                                        } else {
-                                            retObj.status = true;
-                                            retObj.messages.push('Account Operating Routes saved successfully');
-                                            callback(retObj);
-                                        }
-                                    });
-                                }
+                        };
+
+                        AccountsColl.findOne({"role": {"$ne": "account"}}, {"firstName": customerLead.fullname}, {"leadType": customerLead.type}, function (err, account) {
+                            if (account) {
+                                customerLeadData.accountId = account._id;
+                            }
+
+                            var customerLeadDoc = new CustomerLeadsColl(customerLeadData);
+                            customerLeadDoc.save(function (err, doc) {
+                                alternatePhone = [];
+                                customerLeadCallBack(err, 'saved');
                             });
-                            customerLeadCallBack(err, 'saved');
-                        })
+                        });
                     }
                 });
             }, function (customerLeadErr, customerLeadSaved) {
@@ -1417,6 +1379,68 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
     });
 };
 
+Events.prototype.getCustomerOperatingRoutes = function (request, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var CustomerOperatingRoutesDataQuery = "SELECT c.type,c.fullname, cod.source_city as source, cod.source_state as sourceState, cod.source_address as sourceAddress, cod.source_lat as sourceLatitude, cod.source_lng as sourceLongitude, cod.destination_city as destination, cod.destination_state as destinationState, cod.destination_address as destinationAddress, cod.destination_lat as destinationLatitude, cod.destination_lng as destinationLongitude FROM eg_customer_operating_destinations cod,eg_customer c where cod.id_customer=c.id_customer order by cod.id_customer ";
+    pool_crm.query(CustomerOperatingRoutesDataQuery, function (err, CustomerOperatingRoutes) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(CustomerOperatingRoutes, function (CustomerOperatingRoute, CustomerOperatingRoutesCallBack) {
+                OperatingRoutesColl.findOne({
+                    source: CustomerOperatingRoute.source,
+                    sourceState: CustomerOperatingRoute.sourceState,
+                    sourceLatitude: CustomerOperatingRoute.sourceLatitude,
+                    sourceLongitude: CustomerOperatingRoute.sourceLongitude,
+                    destination: CustomerOperatingRoute.destination,
+                    destinationState: CustomerOperatingRoute.destinationState,
+                    destinationLatitude: CustomerOperatingRoute.destinationLatitude,
+                    destinationLongitude: CustomerOperatingRoute.destinationLongitude
+                }, function (findCustomerOperatingRoutesErr, CustomerOperatingRoutesFound) {
+                    if (findCustomerOperatingRoutesErr) {
+                        CustomerOperatingRoutesCallBack(findCustomerOperatingRoutesErr);
+                    } else if (CustomerOperatingRoutesFound) {
+                        CustomerOperatingRoutesCallBack(null, 'Customer Operating Routes exists');
+                    } else {
+                        AccountsColl.findOne({"role": {"$ne": "account"}}, {"firstName": CustomerOperatingRoute.fullname}, {"leadType": CustomerOperatingRoute.type}, function (err, account) {
+                            CustomerOperatingRoute.sourceLocation = {
+                                coordinates: [CustomerOperatingRoute.sourceLongitude, CustomerOperatingRoute.sourceLatitude]
+                            }
+                            CustomerOperatingRoute.destinationLocation = {
+                                coordinates: [CustomerOperatingRoute.destinationLongitude, CustomerOperatingRoute.destinationLatitude]
+                            };
+                            if (account) {
+                                CustomerOperatingRoute.accountId = account._id;
+                            }
+                            var CustomerOperatingRoutesDoc = new OperatingRoutesColl(CustomerOperatingRoute);
+                            CustomerOperatingRoutesDoc.save(function (err) {
+                                CustomerOperatingRoutesCallBack(err, 'saved');
+                            })
+                        });
+                    }
+                });
+            }, function (CustomerOperatingRoutesErr, CustomerOperatingRoutesSaved) {
+                if (CustomerOperatingRoutesErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(CustomerOperatingRoutesErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Customer Operating Routes saved successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
+
 Events.prototype.getCustomerData = function (request, callback) {
     var retObj = {
         status: false,
@@ -1425,8 +1449,6 @@ Events.prototype.getCustomerData = function (request, callback) {
     var alternatePhone = [];
     var approved = '';
     var role = '';
-    var smsEnabled = '';
-    var roleType = ['Truck Owner', 'Guest', 'Commission Agent', 'Transporter', 'Factory Owners'];
     var customerDataQuery = "select * from eg_customer";
 
     pool_crm.query(customerDataQuery, function (err, customers) {
@@ -1437,7 +1459,7 @@ Events.prototype.getCustomerData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(customers, function (customer, customerCallBack) {
-                AccountsColl.findOne({firstName: customer.fullname}, function (findCustomerErr, customerFound) {
+                AccountsColl.findOne({firstName: customer.fullname}, {leadType: customer.type}, function (findCustomerErr, customerFound) {
                     if (findCustomerErr) {
                         customerCallBack(findCustomerErr);
                     } else if (customerFound) {
@@ -1461,34 +1483,20 @@ Events.prototype.getCustomerData = function (request, callback) {
                             approved = 'Rejected';
                         }
 
-                        if(customer.type === 'T') {
+                        if (customer.type === 'T') {
                             role = 'Truck Owner';
-                        } else if(customer.type === 'TR') {
+                        } else if (customer.type === 'TR') {
                             role = 'Transporter';
-                        } else if(customer.type === 'C') {
+                        } else if (customer.type === 'C') {
                             role = 'Commission Agent';
-                        } else if(customer.type === 'L') {
+                        } else if (customer.type === 'L') {
                             role = 'Factory Owners';
-                        } else if(customer.type === 'G') {
+                        } else if (customer.type === 'G') {
                             role = 'Guest';
                         }
 
-                        /*if(customer.enable_sms_email_ads === 0) {
-                            smsEnabled = false;
-                            emailEnabled = false;
-                        } else if(customer.enable_sms_email_ads === 1) {
-                            smsEnabled = true;
-                            emailEnabled = true;
-                        } else if(customer.enable_sms_email_ads === 2) {
-                            smsEnabled = false;
-                            emailEnabled = true;
-                        } else if(customer.enable_sms_email_ads === 3) {
-                            smsEnabled = true;
-                            emailEnabled = false;
-                        }*/
-                        var customerDoc = new AccountsColl({
+                        var customerData = {
                             userName: customer.mobile,
-                            id_franchise: customer.id_franchise,
                             userId: customer.idprefix,
                             firstName: customer.fullname,
                             contactPhone: customer.mobile,
@@ -1521,18 +1529,18 @@ Events.prototype.getCustomerData = function (request, callback) {
                             updatedAt: convertDate(customer.date_modified),
                             smsEmailAds: customer.enable_sms_email_ads,
                             role: role
+                        }
+                        AccountsColl.findOne({"role": "account"}, {"userName": customer.gps_account_id}, function (err, account) {
+                            if (account) {
+                                customerData.accountId = account._id;
+                            }
+
+                            var customerDoc = new AccountsColl(customerData);
+                            customerDoc.save(function (err) {
+                                alternatePhone = [];
+                                customerCallBack(err, 'saved');
+                            })
                         });
-                        customerDoc.save(function (err) {
-                            AccountsColl.find({"role":"account"}, {"userName": 1}, function (err, accounts) {
-                                for (var i = 0; i < accounts.length; i++) {
-                                    AccountsColl.update({'userName': accounts[i].userName,role:{$ne:{$in:roleType}}}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, customer) {
-                                        console.log("Account is updated " + JSON.stringify(customer));
-                                        alternatePhone = [];
-                                    });
-                                }
-                            });
-                        });
-                        customerCallBack(err, 'saved');
                     }
                 });
             }, function (customerErr, customerSaved) {
@@ -1593,11 +1601,8 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
                         if (junkLead.approved) {
                             approved = 'Rejected';
                         }
-
-                        var junkLeadDoc = new CustomerLeadsColl({
-                            id_franchise: junkLead.id_franchise,
+                        var junkLeadData = {
                             userId: junkLead.idprefix,
-                            gps_account_id: junkLead.gps_account_id,
                             firstName: junkLead.fullname,
                             password: '1234',
                             contactPhone: junkLead.contactPhone,
@@ -1616,21 +1621,25 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
                             erpEnabled: junkLead.erp_required,
                             loadEnabled: junkLead.load_required,
                             yearInService: junkLead.year_in_service,
-                            paymentType: junkLead.payment_type,
-                            loadPaymentToPayPercent: junkLead.load_payment_topay_percent,
-                            loadPaymentAdvancePercent: junkLead.load_payment_advance_percent,
-                            loadPaymentPodDays: junkLead.load_payment_pod_days,
                             leadSource: junkLead.lead_source,
-                            noOfTrucks: junkLead.no_of_vechiles,
                             createdAt: convertDate(junkLead.date_created),
                             updatedAt: convertDate(junkLead.date_modified),
                             leadStatus: junkLead.lead_status,
                             isActive: junkLead.status,
                             fuelCardApplied: junkLead.applied_fuel_card,
                             smsEmailAds: junkLead.enable_sms_email_ads,
-                        });
-                        junkLeadDoc.save(function (err) {
-                            junkLeadCallBack(err, 'saved');
+                        }
+
+                        AccountsColl.findOne({"role": {"$ne":"account"}}, {"firstName": junkLead.fullname}, {leadType: junkLead.type}, function (err, account) {
+                            if (account) {
+                                junkLeadData.accountId = account._id;
+                            }
+
+                            var junkLeadDoc = new CustomerLeadsColl(junkLeadData);
+                            junkLeadDoc.save(function (err) {
+                                alternatePhone = [];
+                                junkLeadCallBack(err, 'saved');
+                            });
                         });
                     }
                 });
