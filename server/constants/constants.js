@@ -481,6 +481,9 @@ const serviceActions = {
     delete_rest_of_all_err: 'DELETE_REST_OF_ALL_ERR',
     count_rest_of_all: 'COUNT_REST_OF_ALL',
     count_rest_of_all_err: 'COUNT_REST_OF_ALL_ERR',
+    delete_document_file:'DELETE_DOCUMENT_FILE',
+    delete_document_file_err:'DELETE_DOCUMENT_FILE_ERR',
+
 
 
 };

@@ -91,6 +91,7 @@ AuthRouter.get('/getTransporter', function (req, res) {
 });
 
 AuthRouter.get('/getTransporterDetails', function (req, res) {
+
     CustomerLeads.getTransporterDetails(req, function (result) {
         res.json(result);
     });
@@ -205,6 +206,7 @@ AuthRouter.delete('/deleteGuest', function (req, res) {
 });
 /*Guest End*/
 AuthRouter.delete('/deleteOperatingRoutes',function (req,res) {
+    console.log("jwt",req.jwt);
     CustomerLeads.deleteOperatingRoutes(req,function (result) {
         res.send(result);
     })
@@ -218,13 +220,13 @@ AuthRouter.delete('/deleteTrafficManager',function (req,res) {
 
 AuthRouter.get('/getEmployeesList',function (req,res) {
    CustomerLeads.getEmployeesList(req,function (result) {
-       res.send()
+       res.send(result)
    })
 });
 
-AuthRouter.get('/removeDoc',function (req,res) {
+AuthRouter.delete('/removeDoc',function (req,res) {
     CustomerLeads.removeDoc(req,function (result) {
-        res.send()
+        res.send(result)
     })
 });
 
@@ -245,6 +247,16 @@ AuthRouter.get('/deleteRestOfAllDetails',function (req,res) {
         res.send(result);
     })
 });
+
+AuthRouter.delete('/removeCustomerLeadDocFile',function (req,res) {
+    CustomerLeads.removeCustomerLeadDocFile(req,function (result) {
+        res.send(result);
+    })
+});
+
+
+
+
 
 module.exports = {
     AuthRouter: AuthRouter

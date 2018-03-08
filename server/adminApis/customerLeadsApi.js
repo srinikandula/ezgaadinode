@@ -83,7 +83,7 @@ CustomerLeads.prototype.totalCustomerLeads = function (req, callback) {
         status: false,
         messages: []
     };
-    CustomerLeadsColl.count({"status": {$eq: null}},function (err, doc) {
+    CustomerLeadsColl.count({"status": {$eq: null}}, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting customer leads count');
             analyticsService.create(req, serviceActions.count_customer_leads_err, {
@@ -131,7 +131,6 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
         });
         callback(retObj);
     } else {
-
         if (req.files.files) {
             Utils.uploadDocuments(req.files.files, function (uploadResp) {
                 if (uploadResp.status) {
@@ -151,8 +150,6 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
                 }
             })
         } else {
-            params.createdBy = req.jwt.id;
-
             saveCustomerLead(req, params, callback);
         }
     }
@@ -165,6 +162,7 @@ function saveCustomerLead(req, params, callback) {
         status: false,
         messages: []
     };
+    params.createdBy = req.jwt.id;
     Utils.removeEmptyFields(params);
     var customerLead = new CustomerLeadsColl(params);
     customerLead.save(function (err, doc) {
@@ -505,37 +503,37 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         .sort(sort)
         .skip(skipNumber)
         .limit(limit)
-        .exec( function (err, docs) {
-        if (err) {
-            retObj.messages.push('Error retrieving truck owners');
-            analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        } else if (docs.length > 0) {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.data = docs;
-            analyticsService.create(req, serviceActions.get_truck_owners_list, {
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
-            callback(retObj);
-        } else {
-            retObj.messages.push('No truck owners found');
-            analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
-        }
-    });
+        .exec(function (err, docs) {
+            if (err) {
+                retObj.messages.push('Error retrieving truck owners');
+                analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_truck_owners_list, {
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push('No truck owners found');
+                analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
 };
 
 CustomerLeads.prototype.countTruckOwners = function (req, callback) {
@@ -689,7 +687,7 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                 alternatePhone: customerLead.alternatePhone,
                                 companyName: customerLead.companyName,
                                 pincode: customerLead.pinCode,
-                                role: customerLead.leadType,
+                                role: params.leadType,
                                 documentType: customerLead.documentType,
                                 documentFile: customerLead.documentFile,
                                 paymentType: customerLead.paymentType,
@@ -727,50 +725,50 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                             callback(retObj);
                                         } else {
                                             OperatingRoutesColl.update(
-                                                {accountId:customerLead._id},
+                                                {accountId: customerLead._id},
                                                 {accountId: saveAcc._id},
-                                                {multi: true},function (err,operRoutes) {
-                                                if(err){
-                                                    retObj.messages.push("Customer lead not updated");
-                                                    analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
-                                                        body: JSON.stringify(req.body),
-                                                        accountId: req.jwt.id,
-                                                        success: false,
-                                                        messages: retObj.messages
-                                                    }, function (response) {
-                                                    });
-                                                    callback(retObj);
-                                                }else{
-                                                    CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {
-                                                        status: params.status,
-                                                        comment: params.comment,
-                                                        leadType:params.leadType
-                                                    }, function (err, customerLead) {
-                                                       if(err){
-                                                           retObj.messages.push("Customer lead not updated");
-                                                           analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
-                                                               body: JSON.stringify(req.body),
-                                                               accountId: req.jwt.id,
-                                                               success: false,
-                                                               messages: retObj.messages
-                                                           }, function (response) {
-                                                           });
-                                                           callback(retObj);
-                                                       } else{
-                                                           retObj.status = true;
-                                                           retObj.messages.push("Customer lead updated successfully");
-                                                           analyticsService.create(req, serviceActions.change_customer_lead_status, {
-                                                               body: JSON.stringify(req.body),
-                                                               accountId: req.jwt.id,
-                                                               success: true
-                                                           }, function (response) {
-                                                           });
-                                                           callback(retObj);
-                                                       }
-                                                    });
+                                                {multi: true}, function (err, operRoutes) {
+                                                    if (err) {
+                                                        retObj.messages.push("Customer lead not updated");
+                                                        analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
+                                                            body: JSON.stringify(req.body),
+                                                            accountId: req.jwt.id,
+                                                            success: false,
+                                                            messages: retObj.messages
+                                                        }, function (response) {
+                                                        });
+                                                        callback(retObj);
+                                                    } else {
+                                                        CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {
+                                                            status: params.status,
+                                                            comment: params.comment,
+                                                            leadType: params.leadType
+                                                        }, function (err, customerLead) {
+                                                            if (err) {
+                                                                retObj.messages.push("Customer lead not updated");
+                                                                analyticsService.create(req, serviceActions.change_customer_lead_status_err, {
+                                                                    body: JSON.stringify(req.body),
+                                                                    accountId: req.jwt.id,
+                                                                    success: false,
+                                                                    messages: retObj.messages
+                                                                }, function (response) {
+                                                                });
+                                                                callback(retObj);
+                                                            } else {
+                                                                retObj.status = true;
+                                                                retObj.messages.push("Customer lead updated successfully");
+                                                                analyticsService.create(req, serviceActions.change_customer_lead_status, {
+                                                                    body: JSON.stringify(req.body),
+                                                                    accountId: req.jwt.id,
+                                                                    success: true
+                                                                }, function (response) {
+                                                                });
+                                                                callback(retObj);
+                                                            }
+                                                        });
 
-                                                }
-                                            });
+                                                    }
+                                                });
 
                                         }
                                     })
@@ -892,7 +890,7 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
         status: false,
         messages: []
     };
-    var params = req.body;
+    var params = req.body.content;
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid truck owner');
     }
@@ -918,7 +916,7 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
                     if (!req.body.content.documentFiles) {
                         req.body.content.documentFiles = [];
                     }
-                    console.log("req.body.content.documentFiles",req.body.content.documentFiles,uploadResp.fileNames);
+                    console.log("req.body.content.documentFiles", req.body.content.documentFiles, uploadResp.fileNames);
                     req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
 
                     updateTruckOwner(req, callback);
@@ -1021,8 +1019,7 @@ function updateTruckOwner(req, callback) {
             }
         })
 
-    };
-
+};
 
 
 CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
@@ -2703,52 +2700,53 @@ CustomerLeads.prototype.removeDoc = function (req, callback) {
 
     };
     var params = req.query;
-    console.log('params',params)
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid document");
     }
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        console.log('params',params)
-        /*Utils.removeDoc(params._id, function (removeResp) {
-            if(removeResp){
-                AccountsColl.remove({_id: params._id}, function (err, doc) {
-                    if (err) {
-                        retObj.messages.push("please try again");
-                        analyticsService.create(req, serviceActions.delete_document_err, {
-                            body: JSON.stringify(req.query),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else if (doc && doc.result.n == 1) {
-                        retObj.status = true;
-                        retObj.messages.push("Document deleted successfully");
-                        analyticsService.create(req, serviceActions.delete_document, {
-                            body: JSON.stringify(req.query),
-                            accountId: req.jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    } else {
-                        retObj.messages.push("Document not deleted");
-                        analyticsService.create(req, serviceActions.delete_document_err, {
-                            body: JSON.stringify(req.query),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }
-                })
+        Utils.removeDoc(params.file, function (removeResp) {
+            if (removeResp.status) {
+                AccountsColl.update(
+                    {_id: params._id},
+                    {$pull: {documentFiles: params.file}},
+                    {safe: true}, function (err, doc) {
+                        if (err) {
+                            retObj.messages.push("please try again");
+                            analyticsService.create(req, serviceActions.delete_document_file_err, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        } else if (doc) {
+                            retObj.status = true;
+                            retObj.messages.push("Document deleted successfully");
+                            analyticsService.create(req, serviceActions.delete_document_file, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        } else {
+                            retObj.messages.push("Document not deleted");
+                            analyticsService.create(req, serviceActions.delete_document_file_err, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
+                    })
             } else {
                 retObj.messages.push("Document not deleted");
-                analyticsService.create(req, serviceActions.delete_document_err, {
+                analyticsService.create(req, serviceActions.delete_document_file_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: false,
@@ -2757,7 +2755,7 @@ CustomerLeads.prototype.removeDoc = function (req, callback) {
                 });
                 callback(retObj);
             }
-        });*/
+        });
     }
 };
 
@@ -2774,7 +2772,7 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
-            CustomerLeadsColl.find({"status": "Rejected","leadType":"Junk Lead"}).sort(sort)
+            CustomerLeadsColl.find({"status": "Rejected", "leadType": "Junk Lead"}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -2783,7 +2781,7 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            CustomerLeadsColl.count({"status": "Rejected","leadType":"Junk Lead"}, function (err, count) {
+            CustomerLeadsColl.count({"status": "Rejected", "leadType": "Junk Lead"}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -2833,7 +2831,7 @@ CustomerLeads.prototype.getCountRestOfAll = function (req, callback) {
         status: false,
         messages: []
     };
-    CustomerLeadsColl.count({"status": "Rejected","leadType":"Junk Lead"},function (err, doc) {
+    CustomerLeadsColl.count({"status": "Rejected", "leadType": "Junk Lead"}, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting customer leads count');
             analyticsService.create(req, serviceActions.count_rest_of_all_err, {
@@ -2913,4 +2911,74 @@ CustomerLeads.prototype.deleteRestOfAllDetails = function (req, callback) {
     }
 
 };
+
+/*Author:Naresh
+**Delete Customer lead Documents*/
+CustomerLeads.prototype.removeCustomerLeadDocFile = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id) || !params.file) {
+        retObj.messages.push("Invalid document");
+    }
+
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        Utils.removeDoc(params.file, function (removeResp) {
+            if (removeResp.status) {
+                CustomerLeads.update(
+                    {_id: params._id},
+                    {$pull: {documentFiles: params.file}},
+                    {safe: true}, function (err, doc) {
+                        if (err) {
+                            retObj.messages.push("please try again");
+                            analyticsService.create(req, serviceActions.delete_document_file_err, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        } else if (doc) {
+                            retObj.status = true;
+                            retObj.messages.push("Document deleted successfully");
+                            analyticsService.create(req, serviceActions.delete_document_file, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        } else {
+                            retObj.messages.push("Document not deleted");
+                            analyticsService.create(req, serviceActions.delete_document_file_err, {
+                                body: JSON.stringify(req.query),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
+                    })
+            } else {
+                retObj.messages.push("Document not deleted");
+                analyticsService.create(req, serviceActions.delete_document_file_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+    }
+};
+
 module.exports = new CustomerLeads();
