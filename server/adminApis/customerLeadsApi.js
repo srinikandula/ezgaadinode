@@ -1028,6 +1028,7 @@ CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
         messages: []
     };
     var params = req.query;
+    console.log(params);
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid truck owner");
     }
@@ -1035,7 +1036,7 @@ CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+        AccountsColl.remove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_truck_owner_err, {
@@ -1071,54 +1072,54 @@ CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
     }
 };
 
-CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.push("Invalid truck owner");
-    }
-
-    if (retObj.messages.length > 0) {
-        callback(retObj);
-    } else {
-        AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
-            if (err) {
-                retObj.messages.push("please try again");
-                analyticsService.create(req, serviceActions.delete_truck_owner_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (doc && doc.result.n == 1) {
-                retObj.status = true;
-                retObj.messages.push("Truck owner deleted successfully");
-                analyticsService.create(req, serviceActions.delete_truck_owner, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.messages.push("Truck owner not deleted");
-                analyticsService.create(req, serviceActions.delete_truck_owner_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
-    }
-};
+// CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
+//     var retObj = {
+//         status: false,
+//         messages: []
+//     };
+//     var params = req.query;
+//     if (!params._id || !ObjectId.isValid(params._id)) {
+//         retObj.messages.push("Invalid truck owner");
+//     }
+//
+//     if (retObj.messages.length > 0) {
+//         callback(retObj);
+//     } else {
+//         AccountsColl.findOneAndRemove({_id: params._id}, function (err, doc) {
+//             if (err) {
+//                 retObj.messages.push("please try again");
+//                 analyticsService.create(req, serviceActions.delete_truck_owner_err, {
+//                     body: JSON.stringify(req.query),
+//                     accountId: req.jwt.id,
+//                     success: false,
+//                     messages: retObj.messages
+//                 }, function (response) {
+//                 });
+//                 callback(retObj);
+//             } else if (doc && doc.result.n == 1) {
+//                 retObj.status = true;
+//                 retObj.messages.push("Truck owner deleted successfully");
+//                 analyticsService.create(req, serviceActions.delete_truck_owner, {
+//                     body: JSON.stringify(req.query),
+//                     accountId: req.jwt.id,
+//                     success: true
+//                 }, function (response) {
+//                 });
+//                 callback(retObj);
+//             } else {
+//                 retObj.messages.push("Truck owner not deleted");
+//                 analyticsService.create(req, serviceActions.delete_truck_owner_err, {
+//                     body: JSON.stringify(req.query),
+//                     accountId: req.jwt.id,
+//                     success: false,
+//                     messages: retObj.messages
+//                 }, function (response) {
+//                 });
+//                 callback(retObj);
+//             }
+//         })
+//     }
+// };
 
 /*Author SVPrasadK*/
 /*Transporter Start*/

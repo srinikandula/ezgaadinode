@@ -35,14 +35,13 @@ app.factory('customerServices', function ($http) {
                 params: {_id: params}
             }).then(success, error)
         },
-        deleteTruckOwners: function (params, success, error) {
+        deleteTruckOwner: function (params, success, error) {
             $http({
-                url: '/v1/cpanel/customers/deleteTruckOwners',
+                url: '/v1/cpanel/customers/deleteTruckOwner',
                 method: "DELETE",
                 params: {_id: params}
             }).then(success, error)
         },
-
         countTruckOwners: function (success, error) {
             $http({
                 url: '/v1/cpanel/customers/countTruckOwners',
@@ -590,7 +589,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
 /*Author Sravan*/
 /*Truck Owners Start*/
-app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams','Upload', function ($scope, $state, $stateParams, customerServices, Notification, NgTableParams, Upload) {
+app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams','Upload', 'SettingServices', function ($scope, $state, $stateParams, customerServices, Notification, NgTableParams, Upload, SettingServices) {
     $scope.status = {
         isOpen: true,
         isOpenTwo: true,
@@ -602,8 +601,17 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
     };
 
     $scope.title = "Edit Truck Owner";
-
+    $scope.getTruckTypes = function () {
+        SettingServices.getTruckTypes({}, function (response) {
+            if (response.data.status) {
+                $scope.truckTypes = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
     if ($stateParams.truckownerId) {
+        $scope.getTruckTypes();
         customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
             if (success.data.status) {
                 $scope.truckOwner = success.data.data.truckOwnerData;
@@ -621,7 +629,17 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
                     $scope.truckOwner.yearInService = "";
                 }
                 $scope.truckOwner.files = [{}];
+                $scope.truckOwner.selectTruckTypes = [];
 
+                if($scope.truckOwner.truckTypes.length>0){
+                   for(var i=0; i<$scope.truckOwner.truckTypes.length;i++){
+                       for(var j=0;j<$scope.truckTypes.length;j++){
+                           if($scope.truckTypes[j]._id==$scope.truckOwner.truckTypes[i]){
+                               $scope.truckOwner.selectTruckTypes.push($scope.truckTypes[j]);
+                           }
+                       }
+                   }
+                }
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -631,7 +649,7 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
 
         });
     }
-
+$scope.selectTruckTypes=[];
     $scope.leadType = [{
         "key": "Truck Owner",
         "value": "T"}, {
@@ -674,10 +692,43 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
             routesObj.push({source: '', destination: ''});
         }
     };
-    $scope.deleteOperatingRoute = function (index) {
-        $scope.truckOwner.operatingRoutes.splice(index, 1)
-    };
 
+    $scope.deleteOperatingRoute = function (index) {
+        if( $scope.truckOwner.operatingRoutes[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    customerServices.deleteOperatingRoutes($scope.truckOwner.operatingRoutes[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.truckOwner.operatingRoutes.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.truckOwner.operatingRoutes.splice(index, 1)
+
+        }
+    };
     $scope.addSearchSource = function (index) {
         var input = document.getElementById('searchSource' + index);
         var options = {};
@@ -698,17 +749,9 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
                 $scope.truckOwner.operatingRoutes[index].destination = place.formatted_address;
             });
     };
-    // $scope.getTruckTypes = function () {
-    //     SettingServices.getTruckTypes({}, function (response) {
-    //         if (response.data.status) {
-    //             $scope.getTruckTypes = response.data.data;
-    //         } else {
-    //             Notification.error({message: response.data.messages[0]});
-    //         }
-    //     });
-    // };
 
-    $scope.cancel = function () {
+
+       $scope.cancel = function () {
         $state.go('customers.truckOwners');
     };
 
@@ -777,6 +820,11 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
             params.errorMessage.push('Enter Mobile Number');
         }
         else {
+            $scope.truckOwner.truckTypes=[];
+            $scope.truckOwner.selectTruckTypes.forEach(function (truck) {
+                $scope.truckOwner.truckTypes.push(truck._id);
+            });
+
             if ($scope.truckOwner._id) {
                 Upload.upload({
                     url: '/v1/cpanel/customers/updateTruckOwner',
@@ -790,15 +838,13 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
-                        $state.go('customers.truckOwner');
+                        $state.go('customers.truckOwners');
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
                         });
                     }
                 });
-            } else {
-
             }
         }
     };
@@ -813,6 +859,30 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
     $scope.deleteDoc = function (index) {
         $scope.truckOwner.files.splice(index, 1);
     }
+    $scope.deleteTruckOwner = function (index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete the transporter'
+        }).then(function (result) {
+            if (result.value) {
+                customerServices.deleteTruckOwner($scope.currentPageOfTruckOwners[index]._id, function (success) {
+                    if (success.data.status) {
+                        $scope.initTruckOwner("");
+                        swal(
+                            '',
+                            'Successfully removed',
+                            'success'
+                        );
+                    }
+                });
+            }
+        });
+    };
 }]);
 
 /*Truck Owners End*/
