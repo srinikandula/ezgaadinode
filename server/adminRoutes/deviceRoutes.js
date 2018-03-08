@@ -76,6 +76,18 @@ AuthRouter.get('/getDevicePlanHistory/:deviceId', function (req, res) {
     });
 });
 
+AuthRouter.get('/getDeviceManagementDetails', function (req, res) {
+    Devices.getDeviceManagementDetails(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getDeviceManagementCount', function (req, res) {
+    Devices.getDeviceManagementCount(req, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

@@ -1123,6 +1123,40 @@ Settings.prototype.getPlanDetails = function (req, callback) {
     }
 };
 
+/*Author : Sai Reddy*/
+Settings.prototype.getAllPlans = function (req, callback) {
+    // console.log('get');
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    erpGpsPlansColl.find({plan:req.params.type}, function (err, plans) {
+        if (err) {
+            retObj.messages.push('Error retrieving plan');
+            analyticsService.create(req, serviceActions.get_plan_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (plans) {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.plans = plans;
+            analyticsService.create(req, serviceActions.get_plan, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            // console.log('get');
+            callback(retObj);
+        }
+    });
+};
+
 Settings.prototype.updatePlan = function (req, callback) {
     var retObj = {
         status: false,
@@ -1275,8 +1309,7 @@ Settings.prototype.deletePlan = function (req, callback) {
             }
         });
     }
-}
-
+};
 
 Settings.prototype.planCount = function (req, callback) {
     var retObj = {

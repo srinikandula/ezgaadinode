@@ -21,6 +21,12 @@ app.factory('SettingServices', ['$http', function ($http)   {
                 params: {gpsPlanId: planId}
             }).then(success, error)
         },
+        getAllPlans: function (type, success, error) {
+            $http({
+                url: '/v1/cpanel/settings/getAllPlans/'+type,
+                method: "GET"
+            }).then(success, error)
+        },
         updatePlan: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/settings/updatePlan',

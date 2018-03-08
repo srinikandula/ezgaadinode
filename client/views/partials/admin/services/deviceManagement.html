@@ -1,0 +1,43 @@
+<div ng-controller="deviceManagementCrtl">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Device Management</li>
+
+        <li class="pull-right col-xs-2">
+            <select class="form-control">
+                <option selected value="">Select</option>
+                <option>Working Devices</option>
+                <option>Damaged</option>
+                <option>Not Working</option>
+            </select>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="deviceManagementParams">
+        <tr ng-repeat="employee in currentPageOfDeviceDetails" style="text-align: center;">
+            <td data-title="'S No'">
+                {{$index+1}}
+            </td>
+            <td data-title="'Field Executive'" sortable="'_id.employeeName'" class="clickable-item">
+                {{employee._id.employeeName[0]}}
+            </td>
+            <td data-title="'Assigned Devices'" sortable="'totalDevices'" class="clickable-item">
+                {{employee.totalDevices}}
+            </td>
+            <td data-title="'Devices Inhand'"  class="clickable-item">
+                {{employee.totalDevices - employee.installedDevices}}
+            </td>
+            <td data-title="'Devices Sold'" sortable="'installedDevices'" class="clickable-item">
+                {{employee.installedDevices}}
+            </td>
+            <td data-title="'Installed/Payment Deposited'" sortable="'installedDevices'" class="clickable-item">
+                {{employee.installedDevices}}/0
+            </td>
+            <td data-title="'Inactive'" sortable="'inactiveDevices'" class="clickable-item">
+                {{employee.inactiveDevices}}
+            </td>
+            <td data-title="'Damaged'" sortable="'damagedDevices'" class="clickable-item">
+                {{employee.damagedDevices}}
+            </td>
+        </tr>
+    </table>
+</div>

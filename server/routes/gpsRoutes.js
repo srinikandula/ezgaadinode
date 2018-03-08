@@ -5,7 +5,7 @@ var OpenRouter = express.Router();
 
 var gps = require('../apis/gpsApi');
 var devices = require('../apis/devicesApi');
-var kafka = require('./../apis/testkafka/kafka');
+var kafka = require('./../apis/testkafka/kafkaProducer');
 
 OpenRouter.get('/AddDevicePositions', function (req, res) {
     kafka.sendRecord(req.query, function (result) {
@@ -90,9 +90,7 @@ AuthRouter.get('/downloadReport/:truckId/:startDate/:endDate',function (req,res)
 });*/
 
 var job = cronjob.schedule('0 1,30 * * * *', function() {      //runs everyday midnight at 12AM.
-    console.log('started');
     gps.moveDevicePositions(function (result) {
-        console.log('moved');
         console.log(result.messages[0]);
     });
     /*gps.addInitialCounters(function (result) {

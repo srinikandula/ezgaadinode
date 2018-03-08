@@ -20,14 +20,14 @@ Devices.prototype.addDevices = function (req, callback) {
         // alreadyadded: []
     };
     var params = req.body.devices;
-    for(var i = 0;i < params.length;i++){
-        if(!params[i].imei || !params[i].simPhoneNumber || !params[i].simNumber) {
+    for (var i = 0; i < params.length; i++) {
+        if (!params[i].imei || !params[i].simPhoneNumber || !params[i].simNumber) {
             retObj.status = false;
             retObj.messages.push("Please fill the details");
             break;
         }
     }
-    if(retObj.messages.length > 0) {
+    if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_device_err, {
             body: JSON.stringify(req.body),
             accountId: req.jwt.id,
@@ -43,8 +43,8 @@ Devices.prototype.addDevices = function (req, callback) {
             DevicesColl.findOne({imei: eachdevice.imei}, function (errgetdevice, getdevice) {
                 if (errgetdevice) {
                     eachdeviceCallback(errgetdevice);
-                } else if(getdevice) {
-                    retObj.messages.push('device with IMEI number '+eachdevice.imei+' already added');
+                } else if (getdevice) {
+                    retObj.messages.push('device with IMEI number ' + eachdevice.imei + ' already added');
                     eachdeviceCallback(null);
                 } else {
                     AccountsColl.findOne({userName: 'accounts'}, function (erraccount, account) {
@@ -67,7 +67,7 @@ Devices.prototype.addDevices = function (req, callback) {
             });
         }, function (erradingdevices, devicesadded) {
             // console.log('devicesadded', devicesadded);
-            if(erradingdevices) {
+            if (erradingdevices) {
                 retObj.messages.push("Unable to add devices, please try again");
                 analyticsService.create(req, serviceActions.add_device_err, {
                     body: JSON.stringify(req.body),
@@ -77,7 +77,7 @@ Devices.prototype.addDevices = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else if(retObj.messages.length > 0){
+            } else if (retObj.messages.length > 0) {
                 retObj.status = false;
                 analyticsService.create(req, serviceActions.add_device, {
                     body: JSON.stringify(req.body),
@@ -107,7 +107,7 @@ Devices.prototype.deleteDevice = function (req, callback) {
         messages: []
     };
     DevicesColl.remove({_id: req.params.deviceId}, function (errremoved, removed) {
-        if(errremoved) {
+        if (errremoved) {
             analyticsService.create(req, serviceActions.remove_device_err, {
                 body: JSON.stringify(req.body),
                 accountId: req.jwt.id,
@@ -116,7 +116,7 @@ Devices.prototype.deleteDevice = function (req, callback) {
             }, function (response) {
             });
             callback(retObj);
-        } else{
+        } else {
             retObj.status = true;
             retObj.messages = "Device removed successfully";
             analyticsService.create(req, serviceActions.remove_device, {
@@ -203,11 +203,14 @@ Devices.prototype.transferDevices = function (req, callback) {
     } else {
         params.updatedBy = req.jwt.id;
         async.map(params.devices, function (device, asyncCallback) {
-            DevicesColl.findOneAndUpdate({_id:device}, {assignedTo: req.body.assignedTo, updatedBy : req.jwt.id}, function (errTransfered, transfered) {
+            DevicesColl.findOneAndUpdate({_id: device}, {
+                assignedTo: req.body.assignedTo,
+                updatedBy: req.jwt.id
+            }, function (errTransfered, transfered) {
                 asyncCallback(errTransfered, transfered);
             });
         }, function (asyncerr, asyncsuccess) {
-            if(asyncerr) {
+            if (asyncerr) {
                 retObj.messages.push("Unable to transfer devices, please try again");
                 analyticsService.create(req, serviceActions.transfer_device_err, {
                     body: JSON.stringify(req.body),
@@ -293,7 +296,7 @@ Devices.prototype.getDevices = function (req, callback) {
             });
         }
     }, function (errasync, results) {
-        if(errasync) {
+        if (errasync) {
             retObj.messages.push("Unable to get or count, please try again");
             analyticsService.create(req, serviceActions.get_devices_err, {
                 body: JSON.stringify(params),
@@ -323,7 +326,7 @@ Devices.prototype.getDevices = function (req, callback) {
                     employees: function (employeeCallback) {
                         if(device.installedBy) {
                             AccountsColl.findOne({id_admin: device.installedBy}, function (erremployee, employee) {
-                                if(employee) {
+                                if (employee) {
                                     device.installedBy = employee.displayName;
                                 }
                                 employeeCallback(erremployee, 'success');
@@ -369,8 +372,8 @@ Devices.prototype.getDevice = function (req, callback) {
         status: false,
         messages: []
     };
-    DevicesColl.findOne({_id:req.params.deviceId}).lean().exec(function (errdevice, device) {
-        if(errdevice) {
+    DevicesColl.findOne({_id: req.params.deviceId}).lean().exec(function (errdevice, device) {
+        if (errdevice) {
             retObj.messages.push("Unable to get device, please try again");
             analyticsService.create(req, serviceActions.get_device_err, {
                 body: JSON.stringify(req.body),
@@ -381,8 +384,12 @@ Devices.prototype.getDevice = function (req, callback) {
             });
             callback(retObj);
         } else {
-            TrucksColl.findOne({deviceId: device.imei}, {insuranceExpiry: 1,fitnessExpiry:1, registrationNo:1}).lean().exec(function (errtruck, truck) {
-                if(errtruck){
+            TrucksColl.findOne({deviceId: device.imei}, {
+                insuranceExpiry: 1,
+                fitnessExpiry: 1,
+                registrationNo: 1
+            }).lean().exec(function (errtruck, truck) {
+                if (errtruck) {
                     retObj.messages.push("Unable to populate truck, please try again");
                     analyticsService.create(req, serviceActions.get_device_err, {
                         body: JSON.stringify(req.body),
@@ -416,10 +423,10 @@ Devices.prototype.updateDevice = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set:{deviceId: params.imei}}, function (errassaindevice, assigned) {
+    TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
         // console.log('errassaindevice', errassaindevice);
         // console.log('assigned', assigned);
-        if(errassaindevice) {
+        if (errassaindevice) {
             retObj.messages.push("Unable to assign device to truck, please try again");
             analyticsService.create(req, serviceActions.edit_device_err, {
                 body: JSON.stringify(req.body),
@@ -430,8 +437,13 @@ Devices.prototype.updateDevice = function (req, callback) {
             });
             callback(retObj);
         } else {
-            DevicesColl.findOneAndUpdate({_id: params._id}, {$set:{accountId: params.accountId, installedBy: params.installedBy}}, function (errAddedAccount, accountAdded) {
-                if(errAddedAccount) {
+            DevicesColl.findOneAndUpdate({_id: params._id}, {
+                $set: {
+                    accountId: params.accountId,
+                    installedBy: params.installedBy
+                }
+            }, function (errAddedAccount, accountAdded) {
+                if (errAddedAccount) {
                     retObj.messages.push("Unable to assign device to truck, please try again");
                     analyticsService.create(req, serviceActions.edit_device_err, {
                         body: JSON.stringify(req.body),
@@ -474,8 +486,8 @@ Devices.prototype.getAllDevices = function (req, callback) {
             });
             callback(retObj);
         } else {
-            DevicesColl.find({"accountId" : account._id}, function (errdevices, devices) {
-                if(errdevices) {
+            DevicesColl.find({"accountId": account._id}, function (errdevices, devices) {
+                if (errdevices) {
                     retObj.messages.push("Unable to assign device to truck, please try again");
                     analyticsService.create(req, serviceActions.get_devices_err, {
                         body: JSON.stringify(req.body),
@@ -629,8 +641,11 @@ Devices.prototype.getDevicePlanHistory = function (req, callback) {
         messages: []
     };
     // console.log('check', req.params);
-    AccountDevicePlanHistoryColl.find({deviceId:req.params.deviceId}).populate('planId', {planName: 1, amount:1}).sort({creationTime: -1}).exec(function (errhistory, history) {
-        if(errhistory) {
+    AccountDevicePlanHistoryColl.find({deviceId: req.params.deviceId}).populate('planId', {
+        planName: 1,
+        amount: 1
+    }).sort({creationTime: -1}).exec(function (errhistory, history) {
+        if (errhistory) {
             retObj.messages.push("Unable to get device plan history, please try again");
             analyticsService.create(req, serviceActions.get_device_plan_history_err, {
                 body: JSON.stringify(req.body),
@@ -650,6 +665,120 @@ Devices.prototype.getDevicePlanHistory = function (req, callback) {
                 success: true
             }, function (response) {
             });
+            callback(retObj);
+        }
+    });
+};
+
+Devices.prototype.getDeviceManagementDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.page) {
+        params.page = 1;
+    }
+    console.log(params);
+
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    async.parallel({
+        employees: function (employeescallback) {
+            DevicesColl.aggregate([
+                {$match: {assignedTo: {$exists: true}}},
+                {$lookup: {from: 'accounts', localField: 'assignedTo', foreignField: 'id_admin', as: 'assignedEmployee'}},
+                {
+                    $project: {
+                        'assignedEmployee.contactName': 1,
+                        'assignedTo': 1,
+                        // 'installedBy': 1,
+                        isDamaged: {$cond: [{$eq: ["$isDamaged", true]}, 1, 0]},
+                        isInActive: {$cond: [{$eq: ["$isActive", true]}, 0, 1]},
+                        /*isInActive: {
+                            $cond: {
+                                "if": {$eq: ["$isDamaged", 1]},
+                                "then": 0,
+                                "else": {
+                                    $cond: {
+                                        "if": {
+                                            $and: [{$eq: ["$isDamaged", 0]}, {$eq: ["$isActive", false]}]
+                                        },
+                                        "then": 1,
+                                        "else": 0
+                                    }
+                                }
+                            },//[{$eq: ["$isActive", false]}, 1, 0]},
+                        },*/
+                        installedBy: {$cond: [{$gt: ["$installedBy", null]}, 1, 0]}
+                    }
+                },
+                {
+                    $group: {
+                        _id: {assignedTo: '$assignedTo', employeeName: '$assignedEmployee.contactName'},
+                        // installedDevices: {$push: '$installedBy'},
+                        installedDevices: {$sum: '$installedBy'},
+                        damagedDevices: {$sum: '$isDamaged'},
+                        inactiveDevices: {$sum: '$isInActive'},
+                        totalDevices: {$sum: 1}
+                    }
+                },
+                {$sort:sort},
+                {$skip:skipNumber},
+                {$limit:limit}
+            ], function (errEmp, details) {
+                employeescallback(errEmp, details);
+            });
+        },
+        count: function (countCallback) {
+            DevicesColl.aggregate([
+                {$match: {assignedTo: {$exists: true}}},
+                {
+                    $group: {
+                        _id: {assignedTo: '$assignedTo'}
+                    }
+                }
+            ], function (errcount, countDetails) {
+                countCallback(errcount, countDetails);
+            });
+        }
+    }, function (errDmDetails, dmDetails) {
+        if (errDmDetails) {
+            console.log(errDmDetails);
+            retObj.messages.push("Unable to get dMdevices, please try again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages = "success";
+            retObj.dmDetails = dmDetails.employees;
+            retObj.count = dmDetails.count.length;
+            callback(retObj);
+        }
+    });
+};
+
+Devices.prototype.getDeviceManagementCount = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    DevicesColl.aggregate([
+        {$match: {assignedTo: {$exists: true}}},
+        {
+            $group: {
+                _id: {assignedTo: '$assignedTo'}
+            }
+        }
+    ], function (errDmDetails, dmDetails) {
+        if (errDmDetails) {
+            console.log(errDmDetails);
+            retObj.messages.push("Unable to get dMdevices, please try again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages = "success";
+            retObj.count = dmDetails.length;
             callback(retObj);
         }
     });

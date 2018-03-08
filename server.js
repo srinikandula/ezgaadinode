@@ -34,7 +34,7 @@ var globalApi = require('./server/routes/globalRoutes');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
-var kafkaConsumer = require('./server/apis/testkafka/consumer');
+var kafkaConsumer = require('./server/apis/testkafka/kafkaConsumer');
 
 app.set('port', config.port);
 // app.use(morgan('dev'));

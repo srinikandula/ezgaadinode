@@ -218,37 +218,50 @@
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpenThre">
-                <uib-accordion-heading>
-                    Add Plans <i class="pull-right glyphicon"
-                                 ng-class="{'glyphicon-chevron-down': status.isOpenThre, 'glyphicon-chevron-right': !status.isOpenThre}"></i>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenThre"
+                 ng-show="accountDetails.erpEnabled && pageTitle==='Edit GPS / ERP Account'">
+                <uib-accordion-heading>Assign ERP Plan<i class="pull-right glyphicon"
+                                                         ng-class="{'glyphicon-chevron-down': status.isOpenThre, 'glyphicon-chevron-right': !status.isOpenThre}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12">
                     <ul class="list-inline plans">
+                        <!--<li>
+                            <select class="form-control custom-form-control planfc" ng-change="getPlansOfService()" ng-model="serviceSelected">
+                                <option selected value="">Select Service*</option>
+                                <option value="gps">GPS</option>
+                                <option value="erp">ERP</option>
+                                <option value="both">GPS & ERP</option>
+                            </select>
+                        </li>-->
                         <li>
-                            <select class="form-control custom-form-control planfc">
-                                <option>Select Service*</option>
-                                <option>GPS</option>
-                                <option>ERP</option>
-                                <option>GPS & ERP</option>
+                            <select class="form-control custom-form-control planfc" ng-model="ERPPlanDEtails.planId">
+                                <option selected value="">Plans*</option>
+                                <option ng-repeat="plan in plans" value="{{plan._id}}">{{plan.planName}} -
+                                    {{plan.amount}}
+                                </option>
                             </select>
                         </li>
                         <li>
-                            <select class="form-control custom-form-control planfc">
-                                <option>Add Plans *</option>
-                            </select>
+                            <admin-date-picker ng-model="ERPPlanDEtails.startTime" placeholder="'Start Time *'"
+                                               class="'custom-form-control planfc'"></admin-date-picker>
                         </li>
                         <li>
-                            <date-picker id="date" ban-future="'banFutureDate'" ng-model="expenseDetails.date"
-                                         placeholder="'Date *'" class="'custom-form-control planfc'"></date-picker>
+                            <admin-date-picker ng-model="ERPPlanDEtails.expiryTime" placeholder="'Expiry Time *'"
+                                               class="'custom-form-control planfc'"></admin-date-picker>
                         </li>
                         <li class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control planfc" name="amount"/>
+                            <input type="text" class="form-control custom-form-control planfc"
+                                   ng-model="ERPPlanDEtails.amount"/>
                             <label class="focus-effect-for-input">Amount</label>
                         </li>
-                        <button class="btn btn-success">ADD</button>
+                        <li class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control planfc"
+                                   ng-model="ERPPlanDEtails.remark"/>
+                            <label class="focus-effect-for-input">Remark</label>
+                        </li>
+                        <button class="btn btn-success" ng-click="assignERPPlan()">Assign</button>
                     </ul>
-
+                    <div ng-repeat="err in ERPPlanDEtails.errors">{{err}}</div>
                 </div>
                 <div class="col-xs-12 mt-20">
                     <table class="table table-bordered">
@@ -264,22 +277,20 @@
                         <th>Created Time</th>
                         </thead>
                         <tbody>
-                        <tr>
-                            <td>GPS</td>
-                            <td>Yearly Plan</td>
-                            <td>4000</td>
-                            <td>4000</td>
-                            <td>Yes</td>
-                            <td>Yes</td>
-                            <td>12-02-2018</td>
-                            <td>12-02-2019</td>
-                            <td>12-02-2018</td>
-
+                        <tr ng-repeat="singlePlan in assignedPlans">
+                            <td>ERP</td>
+                            <td>{{singlePlan.planId.planName}}</td>
+                            <td>{{singlePlan.planId.amount}}</td>
+                            <td>{{singlePlan.amount}}</td>
+                            <td>{{singlePlan.received}}</td>
+                            <td>{{singlePlan.remark}}</td>
+                            <td>{{singlePlan.startTime | date: 'mediumDate'}}</td>
+                            <td>{{singlePlan.expiryTime | date: 'mediumDate'}}</td>
+                            <td>{{singlePlan.creationTime | date: 'mediumDate'}}</td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-
             </div>
         </uib-accordion>
 

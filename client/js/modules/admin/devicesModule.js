@@ -64,6 +64,19 @@ app.factory('DeviceService', function ($http) {
                 method: "GET"
             }).then(success, error);
         },
+        getDeviceManagementDetails: function (pageable, success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getDeviceManagementDetails',
+                method: "GET",
+                params: pageable
+            }).then(success, error)
+        },
+        getDeviceManagementCount: function (success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getDeviceManagementCount',
+                method: "GET"
+            }).then(success, error)
+        },
         getAllAccountsForDropdown: function (success, error) {
             $http({
                 url: '/v1/admin/accounts/getAllAccountsForDropdown',
@@ -443,4 +456,56 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
             });
         }
     }
+}]);
+
+app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', function ($scope, DeviceService, NgTableParams) {
+    $scope.count = 0;
+    $scope.getCount = function () {
+        DeviceService.getDeviceManagementCount(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                console.log('count', $scope.count);
+                $scope.init();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+    $scope.getCount();
+
+    $scope.init = function () {
+        console.log('init');
+        $scope.deviceManagementParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        console.log('load');
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting()
+        };
+        DeviceService.getDeviceManagementDetails(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.dmDetails;
+                $scope.currentPageOfDeviceDetails = response.data.dmDetails;
+                console.log('response', $scope.currentPageOfDeviceDetails);
+            } else {
+                // Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
 }]);

@@ -129,6 +129,12 @@ AuthRouter.get('/getPlanDetails', function (req, res) {
     });
 });
 
+AuthRouter.get('/getAllPlans/:type', function (req, res) {
+    Settings.getAllPlans(req, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.put('/updatePlan', function (req, res) {
     Settings.updatePlan(req, function (result) {
         res.json(result);

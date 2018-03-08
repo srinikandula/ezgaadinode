@@ -376,14 +376,14 @@ var deviceSchema = new mongoose.Schema({
     userName: String,
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
-    assignedTo: String,//{type: ObjectId, ref: 'accounts'},
+    assignedTo: Number,//{type: ObjectId, ref: 'accounts'},
     //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
     imei: String,
     simPhoneNumber: String,
     truckId: {type: ObjectId, ref: 'trucks'},
     address: String,
-    installedBy: String,  //installed UserId
+    installedBy: Number,  //installed UserId
     accountId: {type: ObjectId, ref: 'accounts'},
     devicePaymentStatus: String,
     devicePaymentPlan: String, //reference to device payment plan
@@ -492,7 +492,7 @@ var accountDevicePlanHistory = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     accountName: String,
     deviceId: {type: ObjectId, ref: 'devices'},
-    planId: {type: ObjectId, ref: 'devicePlans'},
+    planId: {type: ObjectId, ref: 'erpGpsPlans'},
     remark: String,
     amount: Number,
     creationTime: Date,
@@ -504,7 +504,7 @@ var accountDevicePlanHistory = new mongoose.Schema({
 var faultyPlanhistory = new mongoose.Schema({
     accountId: String, //{type: ObjectId, ref: 'accounts'},
     deviceId: String, //{type: ObjectId, ref: 'devices'},
-    planId: String, //{type: ObjectId, ref: 'devicePlans'},
+    planId: String, //{type: ObjectId, ref: 'erpGpsPlans'},
     remark: String,
     amount: Number,
     creationTime: Date,

@@ -9,7 +9,7 @@ app.factory('AccountService', ['$http', function ($http) {
         },
         count: function (type, success, error) {
             $http({
-                url: '/v1/cpanel/accounts/count/'+type,
+                url: '/v1/cpanel/accounts/count/' + type,
                 method: "GET"
             }).then(success, error)
         },
@@ -28,14 +28,21 @@ app.factory('AccountService', ['$http', function ($http) {
         },
         checkAvailablity: function (userName, success, error) {
             $http({
-                url: '/v1/cpanel/accounts/checkAvailablity/'+userName,
+                url: '/v1/cpanel/accounts/checkAvailablity/' + userName,
                 method: "GET"
             }).then(success, error);
         },
         deleteRoute: function (id, success, error) {
             $http({
-                url: '/v1/cpanel/accounts/deleteRoute/'+id,
+                url: '/v1/cpanel/accounts/deleteRoute/' + id,
                 method: "GET"
+            }).then(success, error);
+        },
+        assignERPPlan: function (plan, success, error) {
+            $http({
+                url: '/v1/cpanel/accounts/assignERPPlan',
+                method: "POST",
+                data: plan
             }).then(success, error);
         }
     }
@@ -92,15 +99,26 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
     };
 }]);
 
-app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', function ($scope, $stateParams, AccountService, Notification, $state) {
+app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', 'SettingServices', function ($scope, $stateParams, AccountService, Notification, $state, SettingServices) {
 
     $scope.pageTitle = "Add New GPS / ERP Account";
-
-    if($stateParams.accountId){
+    if ($stateParams.accountId) {
         $scope.pageTitle = "Edit GPS / ERP Account";
+        AccountService.getAccountDetails($stateParams.accountId, function (success) {
+            if (success.data.status) {
+                $scope.accountDetails = success.data.accountDetails;
+                $scope.operatingRoutes = success.data.accountRoutes;
+                $scope.assignedPlans = success.data.assignedPlans;
+                console.log('assignedPlans', $scope.assignedPlans);
+            } else {
+                Notification.error({message: 'unable to get account details'});
+            }
+        });
     }
-
-
+    $scope.serviceSelected = '';
+    $scope.getPlansOfService = function () {
+        console.log($scope.serviceSelected);
+    };
     $scope.status = {
         isOpen: true,
         isOpenOne: true,
@@ -108,30 +126,33 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         isOpenThre: true,
     };
 
-    $scope.accountDetails = {
-        userName: '',
-        contactName: '',
-        password: '',
-        contactPhone: '',
-        type: '',
-        companyName: '',
-        contactAddress: '',
-        city: '',
-        state: '',
-        pincode: '',
-        gpsEnabled: '',
-        erpEnabled: '',
-        loadEnabled: true,
-        smsEnabled: '',
-        isActive: '',
-        errors: []
-    };
-    $scope.operatingRoutes = [];
+    function initAccountDetails() {
+        $scope.accountDetails = {
+            userName: '',
+            contactName: '',
+            password: '',
+            contactPhone: '',
+            type: '',
+            companyName: '',
+            contactAddress: '',
+            city: '',
+            state: '',
+            pincode: '',
+            gpsEnabled: '',
+            erpEnabled: '',
+            loadEnabled: true,
+            smsEnabled: '',
+            isActive: '',
+            errors: []
+        };
+        $scope.operatingRoutes = [];
+    }
 
+    initAccountDetails();
     $scope.addRoute = function () {
         var params = $scope.operatingRoutes;
-        if(params.length) {
-            if(params[params.length-1].source && params[params.length-1].destination) params.push({
+        if (params.length) {
+            if (params[params.length - 1].source && params[params.length - 1].destination) params.push({
                 accountId: $stateParams.accountId,
                 source: '',
                 sourceState: '',
@@ -178,7 +199,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             if (result.value) {
                 var params = $scope.operatingRoutes;
                 AccountService.deleteRoute(params[index]._id, function (success) {
-                    if(success.data.status) {
+                    if (success.data.status) {
                         params.splice(index, 1);
                         swal(
                             '',
@@ -194,8 +215,8 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
     };
     $scope.getLonLat = function (index, type) {
         var input = '';
-        if(type === 'source') input = document.getElementById(index+'s');
-        else input = document.getElementById(index+'d');
+        if (type === 'source') input = document.getElementById(index + 's');
+        else input = document.getElementById(index + 'd');
         var options = {types: ['(cities)'], componentRestrictions: {country: "in"}};
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
@@ -204,24 +225,24 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             var lng = place.geometry.location.lng();
             var lat = place.geometry.location.lat();
             // console.log(lng, lat);
-            if(type === 'source') {
+            if (type === 'source') {
                 $scope.operatingRoutes[index].sourceLocation.coordinates = [lng, lat];
-                for(var i = 0; i < place.address_components.length; i++) {
+                for (var i = 0; i < place.address_components.length; i++) {
                     var base = place.address_components[i];
-                    if(base.types[0] === 'locality') {
+                    if (base.types[0] === 'locality') {
                         $scope.operatingRoutes[index].source = base.long_name;
-                    } else if(base.types[0] === 'administrative_area_level_1') {
+                    } else if (base.types[0] === 'administrative_area_level_1') {
                         $scope.operatingRoutes[index].sourceState = base.long_name;
                     }
                 }
                 $scope.operatingRoutes[index].sourceAddress = place.formatted_address
             } else {
                 $scope.operatingRoutes[index].destinationLocation.coordinates = [lng, lat];
-                for(var i = 0; i < place.address_components.length; i++) {
+                for (var i = 0; i < place.address_components.length; i++) {
                     var base = place.address_components[i];
-                    if(base.types[0] === 'locality') {
+                    if (base.types[0] === 'locality') {
                         $scope.operatingRoutes[index].destination = base.long_name;
-                    } else if(base.types[0] === 'administrative_area_level_1') {
+                    } else if (base.types[0] === 'administrative_area_level_1') {
                         $scope.operatingRoutes[index].destinationState = base.long_name;
                     }
                 }
@@ -232,7 +253,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
     $scope.availableStatus = true;
     $scope.checkAvailablity = function () {
         AccountService.checkAvailablity($scope.accountDetails.userName, function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.availableStatus = true;
             } else {
                 $scope.availableStatus = true;
@@ -240,41 +261,33 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         });
     };
 
-    if($stateParams.accountId) {
-        AccountService.getAccountDetails($stateParams.accountId, function (success) {
-            if(success.data.status) {
-                $scope.accountDetails = success.data.accountDetails;
-                $scope.operatingRoutes = success.data.accountRoutes;
-            } else {
-                Notification.error({message: 'unable to get account details'});
-            }
-        });
-    }
-
     $scope.addOrUpdateAccount = function () {
         var params = $scope.accountDetails;
         params.errors = [];
-        if(!params.userName) {
+        if (!params.userName) {
             params.errors.push('Invalid User Name');
         }
-        if(!params.contactName) {
+        if (!params.contactName) {
             params.errors.push('Invalid Fullname');
         }
-        if(!params.contactPhone) {
+        if (!params.contactPhone) {
             params.errors.push('Invalid mobile number');
         }
-        if(!params.type) {
+        if (!params.type) {
             params.errors.push('Invalid type');
         }
-        if(params.password.trim().length < 5) {
+        if (params.password.trim().length < 5) {
             params.errors.push('Invalid password. Password has to be at least 5 characters');
         }
-        if(!params.gpsEnabled && !params.erpEnabled) {
+        if (!params.gpsEnabled && !params.erpEnabled) {
             params.errors.push('Select atleast 1 service');
         }
-        if(!params.errors.length) {
-            AccountService.addAccount({account: $scope.accountDetails, routes: $scope.operatingRoutes}, function (success) {
-                if(success.data.status) {
+        if (!params.errors.length) {
+            AccountService.addAccount({
+                account: $scope.accountDetails,
+                routes: $scope.operatingRoutes
+            }, function (success) {
+                if (success.data.status) {
                     Notification.success({message: "Successfully added"});
                     $state.go('services.gpsAccounts');
                 } else {
@@ -282,5 +295,57 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
                 }
             });
         }
+    };
+
+    function getPlans() {
+        SettingServices.getAllPlans('erp', function (success) {
+            if (success.data.status) {
+                $scope.plans = success.data.plans;
+                console.log($scope.plans);
+            }
+        });
     }
+    // getPlans();
+
+    function initPlan() {
+        $scope.ERPPlanDEtails = {
+            accountId: $stateParams.accountId,
+            planId: '',
+            amount: '',
+            remark: '',
+            startTime: '',
+            expiryTime: '',
+            errors: []
+        }
+    }
+    initPlan();
+    $scope.assignERPPlan = function () {
+        var params = $scope.ERPPlanDEtails;
+        $scope.ERPPlanDEtails.errors = [];
+        console.log(params);
+        if (!params.planId) {
+            params.errors.push('Select a plan');
+        }
+        if (!params.startTime) {
+            params.errors.push('Select start date');
+        }
+        if (!params.expiryTime) {
+            params.errors.push('Select expiry date');
+        }
+        if (params.expiryTime < params.startTime) {
+            params.errors.push('expiry date should be greater than start date');
+        }
+        if (!params.amount) {
+            params.errors.push('select an amount');
+        }
+        if (params.errors.length < 1) {
+            console.log('correct');
+            AccountService.assignERPPlan($scope.ERPPlanDEtails, function (success) {
+                if (success.data.status) {
+                    initPlan();
+                    Notification.success({message: "Successfully updated"});
+                }
+            });
+        }
+    };
 }]);

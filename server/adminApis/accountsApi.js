@@ -9,6 +9,7 @@ var serviceActions = require('./../constants/adminConstants');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var keysColl = require('./../models/schemas').keysColl;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
+var AccountDevicePlanHistoryColl= require('./../models/schemas').AccountDevicePlanHistoryColl;
 const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -367,6 +368,17 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                         routesCallback(null, routes);
                     }
                 });
+            },
+            assignedPlans: function (plansCallback) {
+                AccountDevicePlanHistoryColl.find({accountId: ObjectId(accountId), deviceId: {$exists:false}}).populate('planId', {planName:1,amount:1}).exec(function (errplans, plans) {
+                    if(errplans) {
+                        retObj.messages.push('Error retrieving plans');
+                        plansCallback(errplans);
+                    } else {
+                        retObj.messages.push('Successfully retrieved plans');
+                        plansCallback(null, plans);
+                    }
+                });
             }
         }, function (errdetails, accountDetails) {
             if(errdetails) {
@@ -382,6 +394,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 retObj.status = true;
                 retObj.accountDetails = accountDetails.accountInfo;
                 retObj.accountRoutes = accountDetails.operatingRoutes;
+                retObj.assignedPlans = accountDetails.assignedPlans;
                 analyticsService.create(req, serviceActions.get_account_details, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
@@ -548,7 +561,50 @@ Accounts.prototype.deleteAccount = function (req, callback) {
             }
         });
     }
-}
+};
+
+Accounts.prototype.assignERPPlan = function (req, callback) {
+    var retObj={
+        status: false,
+        messages: []
+    };
+    var params = req.body;
+    console.log(params);
+    if(!params.planId) {
+        retObj.messages.push('Select a plan');
+    }
+    if(!params.startTime){
+        retObj.messages.push('Select start date');
+    }
+    if(!params.expiryTime){
+        retObj.messages.push('Select expiry date');
+    }
+    if(params.expiryTime < params.startTime){
+        retObj.messages.push('expiry date should be greater than start date');
+    }
+    if(!params.amount){
+        retObj.messages.push('select an amount');
+    }
+    if(retObj.messages.length < 1){
+        console.log('correct');
+        params.creationTime = new Date();
+        params.received = true;
+        var doc = new AccountDevicePlanHistoryColl(params);
+        doc.save(function (errSaving, saved) {
+            if(errSaving){
+                retObj.status=false;
+                retObj.messages.push('Please try again');
+                analyticsService.create(req,serviceActions.assign_erp_plan_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){});
+                callback(retObj);
+            }else {
+                retObj.status=true;
+                retObj.messages.push('Success');
+                analyticsService.create(req,serviceActions.assign_erp_plan_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){});
+                callback(retObj);
+            }
+        });
+    }
+};
 
 Accounts.prototype.createKeys=function (accountId,access,req,callback) {
     var retObj={
