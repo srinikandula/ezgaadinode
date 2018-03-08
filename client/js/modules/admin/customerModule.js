@@ -186,13 +186,21 @@ app.factory('customerServices', function ($http) {
             }).then(success,error)
         },
         removeDoc:function (params,success,error) {
-            console.log(params)
             $http({
                 url:'/v1/cpanel/customers/removeDoc',
                 method:"DELETE",
-                params:params
+                params:{file:params.file,_id:params._id}
+            }).then(success,error)
+        },
+        removeCustomerLeadDocFile:function(params,success,error) {
+            $http({
+                url:'/v1/cpanel/customers/removeCustomerLeadDocFile',
+                method:"DELETE",
+                params:{file:params.file,_id:params._id}
             }).then(success,error)
         }
+
+
     }
 });
 
@@ -1178,9 +1186,7 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-                doc.transporterId = $stateParams.transporterId;
-                console.log(doc.transporterId)
-                customerServices.removeDoc(doc, function (success) {
+                customerServices.removeDoc({_id:$scope.transporter._id,file:doc}, function (success) {
                     if (success.data.status) {
                         swal(
                             'Deleted!',
