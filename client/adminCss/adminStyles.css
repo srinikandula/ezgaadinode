@@ -1240,6 +1240,14 @@ textarea.custom-form-control{
     left: 0px;
     top: 0px;
 }
+.ui-select-multiple.ui-select-bootstrap input.ui-select-search{
+    margin: 0 auto !important;
+    height: 42px !important;
+}
+.ui-select-multiple.ui-select-bootstrap{
+    margin: 0 auto !important;
+    width: 80%;
+}
 
 /* Responsive Design */
 
