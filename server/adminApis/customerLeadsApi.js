@@ -22,9 +22,25 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var condition={};
+    if (params.customerLead) {
+        condition = {
+            $or:
+                [
+                    {"firstName": new RegExp(params.transporter, "gi")},
+                    {"leadStatus": new RegExp(params.customerLead, "gi")},
+                ], "status": {$eq: null}
+        };
+
+    } else if(params.leadStatus){
+        condition = {"leadStatus":params.leadStatus,"status": {$eq: null}}
+    }else{
+        condition = {"status": {$eq: null}}
+
+    }
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
-            CustomerLeadsColl.find({"status": {$eq: null}}).sort(sort)
+            CustomerLeadsColl.find(condition).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -33,7 +49,7 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            CustomerLeadsColl.count({"status": {$eq: null}}, function (err, count) {
+            CustomerLeadsColl.count(condition, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -498,34 +514,81 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var condition={};
+        if (params.truckOwnwer) {
+            condition = {
+                $or:
+                    [
+                        {"userId": new RegExp(params.truckOwnwer, "gi")},
+                        {"firstName": new RegExp(params.truckOwnwer, "gi")},
+                        {"companyName": new RegExp(params.truckOwnwer, "gi")},
+                        // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                    ], role: 'Truck Owner'
+            };
+        } else if (params.status) {
+            if (params.status === 'gps') {
+                condition = {role: 'Truck Owner', "gpsEnabled": true}
+            } else if (params.status === 'erp') {
+                condition = {role: 'Truck Owner', "erpEnabled": true}
+            } else if (params.status === 'both') {
+                condition = {
+                    $and:
+                        [
+                            {"gpsEnabled": true},
+                            {"erpEnabled": true},
+                        ], role: 'Truck Owner'
+                };
+            } else {
+                condition = {role: 'Truck Owner', "isActive": params.status}
+            }
+        } else {
+            condition = {role: 'Truck Owner'}
+        }
 
-    AccountsColl.find({type: 'account', role: 'Truck Owner'})
-        .sort(sort)
-        .skip(skipNumber)
-        .limit(limit)
-        .exec(function (err, docs) {
-            if (err) {
-                retObj.messages.push('Error retrieving truck owners');
-                analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (docs.length > 0) {
+    async.parallel({
+        truckOwners: function (truckOwnersCallback) {
+            AccountsColl.find(condition).sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                .exec(function (err, docs) {
+                    truckOwnersCallback(err, docs);
+
+                })
+        },
+        count: function (countCallback) {
+            CustomerLeadsColl.count(condition, function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+
+            if (results.truckOwners.length > 0) {
                 retObj.status = true;
-                retObj.messages.push('Success');
-                retObj.data = docs;
+                retObj.messages = "Success";
+                retObj.data = results.truckOwners;
+                retObj.count = results.count;
                 analyticsService.create(req, serviceActions.get_truck_owners_list, {
+                    body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
                 }, function (response) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages.push('No truck owners found');
+                retObj.messages.push("No Truck owners found");
                 analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
+                    body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
@@ -533,8 +596,9 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
                 });
                 callback(retObj);
             }
-        });
-};
+        }
+    });
+   };
 
 CustomerLeads.prototype.countTruckOwners = function (req, callback) {
     var retObj = {
@@ -1176,13 +1240,12 @@ CustomerLeads.prototype.getTransporter = function (req, callback) {
                 $or:
                     [
                         {"userId": new RegExp(params.transporter, "gi")},
-                        {"fullName": new RegExp(params.transporter, "gi")},
+                        {"firstName": new RegExp(params.transporter, "gi")},
                         {"companyName": new RegExp(params.transporter, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                     ], role: 'Transporter'
             };
         } else if (params.status) {
-            console.log('status', params.status);
             if (params.status === 'gps') {
                 condition = {role: 'Transporter', "gpsEnabled": true}
             } else if (params.status === 'erp') {
