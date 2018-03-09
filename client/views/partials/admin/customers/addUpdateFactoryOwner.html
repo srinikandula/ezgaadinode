@@ -245,11 +245,14 @@
                                        ng-model="file.file" ngf-select ngf-pattern="'image/*'" ngf-accept="'image/*'">
 
                                 <span class="plus-pos " ng-show="$index >= 1"> <i class="fa fa-times-circle clr-red"
-                                                                                  ng-click="deleteDoc()"></i></span>
+                                                                                  ng-click="deleteDoc($index)"></i></span>
                             </div>
                         </div>
-                        <div ng-repeat="doc in factoryOwner.documentFiles">
-                            <img src="assets/documents/{{doc}}" width="100">
+                        <div>
+                            <span class="delfile" ng-repeat="doc in factoryOwner.documentFiles"><img src="assets/documents/{{doc}}" width="100">
+                            <span class="plus-pos ">
+                                <i class="fa fa-times-circle clr-red"
+                                   ng-click="removeDoc(doc,$index)"></i></span></span>
                         </div>
                     </div>
                 </div>

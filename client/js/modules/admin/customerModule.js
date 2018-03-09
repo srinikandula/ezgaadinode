@@ -1577,6 +1577,37 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
     $scope.deleteDoc = function (index) {
         $scope.commissionAgent.files.splice(index, 1);
     }
+
+    $scope.removeDoc = function (doc,index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                customerServices.removeDoc({_id:$scope.commissionAgent._id,file:doc}, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.commissionAgent.documentFiles.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    }
 }]);
 /*Commision Agent End*/
 
@@ -1869,6 +1900,37 @@ app.controller('factoryOwnerCtrl', ['$scope', '$state', '$stateParams', 'custome
 
     $scope.deleteDoc = function (index) {
         $scope.factoryOwner.files.splice(index, 1);
+    }
+
+    $scope.removeDoc = function (doc,index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                customerServices.removeDoc({_id:$scope.factoryOwner._id,file:doc}, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.factoryOwner.documentFiles.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
     }
 }]);
 /*Factory Owner End*/

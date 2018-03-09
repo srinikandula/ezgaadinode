@@ -187,6 +187,17 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'orderprocess'},
         params: { _id: null }
     }).state({
+        name: 'orderprocess.createLoadRequest',
+        url: '/createLoadRequest',
+        templateUrl: 'views/partials/admin/orderProcess/createLoadRequest.html',
+        data: { activeTab: 'orderprocess' }
+    }).state({
+        name: 'orderprocess.editLoadRequest',
+        url: '/editLoadRequest/:loadRequestId',
+        templateUrl: 'views/partials/admin/orderProcess/editLoadRequest.html',
+        data: {activeTab: 'orderprocess'},
+        params: { loadRequestId: null }
+    }).state({
         name: 'settings',
         url: '/settings',
         templateUrl: 'views/partials/admin/settings/settings.html',

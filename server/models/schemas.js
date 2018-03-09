@@ -462,7 +462,7 @@ var customerLeadsSchema = mongoose.Schema({
     userId: String,
     accountId: {type: ObjectId, ref: 'accounts'},
     contactPhone: Number,
-    alternatePhone: [Number],
+    alternatePhone: [],
     email: String,
     isLead: Boolean,
     leadType: String,
@@ -679,7 +679,28 @@ var LoadNotificationSchema = mongoose.Schema({
     price: Number,
     message: String,
     sendToAll: Boolean
-}, {timestamps: String})
+}, {timestamps: String});
+
+var adminLoadRequestSchema = mongoose.Schema({
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    customerType: String,
+    customerId: {type: ObjectId, ref: 'accounts'},
+    fullName: String,
+    mobile: Number,
+    sourceAddress: String,
+    destination: [{
+        destinationAddress: String,
+        price: Number
+    }],
+    truckType: {type: ObjectId, ref: 'trucksTypes'},
+    registrationNo: String,
+    makeYear: String,
+    driverInfo: String,
+    dateAvailable: {type: Date},
+    expectedDateReturn: {type: Date},
+    customerLeadId: {type: ObjectId, ref: 'customerLeads'},
+    status: {type: String, default: 'New'}
+}, {timestamps: String});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -722,5 +743,6 @@ module.exports = {
     TruckRequestCommentsColl: mongoose.model('truckRequestComments', truckRequestCommentSchema, 'truckRequestComments'),
     TruckNotificationColl: mongoose.model('truckNotification', truckNotificationSchema, 'truckNotification'),
     trafficManagerColl: mongoose.model('trafficManager', trafficManagerSchema, 'trafficManager'),
-    LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification')
+    LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification'),
+    adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest')
 };

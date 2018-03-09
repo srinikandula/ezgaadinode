@@ -204,6 +204,13 @@ OpenRouter.get('/get/accountGroups', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/mappingGpsStatusToAccount', function (request, res) {
+    Events.getMappingGpsStatusToAccount(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 OpenRouter.get('/get/trucks', function (request, res) {
     Events.createTruckFromEGTruck(request,function(results){
         res.json(results);
