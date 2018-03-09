@@ -10,12 +10,13 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var keysColl = require('./../models/schemas').keysColl;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 var AccountDevicePlanHistoryColl= require('./../models/schemas').AccountDevicePlanHistoryColl;
+var ErpPlanHistoryColl= require('./../models/schemas').ErpPlanHistoryColl;
+var PaymentsColl= require('./../models/schemas').PaymentsColl;
 const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
 
-var Accounts = function () {
-};
+var Accounts = function () {};
 
 Accounts.prototype.totalAccounts = function (req, callback) {
     var retObj = {
@@ -23,10 +24,13 @@ Accounts.prototype.totalAccounts = function (req, callback) {
         messages: []
     };
     var query = {};
-    if(req.params.type === 'gps') {
+    var params = req.params;
+    if(params.type === 'gps') {
         query = {gpsEnabled: true};
-    } else {
+    } else if(params.type === 'erp') {
         query = {erpEnabled: true}
+    } else if(params.type === 'accounts') {
+        query = {type: 'account', role: {$nin:['employee']}}
     }
     AccountsColl.count(query, function (err, doc) {
         if (err) {
@@ -69,8 +73,10 @@ Accounts.prototype.getAccounts = function (req, callback) {
     var query = {};
     if(params.type === 'gps') {
         query = {gpsEnabled: true};
-    } else {
+    } else if(params.type === 'erp') {
         query = {erpEnabled: true}
+    } else if(params.type === 'accounts') {
+        query = {type: 'account', role: {$nin:['employee']}}
     }
     async.parallel({
         accounts: function (accountsCallback) {
@@ -117,7 +123,34 @@ Accounts.prototype.getAccounts = function (req, callback) {
                 success: true
             }, function (response) {
             });
-            callback(retObj);
+            if(params.type === 'accounts') {
+                async.map(docs.accounts, function (account, asynCalback) {
+                    async.parallel({
+                        gpsDate: function (gpsCallback) {
+                            AccountDevicePlanHistoryColl.findOne({accountId:account._id},function (errGps, gpsDateOfAccount) {
+                                gpsCallback(errGps, gpsDateOfAccount);
+                            });
+                        },
+                        erpDate: function (gpsCallback) {
+                            ErpPlanHistoryColl.findOne({accountId:account._id},function (errErp, erpDateOfAccount) {
+                                gpsCallback(errErp, erpDateOfAccount);
+                            });
+                        },
+                    }, function (errDates, dates) {
+                        // console.log(account.userName, account._id, dates.erpDate, dates.gpsDate);
+                        if(dates.gpsDate) account.gpsDate = dates.gpsDate.createdAt;
+                        else account.gpsDate = '--';
+                        if(dates.erpDate) account.erpDate = dates.erpDate.createdAt;
+                        else account.erpDate = '--';
+                        asynCalback(errDates, dates);
+                    });
+                }, function (errAllDates, allDates) {
+                    callback(retObj);
+                });
+            }
+            else {
+                callback(retObj);
+            }
         }
     });
 };
@@ -261,6 +294,7 @@ Accounts.prototype.addAccount = function (req, callback) {
         //         });
         //         callback(retObj);
         //     } else {
+        accountInfo.type = 'account';
                 AccountsColl.update(query, accountInfo, {upsert: true}, function (errSaved, saved) {
                     if(errSaved) {
                         console.log(err);
@@ -370,7 +404,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 });
             },
             assignedPlans: function (plansCallback) {
-                AccountDevicePlanHistoryColl.find({accountId: ObjectId(accountId), deviceId: {$exists:false}}).populate('planId', {planName:1,amount:1}).exec(function (errplans, plans) {
+                AccountDevicePlanHistoryColl.find({accountId: ObjectId(accountId), deviceId: {$exists:false}}).populate('planId', {planName:1,amount:1}).sort({expiryTime:-1}).exec(function (errplans, plans) {
                     if(errplans) {
                         retObj.messages.push('Error retrieving plans');
                         plansCallback(errplans);
@@ -563,12 +597,12 @@ Accounts.prototype.deleteAccount = function (req, callback) {
     }
 };
 
-Accounts.prototype.assignERPPlan = function (req, callback) {
+Accounts.prototype.assignPlan = function (req, callback) {
     var retObj={
         status: false,
         messages: []
     };
-    var params = req.body;
+    var params = req.body.planDetails;
     console.log(params);
     if(!params.planId) {
         retObj.messages.push('Select a plan');
@@ -589,8 +623,44 @@ Accounts.prototype.assignERPPlan = function (req, callback) {
         console.log('correct');
         params.creationTime = new Date();
         params.received = true;
-        var doc = new AccountDevicePlanHistoryColl(params);
-        doc.save(function (errSaving, saved) {
+        async.parallel({
+            assignPlan: function (assignCallback) {
+                params.createdBy = req.jwt.id;
+                params.updatedBy = req.jwt.id;
+                var doc = {};
+                if(req.body.type === 'gps') doc = new AccountDevicePlanHistoryColl(params);
+                else doc = new ErpPlanHistoryColl(params);
+                doc.save(function (errAssign, assigned) {
+                    if(errAssign) {
+                        retObj.messages.push(errAssign);
+                        assignCallback(errAssign);
+                    } else {
+                        assignCallback(null, assigned);
+                    }
+                });
+            },
+            createPayment: function (paymentCallback) {
+                var paymentData = {
+                    accountId: params.accountId,
+                    planId: params.planId,
+                    amountPaid: params.amount,
+                    createdBy: req.jwt.id,
+                    updatedBy: req.jwt.id
+                };
+                if(params.type === 'gps') paymentData.type = 'gps';
+                else paymentData.type = 'erp';
+                console.log('paymentData', paymentData);
+                var doc = new PaymentsColl(paymentData);
+                doc.save(function (errPayment, payment) {
+                    if(errPayment) {
+                        retObj.messages.push('errPayment');
+                        paymentCallback(errPayment);
+                    } else {
+                        paymentCallback(null, payment);
+                    }
+                });
+            }
+        }, function (errSaving, saved) {
             if(errSaving){
                 retObj.status=false;
                 retObj.messages.push('Please try again');

@@ -498,7 +498,23 @@ var accountDevicePlanHistory = new mongoose.Schema({
     creationTime: Date,
     startTime: String,
     expiryTime: Date,
-    received: Boolean
+    received: Boolean,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {timestamps: String});
+
+var erpPlanHistory = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    accountName: String,
+    planId: {type: ObjectId, ref: 'erpGpsPlans'},
+    remark: String,
+    amount: Number,
+    creationTime: Date,
+    startTime: String,
+    expiryTime: Date,
+    received: Boolean,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
 }, {timestamps: String});
 
 var faultyPlanhistory = new mongoose.Schema({
@@ -719,6 +735,17 @@ var adminTripSchema = new mongoose.Schema({
     truckRequestId: {type: ObjectId, ref: 'truckRequests'}
 }, {timestamps: true});
 
+var paymentsSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    planId: {type: ObjectId, ref: 'erpGpsPlans'},
+    amountPaid: Number,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'},
+    type: String//gps or erp
+}, {
+    timestamps: true, versionKey: false
+});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -745,6 +772,7 @@ module.exports = {
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
     CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeads'),
     AccountDevicePlanHistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
+    ErpPlanHistoryColl: mongoose.model('erpPlanHistory', erpPlanHistory, 'erpPlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl: mongoose.model('apiSecretKeys', keysSchema, 'apiSecretKeys'),
     TrucksTypesColl: mongoose.model('trucksTypes', trucksTypesSchema, 'trucksTypes'),
@@ -763,4 +791,5 @@ module.exports = {
     LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification'),
     adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest'),
     AdminTripsColl:mongoose.model('adminTripsColl',adminTripSchema,'adminTripsColl')
+    PaymentsColl: mongoose.model('paymentsSchema', paymentsSchema, 'paymentsSchema')
 };

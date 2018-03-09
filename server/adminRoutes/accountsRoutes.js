@@ -51,8 +51,8 @@ AuthRouter.delete('/deleteAccount', function (req, res) {
     });
 });
 
-AuthRouter.post('/assignERPPlan', function (req, res) {
-    Accounts.assignERPPlan(req, function (result) {
+AuthRouter.post('/assignPlan', function (req, res) {
+    Accounts.assignPlan(req, function (result) {
         res.json(result);
     });
 });

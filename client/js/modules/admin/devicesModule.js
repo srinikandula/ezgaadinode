@@ -77,6 +77,18 @@ app.factory('DeviceService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+        getPaymentCount: function (success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getPaymentCount',
+                method: "GET"
+            }).then(success, error)
+        },
+        getPaymentDetails: function (id, success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getPaymentDetails/'+id,
+                method: "GET"
+            }).then(success, error)
+        },
         getAllAccountsForDropdown: function (success, error) {
             $http({
                 url: '/v1/admin/accounts/getAllAccountsForDropdown',
@@ -94,7 +106,13 @@ app.factory('DeviceService', function ($http) {
                 url: '/v1/admin/getEmployees',
                 method: "GET"
             }).then(success, error)
-        }
+        },
+        getGPSPlansOfDevice: function (deviceId, success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getGPSPlansOfDevice/' + deviceId,
+                method: "GET"
+            }).then(success, error)
+        },
     }
 });
 
@@ -183,12 +201,12 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
     }
 }]);
 
-app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$stateParams', '$filter', '$state', function ($scope, DeviceService, Notification, NgTableParams, $stateParams, $filter, $state) {
+app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$stateParams', '$filter', '$state', 'SettingServices', 'AccountService', function ($scope, DeviceService, Notification, NgTableParams, $stateParams, $filter, $state, SettingServices, AccountService) {
 
     $scope.status = {
         isOpen: true,
         isOpenOne: true
-    }
+    };
 
     $scope.deviceDetails = {
         accountId: '',
@@ -230,13 +248,20 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
                 // } else {
                 //     $scope.deviceDetails.isDamaged = false;
                 // }
-                // console.log($scope.deviceDetails);
+                $scope.GPSPlanDEtails.accountId = $scope.deviceDetails.accountId;
+                console.log($scope.deviceDetails);
                 $scope.getTrucksOfAccount();
             }
         });
     }
-
     getDevice();
+    function getGPSPlansOfDevice() {
+        DeviceService.getGPSPlansOfDevice($stateParams.device, function (success) {
+            if(success.data.status) {
+                $scope.GPSPlans = success.data.GPSPlans;
+            }
+        });
+    }
 
     function getAccounts() {
         DeviceService.getAllAccountsForDropdown(function (success) {
@@ -246,7 +271,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
-
     getAccounts();
 
     function getEmployees() {
@@ -257,7 +281,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
-
     getEmployees();
 
     $scope.getTrucksOfAccount = function () {
@@ -300,18 +323,59 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         }
     };
 
-    function getDevicePlans() {
-        DeviceService.getDevicePlans(function (success) {
-            if(success.data.status) {
-                $scope.devicePlans = success.data.devicePlans;
-            } else {
-                Notification.error({message: "unable to get plans"})
+    function getPlans() {
+        SettingServices.getAllPlans('gps', function (success) {
+            if (success.data.status) {
+                $scope.plans = success.data.plans;
+                console.log($scope.plans);
             }
         });
     }
-    // getDevicePlans();
-
-    function getDevicePlanHistory() {
+    getPlans();
+    function initPlan() {
+        $scope.GPSPlanDEtails = {
+            accountId: '',
+            deviceId: $stateParams.device,
+            planId: '',
+            amount: '',
+            remark: '',
+            startTime: '',
+            expiryTime: '',
+            errors: []
+        }
+    }
+    initPlan();
+    $scope.assignGPSPlan = function () {
+        var params = $scope.GPSPlanDEtails;
+        params.errors = [];
+        console.log(params);
+        if (!params.planId) {
+            params.errors.push('Select a plan');
+        }
+        if (!params.startTime) {
+            params.errors.push('Select start date');
+        }
+        if (!params.expiryTime) {
+            params.errors.push('Select expiry date');
+        }
+        if (params.expiryTime < params.startTime) {
+            params.errors.push('expiry date should be greater than start date');
+        }
+        if (!params.amount) {
+            params.errors.push('select an amount');
+        }
+        if (params.errors.length < 1) {
+            console.log('correct');
+            AccountService.assignPlan({planDetails: $scope.GPSPlanDEtails, type: 'gps'}, function (success) {
+                if (success.data.status) {
+                    initPlan();
+                    // getAccountDetails();
+                    Notification.success({message: "Successfully updated"});
+                }
+            });
+        }
+    };
+/*    function getDevicePlanHistory() {
         DeviceService.getDevicePlanHistory($stateParams.device, function (success) {
             if(success.data.status) {
                 $scope.devicePlanHistory = success.data.devicePlanHistory;
@@ -321,7 +385,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
-    getDevicePlanHistory();
+    getDevicePlanHistory();*/
 }]);
 
 app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {
@@ -508,4 +572,71 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
             }
         });
     };
+}]);
+
+app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', 'AccountService', function ($scope, DeviceService, Notification, NgTableParams, AccountService) {
+    $scope.count = 0;
+    $scope.type = 'accounts';
+    $scope.getCount = function () {
+        AccountService.count('accounts', function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                console.log('$scope.count', $scope.count);
+                $scope.init();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+    $scope.getCount();
+    $scope.init = function () {
+        console.log('$scope.filterBy', $scope.filterBy);
+        $scope.accountParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [50, 100, 200],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+                // $scope.getDevices();
+            }
+        });
+    };
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            type: 'accounts',
+        };
+        AccountService.getAccounts(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.accounts;
+                $scope.currentPageOfAccounts = response.data.accounts;
+                console.log('$scope.currentPageOfAccounts', $scope.currentPageOfAccounts);
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+}]);
+
+app.controller('paymentListCrtl', ['$scope', 'DeviceService', 'Notification', '$stateParams', function ($scope, DeviceService, Notification, $stateParams) {
+    function getPaymentDetails() {
+        DeviceService.getPaymentDetails($stateParams.id, function (success) {
+            if(success.data.status) {
+                $scope.paymentDetails = success.data.paymentDetails;
+                console.log($scope.paymentDetails);
+            } else {
+                Notification.error({message:success.data.messages[0]});
+            }
+        });
+    }
+    getPaymentDetails();
 }]);

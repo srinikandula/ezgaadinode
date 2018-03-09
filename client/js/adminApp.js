@@ -156,6 +156,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/services/payments.html',
         data: {activeTab: 'services'}
     }).state({
+        name: 'services.paymentDetails',
+        url: '/paymentDetails/:id',
+        templateUrl: 'views/partials/admin/services/paymentDetails.html',
+        data: {activeTab: 'services'},
+        params: {id:null}
+    }).state({
         name: 'orderprocess',
         url: '/orderProcess',
         templateUrl: 'views/partials/admin/orderProcess/orderProcess.html',

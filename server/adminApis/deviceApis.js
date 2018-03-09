@@ -8,6 +8,7 @@ var DevicesColl = require('./../models/schemas').DeviceColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var PaymentsColl = require('./../models/schemas').PaymentsColl;
 
 var Devices = function () {
 };
@@ -763,6 +764,93 @@ Devices.prototype.getDeviceManagementCount = function (req, callback) {
         status: false,
         messages: []
     };
+    DevicesColl.aggregate([
+        {$match: {assignedTo: {$exists: true}}},
+        {
+            $group: {
+                _id: {assignedTo: '$assignedTo'}
+            }
+        }
+    ], function (errDmDetails, dmDetails) {
+        if (errDmDetails) {
+            console.log(errDmDetails);
+            retObj.messages.push("Unable to get dMdevices, please try again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages = "success";
+            retObj.count = dmDetails.length;
+            callback(retObj);
+        }
+    });
+};
+
+Devices.prototype.getPaymentCount = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    PaymentsColl.count(function (errcount, count) {
+        if(errcount) {
+            retObj.messages.push("Unable to get payments count, please try again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages = "success";
+            retObj.count = count;
+            callback(retObj);
+        }
+    });
+};
+
+Devices.prototype.getPaymentDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    console.log(req.params);
+    async.parallel({
+        erp: function (erpCallback) {
+            PaymentsColl.find({accountId: req.params.id, type: "erp"}).populate('planId',{planName:1}).populate('createdBy', {userName:1}).exec(function (errErpPayments, erpPayments) {
+                erpCallback(errErpPayments, erpPayments);
+            });
+        },
+        gps: function (gpsCallback) {
+            PaymentsColl.find({accountId: req.params.id, type: "gps"}).populate('planId',{planName:1}).populate('createdBy', {userName:1}).exec(function (errGpsPayments, gpsPayments) {
+                gpsCallback(errGpsPayments, gpsPayments);
+            });
+        }
+    },function (errPaymentDetails, paymentDetails) {
+        if(errPaymentDetails) {
+            console.log(errPaymentDetails);
+            retObj.messages.push("Unable to get payments, please try again");
+            callback(retObj);
+        } else {
+            console.log(paymentDetails);
+            retObj.status = true;
+            retObj.messages = "success";
+            retObj.paymentDetails = paymentDetails;
+            callback(retObj);
+        }
+    });
+};
+
+Devices.prototype.getGPSPlansOfDevice = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    AccountDevicePlanHistoryColl.find({deviceId:req.params.deviceId}, function (errPlans, plans) {
+        if(errPlans) {
+            retObj.messages.push("Unable to get plans, please try again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages = "success";
+            retObj.GPSPlans = plans;
+            callback(retObj);
+        }
+    });
     DevicesColl.aggregate([
         {$match: {assignedTo: {$exists: true}}},
         {

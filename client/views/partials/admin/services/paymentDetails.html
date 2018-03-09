@@ -1,0 +1,52 @@
+<div ng-controller="paymentListCrtl">
+    ERP Payment
+    <div class="col-xs-12 mt-20">
+        <table class="table table-bordered">
+            <thead>
+            <th>Date</th>
+            <th>Service Plan</th>
+            <th>Amount</th>
+            <th>Comment</th>
+            <th>Payment By</th>
+            <th>Payment Type</th>
+            <th>Paid</th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="erpPayment in paymentDetails.erp">
+                <td>{{erpPayment.createdAt | date:'dd/MM/yyyy'}}</td>
+                <td>{{erpPayment.planId.planName}}</td>
+                <td>{{erpPayment.amountPaid}}</td>
+                <td>--</td>
+                <td>{{erpPayment.createdBy.userName}}</td>
+                <td>Cash</td>
+                <td>{{erpPayment.amountPaid}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    GPS Payment
+    <div class="col-xs-12 mt-20">
+        <table class="table table-bordered">
+            <thead>
+            <th>Date</th>
+            <th>Service Plan</th>
+            <th>Amount</th>
+            <th>Comment</th>
+            <th>Payment By</th>
+            <th>Payment Type</th>
+            <th>Paid</th>
+            </thead>
+            <tbody>
+            <tr ng-repeat="gpsPayment in paymentDetails.erp">
+                <td>{{gpsPayment.createdAt | date:'dd/MM/yyyy'}}</td>
+                <td>{{gpsPayment.planId.planName}}</td>
+                <td>{{gpsPayment.amountPaid}}</td>
+                <td>--</td>
+                <td>{{gpsPayment.createdBy.userName}}</td>
+                <td>Cash</td>
+                <td>{{gpsPayment.amountPaid}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

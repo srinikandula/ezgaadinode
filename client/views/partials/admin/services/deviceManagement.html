@@ -1,7 +1,12 @@
 <div ng-controller="deviceManagementCrtl">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Device Management</li>
-
+        <li class="col-xs-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
         <li class="pull-right col-xs-2">
             <select class="form-control">
                 <option selected value="">Select</option>
@@ -30,7 +35,7 @@
                 {{employee.installedDevices}}
             </td>
             <td data-title="'Installed/Payment Deposited'" sortable="'installedDevices'" class="clickable-item">
-                {{employee.installedDevices}}/0
+                {{employee.installedDevices}}/{{employee.installedDevices}}
             </td>
             <td data-title="'Inactive'" sortable="'inactiveDevices'" class="clickable-item">
                 {{employee.inactiveDevices}}

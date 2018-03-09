@@ -38,9 +38,9 @@ app.factory('AccountService', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error);
         },
-        assignERPPlan: function (plan, success, error) {
+        assignPlan: function (plan, success, error) {
             $http({
-                url: '/v1/cpanel/accounts/assignERPPlan',
+                url: '/v1/cpanel/accounts/assignPlan',
                 method: "POST",
                 data: plan
             }).then(success, error);
@@ -101,19 +101,30 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
 
 app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', 'SettingServices', function ($scope, $stateParams, AccountService, Notification, $state, SettingServices) {
 
-    $scope.pageTitle = "Add New GPS / ERP Account";
-    if ($stateParams.accountId) {
-        $scope.pageTitle = "Edit GPS / ERP Account";
+    $scope.enableForm = true;
+    function getAccountDetails() {
         AccountService.getAccountDetails($stateParams.accountId, function (success) {
             if (success.data.status) {
                 $scope.accountDetails = success.data.accountDetails;
                 $scope.operatingRoutes = success.data.accountRoutes;
-                $scope.assignedPlans = success.data.assignedPlans;
-                console.log('assignedPlans', $scope.assignedPlans);
+
+                if (success.data.assignedPlans.length) {
+                    $scope.assignedPlans = success.data.assignedPlans;
+                    $scope.expiryDate = new Date($scope.assignedPlans[$scope.assignedPlans.length-1].expiryTime);
+                    $scope.today = new Date();
+                    $scope.daysRemaining = Math.round(($scope.expiryDate.getTime()-$scope.today.getTime())/(1000*60*60*24));
+                    if($scope.daysRemaining>29) $scope.enableForm = false;
+                    // console.log($scope.daysRemaining);
+                }
             } else {
                 Notification.error({message: 'unable to get account details'});
             }
         });
+    }
+    $scope.pageTitle = "Add New GPS / ERP Account";
+    if ($stateParams.accountId) {
+        $scope.pageTitle = "Edit GPS / ERP Account";
+        getAccountDetails();
     }
     $scope.serviceSelected = '';
     $scope.getPlansOfService = function () {
@@ -132,7 +143,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             contactName: '',
             password: '',
             contactPhone: '',
-            type: '',
+            role: '',
             companyName: '',
             contactAddress: '',
             city: '',
@@ -273,8 +284,8 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         if (!params.contactPhone) {
             params.errors.push('Invalid mobile number');
         }
-        if (!params.type) {
-            params.errors.push('Invalid type');
+        if (!params.role) {
+            params.errors.push('Invalid role');
         }
         if (params.password.trim().length < 5) {
             params.errors.push('Invalid password. Password has to be at least 5 characters');
@@ -305,7 +316,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             }
         });
     }
-    // getPlans();
+    getPlans();
 
     function initPlan() {
         $scope.ERPPlanDEtails = {
@@ -321,7 +332,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
     initPlan();
     $scope.assignERPPlan = function () {
         var params = $scope.ERPPlanDEtails;
-        $scope.ERPPlanDEtails.errors = [];
+        params.errors = [];
         console.log(params);
         if (!params.planId) {
             params.errors.push('Select a plan');
@@ -340,9 +351,10 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         }
         if (params.errors.length < 1) {
             console.log('correct');
-            AccountService.assignERPPlan($scope.ERPPlanDEtails, function (success) {
+            AccountService.assignPlan({planDetails: $scope.ERPPlanDEtails, type: 'erp'}, function (success) {
                 if (success.data.status) {
                     initPlan();
+                    getAccountDetails();
                     Notification.success({message: "Successfully updated"});
                 }
             });
