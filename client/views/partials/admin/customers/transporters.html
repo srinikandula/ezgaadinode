@@ -2,7 +2,7 @@
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Transporters
         </li>
-        <li class="pull-right col-xs-2">
+        <li class="pull-right col-xs-3">
             <select class="form-control" ng-model="status1" ng-change="initTransporter(status1);">
                 <option value="" selected>Search by Status</option>
                 <option value="true">Enabled</option>
@@ -12,53 +12,58 @@
                 <option value="both">All Services</option>
             </select>
         </li>
-        <li class="col-xs-3 pull-right">
+        <li class="col-xs-4 pull-right">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search" ng-model="transporter1">
-                <span class="input-group-addon" ng-click="searchByTransporter(transporter1);"><i class="glyphicon glyphicon-search"></i></span>
+                <span class="input-group-addon" ng-click="searchByTransporter(transporter1);"><i
+                        class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="transporterParams">
-        <tr ng-repeat="transporter in currentPageOfTransporters" style="text-align: center;">
-            <td data-title="'S.No'">
-                {{$index+1}}
-            </td>
-            <td data-title="'ID'" sortable="'userId'" class="clickable-item">
-                {{transporter.userId || '--'}}
-            </td>
-            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
-                {{transporter.firstName || '--'}}
-            </td>
-            <td data-title="'Company'" sortable="'companyName'" class="clickable-item">
-                {{transporter.companyName || '--'}}
-            </td>
-            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
-                {{transporter.contactPhone || '--'}}
-            </td>
-            <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
-                {{transporter.createdAt | date:'dd-MM-yyyy' || '--'}}
-            </td>
-            <td data-title="'No of Loads'" sortable="'noOfLoads'" class="clickable-item">
-                {{transporter.noOfLoads || '0'}}
-            </td>
-            <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
-                {{transporter.erpEnabled?'YES':'NO' || '--'}}
-            </td>
-            <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
-                {{transporter.gpsEnabled?'YES':'NO' || '--'}}
-            </td>
-            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{transporter.isActive?'Enabled':'Disabled' || '--'}}
-            </td>
-            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="customers.addUpdateTransporter({transporterId: transporter._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
-                <a href="#" ng-click="deleteTransporter($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
-            </td>
-        </tr>
-        <tr ng-if="!currentPageOfTransporters || currentPageOfTransporters.length === 0">
-            <td colspan="8">No Transporters Records exist.</td>
-        </tr>
-    </table>
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover" ng-table="transporterParams">
+            <tr ng-repeat="transporter in currentPageOfTransporters" style="text-align: center;">
+                <td data-title="'S.No'">
+                    {{$index+1}}
+                </td>
+                <td data-title="'ID'" sortable="'userId'" class="clickable-item">
+                    {{transporter.userId || '--'}}
+                </td>
+                <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
+                    {{transporter.firstName || '--'}}
+                </td>
+                <td data-title="'Company'" sortable="'companyName'" class="clickable-item">
+                    {{transporter.companyName || '--'}}
+                </td>
+                <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                    {{transporter.contactPhone || '--'}}
+                </td>
+                <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
+                    {{transporter.createdAt | date:'dd-MM-yyyy' || '--'}}
+                </td>
+                <td data-title="'No of Loads'" sortable="'noOfLoads'" class="clickable-item">
+                    {{transporter.noOfLoads || '0'}}
+                </td>
+                <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
+                    {{transporter.erpEnabled?'YES':'NO' || '--'}}
+                </td>
+                <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
+                    {{transporter.gpsEnabled?'YES':'NO' || '--'}}
+                </td>
+                <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                    {{transporter.isActive?'Enabled':'Disabled' || '--'}}
+                </td>
+                <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
+                    <a href="#" ui-sref="customers.addUpdateTransporter({transporterId: transporter._id})"
+                       class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="#" ng-click="deleteTransporter($index)" class="delete_icon"><span
+                            class="glyphicon glyphicon-trash  "></span></a>
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfTransporters || currentPageOfTransporters.length === 0">
+                <td colspan="8">No Transporters Records exist.</td>
+            </tr>
+        </table>
+    </div>
 </div>

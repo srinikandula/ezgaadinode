@@ -147,6 +147,13 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
         });
         callback(retObj);
     } else {
+
+        if (!params.alternatePhone[params.alternatePhone.length - 1]) {
+            params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
+        }
+        if (!params.operatingRoutes) {
+            params.operatingRoutes = [];
+        }
         if (req.files.files) {
             Utils.uploadDocuments(req.files.files, function (uploadResp) {
                 if (uploadResp.status) {
@@ -335,7 +342,9 @@ CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
         if (req.files.files) {
             Utils.uploadDocuments(req.files.files, function (uploadResp) {
                 if (uploadResp.status) {
-
+                    if (!req.body.content.documentFiles) {
+                        req.body.content.documentFiles = []
+                    }
                     req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
 
                     updateCustomerLead(req, callback);
@@ -364,6 +373,9 @@ function updateCustomerLead(req, callback) {
         messages: []
     };
     var params = req.body.content;
+    if (!params.alternatePhone[params.alternatePhone.length - 1]) {
+        params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
+    }
     Utils.removeEmptyFields(params);
     CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
         function (err, doc) {
@@ -379,7 +391,7 @@ function updateCustomerLead(req, callback) {
                 });
                 callback(retObj);
             } else if (doc) {
-                if (params.operatingRoutes.length > 0) {
+                if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
                         var query = {};
                         if (!route._id) {
@@ -424,7 +436,7 @@ function updateCustomerLead(req, callback) {
                     })
                 } else {
                     retObj.status = true;
-                    retObj.messages.push("Commission Agent updated successfully");
+                    retObj.messages.push("CustomerLead updated successfully");
                     analyticsService.create(req, serviceActions.update_customer_lead, {
                         body: JSON.stringify(req.body.content),
                         accountId: req.jwt.id,
@@ -2836,7 +2848,7 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
-            CustomerLeadsColl.find({"status": "Rejected", "leadType": "Junk Lead"}).sort(sort)
+            CustomerLeadsColl.find({"leadStatus": "Junk Lead"}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -2845,7 +2857,7 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            CustomerLeadsColl.count({"status": "Rejected", "leadType": "Junk Lead"}, function (err, count) {
+            CustomerLeadsColl.count({"leadStatus": "Junk Lead"}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -2895,7 +2907,7 @@ CustomerLeads.prototype.getCountRestOfAll = function (req, callback) {
         status: false,
         messages: []
     };
-    CustomerLeadsColl.count({"status": "Rejected", "leadType": "Junk Lead"}, function (err, doc) {
+    CustomerLeadsColl.count({"leadStatus": "Junk Lead"}, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting customer leads count');
             analyticsService.create(req, serviceActions.count_rest_of_all_err, {
@@ -2994,7 +3006,7 @@ CustomerLeads.prototype.removeCustomerLeadDocFile = function (req, callback) {
     } else {
         Utils.removeDoc(params.file, function (removeResp) {
             if (removeResp.status) {
-                CustomerLeads.update(
+                CustomerLeadsColl.update(
                     {_id: params._id},
                     {$pull: {documentFiles: params.file}},
                     {safe: true}, function (err, doc) {
