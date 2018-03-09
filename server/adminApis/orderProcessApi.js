@@ -34,48 +34,25 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         truckRequests: function (truckRequestsCallback) {
-            TruckRequestColl.aggregate([
-                {
-                    $lookup: {
-                        from: 'accounts',
-                        localField: 'customer',
-                        foreignField: '_id',
-                        as: 'customer'
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'customerLeads',
-                        localField: 'customerLeadId',
-                        foreignField: '_id',
-                        as: 'customerLeadId'
-                    }
-                },
-                {
-                    $project: {
-                        createdBy: 1,
-                        customerType: 1,
-                        source: 1,
-                        destination: 1,
-                        goodsType: 1,
-                        truckType: 1,
-                        date: 1,
-                        pickupPoint: 1,
-                        comment: 1,
-                        expectedPrice: 1,
-                        trackingAvailable: 1,
-                        insuranceAvailable: 1,
-                        customer: {
-                            $cond: {
-                                "if": {$eq: ['$customerType', 'Registered']},
-                                "then": "$customer",
-                                "else": "$customerLeadId"
-                            }
-                        },
-                        status: 1
-                    }
-
-                }, {"$sort": {createdAt: -1}}], function (err, docs) {
+            TruckRequestColl.find({},{
+                createdBy: 1,
+                customerType: 1,
+                source: 1,
+                destination: 1,
+                goodsType: 1,
+                truckType: 1,
+                date: 1,
+                pickupPoint: 1,
+                comment: 1,
+                expectedPrice: 1,
+                trackingAvailable: 1,
+                insuranceAvailable: 1,
+                status:1,
+                title:1
+            }).sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                .exec( function (err, docs) {
                 truckRequestsCallback(err, docs);
 
             })
@@ -1486,4 +1463,39 @@ OrderProcess.prototype.deleteLoadRequest = function (req, callback) {
 
 };
 /*Load Request End*/
+
+OrderProcess.prototype.getAllAccountsExceptTruckOwners=function (req,callback) {
+   var retObj={
+       status:false,
+       messages:[]
+   };
+   var params=req.query;
+    var skipNumber = params.size ? parseInt(params.size) : 0;
+    var sort ={createdAt: -1};
+    var condition={};
+    if(params.name){
+        condition={ firstName:{$regex: '.*' + params.name + '.*'},role:{$ne:"Truck Owners"}}
+    }else{
+        condition={ role:{$ne:"Truck Owners"}}
+    }
+   AccountsColl.find(condition,{firstName:1,contactPhone:1,contactName:1,userName:1})
+
+       .skip(skipNumber)
+       .limit(10).exec(function (err,truckOwnersList) {
+        if(err){
+            console.log(err);
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        }else if(truckOwnersList.length){
+            retObj.status=true;
+            retObj.messages.push("Success");
+            retObj.data=truckOwnersList;
+            callback(retObj);
+        }else{
+            retObj.messages.push("No truck owners found");
+            callback(retObj);
+        }
+   })
+
+};
 module.exports = new OrderProcess();

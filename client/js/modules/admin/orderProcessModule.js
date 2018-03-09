@@ -124,6 +124,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 url: '/v1/cpanel/orderProcess/countLoadRequest',
                 method: "GET",
             }).then(success, error)
+        },
+        getAllAccountsExceptTruckOwners:function (params,success,error) {
+            $http({
+                url:'/v1/cpanel/orderProcess/getAllAccountsExceptTruckOwners',
+                method:"GET",
+                params:params
+            }).then(success,error);
         }
 
     }
@@ -147,8 +154,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         isOpenFive: true,
     };
     $scope.initializeTruckRequest = function () {
+        $scope.currentElement=0;
+        $scope.search="";
         $scope.truckRequest = {
             customer: "",
+            title:"",
             customerType: "",
             name: "",
             contactPhone: [""],
@@ -201,11 +211,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
         });
 
-        customerServices.getTruckOwners(function (success) {
+        OrderProcessServices.getAllAccountsExceptTruckOwners({name:$scope.search,size:$scope.currentElement},function (success) {
             if (success.data.status) {
                 $scope.truckOwnersList = success.data.data;
             } else {
-                $scope.goodsTypesList = [];
+                $scope.truckOwnersList = [];
             }
 
         }, function (error) {
@@ -214,6 +224,37 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
 
     };
+    $scope.loadMore=function(){
+        console.log("loadMore");
+        $scope.currentElement=$scope.currentElement+10;
+        OrderProcessServices.getAllAccountsExceptTruckOwners( {name:$scope.search,size:$scope.currentElement},function (success) {
+            if (success.data.status) {
+                $scope.truckOwnersList= $scope.truckOwnersList.concat(success.data.data);
+                console.log($scope.truckOwnersList.length);
+            } else {
+                $scope.truckOwnersList = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+    $scope.searchAccountOwner=function (search) {
+        $scope.currentElement=0;
+       $scope.search=search;
+        OrderProcessServices.getAllAccountsExceptTruckOwners( {name:$scope.search,size:$scope.currentElement},function (success) {
+            if (success.data.status) {
+                $scope.truckOwnersList= success.data.data;
+                console.log($scope.truckOwnersList.length);
+            } else {
+                $scope.truckOwnersList = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+
     $scope.initializeEditTruckRequest = function () {
         $scope.loadBooking = {
             registrationNo: "",
@@ -309,7 +350,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.messages.push("Please select customer");
         }
         if (params.customerType === "UnRegistered" && !params.name) {
-            params.messages.push("Please select name1");
+            params.messages.push("Please select name");
         }
         if (params.customerType === "UnRegistered" && !params.contactPhone) {
             params.messages.push("Please select customer");
@@ -323,8 +364,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 Notification.error(message);
             });
         } else {
+            console.log("sadofg",params.customer);
             if (params.customerType === "Registered") {
+                params.title=params.customer.suserName+" "+params.customer.contactPhone;
                 params.customer = params.customer._id;
+
             }
             OrderProcessServices.addTruckRequest(params, function (success) {
                 if (success.data.status) {
