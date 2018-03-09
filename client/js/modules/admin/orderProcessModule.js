@@ -90,6 +90,40 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "DELETE",
                 params: {_id: params}
             }).then(success, error);
+        },
+        getLoadRequest: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getLoadRequest',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        getLoadRequestDetails: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getLoadRequestDetails',
+                method: "GET",
+                params: {loadRequestId: params}
+            }).then(success, error)
+        },
+        updateLoadRequest: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/updateLoadRequest',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
+        deleteLoadRequest: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/deleteLoadRequest',
+                method: "DELETE",
+                params: {loadRequestId: params}
+            }).then(success, error)
+        },
+        countLoadRequest: function (success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/countLoadRequest',
+                method: "GET",
+            }).then(success, error)
         }
 
     }
@@ -643,5 +677,111 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         });
 
     }
+
+    /*Load Request*/
+    $scope.loadCount = 0;
+
+    $scope.getLoadRequest = function () {
+        $scope.requestLoadParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: 100,
+            getData: function (tableParams) {
+                var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
+                OrderProcessServices.getLoadRequest(pageable, function (success) {
+                    if (success.data.status) {
+                        $scope.loadRequestsList = success.data.data;
+                        tableParams.data = $scope.loadRequestsList;
+                        tableParams.total(parseInt(success.data.count));
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({message: message});
+                        });
+                    }
+                }, function (error) {
+                    error.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                });
+            }
+
+        });
+    };
+
+    $scope.initializeLoadRequest = function () {
+        $scope.truckRequest = {
+            customer: "",
+            customerType: "",
+            name: "",
+            contactPhone: [""],
+            email: "",
+            leadType: "Transpoter",
+            companyName: "",
+            address: "",
+            city: "",
+            state: "",
+            pinCode: "",
+            loadingCharge:"",
+            unloadingCharge:"",
+            pushMessage:"",
+            trackingRequired: "",
+            insuranceRequired:"",
+            status:undefined,
+            truckDetails: [{
+                source: "",
+                destination: "",
+                goodsType: undefined,
+                truckType: undefined,
+                date: new Date(),
+                pickupPoint: "",
+                comment: "",
+                expectedPrice: "",
+                trackingAvailable: "",
+                insuranceAvailable: ""
+            }]
+        };
+        SettingServices.getTruckTypes({}, function (success) {
+            if (success.data.status) {
+                $scope.truckTypesList = success.data.data;
+            } else {
+                $scope.truckTypesList = [];
+
+            }
+
+        }, function (error) {
+
+        });
+
+        SettingServices.getGoodsTypes(function (success) {
+            if (success.data.status) {
+                $scope.goodsTypesList = success.data.data;
+            } else {
+                $scope.goodsTypesList = [];
+            }
+
+        }, function (error) {
+
+        });
+
+        customerServices.getTruckOwners(function (success) {
+            if (success.data.status) {
+                $scope.truckOwnersList = success.data.data;
+            } else {
+                $scope.goodsTypesList = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+
+    $scope.loadCancel = function () {
+        $state.go('orderprocess.loadRequest');
+    };
 
 }]);

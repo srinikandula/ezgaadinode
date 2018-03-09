@@ -290,7 +290,7 @@ Events.prototype.getAccountData = function (request, callback) {
             retObj.results = results;
             for (var i = 0; i < retObj.results.length; i++) {
                 var AccountData = retObj.results[i];
-                AccountData.gpsEnabled = true;
+                //AccountData.gpsEnabled = true;
                 if (!AccountData.contactPhone || AccountData.contactPhone.trim().length == 0 || isNaN(AccountData.contactPhone)) {
                     delete AccountData.contactPhone;
                     AccountData.gpsEnabled = true;
@@ -590,7 +590,11 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                             },
                             planId: function (planIdCallback) {
                                 erpGpsPlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
-                                    planIdCallback(planiderr, planid._id);
+                                    if(planid) {
+                                        planIdCallback(planiderr, planid._id);
+                                    } else {
+                                        planIdCallback(planiderr, planid);
+                                    }
                                 });
                             }
                         }, function (errids, ids) {
@@ -821,7 +825,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(employees, function (employee, employeeCallBack) {
-                AccountsColl.findOne({email: employee.email}, function (findEmployeeErr, employeeFound) {
+                AccountsColl.findOne({"email": employee.email},{"role": "employee"}, function (findEmployeeErr, employeeFound) {
                     if (findEmployeeErr) {
                         employeeCallBack(findEmployeeErr);
                     } else if (employeeFound) {
@@ -958,7 +962,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         two: function (callBackTwo) {
-            events.createTruckFromEGTruck(req, function (result2) {
+            events.getMappingGpsStatusToAccount(req, function (result2) {
                 console.log('2 Completed', result2);
                 if (result2.status) {
                     callBackTwo(null, result2);
@@ -968,7 +972,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         three: function (callBackThree) {
-            events.createTruckFromDevices(req, function (result) {
+            events.createTruckFromEGTruck(req, function (result) {
                 console.log('3 Completed', result);
                 if (result.status) {
                     callBackThree(null, result);
@@ -978,7 +982,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         four: function (callBackFour) {
-            events.getDevicePlans(req, function (result) {
+            events.createTruckFromDevices(req, function (result) {
                 console.log('4 Completed', result);
                 if (result.status) {
                     callBackFour(null, result);
@@ -988,7 +992,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         five: function (callBackFive) {
-            events.devicePlansHistory(req, function (result) {
+            events.getDevicePlans(req, function (result) {
                 console.log('5 Completed', result);
                 if (result.status) {
                     callBackFive(null, result);
@@ -998,7 +1002,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         six: function (callBackSix) {
-            events.getFranchise(req, function (result) {
+            events.devicePlansHistory(req, function (result) {
                 console.log('6 Completed', result);
                 if (result.status) {
                     callBackSix(null, result);
@@ -1008,7 +1012,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         seven: function (callBackSeven) {
-            events.getAdminRoles(req, function (result) {
+            events.getFranchise(req, function (result) {
                 console.log('7 Completed', result);
                 if (result.status) {
                     callBackSeven(null, result);
@@ -1017,8 +1021,8 @@ Events.prototype.getCompleteData = function (req, callback) {
                 }
             })
         },
-        /*eight:function (callBackEight) {
-            events.getAdminPermissions(req,function (result) {
+        eight:function (callBackEight) {
+            events.getAdminRoles(req,function (result) {
                 console.log('8 Completed',result);
                 if(result.status){
                     callBackEight(null,result);
@@ -1026,14 +1030,124 @@ Events.prototype.getCompleteData = function (req, callback) {
                     callBackEight(result,null);
                 }
             })
-        },*/
+        },
         nine: function (callBackNine) {
-            events.getTrucksTypeData(req, function (result) {
+            events.getAdminPermissions(req, function (result) {
                 console.log('9 Completed', result);
                 if (result.status) {
                     callBackNine(null, result);
                 } else {
                     callBackNine(result, null);
+                }
+            })
+        },
+        ten: function (callBackTen) {
+            events.getEmployeeData(req, function (result) {
+                console.log('10 Completed', result);
+                if (result.status) {
+                    callBackTen(null, result);
+                } else {
+                    callBackTen(result, null);
+                }
+            })
+        },
+        eleven: function (callBackEleven) {
+            events.getCustomerData(req, function (result) {
+                console.log('11 Completed', result);
+                if (result.status) {
+                    callBackEleven(null, result);
+                } else {
+                    callBackEleven(result, null);
+                }
+            })
+        },
+        twelve: function (callBackTwelve) {
+            events.getAlternateContact(req, function (result) {
+                console.log('12 Completed', result);
+                if (result.status) {
+                    callBackTwelve(null, result);
+                } else {
+                    callBackTwelve(result, null);
+                }
+            })
+        },
+        thirteen: function (callBackThirteen) {
+            events.getAccountOperatingRoutes(req, function (result) {
+                console.log('13 Completed', result);
+                if (result.status) {
+                    callBackThirteen(null, result);
+                } else {
+                    callBackThirteen(result, null);
+                }
+            })
+        },
+        fourteen: function (callBackFourteen) {
+            events.getTrucksTypeData(req, function (result) {
+                console.log('14 Completed', result);
+                if (result.status) {
+                    callBackFourteen(null, result);
+                } else {
+                    callBackFourteen(result, null);
+                }
+            })
+        },
+        fifteen: function (callBackFifteen) {
+            events.getGoodsTypeData(req, function (result) {
+                console.log('15 Completed', result);
+                if (result.status) {
+                    callBackFifteen(null, result);
+                } else {
+                    callBackFifteen(result, null);
+                }
+            })
+        },
+        sixteen: function (callBackSixteen) {
+            events.getLoadsTypeData(req, function (result) {
+                console.log('16 Completed', result);
+                if (result.status) {
+                    callBackSixteen(null, result);
+                } else {
+                    callBackSixteen(result, null);
+                }
+            })
+        },
+        seventeen: function (callBackSeventeen) {
+            events.getOrderStatusData(req, function (result) {
+                console.log('17 Completed', result);
+                if (result.status) {
+                    callBackSeventeen(null, result);
+                } else {
+                    callBackSeventeen(result, null);
+                }
+            })
+        },
+        eighteen: function (callBackEighteen) {
+            events.getCustomerLeadsData(req, function (result) {
+                console.log('18 Completed', result);
+                if (result.status) {
+                    callBackEighteen(null, result);
+                } else {
+                    callBackEighteen(result, null);
+                }
+            })
+        },
+        nineteen: function (callBackNineteen) {
+            events.getCustomerOperatingRoutes(req, function (result) {
+                console.log('19 Completed', result);
+                if (result.status) {
+                    callBackNineteen(null, result);
+                } else {
+                    callBackNineteen(result, null);
+                }
+            })
+        },
+        twenty: function (callBackTwenty) {
+            events.getJunkLeadsData(req, function (result) {
+                console.log('20 Completed', result);
+                if (result.status) {
+                    callBackTwenty(null, result);
+                } else {
+                    callBackTwenty(result, null);
                 }
             })
         }
@@ -1459,7 +1573,7 @@ Events.prototype.getCustomerData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(customers, function (customer, customerCallBack) {
-                AccountsColl.findOne({firstName: customer.fullname}, {leadType: customer.type}, function (findCustomerErr, customerFound) {
+                AccountsColl.findOne({firstName: customer.fullname,email: customer.email,leadType: customer.type,"role": {"$ne":"employee"}}, function (findCustomerErr, customerFound) {
                     if (findCustomerErr) {
                         customerCallBack(findCustomerErr);
                     } else if (customerFound) {
@@ -1496,10 +1610,9 @@ Events.prototype.getCustomerData = function (request, callback) {
                         }
 
                         var customerData = {
-                            userName: customer.mobile,
+                            userName: customer.email,
                             userId: customer.idprefix,
                             firstName: customer.fullname,
-                            contactPhone: customer.mobile,
                             alternatePhone: alternatePhone,
                             email: customer.email,
                             companyName: customer.company,
@@ -1530,6 +1643,10 @@ Events.prototype.getCustomerData = function (request, callback) {
                             smsEmailAds: customer.enable_sms_email_ads,
                             role: role
                         }
+
+                        if(typeof parseInt(customer.mobile) !== 'number'){
+                            customerData.contactPhone = customer.mobile;
+                        }
                         AccountsColl.findOne({"role": "account"}, {"userName": customer.gps_account_id}, function (err, account) {
                             if (account) {
                                 customerData.accountId = account._id;
@@ -1544,6 +1661,7 @@ Events.prototype.getCustomerData = function (request, callback) {
                     }
                 });
             }, function (customerErr, customerSaved) {
+                console.log(customerErr);
                 if (customerErr) {
                     retObj.status = false;
                     retObj.messages.push('Error saving data');
@@ -1658,5 +1776,44 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
         }
     });
 }
+
+Events.prototype.getMappingGpsStatusToAccount = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var gpsMappingAccountDataQuery = "select distinct accountID from Device order by accountID";
+    pool.query(gpsMappingAccountDataQuery, function (err, results) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.results = results;
+            for (var i = 0; i < retObj.results.length; i++) {
+                var AccountData = retObj.results[i];
+                AccountsColl.update({userName: AccountData.accountID}, {$set: {gpsEnabled: true}}, function (err, result) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.messages.push('Error fetching data');
+                        retObj.messages.push(JSON.stringify(err));
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.results = results;
+                    }
+                });
+                if (i === retObj.results.length - 1) {
+                    retObj.count = retObj.results.length;
+                    callback(retObj);
+                }
+            }
+        }
+    });
+};
 
 module.exports = new Events();

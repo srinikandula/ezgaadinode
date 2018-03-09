@@ -1,1 +1,59 @@
-load Request
+<div ng-controller="orderProcessCtrl" ng-init="getLoadRequests()">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Load Request</li>
+        <li class="pull-right">
+            <button class="btn btn-primary" ui-sref="orderprocess.createLoadRequest">Create New</button>
+        </li>
+        <li class="pull-right col-xs-2">
+            <select class="form-control">
+                <option>Select</option>
+                <option>Qualified</option>
+                <option>Request for Approval</option>
+                <option>Initiate</option>
+                <option>Callback</option>
+                <option>Duplicate</option>
+                <option>Junk Lead</option>
+                <option>Language Barrier</option>
+                <option>Not Interested</option>
+            </select>
+        </li>
+    </ul>
+    <div class="clearfix"></div>
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+           ng-table="requestLoadParams">
+        <tbody>
+        <tr ng-repeat="load in loadRequestsList">
+            <!--<td data-title="'S No'" class="col-sm-1">{{$index+1}}</td>-->
+            <td data-title="'Title'" sortable="'name'" class="clickable-item col-sm-1">
+                {{load.customer[0].userName || load.customer[0].name}}<br>{{load.customer[0].contactPhone}}
+
+            </td>
+            <td data-title="'Customer Name'" sortable="'type'" class="clickable-item col-sm-1">
+                {{load.customer[0].userName || load.customer[0].name}}
+            </td>
+            <td data-title="'Type'" sortable="'mobile'" class="clickable-item col-sm-1">{{load.leadType}}</td>
+            <td data-title="'Source'" sortable="'date'" class="clickable-item col-sm-1">{{load.source}}</td>
+            <td data-title="'Destination'" sortable="'yes'" class="clickable-item col-sm-1">{{load.destination}}</td>
+            <td data-title="'Load Type'" sortable="'loadType'" class="clickable-item col-sm-1">{{load.loadType}}</td>
+            <td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item col-sm-1">{{load.goodsType}}</td>
+            <td data-title="'Estimated Price'" sortable="'goodsType'" class="clickable-item col-sm-1">
+                {{load.expectedPrice}}
+            </td>
+            <td data-title="'Approved'" sortable="'load'" class="clickable-item col-sm-1">{{load.load}}</td>
+            <td data-title="'Status'" sortable="'Status'" class="clickable-item col-sm-1">{{load.status || 'NA'}}</td>
+
+            <td data-title="'Action'" class="col-sm-1">
+                <a href="#" ui-sref="orderprocess.editLoadRequest({_id:load._id})" class="edit_icon">
+                    <span class="glyphicon glyphicon-pencil"></span>
+                </a>
+                <a href="#" ng-click="deleteLoadRequest(load._id)" class="delete_icon">
+                    <span class="glyphicon glyphicon-trash"></span>
+                </a>
+            </td>
+        </tr>
+        <tr ng-if="!loadRequestsList || loadRequestsList.length === 0">
+            <td colspan="8">No Loads exist.</td>
+        </tr>
+        </tbody>
+    </table>
+</div>

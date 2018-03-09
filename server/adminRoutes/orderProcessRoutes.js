@@ -86,6 +86,43 @@ AuthRouter.put('/updateTruckRequestDetails',function (req,res) {
     })
 });
 
+/*Load Request*/
+AuthRouter.get('/countLoadRequest', function (req, res) {
+    OrderProcess.countLoadRequest(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getLoadRequest', function (req, res) {
+    OrderProcess.getLoadRequest(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.post('/addLoadRequest', function (req, res) {
+    OrderProcess.addLoadRequest(req, function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getLoadRequestDetails',function (req,res) {
+    OrderProcess.getLoadRequestDetails(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.put('/updateLoadRequest',function (req,res) {
+    OrderProcess.updateLoadRequest(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.delete('/deleteLoadRequest', function (req, res) {
+    OrderProcess.deleteLoadRequest(req,function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

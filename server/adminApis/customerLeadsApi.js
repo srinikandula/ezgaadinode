@@ -1680,7 +1680,7 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
                 $or:
                     [
                         {"userId": new RegExp(params.commissionAgent, "gi")},
-                        {"fullName": new RegExp(params.commissionAgent, "gi")},
+                        {"firstName": new RegExp(params.commissionAgent, "gi")},
                         {"companyName": new RegExp(params.commissionAgent, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                     ], role: 'Commission Agent'
@@ -2053,7 +2053,7 @@ CustomerLeads.prototype.getFactoryOwner = function (req, callback) {
                 $or:
                     [
                         {"userId": new RegExp(params.factoryOwner, "gi")},
-                        {"fullName": new RegExp(params.factoryOwner, "gi")},
+                        {"firstName": new RegExp(params.factoryOwner, "gi")},
                         {"companyName": new RegExp(params.factoryOwner, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                         {"email": new RegExp(params.factoryOwner, "gi")},
