@@ -1,105 +1,59 @@
-<ul class="list-inline title-ul">
-    <li class="pull-left name-head">Rest Of All</li>
+<div ng-controller="customerCtrl" ng-init="numOfRestOfAll();">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Rest Of All
+        </li>
+        <li class="pull-right col-xs-3">
+            <select class="form-control">
+                <option>Select</option>
+                <option>Enabled</option>
+                <option>Disabled</option>
+                <option>GPS Users</option>
+                <option>ERP Users</option>
+                <option>All Services</option>
+                <option>Load Requested</option>
+            </select>
+        </li>
+        <li class="col-xs-4 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="transporter1">
+                <span class="input-group-addon" ng-click="searchByTransporter(transporter1);"><i
+                        class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
 
-    <li class="pull-right col-xs-2">
-        <select class="form-control">
-            <option>Select</option>
-            <option>Callback</option>
-            <option>Duplicate</option>
-            <option>Junk Lead</option>
-            <option>Language Barrier</option>
-            <option>Not Interested</option>
-        </select>
-    </li>
-    <div class="clearfix"></div>
-</ul>
-<table class="table table-bordered table-responsive mt-20">
-    <thead>
-    <tr>
-        <th>S No</th>
-        <th>ID</th>
-        <th>Customer Name</th>
-        <th>Type</th>
-        <th>Mobile</th>
-        <th>Reg Date</th>
-        <th>is Lead</th>
-        <th>ERP</th>
-        <th>GPS</th>
-        <th>Load</th>
-        <th>Lead Status</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>No</td>
-        <td>Yes</td>
-        <td>Initiated</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>No</td>
-        <td>Yes</td>
-        <td>Qualified</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>No</td>
-        <td>Yes</td>
-        <td>Req for Approval</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>No</td>
-        <td>Yes</td>
-        <td>Duplicate</td>
-        <td>Edit/Delete</td>
-    </tr>
-    <tr>
-        <td>1</td>
-        <td>2889</td>
-        <td>Sravan Kumar</td>
-        <td>TO</td>
-        <td>9618485858</td>
-        <td>01/05/2017</td>
-        <td>Yes</td>
-        <td>Yes</td>
-        <td>No</td>
-        <td>Yes</td>
-        <td>Qualified</td>
-        <td>Edit/Delete</td>
-    </tr>
-    </tbody>
-</table>
+        <div class="clearfix"></div>
+    </ul>
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover text-center"
+               ng-table="restOfAllParams">
+            <tr ng-repeat="customer in currentPageOfrestOfAll">
+                <td>{{$index+1}}</td>
+                <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">{{customer.firstName}}
+                </td>
+                <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">{{customer.contactPhone}}
+                </td>
+                <td data-title="'Reg Date'" sortable="'date'" class="clickable-item">{{customer.createdAt |
+                    date:medium}}
+                </td>
+                <!--<td data-title="'Is Lead'" sortable="'yes'" class="clickable-item">Yes</td>-->
+                <td data-title="'ERP'" sortable="'erp'" class="clickable-item">{{customer.erpEnabled}}</td>
+                <td data-title="'GPS'" sortable="'gps'" class="clickable-item">{{customer.gpsEnabled}}</td>
+                <td data-title="'Load'" sortable="'load'" class="clickable-item">{{customer.loadEnabled}}</td>
+                <td class="col-xs-2" data-title="'Lead Status'">
+                    {{customer.leadStatus}}
+                </td>
+                <td data-title="'Action'">
+                    <a href="#" ui-sref="customers.editRestOfAll({customerId:customer._id})" class="edit_icon">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a href="#" ng-click="delJunkLead(customer._id)" class="delete_icon">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfrestOfAll || currentPageOfrestOfAll.length === 0">
+                <td colspan="8">No Records exist.</td>
+            </tr>
+        </table>
+    </div>
+</div>

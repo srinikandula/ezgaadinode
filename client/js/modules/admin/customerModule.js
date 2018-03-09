@@ -21,6 +21,13 @@ app.factory('customerServices', function ($http) {
                 params: {_id: params}
             }).then(success, error)
         },
+        totalCustomerLeads: function (success, error) {
+            $http({
+                url: '/v1/cpanel/customers/totalCustomerLeads',
+                method: "GET",
+            }).then(success, error)
+        },
+
         getTruckOwners: function (pageble, success, error) {
             $http({
                 url: '/v1/cpanel/customers/getTruckOwners',
@@ -197,8 +204,34 @@ app.factory('customerServices', function ($http) {
                 method:"DELETE",
                 params:{file:params.file,_id:params._id}
             }).then(success,error)
-        }
-
+        },
+        getRestOfAll: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/getRestOfAll',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        getCountRestOfAll: function (success, error) {
+            $http({
+                url: '/v1/cpanel/customers/getCountRestOfAll',
+                method: "GET",
+            }).then(success, error)
+        },
+        getJunkLeadDetails: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/getCustomerLeadDetails',
+                method: "GET",
+                params: {_id: params}
+            }).then(success, error)
+        },
+        deleteRestOfAllDetails: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/deleteRestOfAllDetails',
+                method: "DELETE",
+                params: {_id: params}
+            }).then(success, error)
+        },
 
     }
 });
@@ -369,10 +402,13 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                 });
             } else {
                 var files = $scope.customerLead.files;
+                if(!$scope.customerLead.operatingRoutes){
+                    $scope.customerLead.operatingRoutes=[]
+                }
                 Upload.upload({
                     url: '/v1/cpanel/customers/updateCustomerLead',
                     data: {
-                        files: [files],
+                        files: files,
                         content: $scope.customerLead
                     }
                 }).then(function (success) {
@@ -410,7 +446,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                             success.data.messages[0],
                             'success'
                         );
-                        $scope.getCustomerLeads();
+                        $scope.numOfCustomerLeads();
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
@@ -422,8 +458,39 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             }
         });
     };
+    $scope.count = 0;
+    $scope.numOfCustomerLeads = function () {
+        customerServices.totalCustomerLeads(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.initCustomerLeads();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
 
-    $scope.getCustomerLeads = function () {
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            status: tableParams.option,
+        };
+        customerServices.getCustomerLeads(pageable, function (success) {
+            $scope.invalidCount = 0;
+            if (success.data.status) {
+                //tableParams.total(success.data.count);
+                tableParams.data = success.data.data;
+                $scope.customerLeads = success.data.data;
+            } else {
+                $scope.customerLeads=[];
+                Notification.error({message: success.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initCustomerLeads = function (option) {
         $scope.customerParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -432,30 +499,13 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             }
         }, {
             counts: [],
-            getData: function (tableParams) {
-
-                var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
-                customerServices.getCustomerLeads(pageable, function (success) {
-                    if (success.data.status) {
-
-                        $scope.customerLeads = success.data.data;
-                        tableParams.data = $scope.customerLeads;
-                        tableParams.total(parseInt(success.data.count));
-                    } else {
-
-                        success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
-                        });
-                    }
-                }, function (error) {
-
-                });
+            total: $scope.count,
+            getData: function (params) {
+                params.option = option;
+                loadTableData(params);
             }
-
         });
-        // $scope.customerParams.reload();
     };
-
     $scope.convertCustomerLead = function () {
         var params = $scope.customerLead;
         console.log("params", params);
@@ -584,6 +634,209 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     $scope.deleteDoc = function (index) {
         $scope.customerLead.files.splice(index, 1);
     }
+    $scope.removeDoc = function (doc,index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                customerServices.removeCustomerLeadDocFile({_id:$scope.customerLead._id,file:doc}, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.customerLead.documentFiles.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    }
+
+
+    // <!--------------------------------rest of All ----------------------------->
+
+    $scope.count = 0;
+    $scope.numOfRestOfAll = function () {
+        customerServices.getCountRestOfAll(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.initRestOfAll();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var restloadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+        };
+        customerServices.getRestOfAll(pageable, function (success) {
+            $scope.invalidCount = 0;
+            if (success.data.status) {
+                //tableParams.total(success.data.count);
+                tableParams.data = success.data.data;
+                $scope.currentPageOfrestOfAll = success.data.data;
+            } else {
+                Notification.error({message: success.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initRestOfAll = function () {
+        $scope.restOfAllParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                restloadTableData(params);
+            }
+        });
+    };
+
+    $scope.getJunkLeadDetailsFun = function () {
+        if ($stateParams.customerId) {
+            customerServices.getJunkLeadDetails($stateParams.customerId, function (success) {
+
+                if (success.data.status) {
+                    $scope.customerLead = success.data.data.customerData;
+                    if(success.data.data.operatingRoutes.length>0){
+                        $scope.customerLead.operatingRoutes = success.data.data.operatingRoutes;
+                    }else{
+                        $scope.customerLead.operatingRoutes =[{}]
+                    }
+                    if( $scope.customerLead.alternatePhone.length===0){
+                        $scope.customerLead.alternatePhone =[""]
+                    }
+                    $scope.customerLead.files=[{}];
+
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        } else {
+            customerLeadsFunc();
+        }
+    };
+
+    $scope.updateJunlLeads = function () {
+        var params = $scope.customerLead;
+        params.errorMessage = [];
+
+        if (!params.firstName) {
+            params.errorMessage.push('Enter Your Full Name');
+        }
+        if (!params.contactPhone || typeof parseInt(params.contactPhone) === 'NaN' || (params.contactPhone.length != 10 && typeof params.contactPhone === String)) {
+            params.errorMessage.push('Enter Mobile Number');
+        }
+        if (params.errorMessage.length > 0) {
+            params.errorMessage.forEach(function (message) {
+                Notification.error(message);
+            });
+        } else {
+            if (!$scope.customerLead._id) {
+                var files = $scope.customerLead.files;
+                Upload.upload({
+                    url: '/v1/cpanel/customers/addCustomerLead',
+                    data: {
+                        files: files,
+                        content: $scope.customerLead
+                    },
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('customers.restOfAll');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            } else {
+                var files = $scope.customerLead.files;
+                if(!$scope.customerLead.operatingRoutes){
+                    $scope.customerLead.operatingRoutes=[]
+                }
+                Upload.upload({
+                    url: '/v1/cpanel/customers/updateCustomerLead',
+                    data: {
+                        files: files,
+                        content: $scope.customerLead
+                    }
+                }).then(function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go('customers.restOfAll');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                });
+            }
+        }
+    };
+
+    $scope.delJunkLead = function (customerId) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                customerServices.deleteRestOfAllDetails(customerId, function (success) {
+
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.numOfRestOfAll();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    };
+    // <!--------------------------------rest of All ----------------------------->
 
 }]);
 
@@ -615,7 +868,6 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
         customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
             if (success.data.status) {
                 $scope.truckOwner = success.data.data.truckOwnerData;
-                console.log("$scope.truckOwner", $scope.truckOwner);
                 $scope.truckOwner.confirmPassword = success.data.data.truckOwnerData.password;
                 $scope.truckOwner.newDocumentFile = '';
                 if ($scope.truckOwner.alternatePhone.length === 0) {
@@ -883,6 +1135,37 @@ $scope.selectTruckTypes=[];
             }
         });
     };
+
+    $scope.removeDoc = function (doc,index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                customerServices.removeDoc({_id:$scope.truckOwner._id,file:doc}, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.truckOwner.documentFiles.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    }
 }]);
 
 /*Truck Owners End*/

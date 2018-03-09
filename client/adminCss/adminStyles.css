@@ -433,7 +433,6 @@ footer {
     right: 0;
 }
 
-
 /* Nagesh CSS */
 
 .plus-pos {
@@ -441,6 +440,13 @@ footer {
     top: 9px;
     right: 15px;
     cursor: pointer;
+}
+.del-pos{
+    position: absolute;
+    bottom: 45px;
+    right: -8px;
+    cursor: pointer;
+    font-size: 20px
 }
 
 .plus-pos>i {
@@ -1240,6 +1246,11 @@ textarea.custom-form-control{
     left: 0px;
     top: 0px;
 }
+.delfile img{
+    width: 35%;
+    height: auto;
+    padding-left: 30px;
+}
 .ui-select-multiple.ui-select-bootstrap input.ui-select-search{
     margin: 0 auto !important;
     height: 42px !important;
@@ -1247,6 +1258,10 @@ textarea.custom-form-control{
 .ui-select-multiple.ui-select-bootstrap{
     margin: 0 auto !important;
     width: 80%;
+}
+.table-res{
+    width: 100%;
+    overflow-x: auto;
 }
 
 /* Responsive Design */

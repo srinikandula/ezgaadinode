@@ -242,7 +242,7 @@ AuthRouter.get('/getCountRestOfAll', function (req, res) {
     })
 });
 
-AuthRouter.get('/deleteRestOfAllDetails',function (req,res) {
+AuthRouter.delete('/deleteRestOfAllDetails',function (req,res) {
     CustomerLeads.deleteRestOfAllDetails(req,function (result) {
         res.send(result);
     })

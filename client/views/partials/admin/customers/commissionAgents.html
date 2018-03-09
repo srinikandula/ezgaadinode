@@ -2,14 +2,14 @@
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Commission Agents
         </li>
-        <li class="pull-right col-xs-2">
+        <li class="pull-right col-xs-3">
             <select class="form-control" ng-model="status1" ng-change="initCommissionAgent(status1);">
                 <option value="" selected>Search by Status</option>
                 <option ng-value="true">Enabled</option>
                 <option ng-value="false">Disabled</option>
             </select>
         </li>
-        <li class="col-xs-3 pull-right">
+        <li class="col-xs-4 pull-right">
             <div class="input-group">
                 <input type="text" class="form-control" placeholder="Search" ng-model="commissionAgent1">
                 <span class="input-group-addon" ng-click="searchByCommissionAgent(commissionAgent1);"><i class="glyphicon glyphicon-search"></i></span>
@@ -17,7 +17,8 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="commissionAgentParams">
+    <div class="table-res">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="commissionAgentParams">
         <tr ng-repeat="commissionAgent in currentPageOfCommissionAgents" style="text-align: center;">
             <td data-title="'S.No'">
                 {{$index+1}}
@@ -64,4 +65,5 @@
             <td colspan="8">No Commission Agents Records exist.</td>
         </tr>
     </table>
+    </div>
 </div>

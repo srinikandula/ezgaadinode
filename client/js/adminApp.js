@@ -96,11 +96,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/customers/restOfAll.html',
         data: {activeTab: 'customers'}
     }).state({
-        name: 'customers.addUpdateRestOfAll',
-        url: '/addUpdateRestOfAll/:restOfAllId',
-        templateUrl: 'views/partials/admin/customers/addUpdateRestOfAll.html',
+        name: 'customers.editRestOfAll',
+        url: '/editRestOfAll/:customerId',
+        templateUrl: 'views/partials/admin/customers/editRestOfAll.html',
         data: {activeTab: 'customers'},
-        params: {guestId: null}
+        params: {customerId: null}
     }).state({
         name: 'services',
         url: '/services',
