@@ -118,9 +118,15 @@ AuthRouter.put('/updateLoadRequest',function (req,res) {
 });
 
 AuthRouter.delete('/deleteLoadRequest', function (req, res) {
-    OrderProcess.deleteLoadRequest(req,function (result) {
+    OrderProcess.deleteLoadRequest(req, function (result) {
         res.send(result);
-    })
+    });
+});
+
+AuthRouter.get('/getAllAccountsExceptTruckOwners',function (req,res) {
+   OrderProcess.getAllAccountsExceptTruckOwners(req,function (result) {
+       res.send(result);
+   })
 });
 
 module.exports = {

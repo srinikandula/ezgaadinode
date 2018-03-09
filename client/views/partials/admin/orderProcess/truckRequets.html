@@ -24,10 +24,8 @@
         <tbody>
         <tr ng-repeat="truck in truckRequestsList">
             <!--<td data-title="'S No'" class="col-sm-1">{{$index+1}}</td>-->
-            <td data-title="'Title'" sortable="'name'" class="clickable-item col-sm-1">
-                {{truck.customer[0].userName || truck.customer[0].name}}<br>{{truck.customer[0].contactPhone}}
-
-            </td>
+            <td data-title="'Title'" sortable="'title'" class="clickable-item col-sm-1">
+                {{truck.title}}            </td>
             <td data-title="'Customer Name'" sortable="'type'" class="clickable-item col-sm-1">
                 {{truck.customer[0].userName || truck.customer[0].name}}
             </td>

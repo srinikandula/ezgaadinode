@@ -551,6 +551,7 @@ var orderStatusSchema = mongoose.Schema({
 var truckRequestSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     customer: {type: ObjectId, ref: 'accounts'},
+    title:String,
     customerType: String,
     source: String,
     leadType: String,
@@ -655,7 +656,7 @@ var truckNotificationSchema = mongoose.Schema({
     truckType: String,
     price: Number,
     sendToAll: Boolean
-}, {timestamps: String})
+}, {timestamps: String});
 
 var trafficManagerSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -701,6 +702,7 @@ var adminLoadRequestSchema = mongoose.Schema({
     customerLeadId: {type: ObjectId, ref: 'customerLeads'},
     status: {type: String, default: 'New'}
 }, {timestamps: String});
+
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),

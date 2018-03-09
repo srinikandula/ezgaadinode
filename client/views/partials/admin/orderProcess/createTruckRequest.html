@@ -23,15 +23,15 @@
                         <div class="form-group select-box">
                             <ui-select ng-model="truckRequest.customer" theme="select2"
                                        style="min-width: 390px;"
-                                       title="Customer *" append-to-body="true">
+                                       title="Customer *"  reset-search-input="false" >
 
                                 <ui-select-match placeholder="Customer *" class="form-control order-form-control">
                                     {{$select.selected.userName || userName}}
                                 </ui-select-match>
                                 <ui-select-choices
-                                        repeat="truck in truckOwnersList | propsFilter: {userName: $select.search}">
+                                                    repeat="truck in truckOwnersList "  refresh="searchAccountOwner($select.search)" refresh-delay="0"  scroll-detector="loadMore()" >
                                     <b>
-                                        <div ng-bind-html="truck.userName | highlight: $select.search"></div>
+                                        <div  ng-bind-html="truck.firstName "></div>
                                     </b>
                                     <small>
                                         Mobile: {{truck.contactPhone || '---'}}
