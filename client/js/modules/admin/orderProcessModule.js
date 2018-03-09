@@ -772,7 +772,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
     };
 
     $scope.initializeLoadRequest = function () {
-        $scope.truckRequest = {
+        $scope.loadRequest = {
             customer: "",
             customerType: "",
             name: "",
@@ -790,11 +790,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             trackingRequired: "",
             insuranceRequired:"",
             status:undefined,
-            truckDetails: [{
+            loadDetails: [{
                 source: "",
                 destination: "",
                 goodsType: undefined,
-                truckType: undefined,
+                loadType: undefined,
                 date: new Date(),
                 pickupPoint: "",
                 comment: "",
