@@ -139,7 +139,7 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
 
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_customer_lead_err, {
-            body: JSON.stringify(req.body),
+            body: JSON.stringify(params),
             accountId: req.jwt.id,
             success: false,
             messages: retObj.messages
@@ -156,7 +156,7 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
                 } else {
                     retObj.messages.push("Document uploading failed");
                     analyticsService.create(req, serviceActions.add_customer_lead_err, {
-                        body: JSON.stringify(req.body),
+                        body: JSON.stringify(params),
                         accountId: req.jwt.id,
                         success: false,
                         messages: retObj.messages
@@ -183,9 +183,9 @@ function saveCustomerLead(req, params, callback) {
     var customerLead = new CustomerLeadsColl(params);
     customerLead.save(function (err, doc) {
         if (err) {
-            retObj.messages.push("Please try again");
+            retObj.messages.push("Please try again1");
             analyticsService.create(req, serviceActions.add_customer_lead_err, {
-                body: JSON.stringify(req.body),
+                body: JSON.stringify(params),
                 accountId: req.jwt.id,
                 success: false,
                 messages: retObj.messages
@@ -206,7 +206,7 @@ function saveCustomerLead(req, params, callback) {
                     if (err) {
                         retObj.messages.push("Please try again");
                         analyticsService.create(req, serviceActions.add_customer_lead_err, {
-                            body: JSON.stringify(req.body),
+                            body: JSON.stringify(params),
                             accountId: req.jwt.id,
                             success: false,
                             messages: retObj.messages
@@ -218,7 +218,7 @@ function saveCustomerLead(req, params, callback) {
                         retObj.messages.push("Customer lead added successfully");
                         retObj.data = doc;
                         analyticsService.create(req, serviceActions.get_customer_leads, {
-                            body: JSON.stringify(req.query),
+                            body: JSON.stringify(params),
                             accountId: req.jwt.id,
                             success: true
                         }, function (response) {
@@ -231,7 +231,7 @@ function saveCustomerLead(req, params, callback) {
                 retObj.messages.push("Customer lead added successfully");
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.get_customer_leads, {
-                    body: JSON.stringify(req.query),
+                    body: JSON.stringify(params),
                     accountId: req.jwt.id,
                     success: true
                 }, function (response) {

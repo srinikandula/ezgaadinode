@@ -159,9 +159,10 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         $scope.truckRequest = {
             customer: "",
             title:"",
+            customerName:"",
             customerType: "",
-            name: "",
-            contactPhone: [""],
+            firstName: "",
+            contactPhone: "",
             email: "",
             leadType: "Transpoter",
             companyName: "",
@@ -349,7 +350,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         if (params.customerType === "Registered" && !params.customer) {
             params.messages.push("Please select customer");
         }
-        if (params.customerType === "UnRegistered" && !params.name) {
+        if (params.customerType === "UnRegistered" && !params.firstName) {
             params.messages.push("Please select name");
         }
         if (params.customerType === "UnRegistered" && !params.contactPhone) {
@@ -364,12 +365,18 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 Notification.error(message);
             });
         } else {
-            console.log("sadofg",params.customer);
             if (params.customerType === "Registered") {
-                params.title=params.customer.suserName+" "+params.customer.contactPhone;
+                params.title=params.customer.firstName+" ,"+params.customer.contactPhone;
+                params.customerName=params.customer.firstName;
                 params.customer = params.customer._id;
 
+            }else{
+                params.title=params.firstName+" , "+params.contactPhone;
+                params.customerName=params.firstName;
+
+
             }
+            console.log("Params",params);
             OrderProcessServices.addTruckRequest(params, function (success) {
                 if (success.data.status) {
                     success.data.messages.forEach(function (message) {
@@ -466,7 +473,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
     $scope.searchTrucksForRequest = function () {
         OrderProcessServices.searchTrucksForRequest({
             source: $scope.truckRequest.source,
-            destination: $scope.truckRequest.destinationLocation
+            destination: $scope.truckRequest.destinationLocation,
+            truckType:$scope.truckRequest.truckType
         }, function (success) {
             if (success.data.status) {
                 $scope.availableTruckslist = success.data.data;
@@ -477,6 +485,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             }
         }, function (error) {
 
+
         })
     };
     $scope.getTruckRequestQuotes = function () {
@@ -484,9 +493,9 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             if (success.data.status) {
                 $scope.quotesList = success.data.data;
             } else {
-                success.data.messages.forEach(function (message) {
+                /*success.data.messages.forEach(function (message) {
                     Notification.error(message);
-                })
+                })*/
             }
         }, function (error) {
 
@@ -554,6 +563,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             })
         } else {
             params.truckRequestId = $stateParams._id;
+            if($scope.truckRequest.customerType==="Registered"){
+               params.partyId=$scope.truckRequest.customer._id
+            }else{
+                params.partyId=$scope.truckRequest.customerLeadId._id;
+            }
             OrderProcessServices.loadBookingForTruckRequest(params, function (success) {
                 if (success.data.status) {
                     success.data.messages.forEach(function (message) {
@@ -568,7 +582,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             }, function (error) {
 
             })
-
         }
     };
     $scope.loadBookingStatus = false;
@@ -580,9 +593,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 if (success.data.status) {
                     $scope.loadBooking = success.data.data;
                     $scope.loadBooking.date = new Date($scope.loadBooking.date);
-                    $scope.loadBooking.customer={
-                        _id:$scope.loadBooking.accountId
-                    };
+                    $scope.loadBooking.customer=$scope.loadBooking.accountId;
                     $scope.getTrucksAndDriversByAccountId();
                 } else {
                     $scope.loadBooking = {
@@ -612,8 +623,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 if (success.data.status) {
                     $scope.loadBooking.trucksList = success.data.data.trucksList;
                     $scope.loadBooking.driversList = success.data.data.driversList;
-                    $scope.loadBooking.registrationNo = undefined;
-                    $scope.loadBooking.driverId = undefined;
+
 
                 } else {
                     success.data.messages.forEach(function (message) {
@@ -653,7 +663,11 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.truckRequestId=$stateParams._id;
             OrderProcessServices.addTruckRequestComment(params, function (success) {
                 if (success.data.status) {
-                    $scope.commentList.unshift(success.data.data);
+                    if($scope.commentList.length>0){
+                        $scope.commentList.unshift(success.data.data);
+                    }else{
+                        $scope.commentList=[success.data.data];
+                    }
                     $scope.truckRequest.status=success.data.data.status;
                     $scope.comment = {
                         status: undefined,

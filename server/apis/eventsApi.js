@@ -272,7 +272,7 @@ Events.prototype.getAccountData = function (request, callback) {
         status: false,
         messages: []
     };
-    var accountDataQuery = "select accountID as userName,contactPhone,password,contactEmail as email,contactName,contactAddress,displayName from Account order by accountID";
+    var accountDataQuery = "select accountID as userName,contactPhone,password,contactEmail as email,contactName,contactAddress,displayName,contactName as firstName from Account order by accountID";
     pool.query(accountDataQuery, function (err, results) {
         if (err) {
             retObj.status = false;
@@ -848,6 +848,9 @@ Events.prototype.getEmployeeData = function (request, callback) {
                                 role: 'employee',
                                 createdAt: convertDate(employee.date_created),
                                 updatedAt: convertDate(employee.date_modified),
+                            }
+                            if(typeof parseInt(employee.mobile) === 'number'){
+                                employeeData.contactPhone = employee.mobile;
                             }
                             if (role) {
                                 employeeData.adminRoleId = role._id;
@@ -1643,8 +1646,8 @@ Events.prototype.getCustomerData = function (request, callback) {
                             smsEmailAds: customer.enable_sms_email_ads,
                             role: role
                         }
-
-                        if(typeof parseInt(customer.mobile) !== 'number'){
+                        console.log('customerData',customerData);
+                        if(!isNaN(customer.mobile)){
                             customerData.contactPhone = customer.mobile;
                         }
                         AccountsColl.findOne({"role": "account"}, {"userName": customer.gps_account_id}, function (err, account) {
@@ -1661,7 +1664,6 @@ Events.prototype.getCustomerData = function (request, callback) {
                     }
                 });
             }, function (customerErr, customerSaved) {
-                console.log(customerErr);
                 if (customerErr) {
                     retObj.status = false;
                     retObj.messages.push('Error saving data');

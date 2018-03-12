@@ -27,13 +27,13 @@
             <td data-title="'Title'" sortable="'title'" class="clickable-item col-sm-1">
                 {{truck.title}}            </td>
             <td data-title="'Customer Name'" sortable="'type'" class="clickable-item col-sm-1">
-                {{truck.customer[0].userName || truck.customer[0].name}}
+                {{truck.customerName}}
             </td>
             <td data-title="'Type'" sortable="'mobile'" class="clickable-item col-sm-1">{{truck.leadType}}</td>
             <td data-title="'Source'" sortable="'date'" class="clickable-item col-sm-1">{{truck.source}}</td>
             <td data-title="'Destination'" sortable="'yes'" class="clickable-item col-sm-1">{{truck.destination}}</td>
-            <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item col-sm-1">{{truck.truckType}}</td>
-            <td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item col-sm-1">{{truck.goodsType}}</td>
+            <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item col-sm-1">{{truck.truckType.title}} - {{truck.truckType.tonnes}} Ton</td>
+            <!--<td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item col-sm-1">{{truck.goodsType}}</td>-->
             <td data-title="'Estimated Price'" sortable="'goodsType'" class="clickable-item col-sm-1">
                 {{truck.expectedPrice}}
             </td>

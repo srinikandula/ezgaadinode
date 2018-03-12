@@ -163,8 +163,7 @@ var tripSchema = new mongoose.Schema({
     createdBy: String,
     paymentHistory: [],
     attrs: {},
-    share: {type: Boolean, default: false},
-    truckRequestId: {type: ObjectId, ref: 'truckRequests'}
+    share: {type: Boolean, default: false}
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
@@ -552,12 +551,13 @@ var truckRequestSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
     customer: {type: ObjectId, ref: 'accounts'},
     title:String,
+    customerName:String,
     customerType: String,
     source: String,
     leadType: String,
     destination: String,
     goodsType: String,
-    truckType: String,
+    truckType: {type: ObjectId, ref: 'trucksTypes'},
     date: {type: Date},
     pickupPoint: String,
     comment: String,
@@ -703,6 +703,20 @@ var adminLoadRequestSchema = mongoose.Schema({
     status: {type: String, default: 'New'}
 }, {timestamps: String});
 
+var adminTripSchema = new mongoose.Schema({
+    date: Date,
+    registrationNo: String, //this will be truck id
+    partyId: {type: ObjectId, ref: 'parties'},
+    freightAmount: Number, //5000
+    tripId: String,
+    tripLane: String,
+    tripExpenses: Number,
+    driverId: {type: ObjectId, ref: 'drivers'},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    updatedBy: String,
+    createdBy: String,
+    truckRequestId: {type: ObjectId, ref: 'truckRequests'}
+}, {timestamps: true});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -746,5 +760,6 @@ module.exports = {
     TruckNotificationColl: mongoose.model('truckNotification', truckNotificationSchema, 'truckNotification'),
     trafficManagerColl: mongoose.model('trafficManager', trafficManagerSchema, 'trafficManager'),
     LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification'),
-    adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest')
+    adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest'),
+    AdminTripsColl:mongoose.model('adminTripsColl',adminTripSchema,'adminTripsColl')
 };
