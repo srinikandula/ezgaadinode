@@ -1646,7 +1646,6 @@ Events.prototype.getCustomerData = function (request, callback) {
                             smsEmailAds: customer.enable_sms_email_ads,
                             role: role
                         }
-                        console.log('customerData',customerData);
                         if(!isNaN(customer.mobile)){
                             customerData.contactPhone = customer.mobile;
                         }

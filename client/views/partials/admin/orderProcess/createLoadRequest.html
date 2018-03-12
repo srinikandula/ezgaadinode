@@ -1,16 +1,16 @@
-<div class="col-xs-12 newCust" ng-controller="orderProcessCtrl" ng-init="initializeLoadRequest();">
-    <h4>Load Request</h4>
+<div class="col-xs-12 newCust" ng-controller="loadRequestCtrl" ng-init="getTruckTypes();getAllAccountsExceptTruckOwners();">
+    <h4>{{title}}</h4>
     <div class="col-xs-12">
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpen">
                 <uib-accordion-heading>
-                    Details <i class="pull-right glyphicon"
-                               ng-class="{'glyphicon-chevron-down': status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
+                    Customer Details <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
                 </uib-accordion-heading>
                 <div class="row">
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="truckRequest.customerType">
+                            <select class="form-control custom-form-control" ng-model="loadRequest.customerType">
                                 <option value="">Customer Type</option>
                                 <option>Registered</option>
                                 <option>UnRegistered</option>
@@ -19,22 +19,22 @@
 
                     </div>
                     <div class="col-xs-12 col-sm-6"
-                         ng-show=" loadRequest.customerType=='Registered' || loadRequest.customerType==='' ">
+                         ng-show=" loadRequest.customerType=='Registered' || loadRequest.customerType=='' ">
                         <div class="form-group select-box">
                             <ui-select ng-model="loadRequest.customer" theme="select2"
                                        style="min-width: 390px;"
-                                       title="Customer *" append-to-body="true">
+                                       title="Customer *"  reset-search-input="false" >
 
                                 <ui-select-match placeholder="Customer *" class="form-control order-form-control">
                                     {{$select.selected.userName || userName}}
                                 </ui-select-match>
                                 <ui-select-choices
-                                        repeat="load in loadOwnersList | propsFilter: {userName: $select.search}">
+                                        repeat="truck in truckOwnersList "  refresh="searchAccountOwner($select.search)" refresh-delay="0"  scroll-detector="loadMore()" >
                                     <b>
-                                        <div ng-bind-html="load.userName | highlight: $select.search"></div>
+                                        <div  ng-bind-html="truck.firstName "></div>
                                     </b>
                                     <small>
-                                        Mobile: {{load.contactPhone || '---'}}
+                                        Mobile: {{truck.contactPhone || '---'}}
                                     </small>
                                 </ui-select-choices>
                             </ui-select>
@@ -88,78 +88,84 @@
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenTwo">
                 <uib-accordion-heading>
-                    Load Details <i class="pull-right glyphicon"
-                                    ng-class="{'glyphicon-chevron-down': status.isOpenOne,
-                                     'glyphicon-chevron-right': !status.isOpenOne}"></i>
+                    Truck Details <i class="pull-right glyphicon"
+                                     ng-class="{'glyphicon-chevron-down': status.isOpenTwo,
+                                     'glyphicon-chevron-right': !status.isOpenTwo}"></i>
                 </uib-accordion-heading>
                 <div class="text-right mb-10">
-                    <button class="btn btn-primary btn-sm" ng-click="addTripDetails()">Add</button>
+                    <button class="btn btn-primary btn-sm" ng-click="addTruckDetails()">Add</button>
                 </div>
 
-                <div class="row pos-relative top-border" ng-repeat="load in loadRequest.loadDetails">
+                <div class="row pos-relative top-border" ng-repeat="load in loadRequest.truckDetails">
                     <span class="plus-pos" ng-show="$index>0" style="top:-5px; right:-5px;"> <i
-                            class="fa fa-times-circle clr-red" ng-click="removeLoadDetails($index)"></i></span>
-                    <div class="col-xs-12 col-sm-3 ">
+                            class="fa fa-times-circle clr-red" ng-click="removeTruckDetails($index)"></i></span>
+                    <div class="col-xs-12 col-sm-3">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control " name="source"
                                    ng-model="load.source" id="searchSource{{$index}}"
                                    ng-change="addSearchSource($index)"/>
-                            <label class="order-effect-for-input">Source</label>
+                            <label class="order-effect-for-input">Source *</label>
                         </div>
-                        <div class="form-group">
-                            <admin-date-picker id="date" ng-model="load.date" placeholder="'Date Time Required *'"
-                                               class="'form-control order-form-control'"></admin-date-picker>
-                        </div>
-
-                    </div>
-                    <div class="col-xs-12 col-sm-3">
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control " name="state"
-                                   ng-model="load.destination" id="searchDestination{{$index}}"
-                                   ng-change="addSearchDestination($index)"/>
-                            <label class="order-effect-for-input">Destination</label>
-
-                        </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control " name="pincode"
-                                   ng-model="load.aa"
-                            />
-                            <label class="order-effect-for-input">Pickup Point</label>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-3">
-                        <div class="form-group styling-input-list">
-                            <select class="form-control order-form-control"
-                                    ng-model="load.goodsType">
-                                <option value="">Goods type</option>
-                                <option ng-repeat="goodsType in goodsTypesList">{{goodsType.title}}</option>
-                            </select>
-                        </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control" name="comment"
-                                   ng-model="load.comment"/>
-                            <label class="order-effect-for-input">Response Time / Comment</label>
+                        <div class="form-group pos-relative styling-input-list" ng-repeat="destination in load.destination">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="destination"
+                                       ng-model="destination.destinationAddress" id="searchDestination{{$index}}"
+                                       ng-change="addSearchDestination($parent.$index,$index)"/>
+                                <label class="focus-effect-for-input">Destination *</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control order-form-control " name="state"
+                                       ng-model="destination.price" id="price" />
+                                <label class="order-effect-for-input">Price *</label>
+                            </div>
+                            <span class="plus-pos" ng-show="$index >= 1">
+                                <i class="fa fa-times-circle clr-red"
+                                   ng-click="deleteDestinationAndPrice($parent.$index,$index)"></i></span>
+                            <span class="plus-pos" ng-show="$index == 0">
+                                <i class="fa fa-plus-square" aria-hidden="true"
+                                   ng-click="addDestinationAndPrice($index)"></i></span>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-3">
                         <div class="form-group">
                             <select class="form-control order-form-control"
-                                    ng-model="load.loadType">
-                                <option value="">Load type</option>
-                                <option ng-repeat="loadTypes in loadTypesList">
-                                    {{loadTypes.title}}/{{loadTypes.tonnes}}Tons
+                                    ng-model="load.truckType">
+                                <option value="">Truck Type *</option>
+                                <option ng-repeat="truckType in truckTypesList">
+                                    {{truckType.title}}/{{truckType.tonnes}}Tons
                                 </option>
 
                             </select>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control" name="pincode"
-                                   ng-model="load.expectedPrice"/>
-                            <label class="order-effect-for-input">Expected Price</label>
+                            <input type="text" class="form-control order-form-control " name="registrationNo"
+                                   ng-model="load.registrationNo" id="registrationNo" />
+                            <label class="order-effect-for-input">Registration No *</label>
                         </div>
-
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control " name="makeYear"
+                                   ng-model="load.makeYear" id="makeYear" />
+                            <label class="order-effect-for-input">Make Year</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3">
+                        <div class="form-group">
+                            <admin-date-picker id="dateAvailable" ng-model="load.dateAvailable" placeholder="'Date Time Available'"
+                                               class="'form-control order-form-control'"></admin-date-picker>
+                        </div>
+                        <div class="form-group">
+                            <admin-date-picker id="expectedDateReturn" ng-model="load.expectedDateReturn" placeholder="'Expected Date Return'"
+                                               class="'form-control order-form-control'"></admin-date-picker>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-3">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" name="comment"
+                                   ng-model="load.comment"/>
+                            <label class="order-effect-for-input">Driver Info / Comment</label>
+                        </div>
                     </div>
                 </div>
                 <div class="clearfix"></div>
@@ -168,7 +174,7 @@
 
         </uib-accordion>
         <div class="col-xs-12 save-btns">
-            <a href="#" class="btn btn-danger" ng-click="loadCancel()">Cancel</a>
+            <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
             <a href="#" class="btn btn-primary" ng-click="addLoadRequest()">Submit</a>
         </div>
     </div>
