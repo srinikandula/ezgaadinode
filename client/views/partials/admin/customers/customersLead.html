@@ -1,32 +1,33 @@
-<div ng-controller="customerCtrl" ng-init="getCustomerLeads()">
+<div ng-controller="customerCtrl" ng-init="numOfCustomerLeads()">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Customers Leads</li>
         <li class="pull-right">
             <button class="btn btn-primary" ui-sref="customers.createCustomer">Create New</button>
         </li>
         <li class="pull-right col-xs-12 col-sm-2">
-            <select class="form-control">
-                <option>Select</option>
-                <option>Qualified</option>
-                <option>Request for Approval</option>
-                <option>Initiate</option>
-                <option>Callback</option>
-                <option>Duplicate</option>
-                <option>Junk Lead</option>
-                <option>Language Barrier</option>
-                <option>Not Interested</option>
+            <select class="form-control" ng-model="leadStatus1" ng-change="initCustomerLeads(leadStatus1, '')">
+                <option value="" selected>--Select--</option>
+                <option ng-repeat="status in leadStatus">{{status}}</option>
             </select>
         </li>
-    </ul>
-    <div class="clearfix"></div>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
-               ng-table="customerParams">
+        <li class="col-xs-4 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="customerLeadSearch">
+                <span class="input-group-addon" ng-click="initCustomerLeads('', customerLeadSearch);"><i
+                        class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
+        <div class="clearfix"></div>
 
+    </ul>
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover text-center"
+               ng-table="customerParams">
             <tbody>
             <tr ng-repeat="customer in customerLeads">
                 <td>{{$index+1}}</td>
-                <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">{{customer.firstName}}</td>
+                <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">{{customer.firstName}}
+                </td>
                 <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">{{customer.contactPhone}}
                 </td>
                 <td data-title="'Reg Date'" sortable="'date'" class="clickable-item">{{customer.createdAt |
@@ -48,9 +49,11 @@
                     </a>
                 </td>
             </tr>
-
+            <tr ng-if="!customerLeads || customerLeads.length === 0">
+                <td colspan="8">No Customer Leads Records exist.</td>
+            </tr>
             </tbody>
         </table>
-
     </div>
+
 </div>

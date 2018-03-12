@@ -310,10 +310,11 @@
                             </div>
                         </div>
                         <div>
-                            <span class="delfile" ng-repeat="doc in transporter.documentFiles"><img src="assets/documents/{{doc}}" width="100">
-                            <span class="plus-pos ">
-                                <i class="fa fa-times-circle clr-red"
-                                                                              ng-click="removeDoc(doc,$index)"></i></span></span>
+                            <span class="delfile" ng-repeat="doc in transporter.documentFiles">
+                                <img src="assets/documents/{{doc}}" width="100">
+                            <span class="del-pos ">
+                                <i class="fa fa-times-circle clr-red" ng-click="removeDoc(doc,$index)"></i></span>
+                            </span>
                         </div>
                     </div>
                 </div>

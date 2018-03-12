@@ -519,7 +519,7 @@ Utils.prototype.uploadProfilePic = function (file, callback) {
         false: true,
         messages: []
     };
-    var fileName = new Date() - 0 + "_" + file.originalFilename;
+    var fileName = new Date() - 0 + "_" + file.originalFileame;
     fse.copy(file.path, './client/images/profile-pics/' + fileName, function (err) {
         if (err) {
             retObj.status = false;

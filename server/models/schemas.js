@@ -471,7 +471,7 @@ var customerLeadsSchema = mongoose.Schema({
     city: String,
     state: String,
     pinCode: String,
-    officeNumber: Number,
+    officeNumber: String,
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},

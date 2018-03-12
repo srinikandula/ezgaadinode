@@ -127,7 +127,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="truckOwner.gpsEnabled"/>
+                                            <input type="checkbox" value="" ng-model="truckOwner.erpEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             ERP
                                         </label>
@@ -136,7 +136,7 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="truckOwner.erpEnabled"/>
+                                            <input type="checkbox" value="" ng-model="truckOwner.gpsEnabled"/>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             GPS
                                         </label>
@@ -239,10 +239,13 @@
                             </div>
                         </div>
                         <div class="col-xs-12">
-                            <span ng-repeat="doc in truckOwner.documentFiles">
+                            <span ng-repeat="doc in truckOwner.documentFiles" class="delfile">
                                <a href="assets/documents/{{doc}}" data-lightbox="assets/documents/{{doc}}">
-                                   <img src="assets/documents/{{doc}}" width="100"></a></span>
-
+                                   <img src="assets/documents/{{doc}}" width="100"></a>
+                              <span class="del-pos ">
+                                <i class="fa fa-times-circle clr-red" ng-click="removeDoc(doc,$index)"></i>
+                              </span>
+                            </span>
                         </div>
                     </div>
                 </div>

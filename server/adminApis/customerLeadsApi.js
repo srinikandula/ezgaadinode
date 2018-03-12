@@ -23,12 +23,12 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var condition={};
-    if (params.customerLead) {
+    if (params.customerLeadSearch) {
         condition = {
             $or:
                 [
-                    {"firstName": new RegExp(params.transporter, "gi")},
-                    {"leadStatus": new RegExp(params.customerLead, "gi")},
+                    {"firstName": new RegExp(params.customerLeadSearch, "gi")},
+                    {"leadStatus": new RegExp(params.customerLeadSearch, "gi")},
                 ], "status": {$eq: null}
         };
 
@@ -38,6 +38,7 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
         condition = {"status": {$eq: null}}
 
     }
+
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
             CustomerLeadsColl.find(condition).sort(sort)
@@ -147,6 +148,13 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
         });
         callback(retObj);
     } else {
+
+        if (!params.alternatePhone[params.alternatePhone.length - 1]) {
+            params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
+        }
+        if (!params.operatingRoutes) {
+            params.operatingRoutes = [];
+        }
         if (req.files.files) {
             Utils.uploadDocuments(req.files.files, function (uploadResp) {
                 if (uploadResp.status) {
@@ -335,7 +343,9 @@ CustomerLeads.prototype.updateCustomerLead = function (req, callback) {
         if (req.files.files) {
             Utils.uploadDocuments(req.files.files, function (uploadResp) {
                 if (uploadResp.status) {
-
+                    if (!req.body.content.documentFiles) {
+                        req.body.content.documentFiles = []
+                    }
                     req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
 
                     updateCustomerLead(req, callback);
@@ -364,6 +374,9 @@ function updateCustomerLead(req, callback) {
         messages: []
     };
     var params = req.body.content;
+    if (!params.alternatePhone[params.alternatePhone.length - 1]) {
+        params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
+    }
     Utils.removeEmptyFields(params);
     CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
         function (err, doc) {
@@ -379,7 +392,7 @@ function updateCustomerLead(req, callback) {
                 });
                 callback(retObj);
             } else if (doc) {
-                if (params.operatingRoutes.length > 0) {
+                if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
                         var query = {};
                         if (!route._id) {
@@ -424,7 +437,7 @@ function updateCustomerLead(req, callback) {
                     })
                 } else {
                     retObj.status = true;
-                    retObj.messages.push("Commission Agent updated successfully");
+                    retObj.messages.push("CustomerLead updated successfully");
                     analyticsService.create(req, serviceActions.update_customer_lead, {
                         body: JSON.stringify(req.body.content),
                         accountId: req.jwt.id,
@@ -511,17 +524,18 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         messages: []
     };
     var params = req.query;
+    console.log("param", params);
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var condition={};
-        if (params.truckOwnwer) {
+        if (params.truckOwnerSearch) {
             condition = {
                 $or:
                     [
-                        {"userId": new RegExp(params.truckOwnwer, "gi")},
-                        {"firstName": new RegExp(params.truckOwnwer, "gi")},
-                        {"companyName": new RegExp(params.truckOwnwer, "gi")},
+                        {"userId": new RegExp(params.truckOwnerSearch, "gi")},
+                        {"firstName": new RegExp(params.truckOwnerSearch, "gi")},
+                        {"companyName": new RegExp(params.truckOwnerSearch, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                     ], role: 'Truck Owner'
             };
@@ -544,7 +558,7 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         } else {
             condition = {role: 'Truck Owner'}
         }
-
+        console.log("Condition" ,condition);
     async.parallel({
         truckOwners: function (truckOwnersCallback) {
             AccountsColl.find(condition).sort(sort)
@@ -556,7 +570,7 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            CustomerLeadsColl.count(condition, function (err, count) {
+            AccountsColl.count(condition, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -2834,9 +2848,38 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var condition={};
+    if (params.junkLeadSearch) {
+        condition = {
+            $or:
+                [
+                    {"firstName": new RegExp(params.junkLeadSearch, "gi")},
+                    {"companyName": new RegExp(params.junkLeadSearch, "gi")},
+               ], leadStatus: 'Junk Lead'
+        };
+    } else if (params.status) {
+        if (params.status === 'gps') {
+            condition = {leadStatus: 'Junk Lead', "gpsEnabled": true}
+        } else if (params.status === 'erp') {
+            condition = {leadStatus: 'Junk Lead', "erpEnabled": true}
+        } else if (params.status === 'both') {
+            condition = {
+                $and:
+                    [
+                        {"gpsEnabled": true},
+                        {"erpEnabled": true},
+                    ], leadStatus: 'Junk Lead'
+            };
+        } else if(params.status === 'load') {
+            condition = {leadStatus: 'Junk Lead', "loadEnabled": true}
+        }
+    } else {
+        condition = {leadStatus: 'Junk Lead'}
+    }
+    console.log("condition", condition);
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
-            CustomerLeadsColl.find({"status": "Rejected", "leadType": "Junk Lead"}).sort(sort)
+            CustomerLeadsColl.find(condition).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -2845,7 +2888,7 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            CustomerLeadsColl.count({"status": "Rejected", "leadType": "Junk Lead"}, function (err, count) {
+            CustomerLeadsColl.count({"leadStatus": "Junk Lead"}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -2895,7 +2938,7 @@ CustomerLeads.prototype.getCountRestOfAll = function (req, callback) {
         status: false,
         messages: []
     };
-    CustomerLeadsColl.count({"status": "Rejected", "leadType": "Junk Lead"}, function (err, doc) {
+    CustomerLeadsColl.count({"leadStatus": "Junk Lead"}, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting customer leads count');
             analyticsService.create(req, serviceActions.count_rest_of_all_err, {
@@ -2994,7 +3037,7 @@ CustomerLeads.prototype.removeCustomerLeadDocFile = function (req, callback) {
     } else {
         Utils.removeDoc(params.file, function (removeResp) {
             if (removeResp.status) {
-                CustomerLeads.update(
+                CustomerLeadsColl.update(
                     {_id: params._id},
                     {$pull: {documentFiles: params.file}},
                     {safe: true}, function (err, doc) {

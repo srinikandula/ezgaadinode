@@ -1,61 +1,70 @@
-<div ng-controller="truckOwnerCtrl" ng-init="numOfTruckOwners()" >
+<div ng-controller="truckOwnerCtrl" ng-init="numOfTruckOwners()">
     <ul class="list-inline title-ul">
-        <li class="pull-left name-head">Truck Owners
-        </li>
-        <li class="pull-right col-xs-2">
-            <select class="form-control">
-                <option>Select</option>
-                <option>Enabled</option>
-                <option>Disabled</option>
-                <option>GPS Users</option>
-                <option>ERP Users</option>
-                <option>All Services</option>
-                <option>Load Requested</option>
+        <li class="pull-left name-head">Truck Owners</li>
+        <li class="pull-right col-xs-3">
+            <select class="form-control" ng-model="status1" ng-change="initTruckOwner(status1, '');">
+                <option value="" selected>--Filter by Status--</option>
+                <option value="true">Enabled</option>
+                <option value="false">Disabled</option>
+                <option value="gps">GPS Users</option>
+                <option value="erp">ERP Users</option>
+                <option value="both">All Services</option>
             </select>
+        </li>
+        <li class="col-xs-4 pull-right">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="truckOwnerSearch">
+                <span class="input-group-addon" ng-click="initTruckOwner('', truckOwnerSearch);"><i
+                        class="glyphicon glyphicon-search"></i></span>
+            </div>
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="truckOwnerParams">
-        <tr ng-repeat="owners in currentPageOfTruckOwners" style="text-align: center;">
-            <td data-title="'S.No'">
-                {{$index+1}}
-            </td>
-            <td data-title="'ID'" sortable="'userId'" class="clickable-item">
-                {{owners.userId}}
-            </td>
-            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
-                {{owners.firstName}}
-            </td>
-            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
-                {{owners.contactPhone}}
-            </td>
-            <!--<td data-title="'Email'" sortable="'email'" class="clickable-item">-->
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckOwnerParams">
+            <tr ng-repeat="owners in currentPageOfTruckOwners" style="text-align: center;">
+                <td data-title="'S.No'">
+                    {{$index+1}}
+                </td>
+                <td data-title="'ID'" sortable="'userId'" class="clickable-item">
+                    {{owners.userId}}
+                </td>
+                <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
+                    {{owners.firstName}}
+                </td>
+                <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                    {{owners.contactPhone}}
+                </td>
+                <!--<td data-title="'Email'" sortable="'email'" class="clickable-item">-->
                 <!--{{owners.email}}-->
-            <!--</td>-->
-            <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
-                {{owners.gpsEnabled?'YES':'NO'}}
-            </td>
-            <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
-                {{owners.erpEnabled?'YES':'NO'}}
-            </td>
-            <td data-title="'Load'" sortable="'loadEnabled'" class="clickable-item">
-                {{owners.loadEnabled ?'YES':'NO'}}
-            </td>
-            <td data-title="'SMS/Email'" sortable="'smsEnabled'" class="clickable-item">
-                {{owners.smsEnabled ?'YES':'NO'}}
-            </td>
+                <!--</td>-->
+                <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
+                    {{owners.gpsEnabled?'YES':'NO'}}
+                </td>
+                <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
+                    {{owners.erpEnabled?'YES':'NO'}}
+                </td>
+                <td data-title="'Load'" sortable="'loadEnabled'" class="clickable-item">
+                    {{owners.loadEnabled ?'YES':'NO'}}
+                </td>
+                <td data-title="'SMS/Email'" sortable="'smsEnabled'" class="clickable-item">
+                    {{owners.smsEnabled ?'YES':'NO'}}
+                </td>
 
 
-            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{owners.isActive?'Enabled':'Disabled'}}
-            </td>
-            <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
-                <a href="#" ui-sref="customers.editUpdateTruckOwner({truckownerId: owners._id})" class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
-                <a href="#" ng-click="deleteTruckOwner($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
-            </td>
-        </tr>
-        <tr ng-if="!currentPageOfTruckOwners || currentPageOfTruckOwners.length === 0">
-            <td colspan="8">No Truck Owners Records exist.</td>
-        </tr>
-    </table>
+                <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                    {{owners.isActive?'Enabled':'Disabled'}}
+                </td>
+                <td data-title="'Action'" sortable="'contactPhone'" class="clickable-item">
+                    <a href="#" ui-sref="customers.editUpdateTruckOwner({truckownerId: owners._id})"
+                       class="edit_icon"><span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="#" ng-click="deleteTruckOwner($index)" class="delete_icon"><span
+                            class="glyphicon glyphicon-trash  "></span></a>
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfTruckOwners || currentPageOfTruckOwners.length === 0">
+                <td colspan="8">No Truck Owners Records exist.</td>
+            </tr>
+        </table>
+    </div>
 </div>
