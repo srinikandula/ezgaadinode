@@ -70,21 +70,21 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 data: params
             }).then(success, error);
         },
-        getTruckRequestComments:function (params,success,error) {
+        getTruckRequestComments: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/orderProcess/getTruckRequestComments',
                 method: "GET",
                 params: {truckRequestId: params}
             }).then(success, error);
         },
-        updateTruckRequestDetails:function (params,success,error) {
+        updateTruckRequestDetails: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/orderProcess/updateTruckRequestDetails',
                 method: "PUT",
                 data: params
             }).then(success, error);
         },
-        deleteTruckRequest:function (params,success,error) {
+        deleteTruckRequest: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/orderProcess/deleteTruckRequest',
                 method: "DELETE",
@@ -96,6 +96,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 url: '/v1/cpanel/orderProcess/getLoadRequest',
                 method: "GET",
                 params: params
+            }).then(success, error)
+        },
+        addLoadRequest: function (data, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/addLoadRequest',
+                method: "POST",
+                data: data
             }).then(success, error)
         },
         getLoadRequestDetails: function (params, success, error) {
@@ -125,12 +132,12 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "GET",
             }).then(success, error)
         },
-        getAllAccountsExceptTruckOwners:function (params,success,error) {
+        getAllAccountsExceptTruckOwners: function (params, success, error) {
             $http({
-                url:'/v1/cpanel/orderProcess/getAllAccountsExceptTruckOwners',
-                method:"GET",
-                params:params
-            }).then(success,error);
+                url: '/v1/cpanel/orderProcess/getAllAccountsExceptTruckOwners',
+                method: "GET",
+                params: params
+            }).then(success, error);
         }
 
     }
@@ -154,8 +161,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         isOpenFive: true,
     };
     $scope.initializeTruckRequest = function () {
-        $scope.currentElement=0;
-        $scope.search="";
+        $scope.currentElement = 0;
+        $scope.search = "";
         $scope.truckRequest = {
             customer: "",
             title:"",
@@ -170,12 +177,12 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             city: "",
             state: "",
             pinCode: "",
-            loadingCharge:"",
-            unloadingCharge:"",
-            pushMessage:"",
+            loadingCharge: "",
+            unloadingCharge: "",
+            pushMessage: "",
             trackingRequired: "",
-            insuranceRequired:"",
-            status:undefined,
+            insuranceRequired: "",
+            status: undefined,
             truckDetails: [{
                 source: "",
                 destination: "",
@@ -212,7 +219,10 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
         });
 
-        OrderProcessServices.getAllAccountsExceptTruckOwners({name:$scope.search,size:$scope.currentElement},function (success) {
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
             if (success.data.status) {
                 $scope.truckOwnersList = success.data.data;
             } else {
@@ -225,13 +235,14 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
 
     };
-    $scope.loadMore=function(){
-        console.log("loadMore");
-        $scope.currentElement=$scope.currentElement+10;
-        OrderProcessServices.getAllAccountsExceptTruckOwners( {name:$scope.search,size:$scope.currentElement},function (success) {
+    $scope.loadMore = function () {
+        $scope.currentElement = $scope.currentElement + 10;
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
             if (success.data.status) {
-                $scope.truckOwnersList= $scope.truckOwnersList.concat(success.data.data);
-                console.log($scope.truckOwnersList.length);
+                $scope.truckOwnersList = $scope.truckOwnersList.concat(success.data.data);
             } else {
                 $scope.truckOwnersList = [];
             }
@@ -240,13 +251,15 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
         });
     };
-    $scope.searchAccountOwner=function (search) {
-        $scope.currentElement=0;
-       $scope.search=search;
-        OrderProcessServices.getAllAccountsExceptTruckOwners( {name:$scope.search,size:$scope.currentElement},function (success) {
+    $scope.searchAccountOwner = function (search) {
+        $scope.currentElement = 0;
+        $scope.search = search;
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
             if (success.data.status) {
-                $scope.truckOwnersList= success.data.data;
-                console.log($scope.truckOwnersList.length);
+                $scope.truckOwnersList = success.data.data;
             } else {
                 $scope.truckOwnersList = [];
             }
@@ -342,7 +355,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
     $scope.addTruckRequest = function () {
         var params = $scope.truckRequest;
-        console.log('params.customerType === "UnRegistered" && !params.name', params.customerType, params.name);
         params.messages = [];
         if (!params.customerType) {
             params.messages.push("Please select customer type");
@@ -466,7 +478,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             function () {
                 var place = autocomplete.getPlace();
                 $scope.truckRequest.destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
-                console.log('palece', $scope.truckRequest.destinationLocation);
 
             });
     };
@@ -660,7 +671,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 Notification.error(message);
             })
         } else {
-            params.truckRequestId=$stateParams._id;
+            params.truckRequestId = $stateParams._id;
             OrderProcessServices.addTruckRequestComment(params, function (success) {
                 if (success.data.status) {
                     if($scope.commentList.length>0){
@@ -689,24 +700,24 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }
 
     };
-    $scope.updateTruckRequestDetails=function () {
-      OrderProcessServices.updateTruckRequestDetails($scope.truckRequest,function (success) {
-          if(success.data.status){
-              success.data.messages.forEach(function (message) {
-                  Notification.success(message);
-              })
+    $scope.updateTruckRequestDetails = function () {
+        OrderProcessServices.updateTruckRequestDetails($scope.truckRequest, function (success) {
+            if (success.data.status) {
+                success.data.messages.forEach(function (message) {
+                    Notification.success(message);
+                })
 
-          }else{
-              success.data.messages.forEach(function (message) {
-                  Notification.error(message);
-              })
-          }
-      },function (error) {
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                })
+            }
+        }, function (error) {
 
-      })
+        })
     };
 
-    $scope.deleteTruckRequest=function (id) {
+    $scope.deleteTruckRequest = function (id) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -717,18 +728,18 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-                OrderProcessServices.deleteTruckRequest(id,function (success) {
-                    if(success.data.status){
+                OrderProcessServices.deleteTruckRequest(id, function (success) {
+                    if (success.data.status) {
                         success.data.messages.forEach(function (message) {
                             Notification.success(message);
                         });
                         $scope.getTruckRequests();
-                    }else{
+                    } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error(message);
                         })
                     }
-                },function (err) {
+                }, function (err) {
 
                 })
             }
@@ -736,11 +747,98 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
     }
 
-    /*Load Request*/
-    $scope.loadCount = 0;
+}]);
 
-    $scope.getLoadRequest = function () {
-        $scope.requestLoadParams = new NgTableParams({
+app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'customerServices', 'Notification', 'OrderProcessServices', 'NgTableParams', '$stateParams', function ($scope, $state, SettingServices, customerServices, Notification, OrderProcessServices, NgTableParams, $stateParams) {
+
+    $scope.cancel = function () {
+        $state.go('orderprocess.loadRequest');
+    };
+
+    $scope.status = {
+        isOpen: true,
+        isOpenTwo: true,
+    };
+
+    $scope.loadRequest = {
+        customerType: "",
+        customerId: "",
+        name: "",
+        contactPhone: "",
+        truckDetails: [{sourceAddress: "",
+            destination: [{
+                destinationAddress: "",
+                price: ""
+            }],
+            truckType: "",
+            registrationNo: "",
+            makeYear: "",
+            driverInfo: "",
+            dateAvailable: "",
+            expectedDateReturn: "",}],
+        customerLeadId: "",
+        status: "",
+    }
+
+    $scope.currentElement = 0;
+    $scope.search = "";
+    $scope.title = "Add Load Request";
+    if ($stateParams.loadRequestId) {
+        $scope.title = "Edit Load Request";
+        OrderProcessServices.getLoadRequestDetails($stateParams.loadRequestId, function (success) {
+            if (success.data.status) {
+                $scope.loadRequest = success.data.data;
+                if($scope.loadRequest.destination.length === 0) {
+                    $scope.loadRequest.truckDetails.destination = [{}];
+                }
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+
+    $scope.count = 0;
+
+    $scope.countLoadRequest = function () {
+        OrderProcessServices.countLoadRequest(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initLoadRequest("");
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            status: tableParams.status,
+            loadRequest: tableParams.loadRequest
+        };
+        OrderProcessServices.getLoadRequest(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfLoadRequests = response.data.data;
+                if($scope.currentPageOfLoadRequests.destination.length === 0) {
+                    $scope.loadRequest.truckDetails.destination = [{}];
+                }
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+    $scope.initLoadRequest = function (status) {
+        $scope.loadRequestParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
@@ -748,98 +846,236 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             }
         }, {
             counts: [],
-            total: 100,
-            getData: function (tableParams) {
-                var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
-                OrderProcessServices.getLoadRequest(pageable, function (success) {
-                    if (success.data.status) {
-                        $scope.loadRequestsList = success.data.data;
-                        tableParams.data = $scope.loadRequestsList;
-                        tableParams.total(parseInt(success.data.count));
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
-                        });
-                    }
-                }, function (error) {
-                    error.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
-                    });
-                });
+            total: $scope.count,
+            getData: function (params) {
+                params.status = status;
+                loadTableData(params);
             }
-
         });
     };
 
-    $scope.initializeLoadRequest = function () {
-        $scope.truckRequest = {
-            customer: "",
-            customerType: "",
-            name: "",
-            contactPhone: [""],
-            email: "",
-            leadType: "Transpoter",
-            companyName: "",
-            address: "",
-            city: "",
-            state: "",
-            pinCode: "",
-            loadingCharge:"",
-            unloadingCharge:"",
-            pushMessage:"",
-            trackingRequired: "",
-            insuranceRequired:"",
-            status:undefined,
-            truckDetails: [{
-                source: "",
-                destination: "",
-                goodsType: undefined,
-                truckType: undefined,
-                date: new Date(),
-                pickupPoint: "",
-                comment: "",
-                expectedPrice: "",
-                trackingAvailable: "",
-                insuranceAvailable: ""
-            }]
-        };
-        SettingServices.getTruckTypes({}, function (success) {
-            if (success.data.status) {
-                $scope.truckTypesList = success.data.data;
-            } else {
-                $scope.truckTypesList = [];
-
+    $scope.deleteLoadRequest = function (index) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete the loadRequest'
+        }).then(function (result) {
+            if (result.value) {
+                OrderProcessServices.deleteLoadRequest($scope.currentPageOfLoadRequests[index]._id, function (success) {
+                    if (success.data.status) {
+                        $scope.initLoadRequest("");
+                        swal(
+                            '',
+                            'Successfully removed',
+                            'success'
+                        );
+                    }
+                });
             }
-
-        }, function (error) {
-
         });
+    };
 
-        SettingServices.getGoodsTypes(function (success) {
-            if (success.data.status) {
-                $scope.goodsTypesList = success.data.data;
+    $scope.getTruckTypes = function () {
+        SettingServices.getTruckTypes({}, function (response) {
+            if (response.data.status) {
+                $scope.truckTypesList = response.data.data;
             } else {
-                $scope.goodsTypesList = [];
+                Notification.error({message: response.data.messages[0]});
             }
-
-        }, function (error) {
-
         });
+    };
 
-        customerServices.getTruckOwners(function (success) {
+    $scope.getAllAccountsExceptTruckOwners = function () {
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
             if (success.data.status) {
                 $scope.truckOwnersList = success.data.data;
             } else {
-                $scope.goodsTypesList = [];
+                $scope.truckOwnersList = [];
+            }
+
+        }, function (error) {
+
+        });
+    }
+
+    $scope.loadMore = function () {
+        $scope.currentElement = $scope.currentElement + 10;
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.truckOwnersList = $scope.truckOwnersList.concat(success.data.data);
+            } else {
+                $scope.truckOwnersList = [];
             }
 
         }, function (error) {
 
         });
     };
+    $scope.searchAccountOwner = function (search) {
+        $scope.currentElement = 0;
+        $scope.search = search;
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.truckOwnersList = success.data.data;
+            } else {
+                $scope.truckOwnersList = [];
+            }
+        }, function (error) {
 
-    $scope.loadCancel = function () {
-        $state.go('orderprocess.loadRequest');
+        });
+    };
+
+    $scope.addTruckDetails = function () {
+        var truckDetails = $scope.loadRequest.truckDetails[$scope.loadRequest.truckDetails.length - 1];
+        if (!truckDetails.source || !truckDetails.destination) {
+            swal("Please fill mandatory truck details", "", "info");
+        } else {
+            $scope.loadRequest.truckDetails.push({
+                sourceAddress: "",
+                destination: [{
+                    destinationAddress: "",
+                    price: ""
+                }],
+                truckType: "",
+                registrationNo: "",
+                makeYear: "",
+                driverInfo: "",
+                dateAvailable: "",
+                expectedDateReturn: "",
+            });
+        }
+
+    };
+
+    $scope.removeTruckDetails = function (index) {
+        $scope.loadRequest.truckDetails.splice(index, 1);
+    };
+
+    function checkTruckDetails() {
+        for (var i = 0; i < $scope.loadRequest.truckDetails.length; i++) {
+            if (!$scope.loadRequest.truckDetails[i].source || !$scope.loadRequest.truckDetails[i].destination.destinationAddress || !$scope.loadRequest.truckDetails[i].destination.price || !$scope.loadRequest.truckDetails[i].truckType || !$scope.loadRequest.truckDetails[i].registrationNo) {
+                return false;
+            }
+            if (i === $scope.loadRequest.truckDetails.length - 1) {
+                return true;
+            }
+        }
+    }
+
+    $scope.addDestinationAndPrice = function (index) {
+        var destinationAndPriceDetails = $scope.loadRequest.truckDetails[index].destination[$scope.loadRequest.truckDetails[index].destination.length - 1];
+        if (!destinationAndPriceDetails.destinationAddress || !destinationAndPriceDetails.price) {
+            swal("Please fill destination and price", "", "info");
+        } else {
+            $scope.loadRequest.truckDetails[index].destination.push({
+                    destinationAddress: "",
+                    price: ""
+            });
+        }
+
+    };
+
+    $scope.deleteDestinationAndPrice = function (parentIndex,index) {
+        $scope.loadRequest.truckDetails[parentIndex].destination.splice(index, 1);
+    };
+
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.loadRequest.truckDetails[index].sourceAddress = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function (parentIndex,index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.loadRequest.truckDetails[parentIndex].destination[index].destinationAddress = place.formatted_address;
+            });
+    };
+
+    $scope.addLoadRequest = function () {
+        var params = $scope.loadRequest;
+        params.messages = [];
+        if (!params.customerType) {
+            params.messages.push("Please select customer type");
+        }
+        if (params.customerType === "Registered" && !params.customer) {
+            params.messages.push("Please select customer");
+        }
+        if (params.customerType === "UnRegistered" && !params.name) {
+            params.messages.push("Please select name");
+        }
+        if (params.customerType === "UnRegistered" && !params.contactPhone) {
+            params.messages.push("Please select customer");
+        }
+        if (!checkTruckDetails) {
+            params.messages.push("Please enter mandatory truck details")
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            });
+        } else {
+            if (params.customerType === "Registered") {
+                params.customer = params.customer._id;
+            }
+            if($stateParams.loadRequestId) {
+                OrderProcessServices.updateLoadRequest(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        })
+                        $state.go("orderprocess.loadRequest");
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        })
+                    }
+                }, function (error) {
+
+                })
+            } else {
+                OrderProcessServices.addLoadRequest(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $state.go("orderprocess.loadRequest");
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (error) {
+
+                })
+            }
+        }
+    };
+
+
+    $scope.updateLoadRequestDetails = function () {
+
     };
 
 }]);

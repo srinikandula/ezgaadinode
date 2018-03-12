@@ -1087,9 +1087,9 @@ OrderProcess.prototype.countLoadRequest = function (req, callback) {
         status: false,
         messages: []
     };
-    adminLoadRequestColl.count({}, function (err, count) {
+    adminLoadRequestColl.count({}, function (err, doc) {
         if (err) {
-            retObj.messages.push("Please try again");
+            retObj.messages.push('Error getting load request count');
             analyticsService.create(req, serviceActions.count_load_request_err, {
                 accountId: req.jwt.id,
                 success: false,
@@ -1100,15 +1100,15 @@ OrderProcess.prototype.countLoadRequest = function (req, callback) {
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.count = count;
+            retObj.data = doc;
             analyticsService.create(req, serviceActions.count_load_request, {
-                accountId: req.jwt.id,
+                accountId: req.id,
                 success: true
             }, function (response) {
             });
             callback(retObj);
         }
-    });
+    })
 };
 
 OrderProcess.prototype.getLoadRequest = function (req, callback) {
@@ -1122,55 +1122,38 @@ OrderProcess.prototype.getLoadRequest = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         loadRequests: function (loadRequestsCallback) {
-            TruckRequestColl.aggregate([
-                {
-                    $lookup: {
-                        from: 'accounts',
-                        localField: 'customer',
-                        foreignField: '_id',
-                        as: 'customer'
-                    }
-                },
-                {
-                    $lookup: {
-                        from: 'customerLeads',
-                        localField: 'customerLeadId',
-                        foreignField: '_id',
-                        as: 'customerLeadId'
-                    }
-                },
-                {
-                    $project: {
-                        createdBy: 1,
-                        customerType: 1,
-                        sourceAddress: 1,
-                        destination: 1,
-                        truckType: 1,
-                        dateAvailable: 1,
-                        customer: {
-                            $cond: {
-                                "if": {$eq: ['$customerType', 'Registered']},
-                                "then": "$customer",
-                                "else": "$customerLeadId"
-                            }
-                        },
-                        status: 1
-                    }
+            adminLoadRequestColl.find({},{
+                createdBy: 1,
+                customerType: 1,
+                source: 1,
+                destination: 1,
+                goodsType: 1,
+                truckType: 1,
+                date: 1,
+                pickupPoint: 1,
+                comment: 1,
+                expectedPrice: 1,
+                trackingAvailable: 1,
+                insuranceAvailable: 1,
+                status:1,
+                title:1
+            }).sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                .exec( function (err, docs) {
+                    loadRequestsCallback(err, docs);
 
-                }, {"$sort": {createdAt: -1}}], function (err, docs) {
-                loadRequestsCallback(err, docs);
-
-            })
+                })
         },
         count: function (countCallback) {
-            TruckRequestColl.count({}, function (err, count) {
+            adminLoadRequestColl.count({}, function (err, count) {
                 countCallback(err, count);
             });
         }
     }, function (err, results) {
         if (err) {
             retObj.messages.push("Please try again");
-            analyticsService.create(req, serviceActions.get_load_requests_err, {
+            analyticsService.create(req, serviceActions.get_load_request_err, {
                 body: JSON.stringify(req.body),
                 accountId: req.jwt.id,
                 success: false,
@@ -1185,7 +1168,7 @@ OrderProcess.prototype.getLoadRequest = function (req, callback) {
                 retObj.messages = "Success";
                 retObj.data = results.loadRequests;
                 retObj.count = results.count;
-                analyticsService.create(req, serviceActions.get_load_requests, {
+                analyticsService.create(req, serviceActions.get_load_request, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
                     success: true
@@ -1194,7 +1177,7 @@ OrderProcess.prototype.getLoadRequest = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.messages.push("No load requests found");
-                analyticsService.create(req, serviceActions.get_load_requests_err, {
+                analyticsService.create(req, serviceActions.get_load_request_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: false,
@@ -1212,8 +1195,8 @@ OrderProcess.prototype.addLoadRequest = function (req, callback) {
         status: false,
         messages: []
     };
-    var params = req.query;
-
+    var params = req.body;
+console.log('params',params);
     if (!params.customerType) {
         retObj.messages.push("Please select customer type");
     }
@@ -1227,7 +1210,7 @@ OrderProcess.prototype.addLoadRequest = function (req, callback) {
         retObj.messages.push("Please provide mobile");
     }
     if (!params.loadDetails || !params.loadDetails.length > 0 || !checkLoadDetails(params.loadDetails)) {
-        retObj.messages.push("Please enter load details");
+        retObj.messages.push("Please enter truck details");
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_load_request_err, {
@@ -1335,7 +1318,7 @@ OrderProcess.prototype.getLoadRequestDetails = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+    if (!params.loadRequestId || !ObjectId.isValid(params.loadRequestId)) {
         retObj.messages.push("Invalid load request");
     }
     if (retObj.messages.length > 0) {
@@ -1348,7 +1331,7 @@ OrderProcess.prototype.getLoadRequestDetails = function (req, callback) {
         });
         callback(retObj);
     } else {
-        adminLoadRequestColl.findOne({_id: params._id}).populate("customer").populate("customerLeadId").lean().exec(function (err, doc) {
+        adminLoadRequestColl.findOne({_id: params.loadRequestId}).populate("customer").populate("customerLeadId").lean().exec(function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_load_request_details_err, {
@@ -1454,7 +1437,59 @@ OrderProcess.prototype.updateLoadRequest = function (req, callback) {
 };
 
 OrderProcess.prototype.deleteLoadRequest = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid load request");
+    }
+    if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.delete_load_request_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        adminLoadRequestColl.remove({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("please try again");
+                analyticsService.create(req, serviceActions.delete_load_request_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc && doc.result.n == 1) {
+                retObj.status = true;
+                retObj.messages.push("Load request deleted successfully");
+                analyticsService.create(req, serviceActions.delete_load_request, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Load request not deleted");
+                analyticsService.create(req, serviceActions.delete_load_request_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
 
+    }
 };
 /*Load Request End*/
 
@@ -1465,12 +1500,12 @@ OrderProcess.prototype.getAllAccountsExceptTruckOwners = function (req, callback
     };
     var params = req.query;
     var skipNumber = params.size ? parseInt(params.size) : 0;
-    var sort = {createdAt: -1};
-    var condition = {};
-    if (params.name) {
-        condition = {firstName: {$regex: '.*' + params.name + '.*'}, role: {$ne: "Truck Owners"}}
-    } else {
-        condition = {role: {$ne: "Truck Owners"}}
+    var sort ={createdAt: -1};
+    var condition={};
+    if(params.name){
+        condition={ firstName:{$regex: '.*' + params.name + '.*'},role:{$ne:"Truck Owner"}}
+    }else{
+        condition={ role:{$ne:"Truck Owner"}}
     }
     AccountsColl.find(condition, {firstName: 1, contactPhone: 1, contactName: 1, userName: 1})
 

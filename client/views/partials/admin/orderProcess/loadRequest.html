@@ -1,4 +1,4 @@
-<div ng-controller="orderProcessCtrl" ng-init="getLoadRequests()">
+<div ng-controller="loadRequestCtrl" ng-init="countLoadRequest()">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Load Request</li>
         <li class="pull-right">
@@ -43,7 +43,7 @@
             <td data-title="'Status'" sortable="'Status'" class="clickable-item col-sm-1">{{load.status || 'NA'}}</td>
 
             <td data-title="'Action'" class="col-sm-1">
-                <a href="#" ui-sref="orderprocess.editLoadRequest({_id:load._id})" class="edit_icon">
+                <a href="#" ui-sref="orderprocess.editLoadRequest({loadRequestId:load._id})" class="edit_icon">
                     <span class="glyphicon glyphicon-pencil"></span>
                 </a>
                 <a href="#" ng-click="deleteLoadRequest(load._id)" class="delete_icon">

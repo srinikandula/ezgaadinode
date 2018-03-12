@@ -684,10 +684,11 @@ var LoadNotificationSchema = mongoose.Schema({
 
 var adminLoadRequestSchema = mongoose.Schema({
     createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'},
     customerType: String,
     customerId: {type: ObjectId, ref: 'accounts'},
-    fullName: String,
-    mobile: Number,
+    name: String,
+    contactPhone: Number,
     sourceAddress: String,
     destination: [{
         destinationAddress: String,
