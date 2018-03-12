@@ -23,12 +23,12 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var condition={};
-    if (params.customerLead) {
+    if (params.customerLeadSearch) {
         condition = {
             $or:
                 [
-                    {"firstName": new RegExp(params.transporter, "gi")},
-                    {"leadStatus": new RegExp(params.customerLead, "gi")},
+                    {"firstName": new RegExp(params.customerLeadSearch, "gi")},
+                    {"leadStatus": new RegExp(params.customerLeadSearch, "gi")},
                 ], "status": {$eq: null}
         };
 
@@ -38,6 +38,7 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
         condition = {"status": {$eq: null}}
 
     }
+
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
             CustomerLeadsColl.find(condition).sort(sort)
@@ -523,17 +524,18 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         messages: []
     };
     var params = req.query;
+    console.log("param", params);
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var condition={};
-        if (params.truckOwnwer) {
+        if (params.truckOwnerSearch) {
             condition = {
                 $or:
                     [
-                        {"userId": new RegExp(params.truckOwnwer, "gi")},
-                        {"firstName": new RegExp(params.truckOwnwer, "gi")},
-                        {"companyName": new RegExp(params.truckOwnwer, "gi")},
+                        {"userId": new RegExp(params.truckOwnerSearch, "gi")},
+                        {"firstName": new RegExp(params.truckOwnerSearch, "gi")},
+                        {"companyName": new RegExp(params.truckOwnerSearch, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                     ], role: 'Truck Owner'
             };
@@ -556,7 +558,7 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         } else {
             condition = {role: 'Truck Owner'}
         }
-
+        console.log("Condition" ,condition);
     async.parallel({
         truckOwners: function (truckOwnersCallback) {
             AccountsColl.find(condition).sort(sort)
@@ -568,7 +570,7 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            CustomerLeadsColl.count(condition, function (err, count) {
+            AccountsColl.count(condition, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -2846,9 +2848,38 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var condition={};
+    if (params.junkLeadSearch) {
+        condition = {
+            $or:
+                [
+                    {"firstName": new RegExp(params.junkLeadSearch, "gi")},
+                    {"companyName": new RegExp(params.junkLeadSearch, "gi")},
+               ], leadStatus: 'Junk Lead'
+        };
+    } else if (params.status) {
+        if (params.status === 'gps') {
+            condition = {leadStatus: 'Junk Lead', "gpsEnabled": true}
+        } else if (params.status === 'erp') {
+            condition = {leadStatus: 'Junk Lead', "erpEnabled": true}
+        } else if (params.status === 'both') {
+            condition = {
+                $and:
+                    [
+                        {"gpsEnabled": true},
+                        {"erpEnabled": true},
+                    ], leadStatus: 'Junk Lead'
+            };
+        } else if(params.status === 'load') {
+            condition = {leadStatus: 'Junk Lead', "loadEnabled": true}
+        }
+    } else {
+        condition = {leadStatus: 'Junk Lead'}
+    }
+    console.log("condition", condition);
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
-            CustomerLeadsColl.find({"leadStatus": "Junk Lead"}).sort(sort)
+            CustomerLeadsColl.find(condition).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {

@@ -3,23 +3,26 @@
         <li class="pull-left name-head">Rest Of All
         </li>
         <li class="pull-right col-xs-3">
-            <select class="form-control">
-                <option>Select</option>
-                <option>Enabled</option>
-                <option>Disabled</option>
-                <option>GPS Users</option>
-                <option>ERP Users</option>
-                <option>All Services</option>
-                <option>Load Requested</option>
+            <select class="form-control" ng-model="status1" ng-change="initRestOfAll(status1, '');">
+                <option value="" selected>Select</option>
+                <option value="true">Enabled</option>
+                <option value="disabled">Disabled</option>
+                <option value="gps">GPS Users</option>
+                <option value="erp">ERP Users</option>
+                <option value="both">All Services</option>
+                <option value="load">Load Requested</option>
             </select>
         </li>
         <li class="col-xs-4 pull-right">
-            <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search" ng-model="transporter1">
-                <span class="input-group-addon" ng-click="searchByTransporter(transporter1);"><i
-                        class="glyphicon glyphicon-search"></i></span>
-            </div>
-        </li>
+
+            <form role="search">
+                <div class="input-group add-on">
+                    <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term" ng-model="junkLeadSearch1">
+                    <div class="input-group-btn" ng-click="initRestOfAll('', junkLeadSearch1);">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
 
         <div class="clearfix"></div>
     </ul>

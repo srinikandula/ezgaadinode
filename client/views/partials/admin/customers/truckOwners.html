@@ -2,8 +2,8 @@
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Truck Owners</li>
         <li class="pull-right col-xs-3">
-            <select class="form-control" ng-model="status1" ng-change="initTransporter(status1);">
-                <option value="" selected>Search by Status</option>
+            <select class="form-control" ng-model="status1" ng-change="initTruckOwner(status1, '');">
+                <option value="" selected>--Filter by Status--</option>
                 <option value="true">Enabled</option>
                 <option value="false">Disabled</option>
                 <option value="gps">GPS Users</option>
@@ -13,8 +13,8 @@
         </li>
         <li class="col-xs-4 pull-right">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search" ng-model="transporter1">
-                <span class="input-group-addon" ng-click="searchByTransporter(transporter1);"><i
+                <input type="text" class="form-control" placeholder="Search" ng-model="truckOwnerSearch">
+                <span class="input-group-addon" ng-click="initTruckOwner('', truckOwnerSearch);"><i
                         class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>

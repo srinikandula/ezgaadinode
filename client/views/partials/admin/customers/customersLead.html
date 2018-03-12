@@ -5,22 +5,15 @@
             <button class="btn btn-primary" ui-sref="customers.createCustomer">Create New</button>
         </li>
         <li class="pull-right col-xs-12 col-sm-2">
-            <select class="form-control" ng-model="option" ng-change="initCustomerLeads(option)">
-                <option value="" selected>Select</option>
-                <option value="qualified">Qualified</option>
-                <option value="reqforapproval">Request for Approval</option>
-                <option value="initiate">Initiate</option>
-                <option value="callback">Callback</option>
-                <option value="duplicate">Duplicate</option>
-                <option value="junklead">Junk Lead</option>
-                <option value="lanbarrier">Language Barrier</option>
-                <option value="notinterested">Not Interested</option>
+            <select class="form-control" ng-model="leadStatus1" ng-change="initCustomerLeads(leadStatus1, '')">
+                <option value="" selected>--Select--</option>
+                <option ng-repeat="status in leadStatus">{{status}}</option>
             </select>
         </li>
         <li class="col-xs-4 pull-right">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search" ng-model="transporter1">
-                <span class="input-group-addon" ng-click="searchByTransporter(transporter1);"><i
+                <input type="text" class="form-control" placeholder="Search" ng-model="customerLeadSearch">
+                <span class="input-group-addon" ng-click="initCustomerLeads('', customerLeadSearch);"><i
                         class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>

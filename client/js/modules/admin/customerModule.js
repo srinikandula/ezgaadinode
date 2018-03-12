@@ -248,8 +248,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         $state.go('customers.customersLead');
     };
 
-    $scope.leadStatus = ['Initiate', 'Duplicate', 'Junk Lead', 'Language Barrier', 'Callback', 'Not interested',
-        'Request for Approval'
+    $scope.leadStatus = ['Initiated', 'Duplicate', 'Junk Lead', 'Language Barrier', 'Callback', 'Not interested',
+        'Request for Approval','Qualified'
     ];
 
     $scope.status = {
@@ -475,7 +475,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            status: tableParams.option,
+            leadStatus: tableParams.leadStatus,
+            customerLeadSearch: tableParams.customerLeadSearch,
         };
         customerServices.getCustomerLeads(pageable, function (success) {
             $scope.invalidCount = 0;
@@ -490,7 +491,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         });
     };
 
-    $scope.initCustomerLeads = function (option) {
+    $scope.initCustomerLeads = function (leadStatus, customerLeadSearch) {
         $scope.customerParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -501,7 +502,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                params.option = option;
+                params.leadStatus = leadStatus;
+                params.customerLeadSearch = customerLeadSearch;
                 loadTableData(params);
             }
         });
@@ -673,7 +675,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         customerServices.getCountRestOfAll(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.data;
-                $scope.initRestOfAll();
+                $scope.initRestOfAll('','');
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -685,6 +687,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
+            status: tableParams.status,
+            junkLeadSearch:tableParams.junkLeadSearch,
         };
         customerServices.getRestOfAll(pageable, function (success) {
             $scope.invalidCount = 0;
@@ -698,7 +702,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
         });
     };
 
-    $scope.initRestOfAll = function () {
+    $scope.initRestOfAll = function (status, junkLeadSearch) {
         $scope.restOfAllParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -709,6 +713,9 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             counts: [],
             total: $scope.count,
             getData: function (params) {
+                params.status = status;
+                params.junkLeadSearch = junkLeadSearch;
+
                 restloadTableData(params);
             }
         });
@@ -1015,7 +1022,7 @@ $scope.selectTruckTypes=[];
         customerServices.countTruckOwners(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                $scope.initTruckOwner();
+                $scope.initTruckOwner('', '');
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -1027,7 +1034,8 @@ $scope.selectTruckTypes=[];
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            role: tableParams.role,
+            status: tableParams.status,
+            truckOwnerSearch:tableParams.truckOwnerSearch,
             //transporter: tableParams.transporter
         };
         customerServices.getTruckOwners(pageable, function (response) {
@@ -1042,7 +1050,7 @@ $scope.selectTruckTypes=[];
         });
     };
 
-    $scope.initTruckOwner = function (role) {
+    $scope.initTruckOwner = function (status,truckOwnerSearch) {
         $scope.truckOwnerParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -1053,7 +1061,8 @@ $scope.selectTruckTypes=[];
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                params.role = role;
+                params.status = status;
+                params.truckOwnerSearch = truckOwnerSearch;
                 loadTableData(params);
             }
         });
