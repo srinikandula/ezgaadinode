@@ -14,7 +14,7 @@ var TripCollection = require("../models/schemas").TripCollection;
 var TruckRequestCommentsColl = require("../models/schemas").TruckRequestCommentsColl;
 var adminLoadRequestColl = require("../models/schemas").adminLoadRequestColl;
 var CustomerLeadsColl = require("../models/schemas").CustomerLeadsColl;
-
+var AdminTripsColl = require("../models/schemas").AdminTripsColl;
 var customerLeadsApi = require("./customerLeadsApi");
 var Utils = require("./../apis/utils");
 var emailService = require('./../apis/mailerApi');
@@ -34,7 +34,7 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         truckRequests: function (truckRequestsCallback) {
-            TruckRequestColl.find({},{
+            TruckRequestColl.find({}, {
                 createdBy: 1,
                 customerType: 1,
                 source: 1,
@@ -47,15 +47,16 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
                 expectedPrice: 1,
                 trackingAvailable: 1,
                 insuranceAvailable: 1,
-                status:1,
-                title:1
-            }).sort(sort)
+                status: 1,
+                title: 1,
+                customerName: 1
+            }).populate({path: "truckType", select: "title tonnes"}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                .exec( function (err, docs) {
-                truckRequestsCallback(err, docs);
+                .exec(function (err, docs) {
+                    truckRequestsCallback(err, docs);
 
-            })
+                })
         },
         count: function (countCallback) {
             TruckRequestColl.count({}, function (err, count) {
@@ -146,8 +147,8 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
     if (params.customerType === "Registered" && !params.customer) {
         retObj.messages.push("Please select customer");
     }
-    if (params.customerType === "UnRegistered" && !params.name) {
-        retObj.messages.push("Please select name1");
+    if (params.customerType === "UnRegistered" && !params.firstName) {
+        retObj.messages.push("Please enter name");
     }
     if (!params.truckDetails || !params.truckDetails.length > 0 || !checkTruckDetails(params.truckDetails)) {
         retObj.messages.push("Please enter truck details");
@@ -168,19 +169,32 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
         if (params.customerType === 'Registered') {
             saveTruckRequest(req, callback);
         } else if (params.customerType === 'UnRegistered') {
-            params.leadType = "Transporter";
-            req.query = params;
-            req.files = {files: false};
-            customerLeadsApi.addCustomerLead(req, function (custLeadResp) {
-                console.log('status', custLeadResp.messages[0], custLeadResp.data._id);
-                if (!custLeadResp.status) {
-                    callback(custLeadResp);
+            params.createdBy = req.jwt.id;
+            Utils.removeEmptyFields(params);
+            var customerLead = new CustomerLeadsColl(params);
+            customerLead.save(function (err, doc) {
+                if (err) {
+                    retObj.messages.push("Please try again1");
+                    analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                        body: JSON.stringify(params),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
                 } else {
-                    params.customerLeadId = custLeadResp.data._id;
+                    params.customerLeadId = doc._id;
+                    retObj.messages.push("Customer lead added successfully");
+                    analyticsService.create(req, serviceActions.get_customer_leads, {
+                        body: JSON.stringify(params),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
                     saveTruckRequest(req, callback);
                 }
-
-            })
+            });
         }
     }
 
@@ -467,7 +481,6 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
 
     }*/
     var coordinates = [parseFloat(params.destination[0]), parseFloat(params.destination[1])];
-    console.log('sicug', params.source);
     OperatingRoutesColl.find({
         sourceAddress: {$regex: '.*' + params.source + '.*'},
         destinationLocation: {
@@ -483,53 +496,34 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
         }
 
     }).lean().exec(function (err, operatingRoutes) {
-        console.log(err, operatingRoutes.length);
         if (err) {
-            retObj.messages.push("Please try again");
+            retObj.messages.push("Please try again1");
             callback(retObj);
         } else if (operatingRoutes.length > 0) {
 
             var accountIds = operatingRoutes.map(function (doc) {
                 return doc.accountId;
             });
-            TrucksColl.aggregate({$match: {accountId: {$in: accountIds}}},
-                {
-                    "$lookup": {
-                        "from": "accounts",
-                        "localField": "accountId",
-                        "foreignField": "_id",
-                        "as": "accountId"
-                    }
-                }, {"$unwind": "$accountId"}, {
-                    $group: {
-                        _id: "$accountId",
-                        count: {$sum: 1}
-                    }
-                }, {"$sort": {createdAt: -1}}, function (err, trucks) {
-                    if (err) {
-                        retObj.messages.push("Please try again");
-                        callback(retObj);
-                    } else if (trucks.length > 0) {
-                        operatingRoutes.forEach(function (operatingRoute) {
-                            operatingRoute.acc = trucks.filter(function (truck) {
-                                if (operatingRoute.accountId && truck._id._id) {
-                                    return operatingRoute.accountId.toString() === truck._id._id.toString();
-                                } else {
-                                    return false
-                                }
-
-
-                            })[0];
-                        });
-                        retObj.status = true;
-                        retObj.data = docs;
-                        retObj.messages.push("success");
-                        callback(retObj);
-                    } else {
-                        retObj.messages.push("No trucks found");
-                        callback(retObj);
-                    }
-                })
+            var condition = {};
+            if (params.truckType) {
+                condition = {truckTypes: {$in: [params.truckType]}, _id: {$in: accountIds}}
+            } else {
+                condition = {_id: {$in: accountIds}}
+            }
+            AccountsColl.find(condition, function (err, accountsList) {
+                if (err) {
+                    retObj.messages.push("No trucks found");
+                    callback(retObj);
+                } else if (accountsList.length > 0) {
+                    retObj.status = true;
+                    retObj.data = accountsList;
+                    retObj.messages.push("success");
+                    callback(retObj);
+                } else {
+                    retObj.messages.push("No trucks found");
+                    callback(retObj);
+                }
+            });
         } else {
             retObj.messages.push("No trucks found");
             callback(retObj);
@@ -605,7 +599,7 @@ OrderProcess.prototype.getTruckRequestQuotes = function (req, callback) {
     if (retObj.messages.length) {
         callback(retObj)
     } else {
-        TruckRequestQuoteColl.find({truckRequestId: params.truckRequestId}).populate({path: "accountId"}).exec(function (err, docs) {
+        TruckRequestQuoteColl.find({truckRequestId: params.truckRequestId}).populate({path: "accountId",select:"contactPhone firstName"}).exec(function (err, docs) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_truck_request_quotes_err, {
@@ -682,7 +676,7 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        TripCollection.update(query, params, {upsert: true}, function (err, doc) {
+        AdminTripsColl.update(query, params, {upsert: true}, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_load_booking_for_truck_request_err, {
@@ -711,7 +705,7 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
                         });
                     },
                     tripDetails: function (tripCallback) {
-                        TripCollection.findOne({truckRequestId: params.truckRequestId}).populate('driverId').populate('accountId').exec(function (err, tripDoc) {
+                        AdminTripsColl.findOne({truckRequestId: params.truckRequestId}).populate('driverId').populate('accountId').exec(function (err, tripDoc) {
                             tripCallback(err, tripDoc);
                         })
                     }
@@ -776,7 +770,7 @@ OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
     if (retObj.message.length > 0) {
         callback(retObj);
     } else {
-        TripCollection.findOne({truckRequestId: params.truckRequestId}, function (err, doc) {
+        AdminTripsColl.findOne({truckRequestId: params.truckRequestId}).populate({path:"accountId",select:"firstName contactPhone"}).exec( function (err, doc) {
             if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.get_load_booking_details_err, {
@@ -934,7 +928,7 @@ OrderProcess.prototype.addTruckRequestComment = function (req, callback) {
                                     if (customer.contactPhone) {
                                         var smsParams = {
                                             contact: customer.contactPhone,
-                                            message: 'Hi ' + customer.userName + '\n' +
+                                            message: 'Hi ' + customer.firstName + '\n' +
                                             'your truck request from ' + truckReq.source + ' to ' + truckReq.destination + ' \n status:' + params.status + ' \n comment:' + params.comment
                                         };
                                         SmsService.sendSMS(smsParams, function (smsResp) {
@@ -949,7 +943,7 @@ OrderProcess.prototype.addTruckRequestComment = function (req, callback) {
                                             to: customer.email,
                                             data: {
 
-                                                "name": customer.userName,
+                                                "name": customer.firstName,
                                                 "source": truckReq.source,
                                                 "destination": truckReq.destination,
                                                 "status": params.status,
@@ -1464,38 +1458,38 @@ OrderProcess.prototype.deleteLoadRequest = function (req, callback) {
 };
 /*Load Request End*/
 
-OrderProcess.prototype.getAllAccountsExceptTruckOwners=function (req,callback) {
-   var retObj={
-       status:false,
-       messages:[]
-   };
-   var params=req.query;
+OrderProcess.prototype.getAllAccountsExceptTruckOwners = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
     var skipNumber = params.size ? parseInt(params.size) : 0;
-    var sort ={createdAt: -1};
-    var condition={};
-    if(params.name){
-        condition={ firstName:{$regex: '.*' + params.name + '.*'},role:{$ne:"Truck Owners"}}
-    }else{
-        condition={ role:{$ne:"Truck Owners"}}
+    var sort = {createdAt: -1};
+    var condition = {};
+    if (params.name) {
+        condition = {firstName: {$regex: '.*' + params.name + '.*'}, role: {$ne: "Truck Owners"}}
+    } else {
+        condition = {role: {$ne: "Truck Owners"}}
     }
-   AccountsColl.find(condition,{firstName:1,contactPhone:1,contactName:1,userName:1})
+    AccountsColl.find(condition, {firstName: 1, contactPhone: 1, contactName: 1, userName: 1})
 
-       .skip(skipNumber)
-       .limit(10).exec(function (err,truckOwnersList) {
-        if(err){
+        .skip(skipNumber)
+        .limit(10).exec(function (err, truckOwnersList) {
+        if (err) {
             console.log(err);
             retObj.messages.push("Please try again");
             callback(retObj);
-        }else if(truckOwnersList.length){
-            retObj.status=true;
+        } else if (truckOwnersList.length) {
+            retObj.status = true;
             retObj.messages.push("Success");
-            retObj.data=truckOwnersList;
+            retObj.data = truckOwnersList;
             callback(retObj);
-        }else{
+        } else {
             retObj.messages.push("No truck owners found");
             callback(retObj);
         }
-   })
+    })
 
 };
 module.exports = new OrderProcess();

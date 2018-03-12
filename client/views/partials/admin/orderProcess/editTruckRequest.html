@@ -64,7 +64,7 @@
 
                         </div>
                         <div class="form-group styling-input-list">
-                            <select ng-options="t.title as t.title for t in truckTypesList"
+                            <select ng-options="t._id as t.title for t in truckTypesList"
                                     class="form-control order-form-control" ng-model="truckRequest.truckType">
                                 <option value="">Truck type</option>
 
@@ -139,20 +139,10 @@
                         <li class="form-group styling-input-list">
                             <select class="form-control order-form-control" ng-model="truckRequest.truckType">
                                 <option value="">Truck type</option>
-                                <option ng-repeat="truck in truckTypesList">{{truck.title}}</option>
+                                <option ng-repeat="truck in truckTypesList" value="{{truck._id}}">{{truck.title}}</option>
                             </select>
                         </li>
-                        <li class="form-group styling-input-list">
-                            <select class="form-control order-form-control" ng-model="truckRequest.trackingRequired">
-                                <option value="">Tracking</option>
-                                <option value="yes">Yes</option>
-                                <option value="no">No</option>
-                            </select>
-                        </li>
-                        <li class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control" ng-model="truckRequest.tonnage"/>
-                            <label class="order-effect-for-input">Tonnes*</label>
-                        </li>
+
                         <li>
                             <button class="btn btn-info" ng-click="searchTrucksForRequest()">Go</button>
                         </li>
@@ -174,12 +164,12 @@
                         <tbody>
                         <tr ng-repeat="truck in availableTruckslist">
                             <td>{{$index+1}}</td>
-                            <td>{{truck.acc._id.userName}}</td>
-                            <td>{{truck.acc._id.type}}</td>
-                            <td>{{truck.acc._id.contactPhone}}</td>
-                            <td>{{truck.acc.count}}</td>
-                            <td>{{truck.acc.company || "NA"}}</td>
-                            <td>{{truck.acc.address || "NA"}}</td>
+                            <td>{{truck.firstName}}</td>
+                            <td>{{truck.role}}</td>
+                            <td>{{truck.contactPhone}}</td>
+                            <td>{{truck.noOfTrucks || "NA"}}</td>
+                            <td>{{truck.company || "NA"}}</td>
+                            <td>{{truck.address || "NA"}}</td>
                         </tr>
                         </tbody>
                     </table>
@@ -188,7 +178,7 @@
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" ng-click="getTruckRequestQuotes()"
+            <div uib-accordion-group class="panel-default" ng-init="getTruckRequestQuotes()"
                  is-open="status.isOpenTwo">
                 <uib-accordion-heading>
                     Quotes <i class="pull-right glyphicon"
@@ -199,8 +189,8 @@
                     <ul class="list-inline">
                         <li class="form-group col-xs-12 col-sm-4">
                             <select ng-model="quote.accountId" class="form-control order-form-control">
-                                <option ng-repeat="truck in availableTruckslist" value="{{truck.acc._id._id}}">
-                                    {{truck.acc._id.userName}}
+                                <option ng-repeat="truck in availableTruckslist" value="{{truck._id}}">
+                                    {{truck.firstName}}
                                 </option>
                             </select>
 
@@ -236,7 +226,7 @@
                         <tbody>
                         <tr ng-repeat="quote in quotesList">
                             <td>{{$index+1}}</td>
-                            <td>{{quote.accountId.userName+','+quote.accountId.contactPhone}}</td>
+                            <td>{{quote.accountId.firstName+','+quote.accountId.contactPhone}}</td>
                             <td>{{quote.quote}}</td>
                             <td>{{quote.comment}}</td>
                             <td>
@@ -251,7 +241,7 @@
         </uib-accordion>
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpenThree"
-                 ng-click="getLoadBookingDetails(); $event.stopPropagation();">
+                 ng-init="getLoadBookingDetails(); $event.stopPropagation();">
                 <uib-accordion-heading>
                     Load Booking <i class="pull-right glyphicon"
                                     ng-class="{'glyphicon-chevron-down': status.isOpenThree, 'glyphicon-chevron-right': !status.isOpenThree}"></i>
@@ -260,23 +250,9 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-4">
                         <div class="form-group customSelect">
-                            <ui-select ng-model="loadBooking.customer" ng-change="getTrucksAndDriversByAccountId();"
-                                       theme="select2" style="min-width: 390px;"
-                                       title="Customer *" append-to-body="true">
 
-                                <ui-select-match placeholder="Customer *" class="form-control order-form-control">
-                                    {{$select.selected.userName || userName}}
-                                </ui-select-match>
-                                <ui-select-choices
-                                        repeat="truck in truckOwnersList | propsFilter: {userName: $select.search}">
-                                    <b>
-                                        <div ng-bind-html="truck.userName | highlight: $select.search"></div>
-                                    </b>
-                                    <small>
-                                        Mobile: {{truck.contactPhone || '---'}}
-                                    </small>
-                                </ui-select-choices>
-                            </ui-select>
+                            <input type="text" readonly="true" class="form-control order-form-control" ng-model="loadBooking.customer.firstName"/>
+
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control" ng-model="loadBooking.tripLane"/>
@@ -321,7 +297,7 @@
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" ng-click="getTruckRequestComments()"
+            <div uib-accordion-group class="panel-default" ng-init="getTruckRequestComments()"
                  is-open="status.isOpenFour">
                 <uib-accordion-heading>
                     Comments <i class="pull-right glyphicon"
