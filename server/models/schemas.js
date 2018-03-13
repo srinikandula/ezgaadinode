@@ -46,6 +46,7 @@ var accountSchema = new mongoose.Schema({
     profilePic: String,
     updatedBy: String,
     createdBy: String,
+    addressPreference: {type: String, default: 'osm'},
     smsEnabled: {type: Boolean, default: true},
     isActive: {type: Boolean, default: true},
     gpsEnabled: {type: Boolean, default: false},

@@ -90,10 +90,13 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
         };
         AccountService.getAccounts(pageable, function (response) {
             $scope.invalidCount = 0;
+            console.log($scope.accountParams);
             if (response.data.status) {
+                console.log(response.data);
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.accounts;
                 $scope.currentPageOfAccounts = response.data.accounts;
+                console.log($scope.accountParams);
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
@@ -151,6 +154,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             city: '',
             state: '',
             pincode: '',
+            addressPreference: 'osm',
             gpsEnabled: '',
             erpEnabled: '',
             loadEnabled: true,

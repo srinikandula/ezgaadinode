@@ -508,7 +508,7 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
     }
 }]);
 
-app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', function ($scope, DeviceService, NgTableParams) {
+app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', 'Notification', function ($scope, DeviceService, NgTableParams, Notification) {
     $scope.searchString = '';
     $scope.sortableString = '';
     $scope.count = 0;
@@ -549,12 +549,13 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
         };
         DeviceService.getDeviceManagementDetails(pageable, function (response) {
             $scope.invalidCount = 0;
+            console.log(response.data);
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.dmDetails;
                 $scope.currentPageOfDeviceDetails = response.data.dmDetails;
             } else {
-                // Notification.error({message: response.data.messages[0]});
+                Notification.error({message: response.data.messages[0]});
             }
         });
     };
