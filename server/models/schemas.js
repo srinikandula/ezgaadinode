@@ -790,6 +790,6 @@ module.exports = {
     trafficManagerColl: mongoose.model('trafficManager', trafficManagerSchema, 'trafficManager'),
     LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification'),
     adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest'),
-    AdminTripsColl:mongoose.model('adminTripsColl',adminTripSchema,'adminTripsColl')
+    AdminTripsColl:mongoose.model('adminTripsColl',adminTripSchema,'adminTripsColl'),
     PaymentsColl: mongoose.model('paymentsSchema', paymentsSchema, 'paymentsSchema')
 };
