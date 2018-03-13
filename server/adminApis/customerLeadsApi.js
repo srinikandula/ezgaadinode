@@ -202,7 +202,6 @@ function saveCustomerLead(req, params, callback) {
             callback(retObj);
         } else {
             /* if there is any operatingRoutes added to operatingRoutes collection ,else return success */
-            console.log("params.operatingRoutes", params.operatingRoutes);
             if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (operatingRoute, routesCallback) {
                     operatingRoute.accountId = doc._id;
@@ -381,7 +380,6 @@ function updateCustomerLead(req, callback) {
     CustomerLeadsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
         function (err, doc) {
             if (err) {
-                console.log(err);
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.update_customer_lead_err, {
                     body: JSON.stringify(req.body.content),
@@ -524,7 +522,6 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    console.log("param", params);
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
@@ -558,7 +555,6 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
         } else {
             condition = {role: 'Truck Owner'}
         }
-        console.log("Condition" ,condition);
     async.parallel({
         truckOwners: function (truckOwnersCallback) {
             AccountsColl.find(condition).sort(sort)
@@ -994,7 +990,6 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
                     if (!req.body.content.documentFiles) {
                         req.body.content.documentFiles = [];
                     }
-                    console.log("req.body.content.documentFiles", req.body.content.documentFiles, uploadResp.fileNames);
                     req.body.content.documentFiles = req.body.content.documentFiles.concat(uploadResp.fileNames);
 
                     updateTruckOwner(req, callback);
@@ -1106,7 +1101,6 @@ CustomerLeads.prototype.deleteTruckOwner = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    console.log(params);
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid truck owner");
     }
@@ -2441,7 +2435,7 @@ CustomerLeads.prototype.getGuest = function (req, callback) {
                 $or:
                     [
                         {"userId": new RegExp(params.guest, "gi")},
-                        {"fullName": new RegExp(params.guest, "gi")},
+                        {"firstName": new RegExp(params.guest, "gi")},
                         {"companyName": new RegExp(params.guest, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                         {"email": new RegExp(params.guest, "gi")},
@@ -2876,7 +2870,6 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
     } else {
         condition = {leadStatus: 'Junk Lead'}
     }
-    console.log("condition", condition);
     async.parallel({
         customerLeads: function (customerLeadsCallback) {
             CustomerLeadsColl.find(condition).sort(sort)

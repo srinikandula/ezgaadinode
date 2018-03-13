@@ -834,7 +834,6 @@ Events.prototype.getEmployeeData = function (request, callback) {
                         adminRoleColl.findOne({"role": employee.role}, function (err, role) {
                             var employeeData = {
                                 userName: employee.email,
-                                contactPhone: employee.phone,
                                 password: "12345678",
                                 email: employee.email,
                                 firstName: employee.first_name,
@@ -849,8 +848,8 @@ Events.prototype.getEmployeeData = function (request, callback) {
                                 createdAt: convertDate(employee.date_created),
                                 updatedAt: convertDate(employee.date_modified),
                             }
-                            if(typeof parseInt(employee.mobile) === 'number'){
-                                employeeData.contactPhone = employee.mobile;
+                            if(!isNaN(employee.phone)){
+                                employeeData.contactPhone = employee.phone;
                             }
                             if (role) {
                                 employeeData.adminRoleId = role._id;

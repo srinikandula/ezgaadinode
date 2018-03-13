@@ -554,7 +554,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.messages.push("Please select truck");
         }
         if (!params.freightAmount) {
-            retObj.messages.push("Please enter amount");
+            params.messages.push("Please enter amount");
         }
         if (!params.tripLane) {
             params.messages.push("Please enter pickup point");

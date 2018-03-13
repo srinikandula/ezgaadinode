@@ -224,8 +224,8 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             fitnessExpiry: '',
             insuranceExpiry: ''
         },
-        isDamaged: '',
-        isActive: '',
+        isDamaged: undefined,
+        isActive: undefined,
         rcNumber: '',
         insuranceAmount: '',
         npAvailable: '',

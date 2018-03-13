@@ -1,17 +1,22 @@
-<div class="col-xs-12 newCust" ng-controller="DeviceEditCrtl">
+<div class="col-xs-12 newCust" ng-controller="DeviceEditCrtl" ng-init="">
     <h4>GPS / ERP Account</h4>
     <div class="col-xs-12">
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpen">
                 <uib-accordion-heading>
-                    User Information <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+                    User Information <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="deviceDetails.accountId" ng-change="getTrucksOfAccount()">
-                                <option ng-repeat="account in accounts" value="{{account._id}}">{{account.userName}}</option>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="deviceDetails.accountId"
+                                    ng-change="getTrucksOfAccount()">
+                                <option ng-repeat="account in accounts" value="{{account._id}}">{{account.userName}}
+                                </option>
+
                             </select>
+                            <label class="focus-effect-for-input">Account</label>
                             <!--<ui-select ng-model="deviceDetails.accountId" theme="select2"
                                        style="min-width: 390px;"
                                        title="Choose a person" append-to-body="true">
@@ -24,31 +29,40 @@
                                 </ui-select-choices>
                             </ui-select>-->
                         </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="Device Id" ng-model="deviceDetails.imei"/>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.imei"/>
+                            <label class="focus-effect-for-input">Device Id</label>
                         </div>
-                        <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="deviceDetails.truckId" ng-change="getSelectedTruckDetails()">
-                                <option value="" selected>Select truck</option>
-                                <option ng-repeat="truck in trucks" value="{{truck._id}}">{{truck.registrationNo}}</option>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="deviceDetails.truckId"
+                                    ng-change="getSelectedTruckDetails()">
+                                <option ng-repeat="truck in trucks" value="{{truck._id}}">{{truck.registrationNo}}
+                                </option>
                             </select>
+                            <label class="focus-effect-for-input">Truck Reg no</label>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group styling-input-list">
                             <select class="form-control custom-form-control" ng-model="deviceDetails.installedBy">
-                                <option value="" selected>Installed by</option>
-                                <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}</option>
+                                <option ng-repeat="employee in employees" value="{{employee.id_admin}}">
+                                    {{employee.displayName}}
+                                </option>
                             </select>
+                            <label class="focus-effect-for-input">Installed By</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.address"/>
+                            <label class="focus-effect-for-input">Address</label>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="address" ng-model="deviceDetails.address"/>
-                        </div>
-                        <div class="form-group">
-                            <p class="smsenabled">Is Damaged</p>{{deviceDetails.isDamaged}}
+                            <p class="smsenabled"><b>Is Damaged</b></p>
                             <ul class="list-inline">
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="damaged" value="true" ng-model="deviceDetails.isDamaged">
+                                            <input type="radio" name="damaged" ng-value="true"
+                                                   ng-model="deviceDetails.isDamaged">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                             YES
                                         </label>
@@ -57,7 +71,8 @@
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="damaged" value="false" ng-model="deviceDetails.isDamaged">
+                                            <input type="radio" name="damaged" ng-value="false"
+                                                   ng-model="deviceDetails.isDamaged">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                             NO
                                         </label>
@@ -66,12 +81,13 @@
                             </ul>
                         </div>
                         <div class="form-group">
-                            <p class="smsenabled">Is Active*:</p>{{deviceDetails.isActive}}
+                            <p class="smsenabled"><b>Is Active*:</b></p>
                             <ul class="list-inline">
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="active" value="true" ng-model="deviceDetails.isActive">
+                                            <input type="radio" name="active" value="true"
+                                                   ng-model="deviceDetails.isActive">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                             Enable
                                         </label>
@@ -80,7 +96,8 @@
                                 <li>
                                     <div class="radio">
                                         <label>
-                                            <input type="radio" name="active" value="false" ng-model="deviceDetails.isActive">
+                                            <input type="radio" name="active" value="false"
+                                                   ng-model="deviceDetails.isActive">
                                             <span class="cr"><i class="cr-icon fa fa-circle"></i></span>
                                             Disable
                                         </label>
@@ -90,29 +107,44 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="imei Number" ng-model="deviceDetails.imei"/>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.imei"/>
+                            <label class="focus-effect-for-input">IMEI Number</label>
+
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.simPhoneNumber"/>
+                            <label class="focus-effect-for-input">SIM Number</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.simNumber"/>
+                            <label class="focus-effect-for-input">SIM Id</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.truck.insuranceExpiry"/>
+                            <label class="focus-effect-for-input">Insurance Expiry</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.truck.fitnessExpiry"/>
+                            <label class="focus-effect-for-input">Fitness Expiry</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.rcNumber"/>
+                            <label class="focus-effect-for-input">RC Number</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.insuranceAmount"/>
+                            <label class="focus-effect-for-input">Insurance Amount</label>
                         </div>
                         <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="SIM Phone Number" ng-model="deviceDetails.simPhoneNumber"/>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="SIM ID" ng-model="deviceDetails.simNumber"/>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="Insurance Expire" ng-model="deviceDetails.truck.insuranceExpiry"/>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="Fitness Expire" ng-model="deviceDetails.truck.fitnessExpiry"/>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="Rc No" ng-model="deviceDetails.rcNumber"/>
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="Insurance Amount" ng-model="deviceDetails.insuranceAmount"/>
-                        </div>
-                        <div class="form-group">
-                            <p class="smsenabled">NP Available</p>
+                            <p class="smsenabled"><b>NP Available</b></p>
                             <ul class="list-inline">
                                 <li>
                                     <div class="radio">
@@ -134,8 +166,10 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control custom-form-control" placeholder="NP Expire" ng-model="deviceDetails.npExpiry"/>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="deviceDetails.npExpiry"/>
+                            <label class="focus-effect-for-input">NP Expire</label>
                         </div>
                     </div>
                     <div>Current Location: MR11 Rd, Dewas Naka, Lasudia Mori, Indore, Madhya Pradesh 453771, India</div>
@@ -144,43 +178,35 @@
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpenThre">
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
                 <uib-accordion-heading>Assign GPS Plan<i class="pull-right glyphicon"
-                                                         ng-class="{'glyphicon-chevron-down': status.isOpenThre, 'glyphicon-chevron-right': !status.isOpenThre}"></i>
+                                                         ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12" ng-show="true">
-                    <ul class="list-inline plans">
-                        <!--<li>
-                            <select class="form-control custom-form-control planfc" ng-change="getPlansOfService()" ng-model="serviceSelected">
-                                <option selected value="">Select Service*</option>
-                                <option value="gps">GPS</option>
-                                <option value="erp">ERP</option>
-                                <option value="both">GPS & ERP</option>
-                            </select>
-                        </li>-->
-                        <li>
-                            <select class="form-control custom-form-control planfc" ng-model="GPSPlanDEtails.planId">
+                    <ul class="list-inline">
+                        <li class="col-sm-4 form-group">
+                            <select class="form-control order-form-control" ng-model="GPSPlanDEtails.planId">
                                 <option selected value="">Plans*</option>
                                 <option ng-repeat="plan in plans" value="{{plan._id}}">{{plan.planName}} -
                                     {{plan.amount}}
                                 </option>
                             </select>
                         </li>
-                        <li>
+                        <li class="col-sm-4 form-group">
                             <admin-date-picker ng-model="GPSPlanDEtails.startTime" placeholder="'Start Time *'"
-                                               class="'custom-form-control planfc'"></admin-date-picker>
+                                               class="'order-form-control'"></admin-date-picker>
                         </li>
-                        <li>
+                        <li class="col-sm-4 form-group">
                             <admin-date-picker ng-model="GPSPlanDEtails.expiryTime" placeholder="'Expiry Time *'"
-                                               class="'custom-form-control planfc'"></admin-date-picker>
+                                               class="'order-form-control'"></admin-date-picker>
                         </li>
-                        <li class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control planfc"
+                        <li class="styling-input-list col-sm-4 form-group">
+                            <input type="text" class="form-control order-form-control"
                                    ng-model="GPSPlanDEtails.amount"/>
                             <label class="focus-effect-for-input">Amount</label>
                         </li>
-                        <li class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control planfc"
+                        <li class="styling-input-list form-group col-sm-4">
+                            <input type="text" class="form-control order-form-control"
                                    ng-model="GPSPlanDEtails.remark"/>
                             <label class="focus-effect-for-input">Remark</label>
                         </li>
