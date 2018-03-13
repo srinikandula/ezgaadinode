@@ -2435,7 +2435,7 @@ CustomerLeads.prototype.getGuest = function (req, callback) {
                 $or:
                     [
                         {"userId": new RegExp(params.guest, "gi")},
-                        {"fullName": new RegExp(params.guest, "gi")},
+                        {"firstName": new RegExp(params.guest, "gi")},
                         {"companyName": new RegExp(params.guest, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                         {"email": new RegExp(params.guest, "gi")},
