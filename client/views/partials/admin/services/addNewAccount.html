@@ -124,14 +124,20 @@
                                 <li>
                                     <div class="checkbox">
                                         <label>
-                                            <input type="checkbox" value="" ng-model="accountDetails.loadEnabled"
-                                                   disabled>
+                                            <input type="checkbox" value="" ng-model="accountDetails.loadEnabled" disabled>
                                             <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                                             LOAD
                                         </label>
                                     </div>
                                 </li>
                             </ul>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control custom-form-control" ng-model="accountDetails.addressPreference">
+                                <option value="" selected>Address Preference</option>
+                                <option value="osm">osm</option>
+                                <option value="google">google</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <select class="form-control custom-form-control">
