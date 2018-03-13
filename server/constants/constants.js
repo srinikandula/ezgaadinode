@@ -499,6 +499,9 @@ const serviceActions = {
     count_admin_orders_err:'COUNT_ADMIN_ORDERS_ERR',
     get_admin_orders_list:'GET_ADMIN_ORDERS_LIST',
     get_admin_orders_list_err:'GET_ADMIN_ORDERS_LIST_ERR',
+    create_order:"CREATE_ORDER",
+    create_order_err:"CREATE_ORDER_ERR",
+
 
 };
 module.exports = serviceActions;

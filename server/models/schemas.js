@@ -737,10 +737,28 @@ var adminTripsSchema = new mongoose.Schema({
     truckOwnerId:{type: ObjectId, ref: 'accounts'},
     loadOwnerId:{type: ObjectId, ref: 'accounts'},
     loadCustomerLeadId:{type: ObjectId, ref: 'customerLeads'},
+    truckCustomerLeadId:{type: ObjectId, ref: 'customerLeads'},
     status:{type:String,default:"New"},
     source:String,
     destination:String,
-    truckRequestId: {type: ObjectId, ref: 'truckRequests'}
+    egCommission:Number,
+    dateOfOrder:Date,
+    egBookedAmount:Number,
+    driveName:String,
+    driverMobile:Number,
+    comment:String,
+    loadingAgentNo:String,
+    pickupDate:Date,
+    to_bookedAmount:{type:Number,default:0},
+    to_advance:{type:Number,default:0},
+    to_loadingCharge:{type:Number,default:0},
+    to_unloadingCharge:{type:Number,default:0},
+    to_commission:{type:Number,default:0},
+    applyTds:String,
+    lo_advancce:{type:Number,default:0},
+    lo_loadingCharge:{type:Number,default:0},
+    lo_unloadingCharge:{type:Number,default:0},
+    lo_commission:{type:Number,default:0}
 }, {timestamps: true});
 
 var paymentsSchema = new mongoose.Schema({
