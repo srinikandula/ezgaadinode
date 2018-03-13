@@ -3,17 +3,9 @@
         <li class="pull-left name-head">Device Management</li>
         <li class="col-xs-3">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search">
+                <input type="text" class="form-control" placeholder="Search" ng-model="searchString" ng-change="init()">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
             </div>
-        </li>
-        <li class="pull-right col-xs-2">
-            <select class="form-control">
-                <option selected value="">Select</option>
-                <option>Working Devices</option>
-                <option>Damaged</option>
-                <option>Not Working</option>
-            </select>
         </li>
         <div class="clearfix"></div>
     </ul>
@@ -43,6 +35,9 @@
             <td data-title="'Damaged'" sortable="'damagedDevices'" class="clickable-item">
                 {{employee.damagedDevices}}
             </td>
+        </tr>
+        <tr ng-if="!currentPageOfDeviceDetails || currentPageOfDeviceDetails.length === 0">
+            <td colspan="8">No Records exist.</td>
         </tr>
     </table>
 </div>

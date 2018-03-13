@@ -117,12 +117,13 @@ app.factory('DeviceService', function ($http) {
 });
 
 app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', function ($scope, DeviceService, Notification, NgTableParams, $uibModal) {
+    $scope.searchString = '';
+    $scope.sortableString = '';
     $scope.count = 0;
     $scope.getCount = function () {
         DeviceService.count(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                // console.log('count', $scope.count);
                 $scope.init();
             } else {
                 Notification.error({message: success.data.message});
@@ -135,11 +136,14 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            searchString: $scope.searchString,
+            sortableString: $scope.sortableString
         };
         DeviceService.getDevices(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
+                console.log();
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.devices;
                 $scope.currentPageOfDevices = response.data.devices;
@@ -157,7 +161,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
                 createdAt: -1
             }
         }, {
-            counts: [50, 100, 200],
+            counts: [10, 50, 100, 200],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
@@ -175,7 +179,6 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
     };
 
     $scope.deleteDevice = function (index) {
-        // console.log(index);
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -249,7 +252,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
                 //     $scope.deviceDetails.isDamaged = false;
                 // }
                 $scope.GPSPlanDEtails.accountId = $scope.deviceDetails.accountId;
-                console.log($scope.deviceDetails);
                 $scope.getTrucksOfAccount();
             }
         });
@@ -267,7 +269,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getAllAccountsForDropdown(function (success) {
             if (success.data.status) {
                 $scope.accounts = success.data.accounts;
-                // console.log('accounts', $scope.accounts.length);
             }
         });
     }
@@ -277,29 +278,24 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
                 $scope.employees = success.data.employees;
-                // console.log($scope.employees);
             }
         });
     }
     getEmployees();
 
     $scope.getTrucksOfAccount = function () {
-        // console.log('deviceDetails', $scope.deviceDetails);
         DeviceService.getAllTrucksOfAccount($scope.deviceDetails.accountId, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
-                // console.log('trucks', $scope.trucks)
             }
         });
     };
 
     $scope.getSelectedTruckDetails = function () {
-        // console.log($scope.deviceDetails.truckId);
         if ($scope.deviceDetails.truckId) {
             var truck = _.find($scope.trucks, function (truck) {
                 return truck._id === $scope.deviceDetails.truckId;
             });
-            // console.log(truck);
             $scope.deviceDetails.truck = {};
             $scope.deviceDetails.truck.insuranceExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
             $scope.deviceDetails.truck.fitnessExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
@@ -307,7 +303,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
     };
 
     $scope.updateDevice = function () {
-        // console.log($scope.deviceDetails);
         if (!$scope.deviceDetails.accountId) {
             $scope.deviceDetails.error = 'Please select an account';
         } else {
@@ -327,7 +322,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         SettingServices.getAllPlans('gps', function (success) {
             if (success.data.status) {
                 $scope.plans = success.data.plans;
-                console.log($scope.plans);
             }
         });
     }
@@ -348,7 +342,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
     $scope.assignGPSPlan = function () {
         var params = $scope.GPSPlanDEtails;
         params.errors = [];
-        console.log(params);
         if (!params.planId) {
             params.errors.push('Select a plan');
         }
@@ -365,7 +358,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             params.errors.push('select an amount');
         }
         if (params.errors.length < 1) {
-            console.log('correct');
             AccountService.assignPlan({planDetails: $scope.GPSPlanDEtails, type: 'gps'}, function (success) {
                 if (success.data.status) {
                     initPlan();
@@ -399,7 +391,6 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
                 $scope.employees = success.data.employees;
-                // console.log($scope.employees);
             }
         });
     }
@@ -423,7 +414,6 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
     $scope.addDevices = function () {
         $scope.errors = [];
         var params = $scope.devicesToAdd;
-        //console.log(params);
         for (var i = 0; i < params.length - 1; i++) {
             for (var j = i + 1; j < params.length; j++) {
                 if (params[i].imei === params[j].imei) {
@@ -447,7 +437,6 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
         } else {
             $scope.errors = '';
             DeviceService.addDevices({devices: params, assignedTo: $scope.assignedTo}, function (success) {
-                console.log(success.data);
                 if (success.data.status) {
                     Notification.success({message: "Successfully added"});
                     $state.go('services.gpsDevices');
@@ -470,7 +459,6 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
                 $scope.employees = success.data.employees;
-                console.log($scope.employees);
             }
         });
     }
@@ -480,7 +468,6 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
         DeviceService.getAllDevices(function (success) {
             if (success.data.status) {
                 $scope.allDevices = success.data.devices;
-                console.log('adddevices', $scope.allDevices);
             }
         });
     };
@@ -500,7 +487,6 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
     // } init();
 
     $scope.transferDevices = function () {
-        console.log($scope.selectedDevices, $scope.assignedTo);
         if ($scope.selectedDevices.length < 1) {
             $scope.error = 'please select devices';
         } else if (!$scope.assignedTo) {
@@ -523,12 +509,13 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
 }]);
 
 app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', function ($scope, DeviceService, NgTableParams) {
+    $scope.searchString = '';
+    $scope.sortableString = '';
     $scope.count = 0;
     $scope.getCount = function () {
         DeviceService.getDeviceManagementCount(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                console.log('count', $scope.count);
                 $scope.init();
             } else {
                 Notification.error({message: success.data.message});
@@ -538,7 +525,6 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
     $scope.getCount();
 
     $scope.init = function () {
-        console.log('init');
         $scope.deviceManagementParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -554,11 +540,12 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
     };
 
     var loadTableData = function (tableParams) {
-        console.log('load');
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            searchString: $scope.searchString,
+            sortableString: $scope.sortableString
         };
         DeviceService.getDeviceManagementDetails(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -566,7 +553,6 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.dmDetails;
                 $scope.currentPageOfDeviceDetails = response.data.dmDetails;
-                console.log('response', $scope.currentPageOfDeviceDetails);
             } else {
                 // Notification.error({message: response.data.messages[0]});
             }
@@ -575,13 +561,13 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
 }]);
 
 app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', 'AccountService', function ($scope, DeviceService, Notification, NgTableParams, AccountService) {
+    $scope.searchString = '';
     $scope.count = 0;
     $scope.type = 'accounts';
     $scope.getCount = function () {
         AccountService.count('accounts', function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                console.log('$scope.count', $scope.count);
                 $scope.init();
             } else {
                 Notification.error({message: success.data.message});
@@ -590,7 +576,6 @@ app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTab
     };
     $scope.getCount();
     $scope.init = function () {
-        console.log('$scope.filterBy', $scope.filterBy);
         $scope.accountParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -611,7 +596,8 @@ app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTab
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            type: 'accounts',
+            type: $scope.type,
+            searchString: $scope.searchString,
         };
         AccountService.getAccounts(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -619,7 +605,6 @@ app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTab
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.accounts;
                 $scope.currentPageOfAccounts = response.data.accounts;
-                console.log('$scope.currentPageOfAccounts', $scope.currentPageOfAccounts);
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
@@ -632,7 +617,6 @@ app.controller('paymentListCrtl', ['$scope', 'DeviceService', 'Notification', '$
         DeviceService.getPaymentDetails($stateParams.id, function (success) {
             if(success.data.status) {
                 $scope.paymentDetails = success.data.paymentDetails;
-                console.log($scope.paymentDetails);
             } else {
                 Notification.error({message:success.data.messages[0]});
             }

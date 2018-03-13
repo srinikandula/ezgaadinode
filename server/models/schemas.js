@@ -393,7 +393,7 @@ var deviceSchema = new mongoose.Schema({
     resetTime: Date,
     paymentStart: Date,
     paymentEnd: Date,
-    isDamaged: {type: Boolean, default: '0'}, //duplicate to status?
+    isDamaged: {type: Boolean, default: false}, //duplicate to status?
     replacedFor: String, //if this is replacement to another device
     equipmentType: String,
     serialNumber: String,

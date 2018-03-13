@@ -14,7 +14,6 @@ var Devices = function () {
 };
 
 Devices.prototype.addDevices = function (req, callback) {
-    // console.log(req.body)
     var retObj = {
         status: false,
         messages: [],
@@ -67,7 +66,6 @@ Devices.prototype.addDevices = function (req, callback) {
                 }
             });
         }, function (erradingdevices, devicesadded) {
-            // console.log('devicesadded', devicesadded);
             if (erradingdevices) {
                 retObj.messages.push("Unable to add devices, please try again");
                 analyticsService.create(req, serviceActions.add_device_err, {
@@ -274,17 +272,26 @@ Devices.prototype.getDevices = function (req, callback) {
     if (!params.page) {
         params.page = 1;
     }
-
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var query = {};
+    if (params.sortableString === 'damaged') query.isDamaged = true;
+    else if (params.sortableString === 'notdamaged') query.isDamaged = false;
+    else if (params.sortableString === 'active') query.isActive = true;
+    else if (params.sortableString === 'inactive') query.isActive = false;
+    if(params.searchString) query.$or = [{"simPhoneNumber": new RegExp(params.searchString, "gi")}, {"imei": new RegExp(params.searchString, "gi")}];
     async.parallel({
         devices: function (devicescallback) {
-            DevicesColl.find({})
+            DevicesColl.find(query)
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                .populate('accountId', {userName: 1})
+                // .populate('accountId', {userName: 1})//, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
+                .populate({
+                    path: 'accountId',
+                    // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
+                })//, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate('')
                 .lean()
                 .exec(function (errdevices, devices) {
@@ -292,7 +299,7 @@ Devices.prototype.getDevices = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            DevicesColl.count(function (errcount, count) {
+            DevicesColl.count(query, function (errcount, count) {
                 countCallback(errcount, count);
             });
         }
@@ -308,24 +315,20 @@ Devices.prototype.getDevices = function (req, callback) {
             });
             callback(retObj);
         } else {
-            // for (var i = 0; i < results.devices.length; i++) console.log(results.devices[i]._id);
             async.map(results.devices, function (device, asyncCallback) {
-                // console.log('installed', device.imei, device.installedBy);
                 async.parallel({
                     planhistory: function (planHistoryCallack) {
                         AccountDevicePlanHistoryColl.find({deviceId: device._id})
                             .sort({expiryTime: -1}).limit(1).exec(function (errdeviceplan, deviceplan) {
-                            // console.log('deviceplan.length', deviceplan, device._id);
                             if (deviceplan.length > 0) {
                                 device.expiryTime = deviceplan[0].expiryTime;
                                 device.received = deviceplan[0].received;
-                                // console.log(device);
                             }
                             planHistoryCallack(errdeviceplan, 'success');
                         });
                     },
                     employees: function (employeeCallback) {
-                        if(device.installedBy) {
+                        if (device.installedBy) {
                             AccountsColl.findOne({id_admin: device.installedBy}, function (erremployee, employee) {
                                 if (employee) {
                                     device.installedBy = employee.displayName;
@@ -425,9 +428,7 @@ Devices.prototype.updateDevice = function (req, callback) {
     };
     var params = req.body;
     TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
-        // console.log('errassaindevice', errassaindevice);
-        // console.log('assigned', assigned);
-        if (errassaindevice) {
+       if (errassaindevice) {
             retObj.messages.push("Unable to assign device to truck, please try again");
             analyticsService.create(req, serviceActions.edit_device_err, {
                 body: JSON.stringify(req.body),
@@ -641,7 +642,6 @@ Devices.prototype.getDevicePlanHistory = function (req, callback) {
         status: false,
         messages: []
     };
-    // console.log('check', req.params);
     AccountDevicePlanHistoryColl.find({deviceId: req.params.deviceId}).populate('planId', {
         planName: 1,
         amount: 1
@@ -680,8 +680,7 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
     if (!params.page) {
         params.page = 1;
     }
-    console.log(params);
-
+    //if(params.searchString) query.$or = [{"simPhoneNumber": new RegExp(params.searchString, "gi")}, {"imei": new RegExp(params.searchString, "gi")}];
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
@@ -689,7 +688,14 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
         employees: function (employeescallback) {
             DevicesColl.aggregate([
                 {$match: {assignedTo: {$exists: true}}},
-                {$lookup: {from: 'accounts', localField: 'assignedTo', foreignField: 'id_admin', as: 'assignedEmployee'}},
+                {
+                    $lookup: {
+                        from: 'accounts',
+                        localField: 'assignedTo',
+                        foreignField: 'id_admin',
+                        as: 'assignedEmployee'
+                    }
+                },
                 {
                     $project: {
                         'assignedEmployee.contactName': 1,
@@ -716,6 +722,9 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
                     }
                 },
                 {
+                    $match: {$or: [{"assignedEmployee.contactName": new RegExp(params.searchString, "gi")}]}
+                },
+                {
                     $group: {
                         _id: {assignedTo: '$assignedTo', employeeName: '$assignedEmployee.contactName'},
                         // installedDevices: {$push: '$installedBy'},
@@ -725,9 +734,9 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
                         totalDevices: {$sum: 1}
                     }
                 },
-                {$sort:sort},
-                {$skip:skipNumber},
-                {$limit:limit}
+                {$sort: sort},
+                {$skip: skipNumber},
+                {$limit: limit}
             ], function (errEmp, details) {
                 employeescallback(errEmp, details);
             });
@@ -746,8 +755,7 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
         }
     }, function (errDmDetails, dmDetails) {
         if (errDmDetails) {
-            console.log(errDmDetails);
-            retObj.messages.push("Unable to get dMdevices, please try again");
+             retObj.messages.push("Unable to get dMdevices, please try again");
             callback(retObj);
         } else {
             retObj.status = true;
@@ -773,8 +781,7 @@ Devices.prototype.getDeviceManagementCount = function (req, callback) {
         }
     ], function (errDmDetails, dmDetails) {
         if (errDmDetails) {
-            console.log(errDmDetails);
-            retObj.messages.push("Unable to get dMdevices, please try again");
+             retObj.messages.push("Unable to get dMdevices, please try again");
             callback(retObj);
         } else {
             retObj.status = true;
@@ -791,7 +798,7 @@ Devices.prototype.getPaymentCount = function (req, callback) {
         messages: []
     };
     PaymentsColl.count(function (errcount, count) {
-        if(errcount) {
+        if (errcount) {
             retObj.messages.push("Unable to get payments count, please try again");
             callback(retObj);
         } else {
@@ -808,25 +815,28 @@ Devices.prototype.getPaymentDetails = function (req, callback) {
         status: false,
         messages: []
     };
-    console.log(req.params);
     async.parallel({
         erp: function (erpCallback) {
-            PaymentsColl.find({accountId: req.params.id, type: "erp"}).populate('planId',{planName:1}).populate('createdBy', {userName:1}).exec(function (errErpPayments, erpPayments) {
+            PaymentsColl.find({
+                accountId: req.params.id,
+                type: "erp"
+            }).populate('planId', {planName: 1}).populate('createdBy', {userName: 1}).exec(function (errErpPayments, erpPayments) {
                 erpCallback(errErpPayments, erpPayments);
             });
         },
         gps: function (gpsCallback) {
-            PaymentsColl.find({accountId: req.params.id, type: "gps"}).populate('planId',{planName:1}).populate('createdBy', {userName:1}).exec(function (errGpsPayments, gpsPayments) {
+            PaymentsColl.find({
+                accountId: req.params.id,
+                type: "gps"
+            }).populate('planId', {planName: 1}).populate('createdBy', {userName: 1}).exec(function (errGpsPayments, gpsPayments) {
                 gpsCallback(errGpsPayments, gpsPayments);
             });
         }
-    },function (errPaymentDetails, paymentDetails) {
-        if(errPaymentDetails) {
-            console.log(errPaymentDetails);
+    }, function (errPaymentDetails, paymentDetails) {
+        if (errPaymentDetails) {
             retObj.messages.push("Unable to get payments, please try again");
             callback(retObj);
         } else {
-            console.log(paymentDetails);
             retObj.status = true;
             retObj.messages = "success";
             retObj.paymentDetails = paymentDetails;
@@ -840,8 +850,8 @@ Devices.prototype.getGPSPlansOfDevice = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountDevicePlanHistoryColl.find({deviceId:req.params.deviceId}, function (errPlans, plans) {
-        if(errPlans) {
+    AccountDevicePlanHistoryColl.find({deviceId: req.params.deviceId}, function (errPlans, plans) {
+        if (errPlans) {
             retObj.messages.push("Unable to get plans, please try again");
             callback(retObj);
         } else {
@@ -860,7 +870,6 @@ Devices.prototype.getGPSPlansOfDevice = function (req, callback) {
         }
     ], function (errDmDetails, dmDetails) {
         if (errDmDetails) {
-            console.log(errDmDetails);
             retObj.messages.push("Unable to get dMdevices, please try again");
             callback(retObj);
         } else {

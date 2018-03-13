@@ -49,6 +49,8 @@ app.factory('AccountService', ['$http', function ($http) {
 }]);
 
 app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', 'NgTableParams', function ($scope, $stateParams, AccountService, Notification, NgTableParams) {
+    $scope.searchString = '';
+    $scope.sortableString = '';
     $scope.count = 0;
     $scope.getCount = function () {
         AccountService.count($stateParams.type, function (success) {
@@ -61,13 +63,30 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
         });
     };
     $scope.getCount();
-
+    $scope.init = function () {
+        $scope.accountParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [10, 50, 100, 200],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+                // $scope.getDevices();
+            }
+        });
+    };
     var loadTableData = function (tableParams) {
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            type: $stateParams.type
+            type: $stateParams.type,
+            searchString: $scope.searchString,
+            sortableString: $scope.sortableString
         };
         AccountService.getAccounts(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -77,23 +96,6 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
                 $scope.currentPageOfAccounts = response.data.accounts;
             } else {
                 Notification.error({message: response.data.messages[0]});
-            }
-        });
-    };
-
-    $scope.init = function () {
-        $scope.accountParams = new NgTableParams({
-            page: 1, // show first page
-            size: 10,
-            sorting: {
-                createdAt: -1
-            }
-        }, {
-            counts: [50, 100, 200],
-            total: $scope.count,
-            getData: function (params) {
-                loadTableData(params);
-                // $scope.getDevices();
             }
         });
     };

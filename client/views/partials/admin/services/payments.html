@@ -3,16 +3,16 @@
         <li class="pull-left name-head">Payments</li>
         <li class="col-xs-3">
             <div class="input-group">
-                <input type="text" class="form-control" placeholder="Search">
+                <input type="text" class="form-control" placeholder="Search" ng-model="searchString" ng-change="init()">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
             </div>
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control" ng-model="filterBy" ng-change="init()">
+            <select class="form-control" ng-model="type" ng-change="init()">
                 <option selected value="">Select</option>
                 <option value="erp">ERP Service</option>
                 <option value="gps">GPS Service</option>
-                <option value="accounts">Both the services</option>
+                <option value="both">Both the services</option>
                 <!--<option>Payment pending</option>-->
             </select>
         </li>

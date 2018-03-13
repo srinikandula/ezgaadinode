@@ -62,7 +62,7 @@ Accounts.prototype.getAccounts = function (req, callback) {
         messages: []
     };
     var params = req.query;
-
+    console.log(params);
     if (!params.page) {
         params.page = 1;
     }
@@ -75,9 +75,16 @@ Accounts.prototype.getAccounts = function (req, callback) {
         query = {gpsEnabled: true};
     } else if(params.type === 'erp') {
         query = {erpEnabled: true}
+    } else if(params.type === 'both') {
+        query = {erpEnabled: true, gpsEnabled: true}
     } else if(params.type === 'accounts') {
         query = {type: 'account', role: {$nin:['employee']}}
     }
+    if(params.sortableString === 'smsEnabled') query.smsEnabled = true;
+    else if(params.sortableString === 'smsDisabled') query.smsEnabled = false;
+    else if(params.sortableString === 'statusEnabled') query.isActive = true;
+    else if(params.sortableString === 'statusDisbled') query.isActive = false;
+    query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
