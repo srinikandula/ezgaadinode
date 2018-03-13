@@ -1,4 +1,4 @@
-<div class="col-xs-12 gpsListView">
+<div class="col-xs-12 gpsListView" ng-controller="gpsListViewController">
     <div class="col-xs-12">
         <div class="lisk-block col-xs-12">
             <div class="col-xs-12">
@@ -24,29 +24,29 @@
             </div>
             <div class="col-xs-12 mt-25">
                 <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
-                    <tr style="text-align: center;">
+                    <tr style="text-align: center;" ng-repeat="truck in trucksData">
                         <td data-title="'Date & Time'" sortable="'partyName'" class="clickable-item col-sm-2">
                             <a href="#"></a>
-                            26/12/2017
+                            {{truck.attrs.latestLocation.createdAt |date : "dd/MM/y HH:mm" }}
                         </td>
                         <td data-title="'V Num'" sortable="'partyName'" class="clickable-item col-sm-1">
                             <a href="#"></a>
-                            AP36AA3194
+                            {{truck.registrationNo}}
                         </td>
                         <td data-title="'Location'" sortable="'partyContact'" class="clickable-item col-sm-2">
-                            Hyderabad
+                            {{truck.attrs.latestLocation.address}}
                         </td>
                         <td data-title="'Speed'" sortable="'totalFright'" class="clickable-item col-sm-1">
-                            60KMPH
+                            {{truck.attrs.latestLocation.speed}}
                         </td>
                         <td data-title="'Odo Meter'" sortable="'totalPayment'" class="clickable-item col-sm-2">
                             150KM
                         </td>
                         <td data-title="'Driver'" sortable="'totalPayment'" class="clickable-item col-sm-1">
-                            Sambaa
+                            {{truck.driverId}}
                         </td>
                         <td data-title="'Fuel'" sortable="'totalPayment'" class="clickable-item col-sm-1">
-                            100Lts
+                            NA
                         </td>
                         <td data-title="'Load'" sortable="'totalPayment'" class="clickable-item col-sm-2">
                          <input type="checkbox" /> Looking For Load
