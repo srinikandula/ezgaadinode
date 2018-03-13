@@ -500,7 +500,7 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
 
     }).lean().exec(function (err, operatingRoutes) {
         if (err) {
-            console.log("err",err);
+            console.log("err", err);
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (operatingRoutes.length > 0) {
@@ -1725,8 +1725,49 @@ OrderProcess.prototype.createOrder = function (req, callback) {
 
 };
 
-OrderProcess.prototype.getTripOrderDetails=function () {
-    var retObj={};
+OrderProcess.prototype.getTripOrderDetails = function (req,callback) {
+    var retObj = {
+        status:false,
+        message:[]
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid Order request");
+        callback(retObj);
+    } else {
+        AdminTripsColl.findOne({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.message.push("Please try again");
+                analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc) {
+                retObj.message.push("Success");
+                analyticsService.create(req, serviceActions.get_trip_order_details, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.message.push("Order details not found");
+                analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
 
 };
 

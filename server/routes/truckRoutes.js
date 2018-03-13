@@ -15,6 +15,12 @@ AuthRouter.get('/getAllTrucksForFilter', function (req, res) {
     });
 });
 
+AuthRouter.get('/getTruckTypes', function (req, res) {
+    Trucks.getTruckTypes(req, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.get('/downloadExpiryDetailsByTruck', function (req, res) {
 
     Trucks.downloadExpiryDetailsByTruck(req.jwt, req.query,req, function (result) {
@@ -146,6 +152,7 @@ AuthRouter.get('/getTrucksByPopulate', function (req, res) {
         res.json(result);
     });
 });
+
 
 module.exports = {
     OpenRouter: OpenRouter,

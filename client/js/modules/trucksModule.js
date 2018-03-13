@@ -136,6 +136,12 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
                 url:'/v1/trucks/getAllTrucksForFilter',
                 method:"GET"
             }).then(success,error);
+        },
+        getTruckTypes:function (success,error) {
+            $http({
+                url:'/v1/trucks/getTruckTypes',
+                method:"GET"
+            }).then(success,error);
         }
     }
 }]);
@@ -301,8 +307,20 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.driverName = "";
 
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
+    function getTruckTypes() {
+        TrucksService.getTruckTypes(function (success) {
+            if(success.status){
+                $scope.truckTypesList=success.data.data;
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        },function (error) {
 
-
+        })
+    }
+    getTruckTypes();
     function initializeTruck() {
         if ($stateParams.truckId) {
 
@@ -316,6 +334,8 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                     $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
                     $scope.userId=success.data.userId;
                     $scope.userType=success.data.userType;
+                    $scope.title=$scope.truck.truckType;
+                    $scope.tonnes=$scope.truck.tonnage;
 
                     var selectedDriver = _.find($scope.drivers, function (driver) {
                         return driver._id.toString() === $scope.truck.driverId;
@@ -381,6 +401,8 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         }
 
         if (!params.errors.length) {
+            params.tonnage=params.truckType.tonnes;
+            params.truckType=params.truckType.title ;
             if (!params._id) {
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {

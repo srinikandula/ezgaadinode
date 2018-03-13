@@ -10,7 +10,7 @@ const ObjectId = mongoose.Types.ObjectId;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
-
+var TrucksTypesColl=require('./../models/schemas').TrucksTypesColl;
 
 var config = require('./../config/config');
 var Helpers = require('./utils');
@@ -28,7 +28,8 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
         status: false,
         messages: []
     };
-    if (jwt.type === "account") {
+    console.log("asda",jwt);
+    if (jwt.createTruck) {
         if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
             retObj.messages.push("Please fill all the required truck details");
         }
@@ -37,7 +38,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
             retObj.messages.push("Please provide valid registration number");
         }
 
-        if (!truckDetails.truckType || !_.isString(truckDetails.truckType)) {
+        if (!truckDetails.truckType) {
             retObj.messages.push("Please provide valid Truck type");
         }
 
@@ -229,7 +230,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
         params.page = 1;
     }
 
-    if (jwt.type === "account") {
+    if (jwt.createTruck) {
         if (!params.truckName) {
             condition = {accountId: jwt.accountId}
         } else {
@@ -1132,5 +1133,48 @@ Trucks.prototype.getTrucksByPopulate = function (jwt, params,req, callback) {
     }
 };
 
+
+Trucks.prototype.getTruckTypes=function (req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    TrucksTypesColl.find({status:true},{title:1,tonnes:1},function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_truck_types_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.messages.push("Success");
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_truck_types, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("No truck types found");
+                retObj.data = docs;
+                analyticsService.create(req, serviceActions.get_truck_types_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+};
 
 module.exports = new Trucks();
