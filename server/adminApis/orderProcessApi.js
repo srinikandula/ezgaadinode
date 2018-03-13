@@ -155,8 +155,8 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
         retObj.messages.push("Please enter truck details");
     }
     /*if (params.customerType === 'Registered' && !params.accountId) {
-        retObj.messages.push("Please select customer");
-    }*/
+     retObj.messages.push("Please select customer");
+     }*/
     if (retObj.messages.length > 0) {
         analyticsService.create(req, serviceActions.add_truck_request_err, {
             body: JSON.stringify(req.body),
@@ -475,11 +475,11 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
 
     /*if (params.truckType && params.trackingAvailable) {
 
-    } else if (params.truckType) {
+     } else if (params.truckType) {
 
-    } else if (params.trackingAvailable) {
+     } else if (params.trackingAvailable) {
 
-    }*/
+     }*/
     var coordinates = [parseFloat(params.destination[0]), parseFloat(params.destination[1])];
     OperatingRoutesColl.find({
         sourceAddress: {$regex: '.*' + params.source + '.*'},
@@ -600,7 +600,10 @@ OrderProcess.prototype.getTruckRequestQuotes = function (req, callback) {
     if (retObj.messages.length) {
         callback(retObj)
     } else {
-        TruckRequestQuoteColl.find({truckRequestId: params.truckRequestId}).populate({path: "accountId",select:"contactPhone firstName"}).exec(function (err, docs) {
+        TruckRequestQuoteColl.find({truckRequestId: params.truckRequestId}).populate({
+            path: "accountId",
+            select: "contactPhone firstName"
+        }).exec(function (err, docs) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_truck_request_quotes_err, {
@@ -771,7 +774,10 @@ OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
     if (retObj.message.length > 0) {
         callback(retObj);
     } else {
-        AdminTripsColl.findOne({truckRequestId: params.truckRequestId}).populate({path:"accountId",select:"firstName contactPhone"}).exec( function (err, doc) {
+        AdminTripsColl.findOne({truckRequestId: params.truckRequestId}).populate({
+            path: "accountId",
+            select: "firstName contactPhone"
+        }).exec(function (err, doc) {
             if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.get_load_booking_details_err, {
@@ -1082,7 +1088,7 @@ OrderProcess.prototype.updateTruckRequestDetails = function (req, callback) {
 };
 
 /*Author SVPrasadK
-* Load Request Start*/
+ * Load Request Start*/
 OrderProcess.prototype.countLoadRequest = function (req, callback) {
     var retObj = {
         status: false,
@@ -1123,25 +1129,10 @@ OrderProcess.prototype.getLoadRequest = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         loadRequests: function (loadRequestsCallback) {
-            adminLoadRequestColl.find({},{
-                createdBy: 1,
-                customerType: 1,
-                source: 1,
-                destination: 1,
-                goodsType: 1,
-                truckType: 1,
-                date: 1,
-                pickupPoint: 1,
-                comment: 1,
-                expectedPrice: 1,
-                trackingAvailable: 1,
-                insuranceAvailable: 1,
-                status:1,
-                title:1
-            }).sort(sort)
+            adminLoadRequestColl.find({}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                .exec( function (err, docs) {
+                .exec(function (err, docs) {
                     loadRequestsCallback(err, docs);
 
                 })
@@ -1197,20 +1188,19 @@ OrderProcess.prototype.addLoadRequest = function (req, callback) {
         messages: []
     };
     var params = req.body;
-console.log('params',params);
     if (!params.customerType) {
         retObj.messages.push("Please select customer type");
     }
     if (params.customerType === "Registered" && !params.customer) {
         retObj.messages.push("Please select customer");
     }
-    if (params.customerType === "UnRegistered" && !params.fullName) {
+    if (params.customerType === "UnRegistered" && !params.firstName) {
         retObj.messages.push("Please provide name");
     }
-    if (params.customerType === "UnRegistered" && !params.mobile) {
+    if (params.customerType === "UnRegistered" && !params.contactPhone) {
         retObj.messages.push("Please provide mobile");
     }
-    if (!params.loadDetails || !params.loadDetails.length > 0 || !checkLoadDetails(params.loadDetails)) {
+    if (!params.truckDetails || !params.truckDetails.length > 0 || !checkTruckDetailss(params.truckDetails)) {
         retObj.messages.push("Please enter truck details");
     }
     if (retObj.messages.length) {
@@ -1230,24 +1220,40 @@ console.log('params',params);
             params.leadType = "Transporter";
             req.query = params;
             req.files = {files: false};
-            customerLeadsApi.addCustomerLead(req, function (custLeadResp) {
-                if (!custLeadResp.status) {
-                    callback(custLeadResp);
+            var customerLead = new CustomerLeadsColl(params);
+            customerLead.save(function (err, doc) {
+                if (err) {
+                    retObj.messages.push("Please try again1");
+                    analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                        body: JSON.stringify(params),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
                 } else {
-                    params.customerLeadId = custLeadResp.data._id;
+                    params.customerLeadId = doc._id;
+                    retObj.messages.push("Customer lead added successfully");
+                    analyticsService.create(req, serviceActions.get_customer_leads, {
+                        body: JSON.stringify(params),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
                     saveLoadRequest(req, callback);
                 }
-            })
+            });
         }
     }
 };
 
-function checkLoadDetails(loadDetails) {
-    for (var i = 0; i < loadDetails.length; i++) {
-        if (!loadDetails[i].source || !loadDetails[i].destination) {
+function checkTruckDetailss(truckDetails) {
+    for (var i = 0; i < truckDetails.length; i++) {
+        if (!truckDetails[i].sourceAddress || truckDetails[i].destination.length === 0 || !truckDetails[i].truckType || !truckDetails[i].registrationNo) {
             return false;
         }
-        if (i === loadDetails.length - 1) {
+        if (i === truckDetails.length - 1) {
             return true;
         }
 
@@ -1261,35 +1267,29 @@ function saveLoadRequest(req, callback) {
     };
     var params = req.body;
     params.createdBy = req.jwt.id;
-    async.map(params.loadDetails, function (loadDetail, loadCallback) {
-        params.customerType = loadDetail.customerType;
-        params.customerId = loadDetail.customerId;
-        params.fullName = loadDetail.fullName;
-        params.mobile = loadDetail.mobile;
-        params.sourceAddress = loadDetail.sourceAddress;
-        params.destination = loadDetail.destination;
-        params.truckType = loadDetail.truckType;
-        params.registrationNo = loadDetail.registrationNo;
-        params.makeYear = loadDetail.makeYear;
-        params.driverInfo = loadDetail.driverInfo;
-        params.dateAvailable = loadDetail.dateAvailable;
-        params.expectedDateReturn = loadDetail.expectedDateReturn;
-        params.customerLeadId = loadDetail.customerLeadId;
+    async.map(params.truckDetails, function (truckDetails, truckCallback) {
+        params.sourceAddress = truckDetails.sourceAddress;
+        params.destination = truckDetails.destination;
+        params.truckType = truckDetails.truckType;
+        params.registrationNo = truckDetails.registrationNo;
+        params.makeYear = truckDetails.makeYear;
+        params.driverInfo = truckDetails.driverInfo;
+        params.dateAvailable = truckDetails.dateAvailable;
+        params.expectedDateReturn = truckDetails.expectedDateReturn;
         params = Utils.removeEmptyFields(params)
-        var loadRequest = new adminLoadRequestColl(params);
+        var adminLoadRequest = new adminLoadRequestColl(params);
 
-        loadRequest.save(function (err, doc) {
+        adminLoadRequest.save(function (err, doc) {
             if (err) {
-
-                loadCallback(err);
+                truckCallback(err);
             } else {
-                loadCallback(false);
+                truckCallback(false);
             }
         })
     }, function (err) {
         if (err) {
             retObj.messages.push("Please try again");
-            analyticsService.create(req, serviceActions.add_load_request_err, {
+            analyticsService.create(req, serviceActions.add_truck_request_err, {
                 body: JSON.stringify(req.body),
                 accountId: req.jwt.id,
                 success: false,
@@ -1300,7 +1300,7 @@ function saveLoadRequest(req, callback) {
         } else {
             retObj.status = true;
             retObj.messages.push("Load request added successfully");
-            analyticsService.create(req, serviceActions.add_load_request, {
+            analyticsService.create(req, serviceActions.add_truck_request, {
                 body: JSON.stringify(req.query),
                 accountId: req.jwt.id,
                 success: true
@@ -1332,7 +1332,7 @@ OrderProcess.prototype.getLoadRequestDetails = function (req, callback) {
         });
         callback(retObj);
     } else {
-        adminLoadRequestColl.findOne({_id: params.loadRequestId}).populate("customer").populate("customerLeadId").lean().exec(function (err, doc) {
+        adminLoadRequestColl.findOne({_id: params.loadRequestId}).populate("customerId").populate("customerLeadId").lean().exec(function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_load_request_details_err, {
@@ -1348,11 +1348,11 @@ OrderProcess.prototype.getLoadRequestDetails = function (req, callback) {
                 retObj.messages = "Success";
                 retObj.data = doc;
                 if (doc.customerType === 'Registered') {
-                    retObj.data.customerDetails = doc.accountId;
+                    retObj.data.customerDetails = doc.customerId;
                 } else {
                     retObj.data.customerDetails = doc.customerLeadId;
                 }
-                retObj.data.accountId = "";
+                retObj.data.customerId = "";
                 retObj.data.customerLeadId = "";
                 analyticsService.create(req, serviceActions.get_load_request_details, {
                     body: JSON.stringify(req.query),
@@ -1385,55 +1385,69 @@ OrderProcess.prototype.updateLoadRequest = function (req, callback) {
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid customer lead");
     }
-    if (!params.name) {
+    if (!params.firstName) {
         retObj.messages.push("Please enter name");
     }
-    if (!params.contactPhone || !params.contactPhone.length > 0) {
+    if (!params.contactPhone) {
         retObj.messages.push("Please enter contact number");
-    }
-    if (!params.leadType) {
-        retObj.messages.push("Please select lead type");
     }
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        CustomerLeadsColl.findOneAndUpdate({_id: params._id},
-            {$set: params},
-            {new: true},
-            function (err, doc) {
-                if (err) {
-                    retObj.messages.push("Please try again");
-                    analyticsService.create(req, serviceActions.update_customer_lead_err, {
-                        body: JSON.stringify(req.body),
-                        accountId: req.jwt.id,
-                        success: false,
-                        messages: retObj.messages
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                } else if (doc) {
-                    retObj.status = true;
-                    retObj.messages.push("Customer lead updated successfully");
-                    retObj.data = doc;
-                    analyticsService.create(req, serviceActions.get_customer_leads, {
-                        body: JSON.stringify(req.body),
-                        accountId: req.jwt.id,
-                        success: true
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                } else {
-                    retObj.messages.push("Customer lead not updated");
-                    analyticsService.create(req, serviceActions.update_customer_lead_err, {
-                        body: JSON.stringify(req.body),
-                        accountId: req.jwt.id,
-                        success: false,
-                        messages: retObj.messages
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                }
-            })
+
+        var loadRequestData = {
+            updatedBy: req.jwt.id,
+            customerType: params.customerType,
+            firstName: params.firstName,
+            contactPhone: params.contactPhone,
+            sourceAddress: params.sourceAddress,
+            destination: params.destination,
+            truckType: params.truckType,
+            registrationNo: params.registrationNo,
+            makeYear: params.makeYear,
+            driverInfo: params.driverInfo,
+            dateAvailable: params.dateAvailable,
+            expectedDateReturn: params.expectedDateReturn,
+        }
+        if(params.customerType === 'Registered') {
+            loadRequestData.customerId = params.customerDetails._id;
+        } else {
+            loadRequestData.customerLeadId = params.customerDetails._id;
+        }
+        adminLoadRequestColl.findOneAndUpdate({_id: params._id}, {$set: loadRequestData}, {new: true}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.update_customer_lead_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc) {
+                retObj.status = true;
+                retObj.messages.push("Customer lead updated successfully");
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.get_customer_leads, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Customer lead not updated");
+                analyticsService.create(req, serviceActions.update_customer_lead_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
     }
 };
 
@@ -1443,7 +1457,7 @@ OrderProcess.prototype.deleteLoadRequest = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
+    if (!params.loadRequestId || !ObjectId.isValid(params.loadRequestId)) {
         retObj.messages.push("Invalid load request");
     }
     if (retObj.messages.length > 0) {
@@ -1456,7 +1470,7 @@ OrderProcess.prototype.deleteLoadRequest = function (req, callback) {
         });
         callback(retObj);
     } else {
-        adminLoadRequestColl.remove({_id: params._id}, function (err, doc) {
+        adminLoadRequestColl.remove({_id: params.loadRequestId}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_load_request_err, {
@@ -1501,19 +1515,18 @@ OrderProcess.prototype.getAllAccountsExceptTruckOwners = function (req, callback
     };
     var params = req.query;
     var skipNumber = params.size ? parseInt(params.size) : 0;
-    var sort ={createdAt: -1};
-    var condition={};
-    if(params.name){
-        condition={ firstName:{$regex: '.*' + params.name + '.*'},role:{$ne:"Truck Owner"}}
-    }else{
-        condition={ role:{$ne:"Truck Owner"}}
+    var sort = {createdAt: -1};
+    var condition = {};
+    if (params.name) {
+        condition = {firstName: {$regex: '.*' + params.name + '.*'}, role: {$ne: "Truck Owner"}}
+    } else {
+        condition = {role: {$ne: "Truck Owner"}}
     }
     AccountsColl.find(condition, {firstName: 1, contactPhone: 1, contactName: 1, userName: 1})
 
         .skip(skipNumber)
         .limit(10).exec(function (err, truckOwnersList) {
         if (err) {
-            console.log(err);
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (truckOwnersList.length) {

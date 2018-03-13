@@ -704,14 +704,14 @@ var adminLoadRequestSchema = mongoose.Schema({
     updatedBy: {type: ObjectId, ref: 'accounts'},
     customerType: String,
     customerId: {type: ObjectId, ref: 'accounts'},
-    name: String,
+    firstName: String,
     contactPhone: Number,
     sourceAddress: String,
     destination: [{
         destinationAddress: String,
         price: Number
     }],
-    truckType: {type: ObjectId, ref: 'trucksTypes'},
+    truckType: String,
     registrationNo: String,
     makeYear: String,
     driverInfo: String,

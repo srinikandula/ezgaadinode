@@ -1575,7 +1575,7 @@ Events.prototype.getCustomerData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(customers, function (customer, customerCallBack) {
-                AccountsColl.findOne({firstName: customer.fullname,email: customer.email,leadType: customer.type,"role": {"$ne":"employee"}}, function (findCustomerErr, customerFound) {
+                AccountsColl.findOne({email: customer.email}, function (findCustomerErr, customerFound) {
                     if (findCustomerErr) {
                         customerCallBack(findCustomerErr);
                     } else if (customerFound) {

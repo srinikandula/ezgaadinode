@@ -20,26 +20,23 @@
     </ul>
     <div class="clearfix"></div>
     <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
-           ng-table="requestLoadParams">
+           ng-table="loadRequestParams">
         <tbody>
-        <tr ng-repeat="load in loadRequestsList">
+        <tr ng-repeat="load in currentPageOfLoadRequests">
             <!--<td data-title="'S No'" class="col-sm-1">{{$index+1}}</td>-->
-            <td data-title="'Title'" sortable="'name'" class="clickable-item col-sm-1">
-                {{load.customer[0].userName || load.customer[0].name}}<br>{{load.customer[0].contactPhone}}
-
+            <td data-title="'S.No'" class="clickable-item col-sm-1">
+                {{$index+1}}
             </td>
-            <td data-title="'Customer Name'" sortable="'type'" class="clickable-item col-sm-1">
-                {{load.customer[0].userName || load.customer[0].name}}
+            <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item col-sm-1">
+                {{load.firstName}}
             </td>
-            <td data-title="'Type'" sortable="'mobile'" class="clickable-item col-sm-1">{{load.leadType}}</td>
-            <td data-title="'Source'" sortable="'date'" class="clickable-item col-sm-1">{{load.source}}</td>
-            <td data-title="'Destination'" sortable="'yes'" class="clickable-item col-sm-1">{{load.destination}}</td>
-            <td data-title="'Load Type'" sortable="'loadType'" class="clickable-item col-sm-1">{{load.loadType}}</td>
-            <td data-title="'Goods Type'" sortable="'goodsType'" class="clickable-item col-sm-1">{{load.goodsType}}</td>
-            <td data-title="'Estimated Price'" sortable="'goodsType'" class="clickable-item col-sm-1">
-                {{load.expectedPrice}}
-            </td>
-            <td data-title="'Approved'" sortable="'load'" class="clickable-item col-sm-1">{{load.load}}</td>
+            <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item col-sm-1">{{load.contactPhone}}</td>
+            <td data-title="'Truck No'" sortable="'registrationNo'" class="clickable-item col-sm-1">{{load.registrationNo}}</td>
+            <td data-title="'Make Year'" sortable="'makeYear'" class="clickable-item col-sm-1">{{load.makeYear}}</td>
+            <td data-title="'Source'" sortable="'sourceAddress'" class="clickable-item col-sm-1">{{load.sourceAddress}}</td>
+            <td data-title="'Destination / Price'" sortable="'destinationAddress'" class="clickable-item col-sm-1">
+                <span ng-repeat="destination in load.destination">{{destination.destinationAddress}} / Rs.{{destination.price}}<br /></span></td>
+            <td data-title="'Date'" sortable="'dateAvailable'" class="clickable-item col-sm-1">{{load.dateAvailable | date:'dd-MM-yyyy'}}</td>
             <td data-title="'Status'" sortable="'Status'" class="clickable-item col-sm-1">{{load.status || 'NA'}}</td>
 
             <td data-title="'Action'" class="col-sm-1">
@@ -51,7 +48,7 @@
                 </a>
             </td>
         </tr>
-        <tr ng-if="!loadRequestsList || loadRequestsList.length === 0">
+        <tr ng-if="!currentPageOfLoadRequests || currentPageOfLoadRequests.length === 0">
             <td colspan="8">No Loads exist.</td>
         </tr>
         </tbody>

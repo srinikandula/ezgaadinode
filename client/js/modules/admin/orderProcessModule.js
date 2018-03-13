@@ -177,7 +177,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             firstName: "",
             contactPhone: "",
             email: "",
-            leadType: "Transpoter",
+            leadType: "Transporter",
             companyName: "",
             address: "",
             city: "",
@@ -324,8 +324,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }
     };
     $scope.addTripDetails = function () {
-        var trcuckDetails = $scope.truckRequest.truckDetails[$scope.truckRequest.truckDetails.length - 1];
-        if (!trcuckDetails.source || !trcuckDetails.destination) {
+        var truckDetails = $scope.truckRequest.truckDetails[$scope.truckRequest.truckDetails.length - 1];
+        if (!truckDetails.source || !truckDetails.destination) {
             swal("Please fill mandatory truck details", "", "info");
         } else {
             $scope.truckRequest.truckDetails.push({
@@ -345,7 +345,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
     };
 
     $scope.removeTruckDetails = function (index) {
-        $scope.truckRequest.truckDetail.splice(index, 1);
+        $scope.truckRequest.truckDetails.splice(index, 1);
     };
 
     function checkTruckDetails() {
@@ -387,12 +387,9 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 params.title = params.customer.firstName + " ," + params.customer.contactPhone;
                 params.customerName = params.customer.firstName;
                 params.customer = params.customer._id;
-
             } else {
                 params.title = params.firstName + " , " + params.contactPhone;
                 params.customerName = params.firstName;
-
-
             }
             OrderProcessServices.addTruckRequest(params, function (success) {
                 if (success.data.status) {
@@ -587,8 +584,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 $scope.quotesList = success.data.data;
             } else {
                 /*success.data.messages.forEach(function (message) {
-                    Notification.error(message);
-                })*/
+                 Notification.error(message);
+                 })*/
             }
         }, function (error) {
 
@@ -711,8 +708,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }
     };
     $scope.getTrucksAndDriversByAccountId = function () {
-
-
         if ($scope.loadBooking.customer) {
             $scope.loadBooking.accountId = $scope.loadBooking.customer._id;
 
@@ -720,8 +715,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 if (success.data.status) {
                     $scope.loadBooking.trucksList = success.data.data.trucksList;
                     $scope.loadBooking.driversList = success.data.data.driversList;
-
-
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -782,9 +775,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             }, function (error) {
 
             })
-
         }
-
     };
     $scope.updateTruckRequestDetails = function () {
         OrderProcessServices.updateTruckRequestDetails($scope.truckRequest, function (success) {
@@ -849,7 +840,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
     $scope.loadRequest = {
         customerType: "",
         customerId: "",
-        name: "",
+        firstName: "",
         contactPhone: "",
         truckDetails: [{
             sourceAddress: "",
@@ -864,8 +855,6 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
             dateAvailable: "",
             expectedDateReturn: "",
         }],
-        customerLeadId: "",
-        status: "",
     }
 
     $scope.currentElement = 0;
@@ -876,6 +865,8 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
         OrderProcessServices.getLoadRequestDetails($stateParams.loadRequestId, function (success) {
             if (success.data.status) {
                 $scope.loadRequest = success.data.data;
+                $scope.loadRequest.dateAvailable = new Date($scope.loadRequest.dateAvailable);
+                $scope.loadRequest.expectedDateReturn = new Date($scope.loadRequest.expectedDateReturn);
                 if ($scope.loadRequest.destination.length === 0) {
                     $scope.loadRequest.truckDetails.destination = [{}];
                 }
@@ -916,9 +907,6 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.data;
                 $scope.currentPageOfLoadRequests = response.data.data;
-                if ($scope.currentPageOfLoadRequests.destination.length === 0) {
-                    $scope.loadRequest.truckDetails.destination = [{}];
-                }
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
@@ -942,30 +930,35 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
         });
     };
 
-    $scope.deleteLoadRequest = function (index) {
+    $scope.deleteLoadRequest = function (id) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
             type: 'warning',
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete the loadRequest'
-        }).then(function (result) {
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
             if (result.value) {
-                OrderProcessServices.deleteLoadRequest($scope.currentPageOfLoadRequests[index]._id, function (success) {
+                OrderProcessServices.deleteLoadRequest(id, function (success) {
                     if (success.data.status) {
-                        $scope.initLoadRequest("");
-                        swal(
-                            '',
-                            'Successfully removed',
-                            'success'
-                        );
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $scope.countLoadRequest();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        })
                     }
-                });
+                }, function (err) {
+
+                })
             }
         });
-    };
+
+    }
 
     $scope.getTruckTypes = function () {
         SettingServices.getTruckTypes({}, function (response) {
@@ -1028,7 +1021,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
     $scope.addTruckDetails = function () {
         var truckDetails = $scope.loadRequest.truckDetails[$scope.loadRequest.truckDetails.length - 1];
-        if (!truckDetails.source || !truckDetails.destination) {
+        if (!truckDetails.sourceAddress || !truckDetails.destination[truckDetails.destination.length - 1].destinationAddress || !truckDetails.destination[truckDetails.destination.length - 1].price || !truckDetails.truckType || !truckDetails.registrationNo) {
             swal("Please fill mandatory truck details", "", "info");
         } else {
             $scope.loadRequest.truckDetails.push({
@@ -1054,7 +1047,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
     function checkTruckDetails() {
         for (var i = 0; i < $scope.loadRequest.truckDetails.length; i++) {
-            if (!$scope.loadRequest.truckDetails[i].source || !$scope.loadRequest.truckDetails[i].destination.destinationAddress || !$scope.loadRequest.truckDetails[i].destination.price || !$scope.loadRequest.truckDetails[i].truckType || !$scope.loadRequest.truckDetails[i].registrationNo) {
+            if (!$scope.loadRequest.truckDetails[i].sourceAddress || !$scope.loadRequest.truckDetails[i].destination[$scope.loadRequest.truckDetails[i].destination.length - 1].destinationAddress || !$scope.loadRequest.truckDetails[i].destination[$scope.loadRequest.truckDetails[i].destination.length - 1].price || !$scope.loadRequest.truckDetails[i].truckType || !$scope.loadRequest.truckDetails[i].registrationNo) {
                 return false;
             }
             if (i === $scope.loadRequest.truckDetails.length - 1) {
@@ -1063,12 +1056,12 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
         }
     }
 
-    $scope.addDestinationAndPrice = function (index) {
-        var destinationAndPriceDetails = $scope.loadRequest.truckDetails[index].destination[$scope.loadRequest.truckDetails[index].destination.length - 1];
+    $scope.addDestinationAndPrice = function (parentIndex, index) {
+        var destinationAndPriceDetails = $scope.loadRequest.truckDetails[parentIndex].destination[$scope.loadRequest.truckDetails[parentIndex].destination.length - 1];
         if (!destinationAndPriceDetails.destinationAddress || !destinationAndPriceDetails.price) {
             swal("Please fill destination and price", "", "info");
         } else {
-            $scope.loadRequest.truckDetails[index].destination.push({
+            $scope.loadRequest.truckDetails[parentIndex].destination.push({
                 destinationAddress: "",
                 price: ""
             });
@@ -1078,6 +1071,23 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
     $scope.deleteDestinationAndPrice = function (parentIndex, index) {
         $scope.loadRequest.truckDetails[parentIndex].destination.splice(index, 1);
+    };
+
+    $scope.addDestinationAndPriceEdit = function (index) {
+        var destinationAndPriceDetails = $scope.loadRequest.destination[$scope.loadRequest.destination.length - 1];
+        if (!destinationAndPriceDetails.destinationAddress || !destinationAndPriceDetails.price) {
+            swal("Please fill destination and price", "", "info");
+        } else {
+            $scope.loadRequest.destination.push({
+                destinationAddress: "",
+                price: ""
+            });
+        }
+
+    };
+
+    $scope.deleteDestinationAndPriceEdit = function (index) {
+        $scope.loadRequest.destination.splice(index, 1);
     };
 
     $scope.addSearchSource = function (index) {
@@ -1091,30 +1101,52 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
             });
     };
     $scope.addSearchDestination = function (parentIndex, index) {
+        var input = document.getElementById('searchDestination' + parentIndex + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.loadRequest.truckDetails[index].destination[index].destinationAddress = place.formatted_address;
+            });
+    };
+
+    $scope.editSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.loadRequest.sourceAddress = place.formatted_address;
+            });
+    };
+    $scope.editSearchDestination = function (index) {
         var input = document.getElementById('searchDestination' + index);
         var options = {};
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.loadRequest.truckDetails[parentIndex].destination[index].destinationAddress = place.formatted_address;
+                $scope.loadRequest.destination[index].destinationAddress = place.formatted_address;
             });
     };
 
     $scope.addLoadRequest = function () {
         var params = $scope.loadRequest;
         params.messages = [];
+
         if (!params.customerType) {
             params.messages.push("Please select customer type");
         }
         if (params.customerType === "Registered" && !params.customer) {
             params.messages.push("Please select customer");
         }
-        if (params.customerType === "UnRegistered" && !params.name) {
+        if (params.customerType === "UnRegistered" && !params.firstName) {
             params.messages.push("Please select name");
         }
         if (params.customerType === "UnRegistered" && !params.contactPhone) {
-            params.messages.push("Please select customer");
+            params.messages.push("Please provide mobile");
         }
         if (!checkTruckDetails) {
             params.messages.push("Please enter mandatory truck details")
@@ -1125,8 +1157,53 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
             });
         } else {
             if (params.customerType === "Registered") {
+                params.customerName = params.customer.firstName;
+                params.firstName = params.customer.firstName;
+                params.contactPhone = params.customer.contactPhone;
+                params.customerId = params.customer._id;
                 params.customer = params.customer._id;
+            } else {
+                params.customerName = params.firstName;
+                params.firstName = params.firstName;
+                params.contactPhone = params.contactPhone;
             }
+
+            OrderProcessServices.addLoadRequest(params, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
+                        Notification.success(message);
+                    });
+                    $state.go("orderprocess.loadRequest");
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        }
+    };
+
+
+    $scope.updateLoadRequest = function () {
+        var params = $scope.loadRequest;
+        params.messages = [];
+
+        if (!params.firstName) {
+            params.messages.push("Please select name");
+        }
+        if (!params.contactPhone) {
+            params.messages.push("Please provide mobile");
+        }
+        if (!checkTruckDetails) {
+            params.messages.push("Please enter mandatory truck details")
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            });
+        } else {
             if ($stateParams.loadRequestId) {
                 OrderProcessServices.updateLoadRequest(params, function (success) {
                     if (success.data.status) {
@@ -1143,27 +1220,9 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
                 })
             } else {
-                OrderProcessServices.addLoadRequest(params, function (success) {
-                    if (success.data.status) {
-                        success.data.messages.forEach(function (message) {
-                            Notification.success(message);
-                        });
-                        $state.go("orderprocess.loadRequest");
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error(message);
-                        });
-                    }
-                }, function (error) {
-
-                })
+                Notification.error("Not Found");
             }
         }
-    };
-
-
-    $scope.updateLoadRequestDetails = function () {
-
     };
 
 }]);
