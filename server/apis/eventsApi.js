@@ -548,33 +548,62 @@ Events.prototype.devicePlansHistory = function (request, callback) {
         } else {
             AccountDevicePlanHistoryColl.remove({}, function (errremoved, removed) {
                 FaultyPlanhistoryColl.remove({}, function (errfaultcollremove, faultcollremoved) {
-                });
-                if (errremoved) {
-                    retObj.status = false;
-                    retObj.messages.push('Error removing data');
-                    callback(retObj);
-                } else {
-                    async.map(plansHistory, function (plan, planCallBack) {
-                        async.parallel({
-                            accountId: function (accountCallback) {
-                                AccountsColl.findOne({userName: plan.accountID}, function (erracountid, accountid) {
-                                    if (!accountid) {
-                                        // console.log(plan.accountID, accountid);
-                                        accountCallback(erracountid, {name: plan.accountID});//null);
-                                    } else {
-                                        accountCallback(erracountid, {id: accountid._id});
-                                    }
-                                });
-                            },
-                            deviceId: function (deviceCallback) {
-                                DeviceColl.findOne({deviceId: plan.deviceID}, function (errdeviceid, deviceid) {
-                                    if (deviceid) {
-                                        deviceCallback(errdeviceid, deviceid._id);
-                                    } else {
-                                        var planDoc = new FaultyPlanhistoryColl({
-                                            accountId: plan.accountID,
-                                            deviceId: plan.deviceID,
-                                            planId: plan.planID,
+                    if (errremoved) {
+                        retObj.status = false;
+                        retObj.messages.push('Error removing data');
+                        callback(retObj);
+                    } else {
+                        async.map(plansHistory, function (plan, planCallBack) {
+                            async.parallel({
+                                accountId: function (accountCallback) {
+                                    AccountsColl.findOne({userName: plan.accountID}, function (erracountid, accountid) {
+                                        console.log(plan.accountID, accountid);
+                                        if (!accountid) {
+                                            accountCallback(erracountid, {name: plan.accountID});//null);
+                                        } else {
+                                            accountCallback(erracountid, {id: accountid._id});
+                                        }
+                                    });
+                                },
+                                deviceId: function (deviceCallback) {
+                                    DeviceColl.findOne({deviceId: plan.deviceID}, function (errdeviceid, deviceid) {
+                                        if (deviceid) {
+                                            deviceCallback(errdeviceid, deviceid._id);
+                                        } else {
+                                            var planDoc = new FaultyPlanhistoryColl({
+                                                accountId: plan.accountID,
+                                                deviceId: plan.deviceID,
+                                                planId: plan.planID,
+                                                amount: plan.amount,
+                                                remark: plan.remark,
+                                                creationTime: plan.creationTime,
+                                                startTime: plan.startTime,
+                                                expiryTime: plan.expiryTime,
+                                                received: plan.received
+                                            });
+                                            planDoc.save(function (errsavingfaultplan) {
+                                                deviceCallback(errsavingfaultplan, null);
+                                            });
+                                        }
+                                    })
+                                },
+                                planId: function (planIdCallback) {
+                                    erpGpsPlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
+                                        if(planid) {
+                                            planIdCallback(planiderr, planid._id);
+                                        } else {
+                                            planIdCallback(planiderr, planid);
+                                        }
+                                    });
+                                }
+                            }, function (errids, ids) {
+                                if (errids) {
+                                    planCallBack(errids);
+                                } else {
+                                    if (ids.deviceId) {
+                                        var planDoc = new AccountDevicePlanHistoryColl({
+                                            deviceId: ids.deviceId,
+                                            planId: ids.planId,
                                             amount: plan.amount,
                                             remark: plan.remark,
                                             creationTime: plan.creationTime,
@@ -582,61 +611,32 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                                             expiryTime: plan.expiryTime,
                                             received: plan.received
                                         });
-                                        planDoc.save(function (errsavingfaultplan) {
-                                            deviceCallback(errsavingfaultplan, null);
+                                        if (ids.accountId) {
+                                            if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
+                                            else planDoc.accountName = ids.accountId.name;
+                                        }
+                                        planDoc.save(function (err) {
+                                            planCallBack(err, 'saved');
                                         });
-                                    }
-                                })
-                            },
-                            planId: function (planIdCallback) {
-                                erpGpsPlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
-                                    if(planid) {
-                                        planIdCallback(planiderr, planid._id);
                                     } else {
-                                        planIdCallback(planiderr, planid);
-                                    }
-                                });
-                            }
-                        }, function (errids, ids) {
-                            if (errids) {
-                                planCallBack(errids);
-                            } else {
-                                if (ids.deviceId) {
-                                    var planDoc = new AccountDevicePlanHistoryColl({
-                                        deviceId: ids.deviceId,
-                                        planId: ids.planId,
-                                        amount: plan.amount,
-                                        remark: plan.remark,
-                                        creationTime: plan.creationTime,
-                                        startTime: plan.startTime,
-                                        expiryTime: plan.expiryTime,
-                                        received: plan.received
-                                    });
-                                    if (ids.accountId) {
-                                        if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
-                                        else planDoc.accountName = ids.accountId.name;
-                                    }
-                                    planDoc.save(function (err) {
                                         planCallBack(err, 'saved');
-                                    });
-                                } else {
-                                    planCallBack(err, 'saved');
+                                    }
                                 }
+                            });
+                        }, function (planerr, plansaved) {
+                            if (planerr) {
+                                retObj.status = false;
+                                retObj.messages.push('Error saving data');
+                                retObj.messages.push(JSON.stringify(planerr));
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages.push('devicePlansHistory saved succesfully');
+                                callback(retObj);
                             }
                         });
-                    }, function (planerr, plansaved) {
-                        if (planerr) {
-                            retObj.status = false;
-                            retObj.messages.push('Error saving data');
-                            retObj.messages.push(JSON.stringify(planerr));
-                            callback(retObj);
-                        } else {
-                            retObj.status = true;
-                            retObj.messages.push('devicePlansHistory saved succesfully');
-                            callback(retObj);
-                        }
-                    });
-                }
+                    }
+                });
             });
         }
     });

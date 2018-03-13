@@ -143,7 +143,6 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         DeviceService.getDevices(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
-                console.log();
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.devices;
                 $scope.currentPageOfDevices = response.data.devices;
@@ -245,7 +244,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
                 $scope.deviceDetails.isDamaged = $scope.deviceDetails.isDamaged === '1';
                 if ($scope.deviceDetails.isDamaged) $scope.deviceDetails.isDamaged = $scope.deviceDetails.isDamaged.toString();
                 if ($scope.deviceDetails.isActive) $scope.deviceDetails.isActive = $scope.deviceDetails.isActive.toString();
-                // console.log($scope.deviceDetails.isDamaged);
                 // if($scope.deviceDetails.isDamaged === '1') {
                 //     $scope.deviceDetails.isDamaged = true;
                 // } else {
@@ -367,17 +365,18 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             });
         }
     };
-/*    function getDevicePlanHistory() {
+    $scope.showGpsForm = false;
+    function getDevicePlanHistory() {
         DeviceService.getDevicePlanHistory($stateParams.device, function (success) {
             if(success.data.status) {
                 $scope.devicePlanHistory = success.data.devicePlanHistory;
-                // console.log('history', $scope.devicePlanHistory);
+                $scope.showGpsForm = success.data.showGpsForm;
             } else {
                 Notification.error({message: "unable to get plan history"})
             }
         });
     }
-    getDevicePlanHistory();*/
+    getDevicePlanHistory();
 }]);
 
 app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {
@@ -549,7 +548,6 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
         };
         DeviceService.getDeviceManagementDetails(pageable, function (response) {
             $scope.invalidCount = 0;
-            console.log(response.data);
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.dmDetails;

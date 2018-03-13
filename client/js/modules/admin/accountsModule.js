@@ -90,13 +90,10 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
         };
         AccountService.getAccounts(pageable, function (response) {
             $scope.invalidCount = 0;
-            console.log($scope.accountParams);
             if (response.data.status) {
-                console.log(response.data);
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.accounts;
                 $scope.currentPageOfAccounts = response.data.accounts;
-                console.log($scope.accountParams);
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
@@ -112,15 +109,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             if (success.data.status) {
                 $scope.accountDetails = success.data.accountDetails;
                 $scope.operatingRoutes = success.data.accountRoutes;
-
-                if (success.data.assignedPlans.length) {
-                    $scope.assignedPlans = success.data.assignedPlans;
-                    $scope.expiryDate = new Date($scope.assignedPlans[$scope.assignedPlans.length-1].expiryTime);
-                    $scope.today = new Date();
-                    $scope.daysRemaining = Math.round(($scope.expiryDate.getTime()-$scope.today.getTime())/(1000*60*60*24));
-                    if($scope.daysRemaining>29) $scope.enableForm = false;
-                    // console.log($scope.daysRemaining);
-                }
+                $scope.enableForm = success.data.enableForm;
             } else {
                 Notification.error({message: 'unable to get account details'});
             }
@@ -133,7 +122,6 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
     }
     $scope.serviceSelected = '';
     $scope.getPlansOfService = function () {
-        console.log($scope.serviceSelected);
     };
     $scope.status = {
         isOpen: true,
@@ -238,10 +226,8 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed', function () {
             var place = autocomplete.getPlace();
-            // console.log('place', place);
             var lng = place.geometry.location.lng();
             var lat = place.geometry.location.lat();
-            // console.log(lng, lat);
             if (type === 'source') {
                 $scope.operatingRoutes[index].sourceLocation.coordinates = [lng, lat];
                 for (var i = 0; i < place.address_components.length; i++) {
@@ -318,7 +304,6 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         SettingServices.getAllPlans('erp', function (success) {
             if (success.data.status) {
                 $scope.plans = success.data.plans;
-                console.log($scope.plans);
             }
         });
     }
@@ -339,7 +324,6 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
     $scope.assignERPPlan = function () {
         var params = $scope.ERPPlanDEtails;
         params.errors = [];
-        console.log(params);
         if (!params.planId) {
             params.errors.push('Select a plan');
         }
@@ -356,7 +340,6 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             params.errors.push('select an amount');
         }
         if (params.errors.length < 1) {
-            console.log('correct');
             AccountService.assignPlan({planDetails: $scope.ERPPlanDEtails, type: 'erp'}, function (success) {
                 if (success.data.status) {
                     initPlan();

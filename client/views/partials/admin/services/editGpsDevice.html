@@ -179,10 +179,9 @@
         </uib-accordion>
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
-                <uib-accordion-heading>Assign GPS Plan<i class="pull-right glyphicon"
-                                                         ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
+                <uib-accordion-heading>Assign GPS Plan<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
                 </uib-accordion-heading>
-                <div class="col-xs-12" ng-show="true">
+                <div class="col-xs-12" ng-show="showGpsForm">
                     <ul class="list-inline">
                         <li class="col-sm-4 form-group">
                             <select class="form-control order-form-control" ng-model="GPSPlanDEtails.planId">
@@ -228,8 +227,8 @@
                         <th>Expiry Time</th>
                         </thead>
                         <tbody>
-                        <tr ng-repeat="singlePlan in assignedPlans">
-                            <td>ERP</td>
+                        <tr ng-repeat="singlePlan in devicePlanHistory">
+                            <td>GPS</td>
                             <td>{{singlePlan.planId.planName}}</td>
                             <td>{{singlePlan.planId.amount}}</td>
                             <td>{{singlePlan.amount}}</td>
@@ -241,8 +240,8 @@
                         </tr>
                         </tbody>
                     </table>
+                    <div ng-show="devicePlanHistory.length === 0">No GPS plans</div>
                 </div>
-                <div ng-show="true">No GPS plans</div>
             </div>
         </uib-accordion>
         <div class="col-xs-12 save-btns">

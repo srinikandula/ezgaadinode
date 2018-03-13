@@ -140,8 +140,11 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <select class="form-control custom-form-control">
+                            <select class="form-control custom-form-control" ng-model="accountDetails.truckType">
                                 <option value="" selected>Vehicle Type*</option>
+                                <option>Trucks</option>
+                                <option>Non Trucks</option>
+                                <option>Both</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -225,9 +228,8 @@
         </uib-accordion>
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpenThre"
-                 ng-show="accountDetails.erpEnabled && pageTitle==='Edit GPS / ERP Account'">
-                <uib-accordion-heading>Assign ERP Plan<i class="pull-right glyphicon"
-                                                         ng-class="{'glyphicon-chevron-down': status.isOpenThre, 'glyphicon-chevron-right': !status.isOpenThre}"></i>
+                 ng-show="accountDetails.erpEnabled && pageTitle ==='Edit GPS / ERP Account'">
+                <uib-accordion-heading>Assign ERP Plan<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isOpenThre, 'glyphicon-chevron-right': !status.isOpenThre}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12" ng-show="enableForm">
                     <ul class="list-inline plans">
