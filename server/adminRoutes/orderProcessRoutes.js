@@ -140,6 +140,12 @@ AuthRouter.get('/totalAdminTruckOrders',function (req,res) {
         res.send(result);
     });
 });
+
+AuthRouter.get('/getOrderDetails',function (req,res) {
+   OrderProcess.getOrderDetails(req,function (result) {
+       res.send(result);
+   })
+});
 module.exports = {
     AuthRouter: AuthRouter
 };
