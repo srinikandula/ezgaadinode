@@ -721,10 +721,9 @@ var adminLoadRequestSchema = mongoose.Schema({
     status: {type: String, default: 'New'}
 }, {timestamps: String});
 
-var adminTripSchema = new mongoose.Schema({
+var adminTripsSchema = new mongoose.Schema({
     date: Date,
     registrationNo: String, //this will be truck id
-    partyId: {type: ObjectId, ref: 'parties'},
     freightAmount: Number, //5000
     tripId: String,
     tripLane: String,
@@ -733,6 +732,13 @@ var adminTripSchema = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
     createdBy: String,
+    truckRequestId: {type: ObjectId, ref: 'truckRequests'},
+    truckOwnerId:{type: ObjectId, ref: 'accounts'},
+    loadOwnerId:{type: ObjectId, ref: 'accounts'},
+    loadCustomerLeadId:{type: ObjectId, ref: 'customerLeads'},
+    status:{type:String,default:"New"},
+    source:String,
+    destination:String,
     truckRequestId: {type: ObjectId, ref: 'truckRequests'}
 }, {timestamps: true});
 
@@ -746,6 +752,7 @@ var paymentsSchema = new mongoose.Schema({
 }, {
     timestamps: true, versionKey: false
 });
+
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),

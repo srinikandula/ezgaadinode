@@ -495,5 +495,10 @@ const serviceActions = {
     update_load_request_err: 'UPDATE_LOAD_REQUEST_ERR',
     delete_load_request: 'DELETE_LOAD_REQUEST',
     delete_load_request_err: 'DELETE_LOAD_REQUEST_ERR',
+    count_admin_orders:'COUNT_ADMIN_ORDERS',
+    count_admin_orders_err:'COUNT_ADMIN_ORDERS_ERR',
+    get_admin_orders_list:'GET_ADMIN_ORDERS_LIST',
+    get_admin_orders_list_err:'GET_ADMIN_ORDERS_LIST_ERR',
+
 };
 module.exports = serviceActions;

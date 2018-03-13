@@ -1527,4 +1527,99 @@ OrderProcess.prototype.getAllAccountsExceptTruckOwners = function (req, callback
     })
 
 };
+
+/*Author : Naresh d*/
+OrderProcess.prototype.totalAdminTruckOrders = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    AdminTripsColl.count({}, function (err, doc) {
+        if (err) {
+            retObj.messages.push('Error getting orders count');
+            analyticsService.create(req, serviceActions.count_admin_orders_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = doc;
+            analyticsService.create(req, serviceActions.count_admin_orders, {
+                accountId: req.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
+};
+
+/*Author : Naresh getAdminTruckOrdersList*/
+OrderProcess.prototype.getAdminTruckOrdersList = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    async.parallel({
+        ordersList: function (ordersListCallback) {
+            AdminTripsColl.find({}).sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                .exec(function (err, docs) {
+                    ordersListCallback(err, docs);
+
+                })
+        },
+        count: function (countCallback) {
+            TruckRequestColl.count({}, function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.get_admin_orders_list_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+
+            if (results.truckRequests.length > 0) {
+                retObj.status = true;
+                retObj.messages = "Success";
+                retObj.data = results.ordersList;
+                retObj.count = results.count;
+                analyticsService.create(req, serviceActions.get_admin_orders_list, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("No orders found");
+                analyticsService.create(req, serviceActions.get_admin_orders_list_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        }
+    });
+};
 module.exports = new OrderProcess();
