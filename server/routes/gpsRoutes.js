@@ -5,11 +5,16 @@ var OpenRouter = express.Router();
 
 var gps = require('../apis/gpsApi');
 var devices = require('../apis/devicesApi');
+var kafka = require('./../apis/testkafka/kafkaProducer');
 
 OpenRouter.get('/AddDevicePositions', function (req, res) {
-    gps.AddDevicePositions(req.query, function (result) {
+    kafka.sendRecord(req.query, function (result) {
         res.send(result);
     });
+    // console.log(req.query);
+    // gps.AddDevicePositions(req.query, function (result) {
+    //     res.send(result);
+    // });
 });
 
 AuthRouter.post('/addSecret', function (req, res) {
@@ -84,13 +89,13 @@ AuthRouter.get('/downloadReport/:truckId/:startDate/:endDate',function (req,res)
     });
 });*/
 
-var job = cronjob.schedule('0 0 0 * * *', function() {      //runs everyday midnight at 12AM.
+var job = cronjob.schedule('0 1,30 * * * *', function() {      //runs everyday midnight at 12AM.
     gps.moveDevicePositions(function (result) {
         console.log(result.messages[0]);
     });
-    gps.addInitialCounters(function (result) {
+    /*gps.addInitialCounters(function (result) {
         console.log(result.messages[0]);
-    });
+    });*/
 });
 job.start();
 

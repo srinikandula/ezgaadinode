@@ -1,17 +1,22 @@
 <div ng-controller="accountsListCrtl">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">ERP Accounts</li>
-
+        <li class="col-xs-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="searchString" ng-change="init()">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control">
-                <option>Select</option>
-                <option>Trucks</option>
-                <option>Non Trucks</option>
-                <option>Both</option>
-                <option>SMS Enabled</option>
-                <option>SMS Disabled</option>
-                <option>Status Enabled</option>
-                <option>Status Disbaled</option>
+            <select class="form-control" ng-model="sortableString" ng-change="init()">
+                <option selected value="">Select</option>
+                <option value="">Trucks</option>
+                <option value="">Non Trucks</option>
+                <option value="">Both</option>
+                <option value="smsEnabled">SMS Enabled</option>
+                <option value="smsDisabled">SMS Disabled</option>
+                <option value="statusEnabled">Status Enabled</option>
+                <option value="statusDisbled">Status Disbaled</option>
             </select>
         </li>
         <div class="clearfix"></div>

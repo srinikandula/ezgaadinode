@@ -76,6 +76,36 @@ AuthRouter.get('/getDevicePlanHistory/:deviceId', function (req, res) {
     });
 });
 
+AuthRouter.get('/getDeviceManagementDetails', function (req, res) {
+    Devices.getDeviceManagementDetails(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getDeviceManagementCount', function (req, res) {
+    Devices.getDeviceManagementCount(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getPaymentCount', function (req, res) {
+    Devices.getPaymentCount(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getPaymentDetails/:id', function (req, res) {
+    Devices.getPaymentDetails(req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getGPSPlansOfDevice/:deviceId', function (req, res) {
+    Devices.getGPSPlansOfDevice(req, function (result) {
+        res.json(result);
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

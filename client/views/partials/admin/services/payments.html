@@ -1,0 +1,49 @@
+<div ng-controller="paymentCrtl">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Payments</li>
+        <li class="col-xs-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="searchString" ng-change="init()">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
+        <li class="pull-right col-xs-2">
+            <select class="form-control" ng-model="type" ng-change="init()">
+                <option selected value="">Select</option>
+                <option value="erp">ERP Service</option>
+                <option value="gps">GPS Service</option>
+                <option value="both">Both the services</option>
+                <!--<option>Payment pending</option>-->
+            </select>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="accountParams">
+        <tr ng-repeat="payment in currentPageOfAccounts" style="text-align: center;">
+            <td data-title="'S No'">
+                {{$index+1}}
+            </td>
+            <td data-title="'Customer name'" sortable="'payment.userName'" class="clickable-item">
+                {{payment.userName}}
+            </td>
+            <td data-title="'Mobile'" sortable="'payment.contactPhone'" class="clickable-item">
+                {{payment.contactPhone }}
+            </td>
+            <td data-title="'GPS Reg Date'" sortable="'payment.gpsDate'" class="clickable-item">
+                {{payment.gpsDate | date:'dd/MM/yyyy'}}
+            </td>
+            <td data-title="'GPS'" sortable="'payment.gpsEnabled'" class="clickable-item">
+                {{payment.gpsEnabled}}
+            </td>
+            <td data-title="'GPS Reg Date'" sortable="'payment.erpDate'" class="clickable-item">
+                {{payment.erpDate  | date:'dd/MM/yyyy'}}
+            </td>
+            <td data-title="'GPS Reg Date'" sortable="'payment.erpEnabled'" class="clickable-item">
+                {{payment.erpEnabled}}
+            </td>
+            <td data-title="'Payment'" class="clickable-item">
+                <a href="#" ui-sref="services.paymentDetails({id:payment._id})">Payment Details</a>
+            </td>
+        </tr>
+    </table>
+</div>

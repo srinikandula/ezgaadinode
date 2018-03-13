@@ -376,14 +376,14 @@ var deviceSchema = new mongoose.Schema({
     userName: String,
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
-    assignedTo: String,//{type: ObjectId, ref: 'accounts'},
+    assignedTo: Number,//{type: ObjectId, ref: 'accounts'},
     //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
     imei: String,
     simPhoneNumber: String,
     truckId: {type: ObjectId, ref: 'trucks'},
     address: String,
-    installedBy: String,  //installed UserId
+    installedBy: Number,  //installed UserId
     accountId: {type: ObjectId, ref: 'accounts'},
     devicePaymentStatus: String,
     devicePaymentPlan: String, //reference to device payment plan
@@ -393,7 +393,7 @@ var deviceSchema = new mongoose.Schema({
     resetTime: Date,
     paymentStart: Date,
     paymentEnd: Date,
-    isDamaged: {type: Boolean, default: '0'}, //duplicate to status?
+    isDamaged: {type: Boolean, default: false}, //duplicate to status?
     replacedFor: String, //if this is replacement to another device
     equipmentType: String,
     serialNumber: String,
@@ -492,19 +492,35 @@ var accountDevicePlanHistory = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     accountName: String,
     deviceId: {type: ObjectId, ref: 'devices'},
-    planId: {type: ObjectId, ref: 'devicePlans'},
+    planId: {type: ObjectId, ref: 'erpGpsPlans'},
     remark: String,
     amount: Number,
     creationTime: Date,
     startTime: String,
     expiryTime: Date,
-    received: Boolean
+    received: Boolean,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
+}, {timestamps: String});
+
+var erpPlanHistory = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    accountName: String,
+    planId: {type: ObjectId, ref: 'erpGpsPlans'},
+    remark: String,
+    amount: Number,
+    creationTime: Date,
+    startTime: String,
+    expiryTime: Date,
+    received: Boolean,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'}
 }, {timestamps: String});
 
 var faultyPlanhistory = new mongoose.Schema({
     accountId: String, //{type: ObjectId, ref: 'accounts'},
     deviceId: String, //{type: ObjectId, ref: 'devices'},
-    planId: String, //{type: ObjectId, ref: 'devicePlans'},
+    planId: String, //{type: ObjectId, ref: 'erpGpsPlans'},
     remark: String,
     amount: Number,
     creationTime: Date,
@@ -719,6 +735,17 @@ var adminTripSchema = new mongoose.Schema({
     truckRequestId: {type: ObjectId, ref: 'truckRequests'}
 }, {timestamps: true});
 
+var paymentsSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    planId: {type: ObjectId, ref: 'erpGpsPlans'},
+    amountPaid: Number,
+    createdBy: {type: ObjectId, ref: 'accounts'},
+    updatedBy: {type: ObjectId, ref: 'accounts'},
+    type: String//gps or erp
+}, {
+    timestamps: true, versionKey: false
+});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -745,6 +772,7 @@ module.exports = {
     erpGpsPlansColl: mongoose.model('erpGpsPlans', erpGpsPlans, 'erpGpsPlans'),
     CustomerLeadsColl: mongoose.model('customerLeads', customerLeadsSchema, 'customerLeads'),
     AccountDevicePlanHistoryColl: mongoose.model('accountDevicePlanHistory', accountDevicePlanHistory, 'accountDevicePlanHistory'),
+    ErpPlanHistoryColl: mongoose.model('erpPlanHistory', erpPlanHistory, 'erpPlanHistory'),
     FaultyPlanhistoryColl: mongoose.model('faultyPlanhistory', faultyPlanhistory, 'faultyPlanhistory'),
     keysColl: mongoose.model('apiSecretKeys', keysSchema, 'apiSecretKeys'),
     TrucksTypesColl: mongoose.model('trucksTypes', trucksTypesSchema, 'trucksTypes'),
@@ -763,4 +791,5 @@ module.exports = {
     LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification'),
     adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest'),
     AdminTripsColl:mongoose.model('adminTripsColl',adminTripSchema,'adminTripsColl')
+    PaymentsColl: mongoose.model('paymentsSchema', paymentsSchema, 'paymentsSchema')
 };

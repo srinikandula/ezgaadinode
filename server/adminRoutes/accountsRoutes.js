@@ -51,6 +51,12 @@ AuthRouter.delete('/deleteAccount', function (req, res) {
     });
 });
 
+AuthRouter.post('/assignPlan', function (req, res) {
+    Accounts.assignPlan(req, function (result) {
+        res.json(result);
+    });
+});
+
 AuthRouter.get('/createKeyPair/:accountId/:globalAccess',function (req,res) {
     Accounts.createKeys(req.params.accountId,req.params.globalAccess,req,function (result) {
         res.send(result);

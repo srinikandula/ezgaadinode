@@ -3,7 +3,12 @@
         <li class="pull-left name-head">GPS Device
             <Accounts></Accounts>
         </li>
-
+        <li class="col-xs-3">
+            <div class="input-group">
+                <input type="text" class="form-control" placeholder="Search" ng-model="searchString" ng-change="init()">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-search"></i></span>
+            </div>
+        </li>
         <li class="pull-right">
             <button class="btn btn-success" ng-click="assignDevicesModal()">Assign Devices</button>
         </li>
@@ -11,15 +16,12 @@
             <button class="btn btn-primary" ui-sref="services.addDevice">Add Devices</button>
         </li>
         <li class="pull-right col-xs-2">
-            <select class="form-control">
-                <option>Select</option>
-                <option>Trucks</option>
-                <option>Non Trucks</option>
-                <option>Both</option>
-                <option>SMS Enabled</option>
-                <option>SMS Disabled</option>
-                <option>Status Enabled</option>
-                <option>Status Disbaled</option>
+            <select class="form-control" ng-model="sortableString" ng-change="init()">
+                <option selected value="">Select</option>
+                <option value="damaged">Damaged</option>
+                <option value="notdamaged">Not Damaged</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
             </select>
         </li>
         <div class="clearfix"></div>
@@ -48,9 +50,9 @@
             <td data-title="'Installed By'" sortable="'installedBy'" class="clickable-item">
                 {{device.installedBy}}
             </td>
-            <td data-title="'Payment'" sortable="'received'" class="clickable-item">
+            <!--<td data-title="'Payment'" sortable="'received'" class="clickable-item">
                 {{device.received}}
-            </td>
+            </td>-->
             <td data-title="'Status'" sortable="'isDamaged'" class="clickable-item">
                 {{device.isDamaged == '0' && 'working' || 'Not working'}}
             </td>

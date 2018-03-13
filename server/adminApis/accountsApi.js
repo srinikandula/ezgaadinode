@@ -9,12 +9,14 @@ var serviceActions = require('./../constants/adminConstants');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var keysColl = require('./../models/schemas').keysColl;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
+var AccountDevicePlanHistoryColl= require('./../models/schemas').AccountDevicePlanHistoryColl;
+var ErpPlanHistoryColl= require('./../models/schemas').ErpPlanHistoryColl;
+var PaymentsColl= require('./../models/schemas').PaymentsColl;
 const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
 
-var Accounts = function () {
-};
+var Accounts = function () {};
 
 Accounts.prototype.totalAccounts = function (req, callback) {
     var retObj = {
@@ -22,10 +24,13 @@ Accounts.prototype.totalAccounts = function (req, callback) {
         messages: []
     };
     var query = {};
-    if(req.params.type === 'gps') {
+    var params = req.params;
+    if(params.type === 'gps') {
         query = {gpsEnabled: true};
-    } else {
+    } else if(params.type === 'erp') {
         query = {erpEnabled: true}
+    } else if(params.type === 'accounts') {
+        query = {type: 'account', role: {$nin:['employee']}}
     }
     AccountsColl.count(query, function (err, doc) {
         if (err) {
@@ -57,7 +62,7 @@ Accounts.prototype.getAccounts = function (req, callback) {
         messages: []
     };
     var params = req.query;
-
+    console.log(params);
     if (!params.page) {
         params.page = 1;
     }
@@ -68,9 +73,18 @@ Accounts.prototype.getAccounts = function (req, callback) {
     var query = {};
     if(params.type === 'gps') {
         query = {gpsEnabled: true};
-    } else {
+    } else if(params.type === 'erp') {
         query = {erpEnabled: true}
+    } else if(params.type === 'both') {
+        query = {erpEnabled: true, gpsEnabled: true}
+    } else if(params.type === 'accounts') {
+        query = {type: 'account', role: {$nin:['employee']}}
     }
+    if(params.sortableString === 'smsEnabled') query.smsEnabled = true;
+    else if(params.sortableString === 'smsDisabled') query.smsEnabled = false;
+    else if(params.sortableString === 'statusEnabled') query.isActive = true;
+    else if(params.sortableString === 'statusDisbled') query.isActive = false;
+    query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
@@ -116,7 +130,34 @@ Accounts.prototype.getAccounts = function (req, callback) {
                 success: true
             }, function (response) {
             });
-            callback(retObj);
+            if(params.type === 'accounts') {
+                async.map(docs.accounts, function (account, asynCalback) {
+                    async.parallel({
+                        gpsDate: function (gpsCallback) {
+                            AccountDevicePlanHistoryColl.findOne({accountId:account._id},function (errGps, gpsDateOfAccount) {
+                                gpsCallback(errGps, gpsDateOfAccount);
+                            });
+                        },
+                        erpDate: function (gpsCallback) {
+                            ErpPlanHistoryColl.findOne({accountId:account._id},function (errErp, erpDateOfAccount) {
+                                gpsCallback(errErp, erpDateOfAccount);
+                            });
+                        },
+                    }, function (errDates, dates) {
+                        // console.log(account.userName, account._id, dates.erpDate, dates.gpsDate);
+                        if(dates.gpsDate) account.gpsDate = dates.gpsDate.createdAt;
+                        else account.gpsDate = '--';
+                        if(dates.erpDate) account.erpDate = dates.erpDate.createdAt;
+                        else account.erpDate = '--';
+                        asynCalback(errDates, dates);
+                    });
+                }, function (errAllDates, allDates) {
+                    callback(retObj);
+                });
+            }
+            else {
+                callback(retObj);
+            }
         }
     });
 };
@@ -260,6 +301,7 @@ Accounts.prototype.addAccount = function (req, callback) {
         //         });
         //         callback(retObj);
         //     } else {
+        accountInfo.type = 'account';
                 AccountsColl.update(query, accountInfo, {upsert: true}, function (errSaved, saved) {
                     if(errSaved) {
                         console.log(err);
@@ -367,6 +409,17 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                         routesCallback(null, routes);
                     }
                 });
+            },
+            assignedPlans: function (plansCallback) {
+                AccountDevicePlanHistoryColl.find({accountId: ObjectId(accountId), deviceId: {$exists:false}}).populate('planId', {planName:1,amount:1}).sort({expiryTime:-1}).exec(function (errplans, plans) {
+                    if(errplans) {
+                        retObj.messages.push('Error retrieving plans');
+                        plansCallback(errplans);
+                    } else {
+                        retObj.messages.push('Successfully retrieved plans');
+                        plansCallback(null, plans);
+                    }
+                });
             }
         }, function (errdetails, accountDetails) {
             if(errdetails) {
@@ -382,6 +435,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 retObj.status = true;
                 retObj.accountDetails = accountDetails.accountInfo;
                 retObj.accountRoutes = accountDetails.operatingRoutes;
+                retObj.assignedPlans = accountDetails.assignedPlans;
                 analyticsService.create(req, serviceActions.get_account_details, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
@@ -548,7 +602,86 @@ Accounts.prototype.deleteAccount = function (req, callback) {
             }
         });
     }
-}
+};
+
+Accounts.prototype.assignPlan = function (req, callback) {
+    var retObj={
+        status: false,
+        messages: []
+    };
+    var params = req.body.planDetails;
+    console.log(params);
+    if(!params.planId) {
+        retObj.messages.push('Select a plan');
+    }
+    if(!params.startTime){
+        retObj.messages.push('Select start date');
+    }
+    if(!params.expiryTime){
+        retObj.messages.push('Select expiry date');
+    }
+    if(params.expiryTime < params.startTime){
+        retObj.messages.push('expiry date should be greater than start date');
+    }
+    if(!params.amount){
+        retObj.messages.push('select an amount');
+    }
+    if(retObj.messages.length < 1){
+        console.log('correct');
+        params.creationTime = new Date();
+        params.received = true;
+        async.parallel({
+            assignPlan: function (assignCallback) {
+                params.createdBy = req.jwt.id;
+                params.updatedBy = req.jwt.id;
+                var doc = {};
+                if(req.body.type === 'gps') doc = new AccountDevicePlanHistoryColl(params);
+                else doc = new ErpPlanHistoryColl(params);
+                doc.save(function (errAssign, assigned) {
+                    if(errAssign) {
+                        retObj.messages.push(errAssign);
+                        assignCallback(errAssign);
+                    } else {
+                        assignCallback(null, assigned);
+                    }
+                });
+            },
+            createPayment: function (paymentCallback) {
+                var paymentData = {
+                    accountId: params.accountId,
+                    planId: params.planId,
+                    amountPaid: params.amount,
+                    createdBy: req.jwt.id,
+                    updatedBy: req.jwt.id
+                };
+                if(params.type === 'gps') paymentData.type = 'gps';
+                else paymentData.type = 'erp';
+                console.log('paymentData', paymentData);
+                var doc = new PaymentsColl(paymentData);
+                doc.save(function (errPayment, payment) {
+                    if(errPayment) {
+                        retObj.messages.push('errPayment');
+                        paymentCallback(errPayment);
+                    } else {
+                        paymentCallback(null, payment);
+                    }
+                });
+            }
+        }, function (errSaving, saved) {
+            if(errSaving){
+                retObj.status=false;
+                retObj.messages.push('Please try again');
+                analyticsService.create(req,serviceActions.assign_erp_plan_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){});
+                callback(retObj);
+            }else {
+                retObj.status=true;
+                retObj.messages.push('Success');
+                analyticsService.create(req,serviceActions.assign_erp_plan_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){});
+                callback(retObj);
+            }
+        });
+    }
+};
 
 Accounts.prototype.createKeys=function (accountId,access,req,callback) {
     var retObj={
