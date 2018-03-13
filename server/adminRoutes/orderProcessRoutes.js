@@ -20,6 +20,12 @@ AuthRouter.delete('/deleteTruckRequest', function (req, res) {
     })
 });
 
+AuthRouter.get('/countTruckRequest', function (req, res) {
+    OrderProcess.countTruckRequest(req, function (result) {
+        res.send(result);
+    })
+});
+
 AuthRouter.get('/getTruckRequestDetails',function (req,res) {
     OrderProcess.getTruckRequestDetails(req,function (result) {
         res.send(result);

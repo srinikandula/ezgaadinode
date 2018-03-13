@@ -50,7 +50,8 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
                 status: 1,
                 title: 1,
                 customerName: 1
-            }).populate({path: "truckType", select: "title tonnes"}).sort(sort)
+            }).populate({path: "truckType", select: "title tonnes"})
+                .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -104,7 +105,7 @@ OrderProcess.prototype.getTruckRequests = function (req, callback) {
 };
 
 /*Author : Naresh d*/
-OrderProcess.prototype.totalTruckRequests = function (req, callback) {
+OrderProcess.prototype.countTruckRequest = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -244,7 +245,6 @@ function saveTruckRequest(req, callback) {
         })
     }, function (err) {
         if (err) {
-            console.log("err==", err);
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.add_truck_request_err, {
                 body: JSON.stringify(req.body),
@@ -497,7 +497,8 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
 
     }).lean().exec(function (err, operatingRoutes) {
         if (err) {
-            retObj.messages.push("Please try again1");
+            console.log("err",err);
+            retObj.messages.push("Please try again");
             callback(retObj);
         } else if (operatingRoutes.length > 0) {
 
