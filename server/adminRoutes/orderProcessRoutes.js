@@ -129,6 +129,17 @@ AuthRouter.get('/getAllAccountsExceptTruckOwners',function (req,res) {
    })
 });
 
+AuthRouter.get('/getAdminTruckOrdersList',function (req,res) {
+   OrderProcess.getAdminTruckOrdersList(req,function (result) {
+     res.send(result);
+   });
+});
+
+AuthRouter.get('/totalAdminTruckOrders',function (req,res) {
+    OrderProcess.totalAdminTruckOrders(req,function (result) {
+        res.send(result);
+    });
+});
 module.exports = {
     AuthRouter: AuthRouter
 };
