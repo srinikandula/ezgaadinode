@@ -657,6 +657,11 @@ Devices.prototype.getDevicePlanHistory = function (req, callback) {
             });
             callback(retObj);
         } else {
+            retObj.showGpsForm = true;
+            if(history.length) {
+                var expiry = (new Date(history[0].expiryTime).getTime() - new Date().getTime())/86400000;
+                if(expiry > 30) retObj.showGpsForm = false;
+            }
             retObj.status = true;
             retObj.messages = "success";
             retObj.devicePlanHistory = history;

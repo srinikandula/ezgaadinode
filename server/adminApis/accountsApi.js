@@ -62,7 +62,6 @@ Accounts.prototype.getAccounts = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    console.log(params);
     if (!params.page) {
         params.page = 1;
     }
@@ -84,6 +83,9 @@ Accounts.prototype.getAccounts = function (req, callback) {
     else if(params.sortableString === 'smsDisabled') query.smsEnabled = false;
     else if(params.sortableString === 'statusEnabled') query.isActive = true;
     else if(params.sortableString === 'statusDisbled') query.isActive = false;
+    else if(params.sortableString === 'Trucks') query.truckType = 'Trucks';
+    else if(params.sortableString === 'Non Trucks') query.truckType = 'Non Trucks';
+    else if(params.sortableString === 'Both') query.truckType = 'Both';
     query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
     async.parallel({
         accounts: function (accountsCallback) {
@@ -144,7 +146,6 @@ Accounts.prototype.getAccounts = function (req, callback) {
                             });
                         },
                     }, function (errDates, dates) {
-                        // console.log(account.userName, account._id, dates.erpDate, dates.gpsDate);
                         if(dates.gpsDate) account.gpsDate = dates.gpsDate.createdAt;
                         else account.gpsDate = '--';
                         if(dates.erpDate) account.erpDate = dates.erpDate.createdAt;
@@ -209,7 +210,6 @@ Accounts.prototype.deleteRoute = function (req, callback) {
         status: false,
         messages: []
     };
-    // console.log(req.params);
     OperatingRoutesColl.remove({_id: req.params.id}, function (err, removed) {
         if(err) {
             retObj.messages.push('unable to remove operating route');
@@ -411,7 +411,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 });
             },
             assignedPlans: function (plansCallback) {
-                AccountDevicePlanHistoryColl.find({accountId: ObjectId(accountId), deviceId: {$exists:false}}).populate('planId', {planName:1,amount:1}).sort({expiryTime:-1}).exec(function (errplans, plans) {
+                ErpPlanHistoryColl.find({accountId: ObjectId(accountId)}).populate('planId', {planName:1,amount:1}).sort({expiryTime:-1}).exec(function (errplans, plans) {
                     if(errplans) {
                         retObj.messages.push('Error retrieving plans');
                         plansCallback(errplans);
@@ -436,6 +436,14 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 retObj.accountDetails = accountDetails.accountInfo;
                 retObj.accountRoutes = accountDetails.operatingRoutes;
                 retObj.assignedPlans = accountDetails.assignedPlans;
+                retObj.enableForm = true;
+                if (accountDetails.assignedPlans.length) {
+                    var expiryDate = new Date(accountDetails.assignedPlans[accountDetails.assignedPlans.length-1].expiryTime);
+                    var today = new Date();
+                    var daysRemaining = Math.round((expiryDate.getTime()-today.getTime())/(1000*60*60*24));
+                    if(daysRemaining > 30) retObj.enableForm = false;
+                    // console.log($scope.daysRemaining);
+                }
                 analyticsService.create(req, serviceActions.get_account_details, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
@@ -610,7 +618,6 @@ Accounts.prototype.assignPlan = function (req, callback) {
         messages: []
     };
     var params = req.body.planDetails;
-    console.log(params);
     if(!params.planId) {
         retObj.messages.push('Select a plan');
     }
@@ -627,7 +634,6 @@ Accounts.prototype.assignPlan = function (req, callback) {
         retObj.messages.push('select an amount');
     }
     if(retObj.messages.length < 1){
-        console.log('correct');
         params.creationTime = new Date();
         params.received = true;
         async.parallel({
@@ -656,7 +662,6 @@ Accounts.prototype.assignPlan = function (req, callback) {
                 };
                 if(params.type === 'gps') paymentData.type = 'gps';
                 else paymentData.type = 'erp';
-                console.log('paymentData', paymentData);
                 var doc = new PaymentsColl(paymentData);
                 doc.save(function (errPayment, payment) {
                     if(errPayment) {

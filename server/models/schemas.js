@@ -72,6 +72,7 @@ var accountSchema = new mongoose.Schema({
     bankIfscCode: String,
     bankAccNo: String,
     bankBranch: String,
+    truckType: {type: String, default:"Trucks"}, //Trucks or Non Trucks
     truckTypes:[ {type: ObjectId}]
 }, {
     timestamps: true
