@@ -695,4 +695,46 @@ Gps.prototype.downloadReport = function (truckId,startDate,endDate,req,callback)
     })
 };
 
+Gps.prototype.getAllVehiclesLocation = function (jwt,req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    var condition = {};
+    if (jwt.type === "account") {
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null},"attrs.latestLocation":{$exists:true}};
+    } else {
+        condition = {accountId: jwt.id, deviceId: {$ne: null}};
+    }
+    TrucksColl.find(condition,function (err,trucksData) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Error retrieving trucks data');
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push('Success');
+            retObj.results=trucksData;
+            callback(retObj);
+        }
+    })
+};
+
+Gps.prototype.getTruckReports = function (params,req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    var gps=new Gps();
+    gps.gpsTrackingByTruck(params.truckNo,params.startDate,params.endDate,req,function (result) {
+        if(result.status){
+            var positions=result.results.positions;
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.results=positions;
+            callback(retObj);
+        }else{
+            callback(result);
+        }
+    })
+}
+
 module.exports = new Gps();

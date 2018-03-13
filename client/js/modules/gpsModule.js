@@ -18,6 +18,12 @@ app.factory('GpsService',['$http', function ($http) {
                 url: '/v1/gps/gpsTrackingByMapView',
                 method: "GET",
             }).then(success, error)
+        },
+        getTruckReport:function (body,success,error) {
+            $http({
+                url: '/v1/gps/getTruckReport/'+body.startDate+'/'+body.endDate+'/'+body.truckNo,
+                method: "GET"
+            }).then(success, error)
         }
     }
 }]);
@@ -32,6 +38,25 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
                 success.data.messages.forEach(function (message) {
                     Notification.error({ message: message });
                 });
+            }
+        },function (error) {
+
+        })
+    };
+
+    $scope.reportParams={
+        startDate:new Date(),
+        endDate:new Date(),
+        truckNo:'TS08UB2542'
+    };
+
+    $scope.getTruckReport = function () {
+        GpsService.getTruckReport($scope.reportParams,function (success) {
+            if(success.data.status){
+                $scope.truckReports = success.data.results;
+                console.log(success.data.results);
+            }else{
+
             }
         },function (error) {
 
