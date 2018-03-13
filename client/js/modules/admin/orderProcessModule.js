@@ -42,6 +42,12 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 data: data
             }).then(success, error);
         },
+        countTruckRequest: function (success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/countTruckRequest',
+                method: "GET",
+            }).then(success, error)
+        },
         getLoadBookingDetails: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/orderProcess/getLoadBookingDetails',
@@ -388,7 +394,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
 
             }
-            console.log("Params", params);
             OrderProcessServices.addTruckRequest(params, function (success) {
                 if (success.data.status) {
                     success.data.messages.forEach(function (message) {
@@ -406,7 +411,19 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }
     };
 
-    $scope.getTruckRequests = function () {
+    $scope.count = 0;
+    $scope.numOfTruckRequest = function () {
+        OrderProcessServices.countTruckRequest(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.initTruckRequests();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    $scope.initTruckRequests = function () {
         $scope.requestTruckParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -415,29 +432,28 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             }
         }, {
             counts: [],
-            total: 100,
-            getData: function (tableParams) {
-
-                var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting()};
-
-                OrderProcessServices.getTruckRequests(pageable, function (success) {
-
-                    if (success.data.status) {
-                        $scope.truckRequestsList = success.data.data;
-                        tableParams.data = $scope.truckRequestsList;
-                        tableParams.total(parseInt(success.data.count));
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
-                        });
-                    }
-                }, function (error) {
-                    error.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
-                    });
-                });
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
             }
+        });
+    };
 
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+        };
+        OrderProcessServices.getTruckRequests(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data= response.data.data;
+                $scope.truckRequestsList = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
         });
     };
     $scope.addSearchSource = function (index) {
@@ -489,6 +505,72 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         }, function (success) {
             if (success.data.status) {
                 $scope.availableTruckslist = success.data.data;
+                $scope.table = $('#SearchTruckRequest').DataTable({
+                    destroy: true,
+                    responsive: false,
+                    aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                    iDisplayLength: 10,
+
+
+                    data: success.data.data,
+                    columns: [
+                        {
+                            "title":"S No",
+                            "data": "id",
+                            render: function (data, type, row, meta) {
+                                return meta.row + meta.settings._iDisplayStart + 1;
+                            }
+                        },
+                        {
+                            "title": "Name",
+                            "data": "firstName"
+                        },
+                        {
+                            "title": "Type",
+                            "data": "role"
+                        },
+                        {
+                            "title": "Mobile",
+                            "data": "contactPhone"
+                        },
+                        {
+                            "title": "No of Trucks", "data": "noOfTrucks",
+                            "render": function (data, type, row) {
+                                if (!data ) {
+                                    return '--'
+                                } else {
+                                    return data;
+                                }
+
+                            }
+                        },
+                        {
+                            title: "Company", "data": "company",
+                            "render": function (data, type, row) {
+                                if (!data ) {
+                                   return '--'
+                                } else {
+                                    return data;
+                                }
+
+                            }
+                        },
+                        {
+                            "title": "Address",
+                            "data": "address",
+                            "render": function (data, type, row) {
+                                if (!data ) {
+                                    return '--'
+                                } else {
+                                    return data;
+                                }
+
+                            }
+                        },
+                    ],
+
+                })
+
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);

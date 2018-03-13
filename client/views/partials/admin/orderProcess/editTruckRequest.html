@@ -100,14 +100,14 @@
                         </div>
 
                         <div class="form-group styling-input-list">
-                            <textarea class="form-control order-form-control" ng-model="truckRequest.comment"
+                            <textarea class="form-control" ng-model="truckRequest.comment"
                                       rows="5"></textarea>
-                            <label class="order-effect-for-input">Comments</label>
+                            <label class="focus-effect-for-input">Comments</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <textarea class="form-control order-form-control" ng-model="truckRequest.pushMessage"
+                            <textarea class="form-control" ng-model="truckRequest.pushMessage"
                                       rows="4"></textarea>
-                            <label class="order-effect-for-input">Push Message</label>
+                            <label class="focus-effect-for-input">Push Message</label>
 
 
                         </div>
@@ -123,55 +123,33 @@
                                          ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
                 </uib-accordion-heading>
                 <div class="row">
-                    <ul class="list-inline">
-                        <li class="form-group styling-input-list">
+                        <div class="form-group styling-input-list col-sm-4">
                             <input type="text" class="form-control order-form-control"
                                    ng-model="truckRequest.sourceSearch" name="source" id="searchSource"
                                    ng-change="searchSource()"/>
                             <label class="order-effect-for-input">Source *</label>
-                        </li>
-                        <li class="form-group styling-input-list">
+                        </div>
+                        <div class="form-group styling-input-list col-sm-4">
                             <input type="text" class="form-control order-form-control"
                                    ng-model="truckRequest.destinationSearch" name="destination" id="searchDestination"
                                    ng-change="searchDestination()"/>
                             <label class="order-effect-for-input">Destination *</label>
-                        </li>
-                        <li class="form-group styling-input-list">
+                        </div>
+                        <div class="form-group col-sm-3">
                             <select class="form-control order-form-control" ng-model="truckRequest.truckType">
                                 <option value="">Truck type</option>
-                                <option ng-repeat="truck in truckTypesList" value="{{truck._id}}">{{truck.title}}</option>
+                                <option ng-repeat="truck in truckTypesList" value="{{truck._id}}">{{truck.title}}
+                                </option>
                             </select>
-                        </li>
-
-                        <li>
+                        </div>
+                        <div>
                             <button class="btn btn-info" ng-click="searchTrucksForRequest()">Go</button>
-                        </li>
-                    </ul>
+                        </div>
                 </div>
                 <div class="row col-sm-12 table-responsive">
-                    <table class="table table-bordered table-striped table-condensed table-hover">
-                        <thead>
-                        <tr>
-                            <td>S.No</td>
-                            <td>Name</td>
-                            <td>Type</td>
-                            <td>Mobile</td>
-                            <td>No Of Trucks</td>
-                            <td>Company</td>
-                            <td>Addess</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr ng-repeat="truck in availableTruckslist">
-                            <td>{{$index+1}}</td>
-                            <td>{{truck.firstName}}</td>
-                            <td>{{truck.role}}</td>
-                            <td>{{truck.contactPhone}}</td>
-                            <td>{{truck.noOfTrucks || "NA"}}</td>
-                            <td>{{truck.company || "NA"}}</td>
-                            <td>{{truck.address || "NA"}}</td>
-                        </tr>
-                        </tbody>
+                    <table class="table table-bordered table-striped table-condensed table-hover text-center"
+                           id="SearchTruckRequest">
+
                     </table>
                 </div>
 
@@ -186,31 +164,28 @@
                 </uib-accordion-heading>
 
                 <div class="row">
-                    <ul class="list-inline">
-                        <li class="form-group col-xs-12 col-sm-4">
+                        <div class="form-group col-xs-12 col-sm-4">
                             <select ng-model="quote.accountId" class="form-control order-form-control">
                                 <option ng-repeat="truck in availableTruckslist" value="{{truck._id}}">
                                     {{truck.firstName}}
                                 </option>
                             </select>
 
-                        </li>
-                        <li class="form-group styling-input-list col-xs-12 col-sm-3">
+                        </div>
+                        <div class="form-group styling-input-list col-xs-12 col-sm-4">
                             <input type="text" class="form-control order-form-control" name="quote"
                                    ng-model="quote.quote"/>
                             <label class="order-effect-for-input">Quote</label>
-                        </li>
-                        <li class="form-group styling-input-list col-xs-12 col-sm-3">
+                        </div>
+                        <div class="form-group styling-input-list col-xs-12 col-sm-3">
                             <input type="text" class="form-control order-form-control" name="comment"
                                    ng-model="quote.comment"/>
                             <label class="order-effect-for-input">QuoteComment</label>
-                        </li>
-                        <li class="form-group">
+                        </div>
+                        <div class="form-group">
                             <button class="btn btn-info" ng-click="addTruckRequestQuote()">Submit</button>
-                        </li>
+                        </div>
 
-
-                    </ul>
                 </div>
                 <div class="row col-sm-12 table-responsive">
                     <table class="table table-bordered table-hover">
@@ -251,7 +226,8 @@
                     <div class="col-xs-12 col-sm-4">
                         <div class="form-group customSelect">
 
-                            <input type="text" readonly="true" class="form-control order-form-control" ng-model="loadBooking.customer.firstName"/>
+                            <input type="text" readonly="true" class="form-control order-form-control"
+                                   ng-model="loadBooking.customer.firstName"/>
 
                         </div>
                         <div class="form-group styling-input-list">
