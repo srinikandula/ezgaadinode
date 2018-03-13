@@ -147,8 +147,8 @@ AuthRouter.get('/totalAdminTruckOrders',function (req,res) {
     });
 });
 
-AuthRouter.get('/getOrderDetails',function (req,res) {
-   OrderProcess.getOrderDetails(req,function (result) {
+AuthRouter.get('/createOrder',function (req,res) {
+   OrderProcess.createOrder(req,function (result) {
        res.send(result);
    })
 });

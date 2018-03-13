@@ -151,6 +151,9 @@ OrderProcess.prototype.addTruckRequest = function (req, callback) {
     if (params.customerType === "UnRegistered" && !params.firstName) {
         retObj.messages.push("Please enter name");
     }
+    if (params.customerType === "UnRegistered" && !params.contactPhone) {
+        retObj.messages.push("Please enter phone");
+    }
     if (!params.truckDetails || !params.truckDetails.length > 0 || !checkTruckDetails(params.truckDetails)) {
         retObj.messages.push("Please enter truck details");
     }
@@ -497,7 +500,7 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
 
     }).lean().exec(function (err, operatingRoutes) {
         if (err) {
-            console.log("err",err);
+            console.log("err", err);
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (operatingRoutes.length > 0) {
@@ -1593,7 +1596,7 @@ OrderProcess.prototype.getAdminTruckOrdersList = function (req, callback) {
                 })
         },
         count: function (countCallback) {
-            TruckRequestColl.count({}, function (err, count) {
+            AdminTripsColl.count({}, function (err, count) {
                 countCallback(err, count);
             });
         }
@@ -1636,4 +1639,137 @@ OrderProcess.prototype.getAdminTruckOrdersList = function (req, callback) {
         }
     });
 };
+
+/*Author Naresh*/
+
+OrderProcess.prototype.createOrder = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body;
+    if (!params.loadOwnerType) {
+        retObj.messages.push("select load owner type");
+    }
+
+    if (!params.truckOwnerId) {
+        retObj.messages.push("Please select truck owner");
+    }
+
+    if (params.loadOwnerType === "Registered" && !params.loadOwnerId) {
+        retObj.messages.push("Please select load owner customer");
+    }
+    if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_firstName) {
+        retObj.messages.push("Please enter load owner name");
+    }
+    if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_contactPhone) {
+        retObj.messages.push("Please enter load owner phone");
+    }
+    if (!params.truckType) {
+        retObj.messages.push("Please select truck type");
+    }
+    if (!params.source) {
+        retObj.messages.push("Please enter source");
+    }
+    if (!params.destination) {
+        retObj.messages.push("Please enter destination");
+    }
+    if (!params.registrationNo) {
+        retObj.messages.push("Please enter source");
+    }
+    if (!params.destination) {
+        retObj.messages.push("Please enter destination");
+    }
+    if (!params.egCommission) {
+        retObj.messages.push("Please enter easygaadi commission");
+    }
+    if (!params.to_bookedAmount) {
+        retObj.messages.push("Please truck booked amount");
+    }
+    if (!params.to_advance) {
+        retObj.messages.push("Please truck booked amount");
+    }
+    if (!params.applyTds) {
+        retObj.messages.push("select apply Tds type");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        params.createdBy = req.jwt.id;
+        var adminTrip = new AdminTripsColl(params);
+        adminTrip.save(function (err, saveDoc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.create_order_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages = "Order created successfully";
+                retObj.data = doc;
+                analyticsService.create(req, serviceActions.create_order, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+
+};
+
+OrderProcess.prototype.getTripOrderDetails = function (req,callback) {
+    var retObj = {
+        status:false,
+        message:[]
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid Order request");
+        callback(retObj);
+    } else {
+        AdminTripsColl.findOne({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.message.push("Please try again");
+                analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc) {
+                retObj.message.push("Success");
+                analyticsService.create(req, serviceActions.get_trip_order_details, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.message.push("Order details not found");
+                analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+
+};
+
+
 module.exports = new OrderProcess();

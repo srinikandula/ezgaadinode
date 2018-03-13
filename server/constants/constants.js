@@ -499,6 +499,14 @@ const serviceActions = {
     count_admin_orders_err:'COUNT_ADMIN_ORDERS_ERR',
     get_admin_orders_list:'GET_ADMIN_ORDERS_LIST',
     get_admin_orders_list_err:'GET_ADMIN_ORDERS_LIST_ERR',
+    create_order:"CREATE_ORDER",
+    create_order_err:"CREATE_ORDER_ERR",
+    get_trip_order_details:"GET_TRIP_ORDER_DETAILS",
+    get_trip_order_details_err:"GET_TRIP_ORDER_DETAILS_ERR",
+    get_truck_types:"GET_TRUCK_TYPES",
+    get_truck_types_err:"GET_TRUCK_TYPES_ERR",
+
+
 
 };
 module.exports = serviceActions;

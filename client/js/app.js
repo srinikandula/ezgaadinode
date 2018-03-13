@@ -482,6 +482,8 @@ app.run(['$transitions', '$rootScope', '$cookies',function ($transitions, $rootS
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');
+        $rootScope.createGroup=$cookies.get('createGroup');
+        $rootScope.createTruck=$cookies.get('createTruck');
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
 

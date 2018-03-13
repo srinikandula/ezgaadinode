@@ -386,7 +386,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         })
         getTruckIds();
     } else {
-        getTruckIds();
+        //getTruckIds();
     }
 
     $scope.enableGlobalAccess=false;
@@ -430,7 +430,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         }, function (err) {
 
         });
-    }
+    };
 
     $scope.addOrUpdateAccount = function () {
         var params = $scope.account;
@@ -510,11 +510,11 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                 }
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error(success.data.message);
+                    Notification.error(message);
                 });
             }
         }, function (error) {
-            Notification.error(error);
+           /* Notification.error(error);*/
         });
 
     }

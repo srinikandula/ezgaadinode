@@ -26,6 +26,8 @@ function create(req,action,attrs){
 
 Groups.prototype.login = function (userName, password, contactPhone,req, callback) {
     logger.info("logging in user:" + userName);
+    var truckAccess=["Truck Owner","Transpoters"];
+    var groupAccess=["Truck Owner","Transpoters"];
     var retObj = {
         status: false,
         messages: []
@@ -61,16 +63,41 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                     callback(retObj);
                 } else if (!user) {
                     retObj.messages.push("Invalid Credentials");
-                    create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false})
+                    create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false});
                     callback(retObj);
                 } else if ((user.password === password)) {
+                    retObj.status = true;
+                    retObj._id = user._id;
+                    retObj.userName = userName;
+                    retObj.gpsEnabled = user.gpsEnabled;
+                    retObj.erpEnabled = user.erpEnabled;
+                    retObj.loadEnabled = user.loadEnabled;
+                    retObj.editAccounts = user.editAccounts;
+                    retObj.profilePic = user.profilePic;
+                    retObj.type = user.type;
+                    retObj.role = user.role;
+                    console
+                    if(truckAccess.indexOf(user.role)>-1){
+                        retObj.createTruck=true;
+                    }else{
+                        retObj.createTruck=false;
+                    }
+                    if(groupAccess.indexOf(user.role)>-1){
+                        retObj.createGroup=true;
+                    }else{
+                        retObj.createGroup=false;
+                    }
+
                     var obj = {
                         id: user._id,
                         accountId: user._id,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
                         type: user.role,
-                        role: user.role
+                        role: user.role,
+                        createGroup:retObj.createGroup,
+                        createTruck:retObj.createTruck
+
                     };
                     if(user.role === "group") {
                         obj.accountId = user.accountId;
@@ -86,22 +113,13 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                     retObj.messages.push('Please try again');
                                     callback(retObj);
                                 } else {
+                                    retObj.token = token;
+
                                     ErpSettingsColl.findOne({accountId: user._id}, function (err, settingsData) {
                                         if (err) {
                                             retObj.messages.push('Please try again');
                                             callback(retObj);
                                         } else if (settingsData) {
-                                            retObj.status = true;
-                                            retObj._id = user._id;
-                                            retObj.token = token;
-                                            retObj.userName = userName;
-                                            retObj.gpsEnabled = user.gpsEnabled;
-                                            retObj.erpEnabled = user.erpEnabled;
-                                            retObj.loadEnabled = user.loadEnabled;
-                                            retObj.editAccounts = user.editAccounts;
-                                            retObj.profilePic = user.profilePic;
-                                            retObj.type = user.role;
-                                            retObj.role = user.role;
                                             callback(retObj);
                                         } else {
                                             var erpSettings = new ErpSettingsColl({accountId: user._id});
@@ -110,17 +128,6 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                                     retObj.messages.push('Please try again');
                                                     callback(retObj);
                                                 } else if (saveSettings) {
-                                                    retObj.status = true;
-                                                    retObj._id = user._id;
-                                                    retObj.token = token;
-                                                    retObj.userName = userName;
-                                                    retObj.gpsEnabled = user.gpsEnabled;
-                                                    retObj.erpEnabled = user.erpEnabled;
-                                                    retObj.loadEnabled = user.loadEnabled;
-                                                    retObj.editAccounts = user.editAccounts;
-                                                    retObj.profilePic = user.profilePic;
-                                                    retObj.type = user.role;
-                                                    retObj.role = user.role;
                                                     callback(retObj);
                                                 } else {
                                                     retObj.messages.push('Please try again');
