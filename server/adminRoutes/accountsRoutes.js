@@ -15,7 +15,7 @@ AuthRouter.get('/getAccounts', function (req, res) {
     });
 });
 
-AuthRouter.get('/checkAvailablity/:userName', function (req, res) {
+AuthRouter.post('/checkAvailablity', function (req, res) {
     Accounts.checkAvailablity(req, function (result) {
         res.json(result);
     });

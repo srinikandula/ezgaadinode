@@ -15,13 +15,14 @@
                                    ng-model="accountDetails.userName" ng-change="checkAvailablity()"/>
                             <label class="focus-effect-for-input">User Name*</label>
                         </div>
+                        {{availableStatusError}}
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control"
                                    ng-model="accountDetails.contactName"/>
                             <label class="focus-effect-for-input">Contact Name*</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control"
+                            <input type="number" class="form-control custom-form-control"
                                    ng-model="accountDetails.contactPhone"/>
                             <label class="focus-effect-for-input">Contact Number*</label>
                         </div>
@@ -84,8 +85,8 @@
                             <label class="focus-effect-for-input">State</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control"
-                                   ng-model="accountDetails.pincode"/>
+                            <input type="number" class="form-control custom-form-control"
+                                   ng-model="accountDetails.pincode" maxlength="6"/>
                             <label class="focus-effect-for-input">Pincode</label>
                         </div>
                     </div>
@@ -314,7 +315,7 @@
 
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ui-sref="services.gpsAccounts">Cancel</a>
-            <a href="#" class="btn btn-primary" ng-click="addOrUpdateAccount()">Submit</a>
+            <a href="#" class="btn btn-primary" ng-click="addUpdateAccount()">Submit</a>
 
         </div>
     </div>

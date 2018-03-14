@@ -9,14 +9,15 @@ var serviceActions = require('./../constants/adminConstants');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var keysColl = require('./../models/schemas').keysColl;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
-var AccountDevicePlanHistoryColl= require('./../models/schemas').AccountDevicePlanHistoryColl;
-var ErpPlanHistoryColl= require('./../models/schemas').ErpPlanHistoryColl;
-var PaymentsColl= require('./../models/schemas').PaymentsColl;
+var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
+var ErpPlanHistoryColl = require('./../models/schemas').ErpPlanHistoryColl;
+var PaymentsColl = require('./../models/schemas').PaymentsColl;
 const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
 
-var Accounts = function () {};
+var Accounts = function () {
+};
 
 Accounts.prototype.totalAccounts = function (req, callback) {
     var retObj = {
@@ -25,12 +26,14 @@ Accounts.prototype.totalAccounts = function (req, callback) {
     };
     var query = {};
     var params = req.params;
-    if(params.type === 'gps') {
+    if (params.type === 'gps') {
         query = {gpsEnabled: true};
-    } else if(params.type === 'erp') {
+    } else if (params.type === 'erp') {
         query = {erpEnabled: true}
-    } else if(params.type === 'accounts') {
-        query = {type: 'account', role: {$nin:['employee']}}
+    } else if (params.type === 'both') {
+        query = {erpEnabled: true, gpsEnabled: true}
+    } else if (params.type === 'accounts') {
+        query = {type: 'account', role: {$nin: ['employee']}}
     }
     AccountsColl.count(query, function (err, doc) {
         if (err) {
@@ -70,23 +73,23 @@ Accounts.prototype.getAccounts = function (req, callback) {
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var query = {};
-    if(params.type === 'gps') {
+    if (params.type === 'gps') {
         query = {gpsEnabled: true};
-    } else if(params.type === 'erp') {
+    } else if (params.type === 'erp') {
         query = {erpEnabled: true}
-    } else if(params.type === 'both') {
+    } else if (params.type === 'both') {
         query = {erpEnabled: true, gpsEnabled: true}
-    } else if(params.type === 'accounts') {
-        query = {type: 'account', role: {$nin:['employee']}}
+    } else if (params.type === 'accounts') {
+        query = {type: 'account', role: {$nin: ['employee']}}
     }
-    if(params.sortableString === 'smsEnabled') query.smsEnabled = true;
-    else if(params.sortableString === 'smsDisabled') query.smsEnabled = false;
-    else if(params.sortableString === 'statusEnabled') query.isActive = true;
-    else if(params.sortableString === 'statusDisbled') query.isActive = false;
-    else if(params.sortableString === 'Trucks') query.truckType = 'Trucks';
-    else if(params.sortableString === 'Non Trucks') query.truckType = 'Non Trucks';
-    else if(params.sortableString === 'Both') query.truckType = 'Both';
-    query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
+    if (params.sortableString === 'smsEnabled') query.smsEnabled = true;
+    else if (params.sortableString === 'smsDisabled') query.smsEnabled = false;
+    else if (params.sortableString === 'statusEnabled') query.isActive = true;
+    else if (params.sortableString === 'statusDisbled') query.isActive = false;
+    else if (params.sortableString === 'Trucks') query.truckType = 'Trucks';
+    else if (params.sortableString === 'Non Trucks') query.truckType = 'Non Trucks';
+    else if (params.sortableString === 'Both') query.truckType = 'Both';
+    if(params.searchString) query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
@@ -132,23 +135,23 @@ Accounts.prototype.getAccounts = function (req, callback) {
                 success: true
             }, function (response) {
             });
-            if(params.type === 'accounts') {
+            if (params.type === 'accounts') {
                 async.map(docs.accounts, function (account, asynCalback) {
                     async.parallel({
                         gpsDate: function (gpsCallback) {
-                            AccountDevicePlanHistoryColl.findOne({accountId:account._id},function (errGps, gpsDateOfAccount) {
+                            AccountDevicePlanHistoryColl.findOne({accountId: account._id}, function (errGps, gpsDateOfAccount) {
                                 gpsCallback(errGps, gpsDateOfAccount);
                             });
                         },
                         erpDate: function (gpsCallback) {
-                            ErpPlanHistoryColl.findOne({accountId:account._id},function (errErp, erpDateOfAccount) {
+                            ErpPlanHistoryColl.findOne({accountId: account._id}, function (errErp, erpDateOfAccount) {
                                 gpsCallback(errErp, erpDateOfAccount);
                             });
                         },
                     }, function (errDates, dates) {
-                        if(dates.gpsDate) account.gpsDate = dates.gpsDate.createdAt;
+                        if (dates.gpsDate) account.gpsDate = dates.gpsDate.createdAt;
                         else account.gpsDate = '--';
-                        if(dates.erpDate) account.erpDate = dates.erpDate.createdAt;
+                        if (dates.erpDate) account.erpDate = dates.erpDate.createdAt;
                         else account.erpDate = '--';
                         asynCalback(errDates, dates);
                     });
@@ -168,9 +171,10 @@ Accounts.prototype.checkAvailablity = function (req, callback) {
         status: false,
         messages: []
     };
-    var query = {userName: {$regex: "/\b"+req.params.userName+"\b/i"}, _id: {$nin:[req.jwt.id]}}; //{$or: [{userName: new RegExp(req.params.userName, "i"), _id: {$nin:[req.jwt.id]}}]}
+    var query = {userName: req.body.userName};
+    if(req.body._id) query = {userName: req.body.userName, _id: {$nin: [req.body._id]}};
     AccountsColl.findOne(query, function (erruser, user) {
-        if(erruser) {
+        if (erruser) {
             retObj.messages.push('Error checking availability');
             analyticsService.create(req, serviceActions.add_account_err, {
                 body: JSON.stringify(req.params),
@@ -180,7 +184,7 @@ Accounts.prototype.checkAvailablity = function (req, callback) {
             }, function (response) {
             });
             callback(retObj);
-        } else if(user) {
+        } else if (user) {
             retObj.messages.push('Username already exists');
             analyticsService.create(req, serviceActions.add_account_err, {
                 body: JSON.stringify(req.params),
@@ -211,7 +215,7 @@ Accounts.prototype.deleteRoute = function (req, callback) {
         messages: []
     };
     OperatingRoutesColl.remove({_id: req.params.id}, function (err, removed) {
-        if(err) {
+        if (err) {
             retObj.messages.push('unable to remove operating route');
             analyticsService.create(req, serviceActions.remove_operating_route, {
                 body: JSON.stringify(req.params),
@@ -264,9 +268,9 @@ Accounts.prototype.addAccount = function (req, callback) {
     if (!accountInfo.contactPhone) {
         retObj.messages.push('Invalid Mobile Number');
     }
- /*   if (!accountInfo.type) {
-        retObj.messages.push('Invalid type');
-    }*/
+    if (!accountInfo.role) {
+        retObj.messages.push('Invalid role');
+    }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_account_err, {
             body: JSON.stringify(req.body),
@@ -302,8 +306,21 @@ Accounts.prototype.addAccount = function (req, callback) {
         //         callback(retObj);
         //     } else {
         accountInfo.type = 'account';
+        generateUniqueUserId(accountInfo.role, function (newId) {
+            if(!newId.status) {
+                retObj.messages.push('Error saving account.');
+                analyticsService.create(req, serviceActions.add_account_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                accountInfo.userId = newId.userId;
                 AccountsColl.update(query, accountInfo, {upsert: true}, function (errSaved, saved) {
-                    if(errSaved) {
+                    if (errSaved) {
                         console.log(err);
                         retObj.messages.push('Error saving account');
                         analyticsService.create(req, serviceActions.add_account_err, {
@@ -316,8 +333,8 @@ Accounts.prototype.addAccount = function (req, callback) {
                         callback(retObj);
                     } else {
                         async.map(routes, function (route, asynCallback) {
-                            var routeQuery = {};
-                            if(route._id) {
+                            var routeQuery = {accountId: query._id};
+                            if (route._id) {
                                 routeQuery._id = route._id;
                             } else {
                                 routeQuery = {_id: mongoose.Types.ObjectId()};
@@ -326,7 +343,7 @@ Accounts.prototype.addAccount = function (req, callback) {
                             route.updatedBy = req.jwt.id;
                             delete route.__v;
                             OperatingRoutesColl.update(routeQuery, route, {upsert: true}, function (errroute, routeSaved) {
-                                if(errroute) {
+                                if (errroute) {
                                     console.log(errroute);
                                     retObj.messages.push('Error adding/updating route');
                                     asynCallback(errroute);
@@ -335,7 +352,7 @@ Accounts.prototype.addAccount = function (req, callback) {
                                 }
                             });
                         }, function (errasync, async) {
-                            if(errasync) {
+                            if (errasync) {
                                 retObj.messages.push('Error adding/updating routes');
                                 analyticsService.create(req, serviceActions.add_account_err, {
                                     body: JSON.stringify(req.body),
@@ -359,10 +376,41 @@ Accounts.prototype.addAccount = function (req, callback) {
                         });
                     }
                 });
-            // }
+            }
+        });
+        // }
         // });
     }
 };
+
+function generateUniqueUserId(userType, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (userType === 'Truck Owner') {
+        retObj.userId = "TO" + parseInt(Math.random() * 100000);
+    } else if (userType === 'Manufacturer') {
+        retObj.userId = "MF" + parseInt(Math.random() * 100000);
+    } else if (userType === 'Commission Agent') {
+        retObj.userId = "CA" + parseInt(Math.random() * 100000);
+    } else if (userType === 'Transporter') {
+        retObj.userId = "TR" + parseInt(Math.random() * 100000);
+    } else if (userType === 'Factory Owners') {
+        retObj.userId = "FO" + parseInt(Math.random() * 100000);
+    }
+    AccountsColl.findOne({userId: retObj.userId}, function (err, doc) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else if (doc) {
+            generateUniqueUserId(userType, callback);
+        } else {
+            retObj.status = true;
+            callback(retObj);
+        }
+    })
+}
 
 Accounts.prototype.getAccountDetails = function (req, callback) {
     var retObj = {
@@ -387,10 +435,10 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
         async.parallel({
             accountInfo: function (accountsInfoCallback) {
                 AccountsColl.findOne({"_id": ObjectId(accountId)}, function (err, account) {
-                    if(err) {
+                    if (err) {
                         retObj.messages.push('Error retrieving account');
                         accountsInfoCallback(err);
-                    } else if(account) {
+                    } else if (account) {
                         retObj.messages.push('Successfully retrieved account');
                         accountsInfoCallback(null, account);
                     } else {
@@ -401,7 +449,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
             },
             operatingRoutes: function (routesCallback) {
                 OperatingRoutesColl.find({accountId: ObjectId(accountId)}, function (errroutes, routes) {
-                    if(errroutes) {
+                    if (errroutes) {
                         retObj.messages.push('Error retrieving routes');
                         routesCallback(errroutes);
                     } else {
@@ -411,8 +459,11 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 });
             },
             assignedPlans: function (plansCallback) {
-                ErpPlanHistoryColl.find({accountId: ObjectId(accountId)}).populate('planId', {planName:1,amount:1}).sort({expiryTime:-1}).exec(function (errplans, plans) {
-                    if(errplans) {
+                ErpPlanHistoryColl.find({accountId: ObjectId(accountId)}).populate('planId', {
+                    planName: 1,
+                    amount: 1
+                }).sort({expiryTime: -1}).exec(function (errplans, plans) {
+                    if (errplans) {
                         retObj.messages.push('Error retrieving plans');
                         plansCallback(errplans);
                     } else {
@@ -422,7 +473,7 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 });
             }
         }, function (errdetails, accountDetails) {
-            if(errdetails) {
+            if (errdetails) {
                 analyticsService.create(req, serviceActions.get_account_details_err, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
@@ -438,10 +489,10 @@ Accounts.prototype.getAccountDetails = function (req, callback) {
                 retObj.assignedPlans = accountDetails.assignedPlans;
                 retObj.enableForm = true;
                 if (accountDetails.assignedPlans.length) {
-                    var expiryDate = new Date(accountDetails.assignedPlans[accountDetails.assignedPlans.length-1].expiryTime);
+                    var expiryDate = new Date(accountDetails.assignedPlans[accountDetails.assignedPlans.length - 1].expiryTime);
                     var today = new Date();
-                    var daysRemaining = Math.round((expiryDate.getTime()-today.getTime())/(1000*60*60*24));
-                    if(daysRemaining > 30) retObj.enableForm = false;
+                    var daysRemaining = Math.round((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                    if (daysRemaining > 30) retObj.enableForm = false;
                     // console.log($scope.daysRemaining);
                 }
                 analyticsService.create(req, serviceActions.get_account_details, {
@@ -542,7 +593,7 @@ function updateAccounts(req, callback) {
         } else if (oldAcc) {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.data=oldAcc;
+            retObj.data = oldAcc;
             analyticsService.create(req, serviceActions.update_account, {
                 body: JSON.stringify(req.body),
                 accountId: req.jwt.id,
@@ -578,13 +629,25 @@ Accounts.prototype.deleteAccount = function (req, callback) {
         retObj.messages.push('Invalid account id');
     }
     if (retObj.messages.length) {
-        analyticsService.create(req,serviceActions.delete_account_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.delete_account_err, {
+            body: JSON.stringify(req.params),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
-        AccountsColl.remove({_id: accountId}, function (err,returnValue) {
+        AccountsColl.remove({_id: accountId}, function (err, returnValue) {
             if (err) {
                 retObj.messages.push('Error deleting account');
-                analyticsService.create(req,serviceActions.delete_account_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.delete_account_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (returnValue.result.n === 0) {
                 retObj.status = false;
@@ -613,27 +676,27 @@ Accounts.prototype.deleteAccount = function (req, callback) {
 };
 
 Accounts.prototype.assignPlan = function (req, callback) {
-    var retObj={
+    var retObj = {
         status: false,
         messages: []
     };
     var params = req.body.planDetails;
-    if(!params.planId) {
+    if (!params.planId) {
         retObj.messages.push('Select a plan');
     }
-    if(!params.startTime){
+    if (!params.startTime) {
         retObj.messages.push('Select start date');
     }
-    if(!params.expiryTime){
+    if (!params.expiryTime) {
         retObj.messages.push('Select expiry date');
     }
-    if(params.expiryTime < params.startTime){
+    if (params.expiryTime < params.startTime) {
         retObj.messages.push('expiry date should be greater than start date');
     }
-    if(!params.amount){
+    if (!params.amount) {
         retObj.messages.push('select an amount');
     }
-    if(retObj.messages.length < 1){
+    if (retObj.messages.length < 1) {
         params.creationTime = new Date();
         params.received = true;
         async.parallel({
@@ -641,10 +704,10 @@ Accounts.prototype.assignPlan = function (req, callback) {
                 params.createdBy = req.jwt.id;
                 params.updatedBy = req.jwt.id;
                 var doc = {};
-                if(req.body.type === 'gps') doc = new AccountDevicePlanHistoryColl(params);
+                if (req.body.type === 'gps') doc = new AccountDevicePlanHistoryColl(params);
                 else doc = new ErpPlanHistoryColl(params);
                 doc.save(function (errAssign, assigned) {
-                    if(errAssign) {
+                    if (errAssign) {
                         retObj.messages.push(errAssign);
                         assignCallback(errAssign);
                     } else {
@@ -660,11 +723,11 @@ Accounts.prototype.assignPlan = function (req, callback) {
                     createdBy: req.jwt.id,
                     updatedBy: req.jwt.id
                 };
-                if(params.type === 'gps') paymentData.type = 'gps';
+                if (params.type === 'gps') paymentData.type = 'gps';
                 else paymentData.type = 'erp';
                 var doc = new PaymentsColl(paymentData);
                 doc.save(function (errPayment, payment) {
-                    if(errPayment) {
+                    if (errPayment) {
                         retObj.messages.push('errPayment');
                         paymentCallback(errPayment);
                     } else {
@@ -673,83 +736,127 @@ Accounts.prototype.assignPlan = function (req, callback) {
                 });
             }
         }, function (errSaving, saved) {
-            if(errSaving){
-                retObj.status=false;
+            if (errSaving) {
+                retObj.status = false;
                 retObj.messages.push('Please try again');
-                analyticsService.create(req,serviceActions.assign_erp_plan_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){});
+                analyticsService.create(req, serviceActions.assign_erp_plan_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
-            }else {
-                retObj.status=true;
+            } else {
+                retObj.status = true;
                 retObj.messages.push('Success');
-                analyticsService.create(req,serviceActions.assign_erp_plan_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){});
+                analyticsService.create(req, serviceActions.assign_erp_plan_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
     }
 };
 
-Accounts.prototype.createKeys=function (accountId,access,req,callback) {
-    var retObj={
+Accounts.prototype.createKeys = function (accountId, access, req, callback) {
+    var retObj = {
         status: false,
         messages: []
     };
-    var apiKey=new ObjectId();
-    var secretKey=uuidv1();
-    var data={accountId:accountId,apiKey:apiKey,secretKey:secretKey,globalAccess:access};
-    var keysData=new keysColl(data);
-    keysData.save(function (err,result) {
-        if(err){
-            retObj.status=false;
+    var apiKey = new ObjectId();
+    var secretKey = uuidv1();
+    var data = {accountId: accountId, apiKey: apiKey, secretKey: secretKey, globalAccess: access};
+    var keysData = new keysColl(data);
+    keysData.save(function (err, result) {
+        if (err) {
+            retObj.status = false;
             retObj.messages.push('Please try again');
-            analyticsService.create(req,serviceActions.cre_key_pair_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.cre_key_pair_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
-        }else {
-            retObj.status=true;
+        } else {
+            retObj.status = true;
             retObj.messages.push('Success');
-            retObj.results=result;
-            analyticsService.create(req,serviceActions.cre_key_pair,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            retObj.results = result;
+            analyticsService.create(req, serviceActions.cre_key_pair, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     })
 };
 
-Accounts.prototype.getKeyPairsForAccount =function (accountId,req,callback) {
-    var retObj={
+Accounts.prototype.getKeyPairsForAccount = function (accountId, req, callback) {
+    var retObj = {
         status: false,
         messages: []
     };
-    keysColl.find({accountId:accountId},function (err,keys) {
-        if(err){
-            retObj.status=false;
+    keysColl.find({accountId: accountId}, function (err, keys) {
+        if (err) {
+            retObj.status = false;
             retObj.messages.push('Please try again');
-            analyticsService.create(req,serviceActions.get_acc_key_pairs_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.get_acc_key_pairs_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
-        }else{
-            retObj.status=true;
+        } else {
+            retObj.status = true;
             retObj.messages.push('Success');
-            retObj.results=keys;
-            analyticsService.create(req,serviceActions.get_acc_key_pairs,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            retObj.results = keys;
+            analyticsService.create(req, serviceActions.get_acc_key_pairs, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     })
 
 };
 
-Accounts.prototype.deleteKeyPair = function (id,accountId,req,callback) {
-    var retObj={
+Accounts.prototype.deleteKeyPair = function (id, accountId, req, callback) {
+    var retObj = {
         status: false,
         messages: []
     };
-    keysColl.remove({_id:id},function (err) {
-        if(err){
-            retObj.status=false;
+    keysColl.remove({_id: id}, function (err) {
+        if (err) {
+            retObj.status = false;
             retObj.messages.push('Please try again');
-            analyticsService.create(req,serviceActions.del_key_pair_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.del_key_pair_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
-        }else{
-            retObj.status=true;
+        } else {
+            retObj.status = true;
             retObj.messages.push('Keypair deleted successfully');
-            analyticsService.create(req,serviceActions.del_key_pair,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.del_key_pair, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     })

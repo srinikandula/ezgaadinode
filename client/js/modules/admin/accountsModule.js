@@ -26,10 +26,11 @@ app.factory('AccountService', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        checkAvailablity: function (userName, success, error) {
+        checkAvailablity: function (data, success, error) {
             $http({
-                url: '/v1/cpanel/accounts/checkAvailablity/' + userName,
-                method: "GET"
+                url: '/v1/cpanel/accounts/checkAvailablity',
+                method: "POST",
+                data: data
             }).then(success, error);
         },
         deleteRoute: function (id, success, error) {
@@ -56,6 +57,7 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
         AccountService.count($stateParams.type, function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
+                console.log($scope.count);
                 $scope.init();
             } else {
                 Notification.error({message: success.data.message});
@@ -93,6 +95,8 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.accounts;
+                // tableParams.reload();
+                console.log(response.data);
                 $scope.currentPageOfAccounts = response.data.accounts;
             } else {
                 Notification.error({message: response.data.messages[0]});
@@ -101,7 +105,7 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
     };
 }]);
 
-app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', 'SettingServices', function ($scope, $stateParams, AccountService, Notification, $state, SettingServices) {
+app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', 'SettingServices', 'Utils', function ($scope, $stateParams, AccountService, Notification, $state, SettingServices, Utils) {
 
     $scope.enableForm = true;
     function getAccountDetails() {
@@ -254,18 +258,27 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         });
     };
     $scope.availableStatus = true;
+    $scope.availableStatusError = '';
     $scope.checkAvailablity = function () {
-        AccountService.checkAvailablity($scope.accountDetails.userName, function (success) {
-            if (success.data.status) {
-                $scope.availableStatus = true;
-            } else {
-                $scope.availableStatus = true;
-            }
-        });
+        if($scope.accountDetails.userName.length > 3) {
+            var params = {userName: $scope.accountDetails.userName};
+            if ($scope.accountDetails._id) params._id = $scope.accountDetails._id;
+            AccountService.checkAvailablity(params, function (success) {
+                console.log(success.data);
+                if (success.data.status) {
+                    $scope.availableStatus = false;
+                    $scope.availableStatusError = 'username vailable';
+                } else {
+                    $scope.availableStatus = true;
+                    $scope.availableStatusError = 'username not vailable';
+                }
+            });
+        }
     };
 
-    $scope.addOrUpdateAccount = function () {
+    $scope.addUpdateAccount = function () {
         var params = $scope.accountDetails;
+        console.log(params);
         params.errors = [];
         if (!params.userName) {
             params.errors.push('Invalid User Name');
@@ -282,10 +295,13 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         if (params.password.trim().length < 5) {
             params.errors.push('Invalid password. Password has to be at least 5 characters');
         }
-        if (!params.gpsEnabled && !params.erpEnabled) {
-            params.errors.push('Select atleast 1 service');
+        if (!params.email || !Utils.isValidEmail(params.email)) {
+            params.errors.push('Invalid email');
         }
-        if (!params.errors.length) {
+        /*if (!params.gpsEnabled && !params.erpEnabled) {
+            params.errors.push('Select atleast 1 service');
+        }*/
+        if (!params.errors.length && $scope.availableStatus) {
             AccountService.addAccount({
                 account: $scope.accountDetails,
                 routes: $scope.operatingRoutes

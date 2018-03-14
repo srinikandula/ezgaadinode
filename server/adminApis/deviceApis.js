@@ -280,7 +280,7 @@ Devices.prototype.getDevices = function (req, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
-    if(params.searchString) query.$or = [{"simPhoneNumber": new RegExp(params.searchString, "gi")}, {"imei": new RegExp(params.searchString, "gi")}];
+    if (params.searchString) query.$or = [{"simPhoneNumber": new RegExp(params.searchString, "gi")}, {"imei": new RegExp(params.searchString, "gi")}];
     async.parallel({
         devices: function (devicescallback) {
             DevicesColl.find(query)
@@ -428,7 +428,7 @@ Devices.prototype.updateDevice = function (req, callback) {
     };
     var params = req.body;
     TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
-       if (errassaindevice) {
+        if (errassaindevice) {
             retObj.messages.push("Unable to assign device to truck, please try again");
             analyticsService.create(req, serviceActions.edit_device_err, {
                 body: JSON.stringify(req.body),
@@ -658,9 +658,9 @@ Devices.prototype.getDevicePlanHistory = function (req, callback) {
             callback(retObj);
         } else {
             retObj.showGpsForm = true;
-            if(history.length) {
-                var expiry = (new Date(history[0].expiryTime).getTime() - new Date().getTime())/86400000;
-                if(expiry > 30) retObj.showGpsForm = false;
+            if (history.length) {
+                var expiry = (new Date(history[0].expiryTime).getTime() - new Date().getTime()) / 86400000;
+                if (expiry > 30) retObj.showGpsForm = false;
             }
             retObj.status = true;
             retObj.messages = "success";
@@ -760,13 +760,26 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
         }
     }, function (errDmDetails, dmDetails) {
         if (errDmDetails) {
-             retObj.messages.push("Unable to get dMdevices, please try again");
+            retObj.messages.push("Unable to get dMdevices, please try again");
+            analyticsService.create(req, serviceActions.get_device_management_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages = "success";
             retObj.dmDetails = dmDetails.employees;
             retObj.count = dmDetails.count.length;
+            analyticsService.create(req, serviceActions.get_device_management, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
@@ -786,12 +799,25 @@ Devices.prototype.getDeviceManagementCount = function (req, callback) {
         }
     ], function (errDmDetails, dmDetails) {
         if (errDmDetails) {
-             retObj.messages.push("Unable to get dMdevices, please try again");
+            retObj.messages.push("Unable to get dMdevices, please try again");
+            analyticsService.create(req, serviceActions.get_device_management_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages = "success";
             retObj.count = dmDetails.length;
+            analyticsService.create(req, serviceActions.get_device_management, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
@@ -805,11 +831,24 @@ Devices.prototype.getPaymentCount = function (req, callback) {
     PaymentsColl.count(function (errcount, count) {
         if (errcount) {
             retObj.messages.push("Unable to get payments count, please try again");
+            analyticsService.create(req, serviceActions.get_payments_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages = "success";
             retObj.count = count;
+            analyticsService.create(req, serviceActions.get_payments, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
@@ -840,17 +879,30 @@ Devices.prototype.getPaymentDetails = function (req, callback) {
     }, function (errPaymentDetails, paymentDetails) {
         if (errPaymentDetails) {
             retObj.messages.push("Unable to get payments, please try again");
+            analyticsService.create(req, serviceActions.get_payments_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages = "success";
             retObj.paymentDetails = paymentDetails;
+            analyticsService.create(req, serviceActions.get_payments, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
-Devices.prototype.getGPSPlansOfDevice = function (req, callback) {
+Devices.prototype.getGPSPlansOfDevice = function (req, callback) {  //
     var retObj = {
         status: false,
         messages: []
