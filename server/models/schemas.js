@@ -869,8 +869,7 @@ module.exports = {
     LoadNotificationColl: mongoose.model('loadNotification', LoadNotificationSchema, 'loadNotification'),
     adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest'),
     AdminTripsColl:mongoose.model('adminTripsColl',adminTripsSchema,'adminTripsColl'),
-    PaymentsColl: mongoose.model('paymentsColl', paymentsSchema, 'paymentsColl')
-    PaymentsColl: mongoose.model('paymentsSchema', paymentsSchema, 'paymentsSchema'),
+    PaymentsColl: mongoose.model('paymentsColl', paymentsSchema, 'paymentsColl'),
     OrderPaymentsColl:mongoose.model('orderPayments', orderPaymentsSchema, 'orderPayments'),
     OrderCommentsColl:mongoose.model('orderComments', orderCommentsSchema, 'orderComments'),
     OrderTransactionsColl:mongoose.model('orderTransactions', orderCommentsSchema, 'orderTransactions')
