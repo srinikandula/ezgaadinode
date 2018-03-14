@@ -672,7 +672,7 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
     box-sizing: border-box; /* css3 */
 }
 
-.select2-container .select2-choice {
+.select-box .select2-container .select2-choice {
     display: block;
     height: 26px;
     padding: 0 0 0 8px;
@@ -695,6 +695,13 @@ Version: 3.4.5 Timestamp: Mon Nov  4 08:22:42 PST 2013
 }
 .customSelect .select2-container .select2-choice{
     width: 74% !important;
+}
+.ordernew .select2-container{
+    min-width:220px !important;
+}
+.ordernew .select2-container .select2-choice{
+    width: 100% !important;
+    padding: 3px;
 }
 
 
@@ -1274,6 +1281,49 @@ textarea.custom-form-control{
     right: -9px;
     top: 51px;
     font-size: 20px;
+}
+.loadod{
+    font-size: 12px;
+    margin-left: 18px;
+    border-bottom: 1px solid #ccc;
+    width: 200px;
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+.truckinfomain{
+    padding: 30px 10px;
+}
+.truckinfo{
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 5px;
+}
+.truckinfo ul li{
+    padding-bottom: 5px;
+    font-size: 13px;
+}
+.truckOwnerInfo{
+    padding-top: 20px;
+}
+.truckOwnerInfo p{
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    width: 200px;
+}
+.perTransct{
+    margin: 20px 0;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+}
+.truckBooking ul li{
+    padding-bottom: 15px;
+}
+.print-icon{
+    position: absolute;
+    right: 40px;
+    top: 45px;
+    font-size: 25px;
+    color: #000;
 }
 /* Responsive Design */
 
