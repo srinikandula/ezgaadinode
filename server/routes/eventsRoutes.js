@@ -335,6 +335,13 @@ OpenRouter.get('/get/junkLeads', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/mapInstalledByToDevice', function (request, res) {
+    Events.getMapInstalledByToDevice(request,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
