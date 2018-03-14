@@ -2062,6 +2062,12 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                             function (err, docs) {
                                 transactionsCallback(err, docs);
                             })
+                    },
+                    comments:function (commentsCallback) {
+                        OrderCommentsColl.find(condition,
+                            function (err, docs) {
+                                transactionsCallback(err, docs);
+                            })
                     }
                 }, function (err, result) {
                     if (err) {
@@ -2069,6 +2075,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                         retObj.orderDetails = orderDetails;
                         retObj.paymentsDetails = result.paymentsDetails;
                         retObj.transactionsDetails = result.transactionsDetails;
+                        retObj.comments=result.comments;
                         analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -2148,6 +2155,12 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                             function (err, docs) {
                                 transactionsCallback(err, docs);
                             })
+                    },
+                    comments:function (commentsCallback) {
+                        OrderCommentsColl.find(condition,
+                            function (err, docs) {
+                                transactionsCallback(err, docs);
+                            })
                     }
 
                 }, function (err, result) {
@@ -2156,6 +2169,7 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                         retObj.orderDetails = orderDetails;
                         retObj.paymentsDetails = result.paymentsDetails;
                         retObj.transactionsDetails = result.transactionsDetails;
+                        retObj.comments=result.comments;
                         analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
