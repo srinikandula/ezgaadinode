@@ -505,8 +505,7 @@ const serviceActions = {
     get_trip_order_details_err:"GET_TRIP_ORDER_DETAILS_ERR",
     get_truck_types:"GET_TRUCK_TYPES",
     get_truck_types_err:"GET_TRUCK_TYPES_ERR",
-
-
-
+    get_device_management:'GET_DEVICE_MANAGEMENT',
+    get_device_management_err:'GET_DEVICE_MANAGEMENT_ERR'
 };
 module.exports = serviceActions;
