@@ -892,7 +892,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
     $scope.countLoadRequest = function () {
         OrderProcessServices.countLoadRequest(function (success) {
             if (success.data.status) {
-                $scope.count = success.data.count;
+                $scope.count = success.data.data;
                 $scope.initLoadRequest("");
             } else {
                 Notification.error({message: success.data.message});
