@@ -1263,7 +1263,18 @@ textarea.custom-form-control{
     width: 100%;
     overflow-x: auto;
 }
-
+.destprice{
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+}
+.createload{
+    position: absolute;
+    right: -9px;
+    top: 51px;
+    font-size: 20px;
+}
 /* Responsive Design */
 
 @media only screen and (max-width: 767px) {

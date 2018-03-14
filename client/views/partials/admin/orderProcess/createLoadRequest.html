@@ -1,4 +1,5 @@
-<div class="col-xs-12 newCust" ng-controller="loadRequestCtrl" ng-init="getTruckTypes();getAllAccountsExceptTruckOwners();">
+<div class="col-xs-12 newCust" ng-controller="loadRequestCtrl"
+     ng-init="getTruckTypes();getAllAccountsExceptTruckOwners();">
     <h4>{{title}}</h4>
     <div class="col-xs-12">
         <uib-accordion>
@@ -23,15 +24,16 @@
                         <div class="form-group select-box">
                             <ui-select ng-model="loadRequest.customer" theme="select2"
                                        style="min-width: 390px;"
-                                       title="Customer *"  reset-search-input="false" >
+                                       title="Customer *" reset-search-input="false">
 
                                 <ui-select-match placeholder="Customer *" class="form-control order-form-control">
                                     {{$select.selected.firstName || firstName}}
                                 </ui-select-match>
                                 <ui-select-choices
-                                        repeat="truck in truckOwnersList "  refresh="searchAccountOwner($select.search)" refresh-delay="0"  scroll-detector="loadMore()" >
+                                        repeat="truck in truckOwnersList " refresh="searchAccountOwner($select.search)"
+                                        refresh-delay="0" scroll-detector="loadMore()">
                                     <b>
-                                        <div  ng-bind-html="truck.firstName "></div>
+                                        <div ng-bind-html="truck.firstName "></div>
                                     </b>
                                     <small>
                                         Mobile: {{truck.contactPhone || '---'}}
@@ -101,34 +103,35 @@
                 <div class="row pos-relative top-border" ng-repeat="load in loadRequest.truckDetails track by $index">
                     <span class="plus-pos" ng-show="$index>0" style="top:-5px; right:-5px;"> <i
                             class="fa fa-times-circle clr-red" ng-click="removeTruckDetails($index)"></i></span>
-                    <div class="col-xs-12 col-sm-3">
+                    <div class="col-xs-12 col-sm-4">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control " name="source"
                                    ng-model="load.source" id="searchSource{{$index}}"
                                    ng-change="addSearchSource($index)"/>
                             <label class="order-effect-for-input">Source *</label>
                         </div>
-                        <div class="form-group pos-relative styling-input-list" ng-repeat="destination in load.destination track by $index">
+                        <div class="pos-relative destprice" ng-repeat="destination in load.destination track by $index">
                             <div class="form-group styling-input-list">
-                                <input type="text" class="form-control custom-form-control" name="destination"
-                                       ng-model="destination.destinationAddress" id="searchDestination{{$parent.$index}}{{$index}}"
+                                <input type="text" class="form-control order-form-control" name="destination"
+                                       ng-model="destination.destinationAddress"
+                                       id="searchDestination{{$parent.$index}}{{$index}}"
                                        ng-change="addSearchDestination($parent.$index,$index)"/>
-                                <label class="focus-effect-for-input">Destination *</label>
+                                <label class="order-effect-for-input">Destination *</label>
                             </div>
-                            <div class="form-group styling-input-list">
+                            <div class="styling-input-list">
                                 <input type="text" class="form-control order-form-control " name="state"
-                                       ng-model="destination.price" id="price" />
+                                       ng-model="destination.price" id="price"/>
                                 <label class="order-effect-for-input">Price *</label>
                             </div>
-                            <span class="plus-pos" ng-show="$index >= 1">
+                            <span class="createload" ng-show="$index >= 1">
                                 <i class="fa fa-times-circle clr-red"
                                    ng-click="deleteDestinationAndPrice($parent.$index,$index)"></i></span>
-                            <span class="plus-pos" ng-show="$index == 0">
+                            <span class="createload" ng-show="$index == 0">
                                 <i class="fa fa-plus-square" aria-hidden="true"
                                    ng-click="addDestinationAndPrice($parent.$index,$index)"></i></span>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3">
+                    <div class="col-xs-12 col-sm-4">
                         <div class="form-group">
                             <select class="form-control order-form-control"
                                     ng-model="load.truckType">
@@ -141,26 +144,28 @@
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control " name="registrationNo"
-                                   ng-model="load.registrationNo" id="registrationNo" />
+                                   ng-model="load.registrationNo" id="registrationNo"/>
                             <label class="order-effect-for-input">Registration No *</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control " name="makeYear"
-                                   ng-model="load.makeYear" id="makeYear" />
+                                   ng-model="load.makeYear" id="makeYear"/>
                             <label class="order-effect-for-input">Make Year</label>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3">
+                    <div class="col-xs-12 col-sm-4">
                         <div class="form-group">
-                            <admin-date-picker id="dateAvailable" ng-model="load.dateAvailable" placeholder="'Date Time Available'"
+                            <admin-date-picker id="dateAvailable" ng-model="load.dateAvailable"
+                                               placeholder="'Date Time Available'"
                                                class="'form-control order-form-control'"></admin-date-picker>
                         </div>
                         <div class="form-group">
-                            <admin-date-picker id="expectedDateReturn" ng-model="load.expectedDateReturn" placeholder="'Expected Date Return'"
+                            <admin-date-picker id="expectedDateReturn" ng-model="load.expectedDateReturn"
+                                               placeholder="'Expected Date Return'"
                                                class="'form-control order-form-control'"></admin-date-picker>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3">
+                    <div class="col-xs-12 col-sm-4">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control" name="driverInfo"
                                    ng-model="load.driverInfo"/>
