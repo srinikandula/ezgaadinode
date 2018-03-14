@@ -249,7 +249,7 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo,req, callback) 
                     callback(retObj);
                 } else if (oldAcc) {
                     accountInfo.profile.password = accountInfo.newPassword;
-                    updateAccounts(jwtObj, accountInfo, callback)
+                    updateAccounts(jwtObj, accountInfo,req, callback)
                 } else {
                     retObj.messages.push('Invalid Password');
                     analyticsService.create(req,serviceActions.update_account_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
@@ -257,7 +257,7 @@ Accounts.prototype.updateAccount = function (jwtObj, accountInfo,req, callback) 
                 }
             });
         } else {
-            updateAccounts(jwtObj, accountInfo, callback)
+            updateAccounts(jwtObj, accountInfo,req, callback)
         }
     }
 };

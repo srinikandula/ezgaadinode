@@ -739,6 +739,7 @@ var adminTripsSchema = new mongoose.Schema({
     loadCustomerLeadId:{type: ObjectId, ref: 'customerLeads'},
     truckCustomerLeadId:{type: ObjectId, ref: 'customerLeads'},
     status:{type:String,default:"New"},
+    loadOwnerType:String,
     source:String,
     destination:String,
     egCommission:Number,
@@ -749,16 +750,27 @@ var adminTripsSchema = new mongoose.Schema({
     comment:String,
     loadingAgentNo:String,
     pickupDate:Date,
+    applyTds:String,
     to_bookedAmount:{type:Number,default:0},
-    to_advance:{type:Number,default:0},
+    dateOfPOD:Date,
+    podFront:String,
+    podBack:String,
+    dieselCharges:Number,
+    tollGateCharges:Number,
+    loadingUnloadingCharges:Number,
+    policeCharges:Number,
+    truckStartDate:Date,
+    truckDestinationDate:Date,
+    truckRouteRunTime:String,
+
+    /*to_advance:{type:Number,default:0},
     to_loadingCharge:{type:Number,default:0},
     to_unloadingCharge:{type:Number,default:0},
     to_commission:{type:Number,default:0},
-    applyTds:String,
     lo_advancce:{type:Number,default:0},
     lo_loadingCharge:{type:Number,default:0},
     lo_unloadingCharge:{type:Number,default:0},
-    lo_commission:{type:Number,default:0}
+    lo_commission:{type:Number,default:0}*/
 }, {timestamps: true});
 
 var paymentsSchema = new mongoose.Schema({
@@ -769,9 +781,48 @@ var paymentsSchema = new mongoose.Schema({
     updatedBy: {type: ObjectId, ref: 'accounts'},
     type: String//gps or erp
 }, {
-    timestamps: true, versionKey: false
+    timestamps: true
 });
 
+var orderPaymentsSchema = new mongoose.Schema({
+    orderId:{type: ObjectId, ref: 'adminTripsColl'},
+    truckOwnerId:{type:ObjectId},
+    loadOwnerId:{type:ObjectId},
+    amount:{type:Number,default:0},
+    prefix:String,
+    comment:String,
+}, {
+    timestamps: true
+});
+
+var orderTransactionSchema = new mongoose.Schema({
+    orderId:{type: ObjectId, ref: 'adminTripsColl'},
+    truckOwnerId:{type:ObjectId},
+    loadOwnerId:{type:ObjectId},
+    amount:{type:Number,default:0},
+    prefix:String,
+    comment:String,
+    paymentBy:{type: ObjectId, ref: 'accounts'},
+    paymentType:String,
+    transactionId:String
+}, {
+    timestamps: true
+});
+
+var orderCommentsSchema = new mongoose.Schema({
+    orderId:{type: ObjectId, ref: 'adminTripsColl'},
+    createdBy:{type: ObjectId, ref: 'accounts'},
+    truckOwnerId:{type:ObjectId},
+    loadOwnerId:{type:ObjectId},
+    notify:String,
+    status:String,
+    comment:String,
+    paymentBy:{type: ObjectId, ref: 'accounts'},
+    paymentType:String,
+
+}, {
+    timestamps: true, versionKey: false
+});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -819,4 +870,10 @@ module.exports = {
     adminLoadRequestColl: mongoose.model('adminLoadRequest', adminLoadRequestSchema, 'adminLoadRequest'),
     AdminTripsColl:mongoose.model('adminTripsColl',adminTripsSchema,'adminTripsColl'),
     PaymentsColl: mongoose.model('paymentsColl', paymentsSchema, 'paymentsColl')
+    PaymentsColl: mongoose.model('paymentsSchema', paymentsSchema, 'paymentsSchema'),
+    OrderPaymentsColl:mongoose.model('orderPayments', orderPaymentsSchema, 'orderPayments'),
+    OrderCommentsColl:mongoose.model('orderComments', orderCommentsSchema, 'orderComments'),
+    OrderTransactionsColl:mongoose.model('orderTransactions', orderCommentsSchema, 'orderTransactions')
+
+
 };
