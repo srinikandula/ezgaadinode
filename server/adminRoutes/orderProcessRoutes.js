@@ -152,6 +152,20 @@ AuthRouter.get('/createOrder',function (req,res) {
        res.send(result);
    })
 });
+
+AuthRouter.get('/getTruckOwnerOrderDetails',function (req,res) {
+   OrderProcess.getTruckOwnerOrderDetails(req,function (result) {
+       res.send(result);
+   })
+});
+
+AuthRouter.get('/getLoadOwnerOrderDetails',function (req,res) {
+    OrderProcess.getLoadOwnerOrderDetails(req,function (result) {
+        res.send(result);
+    })
+});
+
+
 module.exports = {
     AuthRouter: AuthRouter
 };

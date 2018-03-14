@@ -15,10 +15,15 @@ var TruckRequestCommentsColl = require("../models/schemas").TruckRequestComments
 var adminLoadRequestColl = require("../models/schemas").adminLoadRequestColl;
 var CustomerLeadsColl = require("../models/schemas").CustomerLeadsColl;
 var AdminTripsColl = require("../models/schemas").AdminTripsColl;
+var OrderPaymentsColl = require("../models/schemas").OrderPaymentsColl;
+var OrderCommentsColl = require("../models/schemas").OrderCommentsColl;
+var OrderTransactionsColl = require("../models/schemas").OrderTransactionsColl;
+
 var customerLeadsApi = require("./customerLeadsApi");
 var Utils = require("./../apis/utils");
 var emailService = require('./../apis/mailerApi');
 var SmsService = require('./../apis/smsApi');
+
 
 var OrderProcess = function () {
 };
@@ -1412,7 +1417,7 @@ OrderProcess.prototype.updateLoadRequest = function (req, callback) {
             dateAvailable: params.dateAvailable,
             expectedDateReturn: params.expectedDateReturn,
         }
-        if(params.customerType === 'Registered') {
+        if (params.customerType === 'Registered') {
             loadRequestData.customerId = params.customerDetails._id;
         } else {
             loadRequestData.customerLeadId = params.customerDetails._id;
@@ -1695,47 +1700,346 @@ OrderProcess.prototype.createOrder = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        params.createdBy = req.jwt.id;
-        var adminTrip = new AdminTripsColl(params);
-        adminTrip.save(function (err, saveDoc) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.create_order_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages = "Order created successfully";
-                retObj.data = doc;
-                analyticsService.create(req, serviceActions.create_order, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
+        if (params.customerType === 'Registered') {
+            saveTripOrder(req, params, callback);
+        } else if (params.customerType === 'UnRegistered') {
+            params.createdBy = req.jwt.id;
+            Utils.removeEmptyFields(params);
+            var customerLead = new CustomerLeadsColl(params);
+            customerLead.save(function (err, doc) {
+                if (err) {
+                    retObj.messages.push("Please try again1");
+                    analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                        body: JSON.stringify(params),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else {
+                    params.customerLeadId = doc._id;
+                    retObj.messages.push("Customer lead added successfully");
+                    analyticsService.create(req, serviceActions.get_customer_leads, {
+                        body: JSON.stringify(params),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    saveTripOrder(req, params, callback);
+                }
+            });
+        }
+
     }
 
 };
 
-OrderProcess.prototype.getTripOrderDetails = function (req,callback) {
+function saveTripOrder(req, params, callback) {
     var retObj = {
-        status:false,
-        message:[]
+        status: false,
+        messages: []
+    };
+
+    params.createdBy = req.jwt.id;
+    var adminTrip = new AdminTripsColl(params);
+    adminTrip.save(function (err, saveDoc) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.create_order_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            var loadOwnerId = "";
+            if (saveDoc.loadOwnerType === "Registered") {
+                loadOwnerId = params.loadOwnerId;
+            } else {
+                loadOwnerId = params.loadCustomerLeadId;
+            }
+
+            async.parallel({
+                to_bookedAmount: function (to_bookedAmountCallBack) {
+                    if (params.to_bookedAmount) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            truckOwnerId: params.truckOwnerId,
+                            amount: params.to_bookedAmount,
+                            prefix: "+",
+                            comment: "Booked Amount"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                to_bookedAmountCallBack(true);
+                            } else {
+                                to_bookedAmountCallBack(false);
+                            }
+                        });
+                    } else {
+                        to_bookedAmountCallBack(false);
+                    }
+                },
+                to_loadingCharge: function (to_loadingChargeCallBack) {
+                    if (params.to_loadingCharge) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            truckOwnerId: params.truckOwnerId,
+                            amount: params.to_loadingCharge,
+                            prefix: "-",
+                            comment: "Loading Charges"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                to_loadingChargeCallBack(true);
+                            } else {
+                                to_loadingChargeCallBack(false);
+                            }
+                        });
+                    } else {
+                        to_loadingChargeCallBack(false);
+                    }
+                },
+                to_unloadingCharge: function (to_unloadingChargeCallBack) {
+                    if (params.to_unloadingCharge) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            truckOwnerId: params.truckOwnerId,
+                            amount: params.to_unloadingCharge,
+                            prefix: "-",
+                            comment: "Unloading Charges"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                to_unloadingChargeCallBack(true);
+                            } else {
+                                to_unloadingChargeCallBack(false);
+                            }
+                        });
+                    } else {
+                        to_unloadingChargeCallBack(false);
+                    }
+                },
+                to_commission: function (to_bookedAmountCallBack) {
+                    if (params.to_commission) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            truckOwnerId: params.truckOwnerId,
+                            amount: params.to_commission,
+                            prefix: "-",
+                            comment: "Commission"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                to_bookedAmountCallBack(true);
+                            } else {
+                                to_bookedAmountCallBack(false);
+                            }
+                        });
+                    } else {
+                        to_bookedAmountCallBack(false);
+                    }
+                },
+                applyTds: function (to_bookedAmountCallBack) {
+                    if (params.applyTds === 'Yes') {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            truckOwnerId: params.to_truckOwnerId,
+                            amount: 100,
+                            prefix: "+",
+                            comment: "Deduct TDS"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                to_bookedAmountCallBack(true);
+                            } else {
+                                to_bookedAmountCallBack(false);
+                            }
+                        });
+                    } else {
+                        to_bookedAmountCallBack(false);
+                    }
+                },
+                to_advance: function (to_advanceCallBack) {
+                    if (params.to_advance) {
+                        var orderTran = new OrderTransactionsColl({
+                            orderId: saveDoc._id,
+                            truckOwnerId: params.to_truckOwnerId,
+                            amount: params.to_advance,
+                            prefix: "+",
+                            comment: "Advance paid"
+
+                        });
+                        orderTran.save(function (err, saved) {
+                            if (err) {
+                                to_advanceCallBack(true);
+                            } else {
+                                to_advanceCallBack(false);
+                            }
+                        });
+                    } else {
+                        to_advanceCallBack(false);
+                    }
+                },
+                egBookedAmount: function (egBookedAmountCallBack) {
+                    if (params.to_bookedAmount) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            loadOwnerId: loadOwnerId,
+                            amount: params.egBookedAmount,
+                            prefix: "+",
+                            comment: "Booked Amount"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                egBookedAmountCallBack(true);
+                            } else {
+                                egBookedAmountCallBack(false);
+                            }
+                        });
+                    } else {
+                        egBookedAmountCallBack(false);
+                    }
+                },
+                lo_loadingCharge: function (lo_loadingChargeCallBack) {
+                    if (params.lo_loadingCharge) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            loadOwnerId: loadOwnerId,
+                            amount: params.lo_loadingCharge,
+                            prefix: "-",
+                            comment: "Loading Charges"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                lo_loadingChargeCallBack(true);
+                            } else {
+                                lo_loadingChargeCallBack(false);
+                            }
+                        });
+                    } else {
+                        lo_loadingChargeCallBack(false);
+                    }
+                },
+                lo_unloadingCharge: function (lo_unloadingChargeCallBack) {
+                    if (params.lo_unloadingCharge) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            loadOwnerId: loadOwnerId,
+                            amount: params.lo_unloadingCharge,
+                            prefix: "-",
+                            comment: "Unloading Charges"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                lo_unloadingChargeCallBack(true);
+                            } else {
+                                lo_unloadingChargeCallBack(false);
+                            }
+                        });
+                    } else {
+                        lo_unloadingChargeCallBack(false);
+                    }
+                },
+                lo_commission: function (lo_bookedAmountCallBack) {
+                    if (params.lo_commission) {
+                        var orderPayment = new OrderPaymentsColl({
+                            orderId: saveDoc._id,
+                            loadOwnerId: loadOwnerId,
+                            amount: params.lo_commission,
+                            prefix: "-",
+                            comment: "Commission"
+
+                        });
+                        orderPayment.save(function (err, saved) {
+                            if (err) {
+                                lo_bookedAmountCallBack(true);
+                            } else {
+                                lo_bookedAmountCallBack(false);
+                            }
+                        });
+                    } else {
+                        lo_bookedAmountCallBack(false);
+                    }
+                },
+
+                lo_advance: function (lo_advanceCallBack) {
+                    if (params.lo_advance) {
+                        var orderTran = new OrderTransactionsColl({
+                            orderId: saveDoc._id,
+                            loadOwnerId: loadOwnerId,
+                            amount: params.lo_advance,
+                            prefix: "+",
+                            comment: "Advance paid"
+
+                        });
+                        orderTran.save(function (err, saved) {
+                            if (err) {
+                                lo_advanceCallBack(true);
+                            } else {
+                                lo_advanceCallBack(false);
+                            }
+                        });
+                    } else {
+                        lo_advanceCallBack(false);
+                    }
+                }
+
+            }, function (err) {
+
+                if (err) {
+                    retObj.messages.push("Oder created,Failed to save payment details");
+                    analyticsService.create(req, serviceActions.create_order_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                } else {
+                    retObj.status = true;
+                    retObj.messages = "Order created successfully";
+                    retObj.data = doc;
+                    analyticsService.create(req, serviceActions.create_order, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+
+        }
+    })
+}
+
+OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        message: []
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid Order request");
-        callback(retObj);
+    }
+    if (!params.billType) {
+        retObj.messages.push("Invalid bill type");
+    }
+    if (retObj.messages.length > 0) {
     } else {
-        AdminTripsColl.findOne({_id: params._id}, function (err, doc) {
+        AdminTripsColl.findOne({_id: params._id}, function (err, orderDetails) {
             if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {
@@ -1746,15 +2050,47 @@ OrderProcess.prototype.getTripOrderDetails = function (req,callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else if (doc) {
-                retObj.message.push("Success");
-                analyticsService.create(req, serviceActions.get_trip_order_details, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
+            } else if (orderDetails) {
+
+                async.parallel({
+                    paymentsDetails: function (paymentsCallback) {
+                        OrderPaymentsColl.find({truckOwnerId:orderDetails.truckOwnerId},
+                            function (err, docs) {
+                                paymentsCallback(err, docs);
+                            })
+                    },
+                    transactionsDetails: function (transactionsCallback) {
+                        OrderTransactionsColl.find({truckOwnerId:orderDetails.truckOwnerId},
+                            function (err, docs) {
+                                transactionsCallback(err, docs);
+                            })
+                    }
+                }, function (err, result) {
+                    if (err) {
+                        retObj.message.push("Please try again");
+                        retObj.orderDetails = orderDetails;
+                        retObj.paymentsDetails = result.paymentsDetails;
+                        retObj.transactionsDetails = result.transactionsDetails;
+                        analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.message.push("Success");
+                        analyticsService.create(req, serviceActions.get_trip_order_details, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
                 });
-                callback(retObj);
+
             } else {
                 retObj.message.push("Order details not found");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {
@@ -1768,8 +2104,91 @@ OrderProcess.prototype.getTripOrderDetails = function (req,callback) {
             }
         })
     }
-
 };
 
+OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        message: []
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid Order request");
+    }
+    if (!params.billType) {
+        retObj.messages.push("Invalid bill type");
+    }
+    if (retObj.messages.length > 0) {
+    } else {
+        AdminTripsColl.findOne({_id: params._id}, function (err, orderDetails) {
+            if (err) {
+                retObj.message.push("Please try again");
+                analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (orderDetails) {
+                var condition = {};
+                if(orderDetails.loadOwnerType=="Registred"){
+                    condition={loadOwnerId:orderDetails.loadOwnerId}
+                }else{
+                    condition={loadOwnerId:orderDetails.loadCustomerLeadId}
+                }
+                async.parallel({
+                    paymentsDetails: function (paymentsCallback) {
+                        OrderPaymentsColl.find(condition,
+                            function (err, docs) {
+                                paymentsCallback(err, docs);
+                            })
+                    },
+                    transactionsDetails: function (transactionsCallback) {
+                        OrderTransactionsColl.find(condition,
+                            function (err, docs) {
+                                transactionsCallback(err, docs);
+                            })
+                    }
+                }, function (err, result) {
+                    if (err) {
+                        retObj.message.push("Please try again");
+                        retObj.orderDetails = orderDetails;
+                        retObj.paymentsDetails = result.paymentsDetails;
+                        retObj.transactionsDetails = result.transactionsDetails;
+                        analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.message.push("Success");
+                        analyticsService.create(req, serviceActions.get_trip_order_details, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                });
 
+            } else {
+                retObj.message.push("Order details not found");
+                analyticsService.create(req, serviceActions.get_trip_order_details_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
 module.exports = new OrderProcess();
