@@ -144,7 +144,14 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "GET",
                 params: params
             }).then(success, error);
-        }
+        },
+        createOrder: function (data, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/createOrder',
+                method: "POST",
+                data: data
+            }).then(success, error)
+        },
 
     }
 }]);
@@ -1225,4 +1232,86 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
         }
     };
 
+}]);
+
+app.controller('viewOrderCtrl', ['$scope', 'OrderProcessServices', 'Notification',function ($scope, OrderProcessServices, Notification) {
+    $scope.status = {
+        isOpen: true,
+        isOpenOne: true,
+    }
+
+    $scope.newOrderRequest = {
+        error:[]
+    }
+
+    $scope.addOrderRequest = function () {
+       var params = $scope.newOrderRequest;
+       params.messages = [];
+
+        if (!params.loadOwnerType) {
+            params.messages.push("Please select customer type");
+        }
+        if (params.loadOwnerType === "Registered" && !params.loadOwnerId) {
+            params.messages.push("Please select Load Owner");
+        }
+        if (params.loadOwnerType === "UnRegistered" && !params.firstName) {
+            params.messages.push("Please Enter Your First Name");
+        }
+        if (params.loadOwnerType === "UnRegistered" && !params.contactPhone) {
+            params.messages.push("Please provide Mobile Number");
+        }
+        if (!params.truckOwner) {
+            params.messages.push("Please Select Truck Owner");
+        }
+        if (!params.source) {
+            params.messages.push("Please enter Source Location");
+        }
+        if (!params.destination) {
+            params.messages.push("Please enter Destination Location");
+        }
+        if (!params.dateOfOrder) {
+            params.messages.push("Please enter Date of Order");
+        }
+        if (!params.pickupDate) {
+            params.messages.push("Please enter Pickup Date");
+        }
+        if (!params.truckType) {
+            params.messages.push("Please select Truck Type");
+        }
+        if (!params.registrationNo) {
+            params.messages.push("Please enter Truck Registration number");
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            });
+        } else {
+            if (params.customerType === "Registered") {
+                params.customerName = params.customer.firstName;
+                params.firstName = params.customer.firstName;
+                params.contactPhone = params.customer.contactPhone;
+                params.customerId = params.customer._id;
+                params.customer = params.customer._id;
+            } else {
+                params.customerName = params.firstName;
+                params.firstName = params.firstName;
+                params.contactPhone = params.contactPhone;
+            }
+            OrderProcessServices.createOrder(params, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
+                        Notification.success(message);
+                    });
+                    $state.go("orderprocess.viewOrder");
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        }
+
+    }
 }]);

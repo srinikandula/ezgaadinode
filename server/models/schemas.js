@@ -741,6 +741,7 @@ var adminTripsSchema = new mongoose.Schema({
     status:{type:String,default:"New"},
     loadOwnerType:String,
     source:String,
+    truckType:String,
     destination:String,
     egCommission:Number,
     dateOfOrder:Date,
@@ -767,7 +768,7 @@ var adminTripsSchema = new mongoose.Schema({
     to_loadingCharge:{type:Number,default:0},
     to_unloadingCharge:{type:Number,default:0},
     to_commission:{type:Number,default:0},
-    lo_advancce:{type:Number,default:0},
+    lo_advance:{type:Number,default:0},
     lo_loadingCharge:{type:Number,default:0},
     lo_unloadingCharge:{type:Number,default:0},
     lo_commission:{type:Number,default:0}*/

@@ -204,6 +204,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'orderprocess'},
         params: { loadRequestId: null }
     }).state({
+        name: 'orderprocess.editOrderRequest',
+        url: '/editOrderRequest',
+        templateUrl: 'views/partials/admin/orderProcess/editOrderRequest.html',
+        data: {activeTab: 'orderprocess'}
+    }).state({
         name: 'settings',
         url: '/settings',
         templateUrl: 'views/partials/admin/settings/settings.html',

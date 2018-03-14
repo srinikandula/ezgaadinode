@@ -1,0 +1,264 @@
+<div class="col-xs-12 newCust" ng-controller="viewOrderCtrl">
+    <h4>New Order Request</h4>
+    <div class="col-xs-12">
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpen">
+                <uib-accordion-heading>
+                    Details <i class="pull-right glyphicon"
+                               ng-class="{'glyphicon-chevron-down': status.isOpen,
+                                        'glyphicon-chevron-right': !status.isOpen}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 pall-zero">
+                        <p class="loadod">Load Owner Details:</p>
+                        <div class="col-sm-6">
+                            <div class="form-group">
+                                <select class="form-control order-form-control" ng-model="newOrderRequest.loadOwnerType">
+                                    <option value="" selected>--Customer Type--</option>
+                                    <option value="registered">Registered</option>
+                                    <option value="unregistered">UnRegistered</option>
+                                </select>
+                            </div>
+                            <div ng-show="newOrderRequest.loadOwnerType === 'unregistered'">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="newOrderRequest.firstName"/>
+                                    <label class="order-effect-for-input">Full Name*</label>
+                                </div>
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="newOrderRequest.contactPhone"/>
+                                    <label class="order-effect-for-input">Mobile*</label>
+                                </div>
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="newOrderRequest.email"/>
+                                    <label class="order-effect-for-input">Email</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6" ng-show="newOrderRequest.loadOwnerType === 'unregistered'">
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="text"
+                                       ng-model="newOrderRequest.companyName"/>
+                                <label class="order-effect-for-input">Company</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="text"
+                                       ng-model="newOrderRequest.city"/>
+                                <label class="order-effect-for-input">City</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="text"
+                                       ng-model="newOrderRequest.address"/>
+                                <label class="order-effect-for-input">Address</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="text"
+                                       ng-model="newOrderRequest.state"/>
+                                <label class="order-effect-for-input">State</label>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6" ng-show="newOrderRequest.loadOwnerType === 'registered'">
+                            <div class="form-group ordernew">
+                                <ui-select ng-model="newOrderRequest.loadOwnerId" theme="select2"
+                                           style="min-width: 390px;"
+                                           title="Customer *" reset-search-input="false">
+                                    <ui-select-match placeholder="Customer *" class="form-control order-form-control">
+                                        {{$select.selected.firstName || firstName}}
+                                    </ui-select-match>
+                                    <ui-select-choices
+                                            repeat="truck in truckOwnersList "
+                                            refresh="searchAccountOwner($select.search)"
+                                            refresh-delay="0" scroll-detector="loadMore()">
+                                        <b>
+                                            <div ng-bind-html="truck.firstName "></div>
+                                        </b>
+                                        <small>Mobile: {{truck.contactPhone || '---'}}</small>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 pall-zero">
+                        <p class="loadod">Truck Owner Type:</p>
+                        <div class="col-sm-8">
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="text"
+                                       ng-model="newOrderRequest.truckOwner"/>
+                                <label class="order-effect-for-input">Customer*</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6 pall-zero">
+                        <p class="loadod">Load Owner Billing:</p>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.lo_advance"/>
+                                <label class="order-effect-for-input">Load Advance</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.lo_loadingCharge"/>
+                                <label class="order-effect-for-input">Loading charges(-)</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.lo_unloadingCharge"/>
+                                <label class="order-effect-for-input">Unloading Charges(-)</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.lo_commission"/>
+                                <label class="order-effect-for-input">Commission(-)</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 pall-zero">
+                        <p class="loadod">Truck Owner Billing:</p>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.to_bookedAmount"/>
+                                <label class="order-effect-for-input">Truck Booked Amount</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.to_loadingCharge"/>
+                                <label class="order-effect-for-input">Loading Amount</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.to_commission"/>
+                                <label class="order-effect-for-input">Commission</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.to_advance"/>
+                                <label class="order-effect-for-input">Truck Advance</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.to_unloadingCharge"/>
+                                <label class="order-effect-for-input">Unloading Amount</label>
+                            </div>
+                            <div class="form-group styling-input-list">
+                                <input class="form-control order-form-control" type="number" min="0"
+                                       ng-model="newOrderRequest.applyTds"/>
+                                <label class="order-effect-for-input">Apply TDS</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
+                <uib-accordion-heading>
+                    Load Details <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': status.isOpenOne,
+                                     'glyphicon-chevron-right': !status.isOpenOne}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.source"/>
+                            <label class="order-effect-for-input">Source Address*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.destination"/>
+                            <label class="order-effect-for-input">Destination Address*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.dateOfOrder"/>
+                            <label class="order-effect-for-input">Date Ordered*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.pickupDate"/>
+                            <label class="order-effect-for-input">Pickup Date & Time*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.truckType"/>
+                            <label class="order-effect-for-input">Truck Type*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.registrationNo"/>
+                            <label class="order-effect-for-input">Truck Reg No*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.driverName"/>
+                            <label class="order-effect-for-input">Driver Name</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.driverMobile"/>
+                            <label class="order-effect-for-input">Driver Mobile</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.loadingAgentNo"/>
+                            <label class="order-effect-for-input">Loading Agent Name</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.egBookedAmount"/>
+                            <label class="order-effect-for-input">EG Booked Amount</label>
+                        </div>
+                    </div>
+
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.egCommission"/>
+                            <label class="order-effect-for-input">EG Commission*</label>
+                        </div>
+                    </div>
+                    <div class="col-xs-4">
+                        <div class="form-group styling-input-list">
+                            <input class="form-control order-form-control" type="text"
+                                   ng-model="newOrderRequest.comment"/>
+                            <label class="order-effect-for-input">Comments</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <div class="col-xs-12 save-btns">
+            <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+            <a href="#" class="btn btn-primary" ng-click="addOrderRequest()">Submit</a>
+        </div>
+    </div>
+</div>
