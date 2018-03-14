@@ -225,47 +225,47 @@ Events.prototype.getLatestLocation = function (jwt, deviceId, req, callback) {
 };
 
 /*Events.prototype.getUserData = function (callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var accountDataQuery = "select accountId as userName,contactPhone,password from Account";
-    var groupDataQuery = "select accountId as userName,contactPhone,password from DeviceGroup";
+ var retObj = {
+ status: false,
+ messages: []
+ };
+ var accountDataQuery = "select accountId as userName,contactPhone,password from Account";
+ var groupDataQuery = "select accountId as userName,contactPhone,password from DeviceGroup";
 
-    async.parallel({
-        accountData: function(accountDataCallback) {
-            pool.query(accountDataQuery, function(err, accountDataResults) {
-                accountDataCallback(err, accountDataResults)
-            });
-        },
-        groupData: function(groupDataCallback) {
-            pool.query(groupDataQuery, function(err, groupDataResults) {
-                groupDataCallback(err, groupDataResults)
-            });
-        }
-    }, function(err, results) {
-        if(err) {
-            retObj.status = false;
-            retObj.messages.push('Error fetching data');
-            retObj.messages.push(JSON.stringify(err));
+ async.parallel({
+ accountData: function(accountDataCallback) {
+ pool.query(accountDataQuery, function(err, accountDataResults) {
+ accountDataCallback(err, accountDataResults)
+ });
+ },
+ groupData: function(groupDataCallback) {
+ pool.query(groupDataQuery, function(err, groupDataResults) {
+ groupDataCallback(err, groupDataResults)
+ });
+ }
+ }, function(err, results) {
+ if(err) {
+ retObj.status = false;
+ retObj.messages.push('Error fetching data');
+ retObj.messages.push(JSON.stringify(err));
 
-            callback(retObj);
-        } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.results = results.accountData.concat(results.groupData);
-            for(var i = 0; i < retObj.results.length; i++) {
-                var userData = retObj.results[i];
-                if(!userData.contactPhone || userData.contactPhone.trim().length == 0 || isNaN(userData.contactPhone)){
-                    delete userData.contactPhone;
-                }
-                EventData.createUserData(userData)
-            }
-            retObj.count = retObj.results.length;
-            callback(retObj);
-        }
-    });
-}*/
+ callback(retObj);
+ } else {
+ retObj.status = true;
+ retObj.messages.push('Success');
+ retObj.results = results.accountData.concat(results.groupData);
+ for(var i = 0; i < retObj.results.length; i++) {
+ var userData = retObj.results[i];
+ if(!userData.contactPhone || userData.contactPhone.trim().length == 0 || isNaN(userData.contactPhone)){
+ delete userData.contactPhone;
+ }
+ EventData.createUserData(userData)
+ }
+ retObj.count = retObj.results.length;
+ callback(retObj);
+ }
+ });
+ }*/
 
 Events.prototype.getAccountData = function (request, callback) {
     var retObj = {
@@ -361,41 +361,56 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
     var trucksDataQuery = "select c.gps_account_id as userName, t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type ";// where c.gps_account_id='" + account.userName + "'";
     var trucks = [];
     pool_crm.query(trucksDataQuery, function (err, truckDataResults) {
-        for (var i = 0; i < truckDataResults.length; i++) {
-            var truckData = truckDataResults[i];
-            var truck = {};
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else {
+            async.map(truckDataResults, function (truckDataResult, truckDataCallBack) {
+                TrucksColl.findOne({
+                    registrationNo: truckDataResult.registrationNo,
+                    userName: truckDataResult.userName
+                }, function (findTruckErr, truckFound) {
+                    if (findTruckErr) {
+                        truckDataCallBack(findTruckErr);
+                    } else if (truckFound) {
+                        truckDataCallBack(null, 'truck exists');
+                    } else {
+                        var truckData = {
+                            fitnessExpiry: convertDate(truckDataResult.fitnessExpiry),
+                            permitExpiry: convertDate(truckDataResult.permitExpiry),
+                            insuranceExpiry: convertDate(truckDataResult.insuranceExpiry),
+                            pollutionExpiry: convertDate(pollutionExpiry),
+                            taxDueDate: convertDate(taxDueDate),
+                            registrationNo: truckDataResult.registrationNo,
+                            userName: truckDataResult.userName,
+                        };
+                        AccountsColl.findOne({"userName": truckDataResult.userName}, function (err, account) {
+                            if (account) {
+                                truckData.accountId = account._id;
+                            }
 
-            truck.fitnessExpiry = convertDate(truckData.fitnessExpiry);
-            truck.permitExpiry = convertDate(truckData.permitExpiry);
-            truck.insuranceExpiry = convertDate(truckData.insuranceExpiry);
-            truck.pollutionExpiry = convertDate(truckData.pollutionExpiry);
-            truck.taxDueDate = convertDate(truckData.taxDueDate);
-            //truckData.driverId = driverId;
-            truck.pollutionExpiry = convertDate(pollutionExpiry);
-            truck.taxDueDate = convertDate(taxDueDate);
-            truck.registrationNo = truckData.registrationNo;
-            truck.userName = truckData.userName;
-            var truckDoc = new TrucksColl(truck);
-            truckDoc.save(truckDoc, function (error, newTrucks) {
-                if (error) {
-                    console.log(error);
+                            var truckDataDoc = new TrucksColl(truckData);
+                            truckDataDoc.save(function (err, doc) {
+                                truckDataCallBack(err, 'saved');
+                            });
+                        });
+                    }
+                });
+            }, function (truckErr, truckSaved) {
+                if (truckErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(planerr));
+                    callback(retObj);
                 } else {
-                    console.log("New trucks inserted");
+                    retObj.status = true;
+                    retObj.messages.push('Trucks saved succesfully');
+                    callback(retObj);
                 }
             });
         }
-
-        AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
-            for (var i = 0; i < accounts.length; i++) {
-                TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
-                    console.log("Truck is updated " + JSON.stringify(truck));
-                });
-            }
-        });
-
-        retObj.status = true;
-        retObj.messages.push('trucks are being loaded from eg_truck');
-        callback(retObj);
     });
 }
 
@@ -405,91 +420,307 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
         messages: [],
     };
 
-    var deviceDataQuery = "select accountId, deviceId, installedById, devicePaymentStatus, currentPlanId, isDamaged, equipmentType, vehicleModel, vehicleId, licenseExpire, insuranceExpire, fitnessExpire, NPExpire, fuelCapacity, installTime, resetTime, expirationTime, serialNumber, simPhoneNumber, simID, imeiNumber, isActive, lastStopTime from Device";
-    pool.query(deviceDataQuery, function (err, devices) {
+    var pollutionExpiry = "0000-00-00";// getting error using default value as null
+    var taxDueDate = "0000-00-00";// getting error using default value as null
+
+    var deviceDataQuery = "select accountId, deviceId, installedById, devicePaymentStatus, currentPlanId, isDamaged, equipmentType, vehicleModel, vehicleId, licenseExpire, insuranceExpire, fitnessExpire, NPExpire, fuelCapacity, installTime, resetTime, expirationTime, serialNumber, simPhoneNumber, simID, imeiNumber, isActive, lastStopTime from Device where installedById<>0";
+    pool.query(deviceDataQuery, function (err, devicesDataResults) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error fetching data');
             retObj.messages.push(JSON.stringify(err));
             callback(retObj);
         } else {
-            if (devices.length !== 0) {
-                for (var i = 0; i < devices.length; i++) {
-                    var device = devices[i];
-                    var truckData = {};
-                    truckData.userName = device.accountId;
-                    truckData.fitnessExpiry = convertDate(device.fitnessExpire);
-                    truckData.permitExpiry = convertDate(device.NPExpire);
-                    truckData.insuranceExpiry = convertDate(device.insuranceExpire);
-                    truckData.pollutionExpiry = convertDate(device.pollutionExpiry);
-                    truckData.taxDueDate = convertDate(device.taxDueDate);
-                    truckData.deviceId = device.imeiNumber;
-                    truckData.registrationNo = device.vehicleId;
-                    truckData.truckType = device.vehicleModel;
-                    truckData.tracking_available = 1;
-                    var truckDoc = new TrucksColl(truckData);
-                    truckDoc.save(truckDoc, function (error, newTrucks) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log("New trucks inserted");
-                        }
-                    });
+            async.map(devicesDataResults, function (devicesDataResult, deviceDataCallBack) {
+                async.parallel({
+                    accountId: function (accountCallback) {
+                        var employeeDataQuery = "select email from eg_admin where id_admin=" + devicesDataResult.installedById;
+                        pool_crm.query(employeeDataQuery, function (employeeErr, employeeDataResult) {
+                            if (employeeErr) {
+                                retObj.status = false;
+                                retObj.messages.push('Error fetching data');
+                                retObj.messages.push(JSON.stringify(err));
+                                callback(retObj);
+                            } else {
+                                AccountsColl.findOne({
+                                    "role": "employee",
+                                    "userName": employeeDataResult[0].email
+                                }, function (accountErr, account) {
+                                    if (accountErr) {
+                                        accountCallback(accountErr, account);//null);
+                                    } else {
+                                        accountCallback(accountErr, account._id);
+                                    }
+                                });
+                            }
+                        });
+                    },
+                    truck: function (truckCallback) {
+                        TrucksColl.findOne({
+                            userName: devicesDataResult.accountId,
+                            registrationNo: devicesDataResult.vehicleId
+                        }, function (truckErr, truck) {
+                            if (truckErr) {
+                                truckCallback(truckErr, truck);
+                            } else if (truck) {
+                                truckCallback(null, "Truck Exists");
+                            } else {
+                                var truckData = {
+                                    fitnessExpiry: convertDate(devicesDataResult.fitnessExpire),
+                                    permitExpiry: convertDate(devicesDataResult.NPExpire),
+                                    insuranceExpiry: convertDate(devicesDataResult.insuranceExpire),
+                                    pollutionExpiry: convertDate(pollutionExpiry),
+                                    taxDueDate: convertDate(taxDueDate),
+                                    registrationNo: devicesDataResult.vehicleId,
+                                    userName: devicesDataResult.accountId,
+                                    deviceId: devicesDataResult.imeiNumber,
+                                    truckType: devicesDataResult.vehicleModel,
+                                    tracking_available: 1
+                                };
+                                truckCallback(null, truckData);
+                            }
+                        })
+                    },
+                    device: function (deviceCallback) {
+                        DeviceColl.findOne({
+                            userName: devicesDataResult.accountId,
+                            deviceId: devicesDataResult.deviceId,
+                            simNumber: devicesDataResult.simId,
+                            imei: devicesDataResult.imeiNumber,
+                            simPhoneNumber: devicesDataResult.simPhoneNumber
+                        }, function (deviceErr, device) {
+                            if (deviceErr) {
+                                deviceCallback(deviceErr, device);
+                            } else if (device) {
+                                deviceCallback(null, "Device Exists");
+                            } else {
+                                var deviceData = {
+                                    deviceId: devicesDataResult.deviceId,
+                                    simNumber: devicesDataResult.simID,
+                                    imei: devicesDataResult.imeiNumber,
+                                    simPhoneNumber: devicesDataResult.simPhoneNumber,
+                                    userName: devicesDataResult.accountId, //find accountId
+                                    devicePaymentStatus: devicesDataResult.devicePaymentStatus,
+                                    devicePaymentPlan: devicesDataResult.currentPlanId,
+                                    isDamaged: devicesDataResult.isDamaged,
+                                    equipmentType: devicesDataResult.equipmentType,
+                                    serialNumber: devicesDataResult.serialNumber,
+                                    isActive: devicesDataResult.isActive,
+                                    lastStopTime: devicesDataResult.lastStopTime,
+                                    fuelCapacity: devicesDataResult.fuelCapacity,
+                                    installTime: devicesDataResult.installTime,
+                                }
+                                deviceCallback(null, deviceData);
 
-                    var deviceData = {};
-                    deviceData.deviceId = device.deviceId;
-                    //deviceData.truckId = truckId; //get deviceId
-                    deviceData.simNumber = device.simID;
-                    deviceData.imei = device.imeiNumber;
-                    deviceData.simPhoneNumber = device.simPhoneNumber;
-                    deviceData.installedBy = device.installedById;
-                    deviceData.userName = device.accountId; //find accountId
-                    deviceData.devicePaymentStatus = device.devicePaymentStatus;
-                    deviceData.devicePaymentPlan = device.currentPlanId;
-                    deviceData.isDamaged = device.isDamaged;
-                    deviceData.equipmentType = device.equipmentType;
-                    deviceData.serialNumber = device.serialNumber;
-                    deviceData.isActive = device.isActive;
-                    deviceData.lastStopTime = device.lastStopTime;
-                    deviceData.fuelCapacity = device.fuelCapacity;
-                    deviceData.installTime = device.installTime;
-                    var deviceDoc = new DeviceColl(deviceData);
-                    deviceDoc.save(deviceData, function (error, device) {
-                        if (error) {
-                            console.log(error);
-                        } else {
-                            console.log("New device inserted");
-                        }
-                    });
-
-                    if (i === devices.length - 1) {
-                        retObj.status = true;
-                        retObj.messages.push('trucks are being loaded');
-                        callback(retObj);
+                            }
+                        })
                     }
-                    //EventData.createTruckData(truckData,deviceData);
-                }
-                AccountsColl.find({}, {"userName": 1}, function (err, accounts) {
-                    for (var i = 0; i < accounts.length; i++) {
-                        TrucksColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, truck) {
-                            console.log("Truck is updated " + JSON.stringify(truck));
+                }, function (err, data) {
+                    if (err) {
+                        deviceDataCallBack(err);
+                    } else {
+                        async.parallel({
+                            truckDoc: function (truckDocCallBack) {
+                                if (data.truck !== 'Truck Exists') {
+                                    data.truck.accountId = data.accountId;
+                                    var truckDataDoc = new TrucksColl(data.truck);
+                                    truckDataDoc.save(function (err, doc) {
+                                        truckDocCallBack(err, 'saved');
+                                    });
+                                } else {
+                                    truckDocCallBack(null, 'saved');
+                                }
+                            },
+                            deviceDoc: function (deviceDocCallBack) {
+                                if (data.device !== 'Device Exists') {
+                                    data.device.accountId = data.accountId;
+                                    data.device.installedBy = data.accountId;
+                                    data.device.assignedTo = data.accountId;
+
+                                    var deviceDataDoc = new DeviceColl(data.device);
+                                    deviceDataDoc.save(function (err, doc) {
+                                        deviceDocCallBack(err, 'saved');
+                                    });
+                                } else {
+                                    deviceDocCallBack(null, 'saved');
+                                }
+                            }
+                        }, function (saveErr, saved) {
+                            if (saveErr) {
+                                deviceDataCallBack(saveErr, saved);
+                            } else {
+                                deviceDataCallBack(saveErr, "saved");
+                            }
                         });
-                        DeviceColl.update({'userName': accounts[i].userName}, {$set: {accountId: accounts[i]._id}}, {multi: true}, function (err, device) {
-                            console.log("Device is updated " + JSON.stringify(device));
-                        });
+
+                        /*if (ids.deviceId) {
+                         var planDoc = new AccountDevicePlanHistoryColl({
+                         deviceId: ids.deviceId,
+                         planId: ids.planId,
+                         amount: plan.amount,
+                         remark: plan.remark,
+                         creationTime: plan.creationTime,
+                         startTime: plan.startTime,
+                         expiryTime: plan.expiryTime,
+                         received: plan.received
+                         });
+                         if (ids.accountId) {
+                         if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
+                         else planDoc.accountName = ids.accountId.name;
+                         }
+                         planDoc.save(function (err) {
+                         planCallBack(err, 'saved');
+                         });
+                         } else {
+                         planCallBack(err, 'saved');
+                         }*/
                     }
                 });
-            }
+            }, function (deviceErr, deviceSaved) {
+                if (deviceErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(deviceErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Device saved successfully');
+                    callback(retObj);
+                }
+            });
+            /*async.mapSeries(devicesDataResults, function (devicesDataResult, deviceDataCallBack) {
+             TrucksColl.findOne({
+             userName: devicesDataResult.accountId,
+             registrationNo: devicesDataResult.vehicleId
+             }, function (findTruckErr, truckFound) {
+             if (findTruckErr) {
+             deviceDataCallBack(findTruckErr);
+             } else if (truckFound) {
+             saveDeviceData(devicesDataResult, function (saveDeviceErr, deviceDataSaved) {
+             deviceDataCallBack(saveDeviceErr, deviceDataSaved);
+             });
+             } else {
+             var truckData = {
+             fitnessExpiry: convertDate(devicesDataResult.fitnessExpire),
+             permitExpiry: convertDate(devicesDataResult.NPExpire),
+             insuranceExpiry: convertDate(devicesDataResult.insuranceExpire),
+             pollutionExpiry: convertDate(pollutionExpiry),
+             taxDueDate: convertDate(taxDueDate),
+             registrationNo: devicesDataResult.vehicleId,
+             userName: devicesDataResult.accountId,
+             deviceId: devicesDataResult.imeiNumber,
+             truckType: devicesDataResult.vehicleModel,
+             tracking_available: 1
+             };
+             AccountsColl.findOne({"userName": devicesDataResult.userName}, function (err, account) {
+             if (account) {
+             truckData.accountId = account._id;
+             }
+
+             var truckDataDoc = new TrucksColl(truckData);
+             truckDataDoc.save(function (err, doc) {
+             if (err) {
+             deviceDataCallBack(err)
+             } else {
+             saveDeviceData(devicesDataResult, function (saveDeviceErr, deviceDataSaved) {
+             deviceDataCallBack(saveDeviceErr, deviceDataSaved);
+             });
+             }
+             });
+             });
+             }
+             });
+             }, function (deviceErr, deviceSaved) {
+             if (deviceErr) {
+             retObj.status = false;
+             retObj.messages.push('Error fetching data');
+             retObj.messages.push(JSON.stringify(err));
+             callback(retObj);
+             } else {
+             retObj.status = true;
+             retObj.messages.push('Device Saved Successfully');
+             callback(retObj);
+             }
+             });*/
         }
     });
 };
+
+function saveDeviceData(devicesDataResult, deviceDataCallBack) {
+    var retObj = {
+        status: false,
+        messages: [],
+    };
+
+    DeviceColl.findOne({
+        userName: devicesDataResult.accountId,
+        deviceId: devicesDataResult.deviceId,
+        simNumber: devicesDataResult.simId,
+        imei: devicesDataResult.imeiNumber,
+        simPhoneNumber: devicesDataResult.simPhoneNumber
+    }, function (findDeviceError, deviceFound) {
+        if (findDeviceError) {
+            deviceDataCallBack(findDeviceError);
+        } else if (deviceFound) {
+            deviceDataCallBack(null, "Device Exists");
+        } else {
+            var installedBy = devicesDataResult.installedById;
+            var employeeDataQuery = "select distinct email from eg_admin where id_admin=" + installedBy;
+            pool_crm.query(employeeDataQuery, function (employeeDataErr, employeeData) {
+                if (employeeDataErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error fetching data');
+                    retObj.messages.push(JSON.stringify(err));
+                    deviceDataCallBack(retObj);
+                } else {
+                    AccountsColl.findOne({
+                        "role": "employee",
+                        userName: employeeData[0].email
+                    }, function (findEmployeeErr, employeeFound) {
+                        if (findEmployeeErr) {
+                            deviceDataCallBack(findEmployeeErr);
+                        } else {
+                            var deviceData = {
+                                deviceId: devicesDataResult.deviceId,
+                                simNumber: devicesDataResult.simID,
+                                imei: devicesDataResult.imeiNumber,
+                                simPhoneNumber: devicesDataResult.simPhoneNumber,
+                                userName: devicesDataResult.accountId, //find accountId
+                                devicePaymentStatus: devicesDataResult.devicePaymentStatus,
+                                devicePaymentPlan: devicesDataResult.currentPlanId,
+                                isDamaged: devicesDataResult.isDamaged,
+                                equipmentType: devicesDataResult.equipmentType,
+                                serialNumber: devicesDataResult.serialNumber,
+                                isActive: devicesDataResult.isActive,
+                                lastStopTime: devicesDataResult.lastStopTime,
+                                fuelCapacity: devicesDataResult.fuelCapacity,
+                                installTime: devicesDataResult.installTime,
+                            }
+                            if (employeeFound) {
+                                deviceData.accountId = employeeFound._id;
+                                deviceData.installedBy = employeeFound._id;
+                                deviceData.assignedTo = employeeFound._id;
+                            }
+                            var deviceDoc = new DeviceColl(deviceData);
+                            deviceDoc.save(function (error, device) {
+                                deviceDataCallBack(error, device);
+                            });
+
+                        }
+                    })
+                }
+            })
+
+        }
+    });
+}
 
 Events.prototype.getDevicePlans = function (request, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var devicePlanQuery = "select * from DevicePlans where id_franchise=1";
+    var devicePlanQuery = "select * from DevicePlans";
     pool.query(devicePlanQuery, function (err, plans) {
         if (err) {
             retObj.status = false;
@@ -502,7 +733,7 @@ Events.prototype.getDevicePlans = function (request, callback) {
                     if (findplanerr) {
                         planCallBack(findplanerr);
                     } else if (planfound) {
-                        planCallBack('plan added already');
+                        planCallBack(null, 'plan added already');
                     } else {
                         var planDoc = new erpGpsPlansColl({
                             planName: plan.plan_name,
@@ -548,62 +779,32 @@ Events.prototype.devicePlansHistory = function (request, callback) {
         } else {
             AccountDevicePlanHistoryColl.remove({}, function (errremoved, removed) {
                 FaultyPlanhistoryColl.remove({}, function (errfaultcollremove, faultcollremoved) {
-                    if (errremoved) {
-                        retObj.status = false;
-                        retObj.messages.push('Error removing data');
-                        callback(retObj);
-                    } else {
-                        async.map(plansHistory, function (plan, planCallBack) {
-                            async.parallel({
-                                accountId: function (accountCallback) {
-                                    AccountsColl.findOne({userName: plan.accountID}, function (erracountid, accountid) {
-                                        console.log(plan.accountID, accountid);
-                                        if (!accountid) {
-                                            accountCallback(erracountid, {name: plan.accountID});//null);
-                                        } else {
-                                            accountCallback(erracountid, {id: accountid._id});
-                                        }
-                                    });
-                                },
-                                deviceId: function (deviceCallback) {
-                                    DeviceColl.findOne({deviceId: plan.deviceID}, function (errdeviceid, deviceid) {
-                                        if (deviceid) {
-                                            deviceCallback(errdeviceid, deviceid._id);
-                                        } else {
-                                            var planDoc = new FaultyPlanhistoryColl({
-                                                accountId: plan.accountID,
-                                                deviceId: plan.deviceID,
-                                                planId: plan.planID,
-                                                amount: plan.amount,
-                                                remark: plan.remark,
-                                                creationTime: plan.creationTime,
-                                                startTime: plan.startTime,
-                                                expiryTime: plan.expiryTime,
-                                                received: plan.received
-                                            });
-                                            planDoc.save(function (errsavingfaultplan) {
-                                                deviceCallback(errsavingfaultplan, null);
-                                            });
-                                        }
-                                    })
-                                },
-                                planId: function (planIdCallback) {
-                                    erpGpsPlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
-                                        if(planid) {
-                                            planIdCallback(planiderr, planid._id);
-                                        } else {
-                                            planIdCallback(planiderr, planid);
-                                        }
-                                    });
-                                }
-                            }, function (errids, ids) {
-                                if (errids) {
-                                    planCallBack(errids);
-                                } else {
-                                    if (ids.deviceId) {
-                                        var planDoc = new AccountDevicePlanHistoryColl({
-                                            deviceId: ids.deviceId,
-                                            planId: ids.planId,
+                });
+                if (errremoved) {
+                    retObj.status = false;
+                    retObj.messages.push('Error removing data');
+                    callback(retObj);
+                } else {
+                    async.map(plansHistory, function (plan, planCallBack) {
+                        async.parallel({
+                            accountId: function (accountCallback) {
+                                AccountsColl.findOne({userName: plan.accountID}, function (erracountid, accountid) {
+                                    if (!accountid) {
+                                        accountCallback(erracountid, {name: plan.accountID});//null);
+                                    } else {
+                                        accountCallback(erracountid, {id: accountid._id});
+                                    }
+                                });
+                            },
+                            deviceId: function (deviceCallback) {
+                                DeviceColl.findOne({deviceId: plan.deviceID}, function (errdeviceid, deviceid) {
+                                    if (deviceid) {
+                                        deviceCallback(errdeviceid, deviceid._id);
+                                    } else {
+                                        var planDoc = new FaultyPlanhistoryColl({
+                                            accountId: plan.accountID,
+                                            deviceId: plan.deviceID,
+                                            planId: plan.planID,
                                             amount: plan.amount,
                                             remark: plan.remark,
                                             creationTime: plan.creationTime,
@@ -611,32 +812,61 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                                             expiryTime: plan.expiryTime,
                                             received: plan.received
                                         });
-                                        if (ids.accountId) {
-                                            if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
-                                            else planDoc.accountName = ids.accountId.name;
-                                        }
-                                        planDoc.save(function (err) {
-                                            planCallBack(err, 'saved');
+                                        planDoc.save(function (errsavingfaultplan) {
+                                            deviceCallback(errsavingfaultplan, null);
                                         });
-                                    } else {
-                                        planCallBack(err, 'saved');
                                     }
-                                }
-                            });
-                        }, function (planerr, plansaved) {
-                            if (planerr) {
-                                retObj.status = false;
-                                retObj.messages.push('Error saving data');
-                                retObj.messages.push(JSON.stringify(planerr));
-                                callback(retObj);
+                                })
+                            },
+                            planId: function (planIdCallback) {
+                                erpGpsPlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
+                                    if (planid) {
+                                        planIdCallback(planiderr, planid._id);
+                                    } else {
+                                        planIdCallback(planiderr, planid);
+                                    }
+                                });
+                            }
+                        }, function (errids, ids) {
+                            if (errids) {
+                                planCallBack(errids);
                             } else {
-                                retObj.status = true;
-                                retObj.messages.push('devicePlansHistory saved succesfully');
-                                callback(retObj);
+                                if (ids.deviceId) {
+                                    var planDoc = new AccountDevicePlanHistoryColl({
+                                        deviceId: ids.deviceId,
+                                        planId: ids.planId,
+                                        amount: plan.amount,
+                                        remark: plan.remark,
+                                        creationTime: plan.creationTime,
+                                        startTime: plan.startTime,
+                                        expiryTime: plan.expiryTime,
+                                        received: plan.received
+                                    });
+                                    if (ids.accountId) {
+                                        if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
+                                        else planDoc.accountName = ids.accountId.name;
+                                    }
+                                    planDoc.save(function (err) {
+                                        planCallBack(err, 'saved');
+                                    });
+                                } else {
+                                    planCallBack(err, 'saved');
+                                }
                             }
                         });
-                    }
-                });
+                    }, function (planerr, plansaved) {
+                        if (planerr) {
+                            retObj.status = false;
+                            retObj.messages.push('Error saving data');
+                            retObj.messages.push(JSON.stringify(planerr));
+                            callback(retObj);
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push('devicePlansHistory saved succesfully');
+                            callback(retObj);
+                        }
+                    });
+                }
             });
         }
     });
@@ -660,7 +890,7 @@ Events.prototype.getFranchise = function (request, callback) {
                     if (findFranchiseErr) {
                         franchiseCallBack(findFranchiseErr);
                     } else if (franchiseFound) {
-                        franchiseCallBack('franchise exists');
+                        franchiseCallBack(null, 'franchise exists');
                     } else {
                         var franchiseDoc = new franchiseColl({
                             fullName: franchise.fullname,
@@ -705,7 +935,7 @@ Events.prototype.getAdminRoles = function (request, callback) {
         status: false,
         messages: []
     };
-    var adminRoleQuery = "select * from eg_admin_role where id_franchise=1";
+    var adminRoleQuery = "select * from eg_admin_role";
     pool_crm.query(adminRoleQuery, function (err, roles) {
         if (err) {
             retObj.status = false;
@@ -718,7 +948,7 @@ Events.prototype.getAdminRoles = function (request, callback) {
                     if (findRoleErr) {
                         roleCallBack(findRoleErr);
                     } else if (roleFound) {
-                        roleCallBack('role exists');
+                        roleCallBack(null, 'role exists');
                     } else {
                         var roleDoc = new adminRoleColl({
                             role: role.role,
@@ -765,7 +995,7 @@ Events.prototype.getAdminPermissions = function (request, callback) {
                     if (findPermissionErr) {
                         permissionCallBack(findPermissionErr);
                     } else if (permissionFound) {
-                        permissionCallBack('permission exists');
+                        permissionCallBack(null, 'permission exists');
                     } else {
                         adminRoleColl.findOne({"role": permission.role}, function (err, role) {
                             var permissionData = {
@@ -816,7 +1046,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
         status: false,
         messages: []
     };
-    var employeeDataQuery = "SELECT a.*,ar.role FROM `eg_admin` a,eg_admin_role ar where a.id_admin_role=ar.id_admin_role and a.id_franchise=1";
+    var employeeDataQuery = "SELECT a.*,ar.role FROM `eg_admin` a,eg_admin_role ar where a.id_admin_role=ar.id_admin_role";
     pool_crm.query(employeeDataQuery, function (err, employees) {
         if (err) {
             retObj.status = false;
@@ -825,7 +1055,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(employees, function (employee, employeeCallBack) {
-                AccountsColl.findOne({"email": employee.email},{"role": "employee"}, function (findEmployeeErr, employeeFound) {
+                AccountsColl.findOne({"email": employee.email}, {"role": "employee"}, function (findEmployeeErr, employeeFound) {
                     if (findEmployeeErr) {
                         employeeCallBack(findEmployeeErr);
                     } else if (employeeFound) {
@@ -848,7 +1078,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
                                 createdAt: convertDate(employee.date_created),
                                 updatedAt: convertDate(employee.date_modified),
                             }
-                            if(!isNaN(employee.phone)){
+                            if (!isNaN(employee.phone)) {
                                 employeeData.contactPhone = employee.phone;
                             }
                             if (role) {
@@ -984,7 +1214,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         four: function (callBackFour) {
-            events.createTruckFromDevices(req, function (result) {
+            events.getEmployeeData(req, function (result) {
                 console.log('4 Completed', result);
                 if (result.status) {
                     callBackFour(null, result);
@@ -1023,13 +1253,13 @@ Events.prototype.getCompleteData = function (req, callback) {
                 }
             })
         },
-        eight:function (callBackEight) {
-            events.getAdminRoles(req,function (result) {
-                console.log('8 Completed',result);
-                if(result.status){
-                    callBackEight(null,result);
-                }else{
-                    callBackEight(result,null);
+        eight: function (callBackEight) {
+            events.getAdminRoles(req, function (result) {
+                console.log('8 Completed', result);
+                if (result.status) {
+                    callBackEight(null, result);
+                } else {
+                    callBackEight(result, null);
                 }
             })
         },
@@ -1044,7 +1274,7 @@ Events.prototype.getCompleteData = function (req, callback) {
             })
         },
         ten: function (callBackTen) {
-            events.getEmployeeData(req, function (result) {
+            events.createTruckFromDevices(req, function (result) {
                 console.log('10 Completed', result);
                 if (result.status) {
                     callBackTen(null, result);
@@ -1158,7 +1388,6 @@ Events.prototype.getCompleteData = function (req, callback) {
             callback({});
         } else {
             callback(results);
-            console.log(results);
         }
     });
 };
@@ -1419,7 +1648,7 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                     if (findCustomerLeadErr) {
                         customerLeadCallBack(findCustomerLeadErr);
                     } else if (customerLeadFound) {
-                        customerLeadCallBack('Customer Lead exists');
+                        customerLeadCallBack(null, 'Customer Lead exists');
                     } else {
                         if (customerLead.alt_mobile_1) {
                             alternatePhone.push(customerLead.alt_mobile_1);
@@ -1575,11 +1804,17 @@ Events.prototype.getCustomerData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(customers, function (customer, customerCallBack) {
-                AccountsColl.findOne({email: customer.email}, function (findCustomerErr, customerFound) {
+                AccountsColl.findOne({
+                    userName: customer.email,
+                    firstName: customer.fullname,
+                    email: customer.email,
+                    leadType: customer.type,
+                    "role": {"$ne": "employee"}
+                }, function (findCustomerErr, customerFound) {
                     if (findCustomerErr) {
                         customerCallBack(findCustomerErr);
                     } else if (customerFound) {
-                        customerCallBack('Customer exists');
+                        customerCallBack(null, "Customer Exists");
                     } else {
                         alternatePhone = [];
                         if (customer.alt_mobile_1) {
@@ -1645,7 +1880,7 @@ Events.prototype.getCustomerData = function (request, callback) {
                             smsEmailAds: customer.enable_sms_email_ads,
                             role: role
                         }
-                        if(!isNaN(customer.mobile)){
+                        if (!isNaN(customer.mobile)) {
                             customerData.contactPhone = customer.mobile;
                         }
                         AccountsColl.findOne({"role": "account"}, {"userName": customer.gps_account_id}, function (err, account) {
@@ -1700,7 +1935,7 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
                     if (findJunkLeadErr) {
                         junkLeadCallBack(findJunkLeadErr);
                     } else if (junkLeadFound) {
-                        junkLeadCallBack('Junk Lead exists');
+                        junkLeadCallBack(null, 'Junk Lead exists');
                     } else {
                         alternatePhone = [];
                         if (junkLead.alt_mobile_1) {
@@ -1748,7 +1983,7 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
                             smsEmailAds: junkLead.enable_sms_email_ads,
                         }
 
-                        AccountsColl.findOne({"role": {"$ne":"account"}}, {"firstName": junkLead.fullname}, {leadType: junkLead.type}, function (err, account) {
+                        AccountsColl.findOne({"role": {"$ne": "account"}}, {"firstName": junkLead.fullname}, {leadType: junkLead.type}, function (err, account) {
                             if (account) {
                                 junkLeadData.accountId = account._id;
                             }
@@ -1815,5 +2050,69 @@ Events.prototype.getMappingGpsStatusToAccount = function (req, callback) {
         }
     });
 };
+
+Events.prototype.getMapInstalledByToDevice = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    DeviceColl.find().distinct("installedBy", function (deviceErr, devices) {
+        if (deviceErr) {
+            retObj.status = false;
+            retObj.messages.push('Error fetching data');
+            retObj.messages.push(JSON.stringify(err));
+            callback(retObj);
+        } else if (devices) {
+            async.mapSeries(devices, function (device, deviceCallBack) {
+                if (device !== 0) {
+                    var employeeDataQuery = "select distinct email from eg_admin where id_admin=" + device;
+                    pool_crm.query(employeeDataQuery, function (employeeDataErr, employeeData) {
+                        if (employeeDataErr) {
+                            deviceCallBack(employeeDataErr)
+                        } else if (employeeData[0].email) {
+                            AccountsColl.findOne({
+                                "role": "employee",
+                                userName: employeeData[0].email
+                            }, function (findEmployeeErr, employee) {
+                                if (findEmployeeErr) {
+                                    deviceCallBack(findEmployeeErr)
+                                } else if (employee) {
+                                    var employeeId = employee._id
+                                    DeviceColl.update({installedBy: device}, {
+                                        $set: {
+                                            assignedTo: employeeId
+                                        }
+                                    }, function (updateDeviceErr, device) {
+                                        if (updateDeviceErr) {
+                                            deviceCallBack(updateDeviceErr);
+                                        } else {
+                                            deviceCallBack(null, 'saved');
+                                        }
+                                    });
+                                } else {
+                                    deviceCallBack(null, "no records found");
+                                }
+                            });
+                        }
+                    })
+                } else {
+                    deviceCallBack(null, 'skip if 0')
+                }
+            }, function (deviceErr, deviceSaved) {
+                if (deviceErr) {
+                    retObj.status = false;
+                    retObj.messages.push('Error saving data');
+                    retObj.messages.push(JSON.stringify(deviceErr));
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push('Device updated successfully');
+                    callback(retObj);
+                }
+            });
+        }
+    });
+}
 
 module.exports = new Events();

@@ -378,14 +378,14 @@ var deviceSchema = new mongoose.Schema({
     userName: String,
     createdBy: {type: ObjectId, ref: 'accounts'},
     deviceId: String,
-    assignedTo: Number,//{type: ObjectId, ref: 'accounts'},
+    assignedTo: {type: ObjectId, ref: 'accounts'},
     //truckId: {type: ObjectId, ref: 'trucks'},
     simNumber: String,
     imei: String,
     simPhoneNumber: String,
     truckId: {type: ObjectId, ref: 'trucks'},
     address: String,
-    installedBy: Number,  //installed UserId
+    installedBy: {type: ObjectId, ref: 'accounts'},  //installed UserId
     accountId: {type: ObjectId, ref: 'accounts'},
     devicePaymentStatus: String,
     devicePaymentPlan: String, //reference to device payment plan
