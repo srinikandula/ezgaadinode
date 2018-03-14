@@ -26,7 +26,7 @@
                                        title="Customer *" reset-search-input="false">
 
                                 <ui-select-match placeholder="Customer *" class="form-control order-form-control">
-                                    {{$select.selected.userName || userName}}
+                                    {{$select.selected.firstName || firstName}}
                                 </ui-select-match>
                                 <ui-select-choices
                                         repeat="truck in truckOwnersList " refresh="searchAccountOwner($select.search)"

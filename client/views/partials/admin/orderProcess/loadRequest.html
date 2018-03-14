@@ -4,7 +4,7 @@
         <li class="pull-right">
             <button class="btn btn-primary" ui-sref="orderprocess.createLoadRequest">Create New</button>
         </li>
-        <li class="pull-right col-xs-2">
+        <li class="pull-right col-xs-3">
             <select class="form-control">
                 <option>Select</option>
                 <option>Qualified</option>
@@ -17,10 +17,21 @@
                 <option>Not Interested</option>
             </select>
         </li>
+        <li class="pull-right col-xs-4">
+            <form role="search">
+                <div class="input-group add-on">
+                    <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </li>
+        <div class="clearfix"></div>
     </ul>
-    <div class="clearfix"></div>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
-           ng-table="loadRequestParams">
+    <table class="table table-bordered table-striped table-condensed table-hover text-center"
+           ng-table="requestLoadParams">
         <tbody>
         <tr ng-repeat="load in currentPageOfLoadRequests">
             <!--<td data-title="'S No'" class="col-sm-1">{{$index+1}}</td>-->
@@ -30,13 +41,21 @@
             <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item col-sm-1">
                 {{load.firstName}}
             </td>
-            <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item col-sm-1">{{load.contactPhone}}</td>
-            <td data-title="'Truck No'" sortable="'registrationNo'" class="clickable-item col-sm-1">{{load.registrationNo}}</td>
+            <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item col-sm-1">{{load.contactPhone}}
+            </td>
+            <td data-title="'Truck No'" sortable="'registrationNo'" class="clickable-item col-sm-1">
+                {{load.registrationNo}}
+            </td>
             <td data-title="'Make Year'" sortable="'makeYear'" class="clickable-item col-sm-1">{{load.makeYear}}</td>
-            <td data-title="'Source'" sortable="'sourceAddress'" class="clickable-item col-sm-1">{{load.sourceAddress}}</td>
+            <td data-title="'Source'" sortable="'sourceAddress'" class="clickable-item col-sm-1">
+                {{load.sourceAddress}}
+            </td>
             <td data-title="'Destination / Price'" sortable="'destinationAddress'" class="clickable-item col-sm-1">
-                <span ng-repeat="destination in load.destination">{{destination.destinationAddress}} / Rs.{{destination.price}}<br /></span></td>
-            <td data-title="'Date'" sortable="'dateAvailable'" class="clickable-item col-sm-1">{{load.dateAvailable | date:'dd-MM-yyyy'}}</td>
+                <span ng-repeat="destination in load.destination">{{destination.destinationAddress}} / Rs.{{destination.price}}<br/></span>
+            </td>
+            <td data-title="'Date'" sortable="'dateAvailable'" class="clickable-item col-sm-1">{{load.dateAvailable |
+                date:'dd-MM-yyyy'}}
+            </td>
             <td data-title="'Status'" sortable="'Status'" class="clickable-item col-sm-1">{{load.status || 'NA'}}</td>
 
             <td data-title="'Action'" class="col-sm-1">

@@ -264,9 +264,9 @@ Accounts.prototype.addAccount = function (req, callback) {
     if (!accountInfo.contactPhone) {
         retObj.messages.push('Invalid Mobile Number');
     }
-    if (!accountInfo.type) {
+ /*   if (!accountInfo.type) {
         retObj.messages.push('Invalid type');
-    }
+    }*/
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_account_err, {
             body: JSON.stringify(req.body),
