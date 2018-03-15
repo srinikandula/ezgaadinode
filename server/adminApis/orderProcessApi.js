@@ -1653,14 +1653,13 @@ OrderProcess.prototype.createOrder = function (req, callback) {
         messages: []
     };
     var params = req.body;
+    console.log(params)
     if (!params.loadOwnerType) {
         retObj.messages.push("select load owner type");
     }
-
     if (!params.truckOwnerId) {
         retObj.messages.push("Please select truck owner");
     }
-
     if (params.loadOwnerType === "Registered" && !params.loadOwnerId) {
         retObj.messages.push("Please select load owner customer");
     }
@@ -1682,9 +1681,6 @@ OrderProcess.prototype.createOrder = function (req, callback) {
     if (!params.registrationNo) {
         retObj.messages.push("Please enter source");
     }
-    if (!params.destination) {
-        retObj.messages.push("Please enter destination");
-    }
     if (!params.egCommission) {
         retObj.messages.push("Please enter easygaadi commission");
     }
@@ -1698,11 +1694,12 @@ OrderProcess.prototype.createOrder = function (req, callback) {
         retObj.messages.push("select apply Tds type");
     }
     if (retObj.messages.length > 0) {
+
         callback(retObj);
-    } else {
-        if (params.customerType === 'Registered') {
+    }else{
+        if (params.loadOwnerType === 'Registered') {
             saveTripOrder(req, params, callback);
-        } else if (params.customerType === 'UnRegistered') {
+        } else if (params.loadOwnerType === 'UnRegistered') {
             params.createdBy = req.jwt.id;
             Utils.removeEmptyFields(params);
             var customerLead = new CustomerLeadsColl(params);
@@ -1740,7 +1737,6 @@ function saveTripOrder(req, params, callback) {
         status: false,
         messages: []
     };
-
     params.createdBy = req.jwt.id;
     var adminTrip = new AdminTripsColl(params);
     adminTrip.save(function (err, saveDoc) {
@@ -2007,10 +2003,12 @@ function saveTripOrder(req, params, callback) {
                         messages: retObj.messages
                     }, function (response) {
                     });
+                    callback(retObj);
+
                 } else {
                     retObj.status = true;
-                    retObj.messages = "Order created successfully";
-                    retObj.data = doc;
+                    retObj.messages .push( "Order created successfully");
+                    retObj.data = saveDoc;
                     analyticsService.create(req, serviceActions.create_order, {
                         body: JSON.stringify(req.body),
                         accountId: req.jwt.id,

@@ -755,7 +755,7 @@ var adminTripsSchema = new mongoose.Schema({
     egCommission:Number,
     dateOfOrder:Date,
     egBookedAmount:Number,
-    driveName:String,
+    driverName:String,
     driverMobile:Number,
     comment:String,
     loadingAgentNo:String,

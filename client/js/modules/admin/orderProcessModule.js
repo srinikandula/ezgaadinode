@@ -152,6 +152,12 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 data: data
             }).then(success, error)
         },
+        getTransporter: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/getTransporter',
+                method: "GET",
+            }).then(success, error)
+        },
 
     }
 }]);
@@ -453,7 +459,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             $scope.invalidCount = 0;
             if (response.data.status) {
                 tableParams.total(response.data.count);
-                tableParams.data= response.data.data;
+                tableParams.data = response.data.data;
                 $scope.truckRequestsList = response.data.data;
             } else {
                 Notification.error({message: response.data.messages[0]});
@@ -519,7 +525,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                     data: success.data.data,
                     columns: [
                         {
-                            "title":"S No",
+                            "title": "S No",
                             "data": "id",
                             render: function (data, type, row, meta) {
                                 return meta.row + meta.settings._iDisplayStart + 1;
@@ -540,7 +546,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                         {
                             "title": "No of Trucks", "data": "noOfTrucks",
                             "render": function (data, type, row) {
-                                if (!data ) {
+                                if (!data) {
                                     return '--'
                                 } else {
                                     return data;
@@ -551,8 +557,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                         {
                             title: "Company", "data": "company",
                             "render": function (data, type, row) {
-                                if (!data ) {
-                                   return '--'
+                                if (!data) {
+                                    return '--'
                                 } else {
                                     return data;
                                 }
@@ -563,7 +569,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                             "title": "Address",
                             "data": "address",
                             "render": function (data, type, row) {
-                                if (!data ) {
+                                if (!data) {
                                     return '--'
                                 } else {
                                     return data;
@@ -1234,52 +1240,106 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
 }]);
 
-app.controller('viewOrderCtrl', ['$scope', 'OrderProcessServices', 'Notification',function ($scope, OrderProcessServices, Notification) {
+app.controller('viewOrderCtrl', ['$scope', '$state','OrderProcessServices', 'customerServices', 'Notification','SettingServices', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices) {
+
     $scope.status = {
         isOpen: true,
         isOpenOne: true,
     }
 
+    $scope.cancel = function () {
+        $state.go('orderprocess.viewOrder');
+    };
+
+    $scope.getTransportersList = function () {
+        customerServices.getTransporter({}, function (response) {
+            if (response.data.status) {
+                $scope.getTransporters = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    }
+
+    $scope.getTruckTypes = function () {
+        SettingServices.getTruckTypes({}, function (response) {
+            if (response.data.status) {
+                $scope.truckTypesList = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+
+    $scope.addSearchSource = function () {
+        var input = document.getElementById('searchSource');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.newOrderRequest.source = place.formatted_address;
+            });
+    };
+    $scope.addSearchDestination = function () {
+        var input = document.getElementById('searchDestination');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.newOrderRequest.destination= [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
+            });
+    };
+
     $scope.newOrderRequest = {
-        error:[]
+        error: []
     }
 
     $scope.addOrderRequest = function () {
-       var params = $scope.newOrderRequest;
-       params.messages = [];
+        var params = $scope.newOrderRequest;
+        params.messages = [];
 
         if (!params.loadOwnerType) {
-            params.messages.push("Please select customer type");
+            params.messages.push("Please select Load Owner");
+        }
+        if (!params.truckOwnerId) {
+            params.messages.push("Please select Truck Owner");
         }
         if (params.loadOwnerType === "Registered" && !params.loadOwnerId) {
             params.messages.push("Please select Load Owner");
         }
-        if (params.loadOwnerType === "UnRegistered" && !params.firstName) {
-            params.messages.push("Please Enter Your First Name");
+        if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_firstName) {
+            params.messages.push("Please enter load owner name");
         }
-        if (params.loadOwnerType === "UnRegistered" && !params.contactPhone) {
-            params.messages.push("Please provide Mobile Number");
-        }
-        if (!params.truckOwner) {
-            params.messages.push("Please Select Truck Owner");
-        }
-        if (!params.source) {
-            params.messages.push("Please enter Source Location");
-        }
-        if (!params.destination) {
-            params.messages.push("Please enter Destination Location");
-        }
-        if (!params.dateOfOrder) {
-            params.messages.push("Please enter Date of Order");
-        }
-        if (!params.pickupDate) {
-            params.messages.push("Please enter Pickup Date");
+        if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_contactPhone) {
+            params.messages.push("Please enter load owner phone");
         }
         if (!params.truckType) {
-            params.messages.push("Please select Truck Type");
+            params.messages.push("Please select Truck type");
+        }
+        if (!params.source) {
+            params.messages.push("Please Enter Source Location");
+        }
+        if (!params.destination) {
+            params.messages.push("Please Enter Destination Location");
         }
         if (!params.registrationNo) {
-            params.messages.push("Please enter Truck Registration number");
+            params.messages.push("Please Enter Vehicle Registration Number");
+        }
+        if (!params.egCommission) {
+            params.messages.push("Please Enter Easygaadi Commission");
+        }
+        if (!params.to_bookedAmount) {
+            params.messages.push("Please Enter Truck Booked Amount");
+        }
+        if (!params.to_advance) {
+            params.messages.push("Please Truck Advance Amount");
+        }
+        if (!params.applyTds) {
+            params.messages.push("select apply TDS type");
         }
         if (params.messages.length > 0) {
             params.messages.forEach(function (message) {
@@ -1302,7 +1362,7 @@ app.controller('viewOrderCtrl', ['$scope', 'OrderProcessServices', 'Notification
                     success.data.messages.forEach(function (message) {
                         Notification.success(message);
                     });
-                    $state.go("orderprocess.viewOrder");
+                    $state.go("orderprocess");
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -1314,4 +1374,6 @@ app.controller('viewOrderCtrl', ['$scope', 'OrderProcessServices', 'Notification
         }
 
     }
+
+
 }]);
