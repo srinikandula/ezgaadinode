@@ -13,21 +13,22 @@
                         <p class="loadod">Load Owner Details:</p>
                         <div class="col-sm-6">
                             <div class="form-group">
-                                <select class="form-control order-form-control" ng-model="newOrderRequest.loadOwnerType">
+                                <select class="form-control order-form-control"
+                                        ng-model="newOrderRequest.loadOwnerType">
                                     <option value="" selected>--Customer Type--</option>
-                                    <option value="registered">Registered</option>
-                                    <option value="unregistered">UnRegistered</option>
+                                    <option value="Registered">Registered</option>
+                                    <option value="UnRegistered">UnRegistered</option>
                                 </select>
                             </div>
-                            <div ng-show="newOrderRequest.loadOwnerType === 'unregistered'">
+                            <div ng-show="newOrderRequest.loadOwnerType === 'UnRegistered'">
                                 <div class="form-group styling-input-list">
                                     <input class="form-control order-form-control" type="text"
-                                           ng-model="newOrderRequest.firstName"/>
+                                           ng-model="newOrderRequest.loadOwner_firstName"/>
                                     <label class="order-effect-for-input">Full Name*</label>
                                 </div>
                                 <div class="form-group styling-input-list">
                                     <input class="form-control order-form-control" type="text"
-                                           ng-model="newOrderRequest.contactPhone"/>
+                                           ng-model="newOrderRequest.loadOwner_contactPhone"/>
                                     <label class="order-effect-for-input">Mobile*</label>
                                 </div>
                                 <div class="form-group styling-input-list">
@@ -37,7 +38,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-sm-6" ng-show="newOrderRequest.loadOwnerType === 'unregistered'">
+                        <div class="col-sm-6" ng-show="newOrderRequest.loadOwnerType === 'UnRegistered'">
                             <div class="form-group styling-input-list">
                                 <input class="form-control order-form-control" type="text"
                                        ng-model="newOrderRequest.companyName"/>
@@ -60,12 +61,36 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-6" ng-show="newOrderRequest.loadOwnerType === 'registered'">
-                            <div class="form-group ordernew">
+                        <div class="col-sm-6" ng-show="newOrderRequest.loadOwnerType === 'Registered'">
+                            <div class="form-group ordernew" ng-init="getTransportersList();">
                                 <ui-select ng-model="newOrderRequest.loadOwnerId" theme="select2"
                                            style="min-width: 390px;"
                                            title="Customer *" reset-search-input="false">
-                                    <ui-select-match placeholder="Customer *" class="form-control order-form-control">
+                                    <ui-select-match placeholder="Load Owner *" class="form-control order-form-control">
+                                        {{$select.selected.firstName || firstName}}
+                                    </ui-select-match>
+                                    <ui-select-choices
+                                            repeat="names in getTransporters"
+                                            refresh="searchAccountOwner($select.search)"
+                                            refresh-delay="0" scroll-detector="loadMore()">
+                                        <b>
+                                            <div ng-bind-html="names.firstName "></div>
+                                        </b>
+                                        <small>Mobile: {{names.contactPhone || '---'}}</small>
+                                    </ui-select-choices>
+                                </ui-select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-sm-6 pall-zero">
+                        <p class="loadod">Truck Owner Type:</p>
+                        <div class="col-sm-6">
+                            <div class="form-group ordernew">
+                                <ui-select ng-model="newOrderRequest.truckOwnerId" theme="select2"
+                                           style="min-width: 390px;"
+                                           title="Customer *" reset-search-input="false">
+                                    <ui-select-match placeholder="Trcuk Owner *"
+                                                     class="form-control order-form-control">
                                         {{$select.selected.firstName || firstName}}
                                     </ui-select-match>
                                     <ui-select-choices
@@ -78,16 +103,6 @@
                                         <small>Mobile: {{truck.contactPhone || '---'}}</small>
                                     </ui-select-choices>
                                 </ui-select>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6 pall-zero">
-                        <p class="loadod">Truck Owner Type:</p>
-                        <div class="col-sm-8">
-                            <div class="form-group styling-input-list">
-                                <input class="form-control order-form-control" type="text"
-                                       ng-model="newOrderRequest.truckOwner"/>
-                                <label class="order-effect-for-input">Customer*</label>
                             </div>
                         </div>
                     </div>
@@ -126,7 +141,7 @@
                             <div class="form-group styling-input-list">
                                 <input class="form-control order-form-control" type="number" min="0"
                                        ng-model="newOrderRequest.to_bookedAmount"/>
-                                <label class="order-effect-for-input">Truck Booked Amount</label>
+                                <label class="order-effect-for-input">Truck Booked Amount*</label>
                             </div>
                             <div class="form-group styling-input-list">
                                 <input class="form-control order-form-control" type="number" min="0"
@@ -143,7 +158,7 @@
                             <div class="form-group styling-input-list">
                                 <input class="form-control order-form-control" type="number" min="0"
                                        ng-model="newOrderRequest.to_advance"/>
-                                <label class="order-effect-for-input">Truck Advance</label>
+                                <label class="order-effect-for-input">Truck Advance*</label>
                             </div>
                             <div class="form-group styling-input-list">
                                 <input class="form-control order-form-control" type="number" min="0"
@@ -151,8 +166,10 @@
                                 <label class="order-effect-for-input">Unloading Amount</label>
                             </div>
                             <div class="form-group styling-input-list">
-                                <input class="form-control order-form-control" type="number" min="0"
-                                       ng-model="newOrderRequest.applyTds"/>
+                                <select class="form-control order-form-control" ng-model="newOrderRequest.applyTds">
+                                    <option value="Yes">Yes</option>
+                                    <option value="No">No</option>
+                                </select>
                                 <label class="order-effect-for-input">Apply TDS</label>
                             </div>
                         </div>
@@ -170,36 +187,37 @@
                 <div class="row">
                     <div class="col-xs-4">
                         <div class="form-group styling-input-list">
-                            <input class="form-control order-form-control" type="text"
-                                   ng-model="newOrderRequest.source"/>
+                            <input class="form-control order-form-control" type="text" name="source"
+                                   ng-model="newOrderRequest.source" id="searchSource"
+                                   ng-change="addSearchSource()"/>
                             <label class="order-effect-for-input">Source Address*</label>
                         </div>
                     </div>
                     <div class="col-xs-4">
                         <div class="form-group styling-input-list">
                             <input class="form-control order-form-control" type="text"
-                                   ng-model="newOrderRequest.destination"/>
+                                   ng-model="newOrderRequest.destination" id="searchDestination"
+                                   ng-change="addSearchDestination()"/>
                             <label class="order-effect-for-input">Destination Address*</label>
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <div class="form-group styling-input-list">
-                            <input class="form-control order-form-control" type="text"
-                                   ng-model="newOrderRequest.dateOfOrder"/>
-                            <label class="order-effect-for-input">Date Ordered*</label>
+                        <div class="form-group">
+                            <admin-date-picker ng-model="newOrderRequest.dateOfOrder"
+                                               class="'order-form-control'" placeholder="'Date of Order'"></admin-date-picker>
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <div class="form-group styling-input-list">
-                            <input class="form-control order-form-control" type="text"
-                                   ng-model="newOrderRequest.pickupDate"/>
-                            <label class="order-effect-for-input">Pickup Date & Time*</label>
+                        <div class="form-group">
+                            <admin-date-picker ng-model="newOrderRequest.pickupDate"
+                                               class="'order-form-control'" placeholder="'Pickup Date'"></admin-date-picker>
                         </div>
                     </div>
                     <div class="col-xs-4">
-                        <div class="form-group styling-input-list">
-                            <input class="form-control order-form-control" type="text"
-                                   ng-model="newOrderRequest.truckType"/>
+                        <div class="form-group styling-input-list" ng-init="getTruckTypes();">
+                            <select class="form-control order-form-control" ng-model="newOrderRequest.truckType">
+                                <option ng-repeat="types in truckTypesList">{{types.title}}</option>
+                            </select>
                             <label class="order-effect-for-input">Truck Type*</label>
                         </div>
                     </div>
