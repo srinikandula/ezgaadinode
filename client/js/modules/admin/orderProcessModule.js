@@ -158,6 +158,34 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "GET",
             }).then(success, error)
         },
+        totalAdminTruckOrders: function (success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/totalAdminTruckOrders',
+                method: "GET",
+            }).then(success, error)
+        },
+        getAdminTruckOrdersList: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getAdminTruckOrdersList',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        getTruckOwnerOrderDetails: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getTruckOwnerOrderDetails',
+                method: "GET",
+                params: {_id: params}
+            }).then(success, error)
+        },
+        getLoadOwnerOrderDetails: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getLoadOwnerOrderDetails',
+                method: "GET",
+                params: {_id: params}
+            }).then(success, error)
+        },
+
 
     }
 }]);
@@ -1240,7 +1268,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
 }]);
 
-app.controller('viewOrderCtrl', ['$scope', '$state','OrderProcessServices', 'customerServices', 'Notification','SettingServices', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices) {
+app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'customerServices', 'Notification', 'SettingServices', 'NgTableParams', '$stateParams', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices, NgTableParams, $stateParams) {
 
     $scope.status = {
         isOpen: true,
@@ -1289,7 +1317,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state','OrderProcessServices', 'cus
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.newOrderRequest.destination= [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+                $scope.newOrderRequest.destination = place.formatted_address;
 
             });
     };
@@ -1362,7 +1390,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state','OrderProcessServices', 'cus
                     success.data.messages.forEach(function (message) {
                         Notification.success(message);
                     });
-                    $state.go("orderprocess");
+                    $state.go("orderprocess.viewOrder");
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -1375,5 +1403,71 @@ app.controller('viewOrderCtrl', ['$scope', '$state','OrderProcessServices', 'cus
 
     }
 
+    $scope.count = 0;
+    $scope.numOfOrders = function () {
+        OrderProcessServices.totalAdminTruckOrders(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                console.log($scope.count);
+                $scope.initOrders();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    $scope.initOrders = function () {
+        $scope.viewOrderParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
+    };
+
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+        };
+        OrderProcessServices.getAdminTruckOrdersList(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.viewOrderList = response.data.data;
+
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+    $scope.truckOwnerOrderOnfo = function () {
+        if ($stateParams.orderId) {
+            OrderProcessServices.getTruckOwnerOrderDetails($stateParams.orderId, function (success) {
+                if (success.data.status) {
+                    $scope.orderDetails = success.data.orderDetails;
+                    $scope.transactionsDetails = success.data.transactionsDetails;
+                    $scope.paymentsDetails = success.data.paymentsDetails;
+                    $scope.comments = success.data.comments;
+                }
+                else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            });
+        }
+    }
 
 }]);

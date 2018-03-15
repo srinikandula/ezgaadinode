@@ -506,7 +506,6 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
 
     }).lean().exec(function (err, operatingRoutes) {
         if (err) {
-            console.log("err", err);
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (operatingRoutes.length > 0) {
@@ -1593,7 +1592,7 @@ OrderProcess.prototype.getAdminTruckOrdersList = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         ordersList: function (ordersListCallback) {
-            AdminTripsColl.find({}).sort(sort)
+            AdminTripsColl.find({}).populate({path:"createdBy",select:"firstName"}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -1619,7 +1618,7 @@ OrderProcess.prototype.getAdminTruckOrdersList = function (req, callback) {
             callback(retObj);
         } else {
 
-            if (results.truckRequests.length > 0) {
+            if (results.ordersList.length > 0) {
                 retObj.status = true;
                 retObj.messages = "Success";
                 retObj.data = results.ordersList;
@@ -1987,15 +1986,13 @@ function saveTripOrder(req, params, callback) {
 OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
     var retObj = {
         status: false,
-        message: []
+        messages: []
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid Order request");
     }
-    if (!params.billType) {
-        retObj.messages.push("Invalid bill type");
-    }
+
     if (retObj.messages.length > 0) {
     } else {
         AdminTripsColl.findOne({_id: params._id}, function (err, orderDetails) {
@@ -2038,11 +2035,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                     }
                 }, function (err, result) {
                     if (err) {
-                        retObj.message.push("Please try again");
-                        retObj.orderDetails = orderDetails;
-                        retObj.paymentsDetails = result.paymentsDetails;
-                        retObj.transactionsDetails = result.transactionsDetails;
-                        retObj.comments = result.comments;
+                        retObj.messages.push("Please try again");
                         analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -2052,7 +2045,12 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                         });
                         callback(retObj);
                     } else {
-                        retObj.message.push("Success");
+                        retObj.status=true;
+                        retObj.orderDetails = orderDetails;
+                        retObj.paymentsDetails = result.paymentsDetails;
+                        retObj.transactionsDetails = result.transactionsDetails;
+                        retObj.comments = result.comments;
+                        retObj.messages.push("Success");
                         analyticsService.create(req, serviceActions.get_trip_order_details, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -2064,7 +2062,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                 });
 
             } else {
-                retObj.message.push("Order details not found");
+                retObj.messages.push("Order details not found");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,

@@ -741,7 +741,7 @@ var adminTripsSchema = new mongoose.Schema({
     driverId: {type: ObjectId, ref: 'drivers'},
     accountId: {type: ObjectId, ref: 'accounts'},
     updatedBy: String,
-    createdBy: String,
+    createdBy: {type: ObjectId, ref: 'accounts'},
     truckRequestId: {type: ObjectId, ref: 'truckRequests'},
     truckOwnerId:{type: ObjectId, ref: 'accounts'},
     loadOwnerId:{type: ObjectId, ref: 'accounts'},
