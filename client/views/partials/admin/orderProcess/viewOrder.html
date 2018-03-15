@@ -1,4 +1,4 @@
-<div ng-controller="viewOrderCtrl">
+<div ng-controller="viewOrderCtrl" ng-init="numOfOrders();">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">View Orders</li>
         <li class="pull-right">
@@ -32,20 +32,27 @@
     </ul>
     <div class="">
         <table class="table table-bordered table-striped table-condensed table-hover text-center"
-               ng-table="requestLoadParams">
+               ng-table="viewOrderParams">
             <tbody>
-            <tr>
-                <td data-title="'S.No'" class="clickable-item"></td>
-                <td data-title="'Order Id'" sortable="'orderId'" class="clickable-item"></td>
-                <td data-title="'Created By'" sortable="'createdBy'" class="clickable-item"></td>
-                <td data-title="'Date Ordered'" sortable="'dateOrdered'" class="clickable-item"></td>
-                <td data-title="'Date Created'" sortable="'dateCreated'" class="clickable-item"></td>
-                <td data-title="'Source'" sortable="'source'" class="clickable-item"></td>
-                <td data-title="'Destination'" sortable="'destination'" class="clickable-item"></td>
-                <td data-title="'Amount'" sortable="'amount'" class="clickable-item"></td>
-                <td data-title="'Status'" sortable="'status'" class="clickable-item"></td>
+            <tr ng-repeat="orders in viewOrderList">
+                <td data-title="'S.No'" class="clickable-item">{{$index+1}}</td>
+                <td data-title="'Order Id'" sortable="'orderId'" class="clickable-item">{{orders.id || '--'}}</td>
+                <td data-title="'Created By'" sortable="'createdBy'" class="clickable-item">
+                    {{orders.createdBy.firstName}}
+                </td>
+                <td data-title="'Date Ordered'" sortable="'dateOrdered'" class="clickable-item">{{orders.dateOfOrder |
+                    date:'dd-MM-yyyy'}}
+                </td>
+                <td data-title="'Date Created'" sortable="'dateCreated'" class="clickable-item">{{orders.createdAt |
+                    date:'dd-MM-yyyy'}}
+                </td>
+                <td data-title="'Source'" sortable="'source'" class="clickable-item">{{orders.source}}</td>
+                <td data-title="'Destination'" sortable="'destination'" class="clickable-item">{{orders.destination}}
+                </td>
+                <td data-title="'Amount'" sortable="'amount'" class="clickable-item">{{orders.egBookedAmount}}</td>
+                <td data-title="'Status'" sortable="'status'" class="clickable-item">{{orders.status}}</td>
                 <td data-title="'Action'">
-                    <a href="#" ui-sref="orderprocess.editLoadRequest({loadRequestId:load._id})" class="edit_icon">
+                    <a href="#" ui-sref="orderprocess.editOrderRequest({orderId:orders._id})" class="edit_icon">
                         <span class="glyphicon glyphicon-pencil"></span>
                     </a>
                     <a href="#" ng-click="deleteLoadRequest(load._id)" class="delete_icon">
@@ -53,8 +60,8 @@
                     </a>
                 </td>
             </tr>
-            <tr ng-if="!currentPageOfLoadRequests || currentPageOfLoadRequests.length === 0">
-                <td colspan="8">No Loads exist.</td>
+            <tr ng-if="!viewOrderList || viewOrderList.length === 0">
+                <td colspan="8">No Orders exist.</td>
             </tr>
             </tbody>
         </table>

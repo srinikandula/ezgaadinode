@@ -210,10 +210,10 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'orderprocess'}
     }).state({
         name: 'orderprocess.editOrderRequest',
-        url: '/editOrderRequest',
+        url: '/editOrderRequest/:orderId',
         templateUrl: 'views/partials/admin/orderProcess/editOrderRequest.html',
         data: {activeTab: 'orderprocess'},
-        params: { editOrderId: null }
+        params: { orderId: null }
     }).state({
         name: 'settings',
         url: '/settings',
