@@ -36,7 +36,7 @@
             <tbody>
             <tr ng-repeat="orders in viewOrderList">
                 <td data-title="'S.No'" class="clickable-item">{{$index+1}}</td>
-                <td data-title="'Order Id'" sortable="'orderId'" class="clickable-item">{{orders.id || '--'}}</td>
+                <td data-title="'Order Id'" sortable="'orderId'" class="clickable-item">{{orders.orderId || '--'}}</td>
                 <td data-title="'Created By'" sortable="'createdBy'" class="clickable-item">
                     {{orders.createdBy.firstName}}
                 </td>

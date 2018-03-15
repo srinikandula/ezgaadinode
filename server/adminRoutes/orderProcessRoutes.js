@@ -183,6 +183,12 @@ AuthRouter.post('/addOrderTransaction',function (res,res) {
     })
 });
 
+AuthRouter.post('/updateOrderPOD',function (req,res) {
+   OrderProcess.updateOrderPOD(req,function (result) {
+       res.send(result);
+   })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
