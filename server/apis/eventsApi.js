@@ -437,10 +437,10 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                         AccountsColl.findOne({
                             "userName": devicesDataResult.accountId
                         }, function (accountErr, account) {
-                            if (accountErr) {
-                                accountCallback(accountErr, account);//null);
-                            } else {
+                            if(account){
                                 accountCallback(accountErr, account._id);
+                            } else {
+                                accountCallback(accountErr, account);//null);
                             }
                         });
                     },
@@ -457,10 +457,10 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                     "role": "employee",
                                     "userName": employeeDataResult[0].email
                                 }, function (employeeErr, employee) {
-                                    if (employeeErr) {
-                                        employeeCallback(employeeErr, employee);//null);
-                                    } else {
+                                    if (employee) {
                                         employeeCallback(employeeErr, employee._id);
+                                    } else {
+                                        employeeCallback(employeeErr, employee);
                                     }
                                 });
                             }
@@ -563,28 +563,6 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                 deviceDataCallBack(saveErr, "saved");
                             }
                         });
-
-                        /*if (ids.deviceId) {
-                         var planDoc = new AccountDevicePlanHistoryColl({
-                         deviceId: ids.deviceId,
-                         planId: ids.planId,
-                         amount: plan.amount,
-                         remark: plan.remark,
-                         creationTime: plan.creationTime,
-                         startTime: plan.startTime,
-                         expiryTime: plan.expiryTime,
-                         received: plan.received
-                         });
-                         if (ids.accountId) {
-                         if (ids.accountId.id) planDoc.accountId = ids.accountId.id;
-                         else planDoc.accountName = ids.accountId.name;
-                         }
-                         planDoc.save(function (err) {
-                         planCallBack(err, 'saved');
-                         });
-                         } else {
-                         planCallBack(err, 'saved');
-                         }*/
                     }
                 });
             }, function (deviceErr, deviceSaved) {
@@ -599,60 +577,6 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     callback(retObj);
                 }
             });
-            /*async.mapSeries(devicesDataResults, function (devicesDataResult, deviceDataCallBack) {
-             TrucksColl.findOne({
-             userName: devicesDataResult.accountId,
-             registrationNo: devicesDataResult.vehicleId
-             }, function (findTruckErr, truckFound) {
-             if (findTruckErr) {
-             deviceDataCallBack(findTruckErr);
-             } else if (truckFound) {
-             saveDeviceData(devicesDataResult, function (saveDeviceErr, deviceDataSaved) {
-             deviceDataCallBack(saveDeviceErr, deviceDataSaved);
-             });
-             } else {
-             var truckData = {
-             fitnessExpiry: convertDate(devicesDataResult.fitnessExpire),
-             permitExpiry: convertDate(devicesDataResult.NPExpire),
-             insuranceExpiry: convertDate(devicesDataResult.insuranceExpire),
-             pollutionExpiry: convertDate(pollutionExpiry),
-             taxDueDate: convertDate(taxDueDate),
-             registrationNo: devicesDataResult.vehicleId,
-             userName: devicesDataResult.accountId,
-             deviceId: devicesDataResult.imeiNumber,
-             truckType: devicesDataResult.vehicleModel,
-             tracking_available: 1
-             };
-             AccountsColl.findOne({"userName": devicesDataResult.userName}, function (err, account) {
-             if (account) {
-             truckData.accountId = account._id;
-             }
-
-             var truckDataDoc = new TrucksColl(truckData);
-             truckDataDoc.save(function (err, doc) {
-             if (err) {
-             deviceDataCallBack(err)
-             } else {
-             saveDeviceData(devicesDataResult, function (saveDeviceErr, deviceDataSaved) {
-             deviceDataCallBack(saveDeviceErr, deviceDataSaved);
-             });
-             }
-             });
-             });
-             }
-             });
-             }, function (deviceErr, deviceSaved) {
-             if (deviceErr) {
-             retObj.status = false;
-             retObj.messages.push('Error fetching data');
-             retObj.messages.push(JSON.stringify(err));
-             callback(retObj);
-             } else {
-             retObj.status = true;
-             retObj.messages.push('Device Saved Successfully');
-             callback(retObj);
-             }
-             });*/
         }
     });
 };
