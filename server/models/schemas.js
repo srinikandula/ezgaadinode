@@ -899,7 +899,7 @@ module.exports = {
     OrderPaymentsColl:mongoose.model('orderPayments', orderPaymentsSchema, 'orderPayments'),
     OrderCommentsColl:mongoose.model('orderComments', orderCommentsSchema, 'orderComments'),
     OrderTransactionsColl:mongoose.model('orderTransactions', orderTransactionSchema, 'orderTransactions'),
-    orderLocationColl:mongoose.model('orderLocations', orderLocationSchema, 'orderLocations')
+    OrderLocationColl:mongoose.model('orderLocations', orderLocationSchema, 'orderLocations')
 
 
 };
