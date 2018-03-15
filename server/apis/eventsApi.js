@@ -434,6 +434,17 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
             async.map(devicesDataResults, function (devicesDataResult, deviceDataCallBack) {
                 async.parallel({
                     accountId: function (accountCallback) {
+                        AccountsColl.findOne({
+                            "userName": devicesDataResult.accountId
+                        }, function (accountErr, account) {
+                            if (accountErr) {
+                                accountCallback(accountErr, account);//null);
+                            } else {
+                                accountCallback(accountErr, account._id);
+                            }
+                        });
+                    },
+                    employeeId: function (employeeCallback) {
                         var employeeDataQuery = "select email from eg_admin where id_admin=" + devicesDataResult.installedById;
                         pool_crm.query(employeeDataQuery, function (employeeErr, employeeDataResult) {
                             if (employeeErr) {
@@ -445,11 +456,11 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                 AccountsColl.findOne({
                                     "role": "employee",
                                     "userName": employeeDataResult[0].email
-                                }, function (accountErr, account) {
-                                    if (accountErr) {
-                                        accountCallback(accountErr, account);//null);
+                                }, function (employeeErr, employee) {
+                                    if (employeeErr) {
+                                        employeeCallback(employeeErr, employee);//null);
                                     } else {
-                                        accountCallback(accountErr, account._id);
+                                        employeeCallback(employeeErr, employee._id);
                                     }
                                 });
                             }
@@ -534,8 +545,8 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                             deviceDoc: function (deviceDocCallBack) {
                                 if (data.device !== 'Device Exists') {
                                     data.device.accountId = data.accountId;
-                                    data.device.installedBy = data.accountId;
-                                    data.device.assignedTo = data.accountId;
+                                    data.device.installedBy = data.employeeId;
+                                    data.device.assignedTo = data.employeeId;
 
                                     var deviceDataDoc = new DeviceColl(data.device);
                                     deviceDataDoc.save(function (err, doc) {
