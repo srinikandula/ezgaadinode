@@ -732,6 +732,7 @@ var adminLoadRequestSchema = mongoose.Schema({
 }, {timestamps: String});
 
 var adminTripsSchema = new mongoose.Schema({
+    orderId:String,
     date: Date,
     registrationNo: String, //this will be truck id
     freightAmount: Number, //5000
@@ -849,6 +850,42 @@ var orderLocationSchema=new mongoose.Schema({
 }, {
     timestamps: true, versionKey: false
 });
+
+
+/*author : Naresh
+**Auto increment order id sequence*/
+var orderCounterSchema = mongoose.Schema({
+    seq: { type: Number, default: 10000 }
+});
+
+var orderCounetrColl=mongoose.model('orderCounter', orderCounterSchema);
+adminTripsSchema.pre('save', function(next) {
+    var doc = this;
+    orderCounetrColl.count({},function (error,count) {
+        if(error){
+            return next(error);
+
+        }else if(count>0){
+            orderCounetrColl.findOneAndUpdate({}, {$inc: { seq: 1} }, function(error, counter)   {
+                if(error)
+                    return next(error);
+                doc.orderId ="Ord"+counter.seq;
+                next();
+            });
+        }else{
+            var orderCount=new orderCounetrColl({seq:10000});
+            orderCount.save(function (error,counter) {
+                if(error)
+                    return next(error);
+                doc.orderId ="Ord"+counter.seq;
+                next();
+            })
+        }
+
+    });
+
+});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),

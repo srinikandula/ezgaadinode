@@ -1592,7 +1592,7 @@ OrderProcess.prototype.getAdminTruckOrdersList = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     async.parallel({
         ordersList: function (ordersListCallback) {
-            AdminTripsColl.find({}).populate({path:"createdBy",select:"firstName"}).sort(sort)
+            AdminTripsColl.find({}).populate({path: "createdBy", select: "firstName"}).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
@@ -1695,7 +1695,7 @@ OrderProcess.prototype.createOrder = function (req, callback) {
     if (retObj.messages.length > 0) {
 
         callback(retObj);
-    }else{
+    } else {
         if (params.loadOwnerType === 'Registered') {
             saveTripOrder(req, params, callback);
         } else if (params.loadOwnerType === 'UnRegistered') {
@@ -1772,7 +1772,7 @@ function saveTripOrder(req, params, callback) {
                             to_bookedAmountCallBack(err, saved);
                         });
                     } else {
-                        to_bookedAmountCallBack(false,"Empty");
+                        to_bookedAmountCallBack(false, "Empty");
                     }
                 },
                 to_loadingCharge: function (to_loadingChargeCallBack) {
@@ -1789,7 +1789,7 @@ function saveTripOrder(req, params, callback) {
                             to_loadingChargeCallBack(err, saved);
                         });
                     } else {
-                        to_loadingChargeCallBack(false,"Empty");
+                        to_loadingChargeCallBack(false, "Empty");
                     }
                 },
                 to_unloadingCharge: function (to_unloadingChargeCallBack) {
@@ -1807,7 +1807,7 @@ function saveTripOrder(req, params, callback) {
 
                         });
                     } else {
-                        to_unloadingChargeCallBack(false,"Empty");
+                        to_unloadingChargeCallBack(false, "Empty");
                     }
                 },
                 to_commission: function (to_bookedAmountCallBack) {
@@ -1825,7 +1825,7 @@ function saveTripOrder(req, params, callback) {
 
                         });
                     } else {
-                        to_bookedAmountCallBack(false,"Empty");
+                        to_bookedAmountCallBack(false, "Empty");
                     }
                 },
                 applyTds: function (to_bookedAmountCallBack) {
@@ -1843,7 +1843,7 @@ function saveTripOrder(req, params, callback) {
 
                         });
                     } else {
-                        to_bookedAmountCallBack(false,"Empty");
+                        to_bookedAmountCallBack(false, "Empty");
                     }
                 },
                 to_advance: function (to_advanceCallBack) {
@@ -1860,7 +1860,7 @@ function saveTripOrder(req, params, callback) {
                             to_advanceCallBack(err, saved);
                         });
                     } else {
-                        to_advanceCallBack(false,"Empty");
+                        to_advanceCallBack(false, "Empty");
                     }
                 },
                 egBookedAmount: function (egBookedAmountCallBack) {
@@ -1878,7 +1878,7 @@ function saveTripOrder(req, params, callback) {
 
                         });
                     } else {
-                        egBookedAmountCallBack(false,"Empty");
+                        egBookedAmountCallBack(false, "Empty");
                     }
                 },
                 lo_loadingCharge: function (lo_loadingChargeCallBack) {
@@ -1896,7 +1896,7 @@ function saveTripOrder(req, params, callback) {
 
                         });
                     } else {
-                        lo_loadingChargeCallBack(false,"Empty");
+                        lo_loadingChargeCallBack(false, "Empty");
                     }
                 },
                 lo_unloadingCharge: function (lo_unloadingChargeCallBack) {
@@ -1913,7 +1913,7 @@ function saveTripOrder(req, params, callback) {
                             lo_unloadingChargeCallBack(err, saved);
                         });
                     } else {
-                        lo_unloadingChargeCallBack(false,"Empty");
+                        lo_unloadingChargeCallBack(false, "Empty");
                     }
                 },
                 lo_commission: function (lo_bookedAmountCallBack) {
@@ -1930,7 +1930,7 @@ function saveTripOrder(req, params, callback) {
                             lo_bookedAmountCallBack(err, saved);
                         });
                     } else {
-                        lo_bookedAmountCallBack(false,"Empty");
+                        lo_bookedAmountCallBack(false, "Empty");
                     }
                 },
 
@@ -1948,11 +1948,11 @@ function saveTripOrder(req, params, callback) {
                             lo_advanceCallBack(err, saved);
                         });
                     } else {
-                        lo_advanceCallBack(false,"Empty");
+                        lo_advanceCallBack(false, "Empty");
                     }
                 }
 
-            }, function (err,result) {
+            }, function (err, result) {
 
                 if (err) {
                     retObj.messages.push("Oder created,Failed to save payment details");
@@ -1967,7 +1967,7 @@ function saveTripOrder(req, params, callback) {
 
                 } else {
                     retObj.status = true;
-                    retObj.messages .push( "Order created successfully");
+                    retObj.messages.push("Order created successfully");
                     retObj.data = saveDoc;
                     analyticsService.create(req, serviceActions.create_order, {
                         body: JSON.stringify(req.body),
@@ -2027,7 +2027,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                                 commentsCallback(err, docs);
                             })
                     },
-                    locations:function (locationCallback) {
+                    locations: function (locationCallback) {
                         OrderLocationColl.find({orderId: orderDetails._id},
                             function (err, docs) {
                                 locationCallback(err, docs);
@@ -2045,7 +2045,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                         });
                         callback(retObj);
                     } else {
-                        retObj.status=true;
+                        retObj.status = true;
                         retObj.orderDetails = orderDetails;
                         retObj.paymentsDetails = result.paymentsDetails;
                         retObj.transactionsDetails = result.transactionsDetails;
@@ -2177,34 +2177,34 @@ OrderProcess.prototype.addOrderComment = function (req, callback) {
     };
     var params = req.body;
 
-    if(!params.orderId || !ObjectId.isValid(params.orderId)){
+    if (!params.orderId || !ObjectId.isValid(params.orderId)) {
         retObj.messages.push("Invalid order");
     }
     if (!params.comment) {
         retObj.messages.push("Please enter comment");
     }
-    if(params.ownerType){
+    if (params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-    if(params.paymentType){
+    if (params.paymentType) {
         retObj.messages.push("select payment type");
     }
-    if(params.status){
+    if (params.status) {
         retObj.messages.push("select status");
     }
-    if(params.ownerType ==="Load Owner" && !params.loadOwnerId){
+    if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
         retObj.messages.push("Invalid load owner");
     }
-    if(params.ownerType==="Truck Owner" && !params.truckOwnerId){
+    if (params.ownerType === "Truck Owner" && !params.truckOwnerId) {
         retObj.messages.push("Invalid owner type");
     }
-    if(retObj.messages.length>0){
+    if (retObj.messages.length > 0) {
         callback(retObj);
-    }else{
-        params.createdBy=req.jwt.id;
-        var orderComment=new OrderCommentsColl(params);
-        orderComment.save(function (err,doc) {
-            if(err){
+    } else {
+        params.createdBy = req.jwt.id;
+        var orderComment = new OrderCommentsColl(params);
+        orderComment.save(function (err, doc) {
+            if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_comment_err, {
                     body: JSON.stringify(req.body),
@@ -2214,9 +2214,9 @@ OrderProcess.prototype.addOrderComment = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else{
+            } else {
                 retObj.message.push("Comment added successfully");
-                retObj.data=doc;
+                retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_order_comment, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2236,34 +2236,34 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
     };
     var params = req.body;
 
-    if(!params.orderId || !ObjectId.isValid(params.orderId)){
+    if (!params.orderId || !ObjectId.isValid(params.orderId)) {
         retObj.messages.push("Invalid order");
     }
     if (!params.comment) {
         retObj.messages.push("Please enter comment");
     }
-    if(params.ownerType){
+    if (params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-    if(params.prefix){
+    if (params.prefix) {
         retObj.messages.push("Invalid comment");
     }
-    if(params.amount){
+    if (params.amount) {
         retObj.messages.push("Enter amount");
     }
-    if(params.ownerType ==="Load Owner" && !params.loadOwnerId){
+    if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
         retObj.messages.push("Invalid load owner");
     }
-    if(params.ownerType==="Truck Owner" && !params.truckOwnerId){
+    if (params.ownerType === "Truck Owner" && !params.truckOwnerId) {
         retObj.messages.push("Invalid owner type");
     }
-    if(retObj.messages.length>0){
+    if (retObj.messages.length > 0) {
         callback(retObj);
-    }else{
-        params.createdBy=req.jwt.id;
-        var orderPayment=new OrderPaymentsColl(params);
-        orderPayment.save(function (err,doc) {
-            if(err){
+    } else {
+        params.createdBy = req.jwt.id;
+        var orderPayment = new OrderPaymentsColl(params);
+        orderPayment.save(function (err, doc) {
+            if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_payment_err, {
                     body: JSON.stringify(req.body),
@@ -2273,9 +2273,9 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else{
+            } else {
                 retObj.message.push("Payment added successfully");
-                retObj.data=doc;
+                retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_order_payment, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2295,49 +2295,49 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
     };
     var params = req.body;
 
-    if(!params.orderId || !ObjectId.isValid(params.orderId)){
+    if (!params.orderId || !ObjectId.isValid(params.orderId)) {
         retObj.messages.push("Invalid order");
     }
     if (!params.comment) {
         retObj.messages.push("Please enter comment");
     }
-    if(params.ownerType){
+    if (params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-    if(params.prefix){
+    if (params.prefix) {
         retObj.messages.push("Invalid comment");
     }
-    if(params.paymentType){
+    if (params.paymentType) {
         retObj.messages.push("Select Payment type")
     }
-    if((params.paymentType==="Cheque" || params.paymentType==="Account Transfer") && !params.transactionDate){
+    if ((params.paymentType === "Cheque" || params.paymentType === "Account Transfer") && !params.transactionDate) {
         retObj.messages.push("Select transaction date")
     }
-    if(params.paymentType==="Cheque" && !params.chequeNo){
+    if (params.paymentType === "Cheque" && !params.chequeNo) {
         retObj.messages.push("Enter cheque no")
     }
-    if(params.paymentType==="Cash" && !params.paymentBy){
+    if (params.paymentType === "Cash" && !params.paymentBy) {
         retObj.messages.push("Select payment by person")
     }
-    if(params.paymentType==="Account Transfer" && !params.bank){
+    if (params.paymentType === "Account Transfer" && !params.bank) {
         retObj.messages.push("Select bank")
     }
-    if(params.amount){
+    if (params.amount) {
         retObj.messages.push("Enter amount");
     }
-    if(params.ownerType ==="Load Owner" && !params.loadOwnerId){
+    if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
         retObj.messages.push("Invalid load owner");
     }
-    if(params.ownerType==="Truck Owner" && !params.truckOwnerId){
+    if (params.ownerType === "Truck Owner" && !params.truckOwnerId) {
         retObj.messages.push("Invalid owner type");
     }
-    if(retObj.messages.length>0){
+    if (retObj.messages.length > 0) {
         callback(retObj);
-    }else{
-        params.createdBy=req.jwt.id;
-        var orderPayment=new OrderPaymentsColl(params);
-        orderPayment.save(function (err,doc) {
-            if(err){
+    } else {
+        params.createdBy = req.jwt.id;
+        var orderPayment = new OrderPaymentsColl(params);
+        orderPayment.save(function (err, doc) {
+            if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_transaction_err, {
                     body: JSON.stringify(req.body),
@@ -2347,9 +2347,9 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else{
+            } else {
                 retObj.message.push("Transaction added successfully");
-                retObj.data=doc;
+                retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_order_transaction, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2369,23 +2369,23 @@ OrderProcess.prototype.addOrderLocation = function (req, callback) {
     };
     var params = req.body;
 
-    if(!params.orderId || !ObjectId.isValid(params.orderId)){
+    if (!params.orderId || !ObjectId.isValid(params.orderId)) {
         retObj.messages.push("Invalid order");
     }
     if (!params.location) {
         retObj.messages.push("Please enter location");
     }
-    if(params.date){
+    if (params.date) {
         retObj.messages.push("select date");
     }
 
-    if(retObj.messages.length>0){
+    if (retObj.messages.length > 0) {
         callback(retObj);
-    }else{
-        params.createdBy=req.jwt.id;
-        var orderLocation=new OrderLocationColl(params);
-        orderLocation.save(function (err,doc) {
-            if(err){
+    } else {
+        params.createdBy = req.jwt.id;
+        var orderLocation = new OrderLocationColl(params);
+        orderLocation.save(function (err, doc) {
+            if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_location_err, {
                     body: JSON.stringify(req.body),
@@ -2395,9 +2395,9 @@ OrderProcess.prototype.addOrderLocation = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else{
+            } else {
                 retObj.message.push("Location details added successfully");
-                retObj.data=doc;
+                retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_order_transaction, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2408,5 +2408,110 @@ OrderProcess.prototype.addOrderLocation = function (req, callback) {
             }
         })
     }
+};
+
+OrderProcess.prototype.updateOrderPOD = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.body.content;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid order");
+    }
+    if (!params.dateOfPOD) {
+        retObj.messages.push("Please select POD date");
+    }
+
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        if (req.files.files) {
+            async.parallel({
+                frontImage: function (frontImageCallback) {
+                    var file = req.files.files[0].file;
+                    var fileName = new Date() - 0 + "_" + file.originalFilename;
+                    fse.copy(file.path, './client/assets/PodFiles/' + fileName, function (err) {
+                        if (err) {
+                            frontImageCallback(err, "");
+                        } else {
+                            fse.remove(file.path, function (err) {
+                                if (err) {
+                                    frontImageCallback(err, "");
+                                } else {
+                                    frontImageCallback(err, fileName);
+                                }
+                            });
+
+                        }
+                    })
+                },
+                backImage: function (backImagesCallback) {
+                    var file = req.files.files[1].file;
+                    var fileName = new Date() - 0 + "_" + file.originalFilename;
+                    fse.copy(file.path, './client/assets/PodFiles/' + fileName, function (err) {
+                        if (err) {
+                            frontImageCallback(err, "");
+                        } else {
+                            fse.remove(file.path, function (err) {
+                                if (err) {
+                                    backImagesCallback(err, "");
+                                } else {
+                                    backImagesCallback(err, fileName);
+                                }
+                            });
+
+                        }
+                    })
+                }
+            }, function (err, result) {
+                if (err) {
+                    retObj.messages("Uploading files failed");
+                    callback(retObj);
+                } else {
+                    var params = {
+                        dateOfPOD: params.deteOfPOD,
+                    };
+                    if (result.frontImage) {
+                        params.podFront = result.frontImage;
+                    }
+                    if (result.backImage) {
+                        params.podBack = result.backImage;
+                    }
+                    AdminTripsColl.findOneAndUpdate({_id: params._id}, params
+                        , function (err, savedDoc) {
+                            if (err) {
+                                retObj.messages("Please try again");
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.data = savedDoc;
+                                retObj.messages("Updated order POD successfully");
+                                callback(retObj);
+                            }
+                        })
+
+                }
+            })
+        }else{
+            var params = {
+                dateOfPOD: params.deteOfPOD,
+            };
+            AdminTripsColl.findOneAndUpdate({_id: params._id}, params
+                , function (err, savedDoc) {
+                    if (err) {
+                        retObj.messages("Please try again");
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.data = savedDoc;
+                        retObj.messages("Updated order POD successfully");
+                        callback(retObj);
+                    }
+                })
+        }
+    }
+
+
 };
 module.exports = new OrderProcess();
