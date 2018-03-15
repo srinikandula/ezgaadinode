@@ -801,6 +801,7 @@ var orderPaymentsSchema = new mongoose.Schema({
     amount:{type:Number,default:0},
     prefix:String,
     comment:String,
+    ownerType:String
 }, {
     timestamps: true
 });
@@ -814,7 +815,11 @@ var orderTransactionSchema = new mongoose.Schema({
     comment:String,
     paymentBy:{type: ObjectId, ref: 'accounts'},
     paymentType:String,
-    transactionId:String
+    transactionId:String,
+    transactionDate:Date,
+    chequeNo:String,
+    ownerType:String
+
 }, {
     timestamps: true
 });
@@ -829,11 +834,21 @@ var orderCommentsSchema = new mongoose.Schema({
     comment:String,
     paymentBy:{type: ObjectId, ref: 'accounts'},
     paymentType:String,
+    ownerType:String
+
 
 }, {
     timestamps: true, versionKey: false
 });
 
+var orderLocationSchema=new mongoose.Schema({
+    orderId:{type: ObjectId, ref: 'adminTripsColl'},
+    createdBy:{type: ObjectId, ref: 'accounts'},
+    location:String,
+    date:Date
+}, {
+    timestamps: true, versionKey: false
+});
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
@@ -883,7 +898,8 @@ module.exports = {
     PaymentsColl: mongoose.model('paymentsColl', paymentsSchema, 'paymentsColl'),
     OrderPaymentsColl:mongoose.model('orderPayments', orderPaymentsSchema, 'orderPayments'),
     OrderCommentsColl:mongoose.model('orderComments', orderCommentsSchema, 'orderComments'),
-    OrderTransactionsColl:mongoose.model('orderTransactions', orderCommentsSchema, 'orderTransactions')
+    OrderTransactionsColl:mongoose.model('orderTransactions', orderTransactionSchema, 'orderTransactions'),
+    orderLocationColl:mongoose.model('orderLocations', orderLocationSchema, 'orderLocations')
 
 
 };
