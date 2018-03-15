@@ -506,6 +506,16 @@ const serviceActions = {
     get_truck_types:"GET_TRUCK_TYPES",
     get_truck_types_err:"GET_TRUCK_TYPES_ERR",
     get_device_management:'GET_DEVICE_MANAGEMENT',
-    get_device_management_err:'GET_DEVICE_MANAGEMENT_ERR'
+    get_device_management_err:'GET_DEVICE_MANAGEMENT_ERR',
+    add_order_comment:"ADD_ORDER_COMMENT",
+    add_order_comment_err:"Add_ORDER_COMMENT_ERR",
+    add_order_payment:"ADD_ORDER_PAYMENT",
+    add_order_payment_err:"ADD_ORDER_PAYMENT_ERR",
+    add_order_transaction:"ADD_ORDER_TRANSACTION",
+    add_order_transaction_err:"ADD_ORDER_TRANSACTION_ERR",
+    add_order_location:"ADD_ORDER_LOCATION",
+    add_order_location_err:"ADD_ORDER_LOCATION_ERR",
+
+
 };
 module.exports = serviceActions;

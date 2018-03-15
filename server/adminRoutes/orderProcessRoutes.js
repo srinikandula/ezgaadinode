@@ -165,6 +165,23 @@ AuthRouter.get('/getLoadOwnerOrderDetails',function (req,res) {
     })
 });
 
+AuthRouter.post('/addOrderComment',function (req,res) {
+    OrderProcess.addOrderComment(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.post('/addOrderPayment',function (req,res) {
+   OrderProcess.addOrderPayment(req,function (result) {
+       res.send(result);
+   })
+});
+
+AuthRouter.post('/addOrderTransaction',function (res,res) {
+    OrderProcess.addOrderTransaction(req,function (result) {
+        res.send(result);
+    })
+});
 
 module.exports = {
     AuthRouter: AuthRouter
