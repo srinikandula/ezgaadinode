@@ -275,6 +275,14 @@ var notificationsSchema = mongoose.Schema({
     message: String
 }, {timestamps: String});
 
+var gpsSettingsSchema = mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    idleTime: {type: Number, default: 10},
+    stopTime: {type: Number, default: 15},
+    overSpeedLimit: {type: Number, default: 60},
+    routeNotificationInterval: {type: Number, default: 10}
+});
+
 var erpSettingsSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     revenue: {
@@ -840,6 +848,7 @@ module.exports = {
     GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
     OtpColl: mongoose.model('otps', otpSchema, 'otps'),
     NotificationColl: mongoose.model('notifications', notificationsSchema, 'notifications'),
+    GpsSettingsColl: mongoose.model('gpssettings', gpsSettingsSchema, 'gpssettings'),
     ErpSettingsColl: mongoose.model('erpsettings', erpSettingsSchema, 'erpsettings'),
     GpsColl: mongoose.model('devicePositions', devicePositions, 'devicePositions'),
     archivedDevicePositionsColl: mongoose.model('archivedDevicePositions', archivedDevicePositions, 'archivedDevicePositions'),

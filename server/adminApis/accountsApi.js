@@ -12,6 +12,7 @@ var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
 var ErpPlanHistoryColl = require('./../models/schemas').ErpPlanHistoryColl;
 var PaymentsColl = require('./../models/schemas').PaymentsColl;
+var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -89,7 +90,7 @@ Accounts.prototype.getAccounts = function (req, callback) {
     else if (params.sortableString === 'Trucks') query.truckType = 'Trucks';
     else if (params.sortableString === 'Non Trucks') query.truckType = 'Non Trucks';
     else if (params.sortableString === 'Both') query.truckType = 'Both';
-    if(params.searchString) query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
+    if (params.searchString) query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
@@ -172,7 +173,7 @@ Accounts.prototype.checkAvailablity = function (req, callback) {
         messages: []
     };
     var query = {userName: req.body.userName};
-    if(req.body._id) query = {userName: req.body.userName, _id: {$nin: [req.body._id]}};
+    if (req.body._id) query = {userName: req.body.userName, _id: {$nin: [req.body._id]}};
     AccountsColl.findOne(query, function (erruser, user) {
         if (erruser) {
             retObj.messages.push('Error checking availability');
@@ -282,32 +283,10 @@ Accounts.prototype.addAccount = function (req, callback) {
         callback(retObj);
     }
     else {
-        // AccountsColl.findOne({userName: accountInfo.userName}, function (err, account) {
-        //     console.log(!!account, accountInfo._id, !!accountInfo._id, accountInfo._id !== account._id.toString());
-        //     if (err) {
-        //         retObj.messages.push('Error fetching account');
-        //         analyticsService.create(req, serviceActions.add_account_err, {
-        //             body: JSON.stringify(req.body),
-        //             accountId: req.jwt.id,
-        //             success: false,
-        //             messages: retObj.messages
-        //         }, function (response) {
-        //         });
-        //         callback(retObj);
-        //     } else if (account && accountInfo._id && accountInfo._id !== account._id.toString()) {
-        //         retObj.messages.push('Account with same userName already exists');
-        //         analyticsService.create(req, serviceActions.add_account_err, {
-        //             body: JSON.stringify(req.body),
-        //             accountId: req.jwt.id,
-        //             success: false,
-        //             messages: retObj.messages
-        //         }, function (response) {
-        //         });
-        //         callback(retObj);
-        //     } else {
         accountInfo.type = 'account';
+        console.log('yup');
         generateUniqueUserId(accountInfo.role, function (newId) {
-            if(!newId.status) {
+            if (!newId.status) {
                 retObj.messages.push('Error saving account.');
                 analyticsService.create(req, serviceActions.add_account_err, {
                     body: JSON.stringify(req.body),
@@ -363,23 +342,35 @@ Accounts.prototype.addAccount = function (req, callback) {
                                 });
                                 callback(retObj);
                             } else {
-                                retObj.status = true;
-                                retObj.messages.push('Success');
-                                analyticsService.create(req, serviceActions.add_account, {
-                                    body: JSON.stringify(req.body),
-                                    accountId: req.jwt.id,
-                                    success: true
-                                }, function (response) {
+                                addGpsSettings(accountInfo.gpsEnabled, accountInfo._id, function (gpsAdded) {
+                                    if(!gpsAdded.status) {
+                                        retObj.messages.push(gpsAdded.message);
+                                        analyticsService.create(req, serviceActions.add_account_err, {
+                                            body: JSON.stringify(req.body),
+                                            accountId: req.jwt.id,
+                                            success: false,
+                                            messages: retObj.messages
+                                        }, function (response) {
+                                        });
+                                        callback(retObj);
+                                    } else {
+                                        retObj.status = true;
+                                        retObj.messages.push('Success');
+                                        analyticsService.create(req, serviceActions.add_account, {
+                                            body: JSON.stringify(req.body),
+                                            accountId: req.jwt.id,
+                                            success: true
+                                        }, function (response) {
+                                        });
+                                        callback(retObj);
+                                    }
                                 });
-                                callback(retObj);
                             }
                         });
                     }
                 });
             }
         });
-        // }
-        // });
     }
 };
 
@@ -410,6 +401,25 @@ function generateUniqueUserId(userType, callback) {
             callback(retObj);
         }
     })
+}
+
+function addGpsSettings(enabled, id, callback) {
+    if(!enabled) {
+        GpsSettingsColl.findOne({accountId: id}, function (errSetting, setting) {
+            if (errSetting) {
+                callback({status: false, message:'error getting settings'});
+            } else if (setting) {
+                callback({status: true, message:'already added'});
+            } else {
+                var gpsDoc = new GpsSettingsColl({accountId: id});
+                gpsDoc.save(function (errGpsSaved, gpsSaved) {
+                    callback({status: true, message:'gps settings added'});
+                });
+            }
+        });
+    } else {
+        callback({status: true, message:'already added'});
+    }
 }
 
 Accounts.prototype.getAccountDetails = function (req, callback) {

@@ -57,7 +57,6 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
         AccountService.count($stateParams.type, function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                console.log($scope.count);
                 $scope.init();
             } else {
                 Notification.error({message: success.data.message});
@@ -96,7 +95,6 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.accounts;
                 // tableParams.reload();
-                console.log(response.data);
                 $scope.currentPageOfAccounts = response.data.accounts;
             } else {
                 Notification.error({message: response.data.messages[0]});
@@ -260,16 +258,15 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
     $scope.availableStatus = true;
     $scope.availableStatusError = '';
     $scope.checkAvailablity = function () {
-        if($scope.accountDetails.userName.length > 3) {
+        if($scope.accountDetails.userName.length > 2) {
             var params = {userName: $scope.accountDetails.userName};
             if ($scope.accountDetails._id) params._id = $scope.accountDetails._id;
             AccountService.checkAvailablity(params, function (success) {
-                console.log(success.data);
                 if (success.data.status) {
-                    $scope.availableStatus = false;
-                    $scope.availableStatusError = 'username vailable';
-                } else {
                     $scope.availableStatus = true;
+                    $scope.availableStatusError = 'username available';
+                } else {
+                    $scope.availableStatus = false;
                     $scope.availableStatusError = 'username not vailable';
                 }
             });
@@ -278,10 +275,13 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
 
     $scope.addUpdateAccount = function () {
         var params = $scope.accountDetails;
-        console.log(params);
         params.errors = [];
         if (!params.userName) {
             params.errors.push('Invalid User Name');
+        }
+        if (params.userName) {
+            if(params.userName.length < 3)
+            params.errors.push('User Name should be minimum of 3 characters');
         }
         if (!params.contactName) {
             params.errors.push('Invalid Fullname');
