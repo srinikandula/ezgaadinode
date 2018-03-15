@@ -449,6 +449,7 @@ var analyticsSchema = mongoose.Schema({
 }, {timestamps: String});
 
 var erpGpsPlans = new mongoose.Schema({
+    devicePlanId: Number,
     planName: String,
     durationInMonths: Number,
     status: Boolean,

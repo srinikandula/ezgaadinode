@@ -671,6 +671,7 @@ Events.prototype.getDevicePlans = function (request, callback) {
                         planCallBack(null, 'plan added already');
                     } else {
                         var planDoc = new erpGpsPlansColl({
+                            devicePlanId: plan.id_device_plans,
                             planName: plan.plan_name,
                             durationInMonths: plan.duration_in_months,
                             amount: plan.amount,
