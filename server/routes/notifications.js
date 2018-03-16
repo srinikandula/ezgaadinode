@@ -14,7 +14,7 @@ OpenRouter.post('/sendPushNotifications',function (req,res) {
     notifications.sendPushNotifications(req.body,function (result) {
         res.json(result);
     })
-})
+});
 
 module.exports = {
     OpenRouter:OpenRouter,

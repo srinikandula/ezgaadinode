@@ -31,6 +31,7 @@ var Accounts = require('./server/adminRoutes/accountsRoutes');
 var Employees = require('./server/adminRoutes/employeeRoutes');
 var Devices = require('./server/adminRoutes/deviceRoutes');
 var globalApi = require('./server/routes/globalRoutes');
+var Notifications= require('./server/routes/notifications');
 var groupsApi = require('./server/apis/groupsApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -105,7 +106,7 @@ app.use('/v1/events', Events.OpenRouter);
 app.use('/v1/group', Groups.OpenRouter);
 app.use('/v1/gps', Gps.OpenRouter);
 app.use('/v1/analytics', Analytics.OpenRouter);
-
+app.use('/v1/notifications',Notifications.OpenRouter);
 app.use(authMiddleware);
 app.use(json2xls.middleware);
 app.use('/v1/events', Events.AuthRouter);
