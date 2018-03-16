@@ -2005,7 +2005,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
 
     if (retObj.messages.length > 0) {
     } else {
-        AdminTripsColl.findOne({_id: params._id}, function (err, orderDetails) {
+        AdminTripsColl.findOne({_id: params._id}).populate({path:'truckOwnerId',select:"firstName contactPhone email userId companyName contactAddress city state"}).exec(function (err, orderDetails) {
             if (err) {
                 retObj.message.push("Please try again");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {

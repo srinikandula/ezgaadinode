@@ -24,30 +24,32 @@
                                     Commission:
                                     0</b></p>
                                 <div class="truckOwnerInfo col-sm-4">
-                                    <p><b>Truck Owner Info: TR183058</b></p>
+                                    <p><b>Truck Owner Info: {{orderDetails.userId || '--'}}</b></p>
                                     <ul class="list-inline">
-                                        <li><b>Name:</b> Sravan Kumar</li>
-                                        <li><b>Mobile:</b> 9014604255</li>
-                                        <li><b>Truck No:</b> AP36AA9874</li>
-                                        <li><b>Email:</b>dummuy@gmail.com</li>
+                                        <li><b>Name:</b> {{orderDetails.truckOwnerId.firstName}}</li>
+                                        <li><b>Mobile:</b> {{orderDetails.truckOwnerId.contactPhone || '---'}}</li>
+                                        <li><b>Truck No:</b> {{orderDetails.registrationNo |uppercase}}</li>
+                                        <li><b>Email:</b> {{orderDetails.truckOwnerId.email}}</li>
+                                    </ul>
+                                </div>
+                                <div class="truckOwnerInfo col-sm-4">
+                                    <p><b>Company Info:</b></p>
+                                    <ul class="list-inline">
+                                        <li><b>Company:</b> {{orderDetails.truckOwnerId.companyName}}</li>
+                                        <li><b>Address:</b> {{orderDetails.truckOwnerId.contactAddress || '----'}}</li>
+                                        <li><b>City:</b> {{orderDetails.truckOwnerId.city}}</li>
+                                        <li><b>State:</b> {{orderDetails.truckOwnerId.state}}</li>
                                     </ul>
                                 </div>
                                 <div class="truckOwnerInfo col-sm-4">
                                     <p><b>Driver Info:</b></p>
                                     <ul class="list-inline">
-                                        <li><b>Name:</b> Sravan Kumar</li>
-                                        <li><b>Mobile:</b> 9014604255</li>
-                                        <li><b>Email:</b>dummuy@gmail.com</li>
+                                        <li><b>Name:</b> {{orderDetails.driverName}}</li>
+                                        <li><b>Mobile:</b> {{orderDetails.driverMobile}}</li>
+                                        <!--<li><b>Email:</b>dummuy@gmail.com</li>-->
                                     </ul>
                                 </div>
-                                <div class="truckOwnerInfo col-sm-4">
-                                    <ul class="list-inline">
-                                        <li><b>Company:</b> Sravan Kumar</li>
-                                        <li><b>Address:</b> Hyderabd</li>
-                                        <li><b>City:</b> Hyderbad</li>
-                                        <li><b>State:</b> Telanagana</li>
-                                    </ul>
-                                </div>
+
                                 <div class="clearfix"></div>
                             </div>
                         </div>
@@ -70,19 +72,12 @@
                                         <th>Amount</th>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>22-07-2016</td>
-                                            <td>Balance Amount Paid</td>
-                                            <td>+</td>
-                                            <td>29600</td>
+                                        <tr ng-repeat="payments in paymentsDetails  ">
+                                            <td>{{payments.createdAt | date:'dd-MM-yyyy'}}</td>
+                                            <td>{{payments.comment}}</td>
+                                            <td>{{payments.prefix}}</td>
+                                            <td>{{payments.amount}}</td>
                                         </tr>
-                                        <tr>
-                                            <td>22-07-2016</td>
-                                            <td>Balance Amount Paid</td>
-                                            <td>+</td>
-                                            <td>29600</td>
-                                        </tr>
-
                                         </tbody>
                                     </table>
                                 </div>
