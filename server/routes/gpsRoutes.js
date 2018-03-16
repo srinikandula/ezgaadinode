@@ -95,7 +95,7 @@ AuthRouter.get('/getTruckReport/:startDate/:endDate/:truckNo',function (req,res)
     })
 });
 
-AuthRouter.post('/accountSettings',function (req,res) {
+AuthRouter.post('/updateGpsSettings',function (req,res) {
     gps.editGpsSettings(req.body,req,function (result) {
         res.send(result);
     })

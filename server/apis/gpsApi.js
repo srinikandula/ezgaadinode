@@ -755,7 +755,7 @@ Gps.prototype.editGpsSettings = function (body,req,callback) {
     })
 };
 
-Gps.prototype.getGpsSettings = function (id,callback) {
+Gps.prototype.getGpsSettings = function (id,req,callback) {
     var retObj={status: false,
         messages: []
     };

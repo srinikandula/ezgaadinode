@@ -12,12 +12,27 @@ app.factory('GpsSettingsService',['$http', function ($http) {
                 url: '/v1/gps/getAllSecrets',
                 method: "GET"
             }).then(success, error)
+        },
+        getGpsSettings: function (success, error) {
+            $http({
+                url: '/v1/gps/getGpsSettings',
+                method: "GET"
+            }).then(success, error)
+        },
+        updateGpsSettings:function (body,success,error) {
+            $http({
+                url: '/v1/gps/updateGpsSettings',
+                method: "POST",
+                data:body
+            }).then(success, error)
         }
     }
 }]);
 
 app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification', '$state', function ($scope, GpsSettingsService, Notification, $state) {
     $scope.secretkey = '';
+
+
     $scope.addSecret = function () {
         if(!$scope.secretkey) {
             $scope.secretkeyerror = 'Please enter a secret key'
@@ -40,5 +55,31 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
         });
     };
     $scope.getAllSecrets();
+
+    function getGpsSettings() {
+        GpsSettingsService.getGpsSettings(function (success) {
+            if(success.data.status){
+                $scope.gpsSettingsParams=success.data.results;
+            }else{
+                Notification.error({message:success.data.message});
+            }
+        },function (error) {
+
+        })
+    }
+
+    getGpsSettings();
+
+    $scope.updateGpsSettings =function () {
+        GpsSettingsService.updateGpsSettings($scope.gpsSettingsParams,function (success) {
+            if(success.data.status){
+                Notification.success({message:success.data.message});
+            }else{
+                Notification.error({message:success.data.message});
+            }
+        },function (error) {
+
+        })
+    }
 
 }]);

@@ -153,6 +153,11 @@ AuthRouter.get('/getTrucksByPopulate', function (req, res) {
     });
 });
 
+AuthRouter.post('/lookingForLoad',function (req,res) {
+    Trucks.lookingForLoad(req.body,req,function (result) {
+        res.json(result);
+    })
+});
 
 module.exports = {
     OpenRouter: OpenRouter,
