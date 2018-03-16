@@ -1610,7 +1610,7 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                             isLead: customerLead.islead,
                             leadType: customerLead.type,
                             firstName: customerLead.fullname,
-                            contactPhone: customerLead.contactPhone,
+                            contactPhone: customerLead.mobile,
                             alternatePhone: alternatePhone,
                             email: customerLead.email,
                             yearInService: customerLead.year_in_service,
@@ -1900,7 +1900,6 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
                             userId: junkLead.idprefix,
                             firstName: junkLead.fullname,
                             password: '1234',
-                            contactPhone: junkLead.contactPhone,
                             alternatePhone: alternatePhone,
                             email: junkLead.email,
                             isLead: junkLead.islead,
@@ -1923,6 +1922,10 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
                             isActive: junkLead.status,
                             fuelCardApplied: junkLead.applied_fuel_card,
                             smsEmailAds: junkLead.enable_sms_email_ads,
+                        }
+
+                        if (!isNaN(junkLead.mobile)) {
+                            junkLeadData.contactPhone = junkLead.mobile;
                         }
 
                         AccountsColl.findOne({"role": {"$ne": "account"}}, {"firstName": junkLead.fullname}, {leadType: junkLead.type}, function (err, account) {
