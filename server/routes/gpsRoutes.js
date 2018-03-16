@@ -93,7 +93,19 @@ AuthRouter.get('/getTruckReport/:startDate/:endDate/:truckNo',function (req,res)
     gps.getTruckReports(req.params,req,function (results) {
         res.send(results);
     })
-})
+});
+
+AuthRouter.post('/accountSettings',function (req,res) {
+    gps.editGpsSettings(req.body,req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.get('/getGpsSettings',function (req,res) {
+    gps.getGpsSettings(req.jwt.id,req,function (result) {
+        res.send(result);
+    })
+});
 
 /*OpenRouter.get('/moveDevicePositions', function (rew, res) {
     gps.moveDevicePositions(function (result) {
