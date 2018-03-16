@@ -14,6 +14,7 @@
                         </div>
                         <div class="form-group styling-input-list">
                             <select class="form-control custom-form-control" ng-model="truckOwner.leadType">
+                                <option ng-value="" selected>-- Select --</option>
                                 <option ng-repeat="type in leadType" ng-value="type.value">{{type.key}}</option>
                             </select>
                             <label class="focus-effect-for-input">Lead Type*</label>
@@ -155,7 +156,6 @@
                         </div>
                         <div class="form-group styling-input-list">
                             <select class="form-control custom-form-control" ng-model="truckOwner.yearInService">
-                                <option value="" selected>--Select Year--</option>
                                 <option ng-repeat="years in yearInService" ng-value="years">{{years}}</option>
                             </select>
                             <label class="focus-effect-for-input" >Year In Service</label>

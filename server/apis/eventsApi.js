@@ -437,7 +437,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                         AccountsColl.findOne({
                             "userName": devicesDataResult.accountId
                         }, function (accountErr, account) {
-                            if(account){
+                            if (account) {
                                 accountCallback(accountErr, account._id);
                             } else {
                                 accountCallback(accountErr, account);//null);
@@ -545,7 +545,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                             deviceDoc: function (deviceDocCallBack) {
                                 if (data.device !== 'Device Exists') {
                                     data.device.accountId = data.accountId;
-                                    if(!data.device.devicePaymentStatus) {
+                                    if (!data.device.devicePaymentStatus) {
                                         data.device.installedBy = data.employeeId;
                                     }
                                     data.device.assignedTo = data.employeeId;
@@ -757,7 +757,7 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                                 },
                                 planId: function (planIdCallback) {
                                     erpGpsPlansColl.findOne({devicePlanId: plan.planID}, function (planiderr, planid) {
-                                        if(planid) {
+                                        if (planid) {
                                             planIdCallback(planiderr, planid._id);
                                         } else {
                                             planIdCallback(planiderr, planid);
@@ -1633,6 +1633,10 @@ Events.prototype.getCustomerLeadsData = function (request, callback) {
                             updatedAt: convertDate(customerLead.date_modified),
                         };
 
+                        if(!customerLead.year_in_service) {
+                            customerLeadData.yearInService = 2018;
+                        }
+
                         AccountsColl.findOne({"role": {"$ne": "account"}}, {"firstName": customerLead.fullname}, {"leadType": customerLead.type}, function (err, account) {
                             if (account) {
                                 customerLeadData.accountId = account._id;
@@ -1729,9 +1733,6 @@ Events.prototype.getCustomerData = function (request, callback) {
         status: false,
         messages: []
     };
-    var alternatePhone = [];
-    var approved = '';
-    var role = '';
     var customerDataQuery = "select * from eg_customer";
 
     pool_crm.query(customerDataQuery, function (err, customers) {
@@ -1742,102 +1743,112 @@ Events.prototype.getCustomerData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(customers, function (customer, customerCallBack) {
-                if(customer.email) {
-                    AccountsColl.findOne({
-                        // userName: customer.email,
-                        // firstName: customer.fullname,
-                        email: customer.email,
-                        leadType: customer.type,
-                        "role": {"$ne": "employee"}
-                    }, function (findCustomerErr, customerFound) {
-                        if (findCustomerErr) {
-                            customerCallBack(findCustomerErr);
-                        } else if (customerFound) {
-                            customerCallBack(null, "Customer Exists");
-                        } else {
-                            alternatePhone = [];
-                            if (customer.alt_mobile_1) {
-                                alternatePhone.push(customer.alt_mobile_1);
-                            }
-                            if (customer.alt_mobile_2) {
-                                alternatePhone.push(customer.alt_mobile_2);
-                            }
-                            if (customer.alt_mobile_3) {
-                                alternatePhone.push(customer.alt_mobile_3);
-                            }
-
-                            if (customer.approved) {
-                                approved = 'Accepted';
-                            }
-                            if (customer.approved) {
-                                approved = 'Rejected';
-                            }
-
-                            if (customer.type === 'T') {
-                                role = 'Truck Owner';
-                            } else if (customer.type === 'TR') {
-                                role = 'Transporter';
-                            } else if (customer.type === 'C') {
-                                role = 'Commission Agent';
-                            } else if (customer.type === 'L') {
-                                role = 'Factory Owners';
-                            } else if (customer.type === 'G') {
-                                role = 'Guest';
-                            }
-
-                            var customerData = {
-                                userName: customer.email,
-                                userId: customer.idprefix,
-                                firstName: customer.fullname,
-                                alternatePhone: alternatePhone,
-                                email: customer.email,
-                                companyName: customer.company,
-                                contactAddress: customer.address,
-                                city: customer.city,
-                                state: customer.state,
-                                pinCode: customer.pincode,
-                                officeNumber: customer.landline,
-                                password: '1234',
-                                erpEnabled: customer.erp_required,
-                                gpsEnabled: customer.gps_required,
-                                loadEnabled: customer.load_required,
-                                yearInService: customer.year_in_service,
-                                paymentType: customer.payment_type,
-                                loadPaymentToPayPercent: customer.load_payment_topay_percent,
-                                loadPaymentAdvancePercent: customer.load_payment_advance_percent,
-                                loadPaymentPodDays: customer.load_payment_pod_days,
-                                leadSource: customer.lead_source,
-                                noOfRegTrucks: customer.no_of_vechiles,
-                                noOfTrucks: customer.no_of_vechiles,
-                                //registrationNo: registrationNo,
-                                isLead: customer.islead,
-                                leadType: customer.type,
-                                isActive: customer.status,
-                                leadStatus: customer.lead_status,
-                                createdAt: convertDate(customer.date_created),
-                                updatedAt: convertDate(customer.date_modified),
-                                smsEmailAds: customer.enable_sms_email_ads,
-                                role: role
-                            }
-                            if (!isNaN(customer.mobile)) {
-                                customerData.contactPhone = customer.mobile;
-                            }
-                            AccountsColl.findOne({"role": "account"}, {"userName": customer.gps_account_id}, function (err, account) {
-                                if (account) {
-                                    customerData.accountId = account._id;
-                                }
-
-                                var customerDoc = new AccountsColl(customerData);
-                                customerDoc.save(function (err) {
-                                    alternatePhone = [];
-                                    customerCallBack(err, 'saved');
-                                })
-                            });
+                // if(customer.email) {
+                var condition = {
+                    $or: [
+                        {"userName": customer.email},
+                        {"userName": customer.mobile},
+                    ], userId: customer.idprefix,
+                    leadType: customer.type,
+                    "role": {"$ne": "employee"}
+                };
+                AccountsColl.findOne(condition, function (findCustomerErr, customerFound) {
+                    if (findCustomerErr) {
+                        customerCallBack(findCustomerErr);
+                    } else if (customerFound) {
+                        customerCallBack(null, "Customer Exists");
+                    } else {
+                        var alternatePhone = [];
+                        var role = '';
+                        var approved = '';
+                        var userName = '';
+                        if (customer.alt_mobile_1) {
+                            alternatePhone.push(customer.alt_mobile_1);
                         }
-                    });
-                } else {
-                    customerCallBack(null, "Customer Exists");
-                }
+                        if (customer.alt_mobile_2) {
+                            alternatePhone.push(customer.alt_mobile_2);
+                        }
+                        if (customer.alt_mobile_3) {
+                            alternatePhone.push(customer.alt_mobile_3);
+                        }
+
+                        if (customer.approved) {
+                            approved = 'Accepted';
+                        }
+                        if (customer.approved) {
+                            approved = 'Rejected';
+                        }
+
+                        if (customer.type === 'T') {
+                            role = 'Truck Owner';
+                        } else if (customer.type === 'TR') {
+                            role = 'Transporter';
+                        } else if (customer.type === 'C') {
+                            role = 'Commission Agent';
+                        } else if (customer.type === 'L') {
+                            role = 'Factory Owners';
+                        } else if (customer.type === 'G') {
+                            role = 'Guest';
+                        }
+
+                        if (customer.email) {
+                            userName = customer.email;
+                        } else {
+                            userName = customer.mobile;
+                        }
+
+                        var customerData = {
+                            userName: userName,
+                            userId: customer.idprefix,
+                            firstName: customer.fullname,
+                            alternatePhone: alternatePhone,
+                            email: customer.email,
+                            companyName: customer.company,
+                            contactAddress: customer.address,
+                            city: customer.city,
+                            state: customer.state,
+                            pinCode: customer.pincode,
+                            officeNumber: customer.landline,
+                            password: '1234',
+                            erpEnabled: customer.erp_required,
+                            gpsEnabled: customer.gps_required,
+                            loadEnabled: customer.load_required,
+                            yearInService: customer.year_in_service,
+                            paymentType: customer.payment_type,
+                            loadPaymentToPayPercent: customer.load_payment_topay_percent,
+                            loadPaymentAdvancePercent: customer.load_payment_advance_percent,
+                            loadPaymentPodDays: customer.load_payment_pod_days,
+                            leadSource: customer.lead_source,
+                            noOfRegTrucks: customer.no_of_vechiles,
+                            noOfTrucks: customer.no_of_vechiles,
+                            //registrationNo: registrationNo,
+                            isLead: customer.islead,
+                            leadType: customer.type,
+                            isActive: customer.status,
+                            leadStatus: customer.lead_status,
+                            createdAt: convertDate(customer.date_created),
+                            updatedAt: convertDate(customer.date_modified),
+                            smsEmailAds: customer.enable_sms_email_ads,
+                            role: role
+                        }
+                        if (!isNaN(customer.mobile)) {
+                            customerData.contactPhone = customer.mobile;
+                        }
+                        AccountsColl.findOne({"role": {"$ne": "employee"}}, {"userName": customer.gps_account_id}, function (err, account) {
+                            if (account) {
+                                customerData.accountId = account._id;
+                            }
+
+                            var customerDoc = new AccountsColl(customerData);
+                            customerDoc.save(function (err) {
+                                customerCallBack(err, 'saved');
+                            })
+                        });
+                    }
+                });
+                /*} else {
+                 customerCallBack(null, "Customer Exists");
+                 }*/
             }, function (customerErr, customerSaved) {
                 if (customerErr) {
                     retObj.status = false;
