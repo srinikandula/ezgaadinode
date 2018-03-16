@@ -13,10 +13,10 @@
                     <div uib-accordion-group class="panel-default pos-relative" is-open="status.isOpen">
                         <uib-accordion-heading>
                             Truck Owner Billing Details <i class="pull-right glyphicon"
-                                       ng-class="{'glyphicon-chevron-down': status.isOpen,
+                                                           ng-class="{'glyphicon-chevron-down': status.isOpen,
                                         'glyphicon-chevron-right': !status.isOpen}"></i>
                         </uib-accordion-heading>
-                        <a href="#"class="print-icon"><span class="glyphicon glyphicon-print"></span></a>
+                        <a href="#" class="print-icon"><span class="glyphicon glyphicon-print"></span></a>
 
                         <div class="row truckinfomain">
                             <div class="truckinfo">
@@ -58,7 +58,7 @@
                                 <ul class="list-inline">
                                     <li class="pull-left"><b>Truck OwnerBilling (per Transaction(Default))</b></li>
                                     <li class="pull-right">
-                                        <button class="btn btn-primary">New</button>
+                                        <button class="btn btn-primary" ng-click="truckPayment()">New</button>
                                     </li>
                                 </ul>
                             </div>
@@ -117,7 +117,7 @@
                                 <ul class="list-inline">
                                     <li class="pull-left"><b>Truck Owner Transactions</b></li>
                                     <li class="pull-right">
-                                        <button class="btn btn-primary">New</button>
+                                        <button class="btn btn-primary" ng-click="truckTransaction()">New</button>
                                     </li>
                                 </ul>
                             </div>
@@ -128,7 +128,7 @@
                                         <th>Date</th>
                                         <th>Comment</th>
                                         <th>Prefix</th>
-                                       <!--<th>Payment By</th>-->
+                                        <!--<th>Payment By</th>-->
                                         <!--<th>Payment Type</th>-->
                                         <th>Amount</th>
                                         </thead>
@@ -226,7 +226,7 @@
                         <div class="row truckBooking">
                             <div class="col-sm-4 col-xs-12">
                                 <ul class="list-inline">
-                                    <li><b>Date Ordered:</b> {{orderDetails.dateOfOrder}}</li>
+                                    <li><b>Date Ordered:</b> {{orderDetails.dateOfOrder | date:'dd-MM-yyyy'}}</li>
                                     <li><b>Order Status:</b> {{orderDetails.status}}</li>
                                 </ul>
                             </div>
@@ -239,9 +239,9 @@
                             </div>
                             <div class="col-sm-4 col-xs-12">
                                 <ul class="list-inline">
-                                    <li><b>Pickup Point:</b>Hyderbad</li>
-                                    <li><b>Pickup Date/Time:</b>21-06-2016 05:00 AM</li>
-                                    <li><b>Goods Type:</b>All</li>
+                                    <li><b>Pickup Point:</b> {{orderDetails.source}}</li>
+                                    <li><b>Pickup Date/Time:</b> {{orderDetails.pickupDate | date:'dd-MM-yyyy'}}</li>
+                                    <li><b>Goods Type:</b> All</li>
                                 </ul>
                             </div>
                         </div>
@@ -376,10 +376,10 @@
                     <div uib-accordion-group class="panel-default pos-relative" is-open="status.isOpen">
                         <uib-accordion-heading>
                             Transaction <i class="pull-right glyphicon"
-                                       ng-class="{'glyphicon-chevron-down': status.isOpen,
+                                           ng-class="{'glyphicon-chevron-down': status.isOpen,
                                         'glyphicon-chevron-right': !status.isOpen}"></i>
                         </uib-accordion-heading>
-                        <a href="#"class="print-icon"><span class="glyphicon glyphicon-print"></span></a>
+                        <a href="#" class="print-icon"><span class="glyphicon glyphicon-print"></span></a>
                         <div class="row truckinfomain">
                             <div class="truckinfo">
                                 <p><b>#Ord201607151588 Given Commission: 1000.00 | Expected Commission: 0 | Obtained
@@ -667,7 +667,100 @@
                 <a href="#" class="btn btn-primary" ng-click="updateOrderRequest()">Submit</a>
             </div>
             <div class="clearfix"></div>
-
         </div>
     </div>
+    <script type="text/ng-template" id="addPayment.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Payment</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="form-group col-sm-6 col-xs-12">
+                    <select class="form-control order-form-control" ng-model="initAddTruckPayment.comment"
+                            ng-change="paymentCommentPrefix();">
+                        <option value="" selected>--Comment--</option>
+                        <option ng-repeat="comments in paymentComments" value="{{comments}}">
+                            {{comments.comment}}({{comments.prefix}})
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12">
+                    <input type="text" class="form-control order-form-control" ng-model="initAddTruckPayment.amount"
+                           placeholder="Amount *"/>
+                </div>
+
+                <!--<div class="col-sm-6">
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="initAddTruckPayment.paymentType">
+                            <option value="" selected>&#45;&#45;Payment Type&#45;&#45;</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="NEFT">NEFT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="initAddTruckPayment.paymentBy">
+                            <option value="" selected>&#45;&#45;Payment By&#45;&#45;</option>
+                            <option value="Sravan">Sravan</option>
+                            <option value="Naresh">Naresh</option>
+                            <option value="Sai">Sai</option>
+                        </select>
+                    </div>
+                </div>-->
+
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addTruckPayment()"/>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="text/ng-template" id="addTransaction.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Transaction</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="initAddTransaction.comment"
+                                ng-change="paymentCommentPrefix();">
+                            <option value="" selected>--Comment--</option>
+                            <option ng-repeat="comments in paymentComments" value="{{comments}}">
+                                {{comments.comment}}({{comments.prefix}})
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="initAddTruckPayment.paymentType">
+                            <option value="" selected>&#45;&#45;Payment Type&#45;&#45;</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="NEFT">NEFT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control order-form-control" ng-model="initAddTransaction.amount"
+                               placeholder="Amount *"/>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="initAddTruckPayment.paymentBy">
+                            <option value="" selected>--Payment By--</option>
+                            <option value="Sravan">Sravan</option>
+                            <option value="Naresh">Naresh</option>
+                            <option value="Sai">Sai</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addTruckPayment()"/>
+                </div>
+            </div>
+        </div>
+    </script>
 </div>
+

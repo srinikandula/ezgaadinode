@@ -773,13 +773,13 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
 OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
     var retObj = {
         status: false,
-        message: []
+        messages: []
     };
     var params = req.query;
     if (!params.truckRequestId || !ObjectId.isValid(params.truckRequestId)) {
-        retObj.message.push("Invalid truck request");
+        retObj.messages.push("Invalid truck request");
     }
-    if (retObj.message.length > 0) {
+    if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
         AdminTripsColl.findOne({truckRequestId: params.truckRequestId}).populate({
@@ -787,7 +787,8 @@ OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
             select: "firstName contactPhone"
         }).exec(function (err, doc) {
             if (err) {
-                retObj.message.push("Please try again");
+                retObj.messages
+                    .push("Please try again");
                 analyticsService.create(req, serviceActions.get_load_booking_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
@@ -798,7 +799,7 @@ OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
                 callback(retObj);
             } else if (doc) {
                 retObj.status = true;
-                retObj.message.push("success");
+                retObj.messages.push("success");
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.get_load_booking_details, {
                     body: JSON.stringify(req.query),
@@ -808,7 +809,7 @@ OrderProcess.prototype.getLoadBookingDetails = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.message.push("Load booking not available");
+                retObj.messages.push("Load booking not available");
                 analyticsService.create(req, serviceActions.get_load_booking_details_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,
@@ -2010,7 +2011,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
             select: "firstName contactPhone email userId companyName contactAddress city state"
         }).exec(function (err, orderDetails) {
             if (err) {
-                retObj.message.push("Please try again");
+                retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2145,7 +2146,7 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
             select: "firstName contactPhone email userId companyName contactAddress city state"
         }).exec(function (err, orderDetails) {
             if (err) {
-                retObj.message.push("Please try again");
+                retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2157,9 +2158,9 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
             } else if (orderDetails) {
                 var condition = {};
                 if (orderDetails.loadOwnerType == "Registred") {
-                    condition = {orderId: params._id,loadOwnerId: orderDetails.loadOwnerId}
+                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadOwnerId}
                 } else {
-                    condition = {orderId: params._id,loadOwnerId: orderDetails.loadCustomerLeadId}
+                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadCustomerLeadId}
                 }
                 async.parallel({
                     paymentsDetails: function (paymentsCallback) {
@@ -2220,7 +2221,7 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
 
                 }, function (err, result) {
                     if (err) {
-                        retObj.message.push("Please try again");
+                        retObj.messages.push("Please try again");
                         retObj.orderDetails = orderDetails;
                         retObj.paymentsDetails = result.paymentsDetails;
                         retObj.transactionsDetails = result.transactionsDetails;
@@ -2234,7 +2235,7 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                         });
                         callback(retObj);
                     } else {
-                        retObj.message.push("Success");
+                        retObj.messages.push("Success");
                         analyticsService.create(req, serviceActions.get_trip_order_details, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -2246,7 +2247,7 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                 });
 
             } else {
-                retObj.message.push("Order details not found");
+                retObj.messages.push("Order details not found");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2295,7 +2296,7 @@ OrderProcess.prototype.addOrderComment = function (req, callback) {
         var orderComment = new OrderCommentsColl(params);
         orderComment.save(function (err, doc) {
             if (err) {
-                retObj.message.push("Please try again");
+                retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_comment_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2305,7 +2306,7 @@ OrderProcess.prototype.addOrderComment = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.message.push("Comment added successfully");
+                retObj.messages.push("Comment added successfully");
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_order_comment, {
                     body: JSON.stringify(req.body),
@@ -2332,13 +2333,13 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
     if (!params.comment) {
         retObj.messages.push("Please enter comment");
     }
-    if (params.ownerType) {
+    if (!params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-    if (params.prefix) {
-        retObj.messages.push("Invalid comment");
+    if (!params.prefix) {
+        retObj.messages.push("Invalid Prefix");
     }
-    if (params.amount) {
+    if (!params.amount) {
         retObj.messages.push("Enter amount");
     }
     if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
@@ -2354,7 +2355,7 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
         var orderPayment = new OrderPaymentsColl(params);
         orderPayment.save(function (err, doc) {
             if (err) {
-                retObj.message.push("Please try again");
+                retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_payment_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2374,7 +2375,7 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
                 OrderPaymentsColl.find(condition,
                     function (err, docs) {
                         if (err) {
-                            retObj.message.push("Please try again");
+                            retObj.messages.push("Please try again");
                             analyticsService.create(req, serviceActions.add_order_payment_err, {
                                 body: JSON.stringify(req.body),
                                 accountId: req.jwt.id,
@@ -2388,10 +2389,10 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
                             var total = 0;
                             if (docs.length > 0) {
                                 for (var i = 0; i < docs.length; i++) {
+                                    retObj.status = true;
                                     total = calculator[docs[i].prefix](total, docs[i].amount);
-
                                     if (i === docs.length - 1) {
-                                        retObj.message.push("Payment added successfully");
+                                        retObj.messages.push("Payment added successfully");
                                         retObj.data = {payments: docs, total: total};
                                         analyticsService.create(req, serviceActions.add_order_payment, {
                                             body: JSON.stringify(req.body),
@@ -2403,7 +2404,8 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
                                     }
                                 }
                             } else {
-                                retObj.message.push("Payment added successfully");
+                                retObj.status = true;
+                                retObj.messages.push("Payment added successfully");
                                 retObj.data = {payments: [], total: 0};
                                 analyticsService.create(req, serviceActions.add_order_payment, {
                                     body: JSON.stringify(req.body),
@@ -2473,7 +2475,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
         var orderPayment = new OrderPaymentsColl(params);
         orderPayment.save(function (err, doc) {
             if (err) {
-                retObj.message.push("Please try again");
+                retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_transaction_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2493,7 +2495,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                 OrderPaymentsColl.find(condition,
                     function (err, docs) {
                         if (err) {
-                            retObj.message.push("Please try again");
+                            retObj.messages.push("Please try again");
                             analyticsService.create(req, serviceActions.add_order_payment_err, {
                                 body: JSON.stringify(req.body),
                                 accountId: req.jwt.id,
@@ -2510,7 +2512,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                                     total = calculator[docs[i].prefix](total, docs[i].amount);
 
                                     if (i === docs.length - 1) {
-                                        retObj.message.push("Transaction added successfully");
+                                        retObj.messages.push("Transaction added successfully");
                                         retObj.data = {transactions: docs, total: total};
                                         analyticsService.create(req, serviceActions.add_order_transaction, {
                                             body: JSON.stringify(req.body),
@@ -2522,7 +2524,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                                     }
                                 }
                             } else {
-                                retObj.message.push("Transaction added successfully");
+                                retObj.messages.push("Transaction added successfully");
                                 retObj.data = {transactions: [], total: 0};
                                 analyticsService.create(req, serviceActions.add_order_transaction, {
                                     body: JSON.stringify(req.body),
@@ -2565,7 +2567,7 @@ OrderProcess.prototype.addOrderLocation = function (req, callback) {
         var orderLocation = new OrderLocationColl(params);
         orderLocation.save(function (err, doc) {
             if (err) {
-                retObj.message.push("Please try again");
+                retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_location_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -2575,7 +2577,7 @@ OrderProcess.prototype.addOrderLocation = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.message.push("Location details added successfully");
+                retObj.messages.push("Location details added successfully");
                 retObj.data = doc;
                 analyticsService.create(req, serviceActions.add_order_transaction, {
                     body: JSON.stringify(req.body),
