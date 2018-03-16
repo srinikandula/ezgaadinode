@@ -1305,6 +1305,9 @@ textarea.custom-form-control{
 .truckOwnerInfo{
     padding-top: 20px;
 }
+.truckOwnerInfo ul li{
+    display: block;
+}
 .truckOwnerInfo p{
     border-bottom: 1px solid #ccc;
     padding-bottom: 5px;
