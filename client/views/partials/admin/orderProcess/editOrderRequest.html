@@ -24,7 +24,7 @@
                                     Commission:
                                     0</b></p>
                                 <div class="truckOwnerInfo col-sm-4">
-                                    <p><b>Truck Owner Info: {{orderDetails.userId || '--'}}</b></p>
+                                    <p><b>Truck Owner Info: {{orderDetails.orderId || '--'}}</b></p>
                                     <ul class="list-inline">
                                         <li><b>Name:</b> {{orderDetails.truckOwnerId.firstName}}</li>
                                         <li><b>Mobile:</b> {{orderDetails.truckOwnerId.contactPhone || '---'}}</li>
@@ -64,7 +64,7 @@
                             </div>
                             <div class="col-xs-12">
                                 <div class="col-xs-12">
-                                    <table class="table table-bordered text-center table-hover">
+                                    <table class="table table-hover">
                                         <thead>
                                         <th>Date</th>
                                         <th>Comment</th>
@@ -72,11 +72,17 @@
                                         <th>Amount</th>
                                         </thead>
                                         <tbody>
-                                        <tr ng-repeat="payments in paymentsDetails  ">
+                                        <tr ng-repeat="payments in paymentsDetails.payments ">
                                             <td>{{payments.createdAt | date:'dd-MM-yyyy'}}</td>
                                             <td>{{payments.comment}}</td>
                                             <td>{{payments.prefix}}</td>
-                                            <td>{{payments.amount}}</td>
+                                            <td><i class="fa fa-inr"></i> {{payments.amount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td><b>Total</b></td>
+                                            <td><b><i class="fa fa-inr"></i> {{paymentsDetails.total}}.00</b></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -117,31 +123,29 @@
                             </div>
                             <div class="col-xs-12">
                                 <div class="col-xs-12">
-                                    <table class="table table-bordered text-center table-hover">
+                                    <table class="table table-hover">
                                         <thead>
                                         <th>Date</th>
                                         <th>Comment</th>
                                         <th>Prefix</th>
-                                        <th>Payment By</th>
-                                        <th>Payment Type</th>
+                                       <!--<th>Payment By</th>-->
+                                        <!--<th>Payment Type</th>-->
                                         <th>Amount</th>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <td>22-07-2016</td>
-                                            <td>Balance Amount Paid</td>
-                                            <td>+</td>
-                                            <td>Sravan B</td>
-                                            <td>Cash</td>
-                                            <td>29600</td>
+                                        <tr ng-repeat="transacDetails in transactionsDetails.transactions">
+                                            <td>{{transacDetails.createdAt | date:'dd-MM-yyyy'}}</td>
+                                            <td>{{transacDetails.comment}}</td>
+                                            <td>{{transacDetails.prefix}}</td>
+                                            <!--<td>Sravan B</td>-->
+                                            <!--<td>Cash</td>-->
+                                            <td><i class="fa fa-inr"></i> {{transacDetails.amount}}</td>
                                         </tr>
                                         <tr>
-                                            <td>22-07-2016</td>
-                                            <td>Balance Amount Paid</td>
-                                            <td>+</td>
-                                            <td>Sravan B</td>
-                                            <td>Cash</td>
-                                            <td>29600</td>
+                                            <td></td>
+                                            <td></td>
+                                            <td><b>Total</b></td>
+                                            <td><i class="fa fa-inr"></i> {{transactionsDetails.total}}</td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -222,8 +226,8 @@
                         <div class="row truckBooking">
                             <div class="col-sm-4 col-xs-12">
                                 <ul class="list-inline">
-                                    <li><b>Date Ordered:</b> 21-06-2016 05:00 AM</li>
-                                    <li><b>Order Status:</b> Processing</li>
+                                    <li><b>Date Ordered:</b> {{orderDetails.dateOfOrder}}</li>
+                                    <li><b>Order Status:</b> {{orderDetails.status}}</li>
                                 </ul>
                             </div>
                             <div class="col-sm-4 col-xs-12">

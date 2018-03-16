@@ -1832,7 +1832,7 @@ function saveTripOrder(req, params, callback) {
                     if (params.applyTds === 'Yes') {
                         var orderPayment = new OrderPaymentsColl({
                             orderId: saveDoc._id,
-                            truckOwnerId: params.to_truckOwnerId,
+                            truckOwnerId: params.truckOwnerId,
                             amount: 100,
                             prefix: "+",
                             comment: "Deduct TDS"
@@ -1850,9 +1850,9 @@ function saveTripOrder(req, params, callback) {
                     if (params.to_advance) {
                         var orderTran = new OrderTransactionsColl({
                             orderId: saveDoc._id,
-                            truckOwnerId: params.to_truckOwnerId,
+                            truckOwnerId: params.truckOwnerId,
                             amount: params.to_advance,
-                            prefix: "+",
+                            prefix: "-",
                             comment: "Advance paid"
 
                         });
@@ -2020,7 +2020,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
 
                 async.parallel({
                     paymentsDetails: function (paymentsCallback) {
-                        OrderPaymentsColl.find({truckOwnerId: orderDetails.truckOwnerId},
+                        OrderPaymentsColl.find({orderId: params._id,truckOwnerId: orderDetails.truckOwnerId},
                             function (err, docs) {
                                 if (err) {
                                     paymentsCallback(err, docs);
@@ -2044,7 +2044,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                             })
                     },
                     transactionsDetails: function (transactionsCallback) {
-                        OrderTransactionsColl.find({truckOwnerId: orderDetails.truckOwnerId},
+                        OrderTransactionsColl.find({orderId: params._id,truckOwnerId: orderDetails.truckOwnerId},
                             function (err, docs) {
                                 if (err) {
                                     transactionsCallback(err, docs);
@@ -2069,7 +2069,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                             })
                     },
                     comments: function (commentsCallback) {
-                        OrderCommentsColl.find({truckOwnerId: orderDetails.truckOwnerId},
+                        OrderCommentsColl.find({orderId: params._id,truckOwnerId: orderDetails.truckOwnerId},
                             function (err, docs) {
                                 commentsCallback(err, docs);
                             })
