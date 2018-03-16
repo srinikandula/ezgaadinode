@@ -2695,4 +2695,47 @@ OrderProcess.prototype.updateOrderPOD = function (req, callback) {
 
 
 };
+
+OrderProcess.prototype.getEasygaadiEmployeesList=function (req,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+
+  };
+  AccountsColl.find({role:'employee'},function (err,docs) {
+    if(err){
+        retObj.messages.push("Please try again");
+        analyticsService.create(req, serviceActions.get_easygaadi_employee_list_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    }else if(docs.length>0){
+        retObj.status=true;
+        retObj.messages.push("Success");
+        retObj.data=docs;
+        analyticsService.create(req, serviceActions.get_easygaadi_employee_list, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: true
+        }, function (response) {
+        });
+        callback(retObj);
+    }else{
+        retObj.messages.push("No Easygaadi employees found");
+        analyticsService.create(req, serviceActions.get_easygaadi_employee_list_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    }
+  })
+
+};
 module.exports = new OrderProcess();
