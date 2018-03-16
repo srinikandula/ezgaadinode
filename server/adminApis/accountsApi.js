@@ -404,7 +404,7 @@ function generateUniqueUserId(userType, callback) {
 }
 
 function addGpsSettings(enabled, id, callback) {
-    if(!enabled) {
+    if(enabled) {
         GpsSettingsColl.findOne({accountId: id}, function (errSetting, setting) {
             if (errSetting) {
                 callback({status: false, message:'error getting settings'});

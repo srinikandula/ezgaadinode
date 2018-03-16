@@ -11,7 +11,7 @@ var TrucksColl = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var TrucksTypesColl=require('./../models/schemas').TrucksTypesColl;
-
+var LoadRequestColl = require("../models/schemas").adminLoadRequestColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -1175,6 +1175,61 @@ Trucks.prototype.getTruckTypes=function (req,callback) {
                 callback(retObj);
             }
         })
+};
+
+Trucks.prototype.lookingForLoad = function (body,req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!body.sourceAddress) {
+        retObj.messages.push("Please select source address");
+    }
+    if(!body.destinationAddress){
+        retObj.messages.push("Please select destination address");
+    }
+    if(!body.truckType){
+        retObj.messages.push("Please select truck type");
+    }
+    if(!body.registrationNo){
+        retObj.messages.push("Please enter truck registration number");
+    }
+    if(!body.pricePerTon){
+        retObj.messages.push("Please enter price per ton");
+    }
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.add_load_request_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    }else{
+        var params = req.body;
+        params.createdBy = req.jwt.id;
+        params.sourceAddress = body.sourceAddress;
+        params.destination=[];
+        params.destination[0] ={destinationAddress: body.destinationAddress, price:body.pricePerTon};
+        params.truckType = body.truckType;
+        params.registrationNo = body.registrationNo;
+        params.dateAvailable = body.dateAvailable;
+        var loadRequest = new LoadRequestColl(params);
+
+        loadRequest.save(function (err, doc) {
+            if (err) {
+                retObj.status=false;
+                console.log(err);
+                retObj.messages.push('Error while saving load request data');
+                callback(retObj);
+            } else {
+                retObj.status=true;
+                retObj.messages.push('Saved load request successfully');
+                callback(retObj);
+            }
+        })
+    }
 };
 
 module.exports = new Trucks();

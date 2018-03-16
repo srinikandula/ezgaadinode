@@ -9,6 +9,7 @@ var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 var GoogleMapsAPI=require('googlemaps');
@@ -735,6 +736,42 @@ Gps.prototype.getTruckReports = function (params,req,callback) {
             callback(result);
         }
     })
-}
+};
+
+Gps.prototype.editGpsSettings = function (body,req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    GpsSettingsColl.update({accountId:req.jwt.id},{$set:body},function (err,settings) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Error retrieving settings for account');
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push('Settings updated successfully');
+            callback(retObj);
+        }
+    })
+};
+
+Gps.prototype.getGpsSettings = function (id,req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+
+    GpsSettingsColl.findOne({accountId:id},function (err,settings) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Error retrieving settings for account');
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.results=settings;
+            callback(retObj);
+        }
+    })
+};
 
 module.exports = new Gps();

@@ -14,7 +14,7 @@
                         <h3>GPS Settings</h3>
                         <div class="form-group">
                             <div class="col-xs-12 styling-input-list">
-                                <input type="text" class="form-control custom-form-control">
+                                <input type="text" ng-model="gpsSettingsParams.idleTime" class="form-control custom-form-control">
                                 <label class="focus-effect-for-input" aria-hidden="true">Min Stop Duration 10</label>
                             </div>
                             <div class="clearfix"></div>
@@ -23,7 +23,7 @@
                     <div class="col-xs-12 pall-zero">
                         <div class="form-group">
                             <div class="col-xs-12 styling-input-list">
-                                <input type="text" class="form-control custom-form-control">
+                                <input type="text" ng-model="gpsSettingsParams.overSpeedLimit" class="form-control custom-form-control">
                                 <label class="focus-effect-for-input" aria-hidden="true">Over Speed Limit KMPH</label>
                             </div>
                             <div class="clearfix"></div>
@@ -32,7 +32,7 @@
                     <div class="col-xs-12 pall-zero">
                         <div class="form-group">
                             <div class="col-xs-12 styling-input-list">
-                                <input type="text" class="form-control custom-form-control">
+                                <input type="text" ng-model="gpsSettingsParams.routeNotificationInterval" class="form-control custom-form-control">
                                 <label class="focus-effect-for-input" aria-hidden="true">Route Notification
                                     Interval</label>
                             </div>
@@ -42,11 +42,14 @@
                     <div class="col-xs-12 pall-zero">
                         <div class="form-group">
                             <div class="col-xs-12 styling-input-list">
-                                <input type="text" class="form-control custom-form-control">
+                                <input type="text" ng-model="gpsSettingsParams.stopTime" class="form-control custom-form-control">
                                 <label class="focus-effect-for-input" aria-hidden="true">Stop Alert Time</label>
                             </div>
                             <div class="clearfix"></div>
                         </div>
+                    </div>
+                    <div class="col-xs-12 pall-zero">
+                        <button class="btn can last" ng-click="updateGpsSettings()" type="submit">Submit</button>
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6  mt-20">
