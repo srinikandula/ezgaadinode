@@ -10,6 +10,12 @@ OpenRouter.post('/saveDeviceDetails',function (req,res) {
     })
 });
 
+OpenRouter.post('/sendPushNotifications',function (req,res) {
+    notifications.sendPushNotifications(req.body,function (result) {
+        res.json(result);
+    })
+})
+
 module.exports = {
     OpenRouter:OpenRouter,
     AuthRouter: AuthRouter
