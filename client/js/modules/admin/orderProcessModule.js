@@ -185,6 +185,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 params: {_id: params}
             }).then(success, error)
         },
+        addOrderPayment: function (data, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/addOrderPayment',
+                method: "POST",
+                data: data
+            }).then(success, error)
+        },
 
 
     }
@@ -1487,11 +1494,36 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                 }
             }
         });
-
+        modalInstance.result.then(function (data) {
+            $scope.paymentsDetails=data;
+        }, function () {
+        });
+    };
+    $scope.truckTransaction = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addTransaction.html',
+            //controller: 'addTruckPaymentCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {
+                        ownerType: 'Truck Owner',
+                        orderId: $scope.orderDetails._id,
+                        truckOwnerId: $scope.orderDetails.truckOwnerId._id
+                    }
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.paymentsDetails=data;
+        }, function () {
+        });
     };
 }]);
 
-app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 'Notification', 'modelData', function ($scope, $state, $uibModalInstance, Notification, modelData) {
+app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 'Notification', 'modelData','OrderProcessServices', function ($scope, $state, $uibModalInstance, Notification, modelData, OrderProcessServices) {
     $scope.paymentComments = [
         {comment: "Late Receivable", prefix: '-'},
         {comment: "Hamali Charges", prefix: '+'},
@@ -1519,36 +1551,50 @@ app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 
         errors: []
     }
 
-   /* $scope.paymentCommentPrefix=function () {
-        $scope.initAddTruckPayment.prefix=$scope.initAddTruckPayment.comment.prefix;
-        $scope.initAddTruckPayment.comment=$scope.initAddTruckPayment.comment.comment;
-    }*/
+    /* $scope.paymentCommentPrefix=function () {
+         $scope.initAddTruckPayment.prefix=$scope.initAddTruckPayment.comment.prefix;
+         $scope.initAddTruckPayment.comment=$scope.initAddTruckPayment.comment.comment;
+     }*/
 
-   $scope.addTruckPayment = function () {
-       var params = $scope.initAddTruckPayment;
-       params.ownerType = modelData.ownerType;
-       params.truckOwnerId = modelData.truckOwnerId;
-       params.orderId = modelData.orderId;
-       params.messages = [];
+    $scope.addTruckPayment = function () {
+        var params = $scope.initAddTruckPayment;
+        params.ownerType = modelData.ownerType;
+        params.truckOwnerId = modelData.truckOwnerId;
+        params.orderId = modelData.orderId;
+        params.messages = [];
+        var comment=angular.copy(JSON.parse($scope.initAddTruckPayment.comment));
+        $scope.initAddTruckPayment.prefix=comment.prefix;
+        $scope.initAddTruckPayment.comment=comment.comment;
+        if (!params.ownerType) {
+            params.messages.push("Please select Owner Type");
+        }
+        if (!params.truckOwnerId) {
+            params.messages.push("Please select Truck Owner");
+        }
+        if (!params.orderId) {
+            params.messages.push("Please select Order Id");
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            });
+        } else {
+            OrderProcessServices.addOrderPayment(params, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
+                        Notification.success(message);
+                    });
+                    $uibModalInstance.close(success.data.data);
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
 
-       if (!params.ownerType) {
-           params.messages.push("Please select Owner Type");
-       }
+            })
+        }
+    }
 
-       OrderProcessServices.createOrder(params, function (success) {
-           if (success.data.status) {
-               success.data.messages.forEach(function (message) {
-                   Notification.success(message);
-               });
-               $state.go("orderprocess.viewOrder");
-           } else {
-               success.data.messages.forEach(function (message) {
-                   Notification.error(message);
-               });
-           }
-       }, function (error) {
-
-       })
-   }
 
 }]);
