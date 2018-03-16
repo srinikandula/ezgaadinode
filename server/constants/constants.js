@@ -515,6 +515,8 @@ const serviceActions = {
     add_order_transaction_err:"ADD_ORDER_TRANSACTION_ERR",
     add_order_location:"ADD_ORDER_LOCATION",
     add_order_location_err:"ADD_ORDER_LOCATION_ERR",
+    get_easygaadi_employee_list:"GET_EASYDAADI_EMPLOYEE_LIST",
+    get_easygaadi_employee_list_err:"GET_EASYDAADI_EMPLOYEE_LIST_ERR",
 
 
 };

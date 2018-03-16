@@ -189,6 +189,12 @@ AuthRouter.post('/updateOrderPOD',function (req,res) {
    })
 });
 
+AuthRouter.get('/getEasygaadiEmployeesList',function (req,res) {
+   OrderProcess.getEasygaadiEmployeesList(req,function (result) {
+       res.send(result);
+   })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
