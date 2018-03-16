@@ -1526,7 +1526,29 @@ app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 
 
    $scope.addTruckPayment = function () {
        var params = $scope.initAddTruckPayment;
-       console.log("", params);
+       params.ownerType = modelData.ownerType;
+       params.truckOwnerId = modelData.truckOwnerId;
+       params.orderId = modelData.orderId;
+       params.messages = [];
+
+       if (!params.ownerType) {
+           params.messages.push("Please select Owner Type");
+       }
+
+       OrderProcessServices.createOrder(params, function (success) {
+           if (success.data.status) {
+               success.data.messages.forEach(function (message) {
+                   Notification.success(message);
+               });
+               $state.go("orderprocess.viewOrder");
+           } else {
+               success.data.messages.forEach(function (message) {
+                   Notification.error(message);
+               });
+           }
+       }, function (error) {
+
+       })
    }
 
 }]);
