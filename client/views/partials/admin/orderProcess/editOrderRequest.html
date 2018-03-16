@@ -771,12 +771,58 @@
 
                         </select>
                     </div>
+<!--
+                <div class="form-group col-sm-6 col-xs-12">
+                    <select class="form-control order-form-control" ng-model="initAddTransaction.comment"
+                            ng-change="paymentCommentPrefix();">
+                        <option value="" selected>&#45;&#45;Comment&#45;&#45;</option>
+                        <option ng-repeat="comments in paymentComments" value="{{comments}}">
+                            {{comments.comment}}({{comments.prefix}})
+                        </option>
+                    </select>
                 </div>
-
-                <div class="col-sm-12 text-center">
+                <div class="form-group col-sm-6 col-xs-12">
+                    <input type="text" class="form-control order-form-control" ng-model="initAddTransaction.amount"
+                           placeholder="Amount *"/>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12">
+                    <select class="form-control order-form-control" ng-model="initAddTransaction.paymentType">
+                        <option value="" selected>&#45;&#45;Payment Type&#45;&#45;</option>
+                        <option value="Cash">Cash</option>
+                        <option value="Cheque">Cheque</option>
+                        <option value="Account Transfer">Account Transfer</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12" ng-show="initAddTransaction.paymentType === 'Cash' ">
+                    <select class="form-control order-form-control" ng-model="initAddTransaction.paymentBy">
+                        <option value="" selected>&#45;&#45;Payment By&#45;&#45;</option>
+                        <option value="Sravan">Sravan</option>
+                        <option value="Naresh">Naresh</option>
+                        <option value="Sai">Sai</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12" ng-show="initAddTransaction.paymentType === 'Cheque' ">
+                    <input type="text" class="form-control order-form-control" ng-model="initAddTransaction.chequeNo"
+                    placeholder="Cheque No"/>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12" ng-show="initAddTransaction.paymentType === 'Account Transfer' ">
+                    <select class="form-control order-form-control" ng-model="initAddTransaction.bank">
+                        <option value="" selected>&#45;&#45;Select Bank&#45;&#45;</option>
+                        <option value="HDFC">HDFC</option>
+                        <option value="SBI">SBI</option>
+                        <option value="ICICI">ICICI</option>
+                        <option value="AXIS">AXIS</option>
+                        <option value="ANDRA">ANDRA BANK</option>
+                        <option value="INDUS">INDUS IND</option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12">
+                    <admin-date-picker ng-model="initAddTransaction.transactionDate" class="'order-form-control'"
+                                       placeholder="'Transaction Date'"></admin-date-picker>
                     <input type="button" class="btn btn-primary" value="Submit" ng-click="addOrderTransaction()"/>
-                </div>
+                </div>-->
             </div>
+        </div>
         </div>
     </script>
 

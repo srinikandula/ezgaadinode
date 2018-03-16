@@ -226,7 +226,6 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 data:data
             }).then(success,error)
         }
-
     }
 }]);
 
@@ -1721,7 +1720,6 @@ app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 
         $uibModalInstance.close();
     };
 
-    $scope.data = modelData;
     $scope.initAddTruckPayment = {
         errors: []
     };
@@ -1750,6 +1748,44 @@ app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 
             });
         } else {
             OrderProcessServices.addOrderPayment(params, function (success) {
+                if (success.data.status) {
+                    success.data.messages.forEach(function (message) {
+                        Notification.success(message);
+                    });
+                    $uibModalInstance.close(success.data.data);
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            })
+        }
+    }
+
+    $scope.initAddTransaction = {
+        errors: []
+    }
+    $scope.addTruckTransaction = function () {
+        var params = $scope.initAddTransaction;
+        params.ownerType = modelData.ownerType;
+        params.truckOwnerId = modelData.truckOwnerId;
+        params.orderId = modelData.orderId;
+        params.messages = [];
+        var comment = angular.copy(JSON.parse($scope.initAddTransaction.comment));
+        $scope.initAddTransaction.prefix = comment.prefix;
+        $scope.initAddTransaction.comment = comment.comment;
+
+        if (!params.ownerType) {
+            params.messages.push("Please select Owner Type");
+        }
+        if (params.messages.length > 0) {
+            params.messages.forEach(function (message) {
+                Notification.error(message);
+            });
+        } else {
+            OrderProcessServices.addOrderTransaction(params, function (success) {
                 if (success.data.status) {
                     success.data.messages.forEach(function (message) {
                         Notification.success(message);

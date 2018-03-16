@@ -2465,12 +2465,14 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
     if (!params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-
+    if (!params.prefix) {
+        retObj.messages.push("Invalid Prefix");
+    }
     if (!params.paymentType) {
         retObj.messages.push("Select Payment type")
     }
     if (!params.transactionDate) {
-        retObj.messages.push("Select transaction date")
+        retObj.messages.push("Please enter Transaction Date")
     }
     if (params.paymentType === "Cheque" && !params.chequeNo) {
         retObj.messages.push("Enter cheque no")
@@ -2496,7 +2498,6 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
         params.createdBy = req.jwt.id;
         var orderTransaction = new OrderTransactionsColl(params);
         orderTransaction.save(function (err, doc) {
-            console.log("err", err);
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_transaction_err, {
@@ -2513,7 +2514,6 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                     condition = {orderId: params.orderId, truckOwnerId: params.truckOwnerId};
                 } else {
                     condition = {orderId: params.orderId, loadOwnerId: params.loadOwnerId};
-
                 }
                 OrderTransactionsColl.find(condition,
                     function (err, docs) {
