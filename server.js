@@ -38,7 +38,7 @@ var kafkaConsumer = require('./server/apis/testkafka/kafkaConsumer');
 
 app.set('port', config.port);
 // app.use(morgan('dev'));
-app.use(express.static('client', {index: "/views/index.html"}));
+app.use(express.static('client'));
 // app.use(express.static('client', {index: "/views/adminIndex.html"}));
 
 app.use(bodyParser.json({limit: config.bodyParserLimit}));
@@ -91,7 +91,7 @@ app.use(function (req, res, next) {
     } else {
         var hostName = req.host || req.hostname;
          if(hostName.indexOf('cpanel') != -1){
-            res.sendFile(__dirname + '/client/views/adminIndex.html');
+             res.sendFile(__dirname + '/client/views/adminIndex.html');
         } else{
             res.sendFile(__dirname + '/client/views/index.html');
 

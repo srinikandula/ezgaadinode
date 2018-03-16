@@ -1983,6 +1983,16 @@ function saveTripOrder(req, params, callback) {
     })
 }
 
+/*Payments calculator*/
+var calculator = {
+    '+': function (total, current) {
+        return total + current
+    },
+    '-': function (total, current) {
+        return total - current
+    }
+
+};
 OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
     var retObj = {
         status: false,
@@ -2012,13 +2022,50 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                     paymentsDetails: function (paymentsCallback) {
                         OrderPaymentsColl.find({truckOwnerId: orderDetails.truckOwnerId},
                             function (err, docs) {
-                                paymentsCallback(err, docs);
+                                if (err) {
+                                    paymentsCallback(err, docs);
+
+                                } else {
+                                    var total = 0;
+                                    if (docs.length > 0) {
+                                        for (var i = 0; i < docs.length; i++) {
+                                            total = calculator[docs[i].prefix](total, docs[i].amount);
+
+                                            if (i === docs.length - 1) {
+                                                paymentsCallback(err, {payments: docs, total: total});
+                                            }
+                                        }
+                                    } else {
+                                        paymentsCallback(err, {payments: [], total: 0});
+                                    }
+
+
+                                }
                             })
                     },
                     transactionsDetails: function (transactionsCallback) {
                         OrderTransactionsColl.find({truckOwnerId: orderDetails.truckOwnerId},
                             function (err, docs) {
-                                transactionsCallback(err, docs);
+                                if (err) {
+                                    transactionsCallback(err, docs);
+
+                                } else {
+                                    var total = 0;
+                                    if (docs.length > 0) {
+                                        for (var i = 0; i < docs.length; i++) {
+                                            total = calculator[docs[i].prefix](total, docs[i].amount);
+
+                                            if (i === docs.length - 1) {
+                                                transactionsCallback(err, {transactions: docs, total: total});
+                                            }
+                                        }
+                                    } else {
+                                        transactionsCallback(err, {transactions: [], total: 0});
+
+                                    }
+
+
+                                }
                             })
                     },
                     comments: function (commentsCallback) {
@@ -2493,7 +2540,7 @@ OrderProcess.prototype.updateOrderPOD = function (req, callback) {
 
                 }
             })
-        }else{
+        } else {
             var params = {
                 dateOfPOD: params.deteOfPOD,
             };
