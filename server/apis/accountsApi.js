@@ -632,7 +632,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body,req, callbac
         retObj.message = "Invalid Image";
         callback(retObj);
     } else {
-        var base64Data = body.image.replace(/^data:image\/png;base64,/, "");
+        var base64Data = body.image.replace(/^data:image\/[a-z]+;base64,/,  "");
         fs.writeFile('./client/images/profile-pics/' + accountId + '.jpg', base64Data, 'base64', function (err) {
             if (err) {
                 retObj.status = false;
