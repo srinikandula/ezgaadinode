@@ -2335,9 +2335,9 @@ OrderProcess.prototype.addOrderPayment = function (req, callback) {
     if (params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-    if (params.prefix) {
-        retObj.messages.push("Invalid comment");
-    }
+    // if (params.prefix) {
+    //     retObj.messages.push("Invalid Prefix");
+    // }
     if (params.amount) {
         retObj.messages.push("Enter amount");
     }

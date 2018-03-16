@@ -58,7 +58,7 @@
                                 <ul class="list-inline">
                                     <li class="pull-left"><b>Truck OwnerBilling (per Transaction(Default))</b></li>
                                     <li class="pull-right">
-                                        <button class="btn btn-primary">New</button>
+                                        <button class="btn btn-primary" ng-click="truckPayment()">New</button>
                                     </li>
                                 </ul>
                             </div>
@@ -226,22 +226,22 @@
                         <div class="row truckBooking">
                             <div class="col-sm-4 col-xs-12">
                                 <ul class="list-inline">
-                                    <li><b>Date Ordered:</b> {{orderDetails.dateOfOrder}}</li>
+                                    <li><b>Date Ordered:</b> {{orderDetails.dateOfOrder | date:'dd-MM-yyyy'}}</li>
                                     <li><b>Order Status:</b> {{orderDetails.status}}</li>
                                 </ul>
                             </div>
                             <div class="col-sm-4 col-xs-12">
                                 <ul class="list-inline">
-                                    <li><b>Date Available:</b> 21-06-2016 05:00 AM</li>
+                                    <li><b>Date Available:</b> 21-06-2016 05:00 AM </li>
                                     <li><b>Tracking Available:</b> Yes</li>
                                     <li><b>Insurance Available:</b>No</li>
                                 </ul>
                             </div>
                             <div class="col-sm-4 col-xs-12">
                                 <ul class="list-inline">
-                                    <li><b>Pickup Point:</b>Hyderbad</li>
-                                    <li><b>Pickup Date/Time:</b>21-06-2016 05:00 AM</li>
-                                    <li><b>Goods Type:</b>All</li>
+                                    <li><b>Pickup Point:</b> {{orderDetails.source}}</li>
+                                    <li><b>Pickup Date/Time:</b> {{orderDetails.pickupDate | date:'dd-MM-yyyy'}}</li>
+                                    <li><b>Goods Type:</b> All</li>
                                 </ul>
                             </div>
                         </div>
@@ -667,7 +667,54 @@
                 <a href="#" class="btn btn-primary" ng-click="updateOrderRequest()">Submit</a>
             </div>
             <div class="clearfix"></div>
-
         </div>
     </div>
+    <script type="text/ng-template" id="addPayment.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">Add Payment</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                    <select class="form-control order-form-control" ng-model="initAddTruckPayment.comment" ng-change="paymentCommentPrefix();">
+                        <option value="" selected>--Comment--</option>
+                        <option ng-repeat="comments in paymentComments" value="{{comments}}">
+                            {{comments.comment}}({{comments.prefix}})
+                        </option>
+                    </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control order-form-control" ng-model="initAddTruckPayment.amount"
+                               placeholder="Amount *"/>
+                    </div>
+
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="initAddTruckPayment.paymentType">
+                            <option value="" selected>--Payment Type--</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="NEFT">NEFT</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="initAddTruckPayment.paymentBy">
+                            <option value="" selected>--Payment By--</option>
+                            <option value="Sravan">Sravan</option>
+                            <option value="Naresh">Naresh</option>
+                            <option value="Sai">Sai</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addTruckPayment()"/>
+                </div>
+            </div>
+        </div>
+    </script>
 </div>
+

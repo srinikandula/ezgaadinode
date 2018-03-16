@@ -1268,7 +1268,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
 }]);
 
-app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'customerServices', 'Notification', 'SettingServices', 'NgTableParams', '$stateParams', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices, NgTableParams, $stateParams) {
+app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'customerServices', 'Notification', 'SettingServices', 'NgTableParams', '$stateParams', '$uibModal', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices, NgTableParams, $stateParams, $uibModal) {
 
     $scope.status = {
         isOpen: true,
@@ -1469,5 +1469,64 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             });
         }
     }
+
+    $scope.truckPayment = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addPayment.html',
+            controller: 'addTruckPaymentCtrl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {
+                        ownerType: 'Truck Owner',
+                        orderId: $scope.orderDetails._id,
+                        truckOwnerId: $scope.orderDetails.truckOwnerId._id
+                    }
+                }
+            }
+        });
+
+    };
+}]);
+
+app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 'Notification', 'modelData', function ($scope, $state, $uibModalInstance, Notification, modelData) {
+    $scope.paymentComments = [
+        {comment: "Late Receivable", prefix: '-'},
+        {comment: "Hamali Charges", prefix: '+'},
+        {comment: "Booked Amount ", prefix: '+'},
+        {comment: "Commission", prefix: '-'},
+        {comment: "Goods Damage", prefix: '-'},
+        {comment: "Loading Charges", prefix: '-'},
+        {comment: "Payment Mamul", prefix: '-'},
+        {comment: "Unloading Charges", prefix: '-'},
+        {comment: "Loading Charges", prefix: '+'},
+        {comment: "Unloading Charges", prefix: '+'},
+        {comment: "Waiting Charges", prefix: '+'},
+        {comment: "Extra Charges", prefix: '-'},
+        {comment: "Extra Charges", prefix: '+'},
+        {comment: "Theft", prefix: '-'},
+        {comment: "Overload Charge", prefix: '+'},
+        {comment: "Deduct TDS", prefix: '-'}
+    ]
+    $scope.cancel = function () {
+        $uibModalInstance.close();
+    };
+
+    $scope.data = modelData;
+    $scope.initAddTruckPayment = {
+        errors: []
+    }
+
+   /* $scope.paymentCommentPrefix=function () {
+        $scope.initAddTruckPayment.prefix=$scope.initAddTruckPayment.comment.prefix;
+        $scope.initAddTruckPayment.comment=$scope.initAddTruckPayment.comment.comment;
+    }*/
+
+   $scope.addTruckPayment = function () {
+       var params = $scope.initAddTruckPayment;
+       console.log("", params);
+   }
 
 }]);
