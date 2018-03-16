@@ -292,7 +292,7 @@ Devices.prototype.getDevices = function (req, callback) {
                     path: 'accountId',
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
                 })//, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
-                .populate('')
+                .populate('installedBy', {userName: 1})
                 .lean()
                 .exec(function (errdevices, devices) {
                     devicescallback(errdevices, devices);
@@ -697,7 +697,7 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
                     $lookup: {
                         from: 'accounts',
                         localField: 'assignedTo',
-                        foreignField: 'id_admin',
+                        foreignField: '_id',
                         as: 'assignedEmployee'
                     }
                 },
