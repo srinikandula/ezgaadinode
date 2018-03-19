@@ -47,5 +47,6 @@
   "bodyParserLimit": "50mb",
   "googleSecretKeyLimit": 3,
   "devicePositionsArchiveLimit": 14,
-  "devicePositionsTopicName": "devicePositions"
+  "devicePositionsTopicName": "devicePositions",
+  "serverKey": "zsdg546erfsd"
 }
