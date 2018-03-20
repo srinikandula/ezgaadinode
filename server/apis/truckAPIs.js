@@ -18,7 +18,7 @@ var pageLimits = require('./../config/pagination');
 var emailService = require('./mailerApi');
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
-
+var notificationService = require('./../apis/notifications');
 
 var Trucks = function () {
 };
@@ -1216,7 +1216,6 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
         params.registrationNo = body.registrationNo;
         params.dateAvailable = body.dateAvailable;
         var loadRequest = new LoadRequestColl(params);
-
         loadRequest.save(function (err, doc) {
             if (err) {
                 retObj.status=false;
@@ -1226,7 +1225,11 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
             } else {
                 retObj.status=true;
                 retObj.messages.push('Saved load request successfully');
-                callback(retObj);
+                notificationService.sendPushNotifications({title:'New Load Request',message:params.registrationNo+' is looking for load '},function (response) {
+                    retObj.messages.push(response.message);
+                    AccountsColl.find({role:'transporters'})
+                    callback(retObj);
+                });
             }
         })
     }
