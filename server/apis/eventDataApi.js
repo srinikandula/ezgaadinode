@@ -142,6 +142,8 @@ EventData.prototype.createAccountData = function (accountData, callback) {
         messages: []
     };
     accountData.role = 'Truck Owner';
+    accountData.leadType = 'T';
+    accountData.yearInService = 2018;
     var accountDoc = new AccountsColl(accountData);
     AccountsColl.find({"userName": accountData.userName}, function (error, accountFound) {
         if (!accountFound || accountFound.length === 0) {

@@ -1067,7 +1067,8 @@ Employees.prototype.addEmployee = function (req, callback) {
                     employeeInfo.profilePic = uploadResp.fileName;
                     employeeInfo.createdBy = req.jwt.id;
                     employeeInfo.accountId = req.jwt.id;
-                    employeeInfo.type = "employee";
+                    employeeInfo.type = "account";
+                    employeeInfo.role = "employee";
                     employeeInfo.userName = employeeInfo.email;
                     employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
                     saveEmployee(req, employeeInfo, callback);
@@ -1086,7 +1087,8 @@ Employees.prototype.addEmployee = function (req, callback) {
         } else {
             employeeInfo.createdBy = req.jwt.id;
             employeeInfo.accountId = req.jwt.id;
-            employeeInfo.type = "employee";
+            employeeInfo.type = "account";
+            employeeInfo.role = "employee";
             employeeInfo.userName = employeeInfo.email;
             employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
             saveEmployee(req, employeeInfo, callback);
@@ -1100,7 +1102,7 @@ function saveEmployee(req, employeeInfo, callback) {
         messages: []
     }
 
-    AccountsColl.findOne({email: employeeInfo.email, type: "employee"}, function (err, oldDoc) {
+    AccountsColl.findOne({email: employeeInfo.email, role: "employee"}, function (err, oldDoc) {
         if (err) {
             retObj.messages.push('Error retrieving employee');
             analyticsService.create(req, serviceActions.add_employee_err, {
