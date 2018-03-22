@@ -517,6 +517,14 @@ const serviceActions = {
     add_order_location_err:"ADD_ORDER_LOCATION_ERR",
     get_easygaadi_employee_list:"GET_EASYDAADI_EMPLOYEE_LIST",
     get_easygaadi_employee_list_err:"GET_EASYDAADI_EMPLOYEE_LIST_ERR",
+    update_view_order:"UPDATE_VIEW_ORDER",
+    update_view_order_err:"UPDATE_VIEW_ORDER_ERR",
+    update_order_pod:"UPDATE_ORDER_POD",
+    update_order_pod_err:"UPDATE_ORDER_POD_ERR",
+    delete_order_location:"DELETE_ORDER_LOCATION",
+    delete_order_location_err:"DELETE_ORDER_LOCATION_ERR",
+
+
 
 
 };

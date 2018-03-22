@@ -37,7 +37,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('editAccounts', success.data.editAccounts);
                     $cookies.put('profilePic', success.data.profilePic);
                     $cookies.put('createGroup', success.data.createGroup);
-                    $cookies.put('createTruck', success.data.createTruck);
+                    $cookies.put('accountAccess', success.data.accountAccess);
                     $rootScope.loggedTrue();
                     $state.go('reports');
                 } else {

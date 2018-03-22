@@ -351,7 +351,7 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
         messages: []
     };
     var condition = {},projections={};
-    if (jwt.type === "account") {
+    if (jwt.accountAccess) {
         condition = {accountId: jwt.accountId, deviceId: {$ne: null},"attrs.latestLocation":{$exists:true}};
         projections={"attrs.latestLocation":1,registrationNo:1,truckType:1};
     } else {

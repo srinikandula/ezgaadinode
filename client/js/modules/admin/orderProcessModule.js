@@ -225,6 +225,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "PUT",
                 data: data
             }).then(success, error)
+        },
+        deleteOrderLocation: function (data, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/deleteOrderLocation',
+                method: "DELETE",
+                params: {_id:data}
+            }).then(success, error)
         }
 
     }
@@ -1318,7 +1325,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
     $scope.status = {
         isOpen: true,
         isOpenOne: true,
-    }
+    };
 
     $scope.cancel = function () {
         $state.go('orderprocess.viewOrder');
@@ -1332,7 +1339,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                 Notification.error({message: response.data.messages[0]});
             }
         });
-    }
+    };
 
     $scope.getTruckTypes = function () {
         SettingServices.getTruckTypes({}, function (response) {
@@ -1742,7 +1749,37 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             waitForRenderAndPrint();
         });
     };
+    $scope.deleteOrderLocation=function (index,loc) {
 
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                OrderProcessServices.deleteOrderLocation(loc._id, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.locationsList.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
+    };
 
 
     /*--------------------------Load Owner Billing Module Starts Here ----------------------*/

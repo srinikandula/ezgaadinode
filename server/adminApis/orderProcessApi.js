@@ -2718,11 +2718,24 @@ OrderProcess.prototype.updateOrderPOD = function (req, callback) {
                         , function (err, savedDoc) {
                             if (err) {
                                 retObj.messages.push("Please try again");
+                                analyticsService.create(req, serviceActions.update_order_pod_err, {
+                                    body: JSON.stringify(req.body),
+                                    accountId: req.jwt.id,
+                                    success: false,
+                                    messages: retObj.messages
+                                }, function (response) {
+                                });
                                 callback(retObj);
                             } else {
                                 retObj.status = true;
                                 retObj.data = savedDoc;
                                 retObj.messages.push("Updated order POD successfully");
+                                analyticsService.create(req, serviceActions.update_order_pod, {
+                                    body: JSON.stringify(req.body),
+                                    accountId: req.jwt.id,
+                                    success: true
+                                }, function (response) {
+                                });
                                 callback(retObj);
                             }
                         })
@@ -2737,11 +2750,24 @@ OrderProcess.prototype.updateOrderPOD = function (req, callback) {
                 , function (err, savedDoc) {
                     if (err) {
                         retObj.messages("Please try again");
+                        analyticsService.create(req, serviceActions.update_order_pod_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
                         callback(retObj);
                     } else {
                         retObj.status = true;
                         retObj.data = savedDoc;
                         retObj.messages("Updated order POD successfully");
+                        analyticsService.create(req, serviceActions.update_order_pod, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
                         callback(retObj);
                     }
                 })
@@ -2808,17 +2834,80 @@ OrderProcess.prototype.updateOrderProcess=function (req,callback) {
     if(retObj.messages.length>0){
         callback(retObj);
     }else{
-        console.log("params",params);
         AdminTripsColl.findOneAndUpdate({_id:params._id},params,function (err,doc){
             if(err){
                 retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.update_view_order_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }else {
                 retObj.status=true;
                 retObj.messages.push("Orders details updated successfully");
+                analyticsService.create(req, serviceActions.update_view_order, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
+    }
+};
+
+OrderProcess.prototype.deleteOrderLocation=function (req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    console.log('ss',params)
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid Location");
+    }
+
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        OrderLocationColl.remove({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("please try again");
+                analyticsService.create(req, serviceActions.delete_order_location_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc && doc.result.n == 1) {
+                retObj.status = true;
+                retObj.messages.push("Location deleted successfully");
+                analyticsService.create(req, serviceActions.delete_order_location, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Location not deleted");
+                analyticsService.create(req, serviceActions.delete_order_location_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
     }
 };
 

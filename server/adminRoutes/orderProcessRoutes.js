@@ -210,6 +210,12 @@ AuthRouter.put("/updateOrderProcess",function (req,res) {
    })
 });
 
+AuthRouter.delete("/deleteOrderLocation",function (req,res) {
+    OrderProcess.deleteOrderLocation(req,function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

@@ -29,7 +29,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
         messages: []
     };
     console.log("asda",jwt);
-    if (jwt.createTruck) {
+    if (jwt.accountAccess) {
         if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
             retObj.messages.push("Please fill all the required truck details");
         }
@@ -230,7 +230,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
         params.page = 1;
     }
 
-    if (jwt.createTruck) {
+    if (jwt.accountAccess) {
         if (!params.truckName) {
             condition = {accountId: jwt.accountId}
         } else {

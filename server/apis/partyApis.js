@@ -130,7 +130,7 @@ Party.prototype.findParty = function (jwt, partyId,req, callback) {
 Party.prototype.updateParty = function (jwt, partyDetails,req, callback) {
     var result = {status: false, messages: []};
     var giveAccess = false;
-    if (jwt.type === "account" && partyDetails.accountId === jwt.accountId) {
+    if (jwt.accountAccess && partyDetails.accountId === jwt.accountId) {
         giveAccess = true;
     } else if (jwt.type === "group" && partyDetails.createdBy === jwt.id) {
         giveAccess = true;

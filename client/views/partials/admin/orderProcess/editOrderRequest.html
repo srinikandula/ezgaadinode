@@ -361,7 +361,7 @@
                                 <tr ng-repeat="loc in locationsList">
                                     <td>{{loc.location}}</td>
                                     <td>{{loc.date | date:"dd-mm-yyyy"}}</td>
-                                    <td>Delete</td>
+                                    <td><button class="btn btn-danger" ng-click="deleteOrderLocation($index,loc)">Delete</button></td>
                                 </tr>
 
                                 </tbody>
