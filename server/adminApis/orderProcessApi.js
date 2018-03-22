@@ -24,7 +24,7 @@ var customerLeadsApi = require("./customerLeadsApi");
 var Utils = require("./../apis/utils");
 var emailService = require('./../apis/mailerApi');
 var SmsService = require('./../apis/smsApi');
-
+var fse = require('fs-extra');
 
 var OrderProcess = function () {
 };
@@ -2073,7 +2073,10 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                             })
                     },
                     comments: function (commentsCallback) {
-                        OrderCommentsColl.find({orderId: params._id, truckOwnerId: orderDetails.truckOwnerId},
+                        OrderCommentsColl.find({
+                            orderId: params._id,
+                            truckOwnerId: orderDetails.truckOwnerId
+                        }).populate({path: "createdBy", select: "firstName"}).exec(
                             function (err, docs) {
                                 commentsCallback(err, docs);
                             })
@@ -2101,6 +2104,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                         retObj.paymentsDetails = result.paymentsDetails;
                         retObj.transactionsDetails = result.transactionsDetails;
                         retObj.comments = result.comments;
+                        retObj.locations=result.locations;
                         retObj.messages.push("Success");
                         analyticsService.create(req, serviceActions.get_trip_order_details, {
                             body: JSON.stringify(req.body),
@@ -2213,7 +2217,7 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                             })
                     },
                     comments: function (commentsCallback) {
-                        OrderCommentsColl.find(condition,
+                        OrderCommentsColl.find(condition).populate({path: "createdBy", select: "firstName"}).exec(
                             function (err, docs) {
                                 commentsCallback(err, docs);
                             })
@@ -2274,21 +2278,10 @@ OrderProcess.prototype.addOrderComment = function (req, callback) {
     if (!params.comment) {
         retObj.messages.push("Please enter comment");
     }
-    if (params.ownerType) {
+    if (!params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-    if (params.paymentType) {
-        retObj.messages.push("select payment type");
-    }
-    if (params.status) {
-        retObj.messages.push("select status");
-    }
-    if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
-        retObj.messages.push("Invalid load owner");
-    }
-    if (params.ownerType === "Truck Owner" && !params.truckOwnerId) {
-        retObj.messages.push("Invalid owner type");
-    }
+
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
@@ -2306,15 +2299,46 @@ OrderProcess.prototype.addOrderComment = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages.push("Comment added successfully");
-                retObj.data = doc;
-                analyticsService.create(req, serviceActions.add_order_comment, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
+                OrderCommentsColl.find({
+                    orderId: params.orderId,
+                    truckOwnerId: params.truckOwnerId
+                }).populate({path: "createdBy", select: "firstName"}).exec(
+                    function (err, docs) {
+                        if (err) {
+                            retObj.messages.push("Please try again");
+                            analyticsService.create(req, serviceActions.add_order_comment_err, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        } else if (docs.length > 0) {
+                            retObj.status = true;
+                            retObj.messages.push("Comment added successfully");
+                            retObj.data = docs;
+                            analyticsService.create(req, serviceActions.add_order_comment, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        } else {
+                            retObj.status = true;
+                            retObj.messages.push("Comment added successfully");
+                            retObj.data = [];
+                            analyticsService.create(req, serviceActions.add_order_comment, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
+                    });
+
             }
         })
     }
@@ -2436,18 +2460,16 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
         retObj.messages.push("Invalid order");
     }
     if (!params.comment) {
-        retObj.messages.push("Please enter comment");
+        retObj.messages.push("Please select comment");
     }
-    if (params.ownerType) {
+    if (!params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
-    if (params.prefix) {
-        retObj.messages.push("Invalid comment");
-    }
-    if (params.paymentType) {
+
+    if (!params.paymentType) {
         retObj.messages.push("Select Payment type")
     }
-    if ((params.paymentType === "Cheque" || params.paymentType === "Account Transfer") && !params.transactionDate) {
+    if (!params.transactionDate) {
         retObj.messages.push("Select transaction date")
     }
     if (params.paymentType === "Cheque" && !params.chequeNo) {
@@ -2459,7 +2481,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
     if (params.paymentType === "Account Transfer" && !params.bank) {
         retObj.messages.push("Select bank")
     }
-    if (params.amount) {
+    if (!params.amount) {
         retObj.messages.push("Enter amount");
     }
     if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
@@ -2472,8 +2494,9 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
         callback(retObj);
     } else {
         params.createdBy = req.jwt.id;
-        var orderPayment = new OrderPaymentsColl(params);
-        orderPayment.save(function (err, doc) {
+        var orderTransaction = new OrderTransactionsColl(params);
+        orderTransaction.save(function (err, doc) {
+            console.log("err", err);
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.add_order_transaction_err, {
@@ -2492,7 +2515,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                     condition = {orderId: params.orderId, loadOwnerId: params.loadOwnerId};
 
                 }
-                OrderPaymentsColl.find(condition,
+                OrderTransactionsColl.find(condition,
                     function (err, docs) {
                         if (err) {
                             retObj.messages.push("Please try again");
@@ -2512,6 +2535,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                                     total = calculator[docs[i].prefix](total, docs[i].amount);
 
                                     if (i === docs.length - 1) {
+                                        retObj.status = true;
                                         retObj.messages.push("Transaction added successfully");
                                         retObj.data = {transactions: docs, total: total};
                                         analyticsService.create(req, serviceActions.add_order_transaction, {
@@ -2524,6 +2548,7 @@ OrderProcess.prototype.addOrderTransaction = function (req, callback) {
                                     }
                                 }
                             } else {
+                                retObj.status = true;
                                 retObj.messages.push("Transaction added successfully");
                                 retObj.data = {transactions: [], total: 0};
                                 analyticsService.create(req, serviceActions.add_order_transaction, {
@@ -2556,7 +2581,7 @@ OrderProcess.prototype.addOrderLocation = function (req, callback) {
     if (!params.location) {
         retObj.messages.push("Please enter location");
     }
-    if (params.date) {
+    if (!params.date) {
         retObj.messages.push("select date");
     }
 
@@ -2577,9 +2602,10 @@ OrderProcess.prototype.addOrderLocation = function (req, callback) {
                 });
                 callback(retObj);
             } else {
+                retObj.status = true;
                 retObj.messages.push("Location details added successfully");
                 retObj.data = doc;
-                analyticsService.create(req, serviceActions.add_order_transaction, {
+                analyticsService.create(req, serviceActions.add_order_location, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
                     success: true
@@ -2610,64 +2636,75 @@ OrderProcess.prototype.updateOrderPOD = function (req, callback) {
         if (req.files.files) {
             async.parallel({
                 frontImage: function (frontImageCallback) {
-                    var file = req.files.files[0].file;
-                    var fileName = new Date() - 0 + "_" + file.originalFilename;
-                    fse.copy(file.path, './client/assets/PodFiles/' + fileName, function (err) {
-                        if (err) {
-                            frontImageCallback(err, "");
-                        } else {
-                            fse.remove(file.path, function (err) {
-                                if (err) {
-                                    frontImageCallback(err, "");
-                                } else {
-                                    frontImageCallback(err, fileName);
-                                }
-                            });
+                    if(req.files.files[0]){
+                        var file = req.files.files[0];
+                        var fileName = new Date() - 0 + "_" + file.originalFilename;
+                        fse.copy(file.path, './client/assets/PodFiles/' + fileName, function (err) {
+                            if (err) {
+                                frontImageCallback(err, "");
+                            } else {
+                                fse.remove(file.path, function (err) {
+                                    if (err) {
+                                        frontImageCallback(err, "");
+                                    } else {
+                                        frontImageCallback(err, fileName);
+                                    }
+                                });
 
-                        }
-                    })
+                            }
+                        })
+                    }else{
+                        frontImageCallback("", "");
+
+                    }
+
                 },
                 backImage: function (backImagesCallback) {
-                    var file = req.files.files[1].file;
-                    var fileName = new Date() - 0 + "_" + file.originalFilename;
-                    fse.copy(file.path, './client/assets/PodFiles/' + fileName, function (err) {
-                        if (err) {
-                            frontImageCallback(err, "");
-                        } else {
-                            fse.remove(file.path, function (err) {
-                                if (err) {
-                                    backImagesCallback(err, "");
-                                } else {
-                                    backImagesCallback(err, fileName);
-                                }
-                            });
+                    if(req.files.files[1]){
+                        var file = req.files.files[1];
+                        var fileName = new Date() - 0 + "_" + file.originalFilename;
+                        fse.copy(file.path, './client/assets/PodFiles/' + fileName, function (err) {
+                            if (err) {
+                                frontImageCallback(err, "");
+                            } else {
+                                fse.remove(file.path, function (err) {
+                                    if (err) {
+                                        backImagesCallback(err, "");
+                                    } else {
+                                        backImagesCallback(err, fileName);
+                                    }
+                                });
 
-                        }
-                    })
+                            }
+                        })
+                    }else{
+                        backImagesCallback("", "");
+                    }
+
                 }
             }, function (err, result) {
                 if (err) {
                     retObj.messages("Uploading files failed");
                     callback(retObj);
                 } else {
-                    var params = {
-                        dateOfPOD: params.deteOfPOD,
+                    var update = {
+                        dateOfPOD: params.dateOfPOD
                     };
                     if (result.frontImage) {
-                        params.podFront = result.frontImage;
+                        update.podFront = result.frontImage;
                     }
                     if (result.backImage) {
-                        params.podBack = result.backImage;
+                        update.podBack = result.backImage;
                     }
-                    AdminTripsColl.findOneAndUpdate({_id: params._id}, params
+                    AdminTripsColl.findOneAndUpdate({_id: params._id}, update
                         , function (err, savedDoc) {
                             if (err) {
-                                retObj.messages("Please try again");
+                                retObj.messages.push("Please try again");
                                 callback(retObj);
                             } else {
                                 retObj.status = true;
                                 retObj.data = savedDoc;
-                                retObj.messages("Updated order POD successfully");
+                                retObj.messages.push("Updated order POD successfully");
                                 callback(retObj);
                             }
                         })
@@ -2696,46 +2733,75 @@ OrderProcess.prototype.updateOrderPOD = function (req, callback) {
 
 };
 
-OrderProcess.prototype.getEasygaadiEmployeesList=function (req,callback) {
-  var retObj={
-      status:false,
-      messages:[]
+OrderProcess.prototype.getEasygaadiEmployeesList = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
 
-  };
-  AccountsColl.find({role:'employee'},function (err,docs) {
-    if(err){
-        retObj.messages.push("Please try again");
-        analyticsService.create(req, serviceActions.get_easygaadi_employee_list_err, {
-            body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
-        callback(retObj);
-    }else if(docs.length>0){
-        retObj.status=true;
-        retObj.messages.push("Success");
-        retObj.data=docs;
-        analyticsService.create(req, serviceActions.get_easygaadi_employee_list, {
-            body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
-            success: true
-        }, function (response) {
-        });
-        callback(retObj);
-    }else{
-        retObj.messages.push("No Easygaadi employees found");
-        analyticsService.create(req, serviceActions.get_easygaadi_employee_list_err, {
-            body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
-            success: false,
-            messages: retObj.messages
-        }, function (response) {
-        });
-        callback(retObj);
-    }
-  })
+    };
+    AccountsColl.find({role: 'employee'}, function (err, docs) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.get_easygaadi_employee_list_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (docs.length > 0) {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = docs;
+            analyticsService.create(req, serviceActions.get_easygaadi_employee_list, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.messages.push("No Easygaadi employees found");
+            analyticsService.create(req, serviceActions.get_easygaadi_employee_list_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
 
 };
+
+OrderProcess.prototype.updateOrderProcess=function (req,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+
+    var params=req.body;
+
+    if(!params._id || !ObjectId.isValid(params._id)){
+        retObj.messages.push("Invalid order request");
+    }
+    if(retObj.messages.length>0){
+        callback(retObj);
+    }else{
+        console.log("params",params);
+        AdminTripsColl.findOneAndUpdate({_id:params._id},params,function (err,doc){
+            if(err){
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            }else {
+                retObj.status=true;
+                retObj.messages.push("Orders details updated successfully");
+                callback(retObj);
+            }
+        });
+    }
+};
+
 module.exports = new OrderProcess();

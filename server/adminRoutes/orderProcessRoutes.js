@@ -1,5 +1,8 @@
 var express = require('express');
 var AuthRouter = express.Router();
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
+
 var OrderProcess = require('../adminApis/orderProcessApi');
 
 AuthRouter.get('/getTruckRequests', function (req, res) {
@@ -177,13 +180,13 @@ AuthRouter.post('/addOrderPayment',function (req,res) {
    })
 });
 
-AuthRouter.post('/addOrderTransaction',function (res,res) {
+AuthRouter.post('/addOrderTransaction',function (req,res) {
     OrderProcess.addOrderTransaction(req,function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.post('/updateOrderPOD',function (req,res) {
+AuthRouter.post('/updateOrderPOD',multipartyMiddleware,function (req,res) {
    OrderProcess.updateOrderPOD(req,function (result) {
        res.send(result);
    })
@@ -191,6 +194,18 @@ AuthRouter.post('/updateOrderPOD',function (req,res) {
 
 AuthRouter.get('/getEasygaadiEmployeesList',function (req,res) {
    OrderProcess.getEasygaadiEmployeesList(req,function (result) {
+       res.send(result);
+   })
+});
+
+AuthRouter.post('/addOrderLocation',function (req,res) {
+    OrderProcess.addOrderLocation(req,function (result) {
+        res.send(result);
+    })
+});
+
+AuthRouter.put("/updateOrderProcess",function (req,res) {
+   OrderProcess.updateOrderProcess(req,function (result) {
        res.send(result);
    })
 });
