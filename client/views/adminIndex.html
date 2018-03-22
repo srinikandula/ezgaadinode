@@ -75,6 +75,9 @@
             <div class="col-xs-12 pall-zero text-center">
                 Powered by easygaadi.com. All Rights Reserved.
             </div>
+            <div id="top" onclick="toTop()">
+                <span class="top"> <i class="fa fa-angle-double-up"></i></span>
+            </div>
         </div>
     </div>
 </footer>
@@ -120,6 +123,28 @@
 <script src="js/directives/adminLeftNav.js"></script>
 <script src="js/directives/adminDatePicker.js"></script>
 <script src="js/directives/uiSelect.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $("#top").hide();
+        $(function toTop() {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 100) {
+                    $('#top').fadeIn();
+                } else {
+                    $('#top').fadeOut();
+                }
+            });
+
+            $('#top').click(function () {
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 800);
+                return false;
+            });
+        });
+    });
+</script>
 
 </body>
 

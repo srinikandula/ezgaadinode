@@ -2293,6 +2293,12 @@ OrderProcess.prototype.addOrderComment = function (req, callback) {
     if (!params.ownerType) {
         retObj.messages.push("Invalid owner type");
     }
+    if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
+        retObj.messages.push("Invalid load owner Id");
+    }
+    if (params.ownerType === "Truck Owner" && !params.truckOwnerId) {
+        retObj.messages.push("Invalid truck owner Id");
+    }
 
     if (retObj.messages.length > 0) {
         callback(retObj);

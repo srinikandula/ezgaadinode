@@ -1546,7 +1546,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         }, function () {
         });
     };
-    $scope.truckTransaction = function () {
+    $scope.truckTransaction = function (ownerType) {
         var modalInstance = $uibModal.open({
             templateUrl: 'addTransaction.html',
             controller: 'addTruckTransactionCtrl',
@@ -1556,7 +1556,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             resolve: {
                 modelData: function () {
                     return {
-                        ownerType: 'Truck Owner',
+                        ownerType: ownerType,
                         orderId: $scope.orderDetails._id,
                         truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : "",
                         loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : ""
@@ -1762,7 +1762,6 @@ app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 
         params.loadOwnerId = modelData.loadOwnerId;
         params.truckOwnerId = modelData.truckOwnerId;
         params.orderId = modelData.orderId;
-        console.log("Front Ends Prams",params);
         params.messages = [];
         var comment = angular.copy(JSON.parse($scope.initAddTruckPayment.comment));
         $scope.initAddTruckPayment.prefix = comment.prefix;
@@ -1839,6 +1838,7 @@ app.controller('addTruckTransactionCtrl', ['$scope', '$state', '$uibModalInstanc
     $scope.addOrderTransaction = function () {
         var params = $scope.transaction;
         params.ownerType = modelData.ownerType;
+        params.loadOwnerId = modelData.loadOwnerId;
         params.truckOwnerId = modelData.truckOwnerId;
         params.orderId = modelData.orderId;
         params.messages = [];
@@ -1846,10 +1846,10 @@ app.controller('addTruckTransactionCtrl', ['$scope', '$state', '$uibModalInstanc
         if (!params.comment) {
             params.messages.push("Please select Comment");
         }
-        if (!params.ownerType) {
-            params.messages.push("Please select Owner Type");
+        if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
+            params.messages.push("Please select Load Owner");
         }
-        if (!params.truckOwnerId) {
+        if (params.ownerType === "Truck Owner" && !params.truckOwnerId) {
             params.messages.push("Please select Truck Owner");
         }
         if (!params.orderId) {
@@ -1912,6 +1912,7 @@ app.controller('addOrderCommentCtrl', ['$scope', '$state', '$uibModalInstance', 
     };
     $scope.addOrderComment = function () {
         var params = $scope.comment;
+        params.loadOwnerId = modelData.loadOwnerId;
         params.ownerType = modelData.ownerType;
         params.truckOwnerId = modelData.truckOwnerId;
         params.orderId = modelData.orderId;

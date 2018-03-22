@@ -401,7 +401,7 @@ Drivers.prototype.deleteDriver = function (jwt, driverId, req, callback) {
             messages: retObj.messages
         }, function (response) {
         });
-        callback(result);
+        callback(retObj);
     }
     if (!Utils.isValidObjectId(driverId)) {
         retObj.messages.push('Invalid driver Id');

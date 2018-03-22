@@ -1314,9 +1314,9 @@ textarea.custom-form-control{
     width: 200px;
 }
 .perTransct{
-    margin: 20px 0;
-    border-bottom: 1px solid #ccc;
-    padding-bottom: 5px;
+    margin: 10px 0;
+    border-top: 1px solid #ccc;
+    padding-top: 15px;
 }
 .truckBooking ul li{
     padding-bottom: 15px;
@@ -1327,6 +1327,31 @@ textarea.custom-form-control{
     top: 45px;
     font-size: 25px;
     color: #000;
+}
+#top {
+    float:right;
+    width:39px;
+    margin-top:-35px;
+}
+#top {
+    transition: all 0.5s ease 0s;
+    -moz-transition: all 0.5s ease 0s;
+    -webkit-transition: all 0.5s ease 0s;
+    -o-transition: all 0.5s ease 0s;
+    opacity: 0.5;
+    display:none;
+    cursor: pointer;
+}
+#top:hover {
+    opacity: 1;
+}
+.top{
+    font-size: 25px;
+    position: fixed;
+    background-color: #e83b13;
+    padding: 5px 10px;
+    bottom: 20px;
+    right: 10px;
 }
 /* Responsive Design */
 
