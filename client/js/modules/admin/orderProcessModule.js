@@ -219,12 +219,12 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 data: data
             }).then(success, error)
         },
-        updateOrderProcess:function (data,success,error) {
+        updateOrderProcess: function (data, success, error) {
             $http({
-                url:'/v1/cpanel/orderProcess/updateOrderProcess',
-                method:"PUT",
-                data:data
-            }).then(success,error)
+                url: '/v1/cpanel/orderProcess/updateOrderProcess',
+                method: "PUT",
+                data: data
+            }).then(success, error)
         }
 
     }
@@ -1309,7 +1309,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
 }]);
 
-app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'customerServices', 'Notification', 'SettingServices', 'NgTableParams', '$stateParams', '$uibModal','Upload', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices, NgTableParams, $stateParams, $uibModal,Upload) {
+app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'customerServices', 'Notification', 'SettingServices', 'NgTableParams', '$stateParams', '$uibModal', 'Upload', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices, NgTableParams, $stateParams, $uibModal, Upload) {
 
     $scope.status = {
         isOpen: true,
@@ -1491,6 +1491,8 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             }
         });
     };
+
+    /*-------------------------- Truck Owner Billing Module starts Here -------------------*/
     $scope.truckOwnerOrderOnfo = function () {
         if ($stateParams.orderId) {
             OrderProcessServices.getTruckOwnerOrderDetails($stateParams.orderId, function (success) {
@@ -1499,15 +1501,15 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     $scope.transactionsDetails = success.data.transactionsDetails;
                     $scope.paymentsDetails = success.data.paymentsDetails;
                     $scope.comments = success.data.comments;
-                    $scope.locationsList=success.data.locations;
-                    if($scope.orderDetails.truckStartDate){
-                        $scope.orderDetails.truckStartDate=new Date($scope.orderDetails.truckStartDate);
+                    $scope.locationsList = success.data.locations;
+                    if ($scope.orderDetails.truckStartDate) {
+                        $scope.orderDetails.truckStartDate = new Date($scope.orderDetails.truckStartDate);
                     }
-                    if($scope.orderDetails.truckDestinationDate){
-                        $scope.orderDetails.truckDestinationDate=new Date($scope.orderDetails.truckDestinationDate);
+                    if ($scope.orderDetails.truckDestinationDate) {
+                        $scope.orderDetails.truckDestinationDate = new Date($scope.orderDetails.truckDestinationDate);
                     }
-                    if($scope.orderDetails.dateOfPOD){
-                        $scope.orderDetails.dateOfPOD=new Date($scope.orderDetails.dateOfPOD);
+                    if ($scope.orderDetails.dateOfPOD) {
+                        $scope.orderDetails.dateOfPOD = new Date($scope.orderDetails.dateOfPOD);
                     }
                 }
                 else {
@@ -1521,7 +1523,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         }
     }
 
-    $scope.truckPayment = function () {
+    $scope.truckPayment = function (ownerType) {
         var modalInstance = $uibModal.open({
             templateUrl: 'addPayment.html',
             controller: 'addTruckPaymentCtrl',
@@ -1531,9 +1533,10 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             resolve: {
                 modelData: function () {
                     return {
-                        ownerType: 'Truck Owner',
+                        ownerType: ownerType,
                         orderId: $scope.orderDetails._id,
-                        truckOwnerId: $scope.orderDetails.truckOwnerId._id
+                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : "",
+                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : ""
                     }
                 }
             }
@@ -1555,7 +1558,8 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     return {
                         ownerType: 'Truck Owner',
                         orderId: $scope.orderDetails._id,
-                        truckOwnerId: $scope.orderDetails.truckOwnerId._id
+                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : "",
+                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : ""
                     }
                 }
             }
@@ -1577,7 +1581,8 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     return {
                         ownerType: ownerType,
                         orderId: $scope.orderDetails._id,
-                        truckOwnerId: $scope.orderDetails.truckOwnerId._id
+                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : "",
+                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : ""
                     }
                 }
             }
@@ -1612,7 +1617,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                 Notification.error(message);
             })
         } else {
-            params.orderId =$scope.orderDetails._id;
+            params.orderId = $scope.orderDetails._id;
             OrderProcessServices.addOrderLocation(params, function (success) {
                 if (success.data.status) {
                     if ($scope.locationsList.length > 0) {
@@ -1635,51 +1640,51 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         }
     };
 
-    $scope.updateOrderProcess=function () {
-        OrderProcessServices.updateOrderProcess($scope.orderDetails,function (success) {
-            if(success.data.status){
+    $scope.updateOrderProcess = function () {
+        OrderProcessServices.updateOrderProcess($scope.orderDetails, function (success) {
+            if (success.data.status) {
                 success.data.messages.forEach(function (message) {
                     Notification.success(message);
                 })
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
                 })
             }
-        },function (error) {
+        }, function (error) {
 
         })
     };
-    $scope.updateOrderPOD=function () {
-        var params={
-            messages:[]
+    $scope.updateOrderPOD = function () {
+        var params = {
+            messages: []
         };
-        if(!$scope.orderDetails._id){
+        if (!$scope.orderDetails._id) {
             params.messages.push("Invalid request");
         }
-        if(!$scope.orderDetails.dateOfPOD){
+        if (!$scope.orderDetails.dateOfPOD) {
             params.messages.push("Please select date of POD");
         }
-        if(!$scope.orderDetails.frontFile){
+        if (!$scope.orderDetails.frontFile) {
             params.messages.push("Please select Front POD");
         }
-        if(params.messages.length>0){
+        if (params.messages.length > 0) {
             params.messages.forEach(function (message) {
                 Notification.error(message);
             })
-        }else{
+        } else {
             var files = [];
-            if($scope.orderDetails.frontFile){
+            if ($scope.orderDetails.frontFile) {
                 files.push($scope.orderDetails.frontFile);
             }
-            if($scope.orderDetails.backFile){
+            if ($scope.orderDetails.backFile) {
                 files.push($scope.orderDetails.backFile);
             }
             Upload.upload({
                 url: '/v1/cpanel/orderProcess/updateOrderPOD',
                 data: {
                     files: files,
-                    content: {_id:$scope.orderDetails._id,dateOfPOD:$scope.orderDetails.dateOfPOD}
+                    content: {_id: $scope.orderDetails._id, dateOfPOD: $scope.orderDetails.dateOfPOD}
                 },
             }).then(function (success) {
                 if (success.data.status) {
@@ -1695,6 +1700,31 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         }
 
     };
+
+
+    /*--------------------------Load Owner Billing Module Starts Here ----------------------*/
+    $scope.loadOwnerInfo = function () {
+        if ($stateParams.orderId) {
+            OrderProcessServices.getLoadOwnerOrderDetails($stateParams.orderId, function (success) {
+                if (success.data.status) {
+                    $scope.orderDetails = success.data.orderDetails;
+                    $scope.transactionsDetails = success.data.transactionsDetails;
+                    $scope.paymentsDetails = success.data.paymentsDetails;
+                    $scope.comments = success.data.comments;
+                    $scope.locationsList = success.data.locations;
+
+                }
+                else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });
+                }
+            }, function (error) {
+
+            });
+        }
+    }
+
 
 }]);
 
@@ -1729,8 +1759,10 @@ app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 
     $scope.addTruckPayment = function () {
         var params = $scope.initAddTruckPayment;
         params.ownerType = modelData.ownerType;
+        params.loadOwnerId = modelData.loadOwnerId;
         params.truckOwnerId = modelData.truckOwnerId;
         params.orderId = modelData.orderId;
+        console.log("Front Ends Prams",params);
         params.messages = [];
         var comment = angular.copy(JSON.parse($scope.initAddTruckPayment.comment));
         $scope.initAddTruckPayment.prefix = comment.prefix;
@@ -1738,7 +1770,10 @@ app.controller('addTruckPaymentCtrl', ['$scope', '$state', '$uibModalInstance', 
         if (!params.ownerType) {
             params.messages.push("Please select Owner Type");
         }
-        if (!params.truckOwnerId) {
+        if (params.ownerType === "Load Owner" && !params.loadOwnerId) {
+            params.messages.push("Please select Load Owner");
+        }
+        if (params.ownerType === "Truck Owner" && !params.truckOwnerId) {
             params.messages.push("Please select Truck Owner");
         }
         if (!params.orderId) {

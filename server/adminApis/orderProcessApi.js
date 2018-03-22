@@ -2048,8 +2048,7 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
                             })
                     },
                     transactionsDetails: function (transactionsCallback) {
-                        OrderTransactionsColl.find({orderId: params._id, truckOwnerId: orderDetails.truckOwnerId},
-                            function (err, docs) {
+                        OrderTransactionsColl.find({orderId: params._id, truckOwnerId: orderDetails.truckOwnerId}).populate({path:'paymentBy',select:'firstName'}).exec(function (err, docs) {
                                 if (err) {
                                     transactionsCallback(err, docs);
 
@@ -2134,21 +2133,22 @@ OrderProcess.prototype.getTruckOwnerOrderDetails = function (req, callback) {
 OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
     var retObj = {
         status: false,
-        message: []
+        messages: []
     };
     var params = req.query;
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid Order request");
     }
-    if (!params.billType) {
-        retObj.messages.push("Invalid bill type");
-    }
     if (retObj.messages.length > 0) {
+        callback(retObj);
     } else {
         AdminTripsColl.findOne({_id: params._id}).populate({
-            path: 'truckOwnerId',
+            path: 'loadOwnerId',
             select: "firstName contactPhone email userId companyName contactAddress city state"
-        }).exec(function (err, orderDetails) {
+        }).populate({
+            path: 'loadCustomerLeadId',
+            select: "firstName contactPhone email userId companyName contactAddress city state"
+        }).lean().exec(function (err, orderDetails) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_trip_order_details_err, {
@@ -2161,10 +2161,14 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                 callback(retObj);
             } else if (orderDetails) {
                 var condition = {};
-                if (orderDetails.loadOwnerType == "Registred") {
-                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadOwnerId}
+                if (orderDetails.loadOwnerType == "Registered") {
+                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadOwnerId._id}
+                    orderDetails.loadOwnerDetails=orderDetails.loadOwnerId;
+                    orderDetails.loadOwnerId="";
                 } else {
-                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadCustomerLeadId}
+                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadCustomerLeadId._id}
+                    orderDetails.loadOwnerDetails=orderDetails.loadCustomerLeadId;
+                    orderDetails.loadCustomerLeadId="";
                 }
                 async.parallel({
                     paymentsDetails: function (paymentsCallback) {
@@ -2221,15 +2225,17 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                             function (err, docs) {
                                 commentsCallback(err, docs);
                             })
+                    },
+                    locations: function (locationCallback) {
+                        OrderLocationColl.find({orderId: orderDetails._id},
+                            function (err, docs) {
+                                locationCallback(err, docs);
+                            })
                     }
 
                 }, function (err, result) {
                     if (err) {
                         retObj.messages.push("Please try again");
-                        retObj.orderDetails = orderDetails;
-                        retObj.paymentsDetails = result.paymentsDetails;
-                        retObj.transactionsDetails = result.transactionsDetails;
-                        retObj.comments = result.comments;
                         analyticsService.create(req, serviceActions.get_trip_order_details_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -2239,6 +2245,12 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                         });
                         callback(retObj);
                     } else {
+                        retObj.status = true;
+                        retObj.orderDetails = orderDetails;
+                        retObj.paymentsDetails = result.paymentsDetails;
+                        retObj.transactionsDetails = result.transactionsDetails;
+                        retObj.comments = result.comments;
+                        retObj.locations=result.locations;
                         retObj.messages.push("Success");
                         analyticsService.create(req, serviceActions.get_trip_order_details, {
                             body: JSON.stringify(req.body),
