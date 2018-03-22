@@ -1,4 +1,4 @@
-<div class="col-xs-12 newCust" ng-controller="viewOrderCtrl">
+<div class="col-xs-12 newCust"  ng-controller="viewOrderCtrl">
     <h4>Edit Order Request</h4>
     <div class="col-xs-12">
         <div class="tabs-title">
@@ -15,8 +15,9 @@
                         Truck Owner Billing Details <i class="pull-right glyphicon"
                                                        ng-class="{'glyphicon-chevron-down': status.isOpen,
                                         'glyphicon-chevron-right': !status.isOpen}"></i>
-                    </uib-accordion-heading>
-                    <a href="#" class="print-icon"><span class="glyphicon glyphicon-print"></span></a>
+
+                        </uib-accordion-heading>
+                        <a href="#" class="print-icon" ng-click="printTruckOwnerBill()"><span class="glyphicon glyphicon-print"></span></a>
 
                     <div class="row truckinfomain">
                         <div class="truckinfo">

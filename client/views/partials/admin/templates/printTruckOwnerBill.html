@@ -1,0 +1,806 @@
+<div class="col-xs-12 newCust" id="myprint" ng-controller="viewOrderCtrl">
+    <h4>Edit Order Request</h4>
+    <div class="col-xs-12">
+        <div class="tabs-title">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#truckOwner">Truck Owner Billing</a></li>
+                <li><a data-toggle="tab" href="#loadOwner">Load Owner Billing</a></li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div id="truckOwner" class="tab-pane fade in active col-xs-12" ng-init="truckOwnerOrderOnfo();">
+                <uib-accordion>
+                    <div uib-accordion-group class="panel-default pos-relative" is-open="status.isOpen">
+                        <uib-accordion-heading>
+                            Truck Owner Billing Details <i class="pull-right glyphicon"
+                                                           ng-class="{'glyphicon-chevron-down': status.isOpen,
+                                        'glyphicon-chevron-right': !status.isOpen}"></i>
+                        </uib-accordion-heading>
+                        <a href="#" class="print-icon" ng-click="printToCart('myprint')"><span class="glyphicon glyphicon-print"></span></a>
+
+                        <div class="row truckinfomain">
+                            <div class="truckinfo">
+                                <p><b>#{{orderDetails.orderId}} Given Commission: 1000.00 | Expected Commission: 0 |
+                                    Obtained
+                                    Commission:
+                                    0</b></p>
+                                <div class="truckOwnerInfo col-sm-4">
+                                    <p><b>Truck Owner Info: {{orderDetails.orderId || '--'}}</b></p>
+                                    <ul class="list-inline">
+                                        <li><b>Name:</b> {{orderDetails.truckOwnerId.firstName}}</li>
+                                        <li><b>Mobile:</b> {{orderDetails.truckOwnerId.contactPhone || '---'}}</li>
+                                        <li><b>Truck No:</b> {{orderDetails.registrationNo |uppercase}}</li>
+                                        <li><b>Email:</b> {{orderDetails.truckOwnerId.email}}</li>
+                                    </ul>
+                                </div>
+                                <div class="truckOwnerInfo col-sm-4">
+                                    <p><b>Company Info:</b></p>
+                                    <ul class="list-inline">
+                                        <li><b>Company:</b> {{orderDetails.truckOwnerId.companyName}}</li>
+                                        <li><b>Address:</b> {{orderDetails.truckOwnerId.contactAddress || '----'}}</li>
+                                        <li><b>City:</b> {{orderDetails.truckOwnerId.city}}</li>
+                                        <li><b>State:</b> {{orderDetails.truckOwnerId.state}}</li>
+                                    </ul>
+                                </div>
+                                <div class="truckOwnerInfo col-sm-4">
+                                    <p><b>Driver Info:</b></p>
+                                    <ul class="list-inline">
+                                        <li><b>Name:</b> {{orderDetails.driverName}}</li>
+                                        <li><b>Mobile:</b> {{orderDetails.driverMobile}}</li>
+                                        <!--<li><b>Email:</b>dummuy@gmail.com</li>-->
+                                    </ul>
+                                </div>
+
+                                <div class="clearfix"></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 perTransct">
+                                <ul class="list-inline">
+                                    <li class="pull-left"><b>Truck OwnerBilling (per Transaction(Default))</b></li>
+                                    <li class="pull-right">
+                                        <button class="btn btn-primary" ng-click="truckPayment()">New</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="col-xs-12">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <th>Date</th>
+                                        <th>Comment</th>
+                                        <th>Prefix</th>
+                                        <th>Amount</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="payments in paymentsDetails.payments ">
+                                            <td>{{payments.createdAt | date:'dd-MM-yyyy'}}</td>
+                                            <td>{{payments.comment}}</td>
+                                            <td>{{payments.prefix}}</td>
+                                            <td><i class="fa fa-inr"></i> {{payments.amount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td><b>Total</b></td>
+                                            <td><b><i class="fa fa-inr"></i> {{paymentsDetails.total}}.00</b></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-xs-12">
+                                <p><b>Add POD</b></p>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group">
+                                        <admin-date-picker ng-model="orderDetails.dateOfPOD"
+                                                           class="'order-form-control'"></admin-date-picker>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group">
+                                        <input type="file" class="form-control custom-form-control"
+                                               ng-model="orderDetails.frontFile" ngf-select ngf-pattern="'image/*'"
+                                               ngf-accept="'image/*'">
+                                        <p class="text-center">
+                                            <span>Front POD </span>
+                                            <a href="/assets/PodFiles/{{orderDetails.podFront}}" ng-show="orderDetails.podFront" target="_new"><span> View</span> / </a>
+                                            <a href="/assets/PodFiles/{{orderDetails.podFront}}" ng-show="orderDetails.podFront" target="_blank" download><span>Download</span></a></p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group">
+                                        <input type="file" class="form-control order-form-control"
+                                               ng-model="orderDetails.backFile" ngf-select ngf-pattern="'image/*'"
+                                               ngf-accept="'image/*'">
+                                        <p class="text-center">
+                                            <span>Back POD </span>
+                                            <a href="/assets/PodFiles/{{orderDetails.podBack}}" ng-show="orderDetails.podBack"><span> View</span> / </a>
+                                            <a href="/assets/PodFiles/{{orderDetails.podBack}}" ng-show="orderDetails.podBack" target="_blank" download><span>Download</span></a></p>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group">
+                                     <button class="btn btn-info" ng-click="updateOrderPOD()">Save POD</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 perTransct">
+                                <ul class="list-inline">
+                                    <li class="pull-left"><b>Truck Owner Transactions</b></li>
+                                    <li class="pull-right">
+                                        <button class="btn btn-primary" ng-click="truckTransaction()">New</button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="col-xs-12">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <th>Date</th>
+                                        <th>Comment</th>
+                                        <th>Prefix</th>
+                                        <!--<th>Payment By</th>-->
+                                        <!--<th>Payment Type</th>-->
+                                        <th>Amount</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="transacDetails in transactionsDetails.transactions">
+                                            <td>{{transacDetails.createdAt | date:'dd-MM-yyyy'}}</td>
+                                            <td>{{transacDetails.comment}}</td>
+                                            <td>{{transacDetails.prefix}}</td>
+                                            <!--<td>Sravan B</td>-->
+                                            <!--<td>Cash</td>-->
+                                            <td><i class="fa fa-inr"></i> {{transacDetails.amount}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td><b>Total</b></td>
+                                            <td><i class="fa fa-inr"></i> {{transactionsDetails.total}}</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 perTransct">
+                                <ul class="list-inline">
+                                    <li class="pull-left"><b>Route Expenses</b></li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group styling-input-list">
+                                        <input type="text" ng-model="orderDetails.dieselCharges"
+                                               class="form-control order-form-control"/>
+                                        <label class="order-effect-for-input">Diesel Expenses</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group styling-input-list">
+                                        <input type="text" class="form-control order-form-control"
+                                               ng-model="orderDetails.tollGateCharges"/>
+                                        <label class="order-effect-for-input">Toll Gate Charges</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group styling-input-list">
+                                        <input type="text" class="form-control order-form-control"
+                                               ng-model="orderDetails.loadingUnloadingCharges">
+                                        <label class="order-effect-for-input">Loading/Unloading</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 col-xs-12">
+                                    <div class="form-group styling-input-list">
+                                        <input type="text" class="form-control order-form-control"
+                                               ng-model="orderDetails.policeCharges">
+                                        <label class="order-effect-for-input">Police Charges</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xs-12 perTransct">
+                                <ul class="list-inline">
+                                    <li class="pull-left"><b>Comments</b></li>
+                                    <li class="pull-right">
+                                        <button class="btn btn-primary" ng-click="addOrderComment('Truck Owner')">New
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-xs-12">
+                                <div class="col-xs-12">
+                                    <table class="table table-bordered text-center table-hover">
+                                        <thead>
+                                        <th>Date</th>
+                                        <th>Comment</th>
+                                        <th>Admin</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr ng-repeat="comment in comments">
+                                            <td>{{comment.createdAt | date:'dd-MM-yyyy'}}</td>
+                                            <td>{{comment.comment}}</td>
+                                            <td>{{comment.createdBy.firstName}}</td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </uib-accordion>
+                <uib-accordion>
+                    <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
+                        <uib-accordion-heading>
+                            Truck Booking Details <i class="pull-right glyphicon"
+                                                     ng-class="{'glyphicon-chevron-down': status.isOpenOne,
+                                     'glyphicon-chevron-right': !status.isOpenOne}"></i>
+                        </uib-accordion-heading>
+                        <div class="row truckBooking">
+                            <div class="col-sm-4 col-xs-12">
+                                <ul class="list-inline">
+                                    <li><b>Date Ordered:</b> {{orderDetails.dateOfOrder | date:'dd-MM-yyyy'}}</li>
+                                    <li><b>Order Status:</b> {{orderDetails.status}}</li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <ul class="list-inline">
+                                    <li><b>Date Available:</b> 21-06-2016 05:00 AM</li>
+                                    <li><b>Tracking Available:</b> Yes</li>
+                                    <li><b>Insurance Available:</b>No</li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <ul class="list-inline">
+                                    <li><b>Pickup Point:</b> {{orderDetails.source}}</li>
+                                    <li><b>Pickup Date/Time:</b> {{orderDetails.pickupDate | date:'dd-MM-yyyy'}}</li>
+                                    <li><b>Goods Type:</b> All</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="orderDetails.source"/>
+                                    <label class="order-effect-for-input">Source Address*</label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="orderDetails.destination"/>
+                                    <label class="order-effect-for-input">Destination Address*</label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="orderDetails.dateOfOrder"/>
+                                    <label class="order-effect-for-input">Payable Amount</label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="orderDetails.truckType"/>
+                                    <label class="order-effect-for-input">Truck Type*</label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="orderDetails.registrationNo"/>
+                                    <label class="order-effect-for-input">Truck Reg No*</label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="orderDetails.driverName"/>
+                                    <label class="order-effect-for-input">Driver Name</label>
+                                </div>
+                            </div>
+                            <div class="col-xs-4">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text"
+                                           ng-model="orderDetails.driverMobile"/>
+                                    <label class="order-effect-for-input">Driver Mobile</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 perTransct">
+                            <ul class="list-inline">
+                                <li class="pull-left"><b>Route History</b></li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-sm-4 col-xs-12">
+                                <div class="form-group">
+                                    <p>Truck Source Start Date Time</p>
+                                    <admin-date-picker ng-model="orderDetails.truckStartDate"
+                                                       class="'order-form-control'"></admin-date-picker>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <div class="form-group">
+                                    <p>Truck Destination Reach Date Time</p>
+                                    <admin-date-picker ng-model="orderDetails.truckDestinationDate"
+                                                       class="'order-form-control'"></admin-date-picker>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <div class="form-group">
+                                    <p>Truck Route Run Time</p>
+                                    <input type="text" ng-model="orderDetails.truckRouteRunTime"
+                                           class="form-control order-form-control"/>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <p>Add Current Location</p>
+                            <div class="col-xs-12">
+                                <table class="table table-bordered text-center table-hover">
+                                    <thead>
+                                    <th>Location</th>
+                                    <th>Date & Time</th>
+                                    <th>Action</th>
+                                    </thead>
+                                    <tbody>
+                                    <tr ng-repeat="loc in locationsList">
+                                        <td>{{loc.location}}</td>
+                                        <td>{{loc.date | date:"dd-mm-yyyy"}}</td>
+                                        <td>Delete</td>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-xs-12">
+                            <div class="col-sm-4 col-xs-12">
+                                <div class="form-group styling-input-list">
+                                    <input class="form-control order-form-control" type="text" name="source"
+                                           ng-model="location.location" id="location"
+                                           ng-change="searchLocation()"/>
+                                    <label class="order-effect-for-input">Current Location</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <div class="form-group styling-input-list">
+                                    <admin-date-picker class="'order-form-control'"
+                                                       ng-model="location.date"></admin-date-picker>
+                                    <!-- <label class="order-effect-for-input">Date & Time</label>
+ -->
+                                </div>
+                            </div>
+                            <div class="col-sm-4 col-xs-12">
+                                <button type="submit" class="btn btn-primary" ng-click="addOrderLocation()">Add New
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                </uib-accordion>
+            </div>
+            <div class="clearfix"></div>
+               <div id="loadOwner" class="tab-pane fade in col-xs-12">
+                   <uib-accordion>
+                       <div uib-accordion-group class="panel-default pos-relative" is-open="status.isOpen">
+                           <uib-accordion-heading>
+                               Load Owner Billing <i class="pull-right glyphicon"
+                                              ng-class="{'glyphicon-chevron-down': status.isOpen,
+                                           'glyphicon-chevron-right': !status.isOpen}"></i>
+                           </uib-accordion-heading>
+                           <a href="#" class="print-icon"><span class="glyphicon glyphicon-print"></span></a>
+                           <div class="row truckinfomain">
+                               <div class="truckinfo">
+                                   <p><b>#Ord201607151588 Given Commission: 1000.00 | Expected Commission: 0 | Obtained
+                                       Commission:
+                                       0</b></p>
+                                   <div class="truckOwnerInfo col-sm-4">
+                                       <p><b>Truck Owner Info: TR183058</b></p>
+                                       <ul class="list-inline">
+                                           <li><b>Name:</b> Sravan Kumar</li>
+                                           <li><b>Mobile:</b> 9014604255</li>
+                                           <li><b>Truck No:</b> AP36AA9874</li>
+                                           <li><b>Email:</b>dummuy@gmail.com</li>
+                                       </ul>
+                                   </div>
+                                   <div class="truckOwnerInfo col-sm-4">
+                                       <p><b>Driver Info:</b></p>
+                                       <ul class="list-inline">
+                                           <li><b>Name:</b> Sravan Kumar</li>
+                                           <li><b>Mobile:</b> 9014604255</li>
+                                           <li><b>Email:</b>dummuy@gmail.com</li>
+                                       </ul>
+                                   </div>
+                                   <div class="truckOwnerInfo col-sm-4">
+                                       <ul class="list-inline">
+                                           <li><b>Company:</b> Sravan Kumar</li>
+                                           <li><b>Address:</b> Hyderabd</li>
+                                           <li><b>City:</b> Hyderbad</li>
+                                           <li><b>State:</b> Telanagana</li>
+                                       </ul>
+                                   </div>
+                                   <div class="clearfix"></div>
+                               </div>
+                           </div>
+                           <div class="row">
+                               <div class="col-xs-12 perTransct">
+                                   <ul class="list-inline">
+                                       <li class="pull-left"><b>Truck OwnerBilling (per Transaction(Default))</b></li>
+                                       <li class="pull-right">
+                                           <button class="btn btn-primary">New</button>
+                                       </li>
+                                   </ul>
+                               </div>
+                               <div class="col-xs-12">
+                                   <div class="col-xs-12">
+                                       <table class="table table-bordered text-center table-hover">
+                                           <thead>
+                                           <th>Date</th>
+                                           <th>Comment</th>
+                                           <th>Prefix</th>
+                                           <th>Amount</th>
+                                           </thead>
+                                           <tbody>
+                                           <tr>
+                                               <td>22-07-2016</td>
+                                               <td>Balance Amount Paid</td>
+                                               <td>+</td>
+                                               <td>29600</td>
+                                           </tr>
+                                           <tr>
+                                               <td>22-07-2016</td>
+                                               <td>Balance Amount Paid</td>
+                                               <td>+</td>
+                                               <td>29600</td>
+                                           </tr>
+
+                                           </tbody>
+                                       </table>
+                                   </div>
+                               </div>
+                               <div class="col-xs-12">
+                                   <p><b>Add POD</b></p>
+                                   <div class="col-sm-4 col-xs-12">
+                                       <div class="form-group">
+                                           <admin-date-picker ng-model="todayDate"
+                                                              class="'order-form-control'"></admin-date-picker>
+                                       </div>
+                                   </div>
+                                   <div class="col-sm-4 col-xs-12">
+                                       <div class="form-group">
+                                           <input type="file" class="form-control order-form-control" name="podFront">
+                                           <p class="text-center">
+                                               <span>Front POD</span>/
+                                               <a hrtef="#"><span>Download</span></a></p>
+                                       </div>
+                                   </div>
+                                   <div class="col-sm-4 col-xs-12">
+                                       <div class="form-group">
+                                           <input type="file" class="form-control order-form-control" name="podBack">
+                                           <p class="text-center">
+                                               <span>Back POD</span>/
+                                               <a hrtef="#"><span>Download</span></a></p>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="col-xs-12 perTransct">
+                                   <ul class="list-inline">
+                                       <li class="pull-left"><b>Truck Owner Transactions</b></li>
+                                       <li class="pull-right">
+                                           <button class="btn btn-primary">New</button>
+                                       </li>
+                                   </ul>
+                               </div>
+                               <div class="col-xs-12">
+                                   <div class="col-xs-12">
+                                       <table class="table table-bordered text-center table-hover">
+                                           <thead>
+                                           <th>Date</th>
+                                           <th>Comment</th>
+                                           <th>Prefix</th>
+                                           <th>Payment By</th>
+                                           <th>Payment Type</th>
+                                           <th>Amount</th>
+                                           </thead>
+                                           <tbody>
+                                           <tr>
+                                               <td>22-07-2016</td>
+                                               <td>Balance Amount Paid</td>
+                                               <td>+</td>
+                                               <td>Sravan B</td>
+                                               <td>Cash</td>
+                                               <td>29600</td>
+                                           </tr>
+                                           <tr>
+                                               <td>22-07-2016</td>
+                                               <td>Balance Amount Paid</td>
+                                               <td>+</td>
+                                               <td>Sravan B</td>
+                                               <td>Cash</td>
+                                               <td>29600</td>
+                                           </tr>
+                                           </tbody>
+                                       </table>
+                                   </div>
+                               </div>
+                               <div class="col-xs-12 perTransct">
+                                   <ul class="list-inline">
+                                       <li class="pull-left"><b>Route Expenses</b></li>
+                                   </ul>
+                               </div>
+                               <div class="col-xs-12">
+                                   <div class="col-sm-3 col-xs-12">
+                                       <div class="form-group styling-input-list">
+                                           <input type="text" class="form-control order-form-control" name="podFront"/>
+                                           <label class="order-effect-for-input">Diesel Expenses</label>
+                                       </div>
+                                   </div>
+                                   <div class="col-sm-3 col-xs-12">
+                                       <div class="form-group styling-input-list">
+                                           <input type="text" class="form-control order-form-control" name="podFront"/>
+                                           <label class="order-effect-for-input">Toll Gate Charges</label>
+                                       </div>
+                                   </div>
+                                   <div class="col-sm-3 col-xs-12">
+                                       <div class="form-group styling-input-list">
+                                           <input type="text" class="form-control order-form-control" name="podBack">
+                                           <label class="order-effect-for-input">Loading/Unloading</label>
+                                       </div>
+                                   </div>
+                                   <div class="col-sm-3 col-xs-12">
+                                       <div class="form-group styling-input-list">
+                                           <input type="text" class="form-control order-form-control" name="podBack">
+                                           <label class="order-effect-for-input">Police Charges</label>
+                                       </div>
+                                   </div>
+                               </div>
+                               <div class="col-xs-12 perTransct">
+                                   <ul class="list-inline">
+                                       <li class="pull-left"><b>Comments</b></li>
+                                       <li class="pull-right">
+                                           <button class="btn btn-primary">New</button>
+                                       </li>
+                                   </ul>
+                               </div>
+                               <div class="col-xs-12">
+                                   <div class="col-xs-12">
+                                       <table class="table table-bordered text-center table-hover">
+                                           <thead>
+                                           <th>Date</th>
+                                           <th>Comment</th>
+                                           <th>Amount</th>
+                                           </thead>
+                                           <tbody>
+                                           <tr>
+                                               <td>22-07-2016</td>
+                                               <td>Balance Amount Paid</td>
+                                               <td>29600</td>
+                                           </tr>
+                                           <tr>
+                                               <td>22-07-2016</td>
+                                               <td>Balance Amount Paid</td>
+                                               <td>29600</td>
+                                           </tr>
+                                           </tbody>
+                                       </table>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </uib-accordion>
+                   <uib-accordion>
+                       <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
+                           <uib-accordion-heading>
+                               Truck Booking Details <i class="pull-right glyphicon"
+                                                        ng-class="{'glyphicon-chevron-down': status.isOpenOne,
+                                        'glyphicon-chevron-right': !status.isOpenOne}"></i>
+                           </uib-accordion-heading>
+                           <div class="row truckBooking">
+                               <div class="col-sm-4 col-xs-12">
+                                   <ul class="list-inline">
+                                       <li><b>Date Ordered:</b> 21-06-2016 05:00 AM</li>
+                                       <li><b>Order Status:</b> Processing</li>
+                                   </ul>
+                               </div>
+                               <div class="col-sm-4 col-xs-12">
+                                   <ul class="list-inline">
+                                       <li><b>Date Available:</b> 21-06-2016 05:00 AM</li>
+                                       <li><b>Tracking Available:</b> Yes</li>
+                                       <li><b>Insurance Available:</b>No</li>
+                                   </ul>
+                               </div>
+                               <div class="col-sm-4 col-xs-12">
+                                   <ul class="list-inline">
+                                       <li><b>Pickup Point:</b>Hyderbad</li>
+                                       <li><b>Pickup Date/Time:</b>21-06-2016 05:00 AM</li>
+                                       <li><b>Goods Type:</b>All</li>
+                                   </ul>
+                               </div>
+                           </div>
+                           <div class="row">
+                               <div class="col-xs-4">
+                                   <div class="form-group styling-input-list">
+                                       <input class="form-control order-form-control" type="text"
+                                              ng-model="newOrderRequest.source"/>
+                                       <label class="order-effect-for-input">Source Address*</label>
+                                   </div>
+                               </div>
+                               <div class="col-xs-4">
+                                   <div class="form-group styling-input-list">
+                                       <input class="form-control order-form-control" type="text"
+                                              ng-model="newOrderRequest.destination"/>
+                                       <label class="order-effect-for-input">Destination Address*</label>
+                                   </div>
+                               </div>
+                               <div class="col-xs-4">
+                                   <div class="form-group styling-input-list">
+                                       <input class="form-control order-form-control" type="text"
+                                              ng-model="newOrderRequest.dateOfOrder"/>
+                                       <label class="order-effect-for-input">Payable Amount</label>
+                                   </div>
+                               </div>
+                               <div class="col-xs-4">
+                                   <div class="form-group styling-input-list">
+                                       <input class="form-control order-form-control" type="text"
+                                              ng-model="newOrderRequest.truckType"/>
+                                       <label class="order-effect-for-input">Truck Type*</label>
+                                   </div>
+                               </div>
+                               <div class="col-xs-4">
+                                   <div class="form-group styling-input-list">
+                                       <input class="form-control order-form-control" type="text"
+                                              ng-model="newOrderRequest.registrationNo"/>
+                                       <label class="order-effect-for-input">Truck Reg No*</label>
+                                   </div>
+                               </div>
+                               <div class="col-xs-4">
+                                   <div class="form-group styling-input-list">
+                                       <input class="form-control order-form-control" type="text"
+                                              ng-model="newOrderRequest.driverName"/>
+                                       <label class="order-effect-for-input">Driver Name</label>
+                                   </div>
+                               </div>
+                               <div class="col-xs-4">
+                                   <div class="form-group styling-input-list">
+                                       <input class="form-control order-form-control" type="text"
+                                              ng-model="newOrderRequest.driverMobile"/>
+                                       <label class="order-effect-for-input">Driver Mobile</label>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </uib-accordion>
+               </div>
+            <div class="col-xs-12 save-btns">
+                <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+                <a href="#" class="btn btn-primary" ng-click="updateOrderProcess()">Submit</a>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+    <script type="text/ng-template" id="addPayment.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Payment</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="form-group col-sm-6 col-xs-12">
+                    <select class="form-control order-form-control" ng-model="initAddTruckPayment.comment"
+                            ng-change="paymentCommentPrefix();">
+                        <option value="" selected>--Comment--</option>
+                        <option ng-repeat="comments in paymentComments" value="{{comments}}">
+                            {{comments.comment}}({{comments.prefix}})
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12">
+                    <input type="text" class="form-control order-form-control" ng-model="initAddTruckPayment.amount"
+                           placeholder="Amount *"/>
+                </div>
+
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addTruckPayment()"/>
+                </div>
+            </div>
+        </div>
+    </script>
+    <script type="text/ng-template" id="addTransaction.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Transaction</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="col-sm-6 col-xs-12">
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="transaction.comment"
+
+                        >
+                            <option value="" selected>--Comment--</option>
+                            <option ng-repeat="comments in transactionComments" value="{{comments}}">
+                                {{comments.comment}}({{comments.prefix}})
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control order-form-control" ng-model="transaction.paymentType">
+                            <option value="" selected>&#45;&#45;Payment Type&#45;&#45;</option>
+                            <option value="Cash">Cash</option>
+                            <option value="Cheque">Cheque</option>
+                            <option value="Account Transfer">Account Transfer</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <input type="text" class="form-control order-form-control" ng-model="transaction.amount"
+                               placeholder="Amount *"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="date" class="form-control order-form-control"
+                               ng-model="transaction.transactionDate"
+                               placeholder="Transaction Date *"/>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group" ng-show="transaction.paymentType=='Cheque'">
+                        <input type="text" class="form-control order-form-control" ng-model="transaction.chequeNo"
+                               placeholder="Cheque No *"/>
+                    </div>
+                    <div class="form-group" ng-show="transaction.paymentType=='Cash'">
+                        <select class="form-control order-form-control" ng-model="transaction.paymentBy">
+                            <option value="" selected>--Payment By--</option>
+                            <option ng-repeat="employee in employessList" value="employee._id">
+                                {{employee.firstName}}
+                            </option>
+
+                        </select>
+                    </div>
+                    <div class="form-group" ng-show="transaction.paymentType=='Account Transfer'">
+                        <select class="form-control order-form-control" ng-model="transaction.bank">
+                            <option value="" selected>--Select Bank--</option>
+                            <option>SBI</option>
+                            <option>ICICI</option>
+                            <option>HDFC</option>
+                            <option>AXIS</option>
+
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addOrderTransaction()"/>
+                </div>
+            </div>
+        </div>
+    </script>
+
+    <script type="text/ng-template" id="addOrderComment.html">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Commnet</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body">
+            <div class="row">
+                <div class="form-group col-sm-6 col-xs-12">
+                    <textarea class="form-control order-form-control" ng-model="comment.comment"
+                              placeholder="Comment..."></textarea>
+                </div>
+                <div class="form-group col-sm-6 col-xs-12">
+                    <input type="checkbox" class="form-control order-form-control" ng-model="comment.notify"
+                           placeholder="Notify"/>
+                </div>
+
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addOrderComment()"/>
+                </div>
+            </div>
+        </div>
+    </script>
+</div>
+
