@@ -1724,17 +1724,6 @@ Events.prototype.getCustomerData = function (request, callback) {
         } else {
             async.map(customers, function (customer, customerCallBack) {
                 // if(customer.email) {
-                if (customer.type === 'T') {
-                    role = 'Truck Owner';
-                } else if (customer.type === 'TR') {
-                    role = 'Transporter';
-                } else if (customer.type === 'C') {
-                    role = 'Commission Agent';
-                } else if (customer.type === 'L') {
-                    role = 'Factory Owners';
-                } else if (customer.type === 'G') {
-                    role = 'Guest';
-                }
                 var condition = {
                     $or: [
                         {"userName": customer.email},
@@ -1767,6 +1756,18 @@ Events.prototype.getCustomerData = function (request, callback) {
                         }
                         if (customer.approved) {
                             approved = 'Rejected';
+                        }
+
+                        if (customer.type === 'T') {
+                            role = 'Truck Owner';
+                        } else if (customer.type === 'TR') {
+                            role = 'Transporter';
+                        } else if (customer.type === 'C') {
+                            role = 'Commission Agent';
+                        } else if (customer.type === 'L') {
+                            role = 'Factory Owners';
+                        } else if (customer.type === 'G') {
+                            role = 'Guest';
                         }
 
                         if (customer.email) {
