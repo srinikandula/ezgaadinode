@@ -1715,7 +1715,6 @@ Events.prototype.getCustomerData = function (request, callback) {
                         {"userName": customer.mobile},
                     ], userId: customer.idprefix,
                     leadType: customer.type,
-                    "role": {"$ne": "employee"}
                 };
                 AccountsColl.findOne(condition, function (findCustomerErr, customerFound) {
                     if (findCustomerErr) {
