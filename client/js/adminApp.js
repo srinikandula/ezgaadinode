@@ -215,6 +215,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'orderprocess'},
         params: { orderId: null }
     }).state({
+        name: 'orderprocess.loadOwnerBilling',
+        url: '/loadOwnerBilling/:orderId',
+        templateUrl: 'views/partials/admin/orderProcess/loadOwnerBilling.html',
+        data: {activeTab: 'orderprocess'},
+        params: { orderId: null }
+    }).state({
         name: 'settings',
         url: '/settings',
         templateUrl: 'views/partials/admin/settings/settings.html',

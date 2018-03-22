@@ -18,10 +18,10 @@
                         </div>
                         <div class="form-group pos-relative styling-input-list" ng-repeat="destination in loadRequest.destination">
                             <div class="form-group styling-input-list">
-                                <input type="text" class="form-control custom-form-control" name="destination"
+                                <input type="text" class="form-control order-form-control" name="destination"
                                        ng-model="destination.destinationAddress" id="searchDestination{{$index}}"
                                        ng-change="editSearchDestination($index)"/>
-                                <label class="focus-effect-for-input">Destination *</label>
+                                <label class="order-effect-for-input">Destination *</label>
                             </div>
                             <div class="form-group styling-input-list">
                                 <input type="text" class="form-control order-form-control " name="state"
@@ -88,43 +88,43 @@
                 <div class="row">
                     <div class="col-xs-12 col-sm-4">
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="firstName"
+                            <input type="text" class="form-control order-form-control" name="firstName"
                                    ng-model="loadRequest.customerDetails.firstName" readonly/>
-                            <label class="focus-effect-for-input">Full Name*</label>
+                            <label class="order-effect-for-input">Full Name*</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="contactPhone"
+                            <input type="text" class="form-control order-form-control" name="contactPhone"
                                    ng-model="loadRequest.customerDetails.contactPhone" readonly/>
-                            <label class="focus-effect-for-input">Mobile*</label>
+                            <label class="order-effect-for-input">Mobile*</label>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-4">
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="email"
+                            <input type="text" class="form-control order-form-control" name="email"
                                    ng-model="loadRequest.customerDetails.email" readonly/>
-                            <label class="focus-effect-for-input">Email</label>
+                            <label class="order-effect-for-input">Email</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="address"
+                            <input type="text" class="form-control order-form-control" name="address"
                                    ng-model="loadRequest.customerDetails.address" readonly/>
-                            <label class="focus-effect-for-input">Address</label>
+                            <label class="order-effect-for-input">Address</label>
                         </div>
                     </div>
                     <div class="col-xs-12 col-sm-4">
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="company"
+                            <input type="text" class="form-control order-form-control" name="company"
                                    ng-model="loadRequest.customerDetails.companyName" readonly/>
-                            <label class="focus-effect-for-input">Company</label>
+                            <label class="order-effect-for-input">Company</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="state"
+                            <input type="text" class="form-control order-form-control" name="state"
                                    ng-model="loadRequest.customerDetails.state" readonly/>
-                            <label class="focus-effect-for-input">State</label>
+                            <label class="order-effect-for-input">State</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="city"
+                            <input type="text" class="form-control order-form-control" name="city"
                                    ng-model="loadRequest.customerDetails.city" readonly/>
-                            <label class="focus-effect-for-input">City</label>
+                            <label class="order-effect-for-input">City</label>
                         </div>
                     </div>
                 </div>
