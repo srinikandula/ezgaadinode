@@ -3,8 +3,9 @@
     <div class="col-xs-12">
         <div class="tabs-title">
             <ul class="nav nav-tabs">
-                <li class="active"><a  href="#" ui-sref="orderprocess.truckOwnerBilling">Truck Owner Billing</a></li>
-                <li><a href="#" ui-sref="orderprocess.loadOwnerBilling({orderId:orderDetails._id})">Load Owner Billing</a></li>
+                <li class="active"><a href="#" ui-sref="orderprocess.truckOwnerBilling">Truck Owner Billing</a></li>
+                <li><a href="#" ui-sref="orderprocess.loadOwnerBilling({orderId:orderDetails._id})">Load Owner
+                    Billing</a></li>
             </ul>
         </div>
         <div class="active col-xs-12" ng-init="truckOwnerOrderOnfo();">
@@ -96,20 +97,22 @@
                                                        class="'order-form-control'"></admin-date-picker>
                                 </div>
                             </div>
-                            <div class="col-sm-3 col-xs-12">
+                            <div class="col-sm-4 col-xs-12">
                                 <div class="form-group">
-                                    <input type="file" class="form-control custom-form-control"
+                                    <input type="file" class="form-control order-form-control"
                                            ng-model="orderDetails.frontFile" ngf-select ngf-pattern="'image/*'"
                                            ngf-accept="'image/*'">
                                     <p class="text-center">
                                         <span>Front POD </span>
-                                        <a href="/assets/PodFiles/{{orderDetails.podFront}}" ng-show="orderDetails.podFront"
+                                        <a href="/assets/PodFiles/{{orderDetails.podFront}}"
+                                           ng-show="orderDetails.podFront"
                                            target="_new"><span> View</span> / </a>
-                                        <a href="/assets/PodFiles/{{orderDetails.podFront}}" ng-show="orderDetails.podFront"
+                                        <a href="/assets/PodFiles/{{orderDetails.podFront}}"
+                                           ng-show="orderDetails.podFront"
                                            target="_blank" download><span>Download</span></a></p>
                                 </div>
                             </div>
-                            <div class="col-sm-3 col-xs-12">
+                            <div class="col-sm-4 col-xs-12">
                                 <div class="form-group">
                                     <input type="file" class="form-control order-form-control"
                                            ng-model="orderDetails.backFile" ngf-select ngf-pattern="'image/*'"
@@ -118,13 +121,14 @@
                                         <span>Back POD </span>
                                         <a href="/assets/PodFiles/{{orderDetails.podBack}}"
                                            ng-show="orderDetails.podBack"><span> View</span> / </a>
-                                        <a href="/assets/PodFiles/{{orderDetails.podBack}}" ng-show="orderDetails.podBack"
+                                        <a href="/assets/PodFiles/{{orderDetails.podBack}}"
+                                           ng-show="orderDetails.podBack"
                                            target="_blank" download><span>Download</span></a></p>
                                 </div>
                             </div>
-                            <div class="col-sm-3 col-xs-12">
+                            <div class="col-sm-1 col-xs-12" style="padding: 4px 0 0 0;">
                                 <div class="form-group">
-                                    <button class="btn btn-info" ng-click="updateOrderPOD()">Save POD</button>
+                                    <button class="btn btn-info" ng-click="updateOrderPOD()">Save</button>
                                 </div>
                             </div>
                         </div>
@@ -132,7 +136,8 @@
                             <ul class="list-inline">
                                 <li class="pull-left"><b>Truck Owner Transactions</b></li>
                                 <li class="pull-right">
-                                    <button class="btn btn-primary" ng-click="truckTransaction()">New</button>
+                                    <button class="btn btn-primary" ng-click="truckTransaction('Truck Owner')">New
+                                    </button>
                                 </li>
                             </ul>
                         </div>
@@ -214,7 +219,7 @@
                         </div>
                         <div class="col-xs-12">
                             <div class="col-xs-12">
-                                <table class="table table-bordered text-center table-hover">
+                                <table class="table table-hover">
                                     <thead>
                                     <th>Date</th>
                                     <th>Comment</th>
@@ -345,7 +350,7 @@
                     <div class="col-xs-12">
                         <p>Add Current Location</p>
                         <div class="col-xs-12">
-                            <table class="table table-bordered text-center table-hover">
+                            <table class="table  table-hover">
                                 <thead>
                                 <th>Location</th>
                                 <th>Date & Time</th>
@@ -428,9 +433,7 @@
                 <div class="row">
                     <div class="col-sm-6 col-xs-12">
                         <div class="form-group">
-                            <select class="form-control order-form-control" ng-model="transaction.comment"
-
-                            >
+                            <select class="form-control order-form-control" ng-model="transaction.comment">
                                 <option value="" selected>--Comment--</option>
                                 <option ng-repeat="comments in transactionComments" value="{{comments}}">
                                     {{comments.comment}}({{comments.prefix}})
@@ -474,10 +477,10 @@
                         <div class="form-group" ng-show="transaction.paymentType=='Account Transfer'">
                             <select class="form-control order-form-control" ng-model="transaction.bank">
                                 <option value="" selected>--Select Bank--</option>
-                                <option>SBI</option>
-                                <option>ICICI</option>
-                                <option>HDFC</option>
-                                <option>AXIS</option>
+                                <option value="SBI">SBI</option>
+                                <option value="ICICI">ICICI</option>
+                                <option value="HDFC">HDFC</option>
+                                <option value="AXIS">AXIS</option>
 
                             </select>
                         </div>
@@ -496,16 +499,11 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="form-group col-sm-6 col-xs-12">
-                    <textarea class="form-control order-form-control" ng-model="comment.comment"
-                              placeholder="Comment..."></textarea>
+                    <div class="form-group col-sm-8 col-xs-12">
+                    <textarea class="form-control" ng-model="comment.comment"
+                              placeholder="Comment..." cols="6"></textarea>
                     </div>
-                    <div class="form-group col-sm-6 col-xs-12">
-                        <input type="checkbox" class="form-control order-form-control" ng-model="comment.notify"
-                               placeholder="Notify"/>
-                    </div>
-
-                    <div class="col-sm-12 text-center">
+                    <div class="form-group col-sm-4 col-xs-12">
                         <input type="button" class="btn btn-primary" value="Submit" ng-click="addOrderComment()"/>
                     </div>
                 </div>
