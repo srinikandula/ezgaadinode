@@ -263,7 +263,7 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, req, callback) {
         messages: []
     };
     var giveAccess = false;
-    if (jwt.type === "account" && driverInfo.accountId === jwt.accountId) {
+    if (jwt.accountAccess && driverInfo.accountId === jwt.accountId) {
         giveAccess = true;
     } else if (jwt.type === "group" && driverInfo.createdBy === jwt.id) {
         giveAccess = true;
@@ -385,7 +385,7 @@ Drivers.prototype.deleteDriver = function (jwt, driverId, req, callback) {
     };
     var condition = {};
     var giveAccess = false;
-    if (jwt.type === "account") {
+    if (jwt.accountAccess) {
         condition = {_id: driverId, accountId: jwt.accountId};
         giveAccess = true;
     } else if (jwt.type === "group") {

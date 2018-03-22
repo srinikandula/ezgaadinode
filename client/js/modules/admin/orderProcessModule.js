@@ -225,6 +225,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "PUT",
                 data: data
             }).then(success, error)
+        },
+        deleteOrderLocation: function (data, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/deleteOrderLocation',
+                method: "DELETE",
+                params: {_id:data}
+            }).then(success, error)
         }
 
     }
@@ -650,6 +657,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 })
 
             } else {
+                $scope.availableTruckslist = [];
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
                 })
@@ -664,6 +672,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             if (success.data.status) {
                 $scope.quotesList = success.data.data;
             } else {
+                $scope.quotesList = [];
                 /*success.data.messages.forEach(function (message) {
                  Notification.error(message);
                  })*/
@@ -815,6 +824,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         OrderProcessServices.getTruckRequestComments($stateParams._id, function (success) {
             if (success.data.status) {
                 $scope.commentList = success.data.data;
+            } else {
+                $scope.commentList = [];
             }
         }, function (error) {
 
@@ -1306,15 +1317,15 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
             }
         }
     };
-
 }]);
 
-app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'customerServices', 'Notification', 'SettingServices', 'NgTableParams', '$stateParams', '$uibModal', 'Upload', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices, NgTableParams, $stateParams, $uibModal, Upload) {
+
+app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'customerServices', 'Notification', 'SettingServices', 'NgTableParams', '$stateParams', '$uibModal', 'Upload', '$http', '$timeout', '$rootScope', '$compile', function ($scope, $state, OrderProcessServices, customerServices, Notification, SettingServices, NgTableParams, $stateParams, $uibModal, Upload, $http, $timeout, $rootScope, $compile) {
 
     $scope.status = {
         isOpen: true,
         isOpenOne: true,
-    }
+    };
 
     $scope.cancel = function () {
         $state.go('orderprocess.viewOrder');
@@ -1328,7 +1339,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                 Notification.error({message: response.data.messages[0]});
             }
         });
-    }
+    };
 
     $scope.getTruckTypes = function () {
         SettingServices.getTruckTypes({}, function (response) {
@@ -1699,6 +1710,75 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             });
         }
 
+    };
+    var printHtml = function (html) {
+        var hiddenFrame = $('<iframe style="display: none"></iframe>').appendTo('body')[0];
+        hiddenFrame.contentWindow.printAndRemove = function () {
+            hiddenFrame.contentWindow.print();
+            $(hiddenFrame).remove();
+        };
+        var htmlDocument = "<!doctype html>" +
+            "<html>" +
+            '<body onload="printAndRemove();">' +
+            html +
+            '</body>' +
+            "</html>";
+        var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
+        doc.write(htmlDocument);
+        doc.close();
+    };
+
+    $scope.printTruckOwnerBill = function () {
+        $http.get("/views/partials/admin/templates/printTruckOwnerBill.html").then(function (template) {
+            var printScope = angular.extend($rootScope.$new(), {
+               /* orderDetails: $scope.orderDetails,
+                transactionsDetails: $scope.transactionsDetails,
+                paymentsDetails: $scope.paymentsDetails,
+                comments: $scope.comments,
+                locationsList: $scope.locationsList*/
+            });
+            var element = $compile($('<div>' + template.data + '</div>'))(printScope);
+            var waitForRenderAndPrint = function () {
+                if (printScope.$$phase || $http.pendingRequests.length) {
+                    $timeout(waitForRenderAndPrint);
+                } else {
+                    printHtml(element.html());
+                    printScope.$destroy(); // To avoid memory leaks from scope create by $rootScope.$new()
+                }
+            }
+            waitForRenderAndPrint();
+        });
+    };
+    $scope.deleteOrderLocation=function (index,loc) {
+
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                OrderProcessServices.deleteOrderLocation(loc._id, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.locationsList.splice(index, 1)
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
+        });
     };
 
 

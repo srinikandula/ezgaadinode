@@ -26,7 +26,7 @@ function create(req,action,attrs){
 
 Groups.prototype.login = function (userName, password, contactPhone,req, callback) {
     logger.info("logging in user:" + userName);
-    var truckAccess=["Truck Owner","Transpoters"];
+    var accountAccess=["Truck Owner","Transpoters"];
     var groupAccess=["Truck Owner","Transpoters"];
     var retObj = {
         status: false,
@@ -76,11 +76,10 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                     retObj.profilePic = user.profilePic;
                     retObj.type = user.type;
                     retObj.role = user.role;
-                    console
-                    if(truckAccess.indexOf(user.role)>-1){
-                        retObj.createTruck=true;
+                    if(accountAccess.indexOf(user.role)>-1){
+                        retObj.accountAccess=true;
                     }else{
-                        retObj.createTruck=false;
+                        retObj.accountAccess=false;
                     }
                     if(groupAccess.indexOf(user.role)>-1){
                         retObj.createGroup=true;
@@ -96,7 +95,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                         type: user.role,
                         role: user.role,
                         createGroup:retObj.createGroup,
-                        createTruck:retObj.createTruck
+                        accountAccess:retObj.accountAccess
 
                     };
                     if(user.role === "group") {
