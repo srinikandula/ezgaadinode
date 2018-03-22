@@ -886,7 +886,7 @@ adminTripsSchema.pre('save', function(next) {
 
 });
 
-var deviceSchema =new mongoose.Schema({
+var deviceIdSchema =new mongoose.Schema({
     imei:String,
     mobile:Number,
     email:String,
@@ -944,5 +944,5 @@ module.exports = {
     OrderCommentsColl:mongoose.model('orderComments', orderCommentsSchema, 'orderComments'),
     OrderTransactionsColl:mongoose.model('orderTransactions', orderTransactionSchema, 'orderTransactions'),
     OrderLocationColl:mongoose.model('orderLocations', orderLocationSchema, 'orderLocations'),
-    deviceIdColl:mongoose.model('deviceId',deviceSchema,'deviceId')
+    deviceIdColl:mongoose.model('deviceId',deviceIdSchema,'deviceId')
 };
