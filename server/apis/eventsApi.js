@@ -335,11 +335,14 @@ Events.prototype.getAccountGroupData = function (request, callback) {
                             contactPhone: accountGroupDataResult.contactPhone,
                             password: accountGroupDataResult.password,
                             role: 'Truck Owner',
-                            leadType:  'T',
+                            leadType: 'T',
                             yearInService: 2018,
                             type: 'group',
                         };
-                        AccountsColl.findOne({"userName": accountGroupDataResult.userName,"role": "Truck Owner"}, function (err, account) {
+                        AccountsColl.findOne({
+                            "userName": accountGroupDataResult.userName,
+                            "role": "Truck Owner"
+                        }, function (err, account) {
                             if (account) {
                                 accountGroupData.accountId = account._id;
                             }
@@ -475,7 +478,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                     return employee.id_admin === devicesDataResult.installedById;
                                 });
                                 // var resultObject = searchEmployeeId(devicesDataResult.installedById, employeeDataResult);
-                                if(resultObject) {
+                                if (resultObject) {
                                     AccountsColl.findOne({
                                         "role": "employee",
                                         "userName": resultObject.email
@@ -520,7 +523,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                 DeviceColl.findOne({
                                     userName: devicesDataResult.accountId,
                                     deviceId: devicesDataResult.deviceId,
-                                    simNumber: devicesDataResult.simId,
+                                    simNumber: devicesDataResult.simID,
                                     imei: devicesDataResult.imeiNumber,
                                     simPhoneNumber: devicesDataResult.simPhoneNumber
                                 }, function (deviceErr, device) {
@@ -609,8 +612,8 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
     });
 };
 
-function searchEmployeeId(nameKey, myArray){
-    for (var i=0; i < myArray.length; i++) {
+function searchEmployeeId(nameKey, myArray) {
+    for (var i = 0; i < myArray.length; i++) {
         if (myArray[i].id_admin === nameKey) {
             return myArray[i].email;
         }
@@ -838,7 +841,7 @@ Events.prototype.getAdminRoles = function (request, callback) {
         status: false,
         messages: []
     };
-    var adminRoleQuery = "select * from eg_admin_role";
+    var adminRoleQuery = "select distinct role,status from eg_admin_role";
     pool_crm.query(adminRoleQuery, function (err, roles) {
         if (err) {
             retObj.status = false;
@@ -847,7 +850,7 @@ Events.prototype.getAdminRoles = function (request, callback) {
             callback(retObj);
         } else {
             async.map(roles, function (role, roleCallBack) {
-                adminRoleColl.findOne({adminRoleId: role.id_admin_role}, function (findRoleErr, roleFound) {
+                adminRoleColl.findOne({role: role.role}, function (findRoleErr, roleFound) {
                     if (findRoleErr) {
                         roleCallBack(findRoleErr);
                     } else if (roleFound) {
@@ -1016,7 +1019,7 @@ Events.prototype.getAccountOperatingRoutes = function (request, callback) {
         status: false,
         messages: []
     };
-    var AccountOperatingRoutesDataQuery = "SELECT accountID as id_account, source_city as source, source_state as sourceState, source_address as sourceAddress, source_lat as sourceLatitude, source_lng as sourceLongitude, destination_city as destination, destination_state as destinationState, destination_address as destinationAddress, destination_lat as destinationLatitude, destination_lng as destinationLongitude FROM AccountOperatingDestinations";
+    var AccountOperatingRoutesDataQuery = "SELECT accountID, source_city as source, source_state as sourceState, source_address as sourceAddress, source_lat as sourceLatitude, source_lng as sourceLongitude, destination_city as destination, destination_state as destinationState, destination_address as destinationAddress, destination_lat as destinationLatitude, destination_lng as destinationLongitude FROM AccountOperatingDestinations";
     pool.query(AccountOperatingRoutesDataQuery, function (err, AccountOperatingRoutes) {
         if (err) {
             retObj.status = false;
@@ -1025,36 +1028,41 @@ Events.prototype.getAccountOperatingRoutes = function (request, callback) {
             callback(retObj);
         } else {
             async.map(AccountOperatingRoutes, function (AccountOperatingRoute, AccountOperatingRoutesCallBack) {
-                OperatingRoutesColl.findOne({
-                    source: AccountOperatingRoute.source,
-                    sourceState: AccountOperatingRoute.sourceState,
-                    sourceLatitude: AccountOperatingRoute.sourceLatitude,
-                    sourceLongitude: AccountOperatingRoute.sourceLongitude,
-                    destination: AccountOperatingRoute.destination,
-                    destinationState: AccountOperatingRoute.destinationState,
-                    destinationLatitude: AccountOperatingRoute.destinationLatitude,
-                    destinationLongitude: AccountOperatingRoute.destinationLongitude
-                }, function (findAccountOperatingRoutesErr, AccountOperatingRoutesFound) {
-                    if (findAccountOperatingRoutesErr) {
-                        AccountOperatingRoutesCallBack(findAccountOperatingRoutesErr);
-                    } else if (AccountOperatingRoutesFound) {
-                        AccountOperatingRoutesCallBack(null, 'Account Operating Routes exists');
-                    } else {
-                        AccountsColl.findOne({"userName": AccountOperatingRoute.id_account}, {"role": "account"}, function (err, account) {
-                            AccountOperatingRoute.sourceLocation = {
-                                coordinates: [AccountOperatingRoute.sourceLongitude, AccountOperatingRoute.sourceLatitude]
-                            }
-                            AccountOperatingRoute.destinationLocation = {
-                                coordinates: [AccountOperatingRoute.destinationLongitude, AccountOperatingRoute.destinationLatitude]
-                            };
-                            if (account) {
+                AccountsColl.findOne({"userName": { $regex: '.*' + AccountOperatingRoute.accountID + '.*' }}, function (err, account) {
+                    if(err) {
+                        AccountOperatingRoutesCallBack(err);
+                    } else if(account) {
+                        OperatingRoutesColl.findOne({
+                            accountId: account._id,
+                            source: AccountOperatingRoute.source,
+                            sourceState: AccountOperatingRoute.sourceState,
+                            // sourceLatitude: AccountOperatingRoute.sourceLatitude,
+                            // sourceLongitude: AccountOperatingRoute.sourceLongitude,
+                            destination: AccountOperatingRoute.destination,
+                            destinationState: AccountOperatingRoute.destinationState,
+                            // destinationLatitude: AccountOperatingRoute.destinationLatitude,
+                            // destinationLongitude: AccountOperatingRoute.destinationLongitude
+                        }, function (findAccountOperatingRoutesErr, AccountOperatingRoutesFound) {
+                            if (findAccountOperatingRoutesErr) {
+                                AccountOperatingRoutesCallBack(findAccountOperatingRoutesErr);
+                            } else if (AccountOperatingRoutesFound) {
+                                AccountOperatingRoutesCallBack(null, 'Account Operating Routes exists');
+                            } else {
+                                AccountOperatingRoute.sourceLocation = {
+                                    coordinates: [AccountOperatingRoute.sourceLongitude, AccountOperatingRoute.sourceLatitude]
+                                }
+                                AccountOperatingRoute.destinationLocation = {
+                                    coordinates: [AccountOperatingRoute.destinationLongitude, AccountOperatingRoute.destinationLatitude]
+                                };
                                 AccountOperatingRoute.accountId = account._id;
+                                var AccountOperatingRoutesDoc = new OperatingRoutesColl(AccountOperatingRoute);
+                                AccountOperatingRoutesDoc.save(function (err) {
+                                    AccountOperatingRoutesCallBack(err, 'saved');
+                                })
                             }
-                            var AccountOperatingRoutesDoc = new OperatingRoutesColl(AccountOperatingRoute);
-                            AccountOperatingRoutesDoc.save(function (err) {
-                                AccountOperatingRoutesCallBack(err, 'saved');
-                            })
                         });
+                    } else {
+                        AccountOperatingRoutesCallBack(null, "No Account");
                     }
                 });
             }, function (AccountOperatingRoutesErr, AccountOperatingRoutesSaved) {
@@ -1636,7 +1644,7 @@ Events.prototype.getCustomerOperatingRoutes = function (request, callback) {
         status: false,
         messages: []
     };
-    var CustomerOperatingRoutesDataQuery = "SELECT c.type,c.fullname, cod.source_city as source, cod.source_state as sourceState, cod.source_address as sourceAddress, cod.source_lat as sourceLatitude, cod.source_lng as sourceLongitude, cod.destination_city as destination, cod.destination_state as destinationState, cod.destination_address as destinationAddress, cod.destination_lat as destinationLatitude, cod.destination_lng as destinationLongitude FROM eg_customer_operating_destinations cod,eg_customer c where cod.id_customer=c.id_customer order by cod.id_customer ";
+    var CustomerOperatingRoutesDataQuery = "SELECT c.gps_account_id,c.type,c.fullname, cod.source_city as source, cod.source_state as sourceState, cod.source_address as sourceAddress, cod.source_lat as sourceLatitude, cod.source_lng as sourceLongitude, cod.destination_city as destination, cod.destination_state as destinationState, cod.destination_address as destinationAddress, cod.destination_lat as destinationLatitude, cod.destination_lng as destinationLongitude FROM eg_customer_operating_destinations cod,eg_customer c where cod.id_customer=c.id_customer order by cod.id_customer ";
     pool_crm.query(CustomerOperatingRoutesDataQuery, function (err, CustomerOperatingRoutes) {
         if (err) {
             retObj.status = false;
@@ -1645,36 +1653,43 @@ Events.prototype.getCustomerOperatingRoutes = function (request, callback) {
             callback(retObj);
         } else {
             async.map(CustomerOperatingRoutes, function (CustomerOperatingRoute, CustomerOperatingRoutesCallBack) {
-                OperatingRoutesColl.findOne({
-                    source: CustomerOperatingRoute.source,
-                    sourceState: CustomerOperatingRoute.sourceState,
-                    sourceLatitude: CustomerOperatingRoute.sourceLatitude,
-                    sourceLongitude: CustomerOperatingRoute.sourceLongitude,
-                    destination: CustomerOperatingRoute.destination,
-                    destinationState: CustomerOperatingRoute.destinationState,
-                    destinationLatitude: CustomerOperatingRoute.destinationLatitude,
-                    destinationLongitude: CustomerOperatingRoute.destinationLongitude
-                }, function (findCustomerOperatingRoutesErr, CustomerOperatingRoutesFound) {
-                    if (findCustomerOperatingRoutesErr) {
-                        CustomerOperatingRoutesCallBack(findCustomerOperatingRoutesErr);
-                    } else if (CustomerOperatingRoutesFound) {
-                        CustomerOperatingRoutesCallBack(null, 'Customer Operating Routes exists');
-                    } else {
-                        AccountsColl.findOne({"role": {"$ne": "account"}}, {"firstName": CustomerOperatingRoute.fullname}, {"leadType": CustomerOperatingRoute.type}, function (err, account) {
-                            CustomerOperatingRoute.sourceLocation = {
-                                coordinates: [CustomerOperatingRoute.sourceLongitude, CustomerOperatingRoute.sourceLatitude]
+                AccountsColl.findOne({"userName": { $regex: '.*' + CustomerOperatingRoute.gps_account_id + '.*' }}, function (err, account) {
+                    if(err) {
+                        AccountOperatingRoutesCallBack(err);
+                    } else if(account) {
+                        OperatingRoutesColl.findOne({
+                            accountId: account._id,
+                            source: CustomerOperatingRoute.source,
+                            sourceState: CustomerOperatingRoute.sourceState,
+                            // sourceLatitude: CustomerOperatingRoute.sourceLatitude,
+                            // sourceLongitude: CustomerOperatingRoute.sourceLongitude,
+                            destination: CustomerOperatingRoute.destination,
+                            destinationState: CustomerOperatingRoute.destinationState,
+                            // destinationLatitude: CustomerOperatingRoute.destinationLatitude,
+                            // destinationLongitude: CustomerOperatingRoute.destinationLongitude
+                        }, function (findCustomerOperatingRoutesErr, CustomerOperatingRoutesFound) {
+                            if (findCustomerOperatingRoutesErr) {
+                                CustomerOperatingRoutesCallBack(findCustomerOperatingRoutesErr);
+                            } else if (CustomerOperatingRoutesFound) {
+                                CustomerOperatingRoutesCallBack(null, 'Customer Operating Routes exists');
+                            } else {
+                                CustomerOperatingRoute.sourceLocation = {
+                                    coordinates: [CustomerOperatingRoute.sourceLongitude, CustomerOperatingRoute.sourceLatitude]
+                                }
+                                CustomerOperatingRoute.destinationLocation = {
+                                    coordinates: [CustomerOperatingRoute.destinationLongitude, CustomerOperatingRoute.destinationLatitude]
+                                };
+                                if (account) {
+                                    CustomerOperatingRoute.accountId = account._id;
+                                }
+                                var CustomerOperatingRoutesDoc = new OperatingRoutesColl(CustomerOperatingRoute);
+                                CustomerOperatingRoutesDoc.save(function (err) {
+                                    CustomerOperatingRoutesCallBack(err, 'saved');
+                                })
                             }
-                            CustomerOperatingRoute.destinationLocation = {
-                                coordinates: [CustomerOperatingRoute.destinationLongitude, CustomerOperatingRoute.destinationLatitude]
-                            };
-                            if (account) {
-                                CustomerOperatingRoute.accountId = account._id;
-                            }
-                            var CustomerOperatingRoutesDoc = new OperatingRoutesColl(CustomerOperatingRoute);
-                            CustomerOperatingRoutesDoc.save(function (err) {
-                                CustomerOperatingRoutesCallBack(err, 'saved');
-                            })
                         });
+                    } else {
+                        CustomerOperatingRoutesCallBack(null, "No Account");
                     }
                 });
             }, function (CustomerOperatingRoutesErr, CustomerOperatingRoutesSaved) {
@@ -1709,6 +1724,17 @@ Events.prototype.getCustomerData = function (request, callback) {
         } else {
             async.map(customers, function (customer, customerCallBack) {
                 // if(customer.email) {
+                if (customer.type === 'T') {
+                    role = 'Truck Owner';
+                } else if (customer.type === 'TR') {
+                    role = 'Transporter';
+                } else if (customer.type === 'C') {
+                    role = 'Commission Agent';
+                } else if (customer.type === 'L') {
+                    role = 'Factory Owners';
+                } else if (customer.type === 'G') {
+                    role = 'Guest';
+                }
                 var condition = {
                     $or: [
                         {"userName": customer.email},
@@ -1741,18 +1767,6 @@ Events.prototype.getCustomerData = function (request, callback) {
                         }
                         if (customer.approved) {
                             approved = 'Rejected';
-                        }
-
-                        if (customer.type === 'T') {
-                            role = 'Truck Owner';
-                        } else if (customer.type === 'TR') {
-                            role = 'Transporter';
-                        } else if (customer.type === 'C') {
-                            role = 'Commission Agent';
-                        } else if (customer.type === 'L') {
-                            role = 'Factory Owners';
-                        } else if (customer.type === 'G') {
-                            role = 'Guest';
                         }
 
                         if (customer.email) {
@@ -1848,7 +1862,11 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
             callback(retObj);
         } else {
             async.map(junkLeads, function (junkLead, junkLeadCallBack) {
-                AccountsColl.findOne({fullName: junkLead.fullname}, function (findJunkLeadErr, junkLeadFound) {
+                CustomerLeadsColl.findOne({
+                    firstName: junkLead.fullname,
+                    leadType: junkLead.type,
+                    leadStatus: junkLead.lead_status
+                }, function (findJunkLeadErr, junkLeadFound) {
                     if (findJunkLeadErr) {
                         junkLeadCallBack(findJunkLeadErr);
                     } else if (junkLeadFound) {
@@ -1903,7 +1921,10 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
                             junkLeadData.contactPhone = junkLead.mobile;
                         }
 
-                        AccountsColl.findOne({"role": {"$ne": "account"}}, {"firstName": junkLead.fullname}, {leadType: junkLead.type}, function (err, account) {
+                        AccountsColl.findOne({
+                            "role": {"$ne": "employee"},
+                            "userName": junkLead.gps_account_id
+                        }, function (err, account) {
                             if (account) {
                                 junkLeadData.accountId = account._id;
                             }
