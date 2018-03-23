@@ -15,7 +15,7 @@
 </head>
 <body>
 <div class="container">
-    <h3 class="text-center">Truck Owner Billing Details</h3>
+    <h3 class="text-center">Load Owner Billing Details</h3>
 
     <div class="row" style="border: 1px solid #ccc; padding: 10px;margin:20px 0;border-radius: 5px;">
         <div class="col-xs-12" style="border: 1px solid #ccc; padding: 10px;margin:10px 0;border-radius: 5px;">
@@ -25,27 +25,26 @@
                 <div class="col-xs-4">
                     <p style="border-bottom: 1px solid #ccc;"><b>Truck Owner Info:</b></p>
                     <ul class="list-inline">
-                        <li><b>Truck Owner ID:</b> {{orderDetails.orderId || 'Not Available'}}</li>
-                        <li><b>Name:</b> {{orderDetails.truckOwnerId.firstName || 'Not Available' }}</li>
-                        <li><b>Mobile:</b> {{orderDetails.truckOwnerId.contactPhone || 'Not Available'}}</li>
-                        <li><b>Truck No:</b> {{orderDetails.registrationNo |uppercase}}</li>
-                        <li><b>Email:</b> {{orderDetails.truckOwnerId.email || 'Not Available'}}</li>
+                        <li><b>Load Owner ID:</b> {{orderDetails.orderId || 'Not Available'}}</li>
+                        <li><b>Name:</b> {{orderDetails.loadOwnerDetails.firstName || 'Not Available' }}</li>
+                        <li><b>Mobile:</b> {{orderDetails.loadOwnerDetails.contactPhone || 'Not Available'}}</li>
+                        <li><b>Email:</b> {{orderDetails.loadOwnerDetails.email || 'Not Available'}}</li>
                     </ul>
                 </div>
                 <div class="col-xs-4">
                     <p style="border-bottom: 1px solid #ccc;"><b>Company Info:</b></p>
                     <ul class="list-inline">
-                        <li><b>Company:</b> {{orderDetails.truckOwnerId.companyName || 'Not Available'}}</li>
-                        <li><b>Address:</b> {{orderDetails.truckOwnerId.contactAddress || 'Not Available'}}</li>
-                        <li><b>City:</b> {{orderDetails.truckOwnerId.city || 'Not Available'}}</li>
-                        <li><b>State:</b> {{orderDetails.truckOwnerId.state || 'Not Available'}}</li>
+                        <li><b>Company:</b> {{orderDetails.loadOwnerDetails.companyName || 'Not Available'}}</li>
+                        <li><b>Address:</b> {{orderDetails.loadOwnerDetails.contactAddress || 'Not Available'}}</li>
+                        <li><b>City:</b> {{orderDetails.loadOwnerDetails.city || 'Not Available'}}</li>
+                        <li><b>State:</b> {{orderDetails.loadOwnerDetails.state || 'Not Available'}}</li>
                     </ul>
                 </div>
                 <div class="col-xs-4">
-                    <p style="border-bottom: 1px solid #ccc;"><b>Driver Info:</b></p>
+                    <p style="border-bottom: 1px solid #ccc;"><b>Load Agent Info:</b></p>
                     <ul class="list-inline">
-                        <li><b>Name:</b> {{orderDetails.driverName || 'Not Available'}}</li>
-                        <li><b>Mobile:</b> {{orderDetails.driverMobile || 'Not Available'}}</li>
+                        <li><b>Name:</b> {{orderDetails.loadingAgentNo || 'Not Available'}}</li>
+                        <li><b>Mobile:</b> {{orderDetails.loadingAgentNumber || 'Not Available'}}</li>
                         <!--<li><b>Email:</b>dummuy@gmail.com</li>-->
                     </ul>
                 </div>
@@ -53,7 +52,7 @@
         </div>
         <div class="col-xs-12 perTransct">
             <ul class="list-inline">
-                <li class="pull-left"><b>Truck OwnerBilling (per Transaction(Default))</b></li>
+                <li class="pull-left"><b>Load Owner Billing</b></li>
             </ul>
         </div>
         <div class="col-xs-12">
@@ -86,7 +85,7 @@
 
         <div class="col-xs-12 perTransct">
             <ul class="list-inline">
-                <li class="pull-left"><b>Truck Owner Transactions</b></li>
+                <li class="pull-left"><b>Load Owner Transactions</b></li>
             </ul>
         </div>
         <div class="col-xs-12">
@@ -95,18 +94,18 @@
                     <thead>
                     <th>Date</th>
                     <th>Comment</th>
-                    <th>Prefix</th>
                     <th>Payment By</th>
                     <th>Payment Type</th>
+                    <th>Prefix</th>
                     <th>Amount</th>
                     </thead>
                     <tbody>
                     <tr ng-repeat="transacDetails in transactionsDetails.transactions">
                         <td>{{transacDetails.createdAt | date:'dd-MM-yyyy'}}</td>
                         <td>{{transacDetails.comment}}</td>
-                        <td>{{transacDetails.prefix}}</td>
                         <td>{{transacDetails.paymentBy.firstName || 'NA'}}</td>
                         <td>{{transacDetails.paymentType || 'NA'}}</td>
+                        <td>{{transacDetails.prefix}}</td>
                         <td><i class="fa fa-inr"></i> {{transacDetails.amount}}</td>
                     </tr>
                     <tr>
@@ -115,41 +114,28 @@
                         <td></td>
                         <td></td>
                         <td><b>Total</b></td>
-                        <td><b><i class="fa fa-inr"></i> {{paymentsDetails.total}}.00</b></td>
+                        <td><b><i class="fa fa-inr"></i> {{transactionsDetails.total}}.00</b></td>
                     </tr>
                     </tbody>
                 </table>
             </div>
         </div>
-        <div class="col-xs-12" style="border: 1px solid #ccc; padding: 10px;margin:10px 0;border-radius: 5px;">
-            <h4><b>Route Expenses:</b></h4>
-            <div class="col-xs-4" style="margin: 10px 0;">
-                <b>Disel Expenses:</b>{{orderDetails.dieselCharges}}
-            </div>
-            <div class="col-xs-4" style="margin: 10px 0;">
-                <b>Toll Gate Charges:</b>{{orderDetails.tollGateCharges}}
-            </div>
-            <div class="col-xs-4" style="margin: 10px 0;">
-                <b>Loading/Unloading:</b>{{orderDetails.loadingUnloadingCharges}}
-            </div>
-            <div class="col-xs-4" style="margin: 10px 0;">
-                <b>Police Charges:</b>{{orderDetails.policeCharges}}
-            </div>
-        </div>
         <div class="col-xs-12">
             <div class="col-xs-12">
-                <p><b>Comments:</b></p>
+                <p><b>Update Status:</b></p>
                 <table class="table table-hover">
                     <thead>
                     <th>Date</th>
+                    <th>Status</th>
                     <th>Comment</th>
-                    <th>Admin</th>
+                    <th>Notify</th>
                     </thead>
                     <tbody>
                     <tr ng-repeat="comment in comments">
-                        <td>{{comment.createdAt |date:'dd-MM-yyyy'}}</td>
+                        <td>{{comment.createdAt | date:'dd-MM-yyyy'}}</td>
+                        <td>{{comment.status}}</td>
                         <td>{{comment.comment}}</td>
-                        <td>{{comment.createdBy.firstName}}</td>
+                        <td>{{comment.notify}}</td>
                     </tr>
                     </tbody>
                 </table>
@@ -185,7 +171,7 @@
                 <ul class="list-inline">
                     <li><b>Source Address:</b> {{orderDetails.source || 'Not Available'}}</li>
                     <li><b>Destination Address:</b> {{orderDetails.destination || 'Not Available'}}</li>
-                    <li><b>Payable Amount :</b> {{orderDetails.paybleAmounts || 'Not Available'}}</li>
+                    <li><b>Payable Amount :</b> {{orderDetails.payableAmount || 'Not Available'}}</li>
                 </ul>
             </div>
             <div class="col-xs-4">
@@ -200,19 +186,6 @@
                     <li><b>Driver Mobile: </b> {{orderDetails.driverMobile || 'Not Available'}}</li>
                 </ul>
             </div>
-        </div>
-        <div class="col-x-12">
-            <p style="font-size: 18px"><b>Route History</b></p>
-            <ul class="list-inline">
-                <li class="col-xs-12"><b>Truck Source Start Date Time</b> : {{orderDetails.truckStartDate || 'Not-Available'}}
-                </li>
-                <li class="col-xs-12"><b>Truck Destination Reach Date Time</b> : {{orderDetails.truckDestinationDate ||
-                    'Not Available'}}
-                </li>
-                <li class="col-xs-12"><b>Truck Route Run Time</b> : {{orderDetails.truckRouteRunTime ||
-                    'Not-Available'}}
-                </li>
-            </ul>
         </div>
     </div>
 

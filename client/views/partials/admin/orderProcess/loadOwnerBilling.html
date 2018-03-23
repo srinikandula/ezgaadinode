@@ -16,7 +16,7 @@
                                               ng-class="{'glyphicon-chevron-down': status.isOpen,
                                            'glyphicon-chevron-right': !status.isOpen}"></i>
                     </uib-accordion-heading>
-                    <a href="#" class="print-icon"><span class="glyphicon glyphicon-print"></span></a>
+                    <a href="#" class="print-icon" ng-click="printLoadOwnerBill();"><span class="glyphicon glyphicon-print"></span></a>
                     <div class="row truckinfomain">
                         <div class="truckinfo">
                             <p><b>{{orderDetails.orderId}} Given Commission: 1000.00 | Expected Commission: 0 | Obtained
@@ -52,7 +52,7 @@
                     <div class="row">
                         <div class="col-xs-12 perTransct">
                             <ul class="list-inline">
-                                <li class="pull-left"><b>Load Owner OwnerBilling</b></li>
+                                <li class="pull-left"><b>Load Owner Billing</b></li>
                                 <li class="pull-right">
                                     <button class="btn btn-primary" ng-click="truckPayment('Load Owner')">New</button>
                                 </li>
@@ -101,18 +101,18 @@
                                     <thead>
                                     <th>Date</th>
                                     <th>Comment</th>
-                                    <th>Prefix</th>
                                     <th>Payment By</th>
                                     <th>Payment Type</th>
+                                    <th>Prefix</th>
                                     <th>Amount</th>
                                     </thead>
                                     <tbody>
                                     <tr ng-repeat="transacDetails in transactionsDetails.transactions">
                                         <td>{{transacDetails.createdAt | date:'dd-MM-yyyy'}}</td>
                                         <td>{{transacDetails.comment}}</td>
-                                        <td>{{transacDetails.prefix}}</td>
                                         <td>{{transacDetails.paymentBy.firstName || 'NA'}}</td>
                                         <td>{{transacDetails.paymentType || 'NA'}}</td>
+                                        <td>{{transacDetails.prefix}}</td>
                                         <td><i class="fa fa-inr"></i> {{transacDetails.amount}}</td>
                                     </tr>
                                     <tr>
@@ -208,7 +208,7 @@
                         <div class="col-xs-4">
                             <div class="form-group styling-input-list">
                                 <input class="form-control order-form-control" type="text"
-                                       ng-model="orderDetails.dateOfOrder"/>
+                                       ng-model="orderDetails.payableAmount"/>
                                 <label class="order-effect-for-input">Payable Amount</label>
                             </div>
                         </div>
