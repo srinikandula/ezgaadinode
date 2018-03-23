@@ -762,7 +762,6 @@ Gps.prototype.getGpsSettings = function (id,req,callback) {
 
     GpsSettingsColl.findOne({accountId:id},function (err,settings) {
         if(err){
-            retObj.status=false;
             retObj.messages.push('Error retrieving settings for account');
             callback(retObj);
         }else{

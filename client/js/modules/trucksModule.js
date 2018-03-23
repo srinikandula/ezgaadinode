@@ -142,7 +142,14 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
                 url:'/v1/trucks/getTruckTypes',
                 method:"GET"
             }).then(success,error);
-        }
+        },
+        getAllTrucksForAccount: function (params, success, error) {
+            $http({
+                url: '/v1/trucks/getAllTrucksForAccount',
+                method: "GET",
+                params: params
+            }).then(success, error);
+        },
     }
 }]);
 

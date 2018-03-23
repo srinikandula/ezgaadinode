@@ -87,6 +87,12 @@ AuthRouter.get('/taxExpiryTrucks', function (req, res) {
     });
 });
 
+AuthRouter.get('/getAllTrucksForAccount',function (req,res) {
+    Trucks.getAllTrucksForAccount(req,function (result) {
+        res.json(result);
+    })
+});
+
 AuthRouter.get('/:truckId', function (req, res) {
     Trucks.findTruck(req.jwt, req.params.truckId,req, function (result) {
         res.send(result);
@@ -98,7 +104,6 @@ AuthRouter.put('/', function (req, res) {
         res.send(result);
     });
 });
-
 
 AuthRouter.delete('/:truckId', function (req, res) {
     Trucks.deleteTruck(req.jwt,req.params.truckId,req, function (result) {

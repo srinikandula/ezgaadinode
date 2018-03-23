@@ -47,7 +47,8 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
     $scope.reportParams={
         startDate:new Date(),
         endDate:new Date(),
-        truckNo:'TS08UB2542'
+        truckNo:'',
+        currentElement:0
     };
 
     $scope.getTruckReport = function () {
@@ -127,5 +128,41 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
 
         })
     }
+
+    $scope.getAllTrucksForAccount = function (search) {
+        TrucksService.getAllTrucksForAccount({
+            name: search,
+            size: $scope.reportParams.currentElement
+        },function (success) {
+            if(success.data.status){
+                console.log(success.data.data);
+                $scope.trucks=success.data.data;
+            }else{
+                $scope.trucks=[];
+            }
+        },function (error) {
+
+        })
+    }
+
+    $scope.loadMore = function () {
+        $scope.currentElement = $scope.currentElement + 10;
+        TrucksService.getAllTrucksForAccount({
+            name: $scope.reportParams.truckNo,
+            size: $scope.reportParams.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.trucks=success.data.data;
+            } else {
+                $scope.trucks = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+
+
+    $scope.getAllTrucksForAccount('');
 
 }]);

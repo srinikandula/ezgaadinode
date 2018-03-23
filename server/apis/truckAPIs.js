@@ -1235,4 +1235,35 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
     }
 };
 
+Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    var params = req.query;
+    var skipNumber = params.size ? parseInt(params.size) : 0;
+    var sort = {createdAt: -1};
+    var condition = {};
+    if (params.name) {
+        condition = {registrationNo: {$regex: '.*' + params.name + '.*'},accountId:req.jwt.id}
+    } else {
+        condition = {accountId:req.jwt.id}
+    }
+    console.log(condition);
+    TrucksColl.find(condition,{registrationNo:1,truckType:1}).skip(skipNumber)
+        .limit(10).exec(function (err, trucks) {
+        if(err){
+            retObj.messages.push("Error while fetching trucks");
+            callback(retObj);
+        }else if(trucks.length){
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = trucks;
+            callback(retObj);
+        }else{
+            retObj.messages.push("No trucks found");
+            callback(retObj);
+        }
+    });
+};
+
 module.exports = new Trucks();
