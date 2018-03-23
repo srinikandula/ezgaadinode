@@ -773,6 +773,7 @@ var adminTripsSchema = new mongoose.Schema({
     truckStartDate:Date,
     truckDestinationDate:Date,
     truckRouteRunTime:String,
+    payableAmount:String,
 
     /*to_advance:{type:Number,default:0},
     to_loadingCharge:{type:Number,default:0},

@@ -2164,11 +2164,11 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                 if (orderDetails.loadOwnerType == "Registered") {
                     condition = {orderId: params._id, loadOwnerId: orderDetails.loadOwnerId._id}
                     orderDetails.loadOwnerDetails=orderDetails.loadOwnerId;
-                    orderDetails.loadOwnerId="";
+                    orderDetails.loadOwnerId=orderDetails.loadOwnerId._id;
                 } else {
                     condition = {orderId: params._id, loadOwnerId: orderDetails.loadCustomerLeadId._id}
                     orderDetails.loadOwnerDetails=orderDetails.loadCustomerLeadId;
-                    orderDetails.loadCustomerLeadId="";
+                    orderDetails.loadCustomerLeadId=orderDetails.loadCustomerLeadId._id;
                 }
                 async.parallel({
                     paymentsDetails: function (paymentsCallback) {
@@ -2867,7 +2867,6 @@ OrderProcess.prototype.deleteOrderLocation=function (req,callback) {
         messages: []
     };
     var params = req.query;
-    console.log('ss',params)
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid Location");
     }

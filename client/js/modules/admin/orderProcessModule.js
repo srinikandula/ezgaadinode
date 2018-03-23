@@ -230,7 +230,7 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
             $http({
                 url: '/v1/cpanel/orderProcess/deleteOrderLocation',
                 method: "DELETE",
-                params: {_id:data}
+                params: {_id: data}
             }).then(success, error)
         }
 
@@ -1546,8 +1546,8 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     return {
                         ownerType: ownerType,
                         orderId: $scope.orderDetails._id,
-                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : "",
-                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : ""
+                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : undefined,
+                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : undefined
                     }
                 }
             }
@@ -1569,8 +1569,8 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     return {
                         ownerType: ownerType,
                         orderId: $scope.orderDetails._id,
-                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : "",
-                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : ""
+                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : undefined,
+                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : undefined
                     }
                 }
             }
@@ -1592,8 +1592,8 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     return {
                         ownerType: ownerType,
                         orderId: $scope.orderDetails._id,
-                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : "",
-                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : ""
+                        truckOwnerId: $scope.orderDetails.truckOwnerId ? $scope.orderDetails.truckOwnerId._id : undefined,
+                        loadOwnerId: $scope.orderDetails.loadOwnerDetails ? $scope.orderDetails.loadOwnerDetails._id : undefined
                     }
                 }
             }
@@ -1718,11 +1718,9 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             $(hiddenFrame).remove();
         };
         var htmlDocument = "<!doctype html>" +
-            "<html>" +
-            '<body onload="printAndRemove();">' +
-            html +
-            '</body>' +
-            "</html>";
+            "<body onload='printAndRemove();'>" +
+             html+
+            "</body>";
         var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
         doc.write(htmlDocument);
         doc.close();
@@ -1731,11 +1729,11 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
     $scope.printTruckOwnerBill = function () {
         $http.get("/views/partials/admin/templates/printTruckOwnerBill.html").then(function (template) {
             var printScope = angular.extend($rootScope.$new(), {
-               /* orderDetails: $scope.orderDetails,
+                orderDetails: $scope.orderDetails,
                 transactionsDetails: $scope.transactionsDetails,
                 paymentsDetails: $scope.paymentsDetails,
                 comments: $scope.comments,
-                locationsList: $scope.locationsList*/
+                locationsList: $scope.locationsList
             });
             var element = $compile($('<div>' + template.data + '</div>'))(printScope);
             var waitForRenderAndPrint = function () {
@@ -1749,7 +1747,28 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             waitForRenderAndPrint();
         });
     };
-    $scope.deleteOrderLocation=function (index,loc) {
+    $scope.printLoadOwnerBill = function () {
+        $http.get("/views/partials/admin/templates/printLoadOwnerBill.html").then(function (template) {
+            var printScope = angular.extend($rootScope.$new(), {
+                orderDetails: $scope.orderDetails,
+                transactionsDetails: $scope.transactionsDetails,
+                paymentsDetails: $scope.paymentsDetails,
+                comments: $scope.comments,
+                locationsList: $scope.locationsList
+            });
+            var element = $compile($('<div>' + template.data + '</div>'))(printScope);
+            var waitForRenderAndPrint = function () {
+                if (printScope.$$phase || $http.pendingRequests.length) {
+                    $timeout(waitForRenderAndPrint);
+                } else {
+                    printHtml(element.html());
+                    printScope.$destroy(); // To avoid memory leaks from scope create by $rootScope.$new()
+                }
+            }
+            waitForRenderAndPrint();
+        });
+    };
+    $scope.deleteOrderLocation = function (index, loc) {
 
         swal({
             title: 'Are you sure?',
