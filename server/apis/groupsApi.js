@@ -26,8 +26,7 @@ function create(req,action,attrs){
 
 Groups.prototype.login = function (userName, password, contactPhone,req, callback) {
     logger.info("logging in user:" + userName);
-    var accountAccess=["Truck Owner","Transpoters"];
-    var groupAccess=["Truck Owner","Transpoters"];
+
     var retObj = {
         status: false,
         messages: []
@@ -76,29 +75,18 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                     retObj.profilePic = user.profilePic;
                     retObj.type = user.type;
                     retObj.role = user.role;
-                    if(accountAccess.indexOf(user.role)>-1){
-                        retObj.accountAccess=true;
-                    }else{
-                        retObj.accountAccess=false;
-                    }
-                    if(groupAccess.indexOf(user.role)>-1){
-                        retObj.createGroup=true;
-                    }else{
-                        retObj.createGroup=false;
-                    }
+
 
                     var obj = {
                         id: user._id,
                         accountId: user._id,
                         userName: user.userName,
                         contactPhone: user.contactPhone,
-                        type: user.role,
-                        role: user.role,
-                        createGroup:retObj.createGroup,
-                        accountAccess:retObj.accountAccess
+                        type: user.type,
+                        role: user.role
 
                     };
-                    if(user.role === "group") {
+                    if(user.type === "group") {
                         obj.accountId = user.accountId;
                     }
                     user.lastLogin=new Date();

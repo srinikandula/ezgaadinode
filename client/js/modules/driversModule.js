@@ -249,9 +249,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         params.errors = [];
 
         if (!params.fullName) {
+
             params.errors.push('Please provide driver\'s full name')
         }
-/*
         if (!Utils.isValidPhoneNumber(params.mobile)) {
             params.errors.push('Please provide valid mobile number');
         }
@@ -260,15 +260,18 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             params.errors.push('Please provide license validity date');
         }
 
-        if (!params.salary) {
+        /*if (!params.salary) {
             params.errors.push('Please provide  salary');
-        }
+        }*/
 
         if (!params.licenseNumber) {
             params.errors.push('Please provide  licenseNumber');
         }
-*/
-        if (!params.errors.length) {
+        if (params.errors.length>0) {
+            params.errors.forEach(function (message) {
+                Notification.error(message)
+            });
+        }else{
             if (params._id) {
                 DriverService.updateDriver(params, function (success) {
                     if (success.data.status) {

@@ -386,7 +386,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         })
         getTruckIds();
     } else {
-        //getTruckIds();
+        getTruckIds();
     }
 
     $scope.enableGlobalAccess=false;
@@ -601,7 +601,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     };
 
     $scope.cancel = function () {
-        $state.go('accounts');
+        $state.go('myGroup');
     }
     $scope.changeProfilePic = function () {
         var modalInstance = $uibModal.open({
@@ -650,6 +650,17 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
 
         })
     }
+    $scope.searchLocation = function () {
+        var input = document.getElementById('location');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.group.location= place.formatted_address;
+
+            });
+    };
 
 }]);
 app.controller('userProfilePicCtrl', ['$scope', '$uibModalInstance', 'AccountServices', '$cookies', '$rootScope', '$state', 'modelType', 'Upload', '$sce', function ($scope, $uibModalInstance, AccountServices, $cookies, $rootScope, $state, modelType, Upload, $sce) {

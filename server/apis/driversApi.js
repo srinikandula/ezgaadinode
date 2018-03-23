@@ -139,7 +139,6 @@ Drivers.prototype.getDrivers = function (jwt, params, req, callback) {
         var skipNumber = (params.page - 1) * params.size;
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
         var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-
         if (!params.driverName) {
             condition = {accountId: jwt.accountId}
         } else {
@@ -263,7 +262,7 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, req, callback) {
         messages: []
     };
     var giveAccess = false;
-    if (jwt.accountAccess && driverInfo.accountId === jwt.accountId) {
+    if (jwt.type === "account" && driverInfo.accountId === jwt.accountId) {
         giveAccess = true;
     } else if (jwt.type === "group" && driverInfo.createdBy === jwt.id) {
         giveAccess = true;
@@ -385,7 +384,7 @@ Drivers.prototype.deleteDriver = function (jwt, driverId, req, callback) {
     };
     var condition = {};
     var giveAccess = false;
-    if (jwt.accountAccess) {
+    if (jwt.type === "account") {
         condition = {_id: driverId, accountId: jwt.accountId};
         giveAccess = true;
     } else if (jwt.type === "group") {

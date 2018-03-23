@@ -351,7 +351,7 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
         messages: []
     };
     var condition = {},projections={};
-    if (jwt.accountAccess) {
+    if (jwt.type === "account") {
         condition = {accountId: jwt.accountId, deviceId: {$ne: null},"attrs.latestLocation":{$exists:true}};
         projections={"attrs.latestLocation":1,registrationNo:1,truckType:1};
     } else {
@@ -742,6 +742,7 @@ Gps.prototype.editGpsSettings = function (body,req,callback) {
     var retObj={status: false,
         messages: []
     };
+    body.idleTime=parseInt(body.idleTime);
     GpsSettingsColl.update({accountId:req.jwt.id},{$set:body},function (err,settings) {
         if(err){
             retObj.status=false;

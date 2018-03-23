@@ -36,10 +36,16 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('userName', success.data.userName);
                     $cookies.put('editAccounts', success.data.editAccounts);
                     $cookies.put('profilePic', success.data.profilePic);
-                    $cookies.put('createGroup', success.data.createGroup);
-                    $cookies.put('accountAccess', success.data.accountAccess);
+                    $cookies.put('type', success.data.type);
+                    $cookies.put('erpEnabled',success.data.erpEnabled);
+                    $cookies.put('gpsEnabled',success.data.gpsEnabled);
                     $rootScope.loggedTrue();
-                    $state.go('reports');
+                    if(success.data.erpEnabled){
+                        $state.go('reports');
+                    }else{
+                        $state.go('gpsReports');
+                    }
+
                 } else {
                     params.errors = success.data.messages;
                 }

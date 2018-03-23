@@ -29,7 +29,7 @@
                 </div>
                 <div class="form-group col-xs-12">
                     <div class="col-xs-12 styling-input-list">
-                        <input ng-model="party.city" type="text" class="form-control custom-form-control" id="city">
+                        <input ng-model="party.city" type="text" class="form-control custom-form-control" id="city" ng-change="searchCity()">
                         <label class="focus-effect-for-input" aria-hidden="true">City*</label>
 
                     </div>
@@ -110,13 +110,13 @@
                             </div>
                             <div class="col-xs-5 form-group pl4-pr0 styling-input-list">
                                 <input ng-model="tripLane.from" type="text" class="form-control custom-form-control"
-                                       id="from">
+                                       id="from{{$index}}" ng-change="searchFrom($index)"      >
                                 <label class="focus-effect-for-input" aria-hidden="true">From</label>
 
                             </div>
                             <div class="col-xs-5     pl4-pr0 styling-input-list">
                                 <input ng-model="tripLane.to" type="text" class="form-control custom-form-control"
-                                       id="to">
+                                       id="to{{$index}}" ng-change="searchTo($index)">
                                 <label class="focus-effect-for-input" aria-hidden="true">To</label>
 
                             </div>

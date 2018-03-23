@@ -27,7 +27,7 @@
                         <ui-select ng-model="driver.truckId" theme="select2"
                                    style="min-width: 390px;"
                                    title="Choose a Truck" append-to-body="true">
-                            <ui-select-match placeholder="Select a Truck*" class="form-control custom-form-control">
+                            <ui-select-match placeholder="Select a Truck" class="form-control custom-form-control">
                                 {{$select.selected.registrationNo || truckRegNo}}
                             </ui-select-match>
                             <ui-select-choices
@@ -93,13 +93,13 @@
             </div>
 
             <div class="clearfix"></div>
-            <div class="col-xs-4 col-xs-push-4">
+           <!-- <div class="col-xs-4 col-xs-push-4">
                 <div class="alert alert-danger" role="alert" ng-show="driver.errors.length">
                     <ul>
                         <li ng-repeat="error in driver.errors">{{error}}</li>
                     </ul>
                 </div>
-            </div>
+            </div>-->
 
             <div class="col-xs-12">
                 <div class="col-xs-4 mtb-25 sub-can">
