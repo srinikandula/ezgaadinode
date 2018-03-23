@@ -1690,7 +1690,7 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
                         {"userId": new RegExp(params.commissionAgent, "gi")},
                         {"firstName": new RegExp(params.commissionAgent, "gi")},
                         {"companyName": new RegExp(params.commissionAgent, "gi")},
-                        // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                        {"mobile": new RegExp(parseFloat(params.commissionAgent),"gi")},
                     ], role: 'Commission Agent'
             };
         } else if (params.status) {
