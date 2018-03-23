@@ -9,6 +9,7 @@ var pageLimits = require('./../config/pagination');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var OperatingRoutesColl=require('./../models/schemas').OperatingRoutesColl;
 
 var Trips = require('./tripsApi');
 var Expenses = require('./expensesApi');
@@ -766,6 +767,87 @@ Accounts.prototype.getEmployees = function (req, callback) {
             callback(retObj);
         }
     });
+};
+
+Accounts.prototype.getAccountRoutes=function (req,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    OperatingRoutesColl.find({accountId: req.jwt.accountId}, function (err, docs) {
+       if(err){
+           retObj.messages.push("Please try again");
+           callback(retObj);
+       }else{
+           retObj.data=docs;
+           retObj.messages.push("Success");
+           callback(retObj);
+       }
+    })
+
+};
+
+Accounts.prototype.updateAccountRoutes=function (req,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+  var operatingRoutes=req.body;
+    if (operatingRoutes && operatingRoutes.length > 0) {
+        async.map(operatingRoutes, function (route, routeCallback) {
+            var query = {};
+            if (!route._id) {
+                query = {_id: mongoose.Types.ObjectId()};
+                route.createdBy = req.jwt.id;
+                route.accountId = req.jwt.accountId;
+            } else {
+                query = {_id: route._id}
+            }
+            route.updatedBy = req.jwt.id;
+            delete route.__v;
+            OperatingRoutesColl.update(query, route, {upsert: true}, function (err, doc) {
+                if (err) {
+                    retObj.messages.push('Error adding/updating route');
+                    routeCallback(err);
+                } else {
+                    routeCallback(null, 'saved');
+                }
+            });
+        }, function (err) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.update_account_operating_routes_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push("Account routes successfully");
+                analyticsService.create(req, serviceActions.update_account_operating_routes, {
+                    body: JSON.stringify(req.body.content),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    } else {
+        retObj.status = false;
+        retObj.messages.push("Please add operating routes");
+        analyticsService.create(req, serviceActions.update_account_operating_routes_err, {
+            body: JSON.stringify(req.body),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    }
 };
 
 module.exports = new Accounts();

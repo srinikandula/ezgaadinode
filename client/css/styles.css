@@ -2113,3 +2113,7 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 /*.ui-select-choices-row:hover{*/
  /*background-color: #eee !important;*/
 /*}*/
+
+.disabled {
+    cursor: not-allowed;
+}

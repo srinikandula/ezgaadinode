@@ -25,7 +25,21 @@ app.factory('GpsSettingsService',['$http', function ($http) {
                 method: "POST",
                 data:body
             }).then(success, error)
+        },
+        getAccountRoutes:function (success,error) {
+            $http({
+                url:'/v1/admin/getAccountRoutes',
+                method:"GET"
+            }).then(success, error)
+        },
+        updateAccountRoutes:function (params,success,error) {
+            $http({
+                url:'/v1/admin/updateAccountRoutes',
+                method:"POST",
+                data:params
+            }).then(success, error)
         }
+
     }
 }]);
 
@@ -59,9 +73,12 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
     function getGpsSettings() {
         GpsSettingsService.getGpsSettings(function (success) {
             if(success.data.status){
+
                 $scope.gpsSettingsParams=success.data.results;
             }else{
-                Notification.error({message:success.data.message});
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message:message});
+                });
             }
         },function (error) {
 
@@ -70,16 +87,38 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
 
     getGpsSettings();
 
+
     $scope.updateGpsSettings =function () {
         GpsSettingsService.updateGpsSettings($scope.gpsSettingsParams,function (success) {
             if(success.data.status){
-                Notification.success({message:success.data.message});
+                success.data.messages.forEach(function (message) {
+                    Notification.success({message:message});
+                });
             }else{
-                Notification.error({message:success.data.message});
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message:message});
+                });
+            }
+        },function (error) {
+
+        })
+    };
+    function getAccountRoutes() {
+        GpsSettingsService.getAccountRoutes(function (success) {
+            if(success.data.status){
+                success.data.messages.forEach(function (message) {
+                    Notification.success({message:message});
+                });
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message:message});
+                });
             }
         },function (error) {
 
         })
     }
+    getAccountRoutes();
+
 
 }]);

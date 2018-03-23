@@ -116,6 +116,19 @@ AuthRouter.get('/getEmployees', function (req, res) {
     });
 });
 
+AuthRouter.get('/getAccountRoutes', function (req, res) {
+    Accounts.getAccountRoutes(req, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.post('/updateAccountRoutes', function (req, res) {
+    Accounts.updateAccountRoutes(req, function (result) {
+        res.send(result);
+    });
+});
+
+
 module.exports = {
     AuthRouter: AuthRouter
 };

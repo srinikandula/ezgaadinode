@@ -455,7 +455,6 @@ function getDuesByParty(jwt, condition, params, callback) {
         status: false,
         messages: []
     };
-
     async.parallel({
         tripFrightTotal: function (callback) {
             TripColl.aggregate(condition,
@@ -483,6 +482,7 @@ function getDuesByParty(jwt, condition, params, callback) {
             var grossFreight = 0;
             var grossExpenses = 0;
             var grossDue = 0;
+
             for (var i = 0; i < partyIds.length; i++) {
                 var party = {"id": partyIds[i], "totalPayment": 0, "totalFright": 0};
                 var partyInfo = _.find(populateResults.tripFrightTotal, function (total) {
@@ -512,7 +512,7 @@ function getDuesByParty(jwt, condition, params, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.parties = result.documents;
-                retObj.grossAmounts = {grossFreight: grossFreight, grossExpenses: grossExpenses, grossDue: grossDue}
+                retObj.grossAmounts = {grossFreight: grossFreight, grossExpenses: grossExpenses, grossDue: grossDue};
                 callback(retObj);
             })
 
@@ -538,7 +538,7 @@ PaymentsReceived.prototype.getDuesByParty = function (jwt, params,req, callback)
                     $lte: new Date(params.toDate),
                 }, "partyId": ObjectId(params.partyId)
             }
-        }
+        };
         getDuesByParty(jwt, condition, params, function (response) {
             if(response.status){
                 analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });

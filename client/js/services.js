@@ -19,6 +19,7 @@ app.factory('Utils', ['$http', '$cookies',function ($http, $cookies) {
         isValidPhoneNumber: function(phNumber) {
             return phNumber && /^[1-9]\d{9}$/.test(phNumber);
         }
+
     }
 }]);
 

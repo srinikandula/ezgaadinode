@@ -53,50 +53,38 @@
                     </div>
                 </div>
                 <div class="col-xs-12 col-sm-6  mt-20">
-                    <div class="gpssettings-right">
-                        <uib-accordion close-others="oneAtATime">
-                            <div uib-accordion-group class="panel-default" is-open="status.open">
-                                <uib-accordion-heading>
-                                    <h3>Set Operating Routes</h3>
-                                    <i class="pull-right glyphicon plus-icon" ng-class="{'glyphicon-minus': status.open, 'glyphicon-plus': !status.open}"></i>
-                                </uib-accordion-heading>
-                                <div class="form-group">
-                                    <div class="col-xs-12 styling-input-list">
-                                        <input type="text" class="form-control custom-form-control">
-                                        <label class="focus-effect-for-input" aria-hidden="true">Min Stops Duration
-                                            10</label>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="col-xs-12 styling-input-list">
-                                        <input type="text" class="form-control custom-form-control">
-                                        <label class="focus-effect-for-input" aria-hidden="true">Over Speed Limit
-                                            KMPH</label>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </div>
+                    <h3>Operating Routes</h3>
+                    <div class="form-group pos-relative styling-input-list"
+                         ng-repeat="operatingRoute in operatingRoutes track by $index">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="source"
+                                   ng-model="operatingRoute.source" id="searchSource{{$index}}"
+                                   ng-change="addSearchSource($index)"/>
+                            <label class="focus-effect-for-input">Source</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="destination"
+                                   ng-model="operatingRoute.destination" id="searchDestination{{$index}}"
+                                   ng-change="addSearchDestination($index)"/>
+                            <label class="focus-effect-for-input">Destination</label>
+                        </div>
+                        <div class="form-group styling-input-list">
+                            <select class="form-control custom-form-control"
+                                    ng-model="operatingRoute.truckType">
+                                <option value="" selected>Truck Type</option>
+                                <option ng-repeat="trucksType in getTruckTypes" value="{{trucksType._id}}">
+                                    {{trucksType.title}}
+                                </option>
+                            </select>
+                        </div>
+                        <span class="plus-pos" ng-show="$index >= 1">
+                                <i class="fa fa-times-circle clr-red"
+                                   ng-click="deleteOperatingRoute($index)"></i></span>
+                        <span class="plus-pos" ng-show="$index == 0">
+                                <i class="fa fa-plus-square" aria-hidden="true"
+                                   ng-click="addOperatingRoute()"></i></span>
+                    </div>
 
-                            </div>
-                        </uib-accordion>
-                    </div>
-                    <div class="">
-                        <button class="btn can" type="reset">clear</button>
-                        <button class="btn can last" type="submit">Submit</button>
-                    </div>
-                    <div class="clearfix"></div>
-                    <div class="userEmail">
-                        <p> testuser@gmail.com</p>
-                    </div>
-                    <div class="">
-                        <input type="text" class="form-control" placeholder="secret key" ng-model="secretkey">
-                        <input type="text" class="form-control mt-5" placeholder="Email" ng-model="email">
-                        <button class="btn btn-danger mt-20" type="submit" ng-click="addSecret()">Add Secret Key</button>
-                        <button class="btn btn-primary pull-right mt-20" type="submit" ui-sref="secretKeys">View Secret Keys</button>
-                    </div>
-                    <div ng-show="secretkeyerror">
-                        {{secretkeyerror}}
-                    </div>
                 </div>
 
             </div>

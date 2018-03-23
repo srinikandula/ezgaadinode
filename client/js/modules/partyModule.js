@@ -189,8 +189,8 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                     loadTableData(params);
                 }
             });
-    }
-    
+    };
+
 }]);
 
 app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootScope', '$stateParams', 'Notification', '$state', function ($scope, Utils, PartyService, $rootScope, $stateParams, Notification, $state) {
@@ -329,6 +329,39 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
     };
     $scope.cancel = function () {
         $state.go('parties');
-    }
+    };
+    $scope.searchCity = function () {
+        var input = document.getElementById('city');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.party.city= place.formatted_address;
+
+            });
+    };
+    $scope.searchFrom = function (index) {
+        var input = document.getElementById('from'+index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.party.tripLanes[index].from= place.formatted_address;
+
+            });
+    };
+    $scope.searchTo =function (index) {
+        var input = document.getElementById("to"+index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.party.tripLanes[index].to= place.formatted_address;
+
+            });
+    };
 }]);
 

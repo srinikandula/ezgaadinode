@@ -523,6 +523,8 @@ const serviceActions = {
     update_order_pod_err:"UPDATE_ORDER_POD_ERR",
     delete_order_location:"DELETE_ORDER_LOCATION",
     delete_order_location_err:"DELETE_ORDER_LOCATION_ERR",
+    update_account_operating_routes:"UPDATE_ACCOUNT_OPERATING_ROUTES",
+    update_account_operating_routes_err:"UPDATE_ACCOUNT_OPERATING_ROUTES_ERR",
 
 
 

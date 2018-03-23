@@ -385,7 +385,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
             if ($stateParams.expenseId) {
                 ExpenseService.updateRecord(params, function (success) {
                     if (success.data.status) {
-                        Notification.success({message: success.data.message});
+                        Notification.success({message: success.data.messages[0]});
                         $state.go('expenses');
                     } else {
                         success.data.messages.forEach(function (message) {

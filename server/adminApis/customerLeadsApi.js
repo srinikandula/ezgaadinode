@@ -191,7 +191,7 @@ function saveCustomerLead(req, params, callback) {
     var customerLead = new CustomerLeadsColl(params);
     customerLead.save(function (err, doc) {
         if (err) {
-            retObj.messages.push("Please try again1");
+            retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.add_customer_lead_err, {
                 body: JSON.stringify(params),
                 accountId: req.jwt.id,
