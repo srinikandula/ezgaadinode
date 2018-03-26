@@ -128,6 +128,11 @@ AuthRouter.post('/updateAccountRoutes', function (req, res) {
     });
 });
 
+AuthRouter.delete('/deleteOperatingRoutes',function (req,res) {
+   Accounts.deleteOperatingRoutes(req,function (result) {
+       res.send(result);
+   })
+});
 
 module.exports = {
     AuthRouter: AuthRouter

@@ -779,6 +779,7 @@ Accounts.prototype.getAccountRoutes=function (req,callback) {
            retObj.messages.push("Please try again");
            callback(retObj);
        }else{
+           retObj.status=true;
            retObj.data=docs;
            retObj.messages.push("Success");
            callback(retObj);
@@ -786,6 +787,7 @@ Accounts.prototype.getAccountRoutes=function (req,callback) {
     })
 
 };
+
 
 Accounts.prototype.updateAccountRoutes=function (req,callback) {
   var retObj={
@@ -847,6 +849,55 @@ Accounts.prototype.updateAccountRoutes=function (req,callback) {
         }, function (response) {
         });
         callback(retObj);
+    }
+};
+
+Accounts.prototype.deleteOperatingRoutes=function (req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid operating route123");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        OperatingRoutesColl.remove({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("please try again");
+                analyticsService.create(req, serviceActions.delete_operating_route_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc && doc.result.n == 1) {
+                retObj.status = true;
+                retObj.messages.push("Operating route deleted successfully");
+                analyticsService.create(req, serviceActions.delete_operating_route, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Operating route not deleted");
+                analyticsService.create(req, serviceActions.delete_operating_route_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
     }
 };
 
