@@ -259,6 +259,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             paymentsId: null
         }
     }).state({
+        name: 'receipts',
+        url: '/receipts',
+        templateUrl: 'views/partials/receipts/receiptReceived.html',
+        data: {
+            activeTab: 'receipts',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'receiptEdit',
+        url: '/receiptEdit/:receiptId',
+        templateUrl: 'views/partials/receipts/receiptEdit.html',
+        data: {
+            activeTab: 'payments',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            receiptId: null
+        }
+    }).state({
         name: 'gpsReports',
         url: '/gps/gpsReports',
         templateUrl: 'views/partials/gps/gpsReports.html',

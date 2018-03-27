@@ -38,6 +38,13 @@ app.factory('GpsSettingsService',['$http', function ($http) {
                 method:"POST",
                 data:params
             }).then(success, error)
+        },
+        deleteOperatingRoutes:function (params,success,error) {
+            $http({
+                url:'/v1/admin/deleteOperatingRoutes',
+                method:"DELETE",
+                params:{_id:params}
+            }).then(success, error)
         }
 
     }
@@ -106,9 +113,7 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
     function getAccountRoutes() {
         GpsSettingsService.getAccountRoutes(function (success) {
             if(success.data.status){
-                success.data.messages.forEach(function (message) {
-                    Notification.success({message:message});
-                });
+                 $scope.operatingRoutesList=success.data.data;
             }else{
                 success.data.messages.forEach(function (message) {
                     Notification.error({message:message});
@@ -119,6 +124,92 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
         })
     }
     getAccountRoutes();
+    $scope.addSearchSource = function (index) {
+        var input = document.getElementById('searchSource' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.operatingRoutesList[index].source = place.name;
+                $scope.operatingRoutesList[index].sourceState = place.address_components[2].long_name;
+                $scope.operatingRoutesList[index].sourceAddress = place.formatted_address;
+                $scope.operatingRoutesList[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
 
+            });
+    };
+    $scope.addSearchDestination = function (index) {
+        var input = document.getElementById('searchDestination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.operatingRoutesList[index].destination = place.name;
+                $scope.operatingRoutesList[index].destinationState = place.address_components[2].long_name;
+                $scope.operatingRoutesList[index].destinationAddress = place.formatted_address;
+                $scope.operatingRoutesList[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+            });
+    };
+    $scope.addOperatingRoute = function () {
+        var routesObj = $scope.operatingRoutesList;
+        if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
+            Notification.error('Enter Source and Destination');
+        } else {
+            routesObj.push({});
+        }
+    };
+    $scope.deleteOperatingRoute = function (index) {
+        if( $scope.operatingRoutesList[index]._id){
+
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    GpsSettingsService.deleteOperatingRoutes($scope.operatingRoutesList[index]._id, function (success) {
+                        if (success.data.status) {
+                            swal(
+                                'Deleted!',
+                                success.data.messages[0],
+                                'success'
+                            );
+                            $scope.operatingRoutesList.splice(index, 1)
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                Notification.error(message);
+                            });
+                        }
+                    }, function (err) {
+
+                    });
+                }
+            });
+        }else{
+            $scope.operatingRoutesList.splice(index, 1)
+
+        }
+    };
+
+    $scope.updateOperatingRoutes=function () {
+        GpsSettingsService.updateAccountRoutes($scope.operatingRoutesList,function (success) {
+            if (success.data.status) {
+                success.data.messages.forEach(function (message) {
+                    Notification.success(message);
+                })
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                })
+            }
+        },function (error) {
+
+        })
+    }
 
 }]);

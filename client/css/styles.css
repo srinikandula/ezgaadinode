@@ -2117,3 +2117,15 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 .disabled {
     cursor: not-allowed;
 }
+.plus-pos, .close-pos{
+    position: absolute;
+    top: 30px;
+    right: -10px;
+    font-size: 22px;
+    color: red;
+    overflow: hidden;
+    cursor: pointer;
+}
+.routes{
+    padding: 30px 0;
+}

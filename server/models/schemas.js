@@ -865,6 +865,15 @@ var orderLocationSchema=new mongoose.Schema({
     timestamps: true, versionKey: false
 });
 
+var receiptSchema=new mongoose.Schema({
+    createdBy:{type: ObjectId, ref: 'accounts'},
+    updatedBy:{type: ObjectId, ref: 'accounts'},
+    accountId:{type: ObjectId, ref: 'accounts'},
+    partyId: {type: ObjectId, ref: 'parties'},
+    amount:Number,
+    date:Date,
+    description:String
+});
 
 /*author : Naresh
 **Auto increment order id sequence*/
@@ -959,5 +968,7 @@ module.exports = {
     OrderCommentsColl:mongoose.model('orderComments', orderCommentsSchema, 'orderComments'),
     OrderTransactionsColl:mongoose.model('orderTransactions', orderTransactionSchema, 'orderTransactions'),
     OrderLocationColl:mongoose.model('orderLocations', orderLocationSchema, 'orderLocations'),
-    deviceIdColl:mongoose.model('deviceId',deviceIdSchema,'deviceId')
+    deviceIdColl:mongoose.model('deviceId',deviceIdSchema,'deviceId'),
+    ReceiptsColl:mongoose.model('receipts',receiptSchema,'receipts'),
+
 };
