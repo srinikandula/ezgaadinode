@@ -94,6 +94,7 @@ gulp.task('merge-components',function () {
         './client/components/angular-ui-select/dist/select.min.js',
         './client/components/datatables.net/js/jquery.dataTables.min.js',
         './client/components/datatables.net-responsive/js/dataTables.responsive.min.js',
+        './client/components/ngmap/build/scripts/ng-map.js',
     ]) // path to your file
         .pipe(concat('components.js'))
         .pipe(gulp.dest('./client/dist/components/'))

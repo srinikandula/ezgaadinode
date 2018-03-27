@@ -1,7 +1,7 @@
 "use strict";
 var jwt = require('jsonwebtoken');
 var config = require('./../config/config');
-var Groups = require('./../apis/groupsApi');
+var Groups = require('../apis/loginApi');
 var staticFilesRegex = /\.(html|css|ico|png|jpeg|jpg|js|eot|svg|ttf|woff|json)$/;
 
 function authMiddleware(req, res, next) {

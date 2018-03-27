@@ -35,7 +35,7 @@ var Employees = require('./server/adminRoutes/employeeRoutes');
 var Devices = require('./server/adminRoutes/deviceRoutes');
 var globalApi = require('./server/routes/globalRoutes');
 var pushNotifications= require('./server/routes/notifications');
-var groupsApi = require('./server/apis/groupsApi');
+var groupsApi = require('./server/apis/loginApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 var kafkaConsumer = require('./server/apis/testkafka/kafkaConsumer');
@@ -94,8 +94,8 @@ app.use(function (req, res, next) {
         next();
     } else {
         var hostName = req.host || req.hostname;
-         if(hostName.indexOf('cpanel') != -1 || hostName.indexOf('admin.') != -1){
-             res.sendFile(__dirname + '/client/views/adminIndex.html');
+        if(hostName.indexOf('cpanel') != -1 || hostName.indexOf('admin.') != -1){
+            res.sendFile(__dirname + '/client/views/adminIndex.html');
         } else{
             res.sendFile(__dirname + '/client/views/index.html');
 
