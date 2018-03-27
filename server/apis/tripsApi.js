@@ -236,7 +236,9 @@ Trips.prototype.addTrip = function (jwt, tripDetails,req, callback) {
     if (!_.isNumber(tripDetails.freightAmount)) {
         retObj.messages.push("Please add Freight Amount");
     }
-
+    if(tripDetails.tripLane){
+        retObj.messages.push("Please select trip lane");
+    }
     if (retObj.messages.length) {
         analyticsService.create(req,serviceActions.add_trip_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);

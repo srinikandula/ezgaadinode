@@ -1,6 +1,6 @@
 var ReceiptsColl = require('./../models/schemas').ReceiptsColl;
 
-var mongoose = require('mongoose');
+var mongoose=require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 var async = require("async");
 
@@ -181,5 +181,34 @@ Receipts.prototype.deleteReceipt = function (req, callback) {
     }
 };
 
+
+/**
+ * Find the Total receipts from the receipts in the account
+ */
+
+Receipts.prototype.findTotalReceipts = function (erpSettingsCondition,req, callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+    ReceiptsColl.aggregate([{$match: erpSettingsCondition},
+            {$group: {_id: null, totalReceipts: {$sum: "$amount"}}}],
+        function (err, receipt) {
+           if(err){
+               retObj.messages.push("Please try again");
+               callback(retObj);
+           }else{
+               retObj.status=true;
+               if(receipt[0]){
+                   retObj.totalReceipts=receipt[0].totalReceipts;
+               }else{
+                   retObj.totalReceipts=0;
+
+               }
+               callback(retObj);
+           }
+        });
+
+};
 
 module.exports = new Receipts();

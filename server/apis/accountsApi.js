@@ -15,6 +15,7 @@ var Trips = require('./tripsApi');
 var Expenses = require('./expensesApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
 var Trucks = require('./truckAPIs');
+var Receipts = require('./receiptsApi');
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 
@@ -352,6 +353,11 @@ Accounts.prototype.erpDashBoardContent = function (jwt,req, callback) {
                     Expenses.findPaybleAmountForAccount(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId),req, function (response) {
                         paybleCallback(response.error, response.paybleCount);
                     });
+                },
+                receiptsAmount:function (receiptsAmountCallback) {
+                    Receipts.findTotalReceipts(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId),req, function (response) {
+                        receiptsAmountCallback(!response.status, response.totalReceipts);
+                    });
                 }
             }, function (error, dashboardContent) {
                 if (error) {
@@ -373,7 +379,7 @@ Accounts.prototype.erpDashBoardContent = function (jwt,req, callback) {
             callback(retObj);
         }
     })
-}
+};
 
 Accounts.prototype.countAccounts = function (jwt,req, callback) {
     var result = {};
