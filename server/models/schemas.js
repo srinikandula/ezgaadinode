@@ -18,6 +18,15 @@ connection.once('open', function () {
 connection.on('error', function (err) {
     console.log('ERROR CONNECTING TO MONGODB', err);
 });
+var routeConfigSchema = new mongoose.Schema({
+    name:String,
+    distance:Number,
+    source:{},
+    destination:{},
+    attrs: {}
+}, {
+    timestamps: true
+});
 
 var accountSchema = new mongoose.Schema({
     userName: { // name of the account is called accountId
@@ -52,6 +61,8 @@ var accountSchema = new mongoose.Schema({
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: true},
+    routeConfigEnabled: {type: Boolean, default: false},
+
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
     alternatePhone: [],
@@ -486,6 +497,8 @@ var customerLeadsSchema = mongoose.Schema({
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},
+    routeConfigEnabled: {type: Boolean, default: false},
+
     yearInService: Number,
     documentType: String,
     documentFiles: [""],
@@ -896,6 +909,7 @@ var deviceIdSchema =new mongoose.Schema({
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
+    RouteConfigColl:mongoose.model('configs',routeConfigSchema,'configs'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),

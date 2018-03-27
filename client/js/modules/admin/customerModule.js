@@ -32,6 +32,7 @@ app.factory('customerServices', function ($http) {
             $http({
                 url: '/v1/cpanel/customers/getTruckOwners',
                 method: "GET",
+
                 params: pageble
             }).then(success, error)
         },
@@ -285,6 +286,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             gpsEnabled: undefined,
             erpEnabled: undefined,
             loadEnabled: undefined,
+            routeConfigEnabled: undefined,
+
             yrsInService: '',
             operatingRoutes: [{}],
             documentType: '',
@@ -368,6 +371,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     $scope.createLeads = function () {
         var params = $scope.customerLead;
         params.errorMessage = [];
+        console.log("Admin params....",params);
 
         if (!params.firstName) {
             params.errorMessage.push('Enter Your Full Name');
@@ -859,6 +863,7 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
         isOpenSix: true,
         isOpenSev: true,
     };
+    $scope.truckOwner ={};
 
     $scope.title = "Edit Truck Owner";
     $scope.getTruckTypes = function () {
@@ -873,6 +878,7 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
     if ($stateParams.truckownerId) {
         $scope.getTruckTypes();
         customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
+            console.log("truck owners...",success);
             if (success.data.status) {
                 $scope.truckOwner = success.data.data.truckOwnerData;
                 $scope.truckOwner.confirmPassword = success.data.data.truckOwnerData.password;
@@ -908,6 +914,10 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
 
         });
     }
+    $scope.add = function(){
+console.log("Route config value..",$scope.truckOwner);
+    };
+
 $scope.selectTruckTypes=[];
     $scope.leadType = [{
         "key": "Truck Owner",
@@ -1044,6 +1054,7 @@ $scope.selectTruckTypes=[];
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.data;
                 $scope.currentPageOfTruckOwners = response.data.data;
+                console.log("currentPageOfTruckOwners",$scope.currentPageOfTruckOwners);
             } else {
                 Notification.error({message: response.data.messages[0]});
             }

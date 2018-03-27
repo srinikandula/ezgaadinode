@@ -9,6 +9,8 @@ var app = express();
 
 var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
+var RouteConfig = require('./server/routes/routeConfigRoutes');
+
 
 var Trips = require('./server/routes/tripRoutes');
 var Expense = require('./server/routes/expensesRoutes');
@@ -129,6 +131,8 @@ app.use('/v1/cpanel/accounts', Accounts.AuthRouter);
 app.use('/v1/cpanel/employees', Employees.AuthRouter);
 app.use('/v1/cpanel/devices', Devices.AuthRouter);
 app.use('/v1/global/',globalApi.AuthRouter);
+app.use('/v1/routeConfigs',RouteConfig.AuthRouter);
+
 
 var server = app.listen(app.get('port'), function () {
     console.log('Listening on port ' + server.address().port);

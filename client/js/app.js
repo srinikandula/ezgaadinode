@@ -27,6 +27,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             access: 'null'
         }
     }).state({
+        name: 'routeConfig',
+        url: '/routeConfig',
+        templateUrl: 'views/partials/routeConfig/list.html',
+        data: {
+            activeTab: 'routeConfig',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'addRouteConfig',
+        url: '/addRouteConfig/:ID',
+        templateUrl: 'views/partials/routeConfig/addRouteConfig.html',
+        data: {
+            activeTab: 'routeConfig',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            ID:null
+        }
+    }).state({
         name: 'myProfile',
         url: '/myProfile',
         templateUrl: 'views/partials/userProfile/myProfile.html',
@@ -478,12 +501,10 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
 }]);
 
 app.run(['$transitions', '$rootScope', '$cookies',function ($transitions, $rootScope, $cookies) {
-
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');
         $rootScope.createGroup=$cookies.get('createGroup');
-        $rootScope.type=$cookies.get('type');
         $rootScope.erpEnabled=$cookies.get('erpEnabled');
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
