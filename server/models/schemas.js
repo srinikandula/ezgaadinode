@@ -853,9 +853,12 @@ var orderLocationSchema=new mongoose.Schema({
 });
 
 var receiptSchema=new mongoose.Schema({
+    createdBy:{type: ObjectId, ref: 'accounts'},
+    updatedBy:{type: ObjectId, ref: 'accounts'},
     accountId:{type: ObjectId, ref: 'accounts'},
     partyId: {type: ObjectId, ref: 'parties'},
     amount:Number,
+    date:Date,
     description:String
 });
 
