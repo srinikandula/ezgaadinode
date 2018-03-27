@@ -94,8 +94,8 @@ app.use(function (req, res, next) {
         next();
     } else {
         var hostName = req.host || req.hostname;
-         if(hostName.indexOf('cpanel') != -1 || hostName.indexOf('admin.') != -1){
-             res.sendFile(__dirname + '/client/views/adminIndex.html');
+        if(hostName.indexOf('cpanel') != -1 || hostName.indexOf('admin.') != -1){
+            res.sendFile(__dirname + '/client/views/adminIndex.html');
         } else{
             res.sendFile(__dirname + '/client/views/index.html');
 

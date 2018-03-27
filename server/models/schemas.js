@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 var config = require('./../config/config');
 var ObjectId = mongoose.Schema.Types.ObjectId;
 
+console.log('Connecting to mongo using url - '+ config.mongo.url);
 mongoose.connect(config.mongo.url, {
     user: config.mongo.user,
     pass: config.mongo.password,

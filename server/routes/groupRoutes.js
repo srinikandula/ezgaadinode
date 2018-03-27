@@ -1,7 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
-var Groups = require('../apis/groupsApi');
+var Groups = require('../apis/loginApi');
 
 
 OpenRouter.post('/login', function (req, res) {

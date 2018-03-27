@@ -1,7 +1,6 @@
 var mongoose = require('mongoose');
 var jwt = require('jsonwebtoken');
 var _ = require('underscore');
-var async = require('async');
 const ObjectId = mongoose.Types.ObjectId;
 var log4js = require('log4js')
     , logger = log4js.getLogger("file-log");
@@ -90,6 +89,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                         obj.accountId = user.accountId;
                     }
                     user.lastLogin=new Date();
+                    //save user with last login time
                     user.save(function (err) {
                         if(err){
                             retObj.messages.push('Please try again');
@@ -101,7 +101,6 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                                     callback(retObj);
                                 } else {
                                     retObj.token = token;
-
                                     ErpSettingsColl.findOne({accountId: user._id}, function (err, settingsData) {
                                         if (err) {
                                             retObj.messages.push('Please try again');
