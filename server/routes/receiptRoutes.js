@@ -14,6 +14,12 @@ AuthRouter.get("/getReceipts",function (req,res) {
    })
 });
 
+AuthRouter.get("/getReceiptDetails",function (req,res) {
+    Receipts.getReceiptDetails(req,function (result) {
+        res.send(result);
+    })
+});
+
 AuthRouter.post("/addReceipt",function (req,res) {
     Receipts.addReceipt(req,function (result) {
         res.send(result);
