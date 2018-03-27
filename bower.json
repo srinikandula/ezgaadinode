@@ -34,7 +34,8 @@
     "datatables.net-responsive": "^2.2.0",
     "datatables.net-responsive-dt": "^2.2.0",
     "angularjs-dropdown-multiselect": "^1.11.8",
-    "lightbox2": "lightbox#^2.10.0"
+    "lightbox2": "lightbox#^2.10.0",
+    "ngmap": "^1.18.4"
   },
   "resolutions": {
     "angular": "1.6.6"
