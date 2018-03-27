@@ -97,13 +97,15 @@ app.controller('PickRouteLocationController', ['$scope','$state','RouteConfigSer
         $scope.position ={};
     }
     $scope.marker = null;
+    $scope.accountHomeLocation = [17.3850,68.4867];
+    //
     var icon = (data&&data.type) ==='source'?'http://maps.google.com/mapfiles/ms/icons/green-dot.png':'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
     NgMap.getMap().then(function(map) {
             if($scope.position.latlng){
                 map.setCenter({lat:$scope.position.latlng[0],lng:$scope.position.latlng[1]});
                 $scope.marker = new google.maps.Marker({icon:icon,position:new google.maps.LatLng($scope.position.latlng[0],$scope.position.latlng[1]),draggable: true});
             } else {
-                $scope.marker = new google.maps.Marker({icon:icon,position:new google.maps.LatLng(17.3850,78.4867),draggable: true});
+                $scope.marker = new google.maps.Marker({icon:icon,position:new google.maps.LatLng($scope.accountHomeLocation[0],$scope.accountHomeLocation[1]),draggable: true});
             }
             $scope.marker.setMap(map);
         var infowindow = new google.maps.InfoWindow;
