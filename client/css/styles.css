@@ -2125,10 +2125,19 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 .disabled {
     cursor: not-allowed;
 }
-.plus-pos, .close-pos{
+.close-pos{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: 22px;
+    color: red;
+    overflow: hidden;
+    cursor: pointer;
+}
+.plus-pos{
     position: absolute;
     top: 30px;
-    right: -10px;
+    right: 0;
     font-size: 22px;
     color: red;
     overflow: hidden;
@@ -2136,6 +2145,10 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 }
 .routes{
     padding: 30px 0;
+}
+.overFlow{
+    height: 250px;
+    overflow-y: scroll;
 }
 #top {
     float:right;
