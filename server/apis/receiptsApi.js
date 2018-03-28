@@ -135,20 +135,25 @@ Receipts.prototype.updateReceipt = function (req, callback) {
     if (!params.amount) {
         retObj.messages.push("Please enter amount");
     }
-    ReceiptsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
-        if (err) {
-            retObj.messages.push("Please try again");
-            callback(retObj);
-        } else if (doc) {
-            retObj.status = true;
-            retObj.messages.push("Receipt updated successfully");
-            retObj.data = doc;
-            callback(retObj);
-        } else {
-            retObj.messages.push("Receipt not updated");
-            callback(retObj);
-        }
-    })
+    if(retObj.messages.length>0){
+        callback(retObj);
+    }else{
+        ReceiptsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else if (doc) {
+                retObj.status = true;
+                retObj.messages.push("Receipt updated successfully");
+                retObj.data = doc;
+                callback(retObj);
+            } else {
+                retObj.messages.push("Receipt not updated");
+                callback(retObj);
+            }
+        })
+    }
+
 };
 
 Receipts.prototype.deleteReceipt = function (req, callback) {
@@ -210,5 +215,36 @@ Receipts.prototype.findTotalReceipts = function (erpSettingsCondition,req, callb
         });
 
 };
+
+Receipts.prototype.getReceiptsByParties=function (req,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+    getReceiptsByParties({},callback);
+
+
+};
+
+function getReceiptsByParties(condition,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    ReceiptsColl.aggregate(condition,
+        {$group: {_id: "$partyId", amount: {$sum: "$amount"}}},
+
+        function (err, receipts) {
+            if(err){
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            }else{
+                retObj.status=true;
+                retObj.messages.push("Success");
+                retObj.data=receipts;
+                callback(retObj);
+            }
+        });
+}
 
 module.exports = new Receipts();

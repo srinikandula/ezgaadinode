@@ -525,8 +525,18 @@ const serviceActions = {
     delete_order_location_err:"DELETE_ORDER_LOCATION_ERR",
     update_account_operating_routes:"UPDATE_ACCOUNT_OPERATING_ROUTES",
     update_account_operating_routes_err:"UPDATE_ACCOUNT_OPERATING_ROUTES_ERR",
-
-
+    get_receipts_by_parties:"GET_RECEIPTS_BY_PARTIES",
+    get_receipts_by_parties_err:"GET_RECEIPTS_BY_PARTIES_ERR",
+    add_receipts:"ADD_RECEIPTS",
+    add_receipts_err:"ADD_RECEIPTS_ERR",
+    update_receipts:"UPDATE_RECEIPTS",
+    update_receipts_err:"UPDATE_RECEIPTS_ERR",
+    get_receipts_list:"GET_RECEIPTS_LIST",
+    get_receipts_list_err:"GET_RECEIPTS_LIST_ERR",
+    get_receipt_details:"GET_RECEIPT_DETAILS",
+    get_receipt_details_err:"GET_RECEIPT_DETAILS_ERR",
+    delete_receipt_details:"DELETE_RECEIPT_DETAILS",
+    delete_receipt_details_err:"DELETE_RECEIPT_DETAILS_ERR"
 
 
 };
