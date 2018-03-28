@@ -38,6 +38,11 @@ AuthRouter.delete("/deleteReceipt",function (req,res) {
     })
 });
 
+AuthRouter.get("/getReceiptsbyParties",function (req,res) {
+   Receipts.getReceiptsByParties(req,function (results) {
+       res.send(result);
+   })
+});
 module.exports = {
     AuthRouter: AuthRouter
 };
