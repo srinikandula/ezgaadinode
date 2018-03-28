@@ -236,7 +236,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails,req, callback) {
     if (!_.isNumber(tripDetails.freightAmount)) {
         retObj.messages.push("Please add Freight Amount");
     }
-    if(tripDetails.tripLane){
+    if(!tripDetails.tripLane){
         retObj.messages.push("Please select trip lane");
     }
     if (retObj.messages.length) {

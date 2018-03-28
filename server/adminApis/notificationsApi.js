@@ -49,7 +49,7 @@ Notifications.prototype.getNotifications = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages = "No truck types found";
+                retObj.messages.push ("Notifications are not Found");
                 analyticsService.create(req, serviceActions.get_notifications_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,

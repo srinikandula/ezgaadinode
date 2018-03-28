@@ -78,7 +78,7 @@
         <div class="row">
             <div class="col-xs-12">
                 <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
-                    <left-menu label="Route Config" ui-sref="routeConfig"></left-menu>
+                    <left-menu label="Reports" ui-sref="reports"></left-menu>
                     <left-menu label="Trucks" ui-sref="trucks"></left-menu>
                     <left-menu label="Drivers" ui-sref="drivers"></left-menu>
                     <left-menu label="Parties" ui-sref="parties"></left-menu>
@@ -86,7 +86,9 @@
                     <left-menu label="Receipts" ui-sref="receipts"></left-menu>
                     <left-menu label="Trips" ui-sref="trips"></left-menu>
                     <!--<left-menu label="Expense-Master"></left-menu>-->
-                    <left-menu label="Expenses" ui-sref="expenses"></left-menu> <div class="clearfix"></div>
+                    <left-menu label="Expenses" ui-sref="expenses"></left-menu>
+                    <left-menu label="Route-Config" ui-sref="routeConfig"></left-menu>
+                    <div class="clearfix"></div>
              </div>
                 <div class="col-xs-12 col-sm-10">
                     <ui-view></ui-view>
@@ -116,5 +118,29 @@
 
 <!--controllers-->
 <script src="dist/js/main.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $("#top").hide();
+        $(function toTop() {
+            $(window).scroll(function () {
+                if ($(this).scrollTop() > 100) {
+                    $('#top').fadeIn();
+                } else {
+                    $('#top').fadeOut();
+                }
+            });
+
+            $('#top').click(function () {
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 800);
+                return false;
+            });
+        });
+    });
+</script>
+<div id="top" onclick="toTop()">
+    <span class="top"> <i class="fa fa-angle-double-up" alt="Scroll to Top"></i></span>
+</div>
 </body>
 </html>

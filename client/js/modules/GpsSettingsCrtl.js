@@ -113,7 +113,11 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
     function getAccountRoutes() {
         GpsSettingsService.getAccountRoutes(function (success) {
             if(success.data.status){
-                 $scope.operatingRoutesList=success.data.data;
+                if(success.data.data.length>0){
+                    $scope.operatingRoutesList=success.data.data;
+                }else{
+                    $scope.operatingRoutesList=[{}];
+                }
             }else{
                 success.data.messages.forEach(function (message) {
                     Notification.error({message:message});

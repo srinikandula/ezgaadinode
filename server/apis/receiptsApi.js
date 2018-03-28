@@ -101,6 +101,7 @@ Receipts.prototype.addReceipt = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
+        params.accountId=req.jwt.accountId;
         params.createdBy=req.jwt.accountId;
         var receipt = new ReceiptsColl(params);
         receipt.save(function (err, doc) {
@@ -196,6 +197,7 @@ Receipts.prototype.findTotalReceipts = function (erpSettingsCondition,req, callb
       status:false,
       messages:[]
   };
+  console.log("cond",erpSettingsCondition)
     ReceiptsColl.aggregate([{$match: erpSettingsCondition},
             {$group: {_id: null, totalReceipts: {$sum: "$amount"}}}],
         function (err, receipt) {
@@ -221,7 +223,7 @@ Receipts.prototype.getReceiptsByParties=function (req,callback) {
       status:false,
       messages:[]
   };
-    getReceiptsByParties({},callback);
+    getReceiptsByParties({$match: {}},callback);
 
 
 };
@@ -232,9 +234,18 @@ function getReceiptsByParties(condition,callback) {
         messages:[]
     };
     ReceiptsColl.aggregate(condition,
-        {$group: {_id: "$partyId", amount: {$sum: "$amount"}}},
+        {
+            "$lookup": {
+                "from": "parties",
+                "localField": "partyId",
+                "foreignField": "_id",
+                "as": "partyId"
+            }
+        }, {"$unwind": "$partyId"},
+        {$group: {_id: "$partyId",amount: {$sum: "$amount"}}},
 
         function (err, receipts) {
+        console.log(err)
             if(err){
                 retObj.messages.push("Please try again");
                 callback(retObj);

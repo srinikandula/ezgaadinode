@@ -1,5 +1,5 @@
-app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'PaymentsService', 'AccountServices', '$stateParams',
-    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, PaymentsService, AccountServices, $stateParams) {
+app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'PaymentsService', 'AccountServices', '$stateParams', 'ReceiptServices',
+    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, PaymentsService, AccountServices, $stateParams, ReceiptServices) {
 
         $scope.vehicleId = $stateParams.vehicleId;
         $scope.id = $stateParams.id;
@@ -31,6 +31,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             AccountServices.erpDashboard(function (success) {
                 if (success.data.status) {
                     $scope.totals = success.data.result;
+                    console.log("Sdcsa",$scope.totals)
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
@@ -426,9 +427,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 "title": "Registration No",
                                 "data": "regNumber",
                                 "render": function (data, type, row) {
-
                                     return '<a href="#" class="ui-sref" >' + data + '</a>';
-
                                 }
                             },
                             {title: 'Diesel', "data": "exps[0].dieselExpense"},
@@ -1071,5 +1070,60 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.downloadPaybleDetailsByParty = function () {
             window.open('/v1/expense/downloadPaybleDetailsByParty?partyId=' + $scope.partyId + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
         }
+
+
+        $scope.getAmountByReceipts = function () {
+            ReceiptServices.getReceiptsByParties(function (success) {
+                if (success.data.status) {
+                    $scope.amounts = success.data.data;
+                    $scope.table = $('#amountByReceipts').DataTable({
+                        destroy: true,
+                        responsive: true,
+                        aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                        iDisplayLength: 10,
+                        sDom: 'tp',
+                        order: [[0, 'des']],
+                        columnDefs: [{
+                            orderable: true,
+                            responsivePriority: 1
+                        }],
+
+                        data: $scope.amounts ,
+                        columns: [
+                            {
+                                title: 'Party Name', "data":"_id.name",
+                                "render": function (data, type, row) {
+                                        return '<a href="#" ui-sref="receiptBypartyName" >' + data + '</a>';
+
+                                }
+                            },
+                            {
+                                title: "Amount", "data": "amount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            }
+                            ],
+
+                        searching: true
+
+                    })
+
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            }, function (err) {
+
+            });
+        };
+
+
     }]);
 

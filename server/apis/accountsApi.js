@@ -355,7 +355,7 @@ Accounts.prototype.erpDashBoardContent = function (jwt,req, callback) {
                     });
                 },
                 receiptsAmount:function (receiptsAmountCallback) {
-                    Receipts.findTotalReceipts(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId),req, function (response) {
+                    Receipts.findTotalReceipts(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId),req, function (response) {
                         receiptsAmountCallback(!response.status, response.totalReceipts);
                     });
                 }

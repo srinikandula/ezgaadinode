@@ -39,7 +39,7 @@ AuthRouter.delete("/deleteReceipt",function (req,res) {
 });
 
 AuthRouter.get("/getReceiptsbyParties",function (req,res) {
-   Receipts.getReceiptsByParties(req,function (results) {
+   Receipts.getReceiptsByParties(req,function (result) {
        res.send(result);
    })
 });

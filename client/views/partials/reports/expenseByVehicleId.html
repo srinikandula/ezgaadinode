@@ -1,6 +1,6 @@
 <div class="col-xs-12 pall-zero" ng-controller="dashboardController" ng-init="getexpenseByVehicleId();">
     <div class="col-sm-3 col-xs-12">
-        <div class="reports-panel" ui-sref="reports">
+        <div class="reports-panel payments" ui-sref="reports">
             <div class="reports-image">
                 <figure>
                     <img src="images/revenue-report.png">
@@ -9,9 +9,26 @@
             <div class="reports-text">
                 <h3>Revenue</h3>
                 <p>From All Vehicles</p>
-                <small><i class="fa fa-inr"></i>
-                    {{totals.totalRevenue}}
-                </small>
+                <!-- <small><i class="fa fa-inr"></i>
+                     {{totals.totalRevenue}}
+                 </small>-->
+            </div>
+            <div class="col-xs-12 pall-zero">
+                <ul class="list-inline">
+                    <li class="payble" ui-sref="reports">
+                        <span class="payable">By Trips</span><br>
+                        <small><i class="fa fa-inr"></i>
+                            {{totals.totalRevenue}}
+                        </small>
+                    </li>
+                    <li class="payble" ui-sref="byReceipts">
+                        <span class="receivable">By Receipts</span> <br>
+                        <small><i class="fa fa-inr"></i>
+                            {{totals.receiptsAmount || 0}}
+                        </small>
+                    </li>
+
+                </ul>
             </div>
         </div>
     </div>
@@ -106,7 +123,7 @@
             <h3 class="db-title">Expense - {{vehicleId}}:</h3>
 
             <table id="expenseByPartylist"
-                   class="display table table-striped table-bordered style-table category-table table table-hover"
+                   class="table table-bordered table-striped table-condensed table-hover"
                    cellspacing="0" width="100%">
                 <tfoot>
                 <tr>
