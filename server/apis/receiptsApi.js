@@ -197,7 +197,6 @@ Receipts.prototype.findTotalReceipts = function (erpSettingsCondition,req, callb
       status:false,
       messages:[]
   };
-  console.log("cond",erpSettingsCondition)
     ReceiptsColl.aggregate([{$match: erpSettingsCondition},
             {$group: {_id: null, totalReceipts: {$sum: "$amount"}}}],
         function (err, receipt) {
@@ -223,7 +222,8 @@ Receipts.prototype.getReceiptsByParties=function (req,callback) {
       status:false,
       messages:[]
   };
-    getReceiptsByParties({$match: {accountId:req.jwt.accountId}},callback);
+  console.log("req.jwt.accountId",req.jwt.accountId)
+    getReceiptsByParties({$match: {accountId:ObjectId(req.jwt.accountId)}},callback);
 
 };
 
