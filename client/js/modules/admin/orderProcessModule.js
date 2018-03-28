@@ -1740,6 +1740,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                 if (printScope.$$phase || $http.pendingRequests.length) {
                     $timeout(waitForRenderAndPrint);
                 } else {
+                    console.log(element.html());
                     printHtml(element.html());
                     printScope.$destroy(); // To avoid memory leaks from scope create by $rootScope.$new()
                 }

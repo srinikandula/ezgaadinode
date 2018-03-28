@@ -532,20 +532,29 @@ body {
 }
 
 .table > tbody > tr > td, .table > tbody > tr > th, .table > tfoot > tr > td, .table > tfoot > tr > th, .table > thead > tr > td, .table > thead > tr > th {
-    padding: 3px !important;
     vertical-align: middle;
     text-align: center;
     color: #333;
 }
-
 .ng-table th.sortable {
-    padding: 10px !important;
+    padding: 10px;
     font-weight: bold;
     font-size: 15px;
     color: #333;
     text-align: center;
 }
+.btn-group-justified, .input-group, table.dataTable{
+    border-collapse: collapse;
+}
+.table.dataTable tfoot td, table.dataTable tfoot th{
+    padding: 10px 18px 6px;
+    border-top: 1px solid #ccc;
+}
+table.dataTable thead td, table.dataTable thead th{
+    padding: 10px 8px !important;
+    border-bottom: 1px solid #ccc;
 
+}
 .red {
     color: red;
 }
@@ -692,7 +701,6 @@ body {
 
 .reports-panel ul li small {
     font-size: 12px;
-    padding-left: 5px;
 }
 
 .reports-panel a {

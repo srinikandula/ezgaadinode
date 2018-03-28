@@ -16,13 +16,13 @@
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
-                    <li class="payble activeLi" ui-sref="reports">
+                    <li class="payble" ui-sref="reports">
                         <span class="payable">By Trips</span><br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.totalRevenue}}
                         </small>
                     </li>
-                    <li class="payble" ui-sref="byReceipts">
+                    <li class="payble activeLi" ui-sref="byReceipts">
                         <span class="receivable">By Receipts</span> <br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.pendingDue || 0}}

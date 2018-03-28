@@ -9,9 +9,26 @@
             <div class="reports-text">
                 <h3>Revenue</h3>
                 <p>From All Vehicles</p>
-                <small><i class="fa fa-inr"></i>
+                <!--<small><i class="fa fa-inr"></i>
                     {{totals.totalRevenue}}
-                </small>
+                </small>-->
+            </div>
+            <div class="col-xs-12 pall-zero">
+                <ul class="list-inline">
+                    <li class="payble" ui-sref="reports">
+                        <span class="payable">By Trips</span><br>
+                        <small><i class="fa fa-inr"></i>
+                            {{totals.totalRevenue}}
+                        </small>
+                    </li>
+                    <li class="payble" ui-sref="byReceipts">
+                        <span class="receivable">By Receipts</span> <br>
+                        <small><i class="fa fa-inr"></i>
+                            {{totals.pendingDue || 0}}
+                        </small>
+                    </li>
+
+                </ul>
             </div>
         </div>
     </div>
@@ -107,7 +124,7 @@
             <h3 class="db-title">Revenue - {{vehicleId}}:</h3>
 
             <table id="revenueByPartylist"
-                   class="display table table-striped table-bordered style-table category-table table table-hover"
+                   class="table table-bordered table-striped table-condensed table-hover"
                    cellspacing="0" width="100%">
                 <tfoot>
                 <tr>
