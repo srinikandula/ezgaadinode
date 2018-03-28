@@ -327,7 +327,7 @@ Devices.prototype.getDevices = function (req, callback) {
                             planHistoryCallack(errdeviceplan, 'success');
                         });
                     },
-                  /*  employees: function (employeeCallback) {
+                    employees: function (employeeCallback) {
                         if (device.installedBy) {
                             AccountsColl.findOne({id_admin: device.installedBy}, function (erremployee, employee) {
                                 if (employee) {
@@ -338,11 +338,11 @@ Devices.prototype.getDevices = function (req, callback) {
                         } else {
                             employeeCallback(null, 'success');
                         }
-                    },*/
+                    },
                     truckDetails:function (truckCallBack) {
                         if (device.installedBy) {
-                            console.log("device.imei",device.imei);
-                            TrucksColl.findOne({TrucksColl: device.imei}, function (errTruck, truck) {
+
+                            TrucksColl.findOne({deviceId: device.imei}, function (errTruck, truck) {
                                 if (truck) {
                                     device.truckNo = truck.registrationNo;
                                     device.latestLocation=truck.attrs.latestLocation;

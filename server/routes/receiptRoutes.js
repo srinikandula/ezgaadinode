@@ -43,6 +43,12 @@ AuthRouter.get("/getReceiptsbyParties",function (req,res) {
        res.send(result);
    })
 });
+
+AuthRouter.get("/getReceiptByPartyName",function (req,res) {
+    Receipts.getReceiptByPartyName(req,function (results) {
+        res.send(result);
+    })
+});
 module.exports = {
     AuthRouter: AuthRouter
 };
