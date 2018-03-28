@@ -223,8 +223,7 @@ Receipts.prototype.getReceiptsByParties=function (req,callback) {
       status:false,
       messages:[]
   };
-    getReceiptsByParties({$match: {}},callback);
-
+    getReceiptsByParties({$match: {accountId:req.jwt.accountId}},callback);
 
 };
 
@@ -243,7 +242,6 @@ function getReceiptsByParties(condition,callback) {
             }
         }, {"$unwind": "$partyId"},
         {$group: {_id: "$partyId",amount: {$sum: "$amount"}}},
-
         function (err, receipts) {
         console.log(err)
             if(err){
@@ -258,4 +256,41 @@ function getReceiptsByParties(condition,callback) {
         });
 }
 
+Receipts.prototype.getReceiptByPartyName=function (req,callback) {
+        var retObj={
+            status:false,
+            messages:[]
+        };
+        var params=req.query;
+        if(!params._id || !ObjectId.isValid(params._id)){
+           retObj.messages.push("Invalid party");
+        }
+        if(retObj.messages.length>0){
+            callback(retObj);
+        }
+        ReceiptsColl.find({partyId:params._id},function (err,docs) {
+            if(err){
+                retObj.status=false;
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            }else if(docs.length>0){
+                var total=0;
+                retObj.status=true;
+                retObj.messages.push("Success");
+                for(var i=0;i<docs.length;i++){
+                    total+=docs[i].amount;
+                    if(i===docs.length-1){
+                        retObj.data=docs;
+                        retObj.tatal=total;
+                        callback(retObj);
+                    }
+                }
+
+            }else{
+                retObj.status=false;
+                retObj.messages.push("No Receipts found");
+                callback(retObj);
+            }
+        })
+};
 module.exports = new Receipts();

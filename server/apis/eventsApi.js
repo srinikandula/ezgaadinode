@@ -573,7 +573,8 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                     deviceDoc: function (deviceDocCallBack) {
                                         if (data.device !== 'Device Exists') {
                                             data.device.accountId = data.accountId;
-                                            if (!data.device.devicePaymentStatus) {
+                                            console.log('data.device.devicePaymentStatus', data.device.devicePaymentStatus);
+                                            if (data.device.devicePaymentStatus.length > 0) {
                                                 data.device.installedBy = data.employeeId;
                                             }
                                             data.device.assignedTo = data.employeeId;
