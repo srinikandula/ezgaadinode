@@ -1,7 +1,7 @@
 <div class="col-xs-12 pall-zero" ng-controller="dashboardController"
-     ng-init="getRevenueByVehicle();getAllTrucks();">
+     ng-init="getRevenueByVehicle();getAllTrucks();getAmountByReceipts();">
     <div class="col-sm-3 col-xs-12">
-        <div class="reports-panel activated payments">
+        <div class="reports-panel activated payments" ui-sref="reports">
             <div class="reports-image">
                 <figure>
                     <img src="images/revenue-report.png">
@@ -16,13 +16,13 @@
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
-                    <li class="payble activeLi" ui-sref="reports">
+                    <li class="payble" ui-sref="reports">
                         <span class="payable">By Trips</span><br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.totalRevenue}}
                         </small>
                     </li>
-                    <li class="payble" ui-sref="byReceipts">
+                    <li class="payble activeLi" ui-sref="byReceipts">
                         <span class="receivable">By Receipts</span> <br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.receiptsAmount || 0}}
@@ -124,7 +124,7 @@
 
         <div class="main-temp col-xs-12 mt-20">
             <div class="col-xs-12 pall-zero db-expenses">
-                <div class="col-xs-3 pall-zero"><p>Total Revenue</p></div>
+                <div class="col-xs-3 pall-zero"><p>Revenue By Receipts</p></div>
                 <div class="col-xs-9 pall-zero">
                     <ul class="list-inline report-expense">
                         <li class="filterFromDate">
@@ -182,17 +182,15 @@
                 </div>
             </div>
 
-            <table id="revenuelist"
+            <table id="amountByReceipts"
                    class="table table-bordered table-striped table-condensed table-hover"
                    cellspacing="0" width="100%">
-                <tfoot>
-                <tr>
-                    <th>Total</th>
-                    <th>{{totalRevenue.grossFreight}}</th>
-                    <th>{{totalRevenue.grossExpenses}}</th>
-                    <th>{{totalRevenue.grossRevenue}}</th>
-                </tr>
-                </tfoot>
+                <!--<tfoot>-->
+                <!--<tr>-->
+                <!--<th>Total</th>-->
+                <!--<th>{{totalRevenue.grossFreight}}</th>                   -->
+                <!--</tr>-->
+                <!--</tfoot>-->
             </table>
         </div>
     </div>

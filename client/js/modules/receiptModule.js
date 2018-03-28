@@ -40,7 +40,13 @@ app.factory('ReceiptServices', ['$http', function ($http) {
                 url: '/v1/receipts/totalReceipts',
                 method: "GET"
             }).then(success, error)
-        }
+        },
+        getReceiptsByParties: function (success, error) {
+            $http({
+                url: '/v1/receipts/getReceiptsByParties',
+                method: "GET",
+            }).then(success, error)
+        },
     }
 }]);
 
