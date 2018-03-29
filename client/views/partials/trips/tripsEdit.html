@@ -4,7 +4,7 @@
         <form class="mt-10" autocomplete="off">
             <div class="col-sm-6 col-xs-12">
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12">
+                    <div class="">
                         <date-picker id="permitExpiry" ng-model="trip.date" past-present="'pastPresentDate'"
                                      placeholder="'Trip Date*'" class="'custom-form-control'">
                         </date-picker>
@@ -12,7 +12,7 @@
                 </div>
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 select-box">
+                    <div class=" select-box">
                         <ui-select ng-model="trip.registrationNo" theme="select2"
                                    style="min-width: 390px;"
                                    title="Choose a Truck" append-to-body="true">
@@ -29,7 +29,7 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 select-box">
+                    <div class=" select-box">
                         <ui-select ng-model="trip.driverId" theme="select2"
                                    style="min-width: 390px;"
                                    title="Choose a person" append-to-body="true">
@@ -45,7 +45,7 @@
                 </div>
                 <div class="form-group col-xs-12">
 
-                    <div class="col-xs-12 select-box">
+                    <div class=" select-box">
                         <ui-select ng-model="trip.partyId" theme="select2" ng-change="selectParty(trip)"
                                    style="min-width: 390px;"
                                    title="Choose a Party" append-to-body="true">
@@ -62,7 +62,7 @@
 
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 select-box">
+                    <div class=" select-box">
                         <ui-select ng-model="trip.tripLane" theme="select2"
                                    style="min-width: 390px;"
                                    title="Select a Trip Lane" append-to-body="true">
@@ -82,35 +82,35 @@
 
             <div class="col-sm-6 col-xs-12">
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 styling-input-list">
+                    <div class=" styling-input-list">
                         <input ng-model="trip.tonnage" type="number" class="form-control custom-form-control"
                                id="tonnage">
                         <label class="focus-effect-for-input" aria-hidden="true">Tonnage*</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 styling-input-list">
+                    <div class=" styling-input-list">
                         <input ng-model="trip.rate" type="number" class="form-control custom-form-control"
                                id="rate">
                         <label class="focus-effect-for-input" aria-hidden="true">Rate*</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 styling-input-list">
+                    <div class=" styling-input-list">
                         <input ng-model="trip.freightAmount" type="number" class="form-control custom-form-control"
                                id="freightAmount" readonly>
                         <label class="focus-effect-for-input" aria-hidden="true">Freight Amount</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 styling-input-list">
+                    <div class=" styling-input-list">
                         <textarea ng-model="trip.remarks" class="form-control custom-form-control"
                                   id="remarks"></textarea>
                         <label class="focus-effect-for-input" aria-hidden="true">Remarks*</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 trip-share">
+                    <div class=" trip-share">
                         <div class="checkbox">
                             <label>
                                 <input ng-model="trip.share" type="checkbox" checked>

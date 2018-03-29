@@ -34,13 +34,13 @@
                 parties.contact }}
             </td>
             <td data-title="'Email'" sortable="'email'" class="clickable-item">{{
-                parties.email }}
+                parties.email || '--'}}
             </td>
             <td data-title="'City'" sortable="'city'" class="clickable-item">{{
-                parties.city }}
+                parties.city || '--'}}
             </td>
             <td data-title="'Party Type'" sortable="'partyType'" class="clickable-item">{{
-                parties.partyType }}
+                parties.partyType}}
             </td>
             <td data-title="'Triplanes'" sortable="'tripLanes'" class="clickable-item">{{
                 parties.tripLanes.length }}

@@ -54,13 +54,13 @@
                     {{trucks.taxDueDate | date:'dd/MM/yyyy' }}</span>
             </td>
             <td data-title="'Driver'" sortable="'fullName'" class="clickable-item">
-                <span>{{ trucks.attrs.fullName }}</span>
+                <span>{{ trucks.attrs.fullName || '--' }}</span>
             </td>
             <td data-title="'Driver Num'" sortable="'mobile'" class="clickable-item">{{
-                trucks.attrs.mobile }}
+                trucks.attrs.mobile || '--'}}
             </td>
             <td data-title="'Created By'" sortable="'createdByName'"
-                class="clickable-item col-sm-1">{{ trucks.attrs.createdByName }}
+                class="clickable-item col-sm-1">{{ trucks.attrs.createdByName|| '--' }}
             </td>
 
             <td data-title="'Action'">

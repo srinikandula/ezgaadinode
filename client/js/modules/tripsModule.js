@@ -367,13 +367,13 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         var params = $scope.trip;
         params.errors = [];
         if (!params.date) {
-            params.errors.push('Please Provide Trip Date');
+            params.errors.push('Please Select Trip Date');
         }
         if (!params.registrationNo) {
-            params.errors.push('Please Provide Registration Number');
+            params.errors.push('Please Select a Vehicle');
         }
         if (!params.driverId) {
-            params.errors.push('Please Select Driver');
+            params.errors.push('Please Select a Driver');
         }
         if (!params.partyId) {
             params.errors.push('Please Select a Party');

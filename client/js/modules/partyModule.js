@@ -1,4 +1,4 @@
-app.factory('PartyService',['$http', '$cookies', function ($http, $cookies) {
+app.factory('PartyService', ['$http', '$cookies', function ($http, $cookies) {
     return {
         addParty: function (partyDetails, success, error) {
             $http({
@@ -68,7 +68,7 @@ app.factory('PartyService',['$http', '$cookies', function ($http, $cookies) {
                 url: '/v1/party/total/count',
                 method: "GET"
             }).then(success, error)
-        },getAllPartiesForFilter: function (success, error) {
+        }, getAllPartiesForFilter: function (success, error) {
             $http({
                 url: '/v1/party/getAllPartiesForFilter',
                 method: "GET",
@@ -80,7 +80,7 @@ app.factory('PartyService',['$http', '$cookies', function ($http, $cookies) {
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
 
     $scope.goToEditPartyPage = function (partyId) {
-        $state.go('editParty', { partyId: partyId });
+        $state.go('editParty', {partyId: partyId});
     };
 
     $scope.count = 0;
@@ -90,22 +90,27 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 $scope.count = success.data.count;
                 $scope.init();
             } else {
-                Notification.error({ message: success.data.message });
+                Notification.error({message: success.data.message});
             }
         });
     };
 
 
     var loadTableData = function (tableParams) {
-        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(), partyName: tableParams.partyName };
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            partyName: tableParams.partyName
+        };
         $scope.loading = true;
         PartyService.getParties(pageable, function (response) {
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.parties)) {
                 $scope.loading = false;
                 $scope.parties = response.data.parties;
-                $scope.userId=response.data.userId;
-                $scope.userType=response.data.userType;
+                $scope.userId = response.data.userId;
+                $scope.userType = response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.parties;
                 $scope.currentPageOfParties = $scope.parties;
@@ -118,7 +123,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 $scope.partiesList = success.data.parties;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
         }, function (error) {
@@ -133,13 +138,13 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 createdAt: -1
             }
         }, {
-                counts: [],
-                total: $scope.count,
-                getData: function (params) {
-                    loadTableData(params);
-                    $scope.getAllParties();
-                }
-            });
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+                $scope.getAllParties();
+            }
+        });
     };
     $scope.getCount();
 
@@ -164,7 +169,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                         $scope.getCount();
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                 }, function (err) {
@@ -172,7 +177,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 });
             }
         });
-       
+
     };
     $scope.searchByPartyName = function (partyName) {
         $scope.partyParams = new NgTableParams({
@@ -182,13 +187,13 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 createdAt: -1
             }
         }, {
-                counts: [],
-                total: $scope.count,
-                getData: function (params) {
-                    params.partyName = partyName;
-                    loadTableData(params);
-                }
-            });
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.partyName = partyName;
+                loadTableData(params);
+            }
+        });
     };
 
 }]);
@@ -233,7 +238,8 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             }
         }, function (err) {
         });
-    };
+    }
+    ;
 
     $scope.addTripLane = function () {
         $scope.party.error = [];
@@ -263,35 +269,29 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         params.error = [];
 
         if (!params.name) {
-            params.error.push('Invalid party name');
+            params.error.push('Please enter Party Name');
         }
         if (!Utils.isValidPhoneNumber(params.contact)) {
-            params.error.push('Invalid mobile number');
-        }
-        if (!Utils.isValidEmail(params.email)) {
-            params.error.push('Invalid email ID');
-        }
-        if (!params.city) {
-            params.error.push('Invalid city');
+            params.error.push('Please enter Party mobile number');
         }
         if (!params.partyType) {
-            params.error.push('Please select party type');
+            params.error.push('Please select Party Type');
         }
         if (params.partyType === 'Transporter') {
             if (!params.isSms && !params.isEmail) {
-                params.error.push('Please select notification type');
+                params.error.push('Please select Notification Type');
             }
-            for(var i = 0;i < params.tripLanes.length;i++) {
+            for (var i = 0; i < params.tripLanes.length; i++) {
                 if (!params.tripLanes[i].name) {
                     params.error.push('Please provide TripLane Name');
                 }
 
                 if (!params.tripLanes[i].from) {
-                    params.error.push('Please provide From Name');
+                    params.error.push('Please provide Source Name');
                 }
 
                 if (!params.tripLanes[i].to) {
-                    params.error.push('Please provide To Name');
+                    params.error.push('Please provide Destination Name');
                 }
             }
         }
@@ -301,10 +301,10 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
                         $state.go('parties');
-                        Notification.success({ message: "Party Updated Successfully" });
+                        Notification.success({message: "Party Updated Successfully"});
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
 
                     }
@@ -316,10 +316,10 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('parties');
-                        Notification.success({ message: "Party Added Successfully" });
+                        Notification.success({message: "Party Added Successfully"});
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                 }, function (err) {
@@ -337,29 +337,29 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.party.city= place.formatted_address;
+                $scope.party.city = place.formatted_address;
 
             });
     };
     $scope.searchFrom = function (index) {
-        var input = document.getElementById('from'+index);
+        var input = document.getElementById('from' + index);
         var options = {};
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.party.tripLanes[index].from= place.formatted_address;
+                $scope.party.tripLanes[index].from = place.formatted_address;
 
             });
     };
-    $scope.searchTo =function (index) {
-        var input = document.getElementById("to"+index);
+    $scope.searchTo = function (index) {
+        var input = document.getElementById("to" + index);
         var options = {};
         var autocomplete = new google.maps.places.Autocomplete(input, options);
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.party.tripLanes[index].to= place.formatted_address;
+                $scope.party.tripLanes[index].to = place.formatted_address;
 
             });
     };

@@ -66,6 +66,8 @@ Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
             result.status = false;
             result.messages.push('Please add triplane');
         }
+    }else{
+        partyDetails.tripLanes=[];
     }
 
 

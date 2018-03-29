@@ -268,9 +268,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             params.errors.push('Please provide  licenseNumber');
         }*/
         if (params.errors.length>0) {
-            params.errors.forEach(function (message) {
+            /*params.errors.forEach(function (message) {
                 Notification.error(message)
-            });
+            });*/
         }else{
             if (params._id) {
                 DriverService.updateDriver(params, function (success) {
