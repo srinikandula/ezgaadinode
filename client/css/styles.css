@@ -2107,6 +2107,7 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     background: #fff;
     position: relative;
     z-index: 1;
+    width: 100%;
 }
 .alert-info.positioned {
     margin-top: 1em;
@@ -2184,5 +2185,25 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     right: 10px;
 }
 .select2-container{
- min-width: 420px !important;
+ width: 100%;
+
+}
+.paymentscontrol{
+    box-shadow: none;
+    border-radius: 0 !important;
+    padding: 6px 10px !important;
+    height: 40px;
+    background: transparent !important;
+}
+.alert-danger {
+    background-color: #d9534f;
+    color: #fff;
+    font-weight: bold;
+}
+.mapIcon{
+    position: absolute;
+    top: 8px;
+    right: 5px;
+    font-size: 25px;
+    cursor: pointer;
 }

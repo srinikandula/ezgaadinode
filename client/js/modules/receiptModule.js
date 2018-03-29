@@ -63,6 +63,19 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
         $state.go('receiptEdit', { receiptId: id });
     };
 
+    $scope.getAllParties = function () {
+        PartyService.getAllPartiesForFilter(function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (err) {
+
+        });
+    }
 
     $scope.count = 0;
     $scope.getReceiptCount = function () {
@@ -81,7 +94,8 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
-            sort: tableParams.sorting()
+            sort: tableParams.sorting(),
+            partyName: tableParams.partyName
         };
         ReceiptServices.getReceipts(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -107,6 +121,7 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
+                $scope.getAllParties();
             }
         });
     };
@@ -148,6 +163,24 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
             };
         });
     };
+
+
+    $scope.searchByPartyName = function (partyName) {
+        $scope.receiptParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.partyName = partyName;
+                loadTableData(params);
+            }
+        });
+    }
 
 
 }]);
@@ -213,18 +246,18 @@ app.controller('receiptEditCtrl', ['$scope', '$state','$stateParams', 'PaymentsS
         params.success = [];
 
         if (!params.date) {
-            params.error.push('InValid Date');
+            params.error.push('Please Select Date');
         }
         if (!params.partyId) {
-            params.error.push('Invalid Party Id');
+            params.error.push('Please Select Party');
         }
         if (!(params.amount)) {
-            params.error.push('Invalid Amount');
+            params.error.push('Please enter an Amount');
         }
         if (params.error.length>0) {
-            params.error.forEach(function (message) {
-                Notification.error({ message: message });
-            });
+            // params.error.forEach(function (message) {
+            //     Notification.error({ message: message });
+            // });
         }else{
             $scope.receiptDetails.partyId =  $scope.receiptDetails.partyId ._id;
             if ($stateParams.receiptId) {

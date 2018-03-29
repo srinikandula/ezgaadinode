@@ -95,7 +95,8 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
     var pageable;
 
     var loadTableData = function (tableParams) {
-        pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(), partyName: tableParams.partyName };
+        pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),
+            partyName: tableParams.partyName };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         PaymentsService.getPayments(pageable, function (response) {
@@ -281,16 +282,16 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         params.success = [];
 
         if (!params.date) {
-            params.error.push('InValid Date');
+            params.error.push('Please select Payment Date');
         }
         if (!params.partyId) {
-            params.error.push('Invalid Party Id');
+            params.error.push('Please Select Party');
         }
         if (!(params.amount)) {
-            params.error.push('Invalid Amount');
+            params.error.push('Please enter an Amount');
         }
         if (!params.paymentType) {
-            params.error.push('Select payment type');
+            params.error.push('Please Select Payment Type');
         }
         if ((params.paymentType === 'NEFT' || params.paymentType === 'Cheque') && !params.paymentRefNo) {
             params.error.push('Enter payment reference number');

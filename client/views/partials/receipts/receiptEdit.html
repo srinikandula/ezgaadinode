@@ -4,14 +4,14 @@
         <form class="mt-10">
             <div class="col-xs-12 col-sm-6">
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12">
+                    <div class="">
                         <date-picker id="date" ban-future="'banFutureDate'" ng-model="receiptDetails.date"
                                      placeholder="'Date*'" class="'custom-form-control'"></date-picker>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
 
-                    <div class="col-xs-12 select-box">
+                    <div class=" select-box">
                         <ui-select ng-model="receiptDetails.partyId" theme="select2"
                                    style="min-width: 390px;"
                                    title="Choose a Party" append-to-body="true">
@@ -29,7 +29,7 @@
             </div>
             <div class="col-xs-12 col-sm-6">
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 styling-input-list">
+                    <div class=" styling-input-list">
                         <input ng-model="receiptDetails.amount" type="number" class="form-control custom-form-control"
                                id="amount">
                         <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
@@ -39,7 +39,7 @@
 
 
                 <div class="form-group col-xs-12">
-                    <div class="col-xs-12 styling-input-list">
+                    <div class=" styling-input-list">
                         <textarea ng-model="receiptDetails.description" type="textarea"
                                   class="form-control custom-form-control"
                                   id="description"></textarea>
@@ -52,7 +52,18 @@
 
             <div class="clearfix"></div>
 
-
+            <div class="col-xs-6 col-xs-push-3">
+                <div class="alert alert-danger" role="alert" ng-show="receiptDetails.error.length">
+                    <ul>
+                        <li ng-repeat="error in receiptDetails.error">{{error}}</li>
+                    </ul>
+                </div>
+                <div class="alert alert-success" role="alert" ng-show="receiptDetails.success.length">
+                    <ul>
+                        <li ng-repeat="success in receiptDetails.success">{{success}}</li>
+                    </ul>
+                </div>
+            </div>
             <div class="col-xs-12">
                 <div class="col-xs-4 mtb-25 sub-can">
                     <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
