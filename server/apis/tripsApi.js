@@ -978,7 +978,7 @@ Trips.prototype.findRevenueByVehicle = function (jwt, params,req, callback) {
                     $lte: new Date(params.toDate),
                 }, "registrationNo": params.regNumber
             }
-        }
+        };
         getRevenueByVehicle(jwt, condition, params, function (response) {
             if(response.status){
                 analyticsService.create(req,serviceActions.find_revenue_by_veh,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
