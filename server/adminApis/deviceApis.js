@@ -315,48 +315,38 @@ Devices.prototype.getDevices = function (req, callback) {
             });
             callback(retObj);
         } else {
-            async.map(results.devices, function (device, asyncCallback) {
-                async.parallel({
-                    planhistory: function (planHistoryCallack) {
-                        AccountDevicePlanHistoryColl.find({deviceId: device._id})
-                            .sort({expiryTime: -1}).limit(1).exec(function (errdeviceplan, deviceplan) {
-                            if (deviceplan.length > 0) {
-                                device.expiryTime = deviceplan[0].expiryTime;
-                                device.received = deviceplan[0].received;
-                            }
-                            planHistoryCallack(errdeviceplan, 'success');
-                        });
-                    },
-                    employees: function (employeeCallback) {
-                        if (device.installedBy) {
-                            AccountsColl.findOne({id_admin: device.installedBy}, function (erremployee, employee) {
-                                if (employee) {
-                                    device.installedBy = employee.displayName;
-                                }
-                                employeeCallback(erremployee, 'success');
-                            });
-                        } else {
-                            employeeCallback(null, 'success');
-                        }
-                    },
-                    truckDetails:function (truckCallBack) {
-                        if (device.installedBy) {
+            async.parallel({
+                planhistory: function (planHistoryCallack) {
 
-                            TrucksColl.findOne({deviceId: device.imei}, function (errTruck, truck) {
-                                if (truck) {
-                                    device.truckNo = truck.registrationNo;
-                                    device.latestLocation=truck.attrs.latestLocation;
-                                }
-                                truckCallBack(errTruck, 'success');
-                            });
-                        } else {
-                            truckCallBack(null, 'success');
+                    var deviceIds = _.pluck(results.devices, '_id');
+                    AccountDevicePlanHistoryColl.aggregate([
+                        {"$match": {"deviceId": {"$in": deviceIds}}},
+                        {$sort: {expiryTime: -1}},
+                        {
+                            "$group": {
+                                "_id": "$deviceId",
+                                "expiryTime": {"$first": "$expiryTime"},
+                                "received": {"$first": "$received"}
+                            }
                         }
-                    }
-                }, function (parallelCallback, success) {
-                    asyncCallback(parallelCallback, success);
-                });
-            }, function (errpopulated, populated) {
+                    ], function (err, planHistory) {
+                        planHistoryCallack(err, planHistory);
+                    })
+
+                },
+                truckDetails: function (truckCallBack) {
+                    var imeis = _.pluck(results.devices, 'imei');
+                    TrucksColl.find({deviceId: {$in: imeis}}, {
+                        registrationNo: 1,
+                        attrs: 1,
+                        deviceId:1
+                    }, function (errTruck, trucks) {
+
+                        truckCallBack(errTruck, trucks);
+                    });
+
+                }
+            }, function (errpopulated, success) {
                 if (errpopulated) {
                     retObj.messages.push("Unable to populate devices, please try again");
                     analyticsService.create(req, serviceActions.get_devices_err, {
@@ -368,19 +358,52 @@ Devices.prototype.getDevices = function (req, callback) {
                     });
                     callback(retObj);
                 } else {
-                    retObj.status = true;
-                    retObj.messages = "Success";
-                    retObj.devices = results.devices;
-                    retObj.count = results.count;
-                    analyticsService.create(req, serviceActions.get_devices, {
-                        body: JSON.stringify(params),
-                        accountId: req.jwt.id,
-                        success: true
-                    }, function (response) {
+
+                    async.map(results.devices,function (device,deviceCallback) {
+                        var planhistory={};
+                        planhistory=_.find(success.planhistory, function (plan) {
+                            return plan._id.toString()===device._id.toString();
+                        });
+                        if(planhistory){
+                            device.expiryTime=planhistory.expiryTime;
+                            device.received=planhistory.received;
+                        }
+                        var truck={};
+                        truck=_.findWhere(success.truckDetails,{deviceId:device.imei});
+                        if(truck){
+                            device.registrationNo=truck.registrationNo;
+                            device.latestLocation=truck.attrs.latestLocation;
+                        }
+                        deviceCallback(false,"success");
+                    },function (deviceErr,deviceResult) {
+                        if(deviceErr){
+                            retObj.messages.push("Unable to populate devices, please try again");
+                            analyticsService.create(req, serviceActions.get_devices_err, {
+                                body: JSON.stringify(params),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }else{
+                            retObj.status = true;
+                            retObj.messages = "Success";
+                            retObj.devices = results.devices;
+                            retObj.count = results.count;
+                            analyticsService.create(req, serviceActions.get_devices, {
+                                body: JSON.stringify(params),
+                                accountId: req.jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
                     });
-                    callback(retObj);
+
                 }
             });
+
         }
     });
 };
