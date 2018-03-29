@@ -1249,7 +1249,7 @@ Trips.prototype.downloadRevenueDetailsByVechicle = function (jwt, params,req, ca
         status: false,
         messages: []
     };
-    Trips.prototype.findRevenueByVehicle(jwt, params, function (revenueResponse) {
+    Trips.prototype.findRevenueByVehicle(jwt, params,req, function (revenueResponse) {
         if (revenueResponse.status) {
             var output = [];
             for (var i = 0; i < revenueResponse.revenue.length; i++) {

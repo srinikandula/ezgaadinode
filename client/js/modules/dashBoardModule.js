@@ -371,6 +371,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
         $scope.validateFilters = function (paramType) {
             var params = $scope.filters;
+            params.error=[];
             if ((!params.fromDate || !params.toDate) && !params.regNumber) {
                 params.error.push('Please Select Dates or Register Number');
             }
@@ -384,6 +385,19 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 } else if (paramType === 'revenue') {
                     $scope.getRevenueByVehicle();
                 }
+            }
+        };
+        $scope.getAmountByReceiptsFilters=function () {
+            var params = $scope.filters;
+            params.error=[];
+            if ((!params.fromDate || !params.toDate) && !params.partyName) {
+                params.error.push('Please Select Dates or Party name');
+            }
+            if (new Date(params.fromDate) > new Date(params.toDate)) {
+                params.error.push('Invalid Date Selection');
+            }
+            if (!params.error.length) {
+               $scope.getAmountByReceipts();
             }
         };
         $scope.selectTruckId = function (truck) {
@@ -1068,11 +1082,14 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         };
         $scope.downloadPaybleDetailsByParty = function () {
             window.open('/v1/expense/downloadPaybleDetailsByParty?partyId=' + $scope.partyId + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
-        }
+        };
+        $scope.downloadReceiptsDetailsByParty = function () {
+            window.open('/v1/receipts/downloadReceiptsDetailsByParty?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&partyId=' + $scope.partyId + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
+        };
 
 
         $scope.getAmountByReceipts = function () {
-            ReceiptServices.getReceiptsByParties(function (success) {
+            ReceiptServices.getReceiptsByParties($scope.filters,function (success) {
                 if (success.data.status) {
                    // $scope.amounts = success.data.data;
                     $scope.table = $('#amountByReceipts').DataTable({

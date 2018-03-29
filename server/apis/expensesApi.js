@@ -1036,7 +1036,7 @@ Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params,req, cal
         messages: []
     };
 
-    Expenses.prototype.getPaybleAmountByParty(jwt, params, function (payableResponse) {
+    Expenses.prototype.getPaybleAmountByParty(jwt, params,req, function (payableResponse) {
         if (payableResponse.status) {
             var output = [];
             for (var i = 0; i < payableResponse.paybleAmounts.length; i++) {

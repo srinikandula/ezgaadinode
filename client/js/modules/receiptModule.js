@@ -25,14 +25,14 @@ app.factory('ReceiptServices', ['$http', function ($http) {
             $http({
                 url: '/v1/receipts/updateReceipt',
                 method: "PUT",
-                data:params
+                data: params
             }).then(success, error)
         },
         deleteReceipt: function (receiptId, success, error) {
             $http({
                 url: '/v1/receipts/deleteReceipt',
                 method: "DELETE",
-                params:{_id:receiptId}
+                params: {_id: receiptId}
             }).then(success, error)
         },
         totalReceipts: function (success, error) {
@@ -41,17 +41,18 @@ app.factory('ReceiptServices', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getReceiptsByParties: function (success, error) {
+        getReceiptsByParties: function (params,success, error) {
             $http({
                 url: '/v1/receipts/getReceiptsByParties',
                 method: "GET",
+                params:params
             }).then(success, error)
         },
         getReceiptByPartyName: function (receiptId, success, error) {
             $http({
                 url: '/v1/receipts/getReceiptByPartyName',
                 method: "GET",
-                params: {_id:receiptId}
+                params: {_id: receiptId}
             }).then(success, error)
         }
     }
@@ -60,7 +61,12 @@ app.factory('ReceiptServices', ['$http', function ($http) {
 app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'ReceiptServices', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService, ReceiptServices) {
 
     $scope.goToEditReceiptsPage = function (id) {
-        $state.go('receiptEdit', { receiptId: id });
+        $state.go('receiptEdit', {receiptId: id});
+    };
+
+    $scope.filters = {
+        fromDate: "",
+        toDate: ""
     };
 
     $scope.getAllParties = function () {
@@ -69,7 +75,7 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
                 $scope.partiesList = success.data.parties;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
         }, function (err) {
@@ -95,6 +101,8 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
+            fromDate: tableParams.fromDate,
+            toDate: tableParams.toDate,
             partyName: tableParams.partyName
         };
         ReceiptServices.getReceipts(pageable, function (response) {
@@ -115,7 +123,9 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
             size: 10,
             sorting: {
                 createdAt: -1
-            }
+            },
+            fromDate: $scope.filters.fromDate,
+            toDate: $scope.filters.toDate
         }, {
             counts: [],
             total: $scope.count,
@@ -125,7 +135,6 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
             }
         });
     };
-
 
 
     $scope.deleteReceipt = function (receiptId) {
@@ -160,7 +169,8 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
                     ;
                 });
 
-            };
+            }
+            ;
         });
     };
 
@@ -172,11 +182,14 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
             sorting: {
                 createdAt: -1
             }
+
         }, {
             counts: [],
             total: $scope.count,
             getData: function (params) {
                 params.partyName = partyName;
+                params.fromDate = $scope.filters.fromDate;
+                params.toDate = $scope.filters.toDate;
                 loadTableData(params);
             }
         });
@@ -184,7 +197,7 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
 
 
 }]);
-app.controller('receiptEditCtrl', ['$scope', '$state','$stateParams', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', 'ReceiptServices', function ($scope, $state, $stateParams, PaymentsService, Notification, NgTableParams, paginationService, PartyService, TripServices, ReceiptServices) {
+app.controller('receiptEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', 'ReceiptServices', function ($scope, $state, $stateParams, PaymentsService, Notification, NgTableParams, paginationService, PartyService, TripServices, ReceiptServices) {
 
     $scope.pageTitle = "Add Receipt";
 
@@ -193,8 +206,8 @@ app.controller('receiptEditCtrl', ['$scope', '$state','$stateParams', 'PaymentsS
     }
 
     $scope.receiptDetails = {
-        partyId:'',
-        error:[]
+        partyId: '',
+        error: []
     }
 
     if ($stateParams.receiptId) {
@@ -206,7 +219,7 @@ app.controller('receiptEditCtrl', ['$scope', '$state','$stateParams', 'PaymentsS
                 getPartyIds();
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
         }, function (err) {
@@ -254,20 +267,20 @@ app.controller('receiptEditCtrl', ['$scope', '$state','$stateParams', 'PaymentsS
         if (!(params.amount)) {
             params.error.push('Please enter an Amount');
         }
-        if (params.error.length>0) {
+        if (params.error.length > 0) {
             // params.error.forEach(function (message) {
             //     Notification.error({ message: message });
             // });
-        }else{
-            $scope.receiptDetails.partyId =  $scope.receiptDetails.partyId ._id;
+        } else {
+            $scope.receiptDetails.partyId = $scope.receiptDetails.partyId._id;
             if ($stateParams.receiptId) {
                 ReceiptServices.updateReceipt(params, function (success) {
                     if (success.data.status) {
-                        Notification.success({ message: success.data.messages[0] });
+                        Notification.success({message: success.data.messages[0]});
                         $state.go('receipts');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                     $state.go('receipts');
@@ -278,11 +291,11 @@ app.controller('receiptEditCtrl', ['$scope', '$state','$stateParams', 'PaymentsS
                 ReceiptServices.addReceipt(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        Notification.success({ message: success.data.messages[0] });
+                        Notification.success({message: success.data.messages[0]});
                         $state.go('receipts');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                 });

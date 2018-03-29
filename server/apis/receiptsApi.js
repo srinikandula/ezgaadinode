@@ -1,14 +1,14 @@
 var ReceiptsColl = require('./../models/schemas').ReceiptsColl;
-var ErpSettingsColl=require('./../models/schemas').ErpSettingsColl;
-var PartyColl=require('./../models/schemas').PartyCollection;
+var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var PartyColl = require('./../models/schemas').PartyCollection;
 
 var mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 var async = require("async");
 var serviceActions = require('./../constants/constants');
 var analyticsService = require('./../apis/analyticsApi');
-var Utils=require('./utils');
-var _=require("underscore");
+var Utils = require('./utils');
+var _ = require("underscore");
 var Receipts = function () {
 };
 
@@ -43,15 +43,16 @@ Receipts.prototype.totalReceipts = function (req, callback) {
 };
 
 Receipts.prototype.getReceipts = function (req, callback) {
-    var retObj={
-        status:false,
-        messages:[]
+    var retObj = {
+        status: false,
+        messages: []
     };
-    var condition={};
-    var params=req.params;
-    if (params.fromDate  && params.toDate  && params.partyName) {
+    var condition = {};
+    var params = req.query;
+    var jwt = req.jwt;
+    if (params.fromDate && params.toDate && params.partyName) {
         PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
-            if(err){
+            if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
@@ -62,15 +63,15 @@ Receipts.prototype.getReceipts = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else{
-                var partIds=_.pluck(partys,"_id");
+            } else {
+                var partIds = _.pluck(partys, "_id");
                 condition = {
                     "accountId": ObjectId(jwt.accountId), date: {
                         $gte: new Date(params.fromDate),
                         $lte: new Date(params.toDate),
-                    }, "partyId":{$in:partIds}
+                    }, "partyId": {$in: partIds}
                 }
-                getReceipts(condition,req,callback)
+                getReceipts(condition, req, callback)
 
             }
         });
@@ -82,10 +83,10 @@ Receipts.prototype.getReceipts = function (req, callback) {
                 $lte: new Date(params.toDate),
             }
         };
-        getReceipts(condition,req,callback)
+        getReceipts(condition, req, callback)
     } else if (params.partyName) {
         PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
-            if(err){
+            if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
@@ -96,27 +97,29 @@ Receipts.prototype.getReceipts = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else{
-                var partIds=_.pluck(partys,"_id");
+            } else {
+                var partIds = _.pluck(partys, "_id");
                 condition = {
-                    "accountId": ObjectId(jwt.accountId), "partyId":{$in:partIds}
+                    "accountId": ObjectId(jwt.accountId), "partyId": {$in: partIds}
                 };
-                getReceipts(condition,req,callback)
+                getReceipts(condition, req, callback)
 
             }
         });
     } else {
-       condition={accountId:req.jwt.accountId}
+        condition = {accountId: req.jwt.accountId};
+        getReceipts(condition, req, callback);
+
     }
-    getReceipts(condition,req,callback)
 
 };
-function getReceipts(candition,req,callback) {
+
+function getReceipts(candition, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var params=req.query;
+    var params = req.query;
     if (!params.page) {
         params.page = 1;
     }
@@ -130,14 +133,14 @@ function getReceipts(candition,req,callback) {
             ReceiptsColl.find(candition)
                 .populate({path: "partyId", select: "name"})
                 .populate({
-                path: "createdBy",
-                select: "firstName"
-            }) .sort(sort)
+                    path: "createdBy",
+                    select: "firstName"
+                }).sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
-                receiptsCallback(err, docs);
-            })
+                    receiptsCallback(err, docs);
+                })
         },
         totalReceipts: function (totalReceiptsCallback) {
             ReceiptsColl.count(candition, function (err, count) {
@@ -170,6 +173,7 @@ function getReceipts(candition,req,callback) {
         }
     });
 }
+
 Receipts.prototype.getReceiptDetails = function (req, callback) {
     var retObj = {
         status: false,
@@ -425,36 +429,36 @@ Receipts.prototype.getReceiptsByParties = function (req, callback) {
         status: false,
         messages: []
     };
-    var condition={};
-    var params=req.query;
-    var jwt=req.jwt;
+    var condition = {};
+    var params = req.query;
+    var jwt = req.jwt;
 
-    if (params.fromDate  && params.toDate  && params.partyName) {
+    if (params.fromDate && params.toDate && params.partyName) {
         PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
-           if(err){
-               retObj.status = false;
-               retObj.messages.push("Please try again");
-               analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
-                   body: JSON.stringify(req.query),
-                   accountId: jwt.id,
-                   success: false,
-                   messages: retObj.messages
-               }, function (response) {
-               });
-               callback(retObj);
-           }else{
-               var partIds=_.pluck(partys,"_id");
-               condition = {
-                   $match: {
-                       "accountId": ObjectId(jwt.accountId), date: {
-                           $gte: new Date(params.fromDate),
-                           $lte: new Date(params.toDate),
-                       }, "partyId":{$in:partIds}
-                   }
-               };
-               getReceiptsByParties(req, condition, callback);
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                var partIds = _.pluck(partys, "_id");
+                condition = {
+                    $match: {
+                        "accountId": ObjectId(jwt.accountId), date: {
+                            $gte: new Date(params.fromDate),
+                            $lte: new Date(params.toDate),
+                        }, "partyId": {$in: partIds}
+                    }
+                };
+                getReceiptsByParties(req, condition, callback);
 
-           }
+            }
         });
     } else if (params.fromDate && params.toDate) {
         condition = {
@@ -468,7 +472,7 @@ Receipts.prototype.getReceiptsByParties = function (req, callback) {
         getReceiptsByParties(req, condition, callback);
     } else if (params.partyName) {
         PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
-            if(err){
+            if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
@@ -479,11 +483,11 @@ Receipts.prototype.getReceiptsByParties = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            }else{
-                var partIds=_.pluck(partys,"_id");
+            } else {
+                var partIds = _.pluck(partys, "_id");
                 condition = {
                     $match: {
-                        "accountId": ObjectId(jwt.accountId), "partyId":{$in:partIds}
+                        "accountId": ObjectId(jwt.accountId), "partyId": {$in: partIds}
                     }
                 };
                 getReceiptsByParties(req, condition, callback);
@@ -618,5 +622,38 @@ Receipts.prototype.getReceiptByPartyName = function (req, callback) {
             }
         })
     }
+};
+
+Receipts.prototype.downloadReceiptsDetailsByParty = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    Receipts.prototype.getReceiptsByParties(req, function (response) {
+        if (response.status) {
+            var output = [];
+            console.log(response);
+            for (var i = 0; i < response.data.length; i++) {
+                output.push({
+                    Party_Name: response.data[i]._id.name,
+                    amount: response.data[i].amount
+
+                })
+                if (i === response.data.length - 1) {
+                    retObj.status = true;
+                    retObj.data = output;
+                    analyticsService.create(req, serviceActions.dwnld_payable_det_by_party, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            }
+        } else {
+            callback(response);
+        }
+    })
 };
 module.exports = new Receipts();

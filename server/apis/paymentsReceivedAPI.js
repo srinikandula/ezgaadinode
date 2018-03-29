@@ -654,7 +654,7 @@ PaymentsReceived.prototype.downloadPaymentDetailsByParty = function (jwt, params
         messages: []
     };
 
-    PaymentsReceived.prototype.getDuesByParty(jwt, params, function (paymentsResponse) {
+    PaymentsReceived.prototype.getDuesByParty(jwt, params,req, function (paymentsResponse) {
         if (paymentsResponse.status) {
 
             var output = [];
