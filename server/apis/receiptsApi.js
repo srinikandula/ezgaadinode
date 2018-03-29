@@ -225,9 +225,7 @@ Receipts.prototype.getReceiptsByParties = function (req, callback) {
         status: false,
         messages: []
     };
-    console.log("req.jwt.accountId", req.jwt.accountId)
     getReceiptsByParties({$match: {accountId: ObjectId(req.jwt.accountId)}}, callback);
-
 };
 
 function getReceiptsByParties(condition, callback) {
@@ -246,8 +244,7 @@ function getReceiptsByParties(condition, callback) {
         }, {"$unwind": "$partyId"},
         {$group: {_id: "$partyId", amount: {$sum: "$amount"}}},
         function (err, receipts) {
-            console.log(err)
-            if (err) {
+            if(err){
                 retObj.messages.push("Please try again");
                 callback(retObj);
             } else {
