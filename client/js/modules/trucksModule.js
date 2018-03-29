@@ -382,14 +382,14 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         params.errors = [];
 
         if (!params.registrationNo) {
-            params.errors.push('Invalid Registration ID');
-        }
+            params.errors.push('Invalid Registration Number');
+        }/*
         if (!params.truckType) {
             params.errors.push('Invalid truckType');
         }
         if (!params.modelAndYear) {
             params.errors.push('Invalid Modal and Year');
-        }
+        }*/
 
         if (!params.fitnessExpiry) {
             params.errors.push('Invalid Fitness Expiry');

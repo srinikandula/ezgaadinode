@@ -45,7 +45,7 @@ AuthRouter.get("/getReceiptsbyParties",function (req,res) {
 });
 
 AuthRouter.get("/getReceiptByPartyName",function (req,res) {
-    Receipts.getReceiptByPartyName(req,function (results) {
+    Receipts.getReceiptByPartyName(req,function (result) {
         res.send(result);
     })
 });

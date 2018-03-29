@@ -185,7 +185,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         accountId: '',
         mobile: '',
         joiningDate: '',
-        licenseValidity: new Date(),
+        licenseValidity: '',
         salary: '',
         licenseNumber: '',
         errors: [],
@@ -256,17 +256,17 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             params.errors.push('Please provide valid mobile number');
         }
 
-        if (!params.licenseValidity) {
+       /* if (!params.licenseValidity) {
             params.errors.push('Please provide license validity date');
         }
 
-        /*if (!params.salary) {
+        if (!params.salary) {
             params.errors.push('Please provide  salary');
-        }*/
+        }
 
         if (!params.licenseNumber) {
             params.errors.push('Please provide  licenseNumber');
-        }
+        }*/
         if (params.errors.length>0) {
             params.errors.forEach(function (message) {
                 Notification.error(message)

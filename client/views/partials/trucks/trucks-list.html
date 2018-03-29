@@ -30,7 +30,7 @@
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckParams">
         <tr ng-repeat="trucks in currentPageOfTrucks" style="text-align: center;">
             <td data-title="'Reg No'" sortable="'registrationNo'" class="clickable-item">
-                {{trucks.registrationNo}}<br>{{trucks.truckType}}/{{trucks.tonnage}}
+                {{trucks.registrationNo | uppercase}}<br>{{trucks.truckType}}/{{trucks.tonnage}}
             </td>
 
             <td data-title="'Permit'" sortable="'permitExpiry'" class="clickable-item">
@@ -75,7 +75,7 @@
             </td>
         </tr>
         <tr ng-if="!currentPageOfTrucks || currentPageOfTrucks.length === 0">
-            <td colspan="8">No trucks Records exist.</td>
+            <td colspan="10">No trucks Records exist.</td>
         </tr>
     </table>
     <div class="add-image pull-right" ng-show="type=='account'">
