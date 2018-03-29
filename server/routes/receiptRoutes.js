@@ -49,6 +49,17 @@ AuthRouter.get("/getReceiptByPartyName",function (req,res) {
         res.send(result);
     })
 });
+
+AuthRouter.get("/downloadReceiptsDetailsByParty",function (req,res) {
+    Receipts.downloadReceiptsDetailsByParty(req, function (result) {
+        if (result.status) {
+            res.xls('Receipts' + new Date().toLocaleDateString() + '.xlsx', result.data);
+        } else {
+            res.send(result);
+        }
+
+    });
+});
 module.exports = {
     AuthRouter: AuthRouter
 };

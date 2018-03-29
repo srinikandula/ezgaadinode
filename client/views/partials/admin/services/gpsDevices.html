@@ -55,7 +55,10 @@
                 {{device.installedBy.userName}}
             </td>
             <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
-                {{device.truckNo || "--"}}
+                {{device.registrationNo || "--"}}
+            </td>
+            <td data-title="'Latest Loc'"  class="clickable-item">
+                {{device.latestLocation.address || "--"}}
             </td>
             <!--<td data-title="'Payment'" sortable="'received'" class="clickable-item">
                 {{device.received}}

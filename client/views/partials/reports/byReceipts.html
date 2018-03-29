@@ -1,5 +1,5 @@
 <div class="col-xs-12 pall-zero" ng-controller="dashboardController"
-     ng-init="getAmountByReceipts();">
+     ng-init="getAmountByReceipts();getAllParties();">
     <div class="col-sm-3 col-xs-12">
         <div class="reports-panel activated payments">
             <div class="reports-image">
@@ -138,21 +138,21 @@
                         </li>
                         <li class="filterToDate pall-zero pos-relative">
                             <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                            <input type="text" ng-model="filters.regNumber"
-                                   uib-typeahead="truck.registrationNo for truck in trucksList | filter:$viewValue"
-                                   class="form-control textfield" typeahead-min-length="1"
-                                   typeahead-on-select="selectTruckId($item)"
-                                   ng-change="resetTruckName();"
-                                   typeahead-select-on-exact="true" placeholder="Registration Num"
-                                   typeahead-no-results="noTruck" autocomplete="false">
 
+                            <input type="text" ng-model="filters.partyName"
+                                   uib-typeahead="party.name for party in partiesList | filter:$viewValue"
+                                   class="form-control textfield" typeahead-min-length="1"
+                                   typeahead-on-select="selectPartyId($item)"
+                                   ng-change="resetPartyName();"
+                                   typeahead-select-on-exact="true" placeholder="Party Name"
+                                   typeahead-no-results="noParty" autocomplete="false">
                             <div ng-show="noTrucks">
                                 <i class="glyphicon glyphicon-remove red"></i>
                                 <span class="red"> No Results Found </span>
                             </div>
                         </li>
                         <li class="col-xs-1">
-                            <button ng-click="validateFilters('revenue')" type="button" class="btn go">Go</button>
+                            <button ng-click="getAmountByReceiptsFilters()" type="button" class="btn go">Go</button>
                         </li>
                     </ul>
                     <ul class="list-inline mailDownload">
@@ -162,7 +162,7 @@
                         </li>
 
                         <li>
-                            <button type="button" ng-click="downloadRevenueDetailsByVechicle();" class="btn mailImage">
+                            <button type="button" ng-click="downloadReceiptsDetailsByParty();" class="btn mailImage">
                                 <img src="images/Reports_Download.png"></button>
                         </li>
                     </ul>

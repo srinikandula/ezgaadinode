@@ -138,7 +138,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
     }
 };
 
-Groups.prototype.forgotPassword = function (contactPhone, callback) {
+Groups.prototype.forgotPassword = function (contactPhone,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -200,7 +200,7 @@ Groups.prototype.forgotPassword = function (contactPhone, callback) {
     }
 };
 
-Groups.prototype.verifyOtp = function (body, callback) {
+Groups.prototype.verifyOtp = function (body,req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -275,7 +275,7 @@ Groups.prototype.verifyOtp = function (body, callback) {
     }
 }
 
-Groups.prototype.resetPasword = function (body, callback) {
+Groups.prototype.resetPasword = function (body,req, callback) {
     var retObj = {
         status: false,
         messages: []

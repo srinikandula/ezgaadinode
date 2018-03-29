@@ -536,7 +536,17 @@ const serviceActions = {
     get_receipt_details:"GET_RECEIPT_DETAILS",
     get_receipt_details_err:"GET_RECEIPT_DETAILS_ERR",
     delete_receipt_details:"DELETE_RECEIPT_DETAILS",
-    delete_receipt_details_err:"DELETE_RECEIPT_DETAILS_ERR"
+    delete_receipt_details_err:"DELETE_RECEIPT_DETAILS_ERR",
+    total_receipts:"TOTAL_RECEIPTS",
+    total_receipts_err:"TOTAL_RECEIPTS_ERR",
+    get_receipts_by_party_name:"GET_RECEIPTS_BY_PARTY_NAME",
+    get_receipts_by_party_name_err:"GET_RECEIPTS_BY_PARTY_NAME_ERR",
+    get_receipts_by_parties:"GET_RECEIPTS_BY_PARTIES",
+    get_receipts_by_parties_err:"GET_RECEIPTS_BY_PARTIES_ERR",
+    find_total_receipts_by_account:"FIND_TOTAL_RECEIPTS_BY_ACCOUNT",
+    find_total_receipts_by_account_err:"FIND_TOTAL_RECEIPTS_BY_ACCOUNT_ERR",
+
+
 
 
 };
