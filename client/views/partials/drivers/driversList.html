@@ -49,7 +49,7 @@
                     drivers.licenseNumber || '--' }}
                 </td>
                 <td data-title="'Validity'" sortable="'licenseValidity'" class="clickable-item">{{
-                    drivers.licenseValidity | date:'yyyy-MM-dd'
+                    drivers.licenseValidity || '--' | date:'yyyy-MM-dd'
                     }}
                 </td>
                 <td data-title="'Created By'" sortable="'createdByName'"

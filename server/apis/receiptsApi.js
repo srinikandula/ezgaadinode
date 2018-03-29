@@ -1,6 +1,6 @@
 var ReceiptsColl = require('./../models/schemas').ReceiptsColl;
 
-var mongoose=require("mongoose");
+var mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 var async = require("async");
 
@@ -32,7 +32,10 @@ Receipts.prototype.getReceipts = function (req, callback) {
     };
     async.parallel({
         receipts: function (receiptsCallback) {
-            ReceiptsColl.find({}).populate({path:"partyId",select:"name"}).populate({path:"createdBy",select:"firstName"}).exec( function (err, docs) {
+            ReceiptsColl.find({}).populate({path: "partyId", select: "name"}).populate({
+                path: "createdBy",
+                select: "firstName"
+            }).exec(function (err, docs) {
                 receiptsCallback(err, docs);
             })
         },
@@ -66,19 +69,19 @@ Receipts.prototype.getReceiptDetails = function (req, callback) {
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid Receipt ID");
     }
-    if(retObj.messages.length>0){
+    if (retObj.messages.length > 0) {
         callback(retObj);
-    }else{
-        ReceiptsColl.findOne({_id:params._id},function (err,doc) {
-            if(err){
+    } else {
+        ReceiptsColl.findOne({_id: params._id}).populate({path:"partyId", select:"name"}).exec( function (err, doc) {
+            if (err) {
                 retObj.messages.push("Please try again");
                 callback(retObj);
-            }else if(doc){
-                retObj.status=true;
+            } else if (doc) {
+                retObj.status = true;
                 retObj.messages.push("Success");
-                retObj.data=doc;
+                retObj.data = doc;
                 callback(retObj);
-           }else{
+            } else {
                 retObj.messages.push("Receipt details not found");
                 callback(retObj);
             }
@@ -101,8 +104,8 @@ Receipts.prototype.addReceipt = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        params.accountId=req.jwt.accountId;
-        params.createdBy=req.jwt.accountId;
+        params.accountId = req.jwt.accountId;
+        params.createdBy = req.jwt.accountId;
         var receipt = new ReceiptsColl(params);
         receipt.save(function (err, doc) {
             if (err) {
@@ -136,9 +139,9 @@ Receipts.prototype.updateReceipt = function (req, callback) {
     if (!params.amount) {
         retObj.messages.push("Please enter amount");
     }
-    if(retObj.messages.length>0){
+    if (retObj.messages.length > 0) {
         callback(retObj);
-    }else{
+    } else {
         ReceiptsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
@@ -192,45 +195,45 @@ Receipts.prototype.deleteReceipt = function (req, callback) {
  * Find the Total receipts from the receipts in the account
  */
 
-Receipts.prototype.findTotalReceipts = function (erpSettingsCondition,req, callback) {
-  var retObj={
-      status:false,
-      messages:[]
-  };
+Receipts.prototype.findTotalReceipts = function (erpSettingsCondition, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
     ReceiptsColl.aggregate([{$match: erpSettingsCondition},
             {$group: {_id: null, totalReceipts: {$sum: "$amount"}}}],
         function (err, receipt) {
-           if(err){
-               retObj.messages.push("Please try again");
-               callback(retObj);
-           }else{
-               retObj.status=true;
-               if(receipt[0]){
-                   retObj.totalReceipts=receipt[0].totalReceipts;
-               }else{
-                   retObj.totalReceipts=0;
+            if (err) {
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                if (receipt[0]) {
+                    retObj.totalReceipts = receipt[0].totalReceipts;
+                } else {
+                    retObj.totalReceipts = 0;
 
-               }
-               callback(retObj);
-           }
+                }
+                callback(retObj);
+            }
         });
 
 };
 
-Receipts.prototype.getReceiptsByParties=function (req,callback) {
-  var retObj={
-      status:false,
-      messages:[]
-  };
-  console.log("req.jwt.accountId",req.jwt.accountId)
-    getReceiptsByParties({$match: {accountId:ObjectId(req.jwt.accountId)}},callback);
+Receipts.prototype.getReceiptsByParties = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    console.log("req.jwt.accountId", req.jwt.accountId)
+    getReceiptsByParties({$match: {accountId: ObjectId(req.jwt.accountId)}}, callback);
 
 };
 
-function getReceiptsByParties(condition,callback) {
-    var retObj={
-        status:false,
-        messages:[]
+function getReceiptsByParties(condition, callback) {
+    var retObj = {
+        status: false,
+        messages: []
     };
     ReceiptsColl.aggregate(condition,
         {
@@ -241,56 +244,57 @@ function getReceiptsByParties(condition,callback) {
                 "as": "partyId"
             }
         }, {"$unwind": "$partyId"},
-        {$group: {_id: "$partyId",amount: {$sum: "$amount"}}},
+        {$group: {_id: "$partyId", amount: {$sum: "$amount"}}},
         function (err, receipts) {
-        console.log(err)
-            if(err){
+            console.log(err)
+            if (err) {
                 retObj.messages.push("Please try again");
                 callback(retObj);
-            }else{
-                retObj.status=true;
+            } else {
+                retObj.status = true;
                 retObj.messages.push("Success");
-                retObj.data=receipts;
+                retObj.data = receipts;
                 callback(retObj);
             }
         });
 }
 
-Receipts.prototype.getReceiptByPartyName=function (req,callback) {
-        var retObj={
-            status:false,
-            messages:[]
-        };
-        var params=req.query;
-        if(!params._id || !ObjectId.isValid(params._id)){
-           retObj.messages.push("Invalid party");
-        }
-        if(retObj.messages.length>0){
-            callback(retObj);
-        }
-        ReceiptsColl.find({partyId:params._id},function (err,docs) {
-            if(err){
-                retObj.status=false;
+Receipts.prototype.getReceiptByPartyName = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid party");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        ReceiptsColl.find({partyId: params._id}).populate({path:'partyId',select:"name"}).exec( function (err, docs) {
+            if (err) {
+                retObj.status = false;
                 retObj.messages.push("Please try again");
                 callback(retObj);
-            }else if(docs.length>0){
-                var total=0;
-                retObj.status=true;
+            } else if (docs.length > 0) {
+                var total = 0;
+                retObj.status = true;
                 retObj.messages.push("Success");
-                for(var i=0;i<docs.length;i++){
-                    total+=docs[i].amount;
-                    if(i===docs.length-1){
-                        retObj.data=docs;
-                        retObj.tatal=total;
+                for (var i = 0; i < docs.length; i++) {
+                    total += docs[i].amount;
+                    if (i === docs.length - 1) {
+                        retObj.data = docs;
+                        retObj.total = total;
                         callback(retObj);
                     }
                 }
 
-            }else{
-                retObj.status=false;
+            } else {
+                retObj.status = false;
                 retObj.messages.push("No Receipts found");
                 callback(retObj);
             }
         })
+    }
 };
 module.exports = new Receipts();

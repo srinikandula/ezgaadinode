@@ -375,6 +375,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!params.driverId) {
             params.errors.push('Please Select Driver');
         }
+        if (!params.partyId) {
+            params.errors.push('Please Select a Party');
+        }
+        if (!params.tripLane) {
+            params.errors.push('Please Select a Trip Lane');
+        }
 
         if (!params.errors.length) {
             if (params._id) {

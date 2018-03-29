@@ -31,7 +31,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             AccountServices.erpDashboard(function (success) {
                 if (success.data.status) {
                     $scope.totals = success.data.result;
-                    console.log("Sdcsa",$scope.totals)
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
@@ -260,7 +259,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 "data": "attrs.truckName",
                                 "render": function (data, type, row) {
 
-                                    return '<a href="#" class="ui-sref" >' + data + '</a>';
+                                    return '<a href="#" class="ui-sref" style="text-transform: uppercase">' + data + '</a>';
 
                                 }
                             },
@@ -427,7 +426,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 "title": "Registration No",
                                 "data": "regNumber",
                                 "render": function (data, type, row) {
-                                    return '<a href="#" class="ui-sref" >' + data + '</a>';
+                                    return '<a href="#" class="ui-sref" style="text-transform: uppercase;">' + data + '</a>';
                                 }
                             },
                             {title: 'Diesel', "data": "exps[0].dieselExpense"},
@@ -1075,7 +1074,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.getAmountByReceipts = function () {
             ReceiptServices.getReceiptsByParties(function (success) {
                 if (success.data.status) {
-                    $scope.amounts = success.data.data;
+                   // $scope.amounts = success.data.data;
                     $scope.table = $('#amountByReceipts').DataTable({
                         destroy: true,
                         responsive: true,
@@ -1088,12 +1087,12 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             responsivePriority: 1
                         }],
 
-                        data: $scope.amounts ,
+                        data: success.data.data ,
                         columns: [
                             {
                                 title: 'Party Name', "data":"_id.name",
                                 "render": function (data, type, row) {
-                                        return '<a href="#" ui-sref="receiptBypartyName" >' + data + '</a>';
+                                    return '<a href="#" class="ui-sref" >' + data + '</a>';
 
                                 }
                             },
@@ -1112,6 +1111,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                         searching: true
 
+                    }).on('click', '.ui-sref', function () {
+                        var data = $scope.table.row($(this).parents('tr')).data();
+                        $state.go('receiptByPartyName', {receiptId: data._id._id, name: data._id.name});
                     })
 
                 } else {
@@ -1123,6 +1125,87 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
             });
         };
+
+
+        $scope.getReceiptsAmountByParty = function () {
+            ReceiptServices.getReceiptByPartyName($stateParams.receiptId, function (success) {
+                if (success.data.status) {
+                    $scope.amounts = success.data.data;
+                    $scope.total= success.data.total;
+                    $scope.table = $('#bypartyNames').DataTable({
+                        destroy: true,
+                        responsive: true,
+                        aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
+                        iDisplayLength: 10,
+                        sDom: 'tp',
+                        order: [[0, 'des']],
+                        columnDefs: [{
+                            orderable: true,
+                            responsivePriority: 1
+                        }],
+
+                        data: $scope.amounts ,
+                        columns: [
+                            {
+                                title: 'Date', "data":"date",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return new Date(data).toLocaleDateString();
+                                    } else {
+                                        return '----';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: 'Party Name', "data":"partyId.name",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '----';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Description", "data": "description",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '----';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Amount", "data": "amount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return '0';
+                                    }
+
+                                }
+                            }
+
+                        ],
+
+                        searching: true
+
+                    })
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            }, function (err) {
+
+            });
+        };
+
 
 
     }]);

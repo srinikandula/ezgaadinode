@@ -47,6 +47,13 @@ app.factory('ReceiptServices', ['$http', function ($http) {
                 method: "GET",
             }).then(success, error)
         },
+        getReceiptByPartyName: function (receiptId, success, error) {
+            $http({
+                url: '/v1/receipts/getReceiptByPartyName',
+                method: "GET",
+                params: {_id:receiptId}
+            }).then(success, error)
+        }
     }
 }]);
 

@@ -452,6 +452,18 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             access: 'auth'
         }
     }).state({
+        name: 'receiptByPartyName',
+        url: '/reports/receiptByPartyName/:receiptId/:name',
+        templateUrl: 'views/partials/reports/receiptByPartyName.html',
+        data: {
+            activeTab: 'Reports',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth',
+            receiptId: null, name: null
+        }
+    }).state({
         name: 'secretKeys',
         url: '/settings/secretKeys',
         templateUrl: 'views/partials/settings/SecretKeys.html',
