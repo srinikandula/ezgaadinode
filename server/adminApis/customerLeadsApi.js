@@ -965,6 +965,12 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
         messages: []
     };
     var params = req.body.content;
+    // console.log("params....",req.body.content);
+    // if(params.routeConfigEnabled){
+    //     if(!params.homeLocation){
+    //         retObj.messages.push('Please enter Home Location');
+    //     }
+    // }
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid truck owner');
     }
@@ -1019,6 +1025,11 @@ function updateTruckOwner(req, callback) {
     };
     var params = req.body.content;
     Utils.removeEmptyFields(params);
+    if(params.routeConfigEnabled ==="true" && !params.homeLocation.homeAddress){
+        retObj.messages.push("please enter home location...");
+        callback(retObj);
+        return;
+    }
     AccountsColl.findOneAndUpdate({_id: params._id}, {$set: params}, {new: true},
         function (err, doc) {
             if (err) {
@@ -1091,7 +1102,6 @@ function updateTruckOwner(req, callback) {
                 callback(retObj);
             }
         })
-
 };
 
 

@@ -152,15 +152,7 @@
                                         </label>
                                     </div>
                                 </li>
-                                <li>
-                                    <div class="checkbox">
-                                        <label>
-                                            <input type="checkbox" value="" ng-model="truckOwner.routeConfigEnabled"/>
-                                            <span class="cr"><i class="cr-icon fa fa-check"></i></span>
-                                            Route Config
-                                        </label>
-                                    </div>
-                                </li>
+
                             </ul>
                         </div>
                         <div class="form-group styling-input-list">
@@ -258,10 +250,37 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </uib-accordion>
-
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenFour">
+                <uib-accordion-heading>
+                    Route Config <i class="pull-right glyphicon"></i>
+                </uib-accordion-heading>
+                <ul class="list-inline">
+                    <li>
+                        <div class="checkbox">
+                            <label>
+                                <input type="checkbox" value="" ng-model="truckOwner.routeConfigEnabled"/>
+                                <span class="cr"><i class="cr-icon fa fa-check"></i></span>
+                                RouteConfig
+                            </label>
+                        </div>
+                    </li>
+                </ul>
+                <div class="row">
+                    <div class="col-xs-12 col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control" name="homeAddress"
+                                   ng-model="truckOwner.homeLocation.homeAddress"
+                                   ng-show="truckOwner.routeConfigEnabled"
+                                   id="accountHomeLocation"
+                                   ng-change="searchHomeLocation()" placeholder="Select Home Location"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
             <a href="#" class="btn btn-primary" ng-click="updateTruckOwner()">Submit</a>

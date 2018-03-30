@@ -22,6 +22,7 @@ connection.on('error', function (err) {
 var routeConfigSchema = new mongoose.Schema({
     name:String,
     distance:Number,
+    accountId: {type: ObjectId, ref: 'accounts'},
     source:{},
     destination:{},
     attrs: {}
@@ -63,7 +64,7 @@ var accountSchema = new mongoose.Schema({
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: true},
     routeConfigEnabled: {type: Boolean, default: false},
-
+    homeLocation:{},
     editAccounts: {type: Boolean, default: false},
     lastLogin: Date,
     alternatePhone: [],
@@ -499,6 +500,7 @@ var customerLeadsSchema = mongoose.Schema({
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: false},
     routeConfigEnabled: {type: Boolean, default: false},
+    homeLocation:[{}],
 
     yearInService: Number,
     documentType: String,

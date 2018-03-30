@@ -63,5 +63,19 @@
     "gulp-usemin": "^0.3.29",
     "install-peers": "^1.0.2",
     "mocha": "^4.1.0"
-  }
+  },
+  "bin": {
+    "easygaadiold": "cerateIndexes.js"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/srinikandula/ezgaadinode.git"
+  },
+  "bugs": {
+    "url": "https://github.com/srinikandula/ezgaadinode/issues"
+  },
+  "homepage": "https://github.com/srinikandula/ezgaadinode#readme"
 }

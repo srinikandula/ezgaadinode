@@ -672,7 +672,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body,req, callbac
         });
 
     }
-}
+};
 
 Accounts.prototype.getErpSettings = function (jwt,req, callback) {
     var retObj = {
@@ -706,6 +706,26 @@ Accounts.prototype.getErpSettings = function (jwt,req, callback) {
             }
         });
     }
+};
+
+Accounts.prototype.getAccountHomeLocation = function(jwt,req,callback){
+    console.log("get account home location...",jwt);
+    var retObj = {
+        status: false,
+        messages: [],
+    };
+    var query = {"_id": ObjectId(jwt.id)};
+    AccountsColl.findOne(query,{'homeLocation':1}, function(err, data){
+        if (err) {
+            retObj.messages.push('Error in finding account home location');
+            callback(retObj);
+        } else if (data) {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.data = data;
+            callback(retObj);
+        }
+    });
 };
 
 Accounts.prototype.updateErpSettings = function (params,req, callback) {

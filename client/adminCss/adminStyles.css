@@ -548,6 +548,18 @@ footer {
     background-color: #fff;
     padding: 0 5px;
 }
+.routeConfig {
+    position: absolute;
+    top: 10px;
+    left: 55px;
+    color: #989898;
+    font-size: 14px;
+    font-weight: lighter;
+    z-index: -99999;
+    width: auto;
+    background-color: #fff;
+    padding: 0 5px;
+}
 .order-effect-for-input {
     position: absolute;
     top: 10px;
