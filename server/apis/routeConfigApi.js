@@ -1,35 +1,58 @@
 var RoutesCollection = require('./../models/schemas').RouteConfigColl;
+var AccountsColl = require('./../models/schemas').AccountsColl;
+var AccountServices=require('./../apis/accountsApi');
+var _ = require('underscore');
+
 
 var Routes = function () {
 };
 
-Routes.prototype.addRouteConfig = function(Info,callback){
-    // console.log("Info",Info);
+Routes.prototype.addRouteConfig = function(jwt,Info,callback){
     var retObj={
         status:false,
-        message:""
+        messages:[],
+        errors:[]
     };
-    var insertDoc = new RoutesCollection(Info);
-    insertDoc.save(function(err,result){
-        if(err){
-            console.log("error...",err);
-            retObj.status=false;
-            retObj.message="error in saving";
-            callback(retObj);
-        }else{
-            retObj.status=true;
-            retObj.message="Saved successfully";
-            retObj.data=result;
-            callback(retObj);
-        }
-    });
+    Info.accountId = jwt.id;
+    if(!Info.name || ! _.isString(Info.name)){
+        retObj.errors.push("Invalid name");
+    }
+    if(!Info.distance){
+
+    }
+    if(!Info.source){
+        retObj.errors.push("Enter source location");
+    }
+    if(!Info.destination){
+        retObj.errors.push("Enter destination location");
+    }
+    if(retObj.errors.length){
+        callback(retObj);
+    }
+    else{
+        var insertDoc = new RoutesCollection(Info);
+        insertDoc.save(function(err,result){
+            if(err){
+                console.log("error...",err);
+                retObj.status=false;
+                retObj.messages.push("error in saving");
+                callback(retObj);
+            }else{
+                retObj.status=true;
+                retObj.messages.push("Saved successfully");
+                retObj.data=result;
+                callback(retObj);
+            }
+        });
+    }
 };
-Routes.prototype.getRouteConfigs = function(req,callback){
+Routes.prototype.getRouteConfigs = function(jwt,req,callback){
     var retObj={
         status:false,
         message:""
     };
-    RoutesCollection.find({},function(err,result){
+    var query = {accountId:jwt.id};
+    RoutesCollection.find(query,function(err,result){
         if(err){
             retObj.status=false;
             retObj.message="error";

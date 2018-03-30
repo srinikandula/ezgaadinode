@@ -306,7 +306,8 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             contactName:'',
             contactMobile:'',
             dateTime:'',
-            meetingAddress:''
+            meetingAddress:'',
+            homeLocation: [{}]
 
         };
     }
@@ -315,6 +316,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     $scope.getCustomerLeadDetails = function () {
         if ($stateParams.customerId) {
             customerServices.getCustomerLeadDetails($stateParams.customerId, function (success) {
+                console.log("getting customer leads...",success);
 
                 if (success.data.status) {
                     $scope.customerLead = success.data.data.customerData;
@@ -483,6 +485,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             customerLeadSearch: tableParams.customerLeadSearch,
         };
         customerServices.getCustomerLeads(pageable, function (success) {
+            console.log("table...",success.data.data);
             $scope.invalidCount = 0;
             if (success.data.status) {
                 //tableParams.total(success.data.count);
@@ -585,6 +588,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
                 $scope.customerLead.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
             });
     };
+
     $scope.addOperatingRoute = function () {
         var routesObj = $scope.customerLead.operatingRoutes;
         if (!routesObj[routesObj.length - 1].source || !routesObj[routesObj.length - 1].destination) {
@@ -878,7 +882,7 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
     if ($stateParams.truckownerId) {
         $scope.getTruckTypes();
         customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
-            console.log("truck owners...",success);
+            console.log("truck owners...(success.data.data)",success.data.data);
             if (success.data.status) {
                 $scope.truckOwner = success.data.data.truckOwnerData;
                 $scope.truckOwner.confirmPassword = success.data.data.truckOwnerData.password;
@@ -889,7 +893,10 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
                 $scope.truckOwner.operatingRoutes = success.data.data.operatingRoutes;
                 if ($scope.truckOwner.operatingRoutes.length === 0) {
                     $scope.truckOwner.operatingRoutes = [{}];
+
                 }
+                $scope.truckOwner.homeLocation = success.data.data.truckOwnerData.homeLocation;
+
                 if($scope.truckOwner.yearInService === 0){
                     $scope.truckOwner.yearInService = "";
                 }
@@ -946,7 +953,8 @@ $scope.selectTruckTypes=[];
         for (var i = 0; i < $scope.truckOwner.contactPhone.length; i++) {
             if (!$scope.truckOwner.contactPhone[i]) {
                 return false;
-            }
+
+                }
             if (i === $scope.truckOwner.contactPhone.length - 1) {
                 return true;
             }
@@ -1016,6 +1024,17 @@ $scope.selectTruckTypes=[];
             function () {
                 var place = autocomplete.getPlace();
                 $scope.truckOwner.operatingRoutes[index].destination = place.formatted_address;
+            });
+    };
+    $scope.searchHomeLocation = function () {
+        var input = document.getElementById('accountHomeLocation');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.truckOwner.homeLocation.homeAddress = place.formatted_address;
+                $scope.truckOwner.homeLocation.latlng = [parseFloat(place.geometry.location.lat()), parseFloat(place.geometry.location.lng())];
             });
     };
 

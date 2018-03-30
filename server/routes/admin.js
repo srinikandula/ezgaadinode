@@ -22,7 +22,6 @@ AuthRouter.get('/accounts/fetchAllAccounts', function (req, res) {
 });
 
 AuthRouter.get('/accounts/getAllAccountsForDropdown', function (req, res) {
-    console.log('helloooooooo');
     Accounts.getAllAccountsForDropdown(req, function (result) {
         res.json(result);
     });
@@ -100,6 +99,12 @@ AuthRouter.post('/uploadUserProfilePic', function (req, res) {
 
 AuthRouter.get('/getErpSettings', function (req, res) {
     Accounts.getErpSettings(req.jwt,req, function (result) {
+        res.json(result);
+    });
+});
+
+AuthRouter.get('/getHomeLocation', function (req, res) {
+    Accounts.getAccountHomeLocation(req.jwt,req, function (result) {
         res.json(result);
     });
 });

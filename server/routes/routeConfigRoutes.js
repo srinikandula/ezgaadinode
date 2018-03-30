@@ -6,15 +6,16 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 
 var routeConfigAPI = require('../apis/routeConfigApi');
+var AccountServices=require('./../apis/accountsApi');
 
 AuthRouter.post('/',function(req,res){
     // console.log('req.body',req.body);
-    routeConfigAPI.addRouteConfig(req.body,function(result){
+    routeConfigAPI.addRouteConfig(req.jwt,req.body,function(result){
         res.json(result);
     });
 });
 AuthRouter.get('/get',function(req,res){
-    routeConfigAPI.getRouteConfigs(req,function(result){
+    routeConfigAPI.getRouteConfigs(req.jwt,req,function(result){
         res.send(result);
     });
 });

@@ -70,7 +70,7 @@ app.controller('RouteConfigListCtrl', ['$scope','$state','RouteConfigService', f
         window.location.reload();
     };
     RouteConfigService.getRouteConfigs(function(successCallback){
-        console.log("getting...",successCallback.data);
+        // console.log("getting route configs.......",successCallback.data.data);
         $scope.routeConfigs = successCallback.data.data;
     },function(errorCallback){
 
@@ -90,33 +90,50 @@ app.controller('RouteConfigListCtrl', ['$scope','$state','RouteConfigService', f
     }
 
 }]);
-app.controller('PickRouteLocationController', ['$scope','$state','RouteConfigService','$uibModalInstance','NgMap','data', function ($scope,$state,RouteConfigService,$uibModalInstance,NgMap,data) {
+app.controller('PickRouteLocationController', ['$scope','$state','RouteConfigService','$uibModalInstance','NgMap','data','AccountServices', function ($scope,$state,RouteConfigService,$uibModalInstance,NgMap,data,AccountServices) {
+    $scope.latlng =[];
     if(data && data.position){
         $scope.position = data.position || {};
     }else{
         $scope.position ={};
     }
     $scope.marker = null;
-    $scope.accountHomeLocation = [17.3850,68.4867];
-    //
+    $scope.accountHomeLocation = [];
+    AccountServices.getAccountHomeLocation(function(success){
+        $scope.latlng = success.data.data.homeLocation.latlng;
+        // console.log(" home location latlng.....",$scope.latlng);
+        $scope.accountHomeLocation = [parseFloat($scope.latlng[0]), parseFloat($scope.latlng[1])];
+        console.log("home location "+ $scope.accountHomeLocation);
+    },function(error){
+
+    });
     var icon = (data&&data.type) ==='source'?'http://maps.google.com/mapfiles/ms/icons/green-dot.png':'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+    var infowindow = new google.maps.InfoWindow;
+    var array =[];
+    var geocoder = {};
     NgMap.getMap().then(function(map) {
+            map.setCenter({lat:$scope.accountHomeLocation[0],lng:$scope.accountHomeLocation[1]});
             if($scope.position.latlng){
                 map.setCenter({lat:$scope.position.latlng[0],lng:$scope.position.latlng[1]});
                 $scope.marker = new google.maps.Marker({icon:icon,position:new google.maps.LatLng($scope.position.latlng[0],$scope.position.latlng[1]),draggable: true});
+                array = [$scope.accountHomeLocation[0],$scope.accountHomeLocation[1]];
+                geocoder = new google.maps.Geocoder;
+                $scope.geocodeLatLng(array,geocoder, map, infowindow,$scope.marker);
+
             } else {
                 $scope.marker = new google.maps.Marker({icon:icon,position:new google.maps.LatLng($scope.accountHomeLocation[0],$scope.accountHomeLocation[1]),draggable: true});
+                array = [$scope.accountHomeLocation[0],$scope.accountHomeLocation[1]];
+                geocoder = new google.maps.Geocoder;
+                $scope.geocodeLatLng(array,geocoder, map, infowindow,$scope.marker);
             }
             $scope.marker.setMap(map);
-        var infowindow = new google.maps.InfoWindow;
         google.maps.event.addListener($scope.marker, 'dragend', function (evt) {
-                var array = [evt.latLng.lat(),evt.latLng.lng()];
-                var geocoder = new google.maps.Geocoder;
+                array = [evt.latLng.lat(),evt.latLng.lng()];
+                geocoder = new google.maps.Geocoder;
                 $scope.geocodeLatLng(array,geocoder, map, infowindow,$scope.marker);
             });
-
-        });
-        $scope.geocodeLatLng =  function (latlang,geocoder, map, infowindow,marker) {
+    });
+    $scope.geocodeLatLng =  function (latlang,geocoder, map, infowindow,marker) {
             var latlng = {lat: parseFloat(latlang[0]), lng: parseFloat(latlang[1])};
             geocoder.geocode({'location': latlng}, function(results, status) {
                 if (status === 'OK') {
@@ -132,20 +149,17 @@ app.controller('PickRouteLocationController', ['$scope','$state','RouteConfigSer
                     window.alert('Geocoder failed due to: ' + status);
                 }
             });
-        };
-        $scope.cancel = function () {
+    };
+    $scope.cancel = function () {
             if($scope.marker){
                 $scope.marker.setMap(null);
             }
             $uibModalInstance.close($scope.position);
-        };
-
-
-
+    };
 }]);
 
-app.controller('AddEditConfigCtrl', ['$scope','$state','RouteConfigService','$uibModal','$stateParams', function ($scope,$state,RouteConfigService,$uibModal,$stateParams) {
-    $scope.route ={};
+app.controller('AddEditConfigCtrl', ['$scope','$state','RouteConfigService','$uibModal','$stateParams','AccountServices', function ($scope,$state,RouteConfigService,$uibModal,$stateParams,AccountServices) {
+    $scope.route ={accountId:""};
     $scope.pageTitle = " Add RouteConfig";
 
     if($stateParams.ID){
@@ -161,20 +175,24 @@ app.controller('AddEditConfigCtrl', ['$scope','$state','RouteConfigService','$ui
 
     $scope.addOrUpdateConfig = function() {
             var params = null;
-            if ($stateParams.ID) {
+            $scope.route.errors =[];
+
+        if ($stateParams.ID) {
                 params = $scope.route;
                 RouteConfigService.updateRouteConfig(params, function (successCallback) {
-                    // console.log('Update success',successCallback.data);
                 }, function (error) {  });
-            } else {
+        } else {
                 params = $scope.route;
                 RouteConfigService.addRouteConfig(params, function (successCallback) {
-                    // console.log("Success data", successCallback.data);
+                    $scope.route.errors = successCallback.data.errors;
+                    if($scope.route.errors.length === 0){
+                        console.log("if block...");
+                        $state.go('routeConfig');
+                    }
                 }, function (errorCallback) {  });
-            }
-            $state.go('routeConfig');
-    };
+        }
 
+    };
     $scope.showMapDialog = function (type) {
          var modalInstance = $uibModal.open({
             templateUrl: 'pickRouteLocation.html',

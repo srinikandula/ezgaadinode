@@ -122,6 +122,13 @@ app.factory('AccountServices',['$http', '$cookies', function ($http, $cookies) {
                 url: '/v1/cpanel/accounts/deleteKeyPair/'+id+'/'+accountId,
                 method: "DELETE"
             }).then(success, error)
+        },
+        getAccountHomeLocation: function (success, error) {
+            console.log('home location...')
+            $http({
+                url: '/v1/admin/getHomeLocation',
+                method: "GET"
+            }).then(success, error)
         }
     }
 }]);

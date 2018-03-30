@@ -964,6 +964,7 @@ CustomerLeads.prototype.updateTruckOwner = function (req, callback) {
         status: false,
         messages: []
     };
+
     var params = req.body.content;
     if (!params._id) {
         retObj.messages.push('Please try again,Invalid truck owner');
