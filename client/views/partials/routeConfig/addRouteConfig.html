@@ -10,33 +10,32 @@
             </div>
             <div class="form-group col-xs-12">
                 <div class="styling-input-list">
-                    <input ng-model="route.distance" type="text" class="form-control custom-form-control">
+                    <input ng-model="route.distance" type="number" class="form-control custom-form-control">
                     <label class="focus-effect-for-input" aria-hidden="true">Expected distance*</label>
                 </div>
             </div>
         </div>
-
-        <div class="form-group col-xs-12">
-            <div class="col-xs-12 styling-input-list">
-                <input id="source" type="text" class="form-control custom-form-control" placeholder="Source*"
-                       ng-model="route.source.address">
-                <!--<label class="focus-effect-for-input" aria-hidden="true"></label>-->
-                <div class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="showMapDialog('source')">
-                        <span class="glyphicon glyphicon-map-marker" aria-hidden="true"></span>
-                    </button>
+        <div class="col-sm-6 col-xs-12">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input id="source" type="text" class="form-control custom-form-control" placeholder="Source*"
+                           ng-model="route.source.address">
+                    <!--<label class="focus-effect-for-input" aria-hidden="true"></label>-->
+                        <div class="mapIcon" ng-click="showMapDialog('source')">
+                            <span class="glyphicon glyphicon-map-marker"></span>
+                        </div>
                 </div>
             </div>
-        </div>
-        <div class="form-group col-xs-12">
-            <div class="col-xs-12 styling-input-list">
-                <input id="destination" type="text" class="form-control custom-form-control" placeholder="Destination*"
-                       ng-model="route.destination.address">
-                <!--<label class="focus-effect-for-input" aria-hidden="true"></label>-->
-                <div class="input-group-btn">
-                    <button type="button" class="btn btn-default" ng-click="showMapDialog('destination')">
-                        <span class="glyphicon glyphicon-map-marker"></span>
-                    </button>
+
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input id="destination" type="text" class="form-control custom-form-control"
+                           placeholder="Destination*"
+                           ng-model="route.destination.address">
+                    <!--<label class="focus-effect-for-input" aria-hidden="true"></label>-->
+                        <div class="mapIcon" ng-click="showMapDialog('destination')">
+                            <span class="glyphicon glyphicon-map-marker"></span>
+                        </div>
                 </div>
             </div>
         </div>

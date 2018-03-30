@@ -181,17 +181,16 @@ app.controller('AddEditConfigCtrl', ['$scope','$state','RouteConfigService','$ui
                 params = $scope.route;
                 RouteConfigService.updateRouteConfig(params, function (successCallback) {
                 }, function (error) {  });
+            $state.go('routeConfig');
         } else {
                 params = $scope.route;
                 RouteConfigService.addRouteConfig(params, function (successCallback) {
                     $scope.route.errors = successCallback.data.errors;
                     if($scope.route.errors.length === 0){
-                        console.log("if block...");
                         $state.go('routeConfig');
                     }
                 }, function (errorCallback) {  });
         }
-
     };
     $scope.showMapDialog = function (type) {
          var modalInstance = $uibModal.open({

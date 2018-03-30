@@ -17,9 +17,9 @@ Routes.prototype.addRouteConfig = function(jwt,Info,callback){
     if(!Info.name || ! _.isString(Info.name)){
         retObj.errors.push("Invalid name");
     }
-    if(!Info.distance){
-
-    }
+    if(!Info.distance || ! _.isNumber(Info.distance)){
+        retObj.errors.push("Invalid distance");
+        }
     if(!Info.source){
         retObj.errors.push("Enter source location");
     }

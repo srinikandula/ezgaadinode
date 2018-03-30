@@ -882,7 +882,6 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
     if ($stateParams.truckownerId) {
         $scope.getTruckTypes();
         customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
-            console.log("truck owners...(success.data.data)",success.data.data);
             if (success.data.status) {
                 $scope.truckOwner = success.data.data.truckOwnerData;
                 $scope.truckOwner.confirmPassword = success.data.data.truckOwnerData.password;
@@ -1073,7 +1072,6 @@ $scope.selectTruckTypes=[];
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.data;
                 $scope.currentPageOfTruckOwners = response.data.data;
-                console.log("currentPageOfTruckOwners",$scope.currentPageOfTruckOwners);
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
