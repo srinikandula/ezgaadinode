@@ -55,7 +55,6 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         GpsService.getTruckReport($scope.reportParams,function (success) {
             if(success.data.status){
                 $scope.truckReports = success.data.results;
-                console.log(success.data.results);
             }else{
 
             }
@@ -129,13 +128,13 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         })
     }
 
+    $scope.trucks=[];
     $scope.getAllTrucksForAccount = function (search) {
         TrucksService.getAllTrucksForAccount({
             name: search,
             size: $scope.reportParams.currentElement
         },function (success) {
             if(success.data.status){
-                console.log(success.data.data);
                 $scope.trucks=success.data.data;
             }else{
                 $scope.trucks=[];
@@ -146,13 +145,13 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
     }
 
     $scope.loadMore = function () {
-        $scope.currentElement = $scope.currentElement + 10;
+        $scope.reportParams.currentElement = $scope.reportParams.currentElement + 10;
         TrucksService.getAllTrucksForAccount({
             name: $scope.reportParams.truckNo,
             size: $scope.reportParams.currentElement
         }, function (success) {
             if (success.data.status) {
-                $scope.trucks=success.data.data;
+                $scope.trucks=$scope.trucks.concat(success.data.data);
             } else {
                 $scope.trucks = [];
             }

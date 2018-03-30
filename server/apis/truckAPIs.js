@@ -1208,7 +1208,7 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
         callback(retObj);
     }else{
         var params = req.body;
-        params.createdBy = req.jwt.id;
+        // params.createdBy = req.jwt.id;
         params.sourceAddress = body.sourceAddress;
         params.destination=[];
         params.destination[0] ={destinationAddress: body.destinationAddress, price:body.pricePerTon};
@@ -1219,16 +1219,23 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
         loadRequest.save(function (err, doc) {
             if (err) {
                 retObj.status=false;
-                console.log(err);
                 retObj.messages.push('Error while saving load request data');
                 callback(retObj);
             } else {
-                retObj.status=true;
-                retObj.messages.push('Saved load request successfully');
-                notificationService.sendPushNotifications({title:'New Load Request',message:params.registrationNo+' is looking for load '},function (response) {
-                    retObj.messages.push(response.message);
-                    AccountsColl.find({role:'transporters'})
-                    callback(retObj);
+                TrucksColl.update({registrationNo:body.registrationNo},{$set:{lookingForLoad:true}},function (err,truck) {
+                    if(err){
+                        retObj.status=false;
+                        retObj.messages.push('Error while updating truck');
+                        callback(retObj);
+                    }else{
+                        retObj.status=true;
+                        retObj.messages.push('Saved load request successfully');
+                        notificationService.sendPushNotifications({title:'New Load Request',message:params.registrationNo+' is looking for load '},function (response) {
+                            retObj.messages.push(response.message);
+                            // AccountsColl.find({role:'transporters'})
+                            callback(retObj);
+                        });
+                    }
                 });
             }
         })
@@ -1240,6 +1247,7 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
         messages: []
     };
     var params = req.query;
+    console.log(params);
     var skipNumber = params.size ? parseInt(params.size) : 0;
     var sort = {createdAt: -1};
     var condition = {};
@@ -1248,7 +1256,7 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
     } else {
         condition = {accountId:req.jwt.id}
     }
-    console.log(condition);
+    console.log(condition,skipNumber);
     TrucksColl.find(condition,{registrationNo:1,truckType:1}).skip(skipNumber)
         .limit(10).exec(function (err, trucks) {
         if(err){
@@ -1260,6 +1268,7 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
             retObj.data = trucks;
             callback(retObj);
         }else{
+            retObj.status = true;
             retObj.messages.push("No trucks found");
             callback(retObj);
         }

@@ -914,7 +914,9 @@ var deviceIdSchema =new mongoose.Schema({
     imei:String,
     mobile:Number,
     email:String,
-    deviceId:String
+    fcmDeviceIds:[String],
+    accountId:{type: ObjectId, ref: 'accounts'},
+    messages:[{title:String,message:String,date:Date}]
 });
 
 module.exports = {

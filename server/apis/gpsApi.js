@@ -743,7 +743,7 @@ Gps.prototype.editGpsSettings = function (body,req,callback) {
         messages: []
     };
     body.idleTime=parseInt(body.idleTime);
-    GpsSettingsColl.update({accountId:req.jwt.id},{$set:body},function (err,settings) {
+    GpsSettingsColl.update({accountId:req.jwt.id},{$set:body},{upsert: true},function (err,settings) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Error retrieving settings for account');
@@ -772,6 +772,39 @@ Gps.prototype.getGpsSettings = function (id,req,callback) {
             callback(retObj);
         }
     })
+};
+
+Gps.prototype.getDailyReports = function (req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    var startDate=req.params.date;
+    startDate.setHours(0);
+    startDate.setMinutes(0);
+    startDate.setSeconds(0);
+    var endDate=new Date();
+    endDate.setDate(startDate.getDate()+1);
+    endDate.setHours(0);
+    endDate.setMinutes(0);
+    endDate.setSeconds(0);
+    console.log(startDate,endDate);
+    // TrucksColl.find({accountId:req.jwt.id},function (err,trucks) {
+    //     if(err){
+    //         retObj.messages.push('Error retrieving trucks for account');
+    //         callback(retObj);
+    //     }else if(trucks.length){
+    //         async.map(trucks,function (truck,asyncCallback) {
+    //             GpsColl.find({deviceId: truck.deviceId, createdAt: {$gte: startDate, $lte: endDate}}, function () {
+    //
+    //             })
+    //         },function (err,results) {
+    //
+    //         });
+    //     }else{
+    //         retObj.messages.push('No trucks found for account');
+    //         callback(retObj);
+    //     }
+    // })
 };
 
 module.exports = new Gps();

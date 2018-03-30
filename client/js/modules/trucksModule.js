@@ -149,7 +149,7 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET",
                 params: params
             }).then(success, error);
-        },
+        }
     }
 }]);
 
