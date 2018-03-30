@@ -5,6 +5,7 @@ var PartyColl = require('./../models/schemas').PartyCollection;
 var mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 var async = require("async");
+var emailService = require('./mailerApi');
 var serviceActions = require('./../constants/constants');
 var analyticsService = require('./../apis/analyticsApi');
 var Utils = require('./utils');
@@ -632,17 +633,16 @@ Receipts.prototype.downloadReceiptsDetailsByParty = function (req, callback) {
     Receipts.prototype.getReceiptsByParties(req, function (response) {
         if (response.status) {
             var output = [];
-            console.log(response);
             for (var i = 0; i < response.data.length; i++) {
                 output.push({
                     Party_Name: response.data[i]._id.name,
                     amount: response.data[i].amount
 
-                })
+                });
                 if (i === response.data.length - 1) {
                     retObj.status = true;
                     retObj.data = output;
-                    analyticsService.create(req, serviceActions.dwnld_payable_det_by_party, {
+                    analyticsService.create(req, serviceActions.download_receipt_by_party, {
                         body: JSON.stringify(req.query),
                         accountId: req.jwt.id,
                         success: true
@@ -652,8 +652,59 @@ Receipts.prototype.downloadReceiptsDetailsByParty = function (req, callback) {
                 }
             }
         } else {
+            retObj.messages.push("Receipt not downloaded");
+            analyticsService.create(req, serviceActions.download_receipt_by_party_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(response);
         }
     })
+};
+
+Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var jwt=req.jwt;
+    var params=req.query;
+    if (!params.email || !Utils.isEmail(params.email)) {
+        retObj.status = false;
+        retObj.messages.push('Please enter valid email');
+        analyticsService.create(req,serviceActions.share_receipts_by_party_via_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+        callback(retObj);
+    } else {
+        Receipts.prototype.getReceiptsByParties(req, function (revenueResponse) {
+            if (revenueResponse.status) {
+                var emailparams = {
+                    templateName: 'shareReceiptsDetailsByParty',
+                    subject: "Easygaadi Receipts Details",
+                    to: params.email,
+                    data: {
+                        receipts: revenueResponse.data
+                    }
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push('Receipts details shared successfully');
+                        analyticsService.create(req,serviceActions.share_receipts_by_party_via_email,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
+                        callback(retObj);
+                    } else {
+                        analyticsService.create(req,serviceActions.share_receipts_by_party_via_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:emailResponse.messages},function(response){ });
+                        callback(emailResponse);
+                    }
+                });
+            } else {
+                analyticsService.create(req,serviceActions.share_receipts_by_party_via_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:revenueResponse.messages},function(response){ });
+                callback(revenueResponse);
+            }
+        })
+    }
+
 };
 module.exports = new Receipts();

@@ -1258,7 +1258,7 @@ Trips.prototype.downloadRevenueDetailsByVechicle = function (jwt, params,req, ca
                     Total_Freight: revenueResponse.revenue[i].totalFreight,
                     Total_Expense: revenueResponse.revenue[i].totalExpense,
                     Total_Revenue: revenueResponse.revenue[i].totalRevenue
-                })
+                });
                 if (i === revenueResponse.revenue.length - 1) {
                     retObj.status = true;
                     output.push({

@@ -545,7 +545,10 @@ const serviceActions = {
     get_receipts_by_parties_err:"GET_RECEIPTS_BY_PARTIES_ERR",
     find_total_receipts_by_account:"FIND_TOTAL_RECEIPTS_BY_ACCOUNT",
     find_total_receipts_by_account_err:"FIND_TOTAL_RECEIPTS_BY_ACCOUNT_ERR",
-
+    download_receipt_by_party:"DOWNLOAD_RECEIPT_BY_PARTY",
+    download_receipt_by_party_err:"DOWNLOAD_RECEIPT_BY_PARTY_ERR",
+    share_receipts_by_party_via_email:"SHARE_RECEIPTS_BY_PARTY_VIA_EMAIL",
+    share_receipts_by_party_via_email_err:"SHARE_RECEIPTS_BY_PARTY_VIA_EMAIL_ERR",
 
 
 

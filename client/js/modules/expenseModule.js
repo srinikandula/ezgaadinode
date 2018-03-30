@@ -126,7 +126,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
 
     var loadTableData = function (tableParams) {
 
-        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),truckNumber:tableParams.truckNumber};
+        var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),regNumber:tableParams.truckNumber,fromDate:$scope.fromDate,toDate:$scope.toDate};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
