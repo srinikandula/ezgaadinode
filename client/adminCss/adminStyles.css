@@ -1353,6 +1353,11 @@ textarea.custom-form-control{
     bottom: 20px;
     right: 10px;
 }
+.statusError{
+    padding: 0 0 0 40px !important;
+    color: red;
+    text-transform: capitalize;
+}
 /* Responsive Design */
 
 @media only screen and (max-width: 767px) {

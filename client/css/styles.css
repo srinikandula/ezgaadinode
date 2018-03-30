@@ -2090,6 +2090,7 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 
 .profile-pic {
     border-radius: 50%;
+    background-color: #fff;
 }
 .styling-input-list-trucks{
     position: relative;

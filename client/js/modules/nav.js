@@ -4,18 +4,18 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         Utils.logout();
         $cookies.remove('token');
         $cookies.remove('userName');
-        $scope.displayName = "";
+        $cookies.remove('routeConfigEnabled');
+        $cookies.remove('erpEnabled');
+        $cookies.remove('gpsEnabled');
         $rootScope.loggedTrue();
         $state.go('login');
     };
     $scope.isLoggedIn = function () {
-        return $cookies.get('token') != undefined;
-    }
-    $scope.loggedInName=function(){
         $scope.displayName=$cookies.get('userName');
+        $scope.routeConfigEnabled = $cookies.get('routeConfigEnabled');
+        return $cookies.get('token') != undefined;
 
     }
-    $scope.loggedInName();
 
     $scope.isLoggedInn = '';
 
