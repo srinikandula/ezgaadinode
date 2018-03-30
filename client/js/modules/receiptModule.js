@@ -54,6 +54,14 @@ app.factory('ReceiptServices', ['$http', function ($http) {
                 method: "GET",
                 params: {_id: receiptId}
             }).then(success, error)
+        },
+        shareReceiptsDetailsByPartyViaEmail:function (params,success,error) {
+            $http({
+                url: '/v1/receipts/shareReceiptsDetailsByPartyViaEmail',
+                method: "GET",
+                params: params
+            }).then(success, error)
+
         }
     }
 }]);

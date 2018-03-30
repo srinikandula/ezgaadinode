@@ -60,6 +60,12 @@ AuthRouter.get("/downloadReceiptsDetailsByParty",function (req,res) {
 
     });
 });
+
+AuthRouter.get('/shareReceiptsDetailsByPartyViaEmail',function (req,res) {
+   Receipts.shareReceiptsDetailsByPartyViaEmail(req,function (result) {
+       res.send(result);
+   }) 
+});
 module.exports = {
     AuthRouter: AuthRouter
 };

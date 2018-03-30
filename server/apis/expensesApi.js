@@ -254,9 +254,7 @@ function getExpenseCosts(condition, jwt, params, callback) {
 
                 }
             })
-            /*for(var i=0;i<results.mCosts.createdbyname.length;i++){
 
-            }*/
         }
     });
 }
@@ -267,9 +265,14 @@ Expenses.prototype.getExpenseCosts = function (jwt, params,req, callback) {
         params.page = 1;
     }
     var condition = {};
-
-    if (!params.truckNumber) {
-        getExpenseCosts({'accountId': jwt.accountId}, jwt, params, function (response) {
+   if (params.fromDate && params.toDate  && params.regNumber) {
+        condition = {
+            "accountId": ObjectId(jwt.accountId), date: {
+                $gte: new Date(params.fromDate),
+                $lte: new Date(params.toDate),
+            }, "vehicleNumber": params.regNumber
+        };
+        getExpenseCosts(condition, jwt, params, function (response) {
             if(response.status){
                 analyticsService.create(req, serviceActions.get_all_expenses, {
                     body: JSON.stringify(req.query),
@@ -288,50 +291,98 @@ Expenses.prototype.getExpenseCosts = function (jwt, params,req, callback) {
             }
             callback(response);
         })
-    } else {
-        trucksCollection.findOne({registrationNo: {$regex: '.*' + params.truckNumber + '.*'}}, function (err, truckData) {
-            if (err) {
-                result.status = false;
-                result.message = 'Error retrieving expenses Costs';
-                analyticsService.create(req,serviceActions.get_all_expenses_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
-                callback(result);
-            } else if (truckData) {
-                getExpenseCosts({
-                    'accountId': jwt.accountId,
-                    'vehicleNumber': truckData._id
-                }, jwt, params, function (response) {
-                    if(response.status){
-                        analyticsService.create(req, serviceActions.get_all_expenses, {
-                            body: JSON.stringify(req.query),
-                            accountId: jwt.id,
-                            success: true,
-                        }, function (response) {
-                        });
-                    }else {
-                        analyticsService.create(req, serviceActions.get_all_expenses_err, {
-                            body: JSON.stringify(req.query),
-                            accountId: jwt.id,
-                            success: false,
-                            messages: result.messages
-                        }, function (response) {
-                        });
-                    }
-                    callback(response);
-                })
-            } else {
-                result.status = true;
-                result.message = 'Success';
-                result.count = 0;
-                result.expenses = [];
+    } else if (params.fromDate && params.toDate) {
+        condition = {
+            "accountId": ObjectId(jwt.accountId), date: {
+                $gte: new Date(params.fromDate),
+                $lte: new Date(params.toDate),
+            }
+        };
+        getExpenseCosts(condition, jwt, params, function (response) {
+            if(response.status){
                 analyticsService.create(req, serviceActions.get_all_expenses, {
                     body: JSON.stringify(req.query),
                     accountId: jwt.id,
                     success: true,
                 }, function (response) {
                 });
-                callback(result);
+            }else {
+                analyticsService.create(req, serviceActions.get_all_expenses_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: result.messages
+                }, function (response) {
+                });
             }
+            callback(response);
         })
+    }else  if (params.regNumber) {
+       trucksCollection.find({registrationNo: {$regex: '.*' + params.regNumber + '.*'}}, function (err, truckData) {
+           if (err) {
+               result.status = false;
+               result.message = 'Error retrieving expenses Costs';
+               analyticsService.create(req,serviceActions.get_all_expenses_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
+               callback(result);
+           } else if (truckData) {
+              var ids=_.pluck(truckData,"_id");
+               getExpenseCosts({
+                   'accountId': jwt.accountId,
+                   'vehicleNumber': {$in:ids}
+               }, jwt, params, function (response) {
+                   if(response.status){
+                       analyticsService.create(req, serviceActions.get_all_expenses, {
+                           body: JSON.stringify(req.query),
+                           accountId: jwt.id,
+                           success: true,
+                       }, function (response) {
+                       });
+                   }else {
+                       analyticsService.create(req, serviceActions.get_all_expenses_err, {
+                           body: JSON.stringify(req.query),
+                           accountId: jwt.id,
+                           success: false,
+                           messages: result.messages
+                       }, function (response) {
+                       });
+                   }
+                   callback(response);
+               })
+           } else {
+               result.status = true;
+               result.message = 'Success';
+               result.count = 0;
+               result.expenses = [];
+               analyticsService.create(req, serviceActions.get_all_expenses, {
+                   body: JSON.stringify(req.query),
+                   accountId: jwt.id,
+                   success: true,
+               }, function (response) {
+               });
+               callback(result);
+           }
+       })
+   }  else {
+       getExpenseCosts({'accountId': jwt.accountId}, jwt, params, function (response) {
+           if(response.status){
+               analyticsService.create(req, serviceActions.get_all_expenses, {
+                   body: JSON.stringify(req.query),
+                   accountId: jwt.id,
+                   success: true,
+               }, function (response) {
+               });
+           }else {
+               analyticsService.create(req, serviceActions.get_all_expenses_err, {
+                   body: JSON.stringify(req.query),
+                   accountId: jwt.id,
+                   success: false,
+                   messages: result.messages
+               }, function (response) {
+               });
+           }
+           callback(response);
+       })
+
 
     }
 
@@ -533,16 +584,16 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
     var retObj = {
         status: false,
         messages: []
-    }
+    };
     if (params.fromDate != '' && params.toDate != '' && params.regNumber != '') {
         condition = {
             $match: {
                 "accountId": ObjectId(jwt.accountId), date: {
                     $gte: new Date(params.fromDate),
                     $lte: new Date(params.toDate),
-                }, "vehicleNumber": params.regNumber
+                }, "vehicleNumber": ObjectId(params.regNumber)
             }
-        }
+        };
         getExpensesByVehicles(jwt, condition, params,req, function (response) {
             callback(response);
         })
@@ -559,7 +610,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
             callback(response);
         })
     } else if (params.regNumber) {
-        condition = {$match: {"accountId": ObjectId(jwt.accountId), "vehicleNumber": params.regNumber}}
+        condition = {$match: {"accountId": ObjectId(jwt.accountId), "vehicleNumber":ObjectId(params.regNumber)}}
         getExpensesByVehicles(jwt, condition, params,req, function (response) {
             callback(response);
         })
