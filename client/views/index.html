@@ -35,7 +35,8 @@
                 <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse col-sm-10" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav col-sm-9">
-                <li ng-hide="erpEnabled=='false'"  ng-class="{selected: subTab === 'ERP'}"> <a href="#"  ui-sref="reports">
+                <li ng-hide="erpEnabled=='false'" ng-class="{selected: subTab === 'ERP'}"> <a href="#"
+                                                                                              ui-sref="reports">
                     <img src="images/erp.png"><span>ERP</span></a></li>
                 <li ng-class="{selected: activeTab === 'gpsReports'}"><a href="#" ui-sref="gpsReports">
                     <img src="images/gps.png"><span>GPS</span></a></li>
@@ -47,15 +48,19 @@
                         src="images/settings.png"><span>Settings</span></a></li>
                 <li><a href="#">  <img src="images/notifications.png"><span>Notifications</span></a></li>
                 <!--<li ng-class="{selected: activeTab === 'Analytics'}"><a href="#" ui-sref="analyticsReports"><img-->
-                        <!--src="images/settings.png"><span>Analytics</span></a></li>-->
+                <!--src="images/settings.png"><span>Analytics</span></a></li>-->
 
             </ul>
             <ul class="nav navbar-nav pull-right margin-top-10 user-nav" ng-show="isLoggedInn" ng-init="loggedTrue()">
 
-                <li class=""><img src="images/profile-pics/{{profilePic}}" width="60" height="55"
-                                  class="profile-pic"></li>
+                <li class="">
+                     <img src="images/dummy.png" width="60" height="55"
+                          class="profile-pic" ng-show="!profilePic">
+                    <img src="images/profile-pics/{{profilePic}}" width="60" height="55"
+                         class="profile-pic" ng-show="profilePic">
+                </li>
                 <li class="profile-nav">
-                    <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown">{{displayName}}
+                    <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown" style="text-transform: capitalize">{{displayName }}
                         <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="#" ui-sref="myProfile">My Profile</a></li>
@@ -87,7 +92,8 @@
                     <left-menu label="Trips" ui-sref="trips"></left-menu>
                     <!--<left-menu label="Expense-Master"></left-menu>-->
                     <left-menu label="Expenses" ui-sref="expenses"></left-menu>
-                    <left-menu label="Route-Config" ui-sref="routeConfig"></left-menu>
+                    <left-menu label="Route-Config" ui-sref="routeConfig"
+                               ng-show="routeConfigEnabled === 'true'"></left-menu>
                     <div class="clearfix"></div>
              </div>
                 <div class="col-xs-12 col-sm-10">

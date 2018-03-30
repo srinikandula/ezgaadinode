@@ -72,6 +72,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                     retObj.loadEnabled = user.loadEnabled;
                     retObj.editAccounts = user.editAccounts;
                     retObj.profilePic = user.profilePic;
+                    retObj.routeConfigEnabled = user.routeConfigEnabled;
                     retObj.type = user.type;
                     retObj.role = user.role;
 

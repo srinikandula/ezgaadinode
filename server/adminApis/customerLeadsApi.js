@@ -746,7 +746,7 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                 userName: params.userName,
                                 firstName: customerLead.firstName,
                                 contactPhone: customerLead.contactPhone,
-                                password: customerLead.contactPhone,
+                                password: customerLead.password,
                                 email: customerLead.email,
                                 type: "account",
                                 accountId: customerLead._id,

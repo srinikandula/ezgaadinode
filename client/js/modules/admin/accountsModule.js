@@ -267,7 +267,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
                     $scope.availableStatusError = 'username available';
                 } else {
                     $scope.availableStatus = false;
-                    $scope.availableStatusError = 'username not vailable';
+                    $scope.availableStatusError = 'username not available';
                 }
             });
         }

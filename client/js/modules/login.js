@@ -39,6 +39,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('type', success.data.type);
                     $cookies.put('erpEnabled',success.data.erpEnabled);
                     $cookies.put('gpsEnabled',success.data.gpsEnabled);
+                    $cookies.put('routeConfigEnabled',success.data.routeConfigEnabled);
                     $rootScope.loggedTrue();
                     if(success.data.erpEnabled){
                         $state.go('reports');

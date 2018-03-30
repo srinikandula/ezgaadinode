@@ -52,7 +52,7 @@
                 {{device.createdAt | date:'yyyy-MM-dd'}}
             </td>
             <td data-title="'Installed By'" sortable="'installedBy'" class="clickable-item">
-                {{device.installedBy.userName}}
+                {{device.installedBy.userName |limitTo:5}}
             </td>
             <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
                 {{device.registrationNo || "--"}}
