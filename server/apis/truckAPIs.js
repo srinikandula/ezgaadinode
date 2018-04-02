@@ -70,6 +70,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
                             retObj.status = true;
                             retObj.messages.push("Truck Added Successfully");
                             retObj.truck = truck;
+                            Helpers.assignTruckTypeToAccount({accountId:jwt.accountId,truckType:truckDetails.truckTypeId});
                             Helpers.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
                             analyticsService.create(req,serviceActions.add_tru,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
                             callback(retObj);
@@ -169,6 +170,7 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
         status: false,
         messages: []
     };
+    console.log("truck details",truckDetails)
     truckDetails = Helpers.removeEmptyFields(truckDetails);
     truckDetails.updatedBy = jwt.id;
     // delete truckDetails.attrs.latestLocation;
@@ -185,7 +187,8 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
                 retObj.status = true;
                 retObj.messages.push("Truck updated successfully");
                 retObj.truck = truck;
-                Helpers.cleanUpTruckDriverAssignment(jwt, truck._id.toString(), truck.driverId)
+                Helpers.assignTruckTypeToAccount({accountId:jwt.accountId,truckType:truckDetails.truckTypeId});
+                Helpers.cleanUpTruckDriverAssignment(jwt, truck._id.toString(), truck.driverId);
                 analyticsService.create(req,serviceActions.update_tru,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
@@ -234,7 +237,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
         if (!params.truckName) {
             condition = {accountId: jwt.accountId}
         } else {
-            condition = {accountId: jwt.accountId, registrationNo: {$regex: '.*' + params.truckName + '.*'}}
+            condition = {accountId: jwt.accountId, registrationNo:new RegExp("^" + params.truckName, "i")}
         }
         var skipNumber = (params.page - 1) * params.size;
         var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
@@ -243,7 +246,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
             trucks: function (trucksCallback) {
                 TrucksColl
                     .find(condition)
-                    .populate('latestLocation')
+                    //.populate('latestLocation')
                     .sort(sort)
                     .skip(skipNumber)
                     .limit(limit)

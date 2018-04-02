@@ -170,7 +170,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             return "";
         }
 
-    }
+    };
     $scope.count = 0;
     $scope.getCount = function () {
         TrucksService.count(function (success) {
@@ -408,9 +408,13 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         }
 
         if (!params.errors.length) {
-            params.tonnage=params.truckType.tonnes;
-            params.truckType=params.truckType.title ;
+            if(typeof params.truckType==="object"){
+                params.tonnage=params.truckType.tonnes;
+                params.truckTypeId=params.truckType._id;
+                params.truckType=params.truckType.title ;
+            }
             if (!params._id) {
+
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {
                         $state.go('trucks');

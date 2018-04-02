@@ -546,16 +546,18 @@ Trips.prototype.getAllAccountTrips = function (jwt, params,req, callback) {
             callback(response);
         })
     } else {
-        TrucksColl.findOne({registrationNo: {$regex: '.*' + params.truckNumber + '.*'}}, function (err, truckData) {
+        TrucksColl.find({registrationNo: new RegExp("^" + params.truckNumber, "i")}, function (err, truckData) {
             if (err) {
                 result.status = false;
                 result.message.push('Error retrieving expenses Costs');
                 analyticsService.create(req,serviceActions.account_trips_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
                 callback(result);
             } else if (truckData) {
+                var ids=_.pluck(truckData,"_id");
+
                 getTrips({
                     'accountId': jwt.accountId,
-                    'registrationNo': truckData._id
+                    'registrationNo': {$in:ids}
                 }, jwt, params, function (response) {
                     if(response.status){
                         analyticsService.create(req,serviceActions.account_trips,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
@@ -566,7 +568,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params,req, callback) {
                 })
             } else {
                 result.status = true;
-                result.message.push('Success');
+                result.messages.push('Success');
                 result.count = 0;
                 result.expenses = [];
                 analyticsService.create(req,serviceActions.account_trips,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });

@@ -394,8 +394,12 @@ function updateCustomerLead(req, callback) {
             } else if (doc) {
                 if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
-                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
-                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                        if(route.destinationLocation[0]){
+                            route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                        }
+                        if(route.sourceLocation[0]){
+                            route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                        }
                         var query = {};
                         if (!route._id) {
                             query = {_id: mongoose.Types.ObjectId()};
@@ -1049,8 +1053,13 @@ function updateTruckOwner(req, callback) {
             } else if (doc) {
                 if (params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
-                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
-                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                        if(route.destinationLocation[0]){
+                            route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                        }
+                        if(route.sourceLocation[0]){
+                            route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                        }
+
                         var query = {};
                         if (!route._id) {
                             query = {_id: mongoose.Types.ObjectId()};
@@ -1065,7 +1074,7 @@ function updateTruckOwner(req, callback) {
                     }, function (err) {
 
                         if (err) {
-                            //console.log("err",err);
+                           // console.log("err",err);
                             retObj.messages.push("Please try again");
                             analyticsService.create(req, serviceActions.update_truck_owner_details_err, {
                                 body: JSON.stringify(req.query),
@@ -1492,8 +1501,12 @@ function updateTransporter(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
-                    route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
-                    route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    if(route.destinationLocation[0]){
+                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    }
+                    if(route.sourceLocation[0]){
+                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    }
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
                         route.createdBy = req.jwt.id;
@@ -1912,8 +1925,12 @@ function updateCommissionAgent(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
-                    route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
-                    route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    if(route.destinationLocation[0]){
+                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    }
+                    if(route.sourceLocation[0]){
+                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    }
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
                         route.createdBy = req.jwt.id;
@@ -2288,8 +2305,12 @@ function updateFactoryOwner(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
-                    route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
-                    route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    if(route.destinationLocation[0]){
+                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    }
+                    if(route.sourceLocation[0]){
+                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    }
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
                         route.createdBy = req.jwt.id;

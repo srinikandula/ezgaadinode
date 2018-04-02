@@ -8,8 +8,8 @@ var expenseMasterColl = require('./../models/schemas').expenseMasterColl;
 var expenseMasterApi = require('./expenseMasterApi')
 var trucksCollection = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
-var analyticsService=require('./../apis/analyticsApi');
-var serviceActions=require('./../constants/constants');
+var analyticsService = require('./../apis/analyticsApi');
+var serviceActions = require('./../constants/constants');
 
 var config = require('./../config/config');
 var Helpers = require('./utils');
@@ -20,47 +20,64 @@ var Utils = require('./utils');
 var Expenses = function () {
 };
 
-function save(expenseDetails, result,req, callback) {
+function save(expenseDetails, result, req, callback) {
     var expenseDoc = new expenseColl(expenseDetails);
     expenseDoc.save(function (err, expense) {
 
         if (err) {
             result.status = false;
             result.messages.push("Error while adding expenses Cost, try Again");
-            analyticsService.create(req,serviceActions.add_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
+            analyticsService.create(req, serviceActions.add_expense_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: result.messages
+            }, function (response) {
+            });
             callback(result);
         } else {
             result.status = true;
             result.messages.push("expenses Cost Added Successfully");
             result.expenses = expense;
-            analyticsService.create(req,serviceActions.add_expense,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.add_expense, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(result);
         }
     });
 }
 
-function saveExpense(expenseDetails, jwt, result,req, callback) {
+function saveExpense(expenseDetails, jwt, result, req, callback) {
     if (expenseDetails.expenseType === 'others' && expenseDetails.expenseName) {
-        expenseMasterApi.addExpenseType(jwt, {"expenseName": expenseDetails.expenseName},req, function (eTResult) {
+        expenseMasterApi.addExpenseType(jwt, {"expenseName": expenseDetails.expenseName}, req, function (eTResult) {
             if (eTResult.status) {
                 expenseDetails.expenseType = eTResult.newDoc._id.toString();
-                save(expenseDetails, result,req, callback);
+                save(expenseDetails, result, req, callback);
             } else {
                 result.status = false;
                 result.messages.push("Expense already exists or Error creating new expense type");
-                analyticsService.create(req,serviceActions.add_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
+                analyticsService.create(req, serviceActions.add_expense_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: result.messages
+                }, function (response) {
+                });
                 callback(result);
             }
         });
     } else {
-        save(expenseDetails, result,req, callback);
+        save(expenseDetails, result, req, callback);
     }
 }
 
-Expenses.prototype.addExpense = function (jwt, expenseDetails,req, callback) {
+Expenses.prototype.addExpense = function (jwt, expenseDetails, req, callback) {
     var result = {
-        status:false,
-        messages:[]
+        status: false,
+        messages: []
     };
     if (!_.isObject(expenseDetails) || _.isEmpty(expenseDetails)) {
         result.status = false;
@@ -104,14 +121,14 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails,req, callback) {
         expenseDetails.updatedBy = jwt.id;
         expenseDetails.accountId = jwt.accountId;
 
-        saveExpense(expenseDetails, jwt, result,req, callback);
+        saveExpense(expenseDetails, jwt, result, req, callback);
     }
 };
 
-function updateExpense(expense, jwt,req, callback) {
+function updateExpense(expense, jwt, req, callback) {
     var result = {
-        status:false,
-        messages:[]
+        status: false,
+        messages: []
     };
     expenseColl.findOneAndUpdate({_id: expense._id},
         {
@@ -133,24 +150,41 @@ function updateExpense(expense, jwt,req, callback) {
             if (err) {
                 result.status = false;
                 result.messages.push("Error while updating expenses Cost Record, try Again");
-                analyticsService.create(req,serviceActions.update_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+                analyticsService.create(req, serviceActions.update_expense_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: result.message
+                }, function (response) {
+                });
                 callback(result);
             } else if (expenseDoc) {
                 result.status = true;
                 result.expense = expenseDoc;
                 result.messages.push("expenses Cost updated successfully");
-                analyticsService.create(req,serviceActions.update_expense,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.update_expense, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(result);
             } else {
                 result.status = false;
                 result.messages.push("Error, finding expenses Record");
-                analyticsService.create(req,serviceActions.update_expense_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+                analyticsService.create(req, serviceActions.update_expense_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: result.message
+                }, function (response) {
+                });
                 callback(result);
             }
         });
 }
 
-Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
+Expenses.prototype.updateExpenseCost = function (jwt, expense, req, callback) {
     var giveAccess = false;
     var result = {
         status: false,
@@ -166,10 +200,10 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
     }
     if (giveAccess) {
         if (expense.expenseType === 'others' && expense.expenseName) {
-            expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName},req, function (eTResult) {
+            expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
                 if (eTResult.status) {
                     expense.expenseType = eTResult.newDoc._id.toString();
-                    updateExpense(expense, jwt,req, callback);
+                    updateExpense(expense, jwt, req, callback);
                 } else {
                     result.status = false;
                     result.messages.push("Unauthorized access or Error creating new expense type");
@@ -177,7 +211,7 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense,req, callback) {
                 }
             });
         } else {
-            updateExpense(expense, jwt,req, callback);
+            updateExpense(expense, jwt, req, callback);
         }
     }
 };
@@ -259,28 +293,17 @@ function getExpenseCosts(condition, jwt, params, callback) {
     });
 }
 
-Expenses.prototype.getExpenseCosts = function (jwt, params,req, callback) {
+Expenses.prototype.getExpenseCosts = function (jwt, params, req, callback) {
     var result = {};
     if (!params.page) {
         params.page = 1;
     }
     var condition = {};
-   if (params.fromDate && params.toDate  && params.regNumber) {
-        condition = {
-            "accountId": ObjectId(jwt.accountId), date: {
-                $gte: new Date(params.fromDate),
-                $lte: new Date(params.toDate),
-            }, "vehicleNumber": params.regNumber
-        };
-        getExpenseCosts(condition, jwt, params, function (response) {
-            if(response.status){
-                analyticsService.create(req, serviceActions.get_all_expenses, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: true,
-                }, function (response) {
-                });
-            }else {
+    if (params.fromDate && params.toDate && params.regNumber) {
+        trucksCollection.find({registrationNo: new RegExp("^" + params.regNumber, "i")}, function (err, truckData) {
+            if (err) {
+                result.status = false;
+                result.message = 'Error retrieving expenses Costs';
                 analyticsService.create(req, serviceActions.get_all_expenses_err, {
                     body: JSON.stringify(req.query),
                     accountId: jwt.id,
@@ -288,8 +311,48 @@ Expenses.prototype.getExpenseCosts = function (jwt, params,req, callback) {
                     messages: result.messages
                 }, function (response) {
                 });
+                callback(result);
+            } else if (truckData) {
+                var ids = _.pluck(truckData, "_id");
+                getExpenseCosts({
+                    'accountId': jwt.accountId,
+                    date: {
+                        $gte: new Date(params.fromDate),
+                        $lte: new Date(params.toDate),
+                    },
+                    'vehicleNumber': {$in: ids}
+                }, jwt, params, function (response) {
+                    if (response.status) {
+                        analyticsService.create(req, serviceActions.get_all_expenses, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: true,
+                        }, function (response) {
+                        });
+                    } else {
+                        analyticsService.create(req, serviceActions.get_all_expenses_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: false,
+                            messages: result.messages
+                        }, function (response) {
+                        });
+                    }
+                    callback(response);
+                })
+            } else {
+                result.status = true;
+                result.message = 'Success';
+                result.count = 0;
+                result.expenses = [];
+                analyticsService.create(req, serviceActions.get_all_expenses, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: true,
+                }, function (response) {
+                });
+                callback(result);
             }
-            callback(response);
         })
     } else if (params.fromDate && params.toDate) {
         condition = {
@@ -299,14 +362,14 @@ Expenses.prototype.getExpenseCosts = function (jwt, params,req, callback) {
             }
         };
         getExpenseCosts(condition, jwt, params, function (response) {
-            if(response.status){
+            if (response.status) {
                 analyticsService.create(req, serviceActions.get_all_expenses, {
                     body: JSON.stringify(req.query),
                     accountId: jwt.id,
                     success: true,
                 }, function (response) {
                 });
-            }else {
+            } else {
                 analyticsService.create(req, serviceActions.get_all_expenses_err, {
                     body: JSON.stringify(req.query),
                     accountId: jwt.id,
@@ -317,78 +380,84 @@ Expenses.prototype.getExpenseCosts = function (jwt, params,req, callback) {
             }
             callback(response);
         })
-    }else  if (params.regNumber) {
-       trucksCollection.find({registrationNo: {$regex: '.*' + params.regNumber + '.*'}}, function (err, truckData) {
-           if (err) {
-               result.status = false;
-               result.message = 'Error retrieving expenses Costs';
-               analyticsService.create(req,serviceActions.get_all_expenses_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
-               callback(result);
-           } else if (truckData) {
-              var ids=_.pluck(truckData,"_id");
-               getExpenseCosts({
-                   'accountId': jwt.accountId,
-                   'vehicleNumber': {$in:ids}
-               }, jwt, params, function (response) {
-                   if(response.status){
-                       analyticsService.create(req, serviceActions.get_all_expenses, {
-                           body: JSON.stringify(req.query),
-                           accountId: jwt.id,
-                           success: true,
-                       }, function (response) {
-                       });
-                   }else {
-                       analyticsService.create(req, serviceActions.get_all_expenses_err, {
-                           body: JSON.stringify(req.query),
-                           accountId: jwt.id,
-                           success: false,
-                           messages: result.messages
-                       }, function (response) {
-                       });
-                   }
-                   callback(response);
-               })
-           } else {
-               result.status = true;
-               result.message = 'Success';
-               result.count = 0;
-               result.expenses = [];
-               analyticsService.create(req, serviceActions.get_all_expenses, {
-                   body: JSON.stringify(req.query),
-                   accountId: jwt.id,
-                   success: true,
-               }, function (response) {
-               });
-               callback(result);
-           }
-       })
-   }  else {
-       getExpenseCosts({'accountId': jwt.accountId}, jwt, params, function (response) {
-           if(response.status){
-               analyticsService.create(req, serviceActions.get_all_expenses, {
-                   body: JSON.stringify(req.query),
-                   accountId: jwt.id,
-                   success: true,
-               }, function (response) {
-               });
-           }else {
-               analyticsService.create(req, serviceActions.get_all_expenses_err, {
-                   body: JSON.stringify(req.query),
-                   accountId: jwt.id,
-                   success: false,
-                   messages: result.messages
-               }, function (response) {
-               });
-           }
-           callback(response);
-       })
+    } else if (params.regNumber) {
+        trucksCollection.find({registrationNo: new RegExp("^" + params.regNumber, "i")}, function (err, truckData) {
+            if (err) {
+                result.status = false;
+                result.message = 'Error retrieving expenses Costs';
+                analyticsService.create(req, serviceActions.get_all_expenses_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: result.messages
+                }, function (response) {
+                });
+                callback(result);
+            } else if (truckData) {
+                var ids = _.pluck(truckData, "_id");
+                getExpenseCosts({
+                    'accountId': jwt.accountId,
+                    'vehicleNumber': {$in: ids}
+                }, jwt, params, function (response) {
+                    if (response.status) {
+                        analyticsService.create(req, serviceActions.get_all_expenses, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: true,
+                        }, function (response) {
+                        });
+                    } else {
+                        analyticsService.create(req, serviceActions.get_all_expenses_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: false,
+                            messages: result.messages
+                        }, function (response) {
+                        });
+                    }
+                    callback(response);
+                })
+            } else {
+                result.status = true;
+                result.message = 'Success';
+                result.count = 0;
+                result.expenses = [];
+                analyticsService.create(req, serviceActions.get_all_expenses, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: true,
+                }, function (response) {
+                });
+                callback(result);
+            }
+        })
+    } else {
+        getExpenseCosts({'accountId': jwt.accountId}, jwt, params, function (response) {
+            if (response.status) {
+                analyticsService.create(req, serviceActions.get_all_expenses, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: true,
+                }, function (response) {
+                });
+            } else {
+                analyticsService.create(req, serviceActions.get_all_expenses_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: result.messages
+                }, function (response) {
+                });
+            }
+            callback(response);
+        })
 
 
     }
 
 };
 
-Expenses.prototype.getAllAccountExpenseCosts = function (jwt,req, callback) {
+Expenses.prototype.getAllAccountExpenseCosts = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -412,13 +481,22 @@ Expenses.prototype.getAllAccountExpenseCosts = function (jwt,req, callback) {
                 if (err) {
                     retObj.status = false;
                     retObj.messages.push('Error retrieving expenses Costs');
-                    analyticsService.create(req,serviceActions.get_all_acc_expenses_err,{accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
+                    analyticsService.create(req, serviceActions.get_all_acc_expenses_err, {
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: result.messages
+                    }, function (response) {
+                    });
                     callback(retObj);
                 } else {
                     retObj.status = true;
                     retObj.message = 'Success';
                     retObj.maintanenceCosts = mCosts;
-                    analyticsService.create(req,serviceActions.get_all_acc_expenses,{accountId:req.jwt.id,success:true},function(response){ });
+                    analyticsService.create(req, serviceActions.get_all_acc_expenses, {
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
             });
@@ -450,7 +528,7 @@ Expenses.prototype.getAll = function (jwt, req, callback) {
     });
 };
 
-Expenses.prototype.findExpenseRecord = function (jwt, expenseId,req, callback) {
+Expenses.prototype.findExpenseRecord = function (jwt, expenseId, req, callback) {
     var result = {};
     var condition = {};
     if (jwt.type === "account") {
@@ -462,25 +540,42 @@ Expenses.prototype.findExpenseRecord = function (jwt, expenseId,req, callback) {
         if (err) {
             result.status = false;
             result.message = "Error while finding expenses Record, try Again";
-            analyticsService.create(req,serviceActions.find_expense_by_id_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+            analyticsService.create(req, serviceActions.find_expense_by_id_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: result.message
+            }, function (response) {
+            });
             callback(result);
         } else if (record) {
             result.status = true;
             result.message = "expenses Record found successfully";
             result.expense = record;
-            analyticsService.create(req,serviceActions.find_expense_by_id,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.find_expense_by_id, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(result);
         } else {
             result.status = false;
             result.message = "Unauthorized access or expenses Record is not found!";
-            analyticsService.create(req,serviceActions.find_expense_by_id_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+            analyticsService.create(req, serviceActions.find_expense_by_id_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: result.message
+            }, function (response) {
+            });
             callback(result);
         }
     });
 };
 
 
-Expenses.prototype.deleteExpenseRecord = function (jwt, expenseId,req, callback) {
+Expenses.prototype.deleteExpenseRecord = function (jwt, expenseId, req, callback) {
     var result = {
         status: false,
         messages: []
@@ -496,7 +591,13 @@ Expenses.prototype.deleteExpenseRecord = function (jwt, expenseId,req, callback)
     } else {
         result.status = false;
         result.messages.push("Unauthorized access");
-        analyticsService.create(req,serviceActions.del_expense_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+        analyticsService.create(req, serviceActions.del_expense_err, {
+            body: JSON.stringify(req.params),
+            accountId: req.jwt.id,
+            success: false,
+            messages: result.message
+        }, function (response) {
+        });
         callback(result);
     }
 
@@ -505,23 +606,40 @@ Expenses.prototype.deleteExpenseRecord = function (jwt, expenseId,req, callback)
             if (err) {
                 result.status = false;
                 result.messages.push('Error deleting expenses Record');
-                analyticsService.create(req,serviceActions.del_expense_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+                analyticsService.create(req, serviceActions.del_expense_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: result.message
+                }, function (response) {
+                });
                 callback(result);
             } else if (returnValue.result.n === 0) {
                 result.status = false;
                 result.messages.push('Unauthorized access or Error deleting expenses Record');
-                analyticsService.create(req,serviceActions.del_expense,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.del_expense, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(result);
             } else {
                 result.status = true;
                 result.messages.push('Success');
-                analyticsService.create(req,serviceActions.del_expense_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+                analyticsService.create(req, serviceActions.del_expense_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: result.message
+                }, function (response) {
+                });
                 callback(result);
             }
         });
     }
 };
-Expenses.prototype.countExpense = function (jwt,req, callback) {
+Expenses.prototype.countExpense = function (jwt, req, callback) {
     var result = {
         status: false,
         messages: []
@@ -530,13 +648,22 @@ Expenses.prototype.countExpense = function (jwt,req, callback) {
         if (err) {
             result.status = false;
             result.messages.push('Error getting count');
-            analyticsService.create(req,serviceActions.count_expense_err,{accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+            analyticsService.create(req, serviceActions.count_expense_err, {
+                accountId: req.jwt.id,
+                success: false,
+                messages: result.message
+            }, function (response) {
+            });
             callback(result);
         } else {
             result.status = true;
             result.messages.push('Success');
             result.count = data;
-            analyticsService.create(req,serviceActions.count_expense,{accountId:req.jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.count_expense, {
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(result);
         }
     })
@@ -579,7 +706,7 @@ Expenses.prototype.findTotalExpenses = function (erpSettingsCondition, req, call
  * @param callback
  */
 
-Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback) {
+Expenses.prototype.findExpensesByVehicles = function (jwt, params, req, callback) {
     var condition = {};
     var retObj = {
         status: false,
@@ -594,7 +721,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
                 }, "vehicleNumber": ObjectId(params.regNumber)
             }
         };
-        getExpensesByVehicles(jwt, condition, params,req, function (response) {
+        getExpensesByVehicles(jwt, condition, params, req, function (response) {
             callback(response);
         })
     } else if (params.fromDate && params.toDate) {
@@ -606,12 +733,12 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
                 }
             }
         }
-        getExpensesByVehicles(jwt, condition, params,req, function (response) {
+        getExpensesByVehicles(jwt, condition, params, req, function (response) {
             callback(response);
         })
     } else if (params.regNumber) {
-        condition = {$match: {"accountId": ObjectId(jwt.accountId), "vehicleNumber":ObjectId(params.regNumber)}}
-        getExpensesByVehicles(jwt, condition, params,req, function (response) {
+        condition = {$match: {"accountId": ObjectId(jwt.accountId), "vehicleNumber": ObjectId(params.regNumber)}}
+        getExpensesByVehicles(jwt, condition, params, req, function (response) {
             callback(response);
         })
     } else {
@@ -619,18 +746,30 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
-                analyticsService.create(req,serviceActions.find_expenses_by_vehs_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.find_expenses_by_vehs_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (erpSettings) {
 
                 condition = {$match: Utils.getErpSettings(erpSettings.expense, erpSettings.accountId)}
-                getExpensesByVehicles(jwt, condition, params,req, function (response) {
+                getExpensesByVehicles(jwt, condition, params, req, function (response) {
                     callback(response);
                 })
             } else {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
-                analyticsService.create(req,serviceActions.find_expenses_by_vehs_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.find_expenses_by_vehs_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
@@ -645,7 +784,7 @@ Expenses.prototype.findExpensesByVehicles = function (jwt, params,req, callback)
  * @param callback
  */
 
-Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId,req, callback) {
+Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, req, callback) {
     var result = {};
     var totalDieselExpense = 0;
     var totaltollExpense = 0;
@@ -655,7 +794,13 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId,req, callba
         if (err) {
             result.status = false;
             result.messages.push('Error getting count');
-            analyticsService.create(req,serviceActions.find_expenses_by_veh_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+            analyticsService.create(req, serviceActions.find_expenses_by_veh_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: result.message
+            }, function (response) {
+            });
             callback(result);
         } else {
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function (results) {
@@ -681,7 +826,12 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId,req, callba
                     totalmExpense: totalmExpense,
                     totalmisc: totalmisc
                 };
-                analyticsService.create(req,serviceActions.find_expenses_by_veh,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.find_expenses_by_veh, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(result);
             });
         }
@@ -690,7 +840,7 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId,req, callba
 /*
 * Retrieve expenseType and truckName based on truck
 * */
-Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId,req, callback) {
+Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -736,7 +886,7 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId,req, callback)
     });
 };
 
-function getExpensesByVehicles(jwt, condition, params,req, callback) {
+function getExpensesByVehicles(jwt, condition, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -752,8 +902,8 @@ function getExpensesByVehicles(jwt, condition, params,req, callback) {
                     }
 
                 },
-                {"$sort":  {createdAt: -1}},
-                 function (error, expensesResult) {
+                {"$sort": {createdAt: -1}},
+                function (error, expensesResult) {
                     expensesCallback(error, expensesResult);
                 });
         },
@@ -772,7 +922,13 @@ function getExpensesByVehicles(jwt, condition, params,req, callback) {
         if (error) {
             retObj.status = true;
             retObj.messages.push(JSON.stringify(error));
-            analyticsService.create(req,serviceActions.find_expenses_by_vehs_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.find_expenses_by_vehs_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
@@ -843,13 +999,18 @@ function getExpensesByVehicles(jwt, condition, params,req, callback) {
                 totalmExpense: totalmExpense,
                 totalmisc: totalmisc
             };
-            analyticsService.create(req,serviceActions.find_expenses_by_vehs,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.find_expenses_by_vehs, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 }
 
-Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params,req, callback) {
+Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -857,10 +1018,16 @@ Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params,req, cal
     if (!params.email || !Utils.isEmail(params.email)) {
         retObj.status = false;
         retObj.messages.push('Please enter valid email');
-        analyticsService.create(req,serviceActions.share_expense_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.share_expense_det_by_email_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
-        Expenses.prototype.findExpensesByVehicles(jwt, params,req, function (expensesResponse) {
+        Expenses.prototype.findExpensesByVehicles(jwt, params, req, function (expensesResponse) {
             if (expensesResponse.status) {
                 var emailparams = {
                     templateName: 'shareExpenseDetailsByVechicle',
@@ -875,15 +1042,32 @@ Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params,req, cal
                     if (emailResponse.status) {
                         retObj.status = true;
                         retObj.messages.push('Expenses details shared successfully');
-                        analyticsService.create(req,serviceActions.share_expense_det_by_email,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
+                        analyticsService.create(req, serviceActions.share_expense_det_by_email, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
                         callback(retObj);
                     } else {
-                        analyticsService.create(req,serviceActions.share_expense_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:emailResponse.messages},function(response){ });
+                        analyticsService.create(req, serviceActions.share_expense_det_by_email_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: emailResponse.messages
+                        }, function (response) {
+                        });
                         callback(emailResponse);
                     }
                 });
             } else {
-                analyticsService.create(req,serviceActions.share_expense_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.share_expense_det_by_email_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(expensesResponse);
             }
         })
@@ -891,13 +1075,13 @@ Expenses.prototype.shareExpensesDetailsViaEmail = function (jwt, params,req, cal
 
 }
 
-Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params,req, callback) {
+Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    Expenses.prototype.findExpensesByVehicles(jwt, params,req, function (expensesResponse) {
+    Expenses.prototype.findExpensesByVehicles(jwt, params, req, function (expensesResponse) {
         if (expensesResponse.status) {
             var output = [];
             for (var i = 0; i < expensesResponse.expenses.length; i++) {
@@ -918,12 +1102,23 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params,req,
                         Miscellaneous: expensesResponse.totalExpenses.totalmisc
                     })
                     retObj.data = output;
-                    analyticsService.create(req,serviceActions.dwnld_expense_det,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
+                    analyticsService.create(req, serviceActions.dwnld_expense_det, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
             }
         } else {
-            analyticsService.create(req,serviceActions.dwnld_expense_det_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:expensesResponse.messages},function(response){ });
+            analyticsService.create(req, serviceActions.dwnld_expense_det_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: expensesResponse.messages
+            }, function (response) {
+            });
             callback(expensesResponse);
         }
     })
@@ -931,7 +1126,7 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params,req,
 
 }
 
-Expenses.prototype.findPaybleAmountForAccount = function (condition,req, callback) {
+Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -966,7 +1161,7 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition,req, callbac
 
 };
 
-function getPaybleAmountByParty(condition, params,req, callback) {
+function getPaybleAmountByParty(condition, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -994,7 +1189,13 @@ function getPaybleAmountByParty(condition, params,req, callback) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error');
-                analyticsService.create(req,serviceActions.get_payable_amnt_by_party_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (payble.length > 0) {
                 var gross = {
@@ -1011,7 +1212,13 @@ function getPaybleAmountByParty(condition, params,req, callback) {
                         retObj.messages.push('Success');
                         retObj.paybleAmounts = payble;
                         retObj.gross = gross;
-                        analyticsService.create(req,serviceActions.get_payable_amnt_by_party,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                        analyticsService.create(req, serviceActions.get_payable_amnt_by_party, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
                         callback(retObj);
                     }
                 }
@@ -1019,14 +1226,20 @@ function getPaybleAmountByParty(condition, params,req, callback) {
             } else {
                 retObj.status = false;
                 retObj.messages.push('No Expense found');
-                analyticsService.create(req,serviceActions.get_payable_amnt_by_party_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
 
         });
 }
 
-Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback) {
+Expenses.prototype.getPaybleAmountByParty = function (jwt, params, req, callback) {
     var condition = {};
     var retObj = {
         status: false,
@@ -1039,7 +1252,7 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback)
                 $lte: new Date(params.toDate),
             }, "partyId": ObjectId(params.partyId)
         }
-        getPaybleAmountByParty(condition, params,req, function (response) {
+        getPaybleAmountByParty(condition, params, req, function (response) {
             callback(response);
         });
     } else if (params.fromDate && params.toDate) {
@@ -1049,12 +1262,12 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback)
                 $lte: new Date(params.toDate),
             }
         }
-        getPaybleAmountByParty(condition, params,req, function (response) {
+        getPaybleAmountByParty(condition, params, req, function (response) {
             callback(response);
         });
     } else if (params.partyId) {
         condition = {"accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId)}
-        getPaybleAmountByParty(condition, params,req, function (response) {
+        getPaybleAmountByParty(condition, params, req, function (response) {
             callback(response);
         });
     } else {
@@ -1062,18 +1275,30 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback)
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
-                analyticsService.create(req,serviceActions.get_payable_amnt_by_party_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (erpSettings) {
 
                 condition = Utils.getErpSettings(erpSettings.expense, erpSettings.accountId)
-                getPaybleAmountByParty(condition, params,req, function (response) {
+                getPaybleAmountByParty(condition, params, req, function (response) {
                     callback(response);
                 });
             } else {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
-                analyticsService.create(req,serviceActions.get_payable_amnt_by_party_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
@@ -1081,13 +1306,13 @@ Expenses.prototype.getPaybleAmountByParty = function (jwt, params,req, callback)
 
 };
 
-Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params,req, callback) {
+Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    Expenses.prototype.getPaybleAmountByParty(jwt, params,req, function (payableResponse) {
+    Expenses.prototype.getPaybleAmountByParty(jwt, params, req, function (payableResponse) {
         if (payableResponse.status) {
             var output = [];
             for (var i = 0; i < payableResponse.paybleAmounts.length; i++) {
@@ -1108,18 +1333,29 @@ Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params,req, cal
                         Payale_Amount: payableResponse.gross.payableAmount
                     })
                     retObj.data = output;
-                    analyticsService.create(req,serviceActions.dwnld_payable_det_by_party,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
+                    analyticsService.create(req, serviceActions.dwnld_payable_det_by_party, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
             }
         } else {
-            analyticsService.create(req,serviceActions.dwnld_payable_det_by_party_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:payableResponse.messages},function(response){ });
+            analyticsService.create(req, serviceActions.dwnld_payable_det_by_party_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: payableResponse.messages
+            }, function (response) {
+            });
             callback(payableResponse);
         }
     })
 
 }
-Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params,req, callback) {
+Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1127,10 +1363,16 @@ Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params,req, call
     if (!params.email || !Utils.isEmail(params.email)) {
         retObj.status = false;
         retObj.messages.push('Please enter valid email');
-        analyticsService.create(req,serviceActions.share_payable_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.share_payable_det_by_email_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
-        Expenses.prototype.getPaybleAmountByParty(jwt, params,req, function (payableResponse) {
+        Expenses.prototype.getPaybleAmountByParty(jwt, params, req, function (payableResponse) {
             if (payableResponse.status) {
                 var emailparams = {
                     templateName: 'sharePayableDetailsByParty',
@@ -1145,15 +1387,32 @@ Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params,req, call
                     if (emailResponse.status) {
                         retObj.status = true;
                         retObj.messages.push('Payable details shared successfully');
-                        analyticsService.create(req,serviceActions.share_payable_det_by_email,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
+                        analyticsService.create(req, serviceActions.share_payable_det_by_email, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
                         callback(retObj);
                     } else {
-                        analyticsService.create(req,serviceActions.share_payable_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:emailResponse.messages},function(response){ });
+                        analyticsService.create(req, serviceActions.share_payable_det_by_email_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: emailResponse.messages
+                        }, function (response) {
+                        });
                         callback(emailResponse);
                     }
                 });
             } else {
-                analyticsService.create(req,serviceActions.share_payable_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:emailResponse.messages},function(response){ });
+                analyticsService.create(req, serviceActions.share_payable_det_by_email_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: emailResponse.messages
+                }, function (response) {
+                });
                 callback(payableResponse);
             }
         })
@@ -1161,7 +1420,7 @@ Expenses.prototype.sharePayableDetailsViaEmail = function (jwt, params,req, call
 
 };
 
-Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params,req, callback) {
+Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         message: []
@@ -1169,12 +1428,24 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params,req, callbac
     if (!jwt.accountId || !ObjectId.isValid(jwt.accountId)) {
         retObj.status = false;
         retObj.message.push("Invalid login");
-        analyticsService.create(req,serviceActions.get_payable_amnt_by_party_id_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.get_payable_amnt_by_party_id_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else if (!params.partyId || !ObjectId.isValid(params.partyId)) {
         retObj.status = false;
         retObj.message.push("Please select valid party");
-        analyticsService.create(req,serviceActions.get_payable_amnt_by_party_id_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.get_payable_amnt_by_party_id_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
         expenseColl.find({
@@ -1184,7 +1455,13 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params,req, callbac
             if (err) {
                 retObj.status = false;
                 retObj.message.push("Please try again");
-                analyticsService.create(req,serviceActions.get_payable_amnt_by_party_id_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_payable_amnt_by_party_id_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (partyData.length > 0) {
                 retObj.status = true;
@@ -1204,7 +1481,12 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params,req, callbac
                     if (i === partyData.length - 1) {
 
                         retObj.partyData = partyData;
-                        analyticsService.create(req,serviceActions.get_payable_amnt_by_party_id,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
+                        analyticsService.create(req, serviceActions.get_payable_amnt_by_party_id, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
                         callback(retObj);
                     }
                 }
@@ -1212,7 +1494,13 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params,req, callbac
             } else {
                 retObj.status = false;
                 retObj.message.push("No Expenses found");
-                analyticsService.create(req,serviceActions.get_payable_amnt_by_party_id_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_payable_amnt_by_party_id_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         })

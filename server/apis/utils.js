@@ -476,7 +476,7 @@ Utils.prototype.uploadDocuments = function (files, callback) {
         fileNames: []
     };
     async.map(files, function (doc, fileCallback) {
-        var file=doc.file;
+        var file = doc.file;
         var fileName = new Date() - 0 + "_" + file.originalFilename;
 
         fse.copy(file.path, './client/assets/documents/' + fileName, function (err) {
@@ -632,6 +632,33 @@ Utils.prototype.removeDoc = function (file, callback) {
         }
 
     });
+};
+
+Utils.prototype.assignTruckTypeToAccount = function (body) {
+    var retObj = {
+        status: false,
+        messages: []
+    }
+    AccountsColl.findOne({_id:body.accountId,truckTypes:body.truckType},function (err,doc) {
+        if(err){
+            console.log("Please try again");
+        }else if(doc){
+            console.log("Type exist");
+        }else{
+            AccountsColl.update(
+                { _id: body.accountId },
+                { $push: { truckTypes: body.truckType } },
+                function (err,updated) {
+                    if(err){
+                        console.log("Error ocurred");
+                    }else{
+                        console.log("truck type added successfully",updated);
+                    }
+                }
+            );
+        }
+    })
+
 };
 
 module.exports = new Utils();
