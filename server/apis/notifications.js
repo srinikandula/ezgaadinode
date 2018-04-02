@@ -11,7 +11,7 @@ var Notifications = function () {
 };
 
 
-Notifications.prototype.saveDeviceDetails = function (body,callback) {
+Notifications.prototype.saveDeviceDetails = function (body,req,callback) {
     var retObj={};
     var query = {};
 
@@ -24,7 +24,7 @@ Notifications.prototype.saveDeviceDetails = function (body,callback) {
         retObj.message = 'Invalid Device Id';
         callback(retObj);
     }else {
-        DeviceIdColl.findOne({accountId:body.accountId},function (err,device) {
+        DeviceIdColl.findOne({accountId:req.jwt.accountId},function (err,device) {
             if(err){
                 retObj.status = false;
                 retObj.message = 'Error, please try again';
