@@ -199,7 +199,7 @@ Party.prototype.getAccountParties = function (jwt, params,req, callback) {
     if (!params.partyName) {
         condition = {accountId: jwt.accountId}
     } else {
-        condition = {accountId: jwt.accountId, name: {$regex: '.*' + params.partyName + '.*'}}
+        condition = {accountId: jwt.accountId, name:new RegExp("^" + params.partyName, "i")}
     }
 
     async.parallel({

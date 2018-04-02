@@ -139,6 +139,7 @@ var truckSchema = new mongoose.Schema({
     userName: String,
     registrationNo: String,
     truckType: String,
+    truckTypeId:{type: ObjectId, ref: 'trucksTypes'},
     modelAndYear: String,
     tonnage: String,
     fitnessExpiry: Date,

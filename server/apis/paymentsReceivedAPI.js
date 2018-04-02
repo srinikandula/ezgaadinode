@@ -188,7 +188,7 @@ PaymentsReceived.prototype.getPayments = function (jwt, params,req, callback) {
             callback(paymentResp);
         });
     } else {
-        PartyCollection.findOne({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partyData) {
+        PartyCollection.findOne({name:new RegExp("^" + params.partyName, "i") }, function (err, partyData) {
             if (err) {
                 result.status = false;
                 result.messages.push('Error retrieving Payments Costs');

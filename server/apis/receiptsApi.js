@@ -52,7 +52,7 @@ Receipts.prototype.getReceipts = function (req, callback) {
     var params = req.query;
     var jwt = req.jwt;
     if (params.fromDate && params.toDate && params.partyName) {
-        PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
+        PartyColl.find({name: new RegExp("^" + params.partyName, "i")}, function (err, partys) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
@@ -86,7 +86,7 @@ Receipts.prototype.getReceipts = function (req, callback) {
         };
         getReceipts(condition, req, callback)
     } else if (params.partyName) {
-        PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
+        PartyColl.find({name: new RegExp("^" + params.partyName, "i")}, function (err, partys) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
