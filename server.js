@@ -126,6 +126,7 @@ app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', PaymentsReceived.AuthRouter);
 app.use('/v1/receipts', Receipts.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
+app.use('/v1/notifications',pushNotifications.AuthRouter);
 app.use('/v1/cpanel/customers', Customers.AuthRouter);
 app.use('/v1/cpanel/settings', Settings.AuthRouter);
 app.use('/v1/cpanel/notifications', Notifications.AuthRouter);

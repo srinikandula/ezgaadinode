@@ -4,7 +4,7 @@ var AuthRouter = express.Router();
 
 var notifications = require('../apis/notifications');
 
-OpenRouter.post('/saveDeviceDetails',function (req,res) {
+AuthRouter.post('/saveDeviceDetails',function (req,res) {
     notifications.saveDeviceDetails(req.body,function (result) {
         res.json(result);
     })
