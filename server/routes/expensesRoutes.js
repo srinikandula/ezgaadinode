@@ -80,7 +80,7 @@ AuthRouter.get('/shareExpensesDetailsViaEmail',function(req,res){
     ExpenseCost.shareExpensesDetailsViaEmail(req.jwt,req.query,req, function (result) {
         res.send(result);
     });
-})
+});
 AuthRouter.get('/downloadExpenseDetailsByVechicle',function(req,res){
     ExpenseCost.downloadExpenseDetailsByVechicle(req.jwt,req.query,req, function (result) {
         if(result.status){
@@ -89,7 +89,7 @@ AuthRouter.get('/downloadExpenseDetailsByVechicle',function(req,res){
             res.send(result);
         }   
     });
-})
+});
 
 AuthRouter.get('/downloadPaybleDetailsByParty',function(req,res){
     ExpenseCost.downloadPaybleDetailsByParty(req.jwt,req.query,req, function (result) {
@@ -99,24 +99,26 @@ AuthRouter.get('/downloadPaybleDetailsByParty',function(req,res){
             res.send(result);
         }   
     });
-})
+});
+
 AuthRouter.get('/getPaybleAmountByParty',function(req,res){
     ExpenseCost.getPaybleAmountByParty(req.jwt,req.query,req,function(result){
         res.send(result);
     })
-})
+});
 
 AuthRouter.get('/sharePayableDetailsViaEmail',function(req,res){
     ExpenseCost.sharePayableDetailsViaEmail(req.jwt,req.query,req, function (result) {
         res.send(result);
     });
-})
+});
 
 AuthRouter.get('/getPaybleAmountByPartyId',function(req,res){
     ExpenseCost.getPaybleAmountByPartyId(req.jwt,req.query,req, function (result) {
         res.send(result);
     });
-})
+});
+
 
 module.exports = {
     OpenRouter: OpenRouter,

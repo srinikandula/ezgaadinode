@@ -205,6 +205,8 @@ function saveCustomerLead(req, params, callback) {
             if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (operatingRoute, routesCallback) {
                     operatingRoute.accountId = doc._id;
+                    operatingRoute.destinationLocation=[parseFloat(operatingRoute.destinationLocation[0]),parseFloat(operatingRoute.destinationLocation[1])];
+                    operatingRoute.sourceLocation=[parseFloat(operatingRoute.sourceLocation[0]),parseFloat(operatingRoute.sourceLocation[1])];
                     var route = new OperatingRoutesColl(operatingRoute);
                     route.save(function (err, saveRoute) {
                         routesCallback(err);
@@ -392,6 +394,8 @@ function updateCustomerLead(req, callback) {
             } else if (doc) {
                 if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
+                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
                         var query = {};
                         if (!route._id) {
                             query = {_id: mongoose.Types.ObjectId()};
@@ -1045,6 +1049,8 @@ function updateTruckOwner(req, callback) {
             } else if (doc) {
                 if (params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
+                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
                         var query = {};
                         if (!route._id) {
                             query = {_id: mongoose.Types.ObjectId()};
@@ -1057,7 +1063,9 @@ function updateTruckOwner(req, callback) {
                             routeCallback(err);
                         });
                     }, function (err) {
+
                         if (err) {
+                            //console.log("err",err);
                             retObj.messages.push("Please try again");
                             analyticsService.create(req, serviceActions.update_truck_owner_details_err, {
                                 body: JSON.stringify(req.query),
@@ -1484,6 +1492,8 @@ function updateTransporter(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
+                    route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
                         route.createdBy = req.jwt.id;
@@ -1902,6 +1912,8 @@ function updateCommissionAgent(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
+                    route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
                         route.createdBy = req.jwt.id;
@@ -2276,6 +2288,8 @@ function updateFactoryOwner(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
+                    route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
                         route.createdBy = req.jwt.id;

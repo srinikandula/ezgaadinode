@@ -515,7 +515,7 @@ OrderProcess.prototype.searchTrucksForRequest = function (req, callback) {
             });
             var condition = {};
             if (params.truckType) {
-                condition = {truckTypes: {$in: [params.truckType]}, _id: {$in: accountIds}}
+                condition = {truckTypes: { $elemMatch: {$eq:params.truckType}}, _id: {$in: accountIds}}
             } else {
                 condition = {_id: {$in: accountIds}}
             }

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+
+<body>
+<div>
+    <table border="1">
+        <tr>
+            <td>Party Name</td>
+            <td>Amount</td>
+
+
+        </tr>
+        #foreach($record in $emailData.receipts)
+        <tr>
+            <td>$record._id.name</td>
+            <td>$record.amount</td>
+
+
+        </tr>
+        #end
+
+
+    </table>
+</div>
+</body>
+
+</html>

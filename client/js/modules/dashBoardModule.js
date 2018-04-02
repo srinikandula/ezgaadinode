@@ -1068,6 +1068,45 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             })
         };
+        $scope.shareReceiptsDetailsViaEmail = function () {
+            swal({
+                title: 'Share receipts details using mail',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                    return new Promise((resolve) => {
+                        ReceiptServices.shareReceiptsDetailsByPartyViaEmail({
+                            fromDate: $scope.filters.fromDate,
+                            toDate: $scope.filters.toDate,
+                            partyId: $scope.partyId,
+                            email: email,
+                            page: $scope.filters.page,
+                            sort: $scope.filters.sort,
+                            size: $scope.filters.size
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
+                                success.data.messages.forEach(function (message) {
+                                    swal.showValidationError(message);
+                                });
+                            }
+                        }, function (error) {
+                        })
+                    })
+                },
+                allowOutsideClick: false
+            }).then((result) => {
+                if (result.value) {
+                    swal({
+                        type: 'success',
+                        html: 'Receipts details sent successfully'
+                    })
+                }
+            })
+        };
         $scope.downloadRevenueDetailsByVechicle = function () {
             window.open('/v1/trips/downloadRevenueDetailsByVechicle?fromDate=' + $scope.filters.fromDate + '&toDate=' + $scope.filters.toDate + '&regNumber=' + $scope.regNumber + '&page=' + $scope.filters.page + '&sort=' + JSON.stringify($scope.filters.sort) + '&size=' + $scope.filters.size);
         };

@@ -1012,7 +1012,12 @@ $scope.selectTruckTypes=[];
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.truckOwner.operatingRoutes[index].source = place.formatted_address;
+                console.log("place",place);
+                $scope.truckOwner.operatingRoutes[index].source = place.name;
+                $scope.truckOwner.operatingRoutes[index].sourceState = place.address_components[2].long_name;
+                $scope.truckOwner.operatingRoutes[index].sourceAddress = place.formatted_address;
+                $scope.truckOwner.operatingRoutes[index].sourceLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
+
             });
     };
     $scope.addSearchDestination = function (index) {
@@ -1022,7 +1027,10 @@ $scope.selectTruckTypes=[];
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                $scope.truckOwner.operatingRoutes[index].destination = place.formatted_address;
+                $scope.truckOwner.operatingRoutes[index].destination = place.name;
+                $scope.truckOwner.operatingRoutes[index].destinationState = place.address_components[2].long_name;
+                $scope.truckOwner.operatingRoutes[index].destinationAddress = place.formatted_address;
+                $scope.truckOwner.operatingRoutes[index].destinationLocation = [parseFloat(place.geometry.location.lng()), parseFloat(place.geometry.location.lat())];
             });
     };
     $scope.searchHomeLocation = function () {
@@ -1115,6 +1123,7 @@ $scope.selectTruckTypes=[];
             });
 
             if ($scope.truckOwner._id) {
+                console.log("sdfsd", $scope.truckOwner.operatingRoutes);
                 Upload.upload({
                     url: '/v1/cpanel/customers/updateTruckOwner',
                     method: "POST",
