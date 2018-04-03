@@ -40,7 +40,7 @@
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentParams">
         <tr ng-repeat="payments in currentPageOfPayments" style="text-align: center;">
             <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ payments.date |
-                date:'MM-dd-yyyy'}}
+                date:'dd-MM-yyyy'}}
             </td>
             <td data-title="'Party'" sortable="'partyName'" class="clickable-item">{{
                 payments.attrs.partyName }}

@@ -57,7 +57,7 @@
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
         <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
             <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ maintanence.date |
-                date:'yyyy-MM-dd'}}
+                date:'dd-MM-yyyy'}}
             </td>
             <td data-title="'Vehicle No'" sortable="'truckName'" class="clickable-item">{{
                 maintanence.attrs.truckName}}

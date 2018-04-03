@@ -35,23 +35,23 @@
 
             <td data-title="'Permit'" sortable="'permitExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.permitExpiry)">
-                    {{trucks.permitExpiry | date:'dd/MM/yyyy'}}</span>
+                    {{trucks.permitExpiry | date:'dd-MM-yyyy'}}</span>
             </td>
             <td data-title="'Pollution'" sortable="'pollutionExpiry'" class="clickable-item">
                         <span ng-class="getBackGroundColor(trucks.pollutionExpiry)">
-                            {{ trucks.pollutionExpiry | date:'dd/MM/yyyy' }}</span>
+                            {{ trucks.pollutionExpiry | date:'dd-MM-yyyy' }}</span>
             </td>
             <td data-title="'Insurance'" sortable="'insuranceExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.insuranceExpiry)">
-                    {{ trucks.insuranceExpiry | date:'dd/MM/yyyy' }}</span>
+                    {{ trucks.insuranceExpiry | date:'dd-MM-yyyy' }}</span>
             </td>
             <td data-title="'Fitness'" sortable="'fitnessExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.fitnessExpiry)">
-                    {{trucks.fitnessExpiry | date:'dd/MM/yyyy' }}</span>
+                    {{trucks.fitnessExpiry | date:'dd-MM-yyyy' }}</span>
             </td>
             <td data-title="'Tax'" sortable="'taxExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.taxDueDate)">
-                    {{trucks.taxDueDate | date:'dd/MM/yyyy' }}</span>
+                    {{trucks.taxDueDate | date:'dd-MM-yyyy' }}</span>
             </td>
             <td data-title="'Driver'" sortable="'fullName'" class="clickable-item">
                 <span>{{ trucks.attrs.fullName || '--' }}</span>

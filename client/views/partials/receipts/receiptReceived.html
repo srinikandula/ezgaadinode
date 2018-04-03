@@ -39,7 +39,7 @@
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="receiptParams">
         <tr ng-repeat="receipts in currentPageOfReceipts" style="text-align: center;">
             <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ receipts.date |
-                date:'MM-dd-yyyy'}}
+                date:'dd-MM-yyyy'}}
             </td>
             <td data-title="'Party'" sortable="'name'" class="clickable-item">{{
                 receipts.partyId.name }}
