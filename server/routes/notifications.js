@@ -20,7 +20,7 @@ AuthRouter.get('/getPushNotifications',function (req,res) {
     notifications.getPushNotifications(req,function (result) {
         res.json(result);
     })
-})
+});
 
 module.exports = {
     OpenRouter:OpenRouter,

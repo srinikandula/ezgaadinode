@@ -24,6 +24,7 @@ Notifications.prototype.saveDeviceDetails = function (body,req,callback) {
         retObj.message = 'Invalid Device Id';
         callback(retObj);
     }else {
+        body.accountId=req.jwt.accountId;
         DeviceIdColl.findOne({accountId:req.jwt.accountId},function (err,device) {
             if(err){
                 retObj.status = false;
