@@ -175,8 +175,8 @@ Notifications.prototype.getPushNotifications=function (req,callback) {
             retObj.status = false;
             retObj.message = 'Error while retrieving notifications';
             callback(retObj);
-        }else{
-            var messages;
+        }else if(device){
+            var messages=[];
             if(device.messages.length>10){
                 messages=device.messages.splice(device.messages.length-10,device.messages.length);
             }else{
@@ -185,6 +185,10 @@ Notifications.prototype.getPushNotifications=function (req,callback) {
             retObj.status = true;
             retObj.message = 'Success';
             retObj.data=messages;
+            callback(retObj);
+        }else{
+            retObj.status = false;
+            retObj.message = 'No device registered for this account.';
             callback(retObj);
         }
     })
