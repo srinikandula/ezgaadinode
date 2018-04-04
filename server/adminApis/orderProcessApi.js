@@ -241,7 +241,7 @@ function saveTruckRequest(req, callback) {
         params.expectedPrice = truckDetails.expectedPrice;
         params.trackingAvailable = truckDetails.trackingAvailable;
         params.insuranceAvailable = truckDetails.insuranceAvailable;
-        params = Utils.removeEmptyFields(params)
+        params = Utils.removeEmptyFields(params);
         var truckRequest = new TruckRequestColl(params);
 
         truckRequest.save(function (err, doc) {
@@ -657,9 +657,54 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
     };
     var query = {};
     var params = req.body;
-    if (!params._id) {
+    if (!params.loadOwnerType) {
+        retObj.messages.push("select load owner type");
+    }
+    if (!params.truckOwnerId) {
+        retObj.messages.push("Please select truck owner");
+    }
+    if (params.loadOwnerType === "Registered" && !params.loadOwnerId) {
+        retObj.messages.push("Please select load owner customer");
+    }
+    if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_firstName) {
+        retObj.messages.push("Please enter load owner name");
+    }
+    if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_contactPhone) {
+        retObj.messages.push("Please enter load owner phone");
+    }
+    if (!params.truckType) {
+        retObj.messages.push("Please select truck type");
+    }
+    if (!params.source) {
+        retObj.messages.push("Please enter source");
+    }
+    if (!params.destination) {
+        retObj.messages.push("Please enter destination");
+    }
+    if (!params.registrationNo) {
+        retObj.messages.push("Please enter truck number");
+    }
+
+    if (!params.to_bookedAmount) {
+        retObj.messages.push("Please truck booked amount");
+    }
+    if(retObj.messages.length>0){
+        callback(retObj);
+    }else {
+        if (!params._id) {
+            saveTripOrder(req, params, function (resp) {
+                console.log(resp);
+            });
+        }else{
+            retObj.messages.push("Load already booked");
+            callback(retObj);
+        }
+    }
+
+    /*if (!params._id) {
         query = {_id: mongoose.Types.ObjectId()};
         params.createdBy = req.jwt.id;
+        saveTripOrder(req,params,callback);
     } else {
         query = {_id: params._id}
     }
@@ -766,7 +811,7 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
                 });
             }
         })
-    }
+    }*/
 
 };
 
@@ -1835,7 +1880,7 @@ function saveTripOrder(req, params, callback) {
                             orderId: saveDoc._id,
                             truckOwnerId: params.truckOwnerId,
                             amount: 100,
-                            prefix: "+",
+                            prefix: "-",
                             comment: "Deduct TDS"
 
                         });
@@ -2166,7 +2211,7 @@ OrderProcess.prototype.getLoadOwnerOrderDetails = function (req, callback) {
                     orderDetails.loadOwnerDetails=orderDetails.loadOwnerId;
                     orderDetails.loadOwnerId=orderDetails.loadOwnerId._id;
                 } else {
-                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadCustomerLeadId._id}
+                    condition = {orderId: params._id, loadOwnerId: orderDetails.loadCustomerLeadId._id};
                     orderDetails.loadOwnerDetails=orderDetails.loadCustomerLeadId;
                     orderDetails.loadCustomerLeadId=orderDetails.loadCustomerLeadId._id;
                 }
@@ -2911,3 +2956,6 @@ OrderProcess.prototype.deleteOrderLocation=function (req,callback) {
 };
 
 module.exports = new OrderProcess();
+
+
+

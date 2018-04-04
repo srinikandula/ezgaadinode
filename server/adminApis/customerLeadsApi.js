@@ -22,7 +22,7 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    var condition={};
+    var condition = {};
     if (params.customerLeadSearch) {
         condition = {
             $or:
@@ -32,9 +32,9 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
                 ], "status": {$eq: null}
         };
 
-    } else if(params.leadStatus){
-        condition = {"leadStatus":params.leadStatus,"status": {$eq: null}}
-    }else{
+    } else if (params.leadStatus) {
+        condition = {"leadStatus": params.leadStatus, "status": {$eq: null}}
+    } else {
         condition = {"status": {$eq: null}}
 
     }
@@ -148,34 +148,60 @@ CustomerLeads.prototype.addCustomerLead = function (req, callback) {
         });
         callback(retObj);
     } else {
+        AccountsColl.findOne({contactPhone: params.contactPhone}, function (err, acc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                    body: JSON.stringify(params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (acc) {
+                retObj.messages.push("Mobile number already exist's");
+                analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                    body: JSON.stringify(params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
 
-        if (!params.alternatePhone[params.alternatePhone.length - 1]) {
-            params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
-        }
-        if (!params.operatingRoutes) {
-            params.operatingRoutes = [];
-        }
-        if (req.files.files) {
-            Utils.uploadDocuments(req.files.files, function (uploadResp) {
-                if (uploadResp.status) {
-                    params.createdBy = req.jwt.id;
-                    params.documentFiles = uploadResp.fileNames;
-                    saveCustomerLead(req, params, callback);
-                } else {
-                    retObj.messages.push("Document uploading failed");
-                    analyticsService.create(req, serviceActions.add_customer_lead_err, {
-                        body: JSON.stringify(params),
-                        accountId: req.jwt.id,
-                        success: false,
-                        messages: retObj.messages
-                    }, function (response) {
-                    });
-                    callback(retObj);
+                if (!params.alternatePhone[params.alternatePhone.length - 1]) {
+                    params.alternatePhone.splice(params.alternatePhone.length - 1, 1)
                 }
-            })
-        } else {
-            saveCustomerLead(req, params, callback);
-        }
+                if (!params.operatingRoutes) {
+                    params.operatingRoutes = [];
+                }
+
+                if (req.files.files) {
+                    Utils.uploadDocuments(req.files.files, function (uploadResp) {
+                        if (uploadResp.status) {
+                            params.createdBy = req.jwt.id;
+                            params.documentFiles = uploadResp.fileNames;
+                            saveCustomerLead(req, params, callback);
+                        } else {
+                            retObj.messages.push("Document uploading failed");
+                            analyticsService.create(req, serviceActions.add_customer_lead_err, {
+                                body: JSON.stringify(params),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        }
+                    })
+                } else {
+                    saveCustomerLead(req, params, callback);
+                }
+
+            }
+        });
     }
 
 
@@ -205,8 +231,8 @@ function saveCustomerLead(req, params, callback) {
             if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (operatingRoute, routesCallback) {
                     operatingRoute.accountId = doc._id;
-                    operatingRoute.destinationLocation=[parseFloat(operatingRoute.destinationLocation[0]),parseFloat(operatingRoute.destinationLocation[1])];
-                    operatingRoute.sourceLocation=[parseFloat(operatingRoute.sourceLocation[0]),parseFloat(operatingRoute.sourceLocation[1])];
+                    operatingRoute.destinationLocation = [parseFloat(operatingRoute.destinationLocation[0]), parseFloat(operatingRoute.destinationLocation[1])];
+                    operatingRoute.sourceLocation = [parseFloat(operatingRoute.sourceLocation[0]), parseFloat(operatingRoute.sourceLocation[1])];
                     var route = new OperatingRoutesColl(operatingRoute);
                     route.save(function (err, saveRoute) {
                         routesCallback(err);
@@ -394,11 +420,11 @@ function updateCustomerLead(req, callback) {
             } else if (doc) {
                 if (params.operatingRoutes && params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
-                        if(route.destinationLocation[0]){
-                            route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                        if (route.destinationLocation[0]) {
+                            route.destinationLocation = [parseFloat(route.destinationLocation[0]), parseFloat(route.destinationLocation[1])];
                         }
-                        if(route.sourceLocation[0]){
-                            route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                        if (route.sourceLocation[0]) {
+                            route.sourceLocation = [parseFloat(route.sourceLocation[0]), parseFloat(route.sourceLocation[1])];
                         }
                         var query = {};
                         if (!route._id) {
@@ -533,36 +559,36 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    var condition={};
-        if (params.truckOwnerSearch) {
+    var condition = {};
+    if (params.truckOwnerSearch) {
+        condition = {
+            $or:
+                [
+                    {"userId": new RegExp(params.truckOwnerSearch, "gi")},
+                    {"firstName": new RegExp(params.truckOwnerSearch, "gi")},
+                    {"companyName": new RegExp(params.truckOwnerSearch, "gi")},
+                    // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                ], role: 'Truck Owner'
+        };
+    } else if (params.status) {
+        if (params.status === 'gps') {
+            condition = {role: 'Truck Owner', "gpsEnabled": true}
+        } else if (params.status === 'erp') {
+            condition = {role: 'Truck Owner', "erpEnabled": true}
+        } else if (params.status === 'both') {
             condition = {
-                $or:
+                $and:
                     [
-                        {"userId": new RegExp(params.truckOwnerSearch, "gi")},
-                        {"firstName": new RegExp(params.truckOwnerSearch, "gi")},
-                        {"companyName": new RegExp(params.truckOwnerSearch, "gi")},
-                        // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
+                        {"gpsEnabled": true},
+                        {"erpEnabled": true},
                     ], role: 'Truck Owner'
             };
-        } else if (params.status) {
-            if (params.status === 'gps') {
-                condition = {role: 'Truck Owner', "gpsEnabled": true}
-            } else if (params.status === 'erp') {
-                condition = {role: 'Truck Owner', "erpEnabled": true}
-            } else if (params.status === 'both') {
-                condition = {
-                    $and:
-                        [
-                            {"gpsEnabled": true},
-                            {"erpEnabled": true},
-                        ], role: 'Truck Owner'
-                };
-            } else {
-                condition = {role: 'Truck Owner', "isActive": params.status}
-            }
         } else {
-            condition = {role: 'Truck Owner'}
+            condition = {role: 'Truck Owner', "isActive": params.status}
         }
+    } else {
+        condition = {role: 'Truck Owner'}
+    }
     async.parallel({
         truckOwners: function (truckOwnersCallback) {
             AccountsColl.find(condition).sort(sort)
@@ -616,7 +642,7 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
             }
         }
     });
-   };
+};
 
 CustomerLeads.prototype.countTruckOwners = function (req, callback) {
     var retObj = {
@@ -1034,7 +1060,7 @@ function updateTruckOwner(req, callback) {
     };
     var params = req.body.content;
     Utils.removeEmptyFields(params);
-    if(params.routeConfigEnabled ==="true" && !params.homeLocation.homeAddress){
+    if (params.routeConfigEnabled === "true" && !params.homeLocation.homeAddress) {
         retObj.messages.push("please enter home location...");
         callback(retObj);
         return;
@@ -1054,11 +1080,11 @@ function updateTruckOwner(req, callback) {
             } else if (doc) {
                 if (params.operatingRoutes.length > 0) {
                     async.map(params.operatingRoutes, function (route, routeCallback) {
-                        if(route.destinationLocation[0]){
-                            route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                        if (route.destinationLocation[0]) {
+                            route.destinationLocation = [parseFloat(route.destinationLocation[0]), parseFloat(route.destinationLocation[1])];
                         }
-                        if(route.sourceLocation[0]){
-                            route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                        if (route.sourceLocation[0]) {
+                            route.sourceLocation = [parseFloat(route.sourceLocation[0]), parseFloat(route.sourceLocation[1])];
                         }
 
                         var query = {};
@@ -1075,7 +1101,7 @@ function updateTruckOwner(req, callback) {
                     }, function (err) {
 
                         if (err) {
-                           // console.log("err",err);
+                            // console.log("err",err);
                             retObj.messages.push("Please try again");
                             analyticsService.create(req, serviceActions.update_truck_owner_details_err, {
                                 body: JSON.stringify(req.query),
@@ -1502,11 +1528,11 @@ function updateTransporter(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
-                    if(route.destinationLocation[0]){
-                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    if (route.destinationLocation[0]) {
+                        route.destinationLocation = [parseFloat(route.destinationLocation[0]), parseFloat(route.destinationLocation[1])];
                     }
-                    if(route.sourceLocation[0]){
-                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    if (route.sourceLocation[0]) {
+                        route.sourceLocation = [parseFloat(route.sourceLocation[0]), parseFloat(route.sourceLocation[1])];
                     }
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
@@ -1724,7 +1750,7 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
                         {"userId": new RegExp(params.commissionAgent, "gi")},
                         {"firstName": new RegExp(params.commissionAgent, "gi")},
                         {"companyName": new RegExp(params.commissionAgent, "gi")},
-                        {"mobile": new RegExp(parseFloat(params.commissionAgent),"gi")},
+                        {"mobile": new RegExp(parseFloat(params.commissionAgent), "gi")},
                     ], role: 'Commission Agent'
             };
         } else if (params.status) {
@@ -1926,11 +1952,11 @@ function updateCommissionAgent(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
-                    if(route.destinationLocation[0]){
-                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    if (route.destinationLocation[0]) {
+                        route.destinationLocation = [parseFloat(route.destinationLocation[0]), parseFloat(route.destinationLocation[1])];
                     }
-                    if(route.sourceLocation[0]){
-                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    if (route.sourceLocation[0]) {
+                        route.sourceLocation = [parseFloat(route.sourceLocation[0]), parseFloat(route.sourceLocation[1])];
                     }
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
@@ -2306,11 +2332,11 @@ function updateFactoryOwner(req, callback) {
             if (params.operatingRoutes.length > 0) {
                 async.map(params.operatingRoutes, function (route, routeCallback) {
                     var query = {};
-                    if(route.destinationLocation[0]){
-                        route.destinationLocation=[parseFloat(route.destinationLocation[0]),parseFloat(route.destinationLocation[1])];
+                    if (route.destinationLocation[0]) {
+                        route.destinationLocation = [parseFloat(route.destinationLocation[0]), parseFloat(route.destinationLocation[1])];
                     }
-                    if(route.sourceLocation[0]){
-                        route.sourceLocation=[parseFloat(route.sourceLocation[0]),parseFloat(route.sourceLocation[1])];
+                    if (route.sourceLocation[0]) {
+                        route.sourceLocation = [parseFloat(route.sourceLocation[0]), parseFloat(route.sourceLocation[1])];
                     }
                     if (!route._id) {
                         query = {_id: mongoose.Types.ObjectId()};
@@ -2888,14 +2914,14 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-    var condition={};
+    var condition = {};
     if (params.junkLeadSearch) {
         condition = {
             $or:
                 [
                     {"firstName": new RegExp(params.junkLeadSearch, "gi")},
                     {"companyName": new RegExp(params.junkLeadSearch, "gi")},
-               ], leadStatus: 'Junk Lead'
+                ], leadStatus: 'Junk Lead'
         };
     } else if (params.status) {
         if (params.status === 'gps') {
@@ -2910,7 +2936,7 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
                         {"erpEnabled": true},
                     ], leadStatus: 'Junk Lead'
             };
-        } else if(params.status === 'load') {
+        } else if (params.status === 'load') {
             condition = {leadStatus: 'Junk Lead', "loadEnabled": true}
         }
     } else {

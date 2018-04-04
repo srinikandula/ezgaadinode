@@ -704,7 +704,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                     success.data.messages.forEach(function (message) {
                         Notification.success(message);
                     });
-                    $scope.quotesList.push(success.data.data);
+                    $scope.getTruckRequestQuotes();
+                   // $scope.quotesList.push(success.data.data);
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -747,6 +748,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.truckOwnerId = $scope.loadBooking.customer._id;
             params.source = $scope.truckRequest.source;
             params.destination = $scope.truckRequest.destination;
+            params.loadOwnerType = $scope.truckRequest.customerType
             if ($scope.truckRequest.customerType === "Registered") {
                 params.loadOwnerId = $scope.truckRequest.customer._id
             } else {
@@ -1713,27 +1715,19 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
     };
     var printHtml = function (html) {
         var hiddenFrame = $('<iframe style="display: none"></iframe>').appendTo('body')[0];
-        /*hiddenFrame.contentWindow.printAndRemove = function () {
+
+        hiddenFrame.contentWindow.printAndRemove = function () {
+            hiddenFrame.contentWindow.focus();
             hiddenFrame.contentWindow.print();
             $(hiddenFrame).remove();
-        };*/
-        $(hiddenFrame).load(function () {
+        };
 
-            if (!hiddenFrame.contentDocument.execCommand('print', false, null)) {
-
-                hiddenFrame.contentWindow.focus();
-
-                hiddenFrame.contentWindow.print();
-
-            }
-
-            $(hiddenFrame).remove();
-
-        });
-        var htmlDocument = "<!doctype html >" +
-            "<body onload='printAndRemove();'>" +
-             html+
-            "</body>";
+        var htmlDocument = "<!doctype html>" +
+            "<html>" +
+            '<body onload="printAndRemove();">' + // Print only after document is loaded
+            html +
+            '</body>' +
+            "</html>";
         var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
         doc.write(htmlDocument);
         doc.close();
