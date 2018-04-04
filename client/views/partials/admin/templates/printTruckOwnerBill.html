@@ -1,7 +1,8 @@
 <head>
+    <script src="../../components/jquery/dist/jquery.min.js"></script>
+    <script src="../../components/bootstrap/dist/js/bootstrap.min.js"></script>
     <link rel="stylesheet" type="text/css" href="../../components/bootstrap/dist/css/bootstrap.min.css">
     <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <script src="../../components/bootstrap/dist/js/bootstrap.min.js"></script>
     <style>
         p {
             margin: 0 !important;
@@ -204,7 +205,8 @@
         <div class="col-x-12">
             <p style="font-size: 18px"><b>Route History</b></p>
             <ul class="list-inline">
-                <li class="col-xs-12"><b>Truck Source Start Date Time</b> : {{orderDetails.truckStartDate || 'Not-Available'}}
+                <li class="col-xs-12"><b>Truck Source Start Date Time</b> : {{orderDetails.truckStartDate ||
+                    'Not-Available'}}
                 </li>
                 <li class="col-xs-12"><b>Truck Destination Reach Date Time</b> : {{orderDetails.truckDestinationDate ||
                     'Not Available'}}
@@ -217,5 +219,5 @@
     </div>
 
 </div>
-</div>
+
 </body>

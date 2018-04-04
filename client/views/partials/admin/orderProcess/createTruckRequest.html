@@ -18,7 +18,7 @@
                         </div>
 
                     </div>
-                    <div class="col-xs-12 col-sm-6"
+                    <div class=" col-sm-6"
                          ng-show=" truckRequest.customerType=='Registered' || truckRequest.customerType=='' ">
                         <div class="form-group select-box">
                             <ui-select ng-model="truckRequest.customer" theme="select2"
@@ -42,47 +42,55 @@
 
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-6" ng-show="truckRequest.customerType=='UnRegistered' ">
+                    <div class="col-sm-6" ng-show="truckRequest.customerType=='UnRegistered' ">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="fullName"
                                    ng-model="truckRequest.firstName"/>
                             <label class="focus-effect-for-input">Full Name*</label>
                         </div>
                     </div>
-                </div>
-                <div class="row" ng-show="truckRequest.customerType=='UnRegistered'">
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="mobile"
-                                   ng-model="truckRequest.contactPhone"/>
-                            <label class="focus-effect-for-input">Mobile*</label>
+                    <div ng-show="truckRequest.customerType=='UnRegistered'">
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="mobile"
+                                       ng-model="truckRequest.contactPhone"/>
+                                <label class="focus-effect-for-input">Mobile*</label>
+                            </div>
                         </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="company"
-                                   ng-model="truckRequest.companyName"/>
-                            <label class="focus-effect-for-input">Company</label>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="company"
+                                       ng-model="truckRequest.companyName"/>
+                                <label class="focus-effect-for-input">Company</label>
+                            </div>
                         </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="city"
-                                   ng-model="truckRequest.city"/>
-                            <label class="focus-effect-for-input">City</label>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="city"
+                                       ng-model="truckRequest.city"/>
+                                <label class="focus-effect-for-input">City</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-xs-12 col-sm-6">
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="fullName"
-                                   ng-model="truckRequest.email"/>
-                            <label class="focus-effect-for-input">Email</label>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="fullName"
+                                       ng-model="truckRequest.email"/>
+                                <label class="focus-effect-for-input">Email</label>
+                            </div>
                         </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="address"
-                                   ng-model="truckRequest.address"/>
-                            <label class="focus-effect-for-input">Address</label>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="address"
+                                       ng-model="truckRequest.address"/>
+                                <label class="focus-effect-for-input">Address</label>
+                            </div>
                         </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="state"
-                                   ng-model="truckRequest.state"/>
-                            <label class="focus-effect-for-input">State</label>
+                        <div class="col-sm-6">
+                            <div class="form-group styling-input-list">
+                                <input type="text" class="form-control custom-form-control" name="state"
+                                       ng-model="truckRequest.state"/>
+                                <label class="focus-effect-for-input">State</label>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -102,49 +110,31 @@
                 <div class="row pos-relative top-border" ng-repeat="truck in truckRequest.truckDetails">
                     <span class="plus-pos" ng-show="$index>0" style="top:-5px; right:-5px;"> <i
                             class="fa fa-times-circle clr-red" ng-click="removeTruckDetails($index)"></i></span>
-                    <div class="col-xs-12 col-sm-3 ">
+                    <div class="col-sm-4">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control " name="source"
                                    ng-model="truck.source" id="searchSource{{$index}}"
                                    ng-change="addSearchSource($index)"/>
                             <label class="order-effect-for-input">Source</label>
                         </div>
-                        <div class="form-group">
-                            <admin-date-picker id="date" ng-model="truck.date" placeholder="'Date Time Required *'"
-                                               class="'form-control order-form-control'"></admin-date-picker>
-                        </div>
-
                     </div>
-                    <div class="col-xs-12 col-sm-3">
+                    <div class="col-sm-4">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control " name="state"
                                    ng-model="truck.destination" id="searchDestination{{$index}}"
                                    ng-change="addSearchDestination($index)"/>
                             <label class="order-effect-for-input">Destination</label>
-
-                        </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control " name="pincode"
-                                   ng-model="truck.aa"
-                            />
-                            <label class="order-effect-for-input">Pickup Point</label>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3">
-                        <!--<div class="form-group styling-input-list">
-                            <select class="form-control order-form-control"
-                                    ng-model="truck.goodsType">
-                                <option value="">Goods type</option>
-                                <option ng-repeat="goodsType in goodsTypesList">{{goodsType.title}}</option>
-                            </select>
-                        </div>-->
+                    <div class="col-sm-4">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control" name="comment"
                                    ng-model="truck.comment"/>
-                            <label class="order-effect-for-input">Response Time / Comment</label>
+                            <label class="order-effect-for-input">Response Time /
+                                Comment</label>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-3">
+                    <div class="col-sm-4">
                         <div class="form-group">
                             <select class="form-control order-form-control"
                                     ng-model="truck.truckType">
@@ -152,25 +142,40 @@
                                 <option ng-repeat="truckTypes in truckTypesList" value="{{truckTypes._id}}">
                                     {{truckTypes.title}}/{{truckTypes.tonnes}}Tons
                                 </option>
-
                             </select>
                         </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" name="pickup"
+                                   ng-model="truck.pickupPoint"/>
+                            <label class="order-effect-for-input">Pickup Point</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group">
+                            <admin-date-picker id="date" ng-model="truck.date" placeholder="'Date Time Required *'"
+                                               class="'form-control order-form-control'"></admin-date-picker>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control" name="pincode"
                                    ng-model="truck.expectedPrice"/>
                             <label class="order-effect-for-input">Expected Price</label>
                         </div>
-
                     </div>
+
                 </div>
-                <div class="clearfix"></div>
-
             </div>
+            <div class="clearfix"></div>
 
-        </uib-accordion>
-        <div class="col-xs-12 save-btns">
-            <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
-            <a href="#" class="btn btn-primary" ng-click="addTruckRequest()">Submit</a>
-        </div>
     </div>
+
+    </uib-accordion>
+    <div class="col-xs-12 save-btns">
+        <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
+        <a href="#" class="btn btn-primary" ng-click="addTruckRequest()">Submit</a>
+    </div>
+</div>
 </div>

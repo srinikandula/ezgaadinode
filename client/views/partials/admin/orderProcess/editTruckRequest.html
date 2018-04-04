@@ -48,8 +48,7 @@
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control"
-                                   ng-model="truckRequest.pickupPoint"
-                            />
+                                   ng-model="truckRequest.pickupPoint"/>
                             <label class="order-effect-for-input">Pickup Point</label>
                         </div>
                         <div class="form-group"> Distance/System Price 0[685.71/6726.51]</div>
@@ -99,17 +98,13 @@
                             </select>
                         </div>
 
-                        <div class="form-group styling-input-list">
+                        <div class="form-group">
                             <textarea class="form-control" ng-model="truckRequest.comment"
-                                      rows="5"></textarea>
-                            <label class="focus-effect-for-input">Comments</label>
+                                      rows="5" placeholder="Comments"></textarea>
                         </div>
-                        <div class="form-group styling-input-list">
+                        <div class="form-group">
                             <textarea class="form-control" ng-model="truckRequest.pushMessage"
-                                      rows="4"></textarea>
-                            <label class="focus-effect-for-input">Push Message</label>
-
-
+                                      rows="4" placeholder="Push Message"></textarea>
                         </div>
                     </div>
                 </div>
@@ -123,28 +118,34 @@
                                          ng-class="{'glyphicon-chevron-down': status.isOpenOne, 'glyphicon-chevron-right': !status.isOpenOne}"></i>
                 </uib-accordion-heading>
                 <div class="row">
-                        <div class="form-group styling-input-list col-sm-4">
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control"
                                    ng-model="truckRequest.sourceSearch" name="source" id="searchSource"
                                    ng-change="searchSource()"/>
                             <label class="order-effect-for-input">Source *</label>
                         </div>
-                        <div class="form-group styling-input-list col-sm-4">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control"
                                    ng-model="truckRequest.destinationSearch" name="destination" id="searchDestination"
                                    ng-change="searchDestination()"/>
                             <label class="order-effect-for-input">Destination *</label>
                         </div>
-                        <div class="form-group col-sm-3">
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group ">
                             <select class="form-control order-form-control" ng-model="truckRequest.truckType">
                                 <option value="">Truck type</option>
                                 <option ng-repeat="truck in truckTypesList" value="{{truck._id}}">{{truck.title}}
                                 </option>
                             </select>
                         </div>
-                        <div>
-                            <button class="btn btn-info" ng-click="searchTrucksForRequest()">Go</button>
-                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-info" ng-click="searchTrucksForRequest()">Go</button>
+                    </div>
                 </div>
                 <div class="row col-sm-12 table-responsive">
                     <table class="table table-bordered table-striped table-condensed table-hover text-center"
@@ -164,27 +165,33 @@
                 </uib-accordion-heading>
 
                 <div class="row">
-                        <div class="form-group col-xs-12 col-sm-4">
+                    <div class="col-sm-4">
+                        <div class="form-group">
                             <select ng-model="quote.accountId" class="form-control order-form-control">
+                                <option value="" selected>--User Name--</option>
                                 <option ng-repeat="truck in availableTruckslist" value="{{truck._id}}">
                                     {{truck.firstName}}
                                 </option>
                             </select>
-
                         </div>
-                        <div class="form-group styling-input-list col-xs-12 col-sm-4">
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control" name="quote"
                                    ng-model="quote.quote"/>
                             <label class="order-effect-for-input">Quote</label>
                         </div>
-                        <div class="form-group styling-input-list col-xs-12 col-sm-3">
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control order-form-control" name="comment"
                                    ng-model="quote.comment"/>
                             <label class="order-effect-for-input">QuoteComment</label>
                         </div>
-                        <div class="form-group">
-                            <button class="btn btn-info" ng-click="addTruckRequestQuote()">Submit</button>
-                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-info" ng-click="addTruckRequestQuote()">Submit</button>
+                    </div>
 
                 </div>
                 <div class="row col-sm-12 table-responsive">
@@ -223,51 +230,60 @@
                 </uib-accordion-heading>
 
                 <div class="row">
-                    <div class="col-xs-12 col-sm-4">
-                        <div class="form-group customSelect">
+                    <div class="form-group customSelect styling-input-list col-sm-4">
+                        <input type="text" readonly="true" class="form-control order-form-control"
+                               ng-model="loadBooking.customer.firstName"/>
+                        <label class="order-effect-for-input" style="padding-left: 20px;">Customer Name</label>
+                    </div>
+                    <div class="form-group styling-input-list col-sm-4">
+                        <input type="text" class="form-control order-form-control" ng-model="loadBooking.tripLane"/>
+                        <label class="order-effect-for-input" style="padding-left: 20px;">Pickup Point*</label>
+                    </div>
 
-                            <input type="text" readonly="true" class="form-control order-form-control"
-                                   ng-model="loadBooking.customer.firstName"/>
-
-                        </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control" ng-model="loadBooking.tripLane"/>
-                            <label class="order-effect-for-input">Pickup Point</label>
-                        </div>
+                    <div class="form-group styling-input-list col-sm-4">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="loadBooking.registrationNo"/>
+                        <label class="order-effect-for-input" style="padding-left: 20px;">Registration No*</label>
+                        <!--  <select class="form-control order-form-control" ng-model="loadBooking.registrationNo">
+                              <option value="">Select truck</option>
+                              <option ng-repeat="truck in loadBooking.trucksList" value="{{truck.registrationNo}}">
+                                  {{truck.registrationNo}}
+                              </option>
+                          </select>-->
                     </div>
-                    <div class="col-xs-12 col-sm-4">
-                        <div class="form-group">
-                            <select class="form-control order-form-control" ng-model="loadBooking.registrationNo">
-                                <option value="">Select truck</option>
-                                <option ng-repeat="truck in loadBooking.trucksList" value="{{truck.registrationNo}}">
-                                    {{truck.registrationNo}}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group styling-input-list">
-                            <admin-date-picker ng-model="loadBooking.date" placeholder="'Date Required *'"
-                                               class="'form-control order-form-control'"></admin-date-picker>
-                        </div>
+                    <div class="form-group styling-input-list col-sm-4">
+                        <admin-date-picker ng-model="loadBooking.date" placeholder="'Date Required *'"
+                                           class="'form-control order-form-control'"></admin-date-picker>
                     </div>
-                    <div class="col-xs-12 col-sm-4">
-                        <div class="form-group">
-                            <select class="form-control order-form-control" ng-model="loadBooking.driverId">
-                                <option value="">Select Driver</option>
-                                <option ng-repeat="driver in loadBooking.driversList" value="{{driver._id}}">
-                                    {{driver.fullName}}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control order-form-control"
-                                   ng-model="loadBooking.freightAmount"/>
-                            <label class="order-effect-for-input">Amount</label>
-                        </div>
+                    <div class="form-group styling-input-list col-sm-4">
+                        <input type="text" class="form-control order-form-control" ng-model="loadBooking.driverId"/>
+                        <!-- <select class="form-control order-form-control" ng-model="loadBooking.driverId">
+                             <option value="">Select Driver</option>
+                             <option ng-repeat="driver in loadBooking.driversList" value="{{driver._id}}">
+                                 {{driver.fullName}}
+                             </option>
+                         </select>-->
+                        <label class="order-effect-for-input" style="padding-left: 20px;">Driver Mobile</label>
                     </div>
-                    <div class="col-sm-12">
-                        <div class="form-group text-center">
-                            <button class="btn btn-info" ng-click="loadBookingForTruckRequest()">Book Load</button>
-                        </div>
+                    <div class="form-group styling-input-list col-sm-4">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="loadBooking.freightAmount"/>
+                        <label class="order-effect-for-input" style="padding-left: 20px;">Amount*</label>
+                    </div>
+                    <div class="form-group styling-input-list col-sm-4">
+                        <input type="number" class="form-control order-form-control" name="loadingCharges"
+                               ng-model="truck.loadingCharges"/>
+                        <label class="order-effect-for-input" style="padding-left: 20px;">Loading Charges*</label>
+                    </div>
+                    <div class="form-group styling-input-list col-sm-4">
+                        <input type="number" class="form-control order-form-control" name="unloadingCharges"
+                               ng-model="truck.unloadingCharges"/>
+                        <label class="order-effect-for-input" style="padding-left: 20px;">Unloading Charges*</label>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <div class="form-group text-center">
+                        <button class="btn btn-info" ng-click="loadBookingForTruckRequest()">Book Load</button>
                     </div>
                 </div>
             </div>
@@ -350,44 +366,62 @@
                 </uib-accordion-heading>
 
                 <div class="row">
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.userName"/>
-                        <label class="order-effect-for-input">Customer ID</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" ng-model="customer.userName"/>
+                            <label class="order-effect-for-input">Customer ID</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.email"/>
-                        <label class="order-effect-for-input">Email</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" ng-model="customer.email"/>
+                            <label class="order-effect-for-input">Email</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
-                        <label class="order-effect-for-input">Company</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
+                            <label class="order-effect-for-input">Company</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.contactPhone"/>
-                        <label class="order-effect-for-input">Mobile</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control"
+                                   ng-model="customer.contactPhone"/>
+                            <label class="order-effect-for-input">Mobile</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
-                        <label class="order-effect-for-input">Address</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
+                            <label class="order-effect-for-input">Address</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
-                        <label class="order-effect-for-input">City</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
+                            <label class="order-effect-for-input">City</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.contactPhone"/>
-                        <label class="order-effect-for-input">Password</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control"
+                                   ng-model="customer.contactPhone"/>
+                            <label class="order-effect-for-input">Password</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
-                        <label class="order-effect-for-input">Office Number</label>
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" ng-model="customer.name"/>
+                            <label class="order-effect-for-input">Office Number</label>
+                        </div>
                     </div>
-                    <div class="form-group col-sm-4 styling-input-list">
-                        <input type="text" class="form-control order-form-control" ng-model="customer.state"/>
-                        <label class="order-effect-for-input">State</label>
-
+                    <div class="col-sm-4">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control order-form-control" ng-model="customer.state"/>
+                            <label class="order-effect-for-input">State</label>
+                        </div>
                     </div>
-
                 </div>
             </div>
         </uib-accordion>

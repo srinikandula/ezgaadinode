@@ -316,7 +316,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     $scope.getCustomerLeadDetails = function () {
         if ($stateParams.customerId) {
             customerServices.getCustomerLeadDetails($stateParams.customerId, function (success) {
-                console.log("getting customer leads...",success);
 
                 if (success.data.status) {
                     $scope.customerLead = success.data.data.customerData;
@@ -373,7 +372,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     $scope.createLeads = function () {
         var params = $scope.customerLead;
         params.errorMessage = [];
-        console.log("Admin params....",params);
 
         if (!params.firstName) {
             params.errorMessage.push('Enter Your Full Name');
@@ -485,7 +483,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
             customerLeadSearch: tableParams.customerLeadSearch,
         };
         customerServices.getCustomerLeads(pageable, function (success) {
-            console.log("table...",success.data.data);
             $scope.invalidCount = 0;
             if (success.data.status) {
                 //tableParams.total(success.data.count);
@@ -517,7 +514,6 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
     };
     $scope.convertCustomerLead = function () {
         var params = $scope.customerLead;
-        console.log("params", params);
         params.messages = [];
         if (!params.status) {
             params.messages.push("Please Select Lead status");
@@ -921,7 +917,6 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
         });
     }
     $scope.add = function(){
-console.log("Route config value..",$scope.truckOwner);
     };
 
 $scope.selectTruckTypes=[];
@@ -1012,7 +1007,6 @@ $scope.selectTruckTypes=[];
         google.maps.event.addListener(autocomplete, 'place_changed',
             function () {
                 var place = autocomplete.getPlace();
-                console.log("place",place);
                 $scope.truckOwner.operatingRoutes[index].source = place.name;
                 $scope.truckOwner.operatingRoutes[index].sourceState = place.address_components[2].long_name;
                 $scope.truckOwner.operatingRoutes[index].sourceAddress = place.formatted_address;
@@ -1123,7 +1117,6 @@ $scope.selectTruckTypes=[];
             });
 
             if ($scope.truckOwner._id) {
-                console.log("sdfsd", $scope.truckOwner.operatingRoutes);
                 Upload.upload({
                     url: '/v1/cpanel/customers/updateTruckOwner',
                     method: "POST",

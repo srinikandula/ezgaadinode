@@ -9,26 +9,14 @@
                                         ng-class="{'glyphicon-chevron-down':status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
                 </uib-accordion-heading>
                 <div class="col-xs-12">
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-sm-6">
                         <div class="styling-input-list">
                             <input type="text" class="form-control custom-form-control"
                                    ng-model="accountDetails.userName" ng-change="checkAvailablity()"/>
                             <label class="focus-effect-for-input">User Name*</label>
-                            <span class="statusError">{{availableStatusError}}</span>
-                        </div>
-
-                        <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control"
-                                   ng-model="accountDetails.contactName"/>
-                            <label class="focus-effect-for-input">Contact Name*</label>
-                        </div>
-                        <div class="form-group styling-input-list">
-                            <input type="number" class="form-control custom-form-control"
-                                   ng-model="accountDetails.contactPhone"/>
-                            <label class="focus-effect-for-input">Contact Number*</label>
                         </div>
                     </div>
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-sm-6">
                         <div class="form-group">
                             <select class="form-control custom-form-control" ng-model="accountDetails.role">
                                 <option value="" selected>Type*</option>
@@ -39,11 +27,30 @@
                                 <option>GPS</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="accountDetails.contactName"/>
+                            <label class="focus-effect-for-input">Contact Name*</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="form-group styling-input-list">
+                            <input type="number" class="form-control custom-form-control"
+                                   ng-model="accountDetails.contactPhone"/>
+                            <label class="focus-effect-for-input">Contact Number*</label>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="password" class="form-control custom-form-control"
                                    ng-model="accountDetails.password"/>
                             <label class="focus-effect-for-input">Password*</label>
                         </div>
+                    </div>
+                    <div class="col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control"
                                    ng-model="accountDetails.email"/>

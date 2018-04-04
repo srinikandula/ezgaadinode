@@ -95,8 +95,14 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
     var pageable;
 
     var loadTableData = function (tableParams) {
-        pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),
-            partyName: tableParams.partyName };
+        pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            partyName: tableParams.partyName,
+            fromDate:$scope.fromDate,
+            toDate:$scope.toDate
+        };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
         PaymentsService.getPayments(pageable, function (response) {

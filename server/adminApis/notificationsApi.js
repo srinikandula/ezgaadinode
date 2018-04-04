@@ -181,7 +181,7 @@ Notifications.prototype.getGpsTruckNtfn = function (req, callback) {
                 callback(retObj);
             } else if (docs.length > 0) {
                 retObj.status = true;
-                retObj.messages = "Success";
+                retObj.messages.push("Success");
                 retObj.data = docs;
                 analyticsService.create(req, serviceActions.get_gps_truck_ntfn, {
                     body: JSON.stringify(req.query),
@@ -191,7 +191,7 @@ Notifications.prototype.getGpsTruckNtfn = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.messages = "No truck Notifications found";
+                retObj.messages.push("No truck Notifications found");
                 analyticsService.create(req, serviceActions.get_gps_truck_ntfn_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,

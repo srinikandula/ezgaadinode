@@ -526,7 +526,7 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
     // Interceptor for redirecting to login page if not logged in
     $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies',function ($q, $location, $rootScope, $cookies) {
         return {
-            'request': function (config) {
+            'request': function (config) {``
 
                 $rootScope.reqloading = true;
                 return config;
