@@ -549,12 +549,11 @@ Trips.prototype.getAllAccountTrips = function (jwt, params,req, callback) {
         TrucksColl.find({registrationNo: new RegExp("^" + params.truckNumber, "i")}, function (err, truckData) {
             if (err) {
                 result.status = false;
-                result.message.push('Error retrieving expenses Costs');
+                result.messages.push('Error retrieving expenses Costs');
                 analyticsService.create(req,serviceActions.account_trips_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
                 callback(result);
             } else if (truckData) {
                 var ids=_.pluck(truckData,"_id");
-
                 getTrips({
                     'accountId': jwt.accountId,
                     'registrationNo': {$in:ids}
@@ -570,7 +569,7 @@ Trips.prototype.getAllAccountTrips = function (jwt, params,req, callback) {
                 result.status = true;
                 result.messages.push('Success');
                 result.count = 0;
-                result.expenses = [];
+                result.trips = [];
                 analyticsService.create(req,serviceActions.account_trips,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
                 callback(result);
             }

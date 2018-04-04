@@ -797,6 +797,7 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
         }
     }, function (errDmDetails, dmDetails) {
         if (errDmDetails) {
+            console.log("dsafasdfsdfdsf",errDmDetails);
             retObj.messages.push("Unable to get dMdevices, please try again");
             analyticsService.create(req, serviceActions.get_device_management_err, {
                 body: JSON.stringify(req.body),

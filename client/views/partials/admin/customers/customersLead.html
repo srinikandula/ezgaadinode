@@ -28,7 +28,7 @@
                ng-table="customerParams">
             <tbody>
             <tr ng-repeat="customer in customerLeads">
-                <td>{{$index+1}}</td>
+                <td data-title="'S No'">{{$index+1}}</td>
                 <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">{{customer.firstName}}
                 </td>
                 <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">{{customer.contactPhone}}
@@ -55,7 +55,7 @@
                 </td>
             </tr>
             <tr ng-if="!customerLeads || customerLeads.length === 0">
-                <td colspan="8">No Customer Leads Records exist.</td>
+                <td colspan="10">No Customer Leads Records exist.</td>
             </tr>
             </tbody>
         </table>

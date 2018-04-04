@@ -60,7 +60,7 @@
                          class="profile-pic" ng-show="profilePic">
                 </li>
                 <li class="profile-nav">
-                    <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown" style="text-transform: capitalize">{{displayName }}
+                    <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown" style="text-transform: capitalize">{{displayName | limitTo:10}}
                         <span class="caret"></span></a>
                     <ul class="dropdown-menu">
                         <li><a href="#" ui-sref="myProfile">My Profile</a></li>

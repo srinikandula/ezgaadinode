@@ -165,7 +165,7 @@ app.controller('NotificationCntrl', ['$scope', '$uibModal', 'NotificationService
                 $scope.currentPageOfTruckNtfns = success.data.data;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+                    Notification.error({ message: message });
                 });
             }
         });

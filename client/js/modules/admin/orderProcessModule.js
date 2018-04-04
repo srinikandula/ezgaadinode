@@ -370,10 +370,9 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             date: "",
             tripLane: "",
             accountId: "",
-            tripLane: "",
-            date: "",
             freightAmount: "",
-            customer: ""
+            customer: "",
+
         };
         $scope.comment = {
             status: undefined,
@@ -385,6 +384,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             OrderProcessServices.getTruckRequestDetails($stateParams._id, function (success) {
                 if (success.data.status) {
                     $scope.truckRequest = success.data.data;
+                    console.log("$scope.truckRequest", $scope.truckRequest);
                     $scope.truckRequest.date = new Date($scope.truckRequest.date);
 
                     $scope.quote = {
@@ -450,6 +450,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
     $scope.addTruckRequest = function () {
         var params = $scope.truckRequest;
         params.messages = [];
+        console.log(params);
         if (!params.customerType) {
             params.messages.push("Please select customer type");
         }
@@ -462,7 +463,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         if (params.customerType === "UnRegistered" && !params.contactPhone) {
             params.messages.push("Please select customer");
         }
-
         if (!checkTruckDetails) {
             params.messages.push("Please enter mandatory truck details")
         }
@@ -1713,11 +1713,24 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
     };
     var printHtml = function (html) {
         var hiddenFrame = $('<iframe style="display: none"></iframe>').appendTo('body')[0];
-        hiddenFrame.contentWindow.printAndRemove = function () {
+        /*hiddenFrame.contentWindow.printAndRemove = function () {
             hiddenFrame.contentWindow.print();
             $(hiddenFrame).remove();
-        };
-        var htmlDocument = "<!doctype html>" +
+        };*/
+        $(hiddenFrame).load(function () {
+
+            if (!hiddenFrame.contentDocument.execCommand('print', false, null)) {
+
+                hiddenFrame.contentWindow.focus();
+
+                hiddenFrame.contentWindow.print();
+
+            }
+
+            $(hiddenFrame).remove();
+
+        });
+        var htmlDocument = "<!doctype html >" +
             "<body onload='printAndRemove();'>" +
              html+
             "</body>";
@@ -1740,7 +1753,6 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                 if (printScope.$$phase || $http.pendingRequests.length) {
                     $timeout(waitForRenderAndPrint);
                 } else {
-                    console.log(element.html());
                     printHtml(element.html());
                     printScope.$destroy(); // To avoid memory leaks from scope create by $rootScope.$new()
                 }

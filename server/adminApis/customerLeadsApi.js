@@ -770,6 +770,7 @@ CustomerLeads.prototype.convertCustomerLead = function (req, callback) {
                                 companyName: customerLead.companyName,
                                 pincode: customerLead.pinCode,
                                 role: params.leadType,
+                                leadType: params.leadType,
                                 documentType: customerLead.documentType,
                                 documentFile: customerLead.documentFile,
                                 paymentType: customerLead.paymentType,
