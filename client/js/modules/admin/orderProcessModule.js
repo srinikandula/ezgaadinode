@@ -232,6 +232,13 @@ app.factory('OrderProcessServices', ['$http', function ($http) {
                 method: "DELETE",
                 params: {_id: data}
             }).then(success, error)
+        },
+        getTruckOwnersAndCommisionAgents: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/orderProcess/getTruckOwnersAndCommisionAgents',
+                method: "GET",
+                params: params
+            }).then(success, error);
         }
 
     }
@@ -1068,8 +1075,8 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
         });
     };
 
-    $scope.getAllAccountsExceptTruckOwners = function () {
-        OrderProcessServices.getAllAccountsExceptTruckOwners({
+    $scope.getTruckOwnersAndCommisionAgents = function () {
+        OrderProcessServices.getTruckOwnersAndCommisionAgents({
             name: $scope.search,
             size: $scope.currentElement
         }, function (success) {
@@ -1086,7 +1093,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
 
     $scope.loadMore = function () {
         $scope.currentElement = $scope.currentElement + 10;
-        OrderProcessServices.getAllAccountsExceptTruckOwners({
+        OrderProcessServices.getTruckOwnersAndCommisionAgents({
             name: $scope.search,
             size: $scope.currentElement
         }, function (success) {
@@ -1103,7 +1110,7 @@ app.controller('loadRequestCtrl', ['$scope', '$state', 'SettingServices', 'custo
     $scope.searchAccountOwner = function (search) {
         $scope.currentElement = 0;
         $scope.search = search;
-        OrderProcessServices.getAllAccountsExceptTruckOwners({
+        OrderProcessServices.getTruckOwnersAndCommisionAgents({
             name: $scope.search,
             size: $scope.currentElement
         }, function (success) {

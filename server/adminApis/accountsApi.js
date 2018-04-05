@@ -360,7 +360,6 @@ Accounts.prototype.addAccount = function (req, callback) {
                             delete route.__v;
                             OperatingRoutesColl.update(routeQuery, route, {upsert: true}, function (errroute, routeSaved) {
                                 if (errroute) {
-                                    console.log(errroute);
                                     retObj.messages.push('Error adding/updating route');
                                     asynCallback(errroute);
                                 } else {

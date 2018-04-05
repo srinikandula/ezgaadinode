@@ -164,15 +164,11 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
                 source: '',
                 sourceState: '',
                 sourceAddress: '',
-                sourceLocation: {
-                    coordinates: [] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
-                },
+                sourceLocation: [],
                 destination: '',
                 destinationState: '',
                 destinationAddress: '',
-                destinationLocation: {
-                    coordinates: [] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
-                }
+                destinationLocation:[]
             });
         } else {
             params.push({
@@ -180,15 +176,11 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
                 source: '',
                 sourceState: '',
                 sourceAddress: '',
-                sourceLocation: {
-                    coordinates: [] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
-                },
+                sourceLocation:[],
                 destination: '',
                 destinationState: '',
                 destinationAddress: '',
-                destinationLocation: {
-                    coordinates: [] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
-                }
+                destinationLocation:[]
             });
         }
     };
@@ -231,7 +223,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             var lng = place.geometry.location.lng();
             var lat = place.geometry.location.lat();
             if (type === 'source') {
-                $scope.operatingRoutes[index].sourceLocation.coordinates = [lng, lat];
+                $scope.operatingRoutes[index].sourceLocation = [lng, lat];
                 for (var i = 0; i < place.address_components.length; i++) {
                     var base = place.address_components[i];
                     if (base.types[0] === 'locality') {
@@ -242,7 +234,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
                 }
                 $scope.operatingRoutes[index].sourceAddress = place.formatted_address
             } else {
-                $scope.operatingRoutes[index].destinationLocation.coordinates = [lng, lat];
+                $scope.operatingRoutes[index].destinationLocation= [lng, lat];
                 for (var i = 0; i < place.address_components.length; i++) {
                     var base = place.address_components[i];
                     if (base.types[0] === 'locality') {

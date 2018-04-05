@@ -349,6 +349,28 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
         positionY: 'bottom'
     });
 
+    // Interceptor for redirecting to login page if not logged in
+
+    $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies',function ($q, $location, $rootScope, $cookies) {
+        return {
+            'request': function (config) {``
+
+                $rootScope.reqloading = true;
+                return config;
+            },
+            'response': function (config) {
+                $rootScope.reqloading = false;
+                return config;
+            },
+            'responseError': function (response) {
+                if ([400, 401, 402, 403].indexOf(response.status) > -1) {
+                    $cookies.remove('token');
+                    $location.path('/login');
+                    return $q.reject(response);
+                }
+            }
+        };
+    }]);
 
 }]);
 app.run(function ($transitions, $rootScope) {
