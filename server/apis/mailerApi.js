@@ -72,4 +72,5 @@ EmailService.prototype.sendEmail = function (data, callback) {
     }
 };
 
+
 module.exports = new EmailService();
