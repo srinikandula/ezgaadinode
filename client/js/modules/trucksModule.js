@@ -314,6 +314,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
     $scope.driverName = "";
 
     $scope.pageTitle = $stateParams.truckId ? 'Update Truck' : 'Add Truck';
+
     function getTruckTypes() {
         TrucksService.getTruckTypes(function (success) {
             if(success.status){

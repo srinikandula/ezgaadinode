@@ -771,7 +771,7 @@ Accounts.prototype.getEmployees = function (req, callback) {
         status: false,
         messages: []
     };
-    AccountsColl.find({type: "employee"}, function (errEmployee, employees) {
+    AccountsColl.find({role: "employee"}, function (errEmployee, employees) {
         if(errEmployee) {
             retObj.messages.push("Unable to employees");
             analyticsService.create(req, serviceActions.get_account_data_err, {

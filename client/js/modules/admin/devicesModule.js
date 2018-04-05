@@ -412,6 +412,7 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
 
     $scope.addDevices = function () {
         $scope.errors = [];
+        console.log("$scope.assignedTo", $scope.assignedTo)
         var params = $scope.devicesToAdd;
         for (var i = 0; i < params.length - 1; i++) {
             for (var j = i + 1; j < params.length; j++) {

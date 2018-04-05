@@ -51,7 +51,7 @@
             <li class="form-group">
                 <select class="form-control" ng-model="assignedTo">
                     <option value="" selected>Select</option>
-                    <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}
+                    <option ng-repeat="employee in employees" value="{{employee._id}}">{{employee.displayName}}
                     </option>
                 </select>
             </li>

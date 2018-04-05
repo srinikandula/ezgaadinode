@@ -27,49 +27,55 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="accountParams">
-        <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
-            <td data-title="'S No'">
-                {{$index+1}}
-            </td>
-            <td data-title="'Customer Name'" sortable="'contactName'" class="clickable-item">
-                {{account.contactName}}
-            </td>
-            <!--<td data-title="'type'" sortable="'type'" class="clickable-item">
-                {{account.type}}
-            </td>-->
-            <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item">
-                {{account.contactPhone}}
-            </td>
-            <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
-                {{account.createdAt | date:'yyyy-MM-dd'}}
-            </td>
-            <td data-title="'No of Trucks'"  class="clickable-item">
-                {{account.noOfTrucks}}
-            </td>
-            <td data-title="'Sold By'" sortable="'createdBy.userName'" class="clickable-item">
-                {{account.createdBy.userName | date:'yyyy-MM-dd'}}
-            </td>
-            <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
-                {{account.erpEnabled?'Enabled':'Disabled'}}
-            </td>
-            <td data-title="'LOAD'" sortable="'loadEnabled'" class="clickable-item">
-                {{account.loadEnabled?'Enabled':'Disabled'}}
-            </td>
-            <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
-                {{account.isActive?'Enabled':'Disabled'}}
-            </td>
-            <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
-                <a href="#" ui-sref="services.addNewAccount({accountId: account._id})" class="edit_icon">
-                    <span class="glyphicon glyphicon-pencil"></span>
-                </a>
-                <a href="#" ng-click="deleteAccount($index)" class="delete_icon">
-                    <span class="glyphicon glyphicon-trash"></span>
-                </a>
-            </td>
-        </tr>
-        <tr ng-if="!currentPageOfAccounts || currentPageOfAccounts.length === 0">
-            <td colspan="8">No GPS Accounts exist</td>
-        </tr>
-    </table>
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
+               ng-table="accountParams">
+            <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
+                <td data-title="'Customer Name'" sortable="'contactName'" class="clickable-item">
+                    {{account.contactName}}
+                </td>
+                <td data-title="'User Name'" sortable="'userName'" class="clickable-item">
+                    {{account.userName}}
+                </td>
+                <td data-title="'Password'" sortable="'password'" class="clickable-item">
+                    {{account.password}}
+                </td>
+                <!--<td data-title="'type'" sortable="'type'" class="clickable-item">
+                    {{account.type}}
+                </td>-->
+                <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item">
+                    {{account.contactPhone}}
+                </td>
+                <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
+                    {{account.createdAt | date:'yyyy-MM-dd'}}
+                </td>
+                <td data-title="'No of Trucks'" class="clickable-item">
+                    {{account.noOfTrucks}}
+                </td>
+                <td data-title="'Sold By'" sortable="'createdBy.userName'" class="clickable-item">
+                    {{account.createdBy.userName | date:'yyyy-MM-dd'}}
+                </td>
+                <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
+                    {{account.erpEnabled?'Enabled':'Disabled'}}
+                </td>
+                <td data-title="'LOAD'" sortable="'loadEnabled'" class="clickable-item">
+                    {{account.loadEnabled?'Enabled':'Disabled'}}
+                </td>
+                <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
+                    {{account.isActive?'Enabled':'Disabled'}}
+                </td>
+                <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
+                    <a href="#" ui-sref="services.addNewAccount({accountId: account._id})" class="edit_icon">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a href="#" ng-click="deleteAccount($index)" class="delete_icon">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfAccounts || currentPageOfAccounts.length === 0">
+                <td colspan="8">No GPS Accounts exist</td>
+            </tr>
+        </table>
+    </div>
 </div>
