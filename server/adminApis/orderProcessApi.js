@@ -2952,6 +2952,40 @@ OrderProcess.prototype.deleteOrderLocation=function (req,callback) {
     }
 };
 
+OrderProcess.prototype.getTruckOwnersAndCommisionAgents = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var skipNumber = params.size ? parseInt(params.size) : 0;
+    var sort = {createdAt: -1};
+    var condition = {};
+    if (params.name) {
+        condition = {firstName: {$regex: '.*' + params.name + '.*'}, role: {$in: ["Truck Owner","Commission Agent"]}}
+    } else {
+        condition = {role: {$in: ["Truck Owner","Commission Agent"]}}
+    }
+    AccountsColl.find(condition, {firstName: 1, contactPhone: 1, contactName: 1, userName: 1})
+
+        .skip(skipNumber)
+        .limit(10).exec(function (err, truckOwnersList) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else if (truckOwnersList.length) {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = truckOwnersList;
+            callback(retObj);
+        } else {
+            retObj.messages.push("No truck owners found");
+            callback(retObj);
+        }
+    })
+
+};
+
 module.exports = new OrderProcess();
 
 

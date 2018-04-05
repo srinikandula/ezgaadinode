@@ -216,6 +216,12 @@ AuthRouter.delete("/deleteOrderLocation",function (req,res) {
     })
 });
 
+AuthRouter.get('/getTruckOwnersAndCommisionAgents',function (req,res) {
+    OrderProcess.getTruckOwnersAndCommisionAgents(req,function (result) {
+        res.send(result);
+    })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
