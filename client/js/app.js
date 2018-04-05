@@ -546,7 +546,7 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
     }]);
 }]);
 
-app.run(['$transitions', '$rootScope', '$cookies',function ($transitions, $rootScope, $cookies) {
+app.run(['$transitions', '$rootScope', '$cookies','$state',function ($transitions, $rootScope, $cookies,$state) {
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');
@@ -554,7 +554,11 @@ app.run(['$transitions', '$rootScope', '$cookies',function ($transitions, $rootS
         $rootScope.erpEnabled=$cookies.get('erpEnabled');
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
-
+        if(to.$to().self.url.startsWith('/reports')){
+            if($rootScope.erpEnabled!=='true'){
+                $state.go('gpsReports');
+            }
+        }
     });
 }]);
 

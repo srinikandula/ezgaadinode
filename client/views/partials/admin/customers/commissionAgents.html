@@ -24,11 +24,14 @@
     <div class="table-res">
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="commissionAgentParams">
         <tr ng-repeat="commissionAgent in currentPageOfCommissionAgents" style="text-align: center;">
-            <td data-title="'S.No'">
+            <!--<td data-title="'S.No'">
                 {{$index+1}}
             </td>
             <td data-title="'ID'" sortable="'userId'" class="clickable-item">
-                {{commissionAgent.userId || '--'}}
+                {{commissionAgent.userId || '&#45;&#45;'}}
+            </td>-->
+            <td data-title="'User Name'" sortable="'userId'" class="clickable-item">
+                {{commissionAgent.userName}}
             </td>
             <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
                 {{commissionAgent.firstName || '--'}}
@@ -36,9 +39,9 @@
             <td data-title="'Company'" sortable="'companyName'" class="clickable-item">
                 {{commissionAgent.companyName || '--'}}
             </td>
-            <td data-title="'Upload'">
+           <!-- <td data-title="'Upload'">
                 <a ui-sref="">Click Here</a>
-            </td>
+            </td>-->
             <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
                 {{commissionAgent.contactPhone || '--'}}
             </td>

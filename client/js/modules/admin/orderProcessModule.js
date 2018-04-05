@@ -384,7 +384,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             OrderProcessServices.getTruckRequestDetails($stateParams._id, function (success) {
                 if (success.data.status) {
                     $scope.truckRequest = success.data.data;
-                    console.log("$scope.truckRequest", $scope.truckRequest);
                     $scope.truckRequest.date = new Date($scope.truckRequest.date);
 
                     $scope.quote = {
@@ -394,11 +393,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                         messages: []
                     };
                     $scope.quotesList = [];
-                    if ($scope.truckRequest.customerType === 'Registered') {
-                        $scope.customer = $scope.truckRequest.customer;
-                    } else {
-                        $scope.customer = $scope.truckRequest.customerLeadId;
-                    }
+                    $scope.customer =  success.data.data.customerDetails;
+
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -704,7 +700,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                     success.data.messages.forEach(function (message) {
                         Notification.success(message);
                     });
-                    $scope.quotesList.push(success.data.data);
+                    $scope.getTruckRequestQuotes();
+                    // $scope.quotesList.push(success.data.data);
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -722,7 +719,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         if (!params.registrationNo) {
             params.messages.push("Please select truck");
         }
-        if (!params.freightAmount) {
+        if (!params.to_bookedAmount) {
             params.messages.push("Please enter amount");
         }
         if (!params.tripLane) {
@@ -731,8 +728,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         if (!params.accountId) {
             params.messages.push("Please select truck provider");
         }
-        if (!params.driverId) {
-            params.messages.push("Please select driver");
+        if (!params.driverMobile) {
+            params.messages.push("Please enter driver id");
         }
         if (!params.date) {
             params.messages.push("Please select pickup date");
@@ -747,10 +744,18 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.truckOwnerId = $scope.loadBooking.customer._id;
             params.source = $scope.truckRequest.source;
             params.destination = $scope.truckRequest.destination;
+            params.loadOwnerType = $scope.truckRequest.customerType;
+            params.to_loadingCharge = $scope.loadBooking.to_loadingCharge;
+            params.to_unloadingCharge = $scope.loadBooking.to_unloadingCharge;
+            params.lo_loadingCharge = $scope.truckRequest.loadingCharge;
+            params.lo_unloadingCharge = $scope.truckRequest.unloadingCharge;
+            params.egBookedAmount=$scope.truckRequest.expectedPrice;
+            params.truckType=$scope.truckRequest.truckType;
+
             if ($scope.truckRequest.customerType === "Registered") {
-                params.loadOwnerId = $scope.truckRequest.customer._id
+                params.loadOwnerId =$scope.customer._id
             } else {
-                params.loadCustomerLeadId = $scope.truckRequest.customerLeadId._id;
+                params.loadCustomerLeadId = $scope.customer._id;
             }
             OrderProcessServices.loadBookingForTruckRequest(params, function (success) {
                 if (success.data.status) {
@@ -1713,27 +1718,19 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
     };
     var printHtml = function (html) {
         var hiddenFrame = $('<iframe style="display: none"></iframe>').appendTo('body')[0];
-        /*hiddenFrame.contentWindow.printAndRemove = function () {
+
+        hiddenFrame.contentWindow.printAndRemove = function () {
+            hiddenFrame.contentWindow.focus();
             hiddenFrame.contentWindow.print();
             $(hiddenFrame).remove();
-        };*/
-        $(hiddenFrame).load(function () {
+        };
 
-            if (!hiddenFrame.contentDocument.execCommand('print', false, null)) {
-
-                hiddenFrame.contentWindow.focus();
-
-                hiddenFrame.contentWindow.print();
-
-            }
-
-            $(hiddenFrame).remove();
-
-        });
-        var htmlDocument = "<!doctype html >" +
-            "<body onload='printAndRemove();'>" +
-             html+
-            "</body>";
+        var htmlDocument = "<!doctype html>" +
+            "<html>" +
+            '<body onload="printAndRemove();">' + // Print only after document is loaded
+            html +
+            '</body>' +
+            "</html>";
         var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
         doc.write(htmlDocument);
         doc.close();
