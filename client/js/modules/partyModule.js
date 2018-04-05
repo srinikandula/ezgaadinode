@@ -73,6 +73,13 @@ app.factory('PartyService', ['$http', '$cookies', function ($http, $cookies) {
                 url: '/v1/party/getAllPartiesForFilter',
                 method: "GET",
             }).then(success, error)
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/party/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
     }
 }]);
@@ -194,6 +201,43 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 loadTableData(params);
             }
         });
+    };
+    $scope.shareDetailsViaEmail=function(){
+        swal({
+            title: 'Share parties data using mail',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                PartyService.shareDetailsViaEmail({
+                email:email
+            },function(success){
+                if (success.data.status) {
+                    resolve()
+                } else {
+
+                }
+            },function(error){
+
+            })
+        })
+
+    },
+        allowOutsideClick: false
+
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: ' sent successfully'
+            })
+        }
+    })
+    };
+    $scope.downloadDetails = function () {
+        window.open('/v1/party/downloadDetails');
     };
 
 }]);

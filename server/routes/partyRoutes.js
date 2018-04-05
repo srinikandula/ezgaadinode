@@ -27,6 +27,22 @@ AuthRouter.get('/getAllPartiesByTransporter', function (req, res) {
     });
 });
 
+AuthRouter.get('/downloadDetails', function (req, res) {
+    Party.downloadDetails(req.jwt,req.query,req, function (result) {
+        if(result.status){
+            res.xls('party details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+
+        }else{
+            res.send(result);
+        }
+    });
+});
+
+AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
+    Party.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
+        res.send(result);
+    });
+});
 
 AuthRouter.get('/:partyId', function (req, res) {
     Party.findParty(req.jwt, req.params.partyId,req, function (result) {

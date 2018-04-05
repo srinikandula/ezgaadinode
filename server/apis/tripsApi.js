@@ -1274,7 +1274,7 @@ Trips.prototype.downloadRevenueDetailsByVechicle = function (jwt, params,req, ca
                         Total_Freight: revenueResponse.grossAmounts.grossFreight,
                         Total_Expense: revenueResponse.grossAmounts.grossExpenses,
                         Total_Revenue: revenueResponse.grossAmounts.grossRevenue
-                    })
+                    });
                     retObj.data = output;
                     analyticsService.create(req,serviceActions.revenue_det_by_veh_dwnld,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
                     callback(retObj);
@@ -1491,6 +1491,73 @@ function shareLoadRequestDetailsViaSMS(partyData, trip, callback) {
         callback(smsResponse);
     });
 
-}
+};
+Trips.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    console.log("shareDetailsViaEmail",params);
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else{
+        Trips.prototype.getAllAccountTrips(jwt,params,req,function(response){
+            // console.log("response...",response);
+            if(response.status){
+                var emailparams = {
+                    templateName: 'tripDetails',
+                    subject: "Trip Details",
+                    to: params.email,
+                    data:response.trips
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push(' Details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            }else{
+                callback(response);
+
+            }
+        })
+    }
+
+};
+Trips.prototype.downloadDetails = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    Trips.prototype.getAllAccountTrips(jwt,params,req,function(response){
+        if(response.status){
+            var output = [];
+            for(var i=0;i<response.trips.length;i++){
+                output.push({
+                    Trip_Date:response.trips[i].date,
+                    Reg_No:response.trips[i].attrs.truckName,
+                    Party_Name:response.trips[i].attrs.partyName,
+                    Driver:response.trips[i].attrs.fullName,
+                    Freight:response.trips[i].freightAmount,
+                    trip_Lane:response.trips[i].tripLane,
+                    Contact:response.trips[i].attrs.mobile
+                });
+            }
+            retObj.data = output;
+            retObj.status=true;
+            retObj.messages.push("successful..");
+            callback(retObj);
+        }else{
+            callback(retObj);
+        }
+    })
+};
+
+
+
 
 module.exports = new Trips();

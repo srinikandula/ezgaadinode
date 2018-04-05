@@ -1505,5 +1505,68 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, req, callba
             }
         })
     }
-}
+};
+Expenses.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    // console.log("shareDetailsViaEmail",params);
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.messages.push("Invalid email....");
+    }else{
+        Expenses.prototype.getExpenseCosts(jwt,params,req,function(response){
+            console.log("response...",response);
+            if(response.status){
+                var emailparams = {
+                    templateName: 'expenseDetails',
+                    subject: "Expense Details",
+                    to: params.email,
+                    data:response.expenses
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push(' Details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            }else{
+                callback(response);
+
+            }
+        })
+    }
+
+};
+Expenses.prototype.downloadDetails = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    Expenses.prototype.getExpenseCosts(jwt,params,req,function(response){
+        if(response.status){
+            var output = [];
+            for(var i=0;i<response.expenses.length;i++){
+                output.push({
+                    Date:response.expenses[i].date,
+                    Vehicle_Number:response.expenses[i].attrs.truckName,
+                    Expense_Type:response.expenses[i].attrs.expenseName,
+                    Amount:response.expenses[i].cost,
+                    Mode:response.expenses[i].mode,
+                    Description:response.expenses[i].description
+                });
+            }
+            retObj.data = output;
+            retObj.status=true;
+            retObj.messages.push("successful..");
+            callback(retObj);
+        }else{
+            callback(retObj);
+        }
+    })
+};
+
 module.exports = new Expenses();

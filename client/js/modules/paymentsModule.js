@@ -70,6 +70,13 @@ app.factory('PaymentsService',['$http', function ($http) {
                 method: "GET",
                 params: params
             }).then(success, error);
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/payments/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
     }
 }]);
@@ -201,7 +208,45 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
                     loadTableData(params);
                 }
             });
-    }
+    };
+    $scope.shareDetailsViaEmail=function(){
+        swal({
+            title: 'Share payments data using mail',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                PaymentsService.shareDetailsViaEmail({
+                email:email
+            },function(success){
+                console.log("success...",success);
+                if (success.data.status) {
+                    resolve()
+                } else {
+
+                }
+            },function(error){
+
+            })
+        })
+
+    },
+        allowOutsideClick: false
+
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: ' sent successfully'
+            })
+        }
+    })
+    };
+    $scope.downloadDetails = function () {
+        window.open('/v1/payments/downloadDetails');
+    };
 
 
 

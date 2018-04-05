@@ -19,6 +19,7 @@ var emailService = require('./mailerApi');
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 var notificationService = require('./../apis/notifications');
+var Utils = require('./utils');
 
 var Trucks = function () {
 };
@@ -1291,6 +1292,68 @@ Trucks.prototype.unCheckLookingForLoad = function (body,req,callback) {
             callback(retObj);
         }
     });
+
+Trucks.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else{
+        Trucks.prototype.getTrucks(jwt,params,req,function(response){
+            if(response.status){
+                var emailparams = {
+                    templateName: 'truckDetails',
+                    subject: "Truck Details",
+                    to: params.email,
+                    data:response.trucks
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push(' Details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            }else{
+                callback(response);
+            }
+        })
+    }
+};
+Trucks.prototype.downloadDetails = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    console.log("share details download....");
+    Trucks.prototype.getTrucks(jwt,params,req,function(response){
+        console.log("response....",response);
+        if(response.status){
+            var output = [];
+            for(var i=0;i<response.trucks.length;i++){
+                output.push({Reg_No:response.trucks[i].registrationNo,
+                Permit:response.trucks[i].permitExpiry,
+                    Pollution:response.trucks[i].pollutionExpiry,
+                    Insurance:response.trucks[i].insuranceExpiry,
+                    Fitness:response.trucks[i].fitnessExpiry,
+                    Tax:response.trucks[i].taxDueDate,
+                    Driver:response.trucks[i].attrs.fullName,
+                    Mobile:response.trucks[i].attrs.mobile
+                });
+            }
+            retObj.data = output;
+            retObj.status=true;
+            retObj.messages.push("successful..");
+            callback(retObj);
+        }else{
+            callback(retObj);
+        }
+    })
 };
 
 module.exports = new Trucks();

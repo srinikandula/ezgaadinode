@@ -22,7 +22,6 @@ AuthRouter.get('/getTruckTypes', function (req, res) {
 });
 
 AuthRouter.get('/downloadExpiryDetailsByTruck', function (req, res) {
-
     Trucks.downloadExpiryDetailsByTruck(req.jwt, req.query,req, function (result) {
         if (result.status) {
             res.xls('Expiry' + new Date().toLocaleDateString() + '.xlsx', result.data);
@@ -31,15 +30,24 @@ AuthRouter.get('/downloadExpiryDetailsByTruck', function (req, res) {
         }
 
     });
-
-
 });
+AuthRouter.get('/downloadDetails', function (req, res) {
+    Trucks.downloadDetails(req.jwt,req.query,req, function (result) {
+        if(result.status){
+            res.xls('Truck details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+
+        }else{
+            res.send(result);
+        }
+    });
+});
+
 
 AuthRouter.get('/shareExpiredDetailsViaEmail',function(req,res){
     Trucks.shareExpiredDetailsViaEmail(req.jwt,req.query,req,function(result){
         res.send(result);
     });
-})
+});
 
 AuthRouter.get('/groupTrucks', function (req, res) {
     Trucks.getTrucks(req.jwt, req.query,req, function (result) {
@@ -91,6 +99,12 @@ AuthRouter.get('/getAllTrucksForAccount',function (req,res) {
     Trucks.getAllTrucksForAccount(req,function (result) {
         res.json(result);
     })
+});
+
+AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
+    Trucks.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
+        res.send(result);
+    });
 });
 
 AuthRouter.get('/:truckId', function (req, res) {
@@ -169,6 +183,8 @@ AuthRouter.post('/unCheckLookingForLoad',function (req,res) {
         res.json(result);
     })
 });
+
+
 
 module.exports = {
     OpenRouter: OpenRouter,

@@ -7,6 +7,9 @@ var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
+var emailService = require('./mailerApi');
+var Utils = require('./utils');
+
 
 var Drivers = function () {
 };
@@ -490,6 +493,62 @@ Drivers.prototype.getAllDriversForFilter = function (jwt, req, callback) {
             retObj.status = false;
             retObj.messages.push('No Drivers Found');
             analyticsService.create(req,serviceActions.get_drivers_for_filter_err,{accountId:jwt.accountId,success:false,messages:result.messages},function(response){ });
+            callback(retObj);
+        }
+    })
+};
+Drivers.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else{
+        Drivers.prototype.getDrivers(jwt,params,req,function(response){
+            if(response.status){
+                var emailparams = {
+                    templateName: 'driverDetails',
+                    subject: "Driver Details",
+                    to: params.email,
+                    data:response.drivers
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push(' Details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            }else{
+                callback(response);
+            }
+        })
+    }
+};
+Drivers.prototype.downloadDetails = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    Drivers.prototype.getDrivers(jwt,params,req,function(response){
+         if(response.status){
+            var output = [];
+            for(var i=0;i<response.drivers.length;i++){
+                output.push({fullName:response.drivers[i].fullName,
+                    Mobile:response.drivers[i].mobile,
+                    License_Validity:response.drivers[i].licenseValidity,
+                    Salary:response.drivers[i].salary,
+                    License_Number:response.drivers[i].licenseNumber});
+            }
+            retObj.data = output;
+            retObj.status=true;
+            retObj.messages.push("successful..");
+            callback(retObj);
+        }else{
             callback(retObj);
         }
     })

@@ -99,6 +99,13 @@ app.factory('ExpenseService',['$http', function ($http) {
                     partyId:params
                 }
             }).then(success, error);
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/expense/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
     }
 }]);
@@ -224,7 +231,43 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                 loadTableData(params);
             }
         });
-    }
+    };
+    $scope.shareDetailsViaEmail=function(){
+        swal({
+            title: 'Share expenses data using mail',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                ExpenseService.shareDetailsViaEmail({
+                email:email
+            },function(success){
+                if (success.data.status) {
+                    resolve()
+                } else {
+
+                }
+            },function(error){})
+        })
+
+    },
+        allowOutsideClick: false
+
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: ' sent successfully'
+            })
+        }
+    })
+    };
+    $scope.downloadDetails = function () {
+        window.open('/v1/expense/downloadDetails');
+    };
+
 }]);
 
 app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyService', '$stateParams', '$state', 'DriverService', 'Notification', 'TrucksService', 'ExpenseMasterServices', function ($scope, ExpenseService,PartyService, $stateParams, $state, DriverService, Notification, TrucksService, ExpenseMasterServices) {
