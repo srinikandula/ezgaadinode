@@ -218,7 +218,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         registrationNo: '',
         freightAmount: '',
         tripLane: '',  //new..//new...
-        tonnage: '',    //new...
+        tonnes: '',    //new...
         rate: '',   //new...
         remarks: '',    //new
         error: [],
@@ -231,6 +231,21 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.cancel = function () {
         $state.go('trips');
     };
+
+    function getTruckTypes() {
+        TrucksService.getTruckTypes(function (success) {
+            if(success.status){
+                $scope.truckTypesList=success.data.data;
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        },function (error) {
+
+        })
+    }
+    getTruckTypes();
 
 
     function getParties() {
@@ -412,6 +427,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             }
         }
     };
+
+
+    $scope.selectedTruckTonnage=function(){
+        $scope.trip.tonnage=parseInt($scope.trip.registrationNo.tonnage);
+    };
+
     $scope.$watch("trip.tonnage", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
     });

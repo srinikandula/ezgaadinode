@@ -13,7 +13,7 @@
 
                 <div class="form-group col-xs-12">
                     <div class=" select-box">
-                        <ui-select ng-model="trip.registrationNo" theme="select2"
+                        <ui-select ng-model="trip.registrationNo" theme="select2" ng-change="selectedTruckTonnage()"
                                    style="min-width: 390px;"
                                    title="Choose a Truck" append-to-body="true">
                             <ui-select-match placeholder="Select a Truck*" class="form-control custom-form-control">
@@ -84,7 +84,7 @@
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
                         <input ng-model="trip.tonnage" type="number" class="form-control custom-form-control"
-                               id="tonnage">
+                               id="tonnage" readonly>
                         <label class="focus-effect-for-input" aria-hidden="true">Tonnage*</label>
                     </div>
                 </div>
@@ -96,10 +96,9 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class=" styling-input-list">
+                    <div>
                         <input ng-model="trip.freightAmount" type="number" class="form-control custom-form-control"
-                               id="freightAmount" readonly>
-                        <label class="focus-effect-for-input" aria-hidden="true">Freight Amount</label>
+                               id="freightAmount" readonly placeholder="Freight Amount">
                     </div>
                 </div>
                 <div class="form-group col-xs-12">

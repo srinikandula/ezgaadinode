@@ -9,9 +9,9 @@
             <div class="reports-text">
                 <h3>Revenue</h3>
                 <p>From All Vehicles</p>
-               <!-- <small><i class="fa fa-inr"></i>
-                    {{totals.totalRevenue}}
-                </small>-->
+                <!-- <small><i class="fa fa-inr"></i>
+                     {{totals.totalRevenue}}
+                 </small>-->
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
@@ -64,7 +64,7 @@
             </div>
             <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
-                    <li class="payble" ui-sref="payableByParty" >
+                    <li class="payble" ui-sref="payableByParty">
                         <span class="payable">Payable</span><br>
                         <small><i class="fa fa-inr"></i>
                             {{totals.paybleAmount || 0}}
@@ -122,15 +122,15 @@
 
         <div class="main-temp col-xs-12 mt-20">
             <div class="col-xs-12 pall-zero db-expenses">
-                <div class="col-xs-3 pall-zero">
+                <div class="col-xs-2 pall-zero">
                     <p>Total Expiry Trucks</p>
                 </div>
-                <div class="col-xs-9 pall-zero">
+                <div class="col-xs-10 pall-zero">
                     <ul class="list-inline pull-right">
-                        <li class="col-xs-6  pos-relative">
-                    <span class="bot-arrow">
-                        <i class="fa fa-angle-down" aria-hidden="true"></i>
-                    </span>
+                        <li class="col-xs-6 pall-zero  pos-relative">
+                             <span class="bot-arrow">
+                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                             </span>
                             <input type="text" ng-model="filters.regNumber"
                                    uib-typeahead="truck.registrationNo for truck in trucksList | filter:$viewValue"
                                    class="form-control textfield" typeahead-min-length="1"
@@ -141,7 +141,7 @@
                                 <span class="red"> No Results Found </span>
                             </div>
                         </li>
-                        <li class="col-xs-2">
+                        <li class="col-xs-2 pall-zero">
                             <button ng-click="getTruckExpires()" type="button" class="btn go">Go</button>
                         </li>
                         <li class="col-xs-2">
