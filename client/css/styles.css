@@ -1293,12 +1293,12 @@ select {
     padding: 0;
 }
 
-.lisk-block ul li {
+/*.lisk-block ul li {
     display: inline-block;
     width: 11%;
     margin: 0 0% 0 0;
     float: left;
-}
+}*/
 
 .lisk-block ul li h2 {
     color: #818390;
@@ -1372,7 +1372,7 @@ select {
     border-radius: 3px 0 0 3px;
     font-size: 15px;
     line-height: 15px;
-    height: 42px;
+    height: 40px;
     width: 85%;
     border-right: none;
     border: 1px solid #dcd8d8;
@@ -1400,7 +1400,7 @@ select {
     display: inline-block;
     float: left;
     background: url(../images/search.png) no-repeat center center #1d232f;
-    height: 42px;
+    height: 40px;
     line-height: 20px;
     text-align: center;
     color: #fff;
@@ -1413,7 +1413,7 @@ select {
 }
 
 .lisk-block ul li a {
-    line-height: 43px;
+    line-height: 40px;
     text-align: center;
     text-decoration: none;
     color: #635f5f;
@@ -1423,7 +1423,7 @@ select {
     border: #848894 1px solid;
     width: 100px;
     font-weight: 500;
-    padding: 13px;
+    padding: 11px;
 }
 
 .lisk-block ul li a.list {
@@ -1440,10 +1440,6 @@ select {
     width: 100px;
 }
 
-.lisk-block ul li.map-wid, .lisk-block ul li.map-wid {
-    width: 9%; /* margin: 0 0px 0 0; */
-}
-
 .activeView {
     background-color: #e83b13;
     color: #fff !important;
@@ -1451,10 +1447,6 @@ select {
     font-weight: bold !important;
 }
 
-.lisk-block ul li.mail-wid, .lisk-block ul li.mail-wid {
-    width: 5%;
-    margin: 0;
-}
 
 .lisk-block ul li.mail-wid a {
     border: #dcdcdc 1px solid;
@@ -2102,6 +2094,15 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     /* Because of the inclusion of Bootstrap */
     height: 45px;
 }
+.gpsSearch .select2 > .select2-choice.ui-select-match {
+  height: 40px;
+    width: 100%;
+    border-radius: 0;
+}
+.gpsSearch .select2-container .select2-choice .select2-arrow b{
+    top:14px;
+}
+
 
 .selectize-control > .selectize-dropdown {
     top: 36px;
@@ -2210,4 +2211,36 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     right: 5px;
     font-size: 25px;
     cursor: pointer;
+}
+.map{
+    height: 42px;
+    line-height: 40px;
+    text-align: center;
+    color: #635f5f;
+    font-size: 16px;
+    border-radius: 2px;
+    outline: none;
+    border: #848894 1px solid;
+    width: 100px;
+    font-weight: 500;
+}
+.lisk-block ul li a.mail{
+    padding: 10px;
+}
+.gpsTitle{
+    padding: 8px 0px;
+    font-size: 20px;
+}
+.gpsSearchMain{
+    display: table;
+}
+.gpsSearch{
+    width: 90%;
+    display: table-cell;
+    border-radius: 0;
+    vertical-align: top;
+}
+.searchBtn{
+    width: 10%;
+    display: table-cell;
 }

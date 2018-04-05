@@ -45,8 +45,8 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
     };
 
     $scope.reportParams={
-        startDate:new Date(),
-        endDate:new Date(),
+        startDate:'',
+        endDate:'',
         truckNo:'',
         currentElement:0
     };
