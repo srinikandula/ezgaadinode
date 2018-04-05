@@ -353,10 +353,10 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
     var condition = {},projections={};
     if (jwt.type === "account") {
         condition = {accountId: jwt.accountId, deviceId: {$ne: null},"attrs.latestLocation":{$exists:true}};
-        projections={"attrs.latestLocation":1,registrationNo:1,truckType:1,lookingForLoad:1};
+        projections={"attrs.latestLocation":1,registrationNo:1,truckType:1,lookingForLoad:1,createdAt:1};
     } else {
         condition = {accountId: jwt.id, deviceId: {$ne: null}};
-        projections={"attrs.latestLocation":1,registrationNo:1,truckType:1,lookingForLoad:1};
+        projections={"attrs.latestLocation":1,registrationNo:1,truckType:1,lookingForLoad:1,createdAt:1};
     }
     TrucksColl.find(condition,projections).exec(function (err, trucksData) {
         if (err) {
