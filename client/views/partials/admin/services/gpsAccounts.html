@@ -35,14 +35,17 @@
             <td data-title="'Customer Name'" sortable="'contactName'" class="clickable-item">
                 {{account.contactName}}
             </td>
-            <td data-title="'type'" sortable="'type'" class="clickable-item">
+            <!--<td data-title="'type'" sortable="'type'" class="clickable-item">
                 {{account.type}}
-            </td>
+            </td>-->
             <td data-title="'mobile'" sortable="'contactPhone'" class="clickable-item">
                 {{account.contactPhone}}
             </td>
             <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
                 {{account.createdAt | date:'yyyy-MM-dd'}}
+            </td>
+            <td data-title="'No of Trucks'"  class="clickable-item">
+                {{account.noOfTrucks}}
             </td>
             <td data-title="'Sold By'" sortable="'createdBy.userName'" class="clickable-item">
                 {{account.createdBy.userName | date:'yyyy-MM-dd'}}

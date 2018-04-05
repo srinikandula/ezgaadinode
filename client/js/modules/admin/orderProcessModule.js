@@ -384,7 +384,6 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             OrderProcessServices.getTruckRequestDetails($stateParams._id, function (success) {
                 if (success.data.status) {
                     $scope.truckRequest = success.data.data;
-                    console.log("$scope.truckRequest", $scope.truckRequest);
                     $scope.truckRequest.date = new Date($scope.truckRequest.date);
 
                     $scope.quote = {
@@ -394,11 +393,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                         messages: []
                     };
                     $scope.quotesList = [];
-                    if ($scope.truckRequest.customerType === 'Registered') {
-                        $scope.customer = $scope.truckRequest.customer;
-                    } else {
-                        $scope.customer = $scope.truckRequest.customerLeadId;
-                    }
+                    $scope.customer =  success.data.data.customerDetails;
+
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -705,7 +701,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                         Notification.success(message);
                     });
                     $scope.getTruckRequestQuotes();
-                   // $scope.quotesList.push(success.data.data);
+                    // $scope.quotesList.push(success.data.data);
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error(message);
@@ -723,7 +719,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         if (!params.registrationNo) {
             params.messages.push("Please select truck");
         }
-        if (!params.freightAmount) {
+        if (!params.to_bookedAmount) {
             params.messages.push("Please enter amount");
         }
         if (!params.tripLane) {
@@ -732,8 +728,8 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
         if (!params.accountId) {
             params.messages.push("Please select truck provider");
         }
-        if (!params.driverId) {
-            params.messages.push("Please select driver");
+        if (!params.driverMobile) {
+            params.messages.push("Please enter driver id");
         }
         if (!params.date) {
             params.messages.push("Please select pickup date");
@@ -748,11 +744,18 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
             params.truckOwnerId = $scope.loadBooking.customer._id;
             params.source = $scope.truckRequest.source;
             params.destination = $scope.truckRequest.destination;
-            params.loadOwnerType = $scope.truckRequest.customerType
+            params.loadOwnerType = $scope.truckRequest.customerType;
+            params.to_loadingCharge = $scope.loadBooking.to_loadingCharge;
+            params.to_unloadingCharge = $scope.loadBooking.to_unloadingCharge;
+            params.lo_loadingCharge = $scope.truckRequest.loadingCharge;
+            params.lo_unloadingCharge = $scope.truckRequest.unloadingCharge;
+            params.egBookedAmount=$scope.truckRequest.expectedPrice;
+            params.truckType=$scope.truckRequest.truckType;
+
             if ($scope.truckRequest.customerType === "Registered") {
-                params.loadOwnerId = $scope.truckRequest.customer._id
+                params.loadOwnerId =$scope.customer._id
             } else {
-                params.loadCustomerLeadId = $scope.truckRequest.customerLeadId._id;
+                params.loadCustomerLeadId = $scope.customer._id;
             }
             OrderProcessServices.loadBookingForTruckRequest(params, function (success) {
                 if (success.data.status) {

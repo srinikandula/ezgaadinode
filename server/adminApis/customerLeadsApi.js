@@ -567,6 +567,7 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
                     {"userId": new RegExp(params.truckOwnerSearch, "gi")},
                     {"firstName": new RegExp(params.truckOwnerSearch, "gi")},
                     {"companyName": new RegExp(params.truckOwnerSearch, "gi")},
+                    {"userName": new RegExp(params.truckOwnerSearch, "gi")},
                     // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                 ], role: 'Truck Owner'
         };
@@ -1304,6 +1305,8 @@ CustomerLeads.prototype.getTransporter = function (req, callback) {
                         {"userId": new RegExp(params.transporter, "gi")},
                         {"firstName": new RegExp(params.transporter, "gi")},
                         {"companyName": new RegExp(params.transporter, "gi")},
+                        {"userName": new RegExp(params.transporter, "gi")}
+
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                     ], role: 'Transporter'
             };
@@ -1750,6 +1753,7 @@ CustomerLeads.prototype.getCommissionAgent = function (req, callback) {
                         {"userId": new RegExp(params.commissionAgent, "gi")},
                         {"firstName": new RegExp(params.commissionAgent, "gi")},
                         {"companyName": new RegExp(params.commissionAgent, "gi")},
+                        {"userName": new RegExp(params.commissionAgent, "gi")},
                         {"mobile": new RegExp(parseFloat(params.commissionAgent), "gi")},
                     ], role: 'Commission Agent'
             };
@@ -2129,6 +2133,7 @@ CustomerLeads.prototype.getFactoryOwner = function (req, callback) {
                         {"userId": new RegExp(params.factoryOwner, "gi")},
                         {"firstName": new RegExp(params.factoryOwner, "gi")},
                         {"companyName": new RegExp(params.factoryOwner, "gi")},
+                        {"userName": new RegExp(params.factoryOwner, "gi")},
                         // {"mobile": new RegExp(parseFloat(params.guest),"gi")},
                         {"email": new RegExp(params.factoryOwner, "gi")},
                         {"city": new RegExp(params.factoryOwner, "gi")},

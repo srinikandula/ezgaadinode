@@ -31,11 +31,14 @@
     <div class="table-res">
         <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckOwnerParams">
             <tr ng-repeat="owners in currentPageOfTruckOwners" style="text-align: center;">
-                <td data-title="'S.No'">
+                <!--<td data-title="'S.No'">
                     {{$index+1}}
                 </td>
                 <td data-title="'ID'" sortable="'userId'" class="clickable-item">
                     {{owners.userId}}
+                </td>-->
+                <td data-title="'User Name'" sortable="'userId'" class="clickable-item">
+                    {{owners.userName}}
                 </td>
                 <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
                     {{owners.firstName}}
@@ -58,9 +61,9 @@
                 <td data-title="'SMS/Email'" sortable="'smsEnabled'" class="clickable-item">
                     {{owners.smsEnabled ?'YES':'NO'}}
                 </td>
-                <td data-title="'RouteConfig'" sortable="'routeConfigEnabled'" class="clickable-item">
+               <!-- <td data-title="'RouteConfig'" sortable="'routeConfigEnabled'" class="clickable-item">
                     {{owners.routeConfigEnabled ?'YES':'NO'}}
-                </td>
+                </td>-->
                 <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
                     {{owners.isActive?'Enabled':'Disabled'}}
                 </td>

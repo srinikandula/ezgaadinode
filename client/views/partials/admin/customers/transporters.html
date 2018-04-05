@@ -27,11 +27,14 @@
     <div class="table-res">
         <table class="table table-bordered table-striped table-condensed table-hover" ng-table="transporterParams">
             <tr ng-repeat="transporter in currentPageOfTransporters" style="text-align: center;">
-                <td data-title="'S.No'">
+                <!--<td data-title="'S.No'">
                     {{$index+1}}
                 </td>
                 <td data-title="'ID'" sortable="'userId'" class="clickable-item">
-                    {{transporter.userId || '--'}}
+                    {{transporter.userId || '&#45;&#45;'}}
+                </td>-->
+                <td data-title="'User Name'" sortable="'userId'" class="clickable-item">
+                    {{transporter.userName}}
                 </td>
                 <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">
                     {{transporter.firstName || '--'}}

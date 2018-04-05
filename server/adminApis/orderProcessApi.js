@@ -666,12 +666,7 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
     if (params.loadOwnerType === "Registered" && !params.loadOwnerId) {
         retObj.messages.push("Please select load owner customer");
     }
-    if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_firstName) {
-        retObj.messages.push("Please enter load owner name");
-    }
-    if (params.loadOwnerType === "UnRegistered" && !params.loadOwner_contactPhone) {
-        retObj.messages.push("Please enter load owner phone");
-    }
+
     if (!params.truckType) {
         retObj.messages.push("Please select truck type");
     }
@@ -690,10 +685,12 @@ OrderProcess.prototype.loadBookingForTruckRequest = function (req, callback) {
     }
     if(retObj.messages.length>0){
         callback(retObj);
-    }else {
+    }else {            console.log("params",params);
+
         if (!params._id) {
             saveTripOrder(req, params, function (resp) {
                 console.log(resp);
+                callback(resp);
             });
         }else{
             retObj.messages.push("Load already booked");

@@ -13,6 +13,8 @@ var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDeviceP
 var ErpPlanHistoryColl = require('./../models/schemas').ErpPlanHistoryColl;
 var PaymentsColl = require('./../models/schemas').PaymentsColl;
 var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
+var DeviceColl = require('./../models/schemas').DeviceColl;
+
 const uuidv1 = require('uuid/v1');
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -126,17 +128,9 @@ Accounts.prototype.getAccounts = function (req, callback) {
             });
             callback(retObj);
         } else {
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.count = docs.count;
-            retObj.accounts = docs.accounts;
-            analyticsService.create(req, serviceActions.get_accounts, {
-                body: JSON.stringify(req.query),
-                accountId: req.jwt.id,
-                success: true
-            }, function (response) {
-            });
+
             if (params.type === 'accounts') {
+
                 async.map(docs.accounts, function (account, asynCalback) {
                     async.parallel({
                         gpsDate: function (gpsCallback) {
@@ -148,20 +142,65 @@ Accounts.prototype.getAccounts = function (req, callback) {
                             ErpPlanHistoryColl.findOne({accountId: account._id}, function (errErp, erpDateOfAccount) {
                                 gpsCallback(errErp, erpDateOfAccount);
                             });
-                        },
+                        }
                     }, function (errDates, dates) {
                         if (dates.gpsDate) account.gpsDate = dates.gpsDate.createdAt;
                         else account.gpsDate = '--';
                         if (dates.erpDate) account.erpDate = dates.erpDate.createdAt;
                         else account.erpDate = '--';
+
                         asynCalback(errDates, dates);
+
                     });
                 }, function (errAllDates, allDates) {
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.count = docs.count;
+                    retObj.accounts = docs.accounts;
+                    analyticsService.create(req, serviceActions.get_accounts, {
+                        body: JSON.stringify(req.query),
+                        accountId: req.jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
                     callback(retObj);
                 });
             }
             else {
-                callback(retObj);
+                /*Get gps enabled trucks count in account*/
+                async.map(docs.accounts, function (account, asynCalback) {
+                    DeviceColl.count({accountId: account._id}, function (errTruck, noOfTruck) {
+                        if(!errTruck){
+                            account.noOfTrucks=noOfTruck;
+                        }
+                        asynCalback(errTruck, noOfTruck);
+                    })
+                },function (err) {
+                    if(err){
+                        retObj.messages.push('Error retrieving accounts');
+                        analyticsService.create(req, serviceActions.get_accounts_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }else{
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.count = docs.count;
+                        retObj.accounts = docs.accounts;
+                        analyticsService.create(req, serviceActions.get_accounts, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+
+                    }
+                });
             }
         }
     });
@@ -284,7 +323,6 @@ Accounts.prototype.addAccount = function (req, callback) {
     }
     else {
         accountInfo.type = 'account';
-        console.log('yup');
         generateUniqueUserId(accountInfo.role, function (newId) {
             if (!newId.status) {
                 retObj.messages.push('Error saving account.');
@@ -300,7 +338,6 @@ Accounts.prototype.addAccount = function (req, callback) {
                 accountInfo.userId = newId.userId;
                 AccountsColl.update(query, accountInfo, {upsert: true}, function (errSaved, saved) {
                     if (errSaved) {
-                        console.log(err);
                         retObj.messages.push('Error saving account');
                         analyticsService.create(req, serviceActions.add_account_err, {
                             body: JSON.stringify(req.body),
@@ -343,7 +380,7 @@ Accounts.prototype.addAccount = function (req, callback) {
                                 callback(retObj);
                             } else {
                                 addGpsSettings(accountInfo.gpsEnabled, accountInfo._id, function (gpsAdded) {
-                                    if(!gpsAdded.status) {
+                                    if (!gpsAdded.status) {
                                         retObj.messages.push(gpsAdded.message);
                                         analyticsService.create(req, serviceActions.add_account_err, {
                                             body: JSON.stringify(req.body),
@@ -404,21 +441,21 @@ function generateUniqueUserId(userType, callback) {
 }
 
 function addGpsSettings(enabled, id, callback) {
-    if(enabled) {
+    if (enabled) {
         GpsSettingsColl.findOne({accountId: id}, function (errSetting, setting) {
             if (errSetting) {
-                callback({status: false, message:'error getting settings'});
+                callback({status: false, message: 'error getting settings'});
             } else if (setting) {
-                callback({status: true, message:'already added'});
+                callback({status: true, message: 'already added'});
             } else {
                 var gpsDoc = new GpsSettingsColl({accountId: id});
                 gpsDoc.save(function (errGpsSaved, gpsSaved) {
-                    callback({status: true, message:'gps settings added'});
+                    callback({status: true, message: 'gps settings added'});
                 });
             }
         });
     } else {
-        callback({status: true, message:'already added'});
+        callback({status: true, message: 'already added'});
     }
 }
 
