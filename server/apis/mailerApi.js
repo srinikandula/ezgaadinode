@@ -44,6 +44,7 @@ EmailService.prototype.sendEmail = function (data, callback) {
         callback(retObj);
     } else {
         template = fs.readFileSync(__dirname + '/../emailTemplates/' + data.templateName + '.html', 'utf8');
+        // console.log("emailData.....data",data.data);
         var mailBody = Velocity.render(template, {emailData: data.data});
         if(!config.smtp){
             retObj.status = false;

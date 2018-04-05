@@ -35,10 +35,24 @@ AuthRouter.get('/account/drivers', function (req, res) {
         res.json(result);
     });
 });
-AuthRouter.get('/:driverId', function (req, res) {
-    Drivers.findDriver(req.params.driverId, req, function (result) {
+AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
+    Drivers.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
         res.send(result);
     });
+});
+AuthRouter.get('/downloadDetails', function (req, res) {
+    Drivers.downloadDetails(req.jwt,req.query,req, function (result) {
+        if(result.status){
+            res.xls('driver details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+        }else{
+            res.send(result);
+        }
+    });
+});
+AuthRouter.get('/:driverId', function (req, res) {
+     Drivers.findDriver(req.params.driverId, req, function (result) {
+         res.send(result);
+     });
 });
 AuthRouter.put('/', function (req, res) {
     Drivers.updateDriver(req.jwt, req.body, req, function (result) {

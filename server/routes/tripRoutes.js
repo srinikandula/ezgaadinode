@@ -29,6 +29,23 @@ AuthRouter.get('/shareRevenueDetailsByVechicleViaEmail', function (req, res) {
         res.send(result);
     });
 });
+AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
+    Trips.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/downloadDetails', function (req, res) {
+    Trips.downloadDetails(req.jwt,req.query,req, function (result) {
+        if(result.status){
+            res.xls('trip details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+
+        }else{
+            res.send(result);
+        }
+    });
+});
+
 AuthRouter.get('/downloadRevenueDetailsByVechicle', function (req, res) {
 
     Trips.downloadRevenueDetailsByVechicle(req.jwt,req.query,req, function (result) {

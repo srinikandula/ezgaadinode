@@ -77,9 +77,14 @@ app.factory('TripServices',['$http', function ($http) {
                 url: '/v1/trips/getPartiesByTrips',
                 method: "GET"
             }).then(success, error);
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/trips/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
-
-
     }
 }]);
 
@@ -199,7 +204,44 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 loadTableData(params);
             }
         });
-    }
+    };
+    $scope.shareDetailsViaEmail=function(){
+        swal({
+            title: 'Share trips data using mail',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                TripServices.shareDetailsViaEmail({
+                email:email
+            },function(success){
+                if (success.data.status) {
+                    resolve()
+                } else {
+
+                }
+            },function(error){
+
+            })
+        })
+
+    },
+        allowOutsideClick: false
+
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: ' sent successfully'
+            })
+        }
+    })
+    };
+    $scope.downloadDetails = function () {
+        window.open('/v1/trips/downloadDetails');
+    };
 
 }]);
 

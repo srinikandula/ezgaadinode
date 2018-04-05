@@ -687,6 +687,77 @@ PaymentsReceived.prototype.downloadPaymentDetailsByParty = function (jwt, params
     })
 
 
-}
+};
+PaymentsReceived.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    console.log("shareDetailsViaEmail",params);
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else{
+        PaymentsReceived.prototype.getPayments(jwt,params,req,function(response){
+            // console.log("response...",response);
+            if(response.status){
+                var emailparams = {
+                    templateName: 'paymentDetails',
+                    subject: "Payment Details",
+                    to: params.email,
+                    data:response.paymentsCosts
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push(' Details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            }else{
+                callback(response);
+
+            }
+        })
+    }
+
+};
+PaymentsReceived.prototype.downloadDetails = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+// <td>Date</td>
+//     <td>Party</td>
+//     <td>Amount</td>
+//     <td>Payment Type</td>
+//     <td>Payment Ref.No</td>
+//     <td>Description</td>
+    console.log("share details download....");
+    PaymentsReceived.prototype.getPayments(jwt,params,req,function(response){
+        console.log("response....",response);
+        if(response.status){
+            var output = [];
+            for(var i=0;i<response.paymentsCosts.length;i++){
+                output.push({
+                    Date:response.paymentsCosts[i].date,
+                    Party:response.paymentsCosts[i].attrs.partyName,
+                    Amount:response.paymentsCosts[i].amount,
+                    Payment_Type:response.paymentsCosts[i].paymentType,
+                    Payment_Ref_No:response.paymentsCosts[i].paymentRefNo,
+                    Description:response.paymentsCosts[i].description
+                });
+            }
+            retObj.data = output;
+            retObj.status=true;
+            retObj.messages.push("successful..");
+            callback(retObj);
+        }else{
+            callback(retObj);
+        }
+    })
+};
 
 module.exports = new PaymentsReceived();

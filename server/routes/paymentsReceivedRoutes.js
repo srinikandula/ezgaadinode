@@ -89,6 +89,21 @@ AuthRouter.get('/downloadPaymentDetailsByParty', function (req, res) {
        
     
     });
+AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
+    PaymentsReceived.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.get('/downloadDetails', function (req, res) {
+    PaymentsReceived.downloadDetails(req.jwt,req.query,req, function (result) {
+        if(result.status){
+            res.xls('payments details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+
+        }else{
+            res.send(result);
+        }
+    });
+});
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
