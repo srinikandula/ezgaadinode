@@ -1,4 +1,4 @@
-<div ng-controller="DeviceCtrl">
+<div ng-controller="DeviceCtrl" xmlns="http://www.w3.org/1999/html">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">GPS Device</li>
         <li class="pull-right">
@@ -55,11 +55,16 @@
                 {{device.installedBy.userName |limitTo:5}}
             </td>
             <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
-                {{device.registrationNo || "--"}}
+                <a href="#" data-toggle="modal" data-target="#latestLocation"
+                   ng-click="getLatestLocation(device);">
+                    {{device.registrationNo || '--' | uppercase}}
+                </a>
             </td>
-            <td data-title="'Latest Loc'"  class="clickable-item">
-                {{device.latestLocation.address || "--"}}
-            </td>
+            <!-- <td data-title="'Latest Loc'" class="clickable-item">
+                 <a href="#" data-toggle="modal" data-target="#latestLocation"
+                    ng-click="getLatestLocation(device.latestLocation.address);">
+                     {{device.latestLocation.address | limitTo:10 || "&#45;&#45;"}}</a>
+             </td>-->
             <!--<td data-title="'Payment'" sortable="'received'" class="clickable-item">
                 {{device.received}}
             </td>-->
@@ -79,37 +84,60 @@
             <td colspan="8">No GPS Devices exist.</td>
         </tr>
     </table>
+
+    <div class="modal fade" id="latestLocation" role="dialog">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Latest Location</h4>
+                </div>
+                <div class="modal-body ">
+                    <p style="font-size: 15px;"><b>Register number</b> : {{latestLocation.deviceId | uppercase}}</p>
+
+                    <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.latestLocation.address}}</p>
+                    <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.latestLocation.speed | number:0}} KMPH</p>
+
+                    <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.latestLocation.deviceTime |date:'dd-MM-yyyy HH:mm:ss '}}</p>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 
 <script type="text/ng-template" id="assignDevicesModal.html">
 
-        <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
-        <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
+    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
+    <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
 
 
-        <div class="modal-header">
-            <h3 class="modal-title" id="modal-title">Transfer Devices</h3>
-        </div>
-        <div class="modal-body" id="modal-body">
-            <div class="row">
-                <div ng-dropdown-multiselect=""
-                     options="allDevices"
-                     selected-model="selectedDevices"
-                     extra-settings="selected_baseline_settings" class="col-sm-4 col-xs-12" translation-texts="customText">
-                </div>
-                <div class="col-sm-7 col-xs-12">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Transfer Devices</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="row">
+            <div ng-dropdown-multiselect=""
+                 options="allDevices"
+                 selected-model="selectedDevices"
+                 extra-settings="selected_baseline_settings" class="col-sm-4 col-xs-12" translation-texts="customText">
+            </div>
+            <div class="col-sm-7 col-xs-12">
                 <select class="form-control" ng-model="assignedTo">
                     <option value="" selected>Transfer To</option>
                     <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}
                     </option>
                 </select>
-                </div>
             </div>
-            <div ng-show="error">{{error}}</div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="transferDevices()">Submit</button>
-            <button class="btn btn-danger" type="button" ng-click="closeAssignDevice()">Cancel</button>
-        </div>
+        <div ng-show="error">{{error}}</div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="transferDevices()">Submit</button>
+        <button class="btn btn-danger" type="button" ng-click="closeAssignDevice()">Cancel</button>
+    </div>
 </script>

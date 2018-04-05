@@ -200,6 +200,11 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
                 });
             }
         });
+    };
+    $scope.getLatestLocation=function (device) {
+        $scope.latestLocation=device;
+        console.log($scope.latestLocation);
+
     }
 }]);
 
