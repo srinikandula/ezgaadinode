@@ -158,7 +158,8 @@ var truckSchema = new mongoose.Schema({
     deviceId: String,
     lookingForLoad: {type: Boolean, default: false},
     isIdle: Boolean,
-    isStopped: Boolean
+    isStopped: Boolean,
+    VehicleType:String
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
@@ -422,7 +423,7 @@ var deviceSchema = new mongoose.Schema({
     equipmentType: String,
     serialNumber: String,
     isActive: {type: Boolean, default: true},
-    remarks: String,
+    remarks: String
 }, {timestamps: true, versionKey: false});
 
 var secretKeys = new mongoose.Schema({

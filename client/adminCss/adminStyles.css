@@ -1370,6 +1370,27 @@ textarea.custom-form-control{
     color: red;
     text-transform: capitalize;
 }
+
+.loader {
+    padding: 10px;
+    border-radius: 4px;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.48);
+    margin-bottom: 10px;
+    position: fixed;
+    z-index: 999;
+    margin: 0 auto;
+    display: block;
+
+}
+
+.loader img {
+    position: relative;
+    top: 42%;
+    left: 42%;
+}
+
 /* Responsive Design */
 
 @media only screen and (max-width: 767px) {
