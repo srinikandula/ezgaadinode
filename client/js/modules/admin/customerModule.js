@@ -853,7 +853,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
 /*Author Sravan*/
 /*Truck Owners Start*/
-app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams','Upload', 'SettingServices', function ($scope, $state, $stateParams, customerServices, Notification, NgTableParams, Upload, SettingServices) {
+app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerServices', 'Notification', 'NgTableParams','Upload', 'SettingServices','$uibModal', function ($scope, $state, $stateParams, customerServices, Notification, NgTableParams, Upload, SettingServices, $uibModal) {
     $scope.status = {
         isOpen: true,
         isOpenTwo: true,
@@ -861,7 +861,7 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
         isOpenFour: true,
         isOpenFive: true,
         isOpenSix: true,
-        isOpenSev: true,
+        isOpenSeven: true,
     };
     $scope.truckOwner ={};
 
@@ -1205,8 +1205,65 @@ $scope.selectTruckTypes=[];
             }
         });
     }
-}]);
 
+    $scope.addNewTruck = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewTruck.html',
+            controller: 'addEditTruckCntrl',
+            size: 'md',
+            backdrop: 'static',
+            // keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {}
+                }
+            }
+        });
+        modalInstance.result.then(function (data) {
+            $scope.getErpPlanCount(data.plan);
+        }, function () {
+        });
+    };
+
+}]);
+app.controller('addEditTruckCntrl', ['$scope', '$state', '$uibModalInstance', 'Notification', 'customerServices', 'modelData','SettingServices', function ($scope, $state, $uibModalInstance, Notification, customerServices, modelData, SettingServices) {
+    $scope.getTruckTypes = function () {
+        SettingServices.getTruckTypes({}, function (response) {
+            if (response.data.status) {
+                $scope.getTruckTypes = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+    $scope.pageTitle = "Add New Truck";
+
+    $scope.addTruck = {};
+
+    $scope.addorUpdateTruck = function () {
+        var params = $scope.addTruck;
+        params.errorMessage = [];
+        if (!params.registrationNo) {
+            params.errorMessage.push('Enter your Vehicle number');
+        }
+        if(!params.truckType){
+            params.errorMessage.push('Select Truck Type');
+        }
+        if(!params.vehicleType){
+            params.errorMessage.push('Select Vehicle Type');
+        }
+        if (params.errorMessage.length > 0) {
+            params.errorMessage.forEach(function (message) {
+                Notification.error(message);
+            });
+        }
+        else{
+            console.log("welcome");
+        }
+    }
+
+
+}]);
 /*Truck Owners End*/
 
 /*Author SVPrasadK*/

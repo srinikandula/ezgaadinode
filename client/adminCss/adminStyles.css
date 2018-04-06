@@ -1391,6 +1391,10 @@ textarea.custom-form-control{
     left: 42%;
 }
 
+.truckAdding label{
+    font-size: 12px;
+    font-weight: 100;
+}
 /* Responsive Design */
 
 @media only screen and (max-width: 767px) {
@@ -1401,6 +1405,8 @@ textarea.custom-form-control{
         left: 15px !important;
     }
 }
+
+
 
 
 
