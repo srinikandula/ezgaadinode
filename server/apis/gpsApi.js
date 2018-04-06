@@ -2,7 +2,8 @@ var _ = require('underscore');
 var async = require('async');
 var nodeGeocoder = require('node-geocoder');
 var config = require('./../config/config');
-
+var json2csv = require('json2csv');
+var fs=require('fs');
 var GpsColl = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
@@ -12,6 +13,7 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
+var mailerApi=require('./../apis/mailerApi');
 var GoogleMapsAPI=require('googlemaps');
 var googlemapsConfig= {
     key: 'AIzaSyC3JuGIZkNVnzrOthyMWEWf3zA0J-aui0M',
@@ -541,7 +543,7 @@ Gps.prototype.findDeviceStatus = function (deviceId,req,callback) {
                         },
                         two:function (aCallbackTwo) {
                             var retObj1={status:false,
-                            messages:[]};
+                                messages:[]};
                             TrucksColl.update({deviceId:deviceId},{$set:{isIdle:isIdle,isStopped:isStopped}},function (err,result) {
                                 if(err){
                                     retObj1.status=false;
@@ -595,54 +597,54 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                 }else{
                     archivedDevicePositions.find({deviceId: truckDetails.deviceId,
                         createdAt: {$gte: startDate, $lte: endDate}}).sort({createdAt: 1}).exec(function (err, archivedPositions) {
-                            if(err){
-                                retObj.status=false;
-                                retObj.messages.push('Error fetching truck positions');
-                                callback(retObj);
-                            }else {
-                                positions = positions.concat(archivedPositions);
-                                if (positions.length>0) {
-                                    var origins = positions[0].location.coordinates[1] + ',' + positions[0].location.coordinates[0];
-                                    var destinations = positions[positions.length - 1].location.coordinates[1] + ',' + positions[positions.length - 1].location.coordinates[0];
-                                    var distance;
-                                    var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
-                                    var diffDays = timeDiff / (1000 * 3600 * 24);
-                                    var averageSpeed = _.pluck(positions, 'speed');
-                                    var sum = 0, counter = 0;
-                                    for (var i = 0; i < averageSpeed.length; i++) {
-                                        if (Number(averageSpeed[i]) !== 0.0) {
-                                            sum = sum + Number(averageSpeed[i]);
-                                            counter++;
-                                        }
+                        if(err){
+                            retObj.status=false;
+                            retObj.messages.push('Error fetching truck positions');
+                            callback(retObj);
+                        }else {
+                            positions = positions.concat(archivedPositions);
+                            if (positions.length>0) {
+                                var origins = positions[0].location.coordinates[1] + ',' + positions[0].location.coordinates[0];
+                                var destinations = positions[positions.length - 1].location.coordinates[1] + ',' + positions[positions.length - 1].location.coordinates[0];
+                                var distance;
+                                var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
+                                var diffDays = timeDiff / (1000 * 3600 * 24);
+                                var averageSpeed = _.pluck(positions, 'speed');
+                                var sum = 0, counter = 0;
+                                for (var i = 0; i < averageSpeed.length; i++) {
+                                    if (Number(averageSpeed[i]) !== 0.0) {
+                                        sum = sum + Number(averageSpeed[i]);
+                                        counter++;
                                     }
-                                    averageSpeed = (sum / counter);
-                                    googlemaps.distance({
-                                        origins: origins,
-                                        destinations: destinations
-                                    }, function (err, result) {
-                                        distance = result.rows[0].elements[0].distance.text;
-                                        if (result) {
-                                            retObj.status = true;
-                                            retObj.messages.push('Success');
-                                            retObj.results = {
-                                                positions: positions,
-                                                distanceTravelled: distance,
-                                                timeTravelled: (diffDays * 24),
-                                                averageSpeed: averageSpeed
-                                            };
-                                            callback(retObj);
-                                        } else {
-                                            retObj.status = false;
-                                            retObj.messages.push('Error finding distance');
-                                            callback(retObj);
-                                        }
-                                    });
-                                }else{
-                                    retObj.status = false;
-                                    retObj.messages.push('No records found for that period');
-                                    callback(retObj);
                                 }
+                                averageSpeed = (sum / counter);
+                                googlemaps.distance({
+                                    origins: origins,
+                                    destinations: destinations
+                                }, function (err, result) {
+                                    distance = result.rows[0].elements[0].distance.text;
+                                    if (result) {
+                                        retObj.status = true;
+                                        retObj.messages.push('Success');
+                                        retObj.results = {
+                                            positions: positions,
+                                            distanceTravelled: distance,
+                                            timeTravelled: (diffDays * 24),
+                                            averageSpeed: averageSpeed
+                                        };
+                                        callback(retObj);
+                                    } else {
+                                        retObj.status = false;
+                                        retObj.messages.push('Error finding distance');
+                                        callback(retObj);
+                                    }
+                                });
+                            }else{
+                                retObj.status = false;
+                                retObj.messages.push('No records found for that period');
+                                callback(retObj);
                             }
+                        }
                     });
                 }
             });
@@ -676,7 +678,8 @@ Gps.prototype.downloadReport = function (truckId,startDate,endDate,req,callback)
                     Date:positions[i].createdAt,
                     Status:status,
                     Address:positions[i].address,
-                    Speed:positions[i].speed
+                    Speed:positions[i].speed,
+                    Odo:positions[i].totalDistance
                 });
                 if (i === positions.length - 1) {
                     retObj.status = true;
@@ -684,7 +687,8 @@ Gps.prototype.downloadReport = function (truckId,startDate,endDate,req,callback)
                         Date:positions[i].createdAt,
                         Status:status,
                         Address:positions[i].address,
-                        Speed:positions[i].speed
+                        Speed:positions[i].speed,
+                        Odo:positions[i].totalDistance
                     });
                     retObj.data = output;
                     callback(retObj);
@@ -726,6 +730,7 @@ Gps.prototype.getTruckReports = function (params,req,callback) {
     };
     var gps=new Gps();
     gps.gpsTrackingByTruck(params.truckNo,params.startDate,params.endDate,req,function (result) {
+        console.log(result);
         if(result.status){
             var positions=result.results.positions;
             retObj.status = true;
@@ -805,6 +810,32 @@ Gps.prototype.getDailyReports = function (req,callback) {
     //         callback(retObj);
     //     }
     // })
+};
+
+Gps.prototype.shareTripDetailsByVechicleViaEmail = function (req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    var gps=new Gps();
+
+    gps.downloadReport(req.body.regNumber,req.body.fromDate,req.body.toDate,req,function (result) {
+        if(result.status){
+            mailerApi.sendEmailWithAttachment2({to:req.body.email,subject:'Trip-Report',data:result.data},function (result) {
+                if(result.status){
+                    retObj.status=true;
+                    retObj.messages.push('Trip Details sent successfully');
+                    callback(retObj);
+                }else{
+                    retObj.status = false;
+                    retObj.message = "Error , Please try again.";
+                    callback(retObj);
+                }
+            })
+        }else{
+            retObj.messages.concat(result.messages);
+            callback(retObj);
+        }
+    });
 };
 
 module.exports = new Gps();

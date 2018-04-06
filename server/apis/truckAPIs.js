@@ -1234,7 +1234,6 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
                         retObj.messages.push('Saved load request successfully');
                         notificationService.sendPushNotifications({title:'New Load Request',message:params.registrationNo+' is looking for load '},function (response) {
                             retObj.messages.push(response.message);
-                            // AccountsColl.find({role:'transporters'})
                             callback(retObj);
                         });
                     }
@@ -1272,6 +1271,23 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
         }else{
             retObj.status = true;
             retObj.messages.push("No trucks found");
+            callback(retObj);
+        }
+    });
+};
+
+Trucks.prototype.unCheckLookingForLoad = function (req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    TrucksColl.update({registrationNo:req.body.registrationNo},{$set:{lookingForLoad:false}},function (err,truck) {
+        if(err){
+            retObj.status=false;
+            retObj.messages.push('Error while updating truck');
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push('Unchecked looking for load successfully');
             callback(retObj);
         }
     });

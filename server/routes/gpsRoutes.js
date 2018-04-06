@@ -111,6 +111,12 @@ AuthRouter.get('/getDailyReport/:date',function (req,res) {
     gps.getDailyReports(req,function (result) {
         res.send(result);
     });
+});
+
+AuthRouter.post('/shareTripDetailsByVechicleViaEmail',function (req,res) {
+    gps.shareTripDetailsByVechicleViaEmail(req,function (result) {
+        res.send(result);
+    })
 })
 
 /*OpenRouter.get('/moveDevicePositions', function (rew, res) {

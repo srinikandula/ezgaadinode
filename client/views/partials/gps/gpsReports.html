@@ -46,11 +46,11 @@
                     <ul class="list-inline">
                         <li><a href="#" class="map" ui-sref="mapView">Map view</a></li>
                         <li><a href="#" class="map" ui-sref="listView">List view</a></li>
-                        <li class="">
+                        <li class="" ng-click="shareTripDetailsByVechicleViaEmail()">
                             <a href="#" class="mail">
                             <img src="images/Reports_Mail.png" width="40" height="28" alt="Reports Mail"></a></li>
 
-                        <li class=" mar-rgt-space pull-right"><a href="#" class="mail">
+                        <li class=" mar-rgt-space pull-right" ng-click="downloadReport()"><a href="#" class="mail">
                             <img src="images/Reports_Download.png" width="40" height="28" alt="img"></a></li>
                     </ul>
                 </div>
@@ -76,7 +76,7 @@
                             {{report.speed}}
                         </td>
                         <td data-title="'Odo Km/hr'" sortable="'totalPayment'" class="clickable-item col-sm-3">
-                            NA
+                            {{report.totalDistance}}
                         </td>
                     </tr>
                     <!-- <tr ng-if="!parties || parties.length === 0">
