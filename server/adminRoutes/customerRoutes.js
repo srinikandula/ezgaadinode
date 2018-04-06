@@ -254,10 +254,41 @@ AuthRouter.delete('/removeCustomerLeadDocFile',function (req,res) {
     })
 });
 
+AuthRouter.get('/getTrucksByAdmin',function (req,res) {
+   CustomerLeads.getTrucksByAdmin(req,function (result) {
 
+   })
+});
 
+AuthRouter.get('/getTotalTrucksByAdmin',function (req,res) {
+    CustomerLeads.getTotalTrucksByAdmin(req,function (result) {
 
+    })
+});
 
+AuthRouter.post('/addTruckByAdmin',function (req,res) {
+    CustomerLeads.addTruckByAdmin(req,function (result) {
+
+    })
+});
+
+AuthRouter.get('/getTruckDetailsByAdmin',function (req,res) {
+    CustomerLeads.getTruckDetailsByAdmin(req,function (result) {
+
+    })
+});
+
+AuthRouter.delete('/deleteTruckByAdmin',function (req,res) {
+    CustomerLeads.deleteTruckByAdmin(req,function (result) {
+
+    })
+});
+
+AuthRouter.put('/updateTruckDetailsByAdmin',function (req,res) {
+    CustomerLeads.updateTruckDetailsByAdmin(req,function (result) {
+
+    })
+});
 module.exports = {
     AuthRouter: AuthRouter
 };

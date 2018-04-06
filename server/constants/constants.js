@@ -549,7 +549,18 @@ const serviceActions = {
     download_receipt_by_party_err:"DOWNLOAD_RECEIPT_BY_PARTY_ERR",
     share_receipts_by_party_via_email:"SHARE_RECEIPTS_BY_PARTY_VIA_EMAIL",
     share_receipts_by_party_via_email_err:"SHARE_RECEIPTS_BY_PARTY_VIA_EMAIL_ERR",
-
+    get_trucks_by_admin:"GET_TRUCKS_BY_ADMIN",
+    get_trucks_by_admin_err:"GET_TRUCKS_BY_ADMIN_err",
+    get_total_trucks_by_admin:"GET_TOTAL_TRUCKS_BY_ADMIN",
+    get_total_trucks_by_admin_err:"GET_TOTAL_TRUCKS_BY_ADMIN_ERR",
+    add_truck_by_admin:"ADD_TRUCK_BY_ADMIN",
+    add_truck_by_admin_err:"ADD_TRUCK_BY_ADMIN_ERR",
+    update_truck_by_admin:"UPDATE_TRUCK_BY_ADMIN",
+    update_truck_by_admin_err:"UPDATE_TRUCK_BY_ADMIN_ERR",
+    delete_truck_by_admin:"DELETE_TRUCK_BY_ADMIN",
+    delete_truck_by_admin_err:"DELETE_TRUCK_BY_ADMIN_ERR",
+    get_truck_details_by_admin:"GET_TRUCK_DETAILS_BY_ADMIN",
+    get_truck_details_by_admin_err:"GET_TRUCK_DETAILS_BY_ADMIN_ERR",
 
 
 };
