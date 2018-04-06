@@ -256,37 +256,37 @@ AuthRouter.delete('/removeCustomerLeadDocFile',function (req,res) {
 
 AuthRouter.get('/getTrucksByAdmin',function (req,res) {
    CustomerLeads.getTrucksByAdmin(req,function (result) {
-
+       res.send(result);
    })
 });
 
 AuthRouter.get('/getTotalTrucksByAdmin',function (req,res) {
     CustomerLeads.getTotalTrucksByAdmin(req,function (result) {
-
+        res.send(result);
     })
 });
 
 AuthRouter.post('/addTruckByAdmin',function (req,res) {
     CustomerLeads.addTruckByAdmin(req,function (result) {
-
+        res.send(result);
     })
 });
 
 AuthRouter.get('/getTruckDetailsByAdmin',function (req,res) {
     CustomerLeads.getTruckDetailsByAdmin(req,function (result) {
-
+        res.send(result);
     })
 });
 
 AuthRouter.delete('/deleteTruckByAdmin',function (req,res) {
     CustomerLeads.deleteTruckByAdmin(req,function (result) {
-
+        res.send(result);
     })
 });
 
 AuthRouter.put('/updateTruckDetailsByAdmin',function (req,res) {
     CustomerLeads.updateTruckDetailsByAdmin(req,function (result) {
-
+        res.send(result);
     })
 });
 module.exports = {

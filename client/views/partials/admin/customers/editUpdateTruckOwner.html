@@ -159,19 +159,21 @@
                             <select class="form-control custom-form-control" ng-model="truckOwner.yearInService">
                                 <option ng-repeat="years in yearInService" ng-value="years">{{years}}</option>
                             </select>
-                            <label class="focus-effect-for-input" >Year In Service</label>
+                            <label class="focus-effect-for-input">Year In Service</label>
 
                         </div>
-                        <div class="form-group styling-input-list" >
+                        <div class="form-group styling-input-list">
 
-                            <ui-select multiple ng-model="truckOwner.selectTruckTypes" theme="bootstrap" close-on-select="false" title="Choose Truck Types">
-                                <ui-select-match placeholder="Choose Truck Types">{{$item.title}} / {{$item.tonnes}}T</ui-select-match>
+                            <ui-select multiple ng-model="truckOwner.selectTruckTypes" theme="bootstrap"
+                                       close-on-select="false" title="Choose Truck Types">
+                                <ui-select-match placeholder="Choose Truck Types">{{$item.title}} / {{$item.tonnes}}T
+                                </ui-select-match>
 
                                 <ui-select-choices repeat="type in truckTypes | filter:$select.search">
                                     {{type.title}}
                                 </ui-select-choices>
                             </ui-select>
-<label class="focus-effect-for-input">Truck Types</label>
+                            <label class="focus-effect-for-input">Truck Types</label>
                         </div>
 
                     </div>
@@ -212,14 +214,14 @@
                                             ng-class="{'glyphicon-chevron-down': status.isOpenFive, 'glyphicon-chevron-right': !status.isOpenFive}"></i>
                 </uib-accordion-heading>
                 <div class="row">
-                  <!--  <div class="col-xs-12 col-sm-6">
-                        <div class="form-group">
-                            <input type="file" ngf-select class="form-control custom-form-control"
-                                   ng-model="truckOwner.newDocumentFile" name="documentFile" ngf-pattern="'image/*'"
-                                   ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}"/>
-                            <img src="{{truckOwner.documentFile}}" ng-if="truckOwner.documentFile">
-                        </div>
-                    </div>-->
+                    <!--  <div class="col-xs-12 col-sm-6">
+                          <div class="form-group">
+                              <input type="file" ngf-select class="form-control custom-form-control"
+                                     ng-model="truckOwner.newDocumentFile" name="documentFile" ngf-pattern="'image/*'"
+                                     ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}"/>
+                              <img src="{{truckOwner.documentFile}}" ng-if="truckOwner.documentFile">
+                          </div>
+                      </div>-->
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group">
                             <p>Uploading Customer Documents</p>
@@ -253,9 +255,10 @@
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpenFour">
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenSix">
                 <uib-accordion-heading>
-                    Route Config <i class="pull-right glyphicon"></i>
+                    Route Config <i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': status.isOpenSix, 'glyphicon-chevron-right': !status.isOpenSix}"></i>
                 </uib-accordion-heading>
                 <ul class="list-inline">
                     <li>
@@ -281,9 +284,128 @@
                 </div>
             </div>
         </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default" is-open="status.isOpenSeven">
+                <uib-accordion-heading>
+                    Add / Edit Truck <i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': status.isOpenSeven, 'glyphicon-chevron-right': !status.isOpenSeven}"></i>
+                </uib-accordion-heading>
+                <div class="row">
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-primary" ng-click="addNewTruck();">Add Truck</button>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div class="table-res mt-10">
+                        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive text-center"
+                               ng-table="truckParams">
+                            <tbody>
+                            <tr ng-repeat="trucks in currentPageOfTrucks">
+                                <td data-title="'S No'">{{$index+1}}</td>
+                                <td data-title="'Registration No'" sortable="''" class="clickable-item">
+                                    {{trucks.registrationNo}}
+                                </td>
+                                <td data-title="'Vehicle Type'" sortable="'vehicleType'" class="clickable-item">
+                                    {{trucks.vehicleType}}
+                                </td>
+                                <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item">
+                                    {{trucks.truckType }}
+                                </td>
+                                <td data-title="'Permit Expiry'" sortable="'permitExpiry'" class="clickable-item">
+                                    {{trucks.permitExpiry ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
+                                <td data-title="'Insurance Expiry'" sortable="'insuranceExpiry'" class="clickable-item">
+                                    {{trucks.insuranceExpiry ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
+                                <td data-title="'Pollution Expiry'" sortable="'pollutionExpiry'" class="clickable-item">
+                                    {{trucks.pollutionExpiry ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
+                                <td data-title="'Action'">
+                                    <a href="#" ng-click="editTruck(trucks._id)"
+                                       class="edit_icon">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                    <a href="#" ng-click="delTruck(trucks._id)" class="delete_icon">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-if="!currentPageOfTrucks || currentPageOfTrucks.length === 0">
+                                <td colspan="8">There is no Trucks for this Account</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </uib-accordion>
         <div class="col-xs-12 save-btns">
             <a href="#" class="btn btn-danger" ng-click="cancel()">Cancel</a>
             <a href="#" class="btn btn-primary" ng-click="updateTruckOwner()">Submit</a>
         </div>
     </div>
+
+
+    <script type="text/ng-template" id="addNewTruck.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">{{pageTitle}}</h3>
+            <span class="close-btn" ng-click="cancel()"><i class="fa fa-close"></i></span>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <div class="row">
+                <div class="col-sm-6 truckAdding">
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control" ng-model="addTruck.registrationNo"/>
+                        <label class="order-effect-for-input">Registration Num*</label>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <select class="form-control order-form-control" ng-model="addTruck.vehicleType">
+                            <option value="" selected>--Select Vehicle Type--</option>
+                            <option value="Car">Car</option>
+                            <option value="Truck">Truck</option>
+                            <option value="Non-Truck">Non Truck</option>
+                        </select>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <select class="form-control order-form-control" ng-model="addTruck.truckType"
+                                ng-init="getTruckTypes()">
+                            <option value="" selected>--Select Truck Type--</option>
+                            <option ng-repeat="type in getTruckTypes"> {{type.title}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Fitness Expiry:</label>
+                        <input type="date" class="form-control order-form-control" ng-model="addTruck.fitnessExpiry">
+                    </div>
+                    <div class="form-group">
+                        <label>Permit Expiry:</label>
+                        <input type="date" class="form-control order-form-control" ng-model="addTruck.permitExpiry">
+                    </div>
+
+                </div>
+                <div class="col-sm-6 truckAdding">
+                    <div class="form-group styling-input-list">
+                        <label>Insurance Expiry:</label>
+                        <input type="date" class="form-control order-form-control" ng-model="addTruck.insuranceExpiry">
+                    </div>
+                    <div class="form-group">
+                        <label>Pollution Expiry:</label>
+                        <input type="date" class="form-control order-form-control" ng-model="addTruck.pollutionExpiry">
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <label>Tax Expiry</label>
+                        <input type="date" class="form-control order-form-control" ng-model="addTruck.taxDueDate">
+                    </div>
+                </div>
+
+
+                <div class="col-sm-12 text-center">
+                    <input type="button" class="btn btn-primary" value="Submit" ng-click="addorUpdateTruck()"/>
+                    <input type="button" class="btn btn-danger" value="Cancel" ng-click="cancel()"/>
+                </div>
+            </div>
+        </div>
+    </script>
 </div>
+
+
+
