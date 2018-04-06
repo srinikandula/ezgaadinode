@@ -327,9 +327,11 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     $scope.selectParty = function (party) {
+        console.log("party",party);
+        $scope.partyType=party.partyId.partyType;
         $scope.tripLanes = party.partyId.tripLanes;
 
-    }
+    };
 
 
     $scope.getTrip = function () {
@@ -376,7 +378,29 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         errors: [],
         success: []
     };
+    $scope.searchSource = function () {
+        var input = document.getElementById('source');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.trip.source = place.name;
+                $scope.trip.sourceAddress = place.formatted_address;
 
+            });
+    };
+    $scope.searchDestination = function () {
+        var input = document.getElementById("destination");
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.trip.destination = place.name;
+                $scope.trip.destinationAddress = place.formatted_address;
+            });
+    };
 
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
@@ -393,10 +417,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!params.partyId) {
             params.errors.push('Please Select a Party');
         }
-        if (!params.tripLane) {
+        if (!params.source) {
             params.errors.push('Please Select a Trip Lane');
         }
-
+        if (!params.destination) {
+            params.errors.push('Please Select a Trip Lane');
+        }
         if (!params.errors.length) {
             if (params._id) {
                 params.date = Number(params.date);

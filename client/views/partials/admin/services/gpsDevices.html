@@ -2,7 +2,7 @@
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">GPS Device</li>
         <li class="pull-right">
-            <button class="btn btn-success" ng-click="assignDevicesModal()">Assign Devices</button>
+            <button class="btn btn-success" ng-click="assignDevicesModal()">Transfer Devices</button>
         </li>
         <li class="pull-right">
             <button class="btn btn-primary" ui-sref="services.addDevice">Add Devices</button>
@@ -121,15 +121,20 @@
     </div>
     <div class="modal-body" id="modal-body">
         <div class="row">
-            <div ng-dropdown-multiselect=""
+            <!--<div ng-dropdown-multiselect=""
                  options="allDevices"
                  selected-model="selectedDevices"
                  extra-settings="selected_baseline_settings" class="col-sm-4 col-xs-12" translation-texts="customText">
+            </div>-->
+            <div col-sm-2 >
+                <textarea ng-model="selectedDevices" class="form-control" cols="22" rows="15">
+
+                </textarea>
             </div>
-            <div class="col-sm-7 col-xs-12">
+            <div class="col-sm-2 col-xs-12">
                 <select class="form-control" ng-model="assignedTo">
                     <option value="" selected>Transfer To</option>
-                    <option ng-repeat="employee in employees" value="{{employee.id_admin}}">{{employee.displayName}}
+                    <option ng-repeat="employee in employees" value="{{employee._id}}">{{employee.displayName}}
                     </option>
                 </select>
             </div>
