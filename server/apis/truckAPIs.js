@@ -170,7 +170,6 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
         status: false,
         messages: []
     };
-    console.log("truck details",truckDetails)
     truckDetails = Helpers.removeEmptyFields(truckDetails);
     truckDetails.updatedBy = jwt.id;
     // delete truckDetails.attrs.latestLocation;

@@ -8,6 +8,7 @@ var CustomerLeadsColl = require("../models/schemas").CustomerLeadsColl;
 var AccountsColl = require("../models/schemas").AccountsColl;
 var OperatingRoutesColl = require("../models/schemas").OperatingRoutesColl;
 var trafficManagerColl = require("../models/schemas").trafficManagerColl;
+var TrucksColl = require("../models/schemas").TrucksColl;
 
 var Utils = require('../apis/utils');
 var CustomerLeads = function () {
@@ -3156,6 +3157,381 @@ CustomerLeads.prototype.removeCustomerLeadDocFile = function (req, callback) {
             }
         });
     }
+};
+/*Author : Naresh d
+* Get Trucks by truck owner*/
+CustomerLeads.prototype.getTrucksByAdmin = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.truckOwnerId || !ObjectId.isValid(params.truckOwnerId)) {
+        retObj.messages.push("Invalid Truck owner");
+    }
+    if (retObj.messages.length > 0) {
+
+        callback(retObj);
+    } else {
+        TrucksColl.find({accountId: params.truckOwnerId}, function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_trucks_by_admin_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (docs.length > 0) {
+                retObj.status = true;
+                retObj.data = docs;
+                retObj.messages.push("Success");
+                analyticsService.create(req, serviceActions.get_trucks_by_admin, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+            } else {
+                retObj.messages.push("No trucks found");
+                analyticsService.create(req, serviceActions.get_trucks_by_admin_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+/*Author : Naresh d
+* Get Total Trucks by admin*/
+CustomerLeads.prototype.getTotalTrucksByAdmin = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.truckOwnerId || !ObjectId.isValid(params.truckOwnerId)) {
+        retObj.messages.push("Invalid Truck owner");
+    }
+    if (retObj.messages.length > 0) {
+
+        callback(retObj);
+    } else {
+        TrucksColl.count({accountId: params.truckOwnerId}, function (err, count) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_total_trucks_by_admin_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.data = count;
+                retObj.messages.push("Success");
+                analyticsService.create(req, serviceActions.get_total_trucks_by_admin, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+/*Author :Naresh D
+* Add truck by admin*/
+CustomerLeads.prototype.addTruckByAdmin = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var jwt = req.jwt;
+    var truckDetails = req.body;
+    if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
+        retObj.messages.push("Please fill all the required truck details");
+    }
+
+    if (!truckDetails.registrationNo || !_.isString(truckDetails.registrationNo)) {
+        retObj.messages.push("Please provide valid registration number");
+    }
+
+    if (!truckDetails.truckType) {
+        retObj.messages.push("Please provide valid Truck type");
+    }
+    if (!truckDetails.vehicleType) {
+        retObj.messages.push("Please select vehicle type");
+    }
+
+    if (!truckDetails.accountId || ObjectId.isValid(truckDetails.accountId)) {
+        retObj.messages.push("Invalid truck owner");
+    }
+
+
+    if (retObj.messages.length) {
+        analyticsService.create(req, serviceActions.add_truck_by_admin_err, {
+            body: JSON.stringify(req.body),
+            accountId: jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
+            if (err) {
+                retObj.messages.push("Error, try again!");
+                analyticsService.create(req, serviceActions.add_truck_by_admin_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (truck && truck.length > 0) {
+                retObj.messages.push("Truck already exists");
+                analyticsService.create(req, serviceActions.add_truck_by_admin_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                truckDetails.createdBy = jwt.id;
+                truckDetails = Utils.removeEmptyFields(truckDetails);
+                var truckDoc = new TrucksColl(truckDetails);
+                truckDoc.save(function (err, truck) {
+                    if (err) {
+                        retObj.messages.push("Error while adding truck, try Again");
+                        analyticsService.create(req, serviceActions.add_truck_by_admin_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push("Truck Added Successfully");
+                        retObj.data = truck;
+                        analyticsService.create(req, serviceActions.add_truck_by_admin, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                });
+            }
+        });
+    }
+};
+
+/*Author : Naresh d
+* Get Truck Details by admin*/
+CustomerLeads.prototype.getTruckDetailsByAdmin = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._id)) {
+        retObj.messages.push("Invalid Truck");
+    }
+    if (retObj.messages.length > 0) {
+        analyticsService.create(req, serviceActions.get_truck_details_by_admin_err, {
+            body: JSON.stringify(req.query),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        TrucksColl.findOne({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_truck_details_by_truck_owner_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc) {
+                retObj.status = true;
+                retObj.data = doc;
+                retObj.messages.push("Success");
+                analyticsService.create(req, serviceActions.get_total_trucks_by_admin, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Truck details not found");
+                analyticsService.create(req, serviceActions.get_truck_details_by_admin_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+/*Author : Naresh d
+* Delete truck by admin*/
+CustomerLeads.prototype.deleteTruckByAdmin = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params._id || !ObjectId.isValid(params._D)) {
+        retObj.messages.push("Invalid Truck ");
+    }
+    if (retObj.messages.length > 0) {
+
+        callback(retObj);
+    } else {
+        TrucksColl.remove({_id: params._id}, function (err, doc) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.delete_truck_by_admin_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (doc && doc.result.n == 1) {
+                retObj.status = true;
+                retObj.data = doc;
+                retObj.messages.push("Truck Deleted successfully");
+                analyticsService.create(req, serviceActions.delete_truck_by_admin, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.messages.push("Truck not deleted");
+                analyticsService.create(req, serviceActions.delete_truck_by_admin_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+    }
+};
+
+/*Author : Naresh d
+* Update by Admin*/
+CustomerLeads.prototype.updateTruckDetailsByAdmin = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var jwt = req.jwt;
+    var truckDetails = req.body;
+    if (!_.isObject(truckDetails) || _.isEmpty(truckDetails)) {
+        retObj.messages.push("Please fill all the required truck details");
+    }
+
+    if (!truckDetails.registrationNo || !_.isString(truckDetails.registrationNo)) {
+        retObj.messages.push("Please provide valid registration number");
+    }
+
+    if (!truckDetails.truckType) {
+        retObj.messages.push("Please provide valid Truck type");
+    }
+    if (!truckDetails.vehicleType) {
+        retObj.messages.push("Please select vehicle type");
+    }
+
+    if (!truckDetails.accountId || ObjectId.isValid(truckDetails.accountId)) {
+        retObj.messages.push("Invalid truck owner");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        truckDetails = Utils.removeEmptyFields(truckDetails);
+        truckDetails.updatedBy = jwt.id;
+        TrucksColl.findOneAndUpdate({_id: truckDetails._id},
+            {
+                $set: truckDetails
+            },
+            {new: true}, function (err, truck) {
+                if (err) {
+                    retObj.messages.push("Error while updating truck, try Again");
+                    analyticsService.create(req, serviceActions.update_truck_by_admin_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else if (truck) {
+                    retObj.status = true;
+                    retObj.messages.push("Truck updated successfully");
+                    retObj.data = truck;
+                    analyticsService.create(req, serviceActions.update_truck_by_admin, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                } else {
+                    retObj.status = false;
+                    retObj.messages.push("Error, finding truck");
+                    analyticsService.create(req, serviceActions.update_truck_by_admin_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: req.jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+    }
+
 };
 
 module.exports = new CustomerLeads();
