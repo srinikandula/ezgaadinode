@@ -294,10 +294,47 @@
                     <div class="pull-right">
                         <button type="submit" class="btn btn-primary" ng-click="addNewTruck();">Add Truck</button>
                     </div>
-                    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
-                           ng-table="truckParams">
-
-                    </table>
+                    <div class="clearfix"></div>
+                    <div class="table-res mt-10">
+                        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive text-center"
+                               ng-table="truckParams">
+                            <tbody>
+                            <tr ng-repeat="trucks in currentPageOfTrucks">
+                                <td data-title="'S No'">{{$index+1}}</td>
+                                <td data-title="'Registration No'" sortable="''" class="clickable-item">
+                                    {{trucks.registrationNo}}
+                                </td>
+                                <td data-title="'Vehicle Type'" sortable="'vehicleType'" class="clickable-item">
+                                    {{trucks.vehicleType}}
+                                </td>
+                                <td data-title="'Truck Type'" sortable="'truckType'" class="clickable-item">
+                                    {{trucks.truckType }}
+                                </td>
+                                <td data-title="'Permit Expiry'" sortable="'permitExpiry'" class="clickable-item">
+                                    {{trucks.permitExpiry ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
+                                <td data-title="'Insurance Expiry'" sortable="'insuranceExpiry'" class="clickable-item">
+                                    {{trucks.insuranceExpiry ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
+                                <td data-title="'Pollution Expiry'" sortable="'pollutionExpiry'" class="clickable-item">
+                                    {{trucks.pollutionExpiry ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
+                                <td data-title="'Action'">
+                                    <a href="#" ng-click="editTruck(trucks._id)"
+                                       class="edit_icon">
+                                        <span class="glyphicon glyphicon-pencil"></span>
+                                    </a>
+                                    <a href="#" ng-click="delTruck(trucks._id)" class="delete_icon">
+                                        <span class="glyphicon glyphicon-trash"></span>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr ng-if="!currentPageOfTrucks || currentPageOfTrucks.length === 0">
+                                <td colspan="8">There is no Trucks for this Account</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </uib-accordion>
@@ -321,18 +358,18 @@
                         <label class="order-effect-for-input">Registration Num*</label>
                     </div>
                     <div class="form-group styling-input-list">
-                        <select class="form-control order-form-control" ng-model="addTruck.truckType"
-                                ng-init="getTruckTypes()">
-                            <option value="" selected>--Select Truck Type--</option>
-                            <option ng-repeat="type in getTruckTypes"> {{type.title}}</option>
-                        </select>
-                    </div>
-                    <div class="form-group styling-input-list">
                         <select class="form-control order-form-control" ng-model="addTruck.vehicleType">
                             <option value="" selected>--Select Vehicle Type--</option>
                             <option value="Car">Car</option>
                             <option value="Truck">Truck</option>
                             <option value="Non-Truck">Non Truck</option>
+                        </select>
+                    </div>
+                    <div class="form-group styling-input-list">
+                        <select class="form-control order-form-control" ng-model="addTruck.truckType"
+                                ng-init="getTruckTypes()">
+                            <option value="" selected>--Select Truck Type--</option>
+                            <option ng-repeat="type in getTruckTypes"> {{type.title}}</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -363,6 +400,7 @@
 
                 <div class="col-sm-12 text-center">
                     <input type="button" class="btn btn-primary" value="Submit" ng-click="addorUpdateTruck()"/>
+                    <input type="button" class="btn btn-danger" value="Cancel" ng-click="cancel()"/>
                 </div>
             </div>
         </div>

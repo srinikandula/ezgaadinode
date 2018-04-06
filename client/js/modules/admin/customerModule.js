@@ -233,7 +233,48 @@ app.factory('customerServices', function ($http) {
                 params: {_id: params}
             }).then(success, error)
         },
-
+        addTruckByAdmin: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/addTruckByAdmin',
+                method: "POST",
+                data: params
+            }).then(success, error)
+        },
+        getTrucksByAdmin: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/getTrucksByAdmin',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        getTotalTrucksByAdmin: function (id, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/getTotalTrucksByAdmin',
+                method: "GET",
+                params: {truckOwnerId: id}
+            }).then(success, error)
+        },
+        getTruckDetailsByAdmin: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/getTruckDetailsByAdmin',
+                method: "GET",
+                params: {_id: params}
+            }).then(success, error)
+        },
+        updateTruckDetailsByAdmin: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/updateTruckDetailsByAdmin',
+                method: "PUT",
+                data: params
+            }).then(success, error)
+        },
+        deleteTruckByAdmin: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/customers/deleteTruckByAdmin',
+                method: "DELETE",
+                params: {_id: params}
+            }).then(success, error)
+        },
     }
 });
 
@@ -880,6 +921,7 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
         customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
             if (success.data.status) {
                 $scope.truckOwner = success.data.data.truckOwnerData;
+                $scope.getTotalTrucks($scope.truckOwner._id);
                 $scope.truckOwner.confirmPassword = success.data.data.truckOwnerData.password;
                 $scope.truckOwner.newDocumentFile = '';
                 if ($scope.truckOwner.alternatePhone.length === 0) {
@@ -1100,7 +1142,6 @@ $scope.selectTruckTypes=[];
 
     $scope.updateTruckOwner = function () {
         var params = $scope.truckOwner;
-
         if (!params.leadType || !_.isString(params.leadType)) {
             Notification.error('Please Select Customer Type');
         }
@@ -1115,7 +1156,6 @@ $scope.selectTruckTypes=[];
             $scope.truckOwner.selectTruckTypes.forEach(function (truck) {
                 $scope.truckOwner.truckTypes.push(truck._id);
             });
-
             if ($scope.truckOwner._id) {
                 Upload.upload({
                     url: '/v1/cpanel/customers/updateTruckOwner',
@@ -1138,7 +1178,9 @@ $scope.selectTruckTypes=[];
                 });
             }
         }
+
     };
+
     $scope.addDoc = function () {
         if ($scope.truckOwner.files[$scope.truckOwner.files.length - 1].file) {
             $scope.truckOwner.files.push({});
@@ -1215,18 +1257,119 @@ $scope.selectTruckTypes=[];
             // keyboard: false,
             resolve: {
                 modelData: function () {
-                    return {}
+                    return {accountId : $scope.truckOwner._id}
                 }
             }
         });
-        modalInstance.result.then(function (data) {
-            $scope.getErpPlanCount(data.plan);
+        modalInstance.result.then(function () {
+             $scope.getTotalTrucks($scope.truckOwner._id);
         }, function () {
+        });
+    };
+    $scope.editTruck = function (id) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addNewTruck.html',
+            controller: 'addEditTruckCntrl',
+            size: 'md',
+            backdrop: 'static',
+             keyboard: false,
+            resolve: {
+                modelData: function () {
+                    return {_id:id, accountId : $scope.truckOwner._id}
+                }
+            }
+        });
+        modalInstance.result.then(function () {
+             $scope.getTotalTrucks($scope.truckOwner._id);
+        }, function () {
+        });
+    };
+
+    $scope.count = 0;
+
+    $scope.getTotalTrucks = function (id) {
+        customerServices.getTotalTrucksByAdmin(id,  function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.initTruck(id);
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    var loadTableDataTrucks = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            truckOwnerId:tableParams.id
+        };
+        customerServices.getTrucksByAdmin(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.data = response.data.data;
+                $scope.currentPageOfTrucks = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+    $scope.initTruck = function (id) {
+        $scope.truckParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.id= id;
+                loadTableDataTrucks(params);
+            }
+        });
+    };
+    $scope.delTruck = function (id) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                customerServices.deleteTruckByAdmin(id, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            success.data.messages[0],
+                            'success'
+                        );
+                        $scope.getTotalTrucks($scope.truckOwner._id);
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (err) {
+
+                });
+            }
         });
     };
 
 }]);
 app.controller('addEditTruckCntrl', ['$scope', '$state', '$uibModalInstance', 'Notification', 'customerServices', 'modelData','SettingServices', function ($scope, $state, $uibModalInstance, Notification, customerServices, modelData, SettingServices) {
+
+    $scope.cancel = function () {
+        $uibModalInstance.close();
+    };
+
     $scope.getTruckTypes = function () {
         SettingServices.getTruckTypes({}, function (response) {
             if (response.data.status) {
@@ -1238,19 +1381,45 @@ app.controller('addEditTruckCntrl', ['$scope', '$state', '$uibModalInstance', 'N
     };
     $scope.pageTitle = "Add New Truck";
 
-    $scope.addTruck = {};
+    $scope.addTruck = { };
+
+
+    $scope.initTruckEdit = function () {
+        if (modelData._id) {
+            $scope.pageTitle = "Edit Truck";
+            customerServices.getTruckDetailsByAdmin(modelData._id, function (success) {
+                if (success.data.status) {
+                    $scope.addTruck = success.data.data;
+                    $scope.addTruck.taxDueDate = new Date($scope.addTruck.taxDueDate);
+                    $scope.addTruck.permitExpiry = new Date($scope.addTruck.permitExpiry);
+                    $scope.addTruck.pollutionExpiry = new Date($scope.addTruck.pollutionExpiry);
+                    $scope.addTruck.fitnessExpiry = new Date($scope.addTruck.fitnessExpiry);
+                    $scope.addTruck.insuranceExpiry = new Date($scope.addTruck.insuranceExpiry);
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message);
+                    });``
+                }
+            }, function (error) {
+
+            })
+        }
+    };
+
+    $scope.initTruckEdit();
+
 
     $scope.addorUpdateTruck = function () {
         var params = $scope.addTruck;
+        params.accountId = modelData.accountId;
+        console.log(params);
         params.errorMessage = [];
+
         if (!params.registrationNo) {
             params.errorMessage.push('Enter your Vehicle number');
         }
         if(!params.truckType){
             params.errorMessage.push('Select Truck Type');
-        }
-        if(!params.vehicleType){
-            params.errorMessage.push('Select Vehicle Type');
         }
         if (params.errorMessage.length > 0) {
             params.errorMessage.forEach(function (message) {
@@ -1258,7 +1427,37 @@ app.controller('addEditTruckCntrl', ['$scope', '$state', '$uibModalInstance', 'N
             });
         }
         else{
-            console.log("welcome");
+            if (params._id) {
+                customerServices.updateTruckDetailsByAdmin(params, function (success) {
+                    if (success.data.status) {
+
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                })
+            }
+            else {
+                customerServices.addTruckByAdmin(params, function (success) {
+                    if (success.data.status) {
+                        success.data.messages.forEach(function (message) {
+                            Notification.success(message);
+                        });
+                        $uibModalInstance.close({});
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error(message);
+                        });
+                    }
+                }, function (error) {
+
+                })
+            }
         }
     }
 

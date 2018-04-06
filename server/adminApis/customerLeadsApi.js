@@ -3166,15 +3166,36 @@ CustomerLeads.prototype.getTrucksByAdmin = function (req, callback) {
         messages: []
     };
     var params = req.query;
+
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+
     if (!params.truckOwnerId || !ObjectId.isValid(params.truckOwnerId)) {
         retObj.messages.push("Invalid Truck owner");
     }
     if (retObj.messages.length > 0) {
-
         callback(retObj);
     } else {
-        TrucksColl.find({accountId: params.truckOwnerId}, function (err, docs) {
-            if (err) {
+        async.parallel({
+            trucks:function (trucksCallback) {
+                TrucksColl.find({accountId: params.truckOwnerId})
+                    .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .lean()
+                    .exec(function (err, docs) {
+                    trucksCallback(err, docs);
+
+                })
+            },
+            count:function (countCallback) {
+                TrucksColl.count({accountId: params.truckOwnerId}, function (err, count) {
+                    countCallback(err, count);
+                });
+            }
+        },function(err,result){
+            if(err){
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_trucks_by_admin_err, {
                     body: JSON.stringify(req.query),
@@ -3184,9 +3205,10 @@ CustomerLeads.prototype.getTrucksByAdmin = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else if (docs.length > 0) {
+            }else{
                 retObj.status = true;
-                retObj.data = docs;
+                retObj.data = result.trucks;
+                retObj.count=result.count;
                 retObj.messages.push("Success");
                 analyticsService.create(req, serviceActions.get_trucks_by_admin, {
                     body: JSON.stringify(req.query),
@@ -3194,18 +3216,11 @@ CustomerLeads.prototype.getTrucksByAdmin = function (req, callback) {
                     success: true
                 }, function (response) {
                 });
-            } else {
-                retObj.messages.push("No trucks found");
-                analyticsService.create(req, serviceActions.get_trucks_by_admin_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
                 callback(retObj);
             }
-        })
+
+        });
+
     }
 };
 
@@ -3270,13 +3285,13 @@ CustomerLeads.prototype.addTruckByAdmin = function (req, callback) {
     }
 
     if (!truckDetails.truckType) {
-        retObj.messages.push("Please provide valid Truck type");
+        retObj.messages.push("Please select Truck type");
     }
     if (!truckDetails.vehicleType) {
         retObj.messages.push("Please select vehicle type");
     }
 
-    if (!truckDetails.accountId || ObjectId.isValid(truckDetails.accountId)) {
+    if (!truckDetails.accountId || !ObjectId.isValid(truckDetails.accountId)) {
         retObj.messages.push("Invalid truck owner");
     }
 
@@ -3413,7 +3428,8 @@ CustomerLeads.prototype.deleteTruckByAdmin = function (req, callback) {
         messages: []
     };
     var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._D)) {
+    console.log(params);
+    if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Invalid Truck ");
     }
     if (retObj.messages.length > 0) {
@@ -3478,11 +3494,8 @@ CustomerLeads.prototype.updateTruckDetailsByAdmin = function (req, callback) {
     if (!truckDetails.truckType) {
         retObj.messages.push("Please provide valid Truck type");
     }
-    if (!truckDetails.vehicleType) {
-        retObj.messages.push("Please select vehicle type");
-    }
 
-    if (!truckDetails.accountId || ObjectId.isValid(truckDetails.accountId)) {
+    if (!truckDetails.accountId || !ObjectId.isValid(truckDetails.accountId)) {
         retObj.messages.push("Invalid truck owner");
     }
     if (retObj.messages.length > 0) {

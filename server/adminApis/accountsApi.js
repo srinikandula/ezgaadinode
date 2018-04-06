@@ -338,6 +338,7 @@ Accounts.prototype.addAccount = function (req, callback) {
                 accountInfo.userId = newId.userId;
                 AccountsColl.update(query, accountInfo, {upsert: true}, function (errSaved, saved) {
                     if (errSaved) {
+
                         retObj.messages.push('Error saving account');
                         analyticsService.create(req, serviceActions.add_account_err, {
                             body: JSON.stringify(req.body),
