@@ -492,14 +492,14 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
     // } init();
 
     $scope.transferDevices = function () {
-        if ($scope.selectedDevices.length < 1) {
+        if (!$scope.selectedDevices) {
             $scope.error = 'please select devices';
         } else if (!$scope.assignedTo) {
             $scope.error = 'please select an employeee';
         } else {
             $scope.error = '';
             DeviceService.transferDevices({
-                devices: _.pluck($scope.selectedDevices, '_id'),
+                devices: $scope.selectedDevices,
                 assignedTo: $scope.assignedTo
             }, function (success) {
                 if (success.data.status) {

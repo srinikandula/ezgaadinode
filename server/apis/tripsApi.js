@@ -74,7 +74,8 @@ function shareTripDetails(tripDetails, trip, callback) {
                                 "Vehicle No:" + truckData.registrationNo + "," +
                                 "Driver Name:" + driverData.fullName + "," +
                                 "Driver Number:" + driverData.mobile + "," +
-                                "Trip Lane:" + tripDetails.tripLane + "," +
+                                "Source:" + tripDetails.source + "," +
+                                "Destination:" + tripDetails.destination + "," +
                                 "Tonnage :" + tripDetails.tonnage + "," +
                                 "Rate:" + tripDetails.rate + "," +
                                 "Amount:" + tripDetails.freightAmount,
@@ -90,7 +91,8 @@ function shareTripDetails(tripDetails, trip, callback) {
                                     "Vehicle No:" + truckData.registrationNo + ",\n" +
                                     "Driver Name:" + driverData.fullName + ",\n" +
                                     "Driver Number:" + driverData.mobile + ",\n" +
-                                    "Trip Lane:" + tripDetails.tripLane + ",\n" +
+                                    "Source:" + tripDetails.source + ",\n" +
+                                    "Destination:" + tripDetails.destination + ",\n" +
                                     "Tonnage :" + tripDetails.tonnage + ",\n" +
                                     "Rate:" + tripDetails.rate + ",\n" +
                                     "Amount:" + tripDetails.freightAmount
@@ -109,7 +111,8 @@ function shareTripDetails(tripDetails, trip, callback) {
                                                     "vehicleNo": truckData.registrationNo,
                                                     "driverName": driverData.fullName,
                                                     "driverNumber": driverData.mobile,
-                                                    "tripLane": tripDetails.tripLane,
+                                                    "source": tripDetails.source,
+                                                    "destination": tripDetails.destination,
                                                     "Tonnage": tripDetails.tonnage,
                                                     "Rate": tripDetails.rate,
                                                     "Amount": tripDetails.freightAmount
@@ -166,7 +169,8 @@ function shareTripDetails(tripDetails, trip, callback) {
                                         "vehicleNo": truckData.registrationNo,
                                         "driverName": driverData.fullName,
                                         "driverNumber": driverData.mobile,
-                                        "tripLane": tripDetails.tripLane,
+                                        "source": tripDetails.source,
+                                        "destination": tripDetails.destination,
                                         "Tonnage": tripDetails.tonnage,
                                         "Rate": tripDetails.rate,
                                         "Amount": tripDetails.freightAmount
@@ -236,8 +240,11 @@ Trips.prototype.addTrip = function (jwt, tripDetails,req, callback) {
     if (!_.isNumber(tripDetails.freightAmount)) {
         retObj.messages.push("Please add Freight Amount");
     }
-    if(!tripDetails.tripLane){
-        retObj.messages.push("Please select trip lane");
+    if(!tripDetails.source){
+        retObj.messages.push("Enter source");
+    }
+    if(!tripDetails.destination){
+        retObj.messages.push("Enter destination");
     }
     if (retObj.messages.length) {
         analyticsService.create(req,serviceActions.add_trip_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
@@ -247,7 +254,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails,req, callback) {
         tripDetails.groupId = jwt.id;
         tripDetails.accountId = jwt.accountId;
         tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
-        tripDetails.tripLane = tripDetails.tripLane.name;
+        //tripDetails.tripLane = tripDetails.tripLane.name;
         var tripDoc = new TripCollection(tripDetails);
         tripDoc.save(function (err, trip) {
             if (err) {

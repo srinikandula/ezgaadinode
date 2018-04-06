@@ -314,7 +314,7 @@ Party.prototype.getAllPartiesByTransporter = function (jwt,req, callback) {
         messages: []
     };
 
-    PartyCollection.find({partyType: 'Transporter', accountId: jwt.accountId}, function (err, parties) {
+    PartyCollection.find({partyType: {$in:['Transporter','Commission']}, accountId: jwt.accountId},{partyType:1,name:1,tripLanes:1}, function (err, parties) {
         if (err) {
             retObj.message.push('Error getting parties');
             analyticsService.create(req,serviceActions.get_parties_by_trans_err,{accountId:jwt.id,success:false,messages:retObj.message},function(response){ });

@@ -629,14 +629,17 @@ Accounts.prototype.updateAccountGroup = function (jwtObj, accountGroupInfo,req, 
 };
 
 Accounts.prototype.uploadUserProfilePic = function (accountId, body,req, callback) {
-    var retObj = {};
+    var retObj = {
+        status:false,
+        messages:[]
+    };
     if (!accountId || !ObjectId.isValid(accountId)) {
         retObj.status = false;
-        retObj.message = "Please try again later";
+        retObj.message.push("Please try again later");
         callback(retObj);
     } else if (!body.image) {
         retObj.status = false;
-        retObj.message = "Invalid Image";
+        retObj.message.push("Invalid Image");
         callback(retObj);
     } else {
         var base64Data = body.image.replace(/^data:image\/[a-z]+;base64,/,  "");
@@ -657,13 +660,13 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body,req, callbac
                         callback(retObj);
                     } else if (data) {
                         retObj.status = true;
-                        retObj.message = "Image uploaded successfully";
+                        retObj.message.push("Image uploaded successfully");
                         retObj.profilePic = accountId + '.jpg';
                         analyticsService.create(req,serviceActions.upld_usr_profile_pic,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                         callback(retObj);
                     } else {
                         retObj.status = false;
-                        retObj.message = "Please try again latter";
+                        retObj.message.push("Please try again latter");
                         analyticsService.create(req,serviceActions.upld_usr_profile_pic_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                         callback(retObj);
                     }

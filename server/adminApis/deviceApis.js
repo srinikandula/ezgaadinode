@@ -184,8 +184,8 @@ Devices.prototype.transferDevices = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    if (params.devices.length < 1) {
-        retObj.messages.push("Please provide device ids");
+    if (!params.devices) {
+        retObj.messages.push("Please provide device IMEI numbers");
     }
     if (!params.assignedTo) {
         retObj.messages.push("Please provide employee id");
@@ -200,37 +200,73 @@ Devices.prototype.transferDevices = function (req, callback) {
         });
         callback(retObj);
     } else {
+        var imeiNumbers=params.devices.split('\n');
+
         params.updatedBy = req.jwt.id;
-        async.map(params.devices, function (device, asyncCallback) {
-            DevicesColl.findOneAndUpdate({_id: device}, {
-                assignedTo: req.body.assignedTo,
-                updatedBy: req.jwt.id
-            }, function (errTransfered, transfered) {
-                asyncCallback(errTransfered, transfered);
-            });
-        }, function (asyncerr, asyncsuccess) {
-            if (asyncerr) {
-                retObj.messages.push("Unable to transfer devices, please try again");
-                analyticsService.create(req, serviceActions.transfer_device_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages = "Device updated successfully";
-                analyticsService.create(req, serviceActions.transfer_device, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            }
+        DevicesColl.find({imei:{$in:imeiNumbers}},function (err,devices) {
+           if(err){
+               retObj.messages.push("Unable to transfer devices, please try again");
+               analyticsService.create(req, serviceActions.transfer_device_err, {
+                   body: JSON.stringify(req.body),
+                   accountId: req.jwt.id,
+                   success: false,
+                   messages: retObj.messages
+               }, function (response) {
+               });
+               callback(retObj);
+           }else if(devices.length>0){
+
+               var deviceIds=_.pluck(devices,"_id");
+
+               var success=0;
+               async.map(devices, function (device, asyncCallback) {
+                   DevicesColl.findOneAndUpdate({_id: device}, {
+                       assignedTo: req.body.assignedTo,
+                       updatedBy: req.jwt.id
+                   }, function (errTransfered, transfered) {
+
+                       if(transfered){
+
+                           success=success+1;
+                       }
+                       asyncCallback(errTransfered, transfered);
+                   });
+               }, function (asyncerr, asyncsuccess) {
+                   if (asyncerr) {
+                       retObj.messages.push("Unable to transfer devices, please try again");
+                       analyticsService.create(req, serviceActions.transfer_device_err, {
+                           body: JSON.stringify(req.body),
+                           accountId: req.jwt.id,
+                           success: false,
+                           messages: retObj.messages
+                       }, function (response) {
+                       });
+                       callback(retObj);
+                   } else {
+                       retObj.status = true;
+                       retObj.messages = success+" Device transferred successfully";
+                       analyticsService.create(req, serviceActions.transfer_device, {
+                           body: JSON.stringify(req.body),
+                           accountId: req.jwt.id,
+                           success: true
+                       }, function (response) {
+                       });
+                       callback(retObj);
+                   }
+               });
+           }else{
+               retObj.messages.push("No Device found with imei number");
+               analyticsService.create(req, serviceActions.transfer_device_err, {
+                   body: JSON.stringify(req.body),
+                   accountId: req.jwt.id,
+                   success: false,
+                   messages: retObj.messages
+               }, function (response) {
+               });
+               callback(retObj);
+           }
         });
+
     }
 };
 

@@ -24,12 +24,14 @@
                                 <div ng-bind-html="truck.registrationNo | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
+                        <label class="focus-effect-for-input-trucks">Registration Number</label>
+
                     </div>
 
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class=" select-box">
+                    <div class=" select-box styling-input-list">
                         <ui-select ng-model="trip.driverId" theme="select2"
                                    style="min-width: 390px;"
                                    title="Choose a person" append-to-body="true">
@@ -41,6 +43,8 @@
                                 <div ng-bind-html="driver.fullName | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
+
+                        <label class="focus-effect-for-input-trucks">Driver Name</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
@@ -57,25 +61,34 @@
                                 <div ng-bind-html="party.name | highlight: $select.search" ></div>
                             </ui-select-choices>
                         </ui-select>
+                        <label class="focus-effect-for-input-trucks">Party</label>
+
                     </div>
                 </div>
 
 
-                <div class="form-group col-xs-12">
-                    <div class=" select-box">
-                        <ui-select ng-model="trip.tripLane" theme="select2"
-                                   style="min-width: 390px;"
-                                   title="Select a Trip Lane" append-to-body="true">
-                            <ui-select-match placeholder="Select a Trip Lane*" class="form-control custom-form-control">
-                                {{$select.selected.name || trip.tripLane}}
-                            </ui-select-match>
-                            <ui-select-choices
-                                    repeat="tripLane in tripLanes | propsFilter: {name: $select.search}">
-                                <div ng-bind-html="tripLane.name | highlight: $select.search"></div>
-                            </ui-select-choices>
-                        </ui-select>
-                    </div>
+                <div class="form-group col-xs-6" >
+                    <div class="styling-input-list">
+                        <input ng-model="trip.source" type="text" class="form-control custom-form-control" id="source"
+                               ng-change="searchSource()">
+                        <label class="focus-effect-for-input" aria-hidden="true">Source</label>
 
+                    </div>
+                </div>
+                <div class="form-group col-xs-6" >
+                    <div class="styling-input-list">
+                        <input ng-model="trip.destination" type="text" class="form-control custom-form-control" id="destination"
+                               ng-change="searchDestination()">
+                        <label class="focus-effect-for-input" aria-hidden="true">Destination</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12" ng-show="partyType=='Commission'" >
+                    <div class=" styling-input-list">
+                        <input ng-model="trip.commission" type="number" class="form-control custom-form-control"
+                               id="commission">
+                        <label class="focus-effect-for-input" aria-hidden="true">Commission*</label>
+                    </div>
                 </div>
 
             </div>
@@ -96,9 +109,11 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div>
+                    <div class=" styling-input-list">
                         <input ng-model="trip.freightAmount" type="number" class="form-control custom-form-control"
-                               id="freightAmount" readonly placeholder="Freight Amount">
+                               id="freightAmount" readonly >
+                        <label class="focus-effect-for-input" aria-hidden="true">Fight amount</label>
+
                     </div>
                 </div>
                 <div class="form-group col-xs-12">

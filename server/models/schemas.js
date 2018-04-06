@@ -159,7 +159,7 @@ var truckSchema = new mongoose.Schema({
     lookingForLoad: {type: Boolean, default: false},
     isIdle: Boolean,
     isStopped: Boolean,
-    VehicleType:String
+    vehicleType:String
 }, {timestamps: true});
 
 var tripSchema = new mongoose.Schema({
@@ -180,7 +180,12 @@ var tripSchema = new mongoose.Schema({
     createdBy: String,
     paymentHistory: [],
     attrs: {},
-    share: {type: Boolean, default: false}
+    share: {type: Boolean, default: false},
+    commission:Number,
+    source:String,
+    sourceAddress:String,
+    destination:String,
+    destinationAddress:String
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
