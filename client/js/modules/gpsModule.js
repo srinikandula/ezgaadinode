@@ -24,6 +24,13 @@ app.factory('GpsService',['$http', function ($http) {
                 url: '/v1/gps/getTruckReport/'+body.startDate+'/'+body.endDate+'/'+body.truckNo,
                 method: "GET"
             }).then(success, error)
+        },
+        shareTripDetailsByVechicleViaEmail:function (body,success,error) {
+            $http({
+                url: '/v1/gps/shareTripDetailsByVechicleViaEmail',
+                method: "POST",
+                data: body
+            }).then(success, error)
         }
     }
 }]);
@@ -51,17 +58,83 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         currentElement:0
     };
 
-    $scope.getTruckReport = function () {
-        GpsService.getTruckReport($scope.reportParams,function (success) {
-            if(success.data.status){
-                $scope.truckReports = success.data.results;
-            }else{
+    function reportParamsValidation() {
+        if(!$scope.reportParams.startDate){
+            Notification.error({ message: "Please select a start date" });
+            return false;
+        }else if(!$scope.reportParams.endDate){
+            Notification.error({ message: "Please select a end date" });
+            return false;
+        }else if(!$scope.reportParams.truckNo.registrationNo){
+            Notification.error({ message: "Please select a truck" });
+            return false;
+        }else{
+            return true;
+        }
+    }
 
-            }
-        },function (error) {
-
-        })
+    $scope.downloadReport = function () {
+        if(reportParamsValidation()){
+            var body=$scope.reportParams;
+            window.open('/v1/gps/downloadReport/'+body.truckNo.registrationNo+'/'+body.startDate+'/'+body.endDate);
+        }
     };
+
+    $scope.getTruckReport = function () {
+        if(reportParamsValidation()) {
+            $scope.reportParams.truckNo=$scope.reportParams.truckNo.registrationNo;
+            GpsService.getTruckReport($scope.reportParams, function (success) {
+                if (success.data.status) {
+                    $scope.truckReports = success.data.results;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            }, function (error) {
+
+            })
+        }
+    };
+
+
+    $scope.shareTripDetailsByVechicleViaEmail = function () {
+        swal({
+            title: 'Share trip data using email',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                GpsService.shareTripDetailsByVechicleViaEmail({
+                fromDate: $scope.reportParams.startDate,
+                toDate: $scope.reportParams.endDate,
+                regNumber: $scope.reportParams.truckNo.registrationNo,
+                email: email,
+            }, function (success) {
+                if (success.data.status) {
+                    resolve()
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        swal.showValidationError(message);
+                    });
+                }
+            }, function (error) {
+            })
+        })
+    },
+        allowOutsideClick: false
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: 'Trip details sent successfully'
+            })
+        }
+    })
+    };
+
 
     $scope.getAllTrucks = function () {
         TrucksService.getAllTrucksForFilter(function (success) {

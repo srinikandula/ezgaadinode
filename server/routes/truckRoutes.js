@@ -164,6 +164,12 @@ OpenRouter.post('/lookingForLoad',function (req,res) {
     })
 });
 
+AuthRouter.post('/unCheckLookingForLoad',function (req,res) {
+    Trucks.unCheckLookingForLoad(req.body,req,function (result) {
+        res.json(result);
+    })
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
