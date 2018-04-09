@@ -200,71 +200,71 @@ Devices.prototype.transferDevices = function (req, callback) {
         });
         callback(retObj);
     } else {
-        var imeiNumbers=params.devices.split('\n');
+        var imeiNumbers = params.devices.split('\n');
 
         params.updatedBy = req.jwt.id;
-        DevicesColl.find({imei:{$in:imeiNumbers}},function (err,devices) {
-           if(err){
-               retObj.messages.push("Unable to transfer devices, please try again");
-               analyticsService.create(req, serviceActions.transfer_device_err, {
-                   body: JSON.stringify(req.body),
-                   accountId: req.jwt.id,
-                   success: false,
-                   messages: retObj.messages
-               }, function (response) {
-               });
-               callback(retObj);
-           }else if(devices.length>0){
+        DevicesColl.find({imei: {$in: imeiNumbers}}, function (err, devices) {
+            if (err) {
+                retObj.messages.push("Unable to transfer devices, please try again");
+                analyticsService.create(req, serviceActions.transfer_device_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (devices.length > 0) {
 
-               var deviceIds=_.pluck(devices,"_id");
+                var deviceIds = _.pluck(devices, "_id");
 
-               var success=0;
-               async.map(devices, function (device, asyncCallback) {
-                   DevicesColl.findOneAndUpdate({_id: device}, {
-                       assignedTo: req.body.assignedTo,
-                       updatedBy: req.jwt.id
-                   }, function (errTransfered, transfered) {
+                var success = 0;
+                async.map(devices, function (device, asyncCallback) {
+                    DevicesColl.findOneAndUpdate({_id: device}, {
+                        assignedTo: req.body.assignedTo,
+                        updatedBy: req.jwt.id
+                    }, function (errTransfered, transfered) {
 
-                       if(transfered){
+                        if (transfered) {
 
-                           success=success+1;
-                       }
-                       asyncCallback(errTransfered, transfered);
-                   });
-               }, function (asyncerr, asyncsuccess) {
-                   if (asyncerr) {
-                       retObj.messages.push("Unable to transfer devices, please try again");
-                       analyticsService.create(req, serviceActions.transfer_device_err, {
-                           body: JSON.stringify(req.body),
-                           accountId: req.jwt.id,
-                           success: false,
-                           messages: retObj.messages
-                       }, function (response) {
-                       });
-                       callback(retObj);
-                   } else {
-                       retObj.status = true;
-                       retObj.messages = success+" Device transferred successfully";
-                       analyticsService.create(req, serviceActions.transfer_device, {
-                           body: JSON.stringify(req.body),
-                           accountId: req.jwt.id,
-                           success: true
-                       }, function (response) {
-                       });
-                       callback(retObj);
-                   }
-               });
-           }else{
-               retObj.messages.push("No Device found with imei number");
-               analyticsService.create(req, serviceActions.transfer_device_err, {
-                   body: JSON.stringify(req.body),
-                   accountId: req.jwt.id,
-                   success: false,
-                   messages: retObj.messages
-               }, function (response) {
-               });
-               callback(retObj);
-           }
+                            success = success + 1;
+                        }
+                        asyncCallback(errTransfered, transfered);
+                    });
+                }, function (asyncerr, asyncsuccess) {
+                    if (asyncerr) {
+                        retObj.messages.push("Unable to transfer devices, please try again");
+                        analyticsService.create(req, serviceActions.transfer_device_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages = success + " Device transferred successfully";
+                        analyticsService.create(req, serviceActions.transfer_device, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                });
+            } else {
+                retObj.messages.push("No Device found with imei number");
+                analyticsService.create(req, serviceActions.transfer_device_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            }
         });
 
     }
@@ -375,7 +375,7 @@ Devices.prototype.getDevices = function (req, callback) {
                     TrucksColl.find({deviceId: {$in: imeis}}, {
                         registrationNo: 1,
                         attrs: 1,
-                        deviceId:1
+                        deviceId: 1
                     }, function (errTruck, trucks) {
 
                         truckCallBack(errTruck, trucks);
@@ -395,24 +395,24 @@ Devices.prototype.getDevices = function (req, callback) {
                     callback(retObj);
                 } else {
 
-                    async.map(results.devices,function (device,deviceCallback) {
-                        var planhistory={};
-                        planhistory=_.find(success.planhistory, function (plan) {
-                            return plan._id.toString()===device._id.toString();
+                    async.map(results.devices, function (device, deviceCallback) {
+                        var planhistory = {};
+                        planhistory = _.find(success.planhistory, function (plan) {
+                            return plan._id.toString() === device._id.toString();
                         });
-                        if(planhistory){
-                            device.expiryTime=planhistory.expiryTime;
-                            device.received=planhistory.received;
+                        if (planhistory) {
+                            device.expiryTime = planhistory.expiryTime;
+                            device.received = planhistory.received;
                         }
-                        var truck={};
-                        truck=_.findWhere(success.truckDetails,{deviceId:device.imei});
-                        if(truck){
-                            device.registrationNo=truck.registrationNo;
-                            device.latestLocation=truck.attrs.latestLocation;
+                        var truck = {};
+                        truck = _.findWhere(success.truckDetails, {deviceId: device.imei});
+                        if (truck) {
+                            device.registrationNo = truck.registrationNo;
+                            device.latestLocation = truck.attrs.latestLocation;
                         }
-                        deviceCallback(false,"success");
-                    },function (deviceErr,deviceResult) {
-                        if(deviceErr){
+                        deviceCallback(false, "success");
+                    }, function (deviceErr, deviceResult) {
+                        if (deviceErr) {
                             retObj.messages.push("Unable to populate devices, please try again");
                             analyticsService.create(req, serviceActions.get_devices_err, {
                                 body: JSON.stringify(params),
@@ -422,7 +422,7 @@ Devices.prototype.getDevices = function (req, callback) {
                             }, function (response) {
                             });
                             callback(retObj);
-                        }else{
+                        } else {
                             retObj.status = true;
                             retObj.messages = "Success";
                             retObj.devices = results.devices;
@@ -833,7 +833,7 @@ Devices.prototype.getDeviceManagementDetails = function (req, callback) {
         }
     }, function (errDmDetails, dmDetails) {
         if (errDmDetails) {
-            console.log("dsafasdfsdfdsf",errDmDetails);
+            console.log("dsafasdfsdfdsf", errDmDetails);
             retObj.messages.push("Unable to get dMdevices, please try again");
             analyticsService.create(req, serviceActions.get_device_management_err, {
                 body: JSON.stringify(req.body),
@@ -1012,4 +1012,131 @@ Devices.prototype.getGPSPlansOfDevice = function (req, callback) {  //
     });
 };
 
+Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.page) {
+        params.page = 1;
+    }
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    if (!params.accountId || !ObjectId.isValid(params.accountId)) {
+        retObj.messages.push("Invalid account Id");
+    }
+    if (!params.type) {
+        retObj.messages.push("Invalid request type");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        var condition = {};
+        if (params.type === 'assigned') {
+        condition={assignedTo:params.accountId}
+        } else if (params.type === 'sold') {
+            condition={installedBy:params.accountId}
+
+        } else if (params.type === 'inHand') {
+            condition={assignedTo:params.accountId,installedBy:{$exists:false}}
+
+        }
+        async.parallel({
+            devices: function (devicesCallback) {
+                DevicesColl.find(condition) .sort(sort)
+                    .skip(skipNumber)
+                    .limit(limit)
+                    .populate('installedBy', {userName: 1})
+                    .lean()
+                    .exec(function (err, devices) {
+                    devicesCallback(err, devices);
+                })
+            },
+            count: function (countCallback) {
+                DevicesColl.count(condition, function (err, count) {
+                    countCallback(err, count);
+                })
+            }
+        }, function (err, result) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_gps_devices_by_status_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                result.data = result.devices;
+                retObj.count = result.count;
+                analyticsService.create(req, serviceActions.get_gps_devices_by_status, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        })
+
+    }
+};
+
+Devices.prototype.getGpsDevicesCountByStatus=function (req,res) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    if (!params.accountId || !ObjectId.isValid(params.accountId)) {
+        retObj.messages.push("Invalid account Id");
+    }
+    if (!params.type) {
+        retObj.messages.push("Invalid request type");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        var condition = {};
+        if (params.type === 'assigned') {
+            condition={assignedTo:params.accountId}
+        } else if (params.type === 'sold') {
+            condition={installedBy:params.accountId}
+
+        } else if (params.type === 'inHand') {
+            condition={assignedTo:params.accountId,installedBy:{$exists:false}}
+
+        }
+        DevicesColl.count(condition, function (err, count) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_gps_devices_count_by_status_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.count = count;
+                analyticsService.create(req, serviceActions.get_gps_devices_count_by_status, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+
+
+    }
+};
 module.exports = new Devices();
