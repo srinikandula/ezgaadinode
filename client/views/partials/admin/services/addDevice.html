@@ -2,7 +2,7 @@
     <table class="table table-bordered table-responsive">
         <thead>
         <tr>
-            <th></th>
+            <!--<th></th>-->
             <th>S No.</th>
             <th>IMEI No</th>
             <th>SIM No</th>
@@ -12,18 +12,18 @@
         </thead>
         <tbody>
         <tr ng-repeat="device in devicesToAdd">
-            <td>
+           <!-- <td>
                 <div class="checkbox mtb-0">
                     <label>
                         <input type="checkbox" value=""/>
                         <span class="cr"><i class="cr-icon fa fa-check"></i></span>
                     </label>
                 </div>
-            </td>
+            </td>-->
             <td>{{$index+1}}</td>
-            <td><input type="text" class="form-control" placeholder="IMEI Number" ng-model="device.imei"/></td>
-            <td><input type="text" class="form-control" placeholder="SIM No" ng-model="device.simPhoneNumber"/></td>
-            <td><input type="text" class="form-control" placeholder="SIM ID" ng-model="device.simNumber"/></td>
+            <td><input type="text" class="form-control" placeholder="IMEI Number" ng-model="device.imei" ng-change="addImeiNumbers($index,device.imei)"/></td>
+            <td><input type="text" class="form-control" placeholder="SIM No" ng-model="device.simPhoneNumber" ng-change="addPhoneNumbers($index,device.simPhoneNumber)"/></td>
+            <td><input type="text" class="form-control" placeholder="SIM ID" ng-model="device.simNumber" ng-change="addSimIds($index,device.simNumber)"/></td>
             <td>
                 <a href="#" class="btn" ng-click="addDeviceRow()" ng-show="$index === devicesToAdd.length-1">
                     <i class="fa fa-plus-square"></i></a>

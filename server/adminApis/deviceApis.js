@@ -1035,24 +1035,28 @@ Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
     } else {
         var condition = {};
         if (params.type === 'assigned') {
-        condition={assignedTo:params.accountId}
+            condition = {assignedTo: params.accountId}
         } else if (params.type === 'sold') {
-            condition={installedBy:params.accountId}
+            condition = {installedBy: params.accountId}
 
         } else if (params.type === 'inHand') {
-            condition={assignedTo:params.accountId,installedBy:{$exists:false}}
+            condition = {assignedTo: params.accountId, installedBy: {$exists: false}}
 
         }
         async.parallel({
             devices: function (devicesCallback) {
-                DevicesColl.find(condition) .sort(sort)
+                DevicesColl.find(condition).sort(sort)
                     .skip(skipNumber)
                     .limit(limit)
+                    .populate({
+                        path: 'accountId',
+                        select: "userName"
+                    })
                     .populate('installedBy', {userName: 1})
                     .lean()
                     .exec(function (err, devices) {
-                    devicesCallback(err, devices);
-                })
+                        devicesCallback(err, devices);
+                    })
             },
             count: function (countCallback) {
                 DevicesColl.count(condition, function (err, count) {
@@ -1071,23 +1075,101 @@ Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                retObj.status = true;
-                result.data = result.devices;
-                retObj.count = result.count;
-                analyticsService.create(req, serviceActions.get_gps_devices_by_status, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
+                async.parallel({
+                    planhistory: function (planHistoryCallack) {
+
+                        var deviceIds = _.pluck(results.devices, '_id');
+                        AccountDevicePlanHistoryColl.aggregate([
+                            {"$match": {"deviceId": {"$in": deviceIds}}},
+                            {$sort: {expiryTime: -1}},
+                            {
+                                "$group": {
+                                    "_id": "$deviceId",
+                                    "expiryTime": {"$first": "$expiryTime"},
+                                    "received": {"$first": "$received"}
+                                }
+                            }
+                        ], function (err, planHistory) {
+                            planHistoryCallack(err, planHistory);
+                        })
+
+                    },
+                    truckDetails: function (truckCallBack) {
+                        var imeis = _.pluck(results.devices, 'imei');
+                        TrucksColl.find({deviceId: {$in: imeis}}, {
+                            registrationNo: 1,
+                            attrs: 1,
+                            deviceId: 1
+                        }, function (errTruck, trucks) {
+
+                            truckCallBack(errTruck, trucks);
+                        });
+
+                    }
+                }, function (errpopulated, success) {
+                    if (errpopulated) {
+                        retObj.messages.push("Unable to populate devices, please try again");
+                        analyticsService.create(req, serviceActions.get_devices_err, {
+                            body: JSON.stringify(params),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+
+                        async.map(results.devices, function (device, deviceCallback) {
+                            var planhistory = {};
+                            planhistory = _.find(success.planhistory, function (plan) {
+                                return plan._id.toString() === device._id.toString();
+                            });
+                            if (planhistory) {
+                                device.expiryTime = planhistory.expiryTime;
+                                device.received = planhistory.received;
+                            }
+                            var truck = {};
+                            truck = _.findWhere(success.truckDetails, {deviceId: device.imei});
+                            if (truck) {
+                                device.registrationNo = truck.registrationNo;
+                                device.latestLocation = truck.attrs.latestLocation;
+                            }
+                            deviceCallback(false, "success");
+                        }, function (deviceErr, deviceResult) {
+                            if (deviceErr) {
+                                retObj.messages.push("Unable to populate devices, please try again");
+                                analyticsService.create(req, serviceActions.get_gps_devices_by_status_err, {
+                                    body: JSON.stringify(params),
+                                    accountId: req.jwt.id,
+                                    success: false,
+                                    messages: retObj.messages
+                                }, function (response) {
+                                });
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages = "Success";
+                                retObj.data = results.devices;
+                                retObj.count = results.count;
+                                analyticsService.create(req, serviceActions.get_gps_devices_by_status, {
+                                    body: JSON.stringify(params),
+                                    accountId: req.jwt.id,
+                                    success: true
+                                }, function (response) {
+                                });
+                                callback(retObj);
+                            }
+                        });
+
+                    }
                 });
-                callback(retObj);
             }
         })
 
     }
 };
 
-Devices.prototype.getGpsDevicesCountByStatus=function (req,res) {
+Devices.prototype.getGpsDevicesCountByStatus = function (req, res) {
     var retObj = {
         status: false,
         messages: []
@@ -1104,12 +1186,12 @@ Devices.prototype.getGpsDevicesCountByStatus=function (req,res) {
     } else {
         var condition = {};
         if (params.type === 'assigned') {
-            condition={assignedTo:params.accountId}
+            condition = {assignedTo: params.accountId}
         } else if (params.type === 'sold') {
-            condition={installedBy:params.accountId}
+            condition = {installedBy: params.accountId}
 
         } else if (params.type === 'inHand') {
-            condition={assignedTo:params.accountId,installedBy:{$exists:false}}
+            condition = {assignedTo: params.accountId, installedBy: {$exists: false}}
 
         }
         DevicesColl.count(condition, function (err, count) {
