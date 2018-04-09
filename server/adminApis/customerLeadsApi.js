@@ -67,8 +67,6 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
             });
             callback(retObj);
         } else {
-
-            if (results.customerLeads.length > 0) {
                 retObj.status = true;
                 retObj.messages = "Success";
                 retObj.data = results.customerLeads;
@@ -80,17 +78,6 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else {
-                retObj.messages.push("No Customer leads found");
-                analyticsService.create(req, serviceActions.get_customer_leads_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
         }
     });
 
@@ -618,8 +605,6 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
             });
             callback(retObj);
         } else {
-
-            if (results.truckOwners.length > 0) {
                 retObj.status = true;
                 retObj.messages = "Success";
                 retObj.data = results.truckOwners;
@@ -631,17 +616,6 @@ CustomerLeads.prototype.getTruckOwners = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else {
-                retObj.messages.push("No Truck owners found");
-                analyticsService.create(req, serviceActions.get_truck_owners_list_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
         }
     });
 };
@@ -2976,7 +2950,6 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
             callback(retObj);
         } else {
 
-            if (results.customerLeads.length > 0) {
                 retObj.status = true;
                 retObj.messages = "Success";
                 retObj.data = results.customerLeads;
@@ -2988,17 +2961,6 @@ CustomerLeads.prototype.getRestOfAll = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else {
-                retObj.messages.push("No Customer leads found");
-                analyticsService.create(req, serviceActions.get_customer_leads_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
         }
     });
 

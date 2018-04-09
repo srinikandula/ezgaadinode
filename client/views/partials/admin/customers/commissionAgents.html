@@ -12,8 +12,8 @@
         <li class="col-xs-4 pull-right">
             <form role="search">
                 <div class="input-group add-on">
-                    <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term" ng-model="commissionAgent1" ng-change="searchByCommissionAgent(commissionAgent1)">
-                    <div class="input-group-btn">
+                    <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term" ng-model="commissionAgent1" >
+                    <div class="input-group-btn" ng-click="searchByCommissionAgent(commissionAgent1)">
                         <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
                     </div>
                 </div>
@@ -68,8 +68,8 @@
                 <a href="#" ng-click="deleteCommissionAgent($index)" class="delete_icon"><span class="glyphicon glyphicon-trash  "></span></a>
             </td>
         </tr>
-        <tr ng-if="!currentPageOfCommissionAgents || currentPageOfCommissionAgents.length === 0">
-            <td colspan="8">No Commission Agents Records exist.</td>
+        <tr ng-if="!currentPageOfCommissionAgents || currentPageOfCommissionAgents.length === 0" class="text-center">
+            <td colspan="10">No Commission Agents Records exist.</td>
         </tr>
     </table>
     </div>

@@ -172,7 +172,10 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
     $scope.assignDevicesModal = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'assignDevicesModal.html',
-            controller: 'transferDevicesCrtl'
+            controller: 'transferDevicesCrtl',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
         });
 
     };
@@ -456,10 +459,9 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
 
 app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', '$uibModalInstance', function ($scope, DeviceService, Notification, $state, $uibModalInstance) {
 
-    $scope.closeAssignDevice = function () {
-        $uibModalInstance.dismiss('cancel');
+    $scope.cancel = function () {
+        $uibModalInstance.close();
     };
-
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
