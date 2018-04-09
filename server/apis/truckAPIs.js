@@ -1278,22 +1278,23 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
 };
 
 Trucks.prototype.unCheckLookingForLoad = function (body,req,callback) {
-    var retObj={status: false,
+    var retObj = {
+        status: false,
         messages: []
     };
-    TrucksColl.update({registrationNo:body.registrationNo},{$set:{lookingForLoad:false}},function (err,truck) {
-        if(err){
-            retObj.status=false;
+    TrucksColl.update({registrationNo: body.registrationNo}, {$set: {lookingForLoad: false}}, function (err, truck) {
+        if (err) {
+            retObj.status = false;
             retObj.messages.push('Error while updating truck');
             callback(retObj);
-        }else{
-            retObj.status=true;
+        } else {
+            retObj.status = true;
             retObj.messages.push('Unchecked looking for load successfully');
             callback(retObj);
         }
     });
-
-Trucks.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+};
+Trucks.prototype.shareDetailsViaEmail123 = function (jwt,params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1330,30 +1331,33 @@ Trucks.prototype.downloadDetails = function (jwt, params,req, callback) {
         status: false,
         messages: []
     };
-    console.log("share details download....");
-    Trucks.prototype.getTrucks(jwt,params,req,function(response){
-        console.log("response....",response);
-        if(response.status){
+    // console.log("share details download....");
+    Trucks.prototype.getTrucks(jwt, params, req, function (response) {
+        // console.log("response....", response);
+        if (response.status) {
             var output = [];
-            for(var i=0;i<response.trucks.length;i++){
-                output.push({Reg_No:response.trucks[i].registrationNo,
-                Permit:response.trucks[i].permitExpiry,
-                    Pollution:response.trucks[i].pollutionExpiry,
-                    Insurance:response.trucks[i].insuranceExpiry,
-                    Fitness:response.trucks[i].fitnessExpiry,
-                    Tax:response.trucks[i].taxDueDate,
-                    Driver:response.trucks[i].attrs.fullName,
-                    Mobile:response.trucks[i].attrs.mobile
+            for (var i = 0; i < response.trucks.length; i++) {
+                output.push({
+                    Reg_No: response.trucks[i].registrationNo,
+                    Permit: response.trucks[i].permitExpiry,
+                    Pollution: response.trucks[i].pollutionExpiry,
+                    Insurance: response.trucks[i].insuranceExpiry,
+                    Fitness: response.trucks[i].fitnessExpiry,
+                    Tax: response.trucks[i].taxDueDate,
+                    Driver: response.trucks[i].attrs.fullName,
+                    Mobile: response.trucks[i].attrs.mobile
                 });
             }
             retObj.data = output;
-            retObj.status=true;
+            retObj.status = true;
             retObj.messages.push("successful..");
             callback(retObj);
-        }else{
+        } else {
             callback(retObj);
         }
     })
+
 };
+
 
 module.exports = new Trucks();

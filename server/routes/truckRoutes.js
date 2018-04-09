@@ -102,7 +102,7 @@ AuthRouter.get('/getAllTrucksForAccount',function (req,res) {
 });
 
 AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
-    Trucks.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
+    Trucks.shareDetailsViaEmail123(req.jwt, req.query, req, function (result) {
         res.send(result);
     });
 });

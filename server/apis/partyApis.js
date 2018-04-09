@@ -493,7 +493,7 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
 
         }
     });
-}
+};
 
 Party.prototype.getAllPartiesForFilter = function (jwt,req, callback) {
     var retObj = {
@@ -561,12 +561,7 @@ Party.prototype.downloadDetails = function (jwt, params,req, callback) {
         status: false,
         messages: []
     };
-// <td>Party Name</td>
-//     <td>Contact</td>
-//     <td>Email</td>
-//     <td>City</td>
-//     <td>Party Type</td>
-//     <td>Triplanes</td>
+
     console.log("share details download....");
     Party.prototype.getAccountParties(jwt,params,req,function(response){
         console.log("response....",response);
