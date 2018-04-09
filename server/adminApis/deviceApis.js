@@ -1040,8 +1040,7 @@ Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
             condition = {installedBy: params.accountId}
 
         } else if (params.type === 'inHand') {
-            condition = {assignedTo: params.accountId, installedBy: {$exists: false}}
-
+            condition={assignedTo:params.accountId,installedBy:{$exists:false}}
         }
         async.parallel({
             devices: function (devicesCallback) {

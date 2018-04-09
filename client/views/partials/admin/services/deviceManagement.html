@@ -1,4 +1,4 @@
-<div ng-controller="deviceManagementCrtl">
+<div ng-controller="deviceManagementCrtl" ng-init="getCount();">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">Device Management</li>
         <li class="col-xs-4 pull-right">
@@ -15,6 +15,7 @@
     </ul>
     <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive" ng-table="deviceManagementParams">
         <tr ng-repeat="employee in currentPageOfDeviceDetails" style="text-align: center;">
+
             <td data-title="'S No'">
                 {{$index+1}}
             </td>
@@ -22,7 +23,7 @@
                 {{employee._id.employeeName[0]}}
             </td>
             <td data-title="'Assigned Devices'" sortable="'totalDevices'" class="clickable-item">
-                {{employee.totalDevices}}
+                <a href="#" ui-sref="services.assignedGpsDevices({type:'assigned', accountId:employee._id.assignedTo})">{{employee.totalDevices}}</a>
             </td>
             <td data-title="'Devices Inhand'"  class="clickable-item">
                 {{employee.totalDevices - employee.installedDevices}}

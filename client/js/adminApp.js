@@ -151,6 +151,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/services/deviceManagement.html',
         data: {activeTab: 'services'}
     }).state({
+        name: 'services.assignedGpsDevices',
+        url: '/assignedGpsDevices/:type/:accountId',
+        templateUrl: 'views/partials/admin/services/assignedGpsDevices.html',
+        data: {activeTab: 'services'},
+        params: {type:null, accountId:null}
+    }).state({
         name: 'services.payments',
         url: '/payments',
         templateUrl: 'views/partials/admin/services/payments.html',
