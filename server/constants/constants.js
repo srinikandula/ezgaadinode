@@ -561,6 +561,10 @@ const serviceActions = {
     delete_truck_by_admin_err:"DELETE_TRUCK_BY_ADMIN_ERR",
     get_truck_details_by_admin:"GET_TRUCK_DETAILS_BY_ADMIN",
     get_truck_details_by_admin_err:"GET_TRUCK_DETAILS_BY_ADMIN_ERR",
+    get_gps_devices_by_status:"GET_GPS_DEVICES_BY_STATUS",
+    get_gps_devices_by_status_err:"GET_GPS_DEVICES_BY_STATUS_ERR",
+    get_gps_devices_count_by_status:"GET_GPS_DEVICES_COUNT_BY_STATUS",
+    get_gps_devices_count_by_status_err:"GET_GPS_DEVICES_COUNT_BY_STATUS_ERR",
 
 
 };

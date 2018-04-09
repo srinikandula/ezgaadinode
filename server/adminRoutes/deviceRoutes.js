@@ -106,10 +106,15 @@ AuthRouter.get('/getGPSPlansOfDevice/:deviceId', function (req, res) {
     });
 });
 
-AuthRouter.get('/getAssignedDevicesList',function (req,res) {
-   Devices.getAssignedDevicesList(req,function (result) {
+AuthRouter.get('/getGpsDevicesByStatus',function (req,res) {
+   Devices.getGpsDevicesByStatus(req,function (result) {
        res.json(result);
    })
+});
+AuthRouter.get('/getGpsDevicesCountByStatus',function (req,res) {
+    Devices.getGpsDevicesCountByStatus(req,function (result) {
+        res.json(result);
+    })
 });
 
 module.exports = {
