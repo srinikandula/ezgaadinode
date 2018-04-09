@@ -1090,11 +1090,11 @@ $scope.selectTruckTypes=[];
 
     $scope.count = 0;
 
-    $scope.numOfTruckOwners = function () {
-        customerServices.countTruckOwners(function (success) {
+    $scope.numOfTruckOwners = function ( ) {
+        customerServices.countTruckOwners( function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                $scope.initTruckOwner('', '');
+                $scope.initTruckOwner('','');
             } else {
                 Notification.error({message: success.data.message});
             }
@@ -1113,7 +1113,7 @@ $scope.selectTruckTypes=[];
         customerServices.getTruckOwners(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
-                tableParams.total(response.data.count);
+                tableParams.total=response.data.count;
                 tableParams.data = response.data.data;
                 $scope.currentPageOfTruckOwners = response.data.data;
             } else {
