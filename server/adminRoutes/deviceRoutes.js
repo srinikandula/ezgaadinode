@@ -106,6 +106,12 @@ AuthRouter.get('/getGPSPlansOfDevice/:deviceId', function (req, res) {
     });
 });
 
+AuthRouter.get('/getAssignedDevicesList',function (req,res) {
+   Devices.getAssignedDevicesList(req,function (result) {
+       res.json(result);
+   })
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };
