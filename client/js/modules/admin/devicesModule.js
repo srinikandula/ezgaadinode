@@ -113,6 +113,20 @@ app.factory('DeviceService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+        getGpsDevicesByStatus: function (pageble, success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getGpsDevicesByStatus',
+                method: "GET",
+                params: pageble
+            }).then(success, error)
+        },
+        getGpsDevicesCountByStatus: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getGpsDevicesCountByStatus',
+                method: "GET",
+                params:params
+            }).then(success, error)
+        },
     }
 });
 
@@ -578,7 +592,7 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
     }
 }]);
 
-app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', 'Notification', function ($scope, DeviceService, NgTableParams, Notification) {
+app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', 'Notification','$stateParams', function ($scope, DeviceService, NgTableParams, Notification,$stateParams) {
     $scope.searchString = '';
     $scope.sortableString = '';
     $scope.count = 0;
@@ -602,6 +616,7 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
                 createdAt: -1
             }
         }, {
+            counts:[10, 20, 50],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
@@ -628,6 +643,56 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
             }
         });
     };
+
+$scope.getAssignedDevices= function () {
+    $scope.Name = $stateParams.Name;
+        DeviceService.getGpsDevicesCountByStatus({type:$stateParams.type, accountId:$stateParams.accountId}, function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.initDevices();
+            } else {
+                Notification.error({message: success.data.message});
+            }
+        });
+    };
+
+    $scope.initDevices = function () {
+        $scope.deviceParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts:[],
+            total: $scope.count,
+            getData: function (params) {
+                devicesloadTableData(params);
+            }
+        });
+    };
+
+    var devicesloadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            type: $stateParams.type,
+            accountId: $stateParams.accountId
+        };
+        DeviceService.getGpsDevicesByStatus(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.data;
+                $scope.currentPageOfDeviceDetails = response.data.data;
+            } else {
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
+
+
 }]);
 
 app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', 'AccountService', function ($scope, DeviceService, Notification, NgTableParams, AccountService) {

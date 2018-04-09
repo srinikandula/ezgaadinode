@@ -47,13 +47,13 @@
                     {{account.contactPhone}}
                 </td>
                 <td data-title="'Reg Date'" sortable="'createdAt'" class="clickable-item">
-                    {{account.createdAt | date:'yyyy-MM-dd'}}
+                    {{account.createdAt | date:'dd-MM-yyyy'}}
                 </td>
                 <td data-title="'No of trucks'" class="clickable-item">
                     {{account.noOfTrucks}}
                 </td>
                 <td data-title="'Sold By'" sortable="'createdBy.userName'" class="clickable-item">
-                    {{account.createdBy.userName | date:'yyyy-MM-dd'}}
+                    {{account.createdBy.userName | date:'dd-MM-yyyy'}}
                 </td>
                 <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
                     {{account.erpEnabled?'Enabled':'Disabled'}}

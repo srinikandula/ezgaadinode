@@ -1,0 +1,40 @@
+<div ng-controller="deviceManagementCrtl" ng-init="getAssignedDevices();">
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Installed Devices List : <b>{{Name | uppercase}}</b></li>
+        <div class="clearfix"></div>
+    </ul>
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
+               ng-table="deviceParams">
+            <tr ng-repeat="device in currentPageOfDeviceDetails" style="text-align: center;">
+                <td data-title="'S No'">
+                    {{$index+1}}
+                </td>
+                <td data-title="'Accounts'" sortable="'employeeName'" class="clickable-item">
+                    {{device.userName}}
+                </td>
+                <td data-title="'Device ID'" sortable="'totalDevices'" class="clickable-item">
+                    {{device.deviceId || '--'}}
+                </td>
+                <td data-title="'SIM Id'" class="clickable-item">
+                    {{device.simNumber || '--'}}
+                </td>
+                <td data-title="'SIM No'" sortable="'installedDevices'" class="clickable-item">
+                    {{device.simPhoneNumber || '--'}}
+                </td>
+                <td data-title="'IMEI Number'" sortable="'installedDevices'" class="clickable-item">
+                    {{device.imei || '--'}}
+                </td>
+                <td data-title="'Date Created'" sortable="'damagedDevices'" class="clickable-item">
+                    {{device.createdAt | date:'dd-MM-yyyy' || '--'}}
+                </td>
+                <td data-title="'Status'" sortable="'damagedDevices'" class="clickable-item">
+                    {{device.isActive || '--'}}
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfDeviceDetails || currentPageOfDeviceDetails.length === 0">
+                <td colspan="12">No Records exist.</td>
+            </tr>
+        </table>
+    </div>
+</div>

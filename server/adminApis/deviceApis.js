@@ -1040,8 +1040,7 @@ Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
             condition = {installedBy: params.accountId}
 
         } else if (params.type === 'inHand') {
-            condition = {assignedTo: params.accountId, installedBy: {$exists: false}}
-
+            condition={assignedTo:params.accountId,installedBy:{$exists:false}}
         }
         async.parallel({
             devices: function (devicesCallback) {
@@ -1063,7 +1062,7 @@ Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
                     countCallback(err, count);
                 })
             }
-        }, function (err, result) {
+        }, function (err, results) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_gps_devices_by_status_err, {
@@ -1169,7 +1168,7 @@ Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
     }
 };
 
-Devices.prototype.getGpsDevicesCountByStatus = function (req, res) {
+Devices.prototype.getGpsDevicesCountByStatus = function (req, callback) {
     var retObj = {
         status: false,
         messages: []

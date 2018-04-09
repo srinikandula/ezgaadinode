@@ -43,13 +43,13 @@
                 {{device.imei}}
             </td>
             <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
-                {{device.updatedAt | date:'yyyy-MM-dd'}}
+                {{device.updatedAt | date:'dd-MM-yyyy'}}
             </td>
             <td data-title="'Plan Expiry'" sortable="'expiryTime'" class="clickable-item">
-                {{device.expiryTime | date:'yyyy-MM-dd'}}
+                {{device.expiryTime | date:'dd-MM-yyyy'}}
             </td>
             <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">
-                {{device.createdAt | date:'yyyy-MM-dd'}}
+                {{device.createdAt | date:'dd-MM-yyyy'}}
             </td>
             <td data-title="'Installed By'" sortable="'installedBy'" class="clickable-item">
                 {{device.installedBy.userName |limitTo:5}}
