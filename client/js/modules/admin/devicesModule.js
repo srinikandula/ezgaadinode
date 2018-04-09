@@ -85,7 +85,7 @@ app.factory('DeviceService', function ($http) {
         },
         getPaymentDetails: function (id, success, error) {
             $http({
-                url: '/v1/cpanel/devices/getPaymentDetails/'+id,
+                url: '/v1/cpanel/devices/getPaymentDetails/' + id,
                 method: "GET"
             }).then(success, error)
         },
@@ -204,8 +204,8 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             }
         });
     };
-    $scope.getLatestLocation=function (device) {
-        $scope.latestLocation=device;
+    $scope.getLatestLocation = function (device) {
+        $scope.latestLocation = device;
         console.log($scope.latestLocation);
 
     }
@@ -262,10 +262,12 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
+
     getDevice();
+
     function getGPSPlansOfDevice() {
         DeviceService.getGPSPlansOfDevice($stateParams.device, function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.GPSPlans = success.data.GPSPlans;
             }
         });
@@ -275,18 +277,31 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getAllAccountsForDropdown(function (success) {
             if (success.data.status) {
                 $scope.accounts = success.data.accounts;
+                $scope.accounts.sort(function(a, b){
+                    if(a.userName < b.userName) return -1;
+                    if(a.userName > b.firstname) return 1;
+                    return 0;
+                })
+
             }
         });
     }
+
     getAccounts();
 
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
                 $scope.employees = success.data.employees;
+               /* $scope.employees.sort(function(a, b){
+                    if(a.displayName < b.displayName) return -1;
+                    if(a.displayName > b.displayName) return 1;
+                    return 0;
+                })*/
             }
         });
     }
+
     getEmployees();
 
     $scope.getTrucksOfAccount = function () {
@@ -331,7 +346,9 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
+
     getPlans();
+
     function initPlan() {
         $scope.GPSPlanDEtails = {
             accountId: '',
@@ -344,6 +361,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             errors: []
         }
     }
+
     initPlan();
     $scope.assignGPSPlan = function () {
         var params = $scope.GPSPlanDEtails;
@@ -374,9 +392,10 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         }
     };
     $scope.showGpsForm = false;
+
     function getDevicePlanHistory() {
         DeviceService.getDevicePlanHistory($stateParams.device, function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.devicePlanHistory = success.data.devicePlanHistory;
                 $scope.showGpsForm = success.data.showGpsForm;
             } else {
@@ -384,15 +403,19 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }
         });
     }
+
     getDevicePlanHistory();
 }]);
 
 app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {
-    $scope.devicesToAdd = [{
-        imei: '',
-        simPhoneNumber: '',
-        simNumber: ''
-    }];
+    $scope.devicesToAdd = [];
+    for (var i = 0; i < 30; i++) {
+        $scope.devicesToAdd.push({
+            imei: '',
+            simPhoneNumber: '',
+            simNumber: ''
+        })
+    }
 
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
@@ -401,6 +424,34 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
             }
         });
     }
+
+    $scope.addImeiNumbers = function (index, imeiNos) {
+        if (index === 0) {
+            var imeiNumbers = imeiNos.split(' ');
+             for (var i = 0; i < imeiNumbers.length; i++) {
+                 $scope.devicesToAdd[i].imei = imeiNumbers[i];
+             }
+
+        }
+    };
+    $scope.addPhoneNumbers = function (index, phomeNos) {
+        if (index === 0) {
+            var phoneNumbers = phomeNos.split(' ');
+            for (var i = 0; i < phoneNumbers.length; i++) {
+                $scope.devicesToAdd[i].simPhoneNumber = phoneNumbers[i];
+            }
+
+        }
+    };
+    $scope.addSimIds = function (index, simIds) {
+        if (index === 0) {
+            var simNums = simIds.split(' ');
+            for (var i = 0; i < simNums.length; i++) {
+                $scope.devicesToAdd[i].simNumber = simNums[i];
+            }
+
+        }
+    };
 
     getEmployees();
 
@@ -420,23 +471,35 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
 
     $scope.addDevices = function () {
         $scope.errors = [];
-        console.log("$scope.assignedTo", $scope.assignedTo)
         var params = $scope.devicesToAdd;
-        for (var i = 0; i < params.length - 1; i++) {
-            for (var j = i + 1; j < params.length; j++) {
-                if (params[i].imei === params[j].imei) {
-                    $scope.errors.push('Multiple devices cannot have same IMEI number');
-                    return;
+        for (var i = 0; i < params.length ; i++) {
+            if(!params[i].imei && !params[i].simPhoneNumber && !params[i].simNumber){
+                console.log("$scope.assignedTo", i,params.length)
+
+                params.splice(i,1);
+                if(i!==0){
+                    i=i-1;
+
                 }
-                if (params[i].simPhoneNumber === params[j].simPhoneNumber) {
-                    $scope.errors.push('Multiple devices cannot have same Sim PhoneNumber');
-                    return;
-                }
-                if (params[i].simNumber === params[j].simNumber) {
-                    $scope.errors.push('Multiple devices cannot have same Sim Number');
-                    return;
+
+            }else{
+                for (var j = i + 1; j < params.length; j++) {
+
+                    if (params[i].imei === params[j].imei) {
+                        $scope.errors.push('Multiple devices cannot have same IMEI number');
+                        return;
+                    }
+                    if (params[i].simPhoneNumber === params[j].simPhoneNumber) {
+                        $scope.errors.push('Multiple devices cannot have same Sim PhoneNumber');
+                        return;
+                    }
+                    if (params[i].simNumber === params[j].simNumber) {
+                        $scope.errors.push('Multiple devices cannot have same Sim Number');
+                        return;
+                    }
                 }
             }
+
         }
         if (!params[params.length - 1].imei || !params[params.length - 1].simPhoneNumber || !params[params.length - 1].simNumber) {
             $scope.errors.push('please fill all the details');
@@ -622,12 +685,13 @@ app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTab
 app.controller('paymentListCrtl', ['$scope', 'DeviceService', 'Notification', '$stateParams', function ($scope, DeviceService, Notification, $stateParams) {
     function getPaymentDetails() {
         DeviceService.getPaymentDetails($stateParams.id, function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.paymentDetails = success.data.paymentDetails;
             } else {
-                Notification.error({message:success.data.messages[0]});
+                Notification.error({message: success.data.messages[0]});
             }
         });
     }
+
     getPaymentDetails();
 }]);

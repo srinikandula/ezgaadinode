@@ -29,11 +29,11 @@
                                 </ui-select-choices>
                             </ui-select>-->
                         </div>
-                        <div class="form-group styling-input-list">
+                       <!-- <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control"
                                    ng-model="deviceDetails.imei"/>
                             <label class="focus-effect-for-input">Device Id</label>
-                        </div>
+                        </div>-->
                         <div class="form-group styling-input-list">
                             <select class="form-control custom-form-control" ng-model="deviceDetails.truckId"
                                     ng-change="getSelectedTruckDetails()">
@@ -44,11 +44,11 @@
                         </div>
                         <div class="form-group styling-input-list">
                             <select class="form-control custom-form-control" ng-model="deviceDetails.installedBy">
+                                <option value="" >Select Employee</option>
                                 <option ng-repeat="employee in employees" value="{{employee.id_admin}}">
                                     {{employee.displayName}}
                                 </option>
                             </select>
-                            <label class="focus-effect-for-input">Installed By</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control"
