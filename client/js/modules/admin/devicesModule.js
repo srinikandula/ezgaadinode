@@ -120,10 +120,11 @@ app.factory('DeviceService', function ($http) {
                 params: pageble
             }).then(success, error)
         },
-        getGpsDevicesCountByStatus: function (success, error) {
+        getGpsDevicesCountByStatus: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/devices/getGpsDevicesCountByStatus',
                 method: "GET",
+                params:params
             }).then(success, error)
         },
     }
@@ -615,6 +616,7 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
                 createdAt: -1
             }
         }, {
+            counts:[10, 20, 50],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
@@ -643,33 +645,34 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
     };
 
 $scope.getAssignedDevices= function () {
-    $scope.getCountAssignedDevices = function () {
-        DeviceService.getDeviceManagementCount(function (success) {
+    $scope.Name = $stateParams.Name;
+        DeviceService.getGpsDevicesCountByStatus({type:$stateParams.type, accountId:$stateParams.accountId}, function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
-                $scope.init();
+                $scope.initDevices();
             } else {
                 Notification.error({message: success.data.message});
             }
         });
     };
 
-    $scope.init = function () {
-        $scope.deviceManagementParams = new NgTableParams({
+    $scope.initDevices = function () {
+        $scope.deviceParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
                 createdAt: -1
             }
         }, {
+            counts:[],
             total: $scope.count,
             getData: function (params) {
-                loadTableData(params);
+                devicesloadTableData(params);
             }
         });
     };
 
-    var loadTableData = function (tableParams) {
+    var devicesloadTableData = function (tableParams) {
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
@@ -688,7 +691,6 @@ $scope.getAssignedDevices= function () {
             }
         });
     };
-}
 
 
 }]);

@@ -151,11 +151,17 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/services/deviceManagement.html',
         data: {activeTab: 'services'}
     }).state({
-        name: 'services.assignedGpsDevices',
-        url: '/assignedGpsDevices/:type/:accountId',
-        templateUrl: 'views/partials/admin/services/assignedGpsDevices.html',
+        name: 'services.inHandGpsDevices',
+        url: '/inHandGpsDevices/:Name/:type/:accountId',
+        templateUrl: 'views/partials/admin/services/inHandGpsDevices.html',
         data: {activeTab: 'services'},
-        params: {type:null, accountId:null}
+        params: {Name:null, type:null, accountId:null}
+    }).state({
+        name: 'services.installedGpsDevices',
+        url: '/installedGpsDevices/:Name/:type/:accountId',
+        templateUrl: 'views/partials/admin/services/installedGpsDevices.html',
+        data: {activeTab: 'services'},
+        params: {Name:null, type:null, accountId:null}
     }).state({
         name: 'services.payments',
         url: '/payments',
