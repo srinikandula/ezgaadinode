@@ -9,6 +9,9 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var PaymentsColl = require('./../models/schemas').PaymentsColl;
+var config = require('./../config/config');
+var mysql = require('mysql');
+var traccar_mysql = mysql.createPool(config.traccar_mysql);
 
 var Devices = function () {
 };
@@ -53,14 +56,28 @@ Devices.prototype.addDevices = function (req, callback) {
                         } else {
                             eachdevice.accountId = account._id;
                             eachdevice.assignedTo = req.body.assignedTo;
-                            var device = new DevicesColl(eachdevice);
-                            device.save(function (addDeviceErr, document) {
+                            async.parallel({
+                                tracker: function (trackerCallback) {
+                                    traccar_mysql.query("INSERT INTO devices (name, uniqueid) VALUES ('" + eachdevice.imei.toString() + "','" + eachdevice.imei.toString() + "')", function (err, tracker) {
+                                        trackerCallback(err, tracker)
+                                    });
+                                },
+                                device: function (deviceCallback) {
+                                    var device = new DevicesColl(eachdevice);
+                                    device.save(function (err, document) {
+                                        deviceCallback(err, document)
+                                    });
+
+                                }
+                            }, function (addDeviceErr, saveDevice) {
                                 if (addDeviceErr) {
                                     eachdeviceCallback(addDeviceErr);
                                 } else {
                                     eachdeviceCallback(null);
                                 }
                             });
+
+
                         }
                     });
                 }
@@ -515,7 +532,10 @@ Devices.prototype.updateDevice = function (req, callback) {
             DevicesColl.findOneAndUpdate({_id: params._id}, {
                 $set: {
                     accountId: params.accountId,
-                    installedBy: params.installedBy
+                    installedBy: params.installedBy,
+                    simNumber:params.simNumber,
+                    simPhoneNumber:params.simPhoneNumber
+
                 }
             }, function (errAddedAccount, accountAdded) {
                 if (errAddedAccount) {

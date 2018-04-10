@@ -466,11 +466,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             params.errors.push('Please Select a Trip Lane');
         }
         if (!params.errors.length) {
+            params.partyId=params.partyId._id;
             if (params._id) {
                 params.date = Number(params.date);
-                if(typeof  $scope.trip.tripLane ==="string") {
+               /* if(typeof  $scope.trip.tripLane ==="string") {
                     $scope.trip.tripLane = {name: $scope.trip.tripLane}
-                }
+                }*/
                 TripServices.updateTrip($scope.trip, function (success) {
                     if (success.data.status) {
                         Notification.success({message: 'Trip updated successfully'});
