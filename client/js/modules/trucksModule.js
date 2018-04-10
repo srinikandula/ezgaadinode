@@ -149,6 +149,13 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET",
                 params: params
             }).then(success, error);
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/trucks/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
     }
 }]);
@@ -288,7 +295,43 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             }
         });
     };
+    $scope.shareDetailsViaEmail=function(){
+        swal({
+            title: 'Share trucks data using mail',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                TrucksService.shareDetailsViaEmail({
+                email:email
+            },function(success){
+                if (success.data.status) {
+                    resolve()
+                } else {
 
+                }
+            },function(error){
+
+            })
+        })
+
+    },
+        allowOutsideClick: false
+
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: ' sent successfully'
+            })
+        }
+    })
+    }
+    $scope.downloadDetails = function () {
+        window.open('/v1/trucks/downloadDetails');
+    };
 
 }]);
 

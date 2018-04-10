@@ -8,6 +8,9 @@ var config = require('./../config/config');
 var Utils = require('./utils');
 var Trips = require('./tripsApi');
 var PaymentsReceived = require('./paymentsReceivedAPI');
+var emailService = require('./mailerApi');
+
+var Utils = require('./utils');
 
 var ExpenseCostColl = require('./expensesApi');
 var TripCollection = require('./../models/schemas').TripCollection;
@@ -490,7 +493,7 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
 
         }
     });
-}
+};
 
 Party.prototype.getAllPartiesForFilter = function (jwt,req, callback) {
     var retObj = {
@@ -518,6 +521,68 @@ Party.prototype.getAllPartiesForFilter = function (jwt,req, callback) {
         }
     })
 };
+Party.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else{
+        Party.prototype.getAccountParties(jwt,params,req,function(response){
+            // console.log("response...",response);
+            if(response.status){
+                var emailparams = {
+                    templateName: 'partyDetails',
+                    subject: "Party Details",
+                    to: params.email,
+                    data:response.parties
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push(' Details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            }else{
+                callback(response);
 
+            }
+        })
+    }
+
+};
+Party.prototype.downloadDetails = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    console.log("share details download....");
+    Party.prototype.getAccountParties(jwt,params,req,function(response){
+        console.log("response....",response);
+        if(response.status){
+            var output = [];
+            for(var i=0;i<response.parties.length;i++){
+                output.push({Party_Name:response.parties[i].name,
+                    Contact:response.parties[i].contact,
+                    Email:response.parties[i].email,
+                    City:response.parties[i].city,
+                    Party_Type:response.parties[i].partyType
+                });
+            }
+            retObj.data = output;
+            retObj.status=true;
+            retObj.messages.push("successful..");
+            callback(retObj);
+        }else{
+            callback(retObj);
+        }
+    })
+};
 
 module.exports = new Party();

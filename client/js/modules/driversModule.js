@@ -49,6 +49,13 @@ app.factory('DriverService',['$http', function ($http) {
                 url: '/v1/drivers/getAllDriversForFilter',
                 method: "GET",
             }).then(success, error)
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/drivers/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
     }
 }]);
@@ -171,8 +178,44 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
             }
         });
     }
+        $scope.shareDetailsViaEmail=function(){
+            swal({
+                title: 'Share drivers data using mail',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                return new Promise((resolve) => {
+                    DriverService.shareDetailsViaEmail({
+                    email:email
+                },function(success){
+                    if (success.data.status) {
+                        resolve()
+                    } else {
 
-    // $scope.getDrivers();
+                    }
+                },function(error){
+
+                })
+                })
+
+                },
+            allowOutsideClick: false
+
+        }).then((result) => {
+                if (result.value) {
+                swal({
+                    type: 'success',
+                    html: ' sent successfully'
+                })
+            }
+        })
+        };
+        $scope.downloadDetails = function () {
+            window.open('/v1/drivers/downloadDetails');
+        };
+
 }]);
 
 app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams) {

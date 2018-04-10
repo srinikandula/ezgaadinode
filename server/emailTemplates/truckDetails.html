@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+<body>
+<div>
+    <table border="1">
+        <tr>
+            <td>Reg No</td>
+            <td>Permit</td>
+            <td>Pollution</td>
+            <td>Insurance</td>
+            <td>Fitness</td>
+            <td>Tax</td>
+            <td>Driver</td>
+            <td>Mobile</td>
+        </tr>
+        #foreach($record in $emailData)
+        <tr>
+            <td>$record.registrationNo</td>
+            <td>$record.permitExpiry</td>
+            <td>$record.pollutionExpiry</td>
+            <td>$record.insuranceExpiry</td>
+            <td>$record.fitnessExpiry</td>
+            <td>$record.taxDueDate</td>
+            <td>$record.attrs.fullName</td>
+            <td>$record.attrs.mobile</td>
+
+        </tr>
+        #end
+    </table>
+</div>
+</body>
+</html>

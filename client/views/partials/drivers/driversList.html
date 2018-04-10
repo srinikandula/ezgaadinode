@@ -1,9 +1,9 @@
 <div class="main-right col-xs-12" ng-controller="DriversListCtrl">
 
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-3 pall-zero"><h3>Driver Details</h3></div>
+        <div class="col-sm-3 pall-zero"><h3 style="padding:0">Driver Details</h3></div>
         <div class="col-xs-8 col-xs-push-1 pall-zero">
-            <div class="col-sm-8">
+            <div class="col-sm-7">
                 <form>
                 <div class="input-group stylish-input-group">
                     <input type="text" ng-model="driver2"  class="form-control" placeholder="Search By Driver Name">
@@ -15,17 +15,24 @@
                 </div>
                 </form>
             </div>
-        <div class="col-sm-4 pall-zero pos-relative">
+        <div class="col-sm-3 pall-zero pos-relative">
             <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
             <select class="form-control" ng-model="driver1" ng-change="searchByDriverName(driver1);">
                 <option value="" selected>All Drivers</option>
                 <option ng-repeat="drivers in driversList ">{{drivers.fullName}}</option>
             </select>
         </div>
+            <div class="col-sm-1 list-inline mailDownload">
+                <button  style="margin-left:7px" type="button" ng-click="shareDetailsViaEmail()"
+                        class="btn mailImage"><img src="images/Reports_Mail.png">
+                </button>
+            </div>
+            <div>
+                <button type="button" ng-click="downloadDetails();" class="btn mailImage">
+                    <img src="images/Reports_Download.png"></button>
+            </div>
         </div>
     </div>
-
-
     <div class="mt-10">
         <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
                ng-table="driverParams">

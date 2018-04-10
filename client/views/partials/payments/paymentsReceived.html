@@ -1,7 +1,7 @@
 <div class="main-right col-xs-12" ng-controller="PaymentsCtrl">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-2 pall-zero"><h3>Payments:</h3></div>
-        <div class="col-sm-10 pall-zero ">
+        <div class="col-sm-2 pall-zero"><h3>Payments</h3></div>
+        <div class="col-sm-8 pall-zero">
             <ul class="list-inline ">
                 <li class="col-sm-3">
                     <date-picker ng-model="fromDate" class="'paymentscontrol'" ban-future="'banFutureDate'"></date-picker>
@@ -32,7 +32,18 @@
                 </li>
             </ul>
         </div>
+        <div class="col-sm-1 list-inline mailDownload">
+            <button  style="margin-left:7px" type="button" ng-click="shareDetailsViaEmail()"
+                     class="btn mailImage"><img src="images/Reports_Mail.png">
+            </button>
+        </div>
+        <div class="col-sm-1 list-inline mailDownload">
+            <button type="button" ng-click="downloadDetails();" class="btn mailImage">
+                <img src="images/Reports_Download.png"></button>
+        </div>
 
+        </div>
+        </div>
     </div>
     <!--<div class="toolbar-button-div pull-right mb-10">-->
     <!--<button class="btn  btn-blue pull-right" ng-click="goToEditPaymentsPage()">Add Payments</button>-->

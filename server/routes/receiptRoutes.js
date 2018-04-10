@@ -66,6 +66,23 @@ AuthRouter.get('/shareReceiptsDetailsByPartyViaEmail',function (req,res) {
        res.send(result);
    }) 
 });
+
+AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
+    Receipts.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.get('/downloadDetails', function (req, res) {
+    Receipts.downloadDetails(req.jwt,req.query,req, function (result) {
+        if(result.status){
+            res.xls('receipts details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+
+        }else{
+            res.send(result);
+        }
+    });
+});
+
 module.exports = {
     AuthRouter: AuthRouter
 };

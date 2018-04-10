@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+<body>
+<div>
+    <table border="1">
+        <tr>
+            <td>Date</td>
+            <td>Party</td>
+            <td>Amount</td>
+            <td>Description</td>
+        </tr>
+        #foreach($record in $emailData)
+        <tr>
+            <td>$record.date</td>
+            <td>$record.partyId.name</td>
+            <td>$record.amount</td>
+            <td>$record.description</td>
+        </tr>
+        #end
+    </table>
+</div>
+</body>
+</html>

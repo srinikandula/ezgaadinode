@@ -707,4 +707,64 @@ Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (req, callback
     }
 
 };
+Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    // console.log("shareDetailsViaEmail",params);
+    if(!params.email || !Utils.isEmail(params.email)){
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else{
+        Receipts.prototype.getReceipts(req,function(response){
+            if(response.status){
+                var emailparams = {
+                    templateName: 'receiptDetails',
+                    subject: "Receipt Details",
+                    to: params.email,
+                    data:response.receipts
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        retObj.status = true;
+                        retObj.messages.push(' Details shared successfully');
+                        callback(retObj);
+                    } else {
+                        callback(emailResponse);
+                    }
+                });
+            }else{
+                callback(response);
+
+            }
+        })
+    }
+
+};
+Receipts.prototype.downloadDetails = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    console.log("share details download....");
+    Receipts.prototype.getReceipts(req,function(response){
+        console.log("response....",response);
+        if(response.status){
+            var output = [];
+            for(var i=0;i<response.receipts.length;i++){
+               output.push({Date:response.receipts[i].date,
+               Party:response.receipts[i].partyId.name,
+               Amount:response.receipts[i].amount,
+               Description:response.receipts[i].description});
+            }
+            retObj.data = output;
+            retObj.status=true;
+            retObj.messages.push("successful..");
+            callback(retObj);
+        }else{
+            callback(retObj);
+        }
+    })
+};
 module.exports = new Receipts();

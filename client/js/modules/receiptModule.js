@@ -62,6 +62,13 @@ app.factory('ReceiptServices', ['$http', function ($http) {
                 params: params
             }).then(success, error)
 
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/receipts/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
     }
 }]);
@@ -201,8 +208,46 @@ app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notificat
                 loadTableData(params);
             }
         });
-    }
+    };
+    $scope.shareDetailsViaEmail=function(){
+        swal({
+            title: 'Share receipts data using mail',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                ReceiptServices.shareDetailsViaEmail({
+                email:email
+            },function(success){
+                console.log("success...",success);
+                if (success.data.status) {
+                    resolve()
+                } else {
 
+                }
+            },function(error){
+
+            })
+        })
+
+    },
+        allowOutsideClick: false
+
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: ' sent successfully'
+            })
+        }
+    })
+    };
+
+    $scope.downloadDetails = function () {
+        window.open('/v1/receipts/downloadDetails');
+    };
 
 }]);
 app.controller('receiptEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', 'ReceiptServices', function ($scope, $state, $stateParams, PaymentsService, Notification, NgTableParams, paginationService, PartyService, TripServices, ReceiptServices) {
