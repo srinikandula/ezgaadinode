@@ -113,7 +113,7 @@ app.controller('ShowTripLanesCtrl', ['$scope', '$uibModal', 'NgTableParams', 'Tr
 }]);
 
 app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneServices', '$stateParams', 'Notification', function ($scope, $state, Utils, TripLaneServices, $stateParams, Notification) {
-    console.log('tl-->', $stateParams);
+
     $scope.pagetitle = "Add Trip Lane";
 
     $scope.drivers = [];
@@ -135,7 +135,6 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
     if ($stateParams.tripLaneId) {
         $scope.pagetitle = "Edit Trip Lane";
         TripLaneServices.getTripLane($stateParams.tripLaneId, function (success) {
-            console.log('acc===>', success.data);
             if (success.data.status) {
                 $scope.tripLane = success.data.tripLane;
             } else {
@@ -149,7 +148,6 @@ app.controller('AddEditTripLaneCtrl', ['$scope', '$state', 'Utils', 'TripLaneSer
         var params = $scope.tripLane;
         params.success = [];
         params.error = [];
-        console.log(params.error);
         if (!params.name) {
             params.error.push('Invalid Trip Lane Name');
         }

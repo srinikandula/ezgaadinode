@@ -1,67 +1,51 @@
 <div class="main-right col-xs-12" ng-controller="ExpenseCtrl">
     <div class="col-xs-12 pall-zero mb-10">
         <div class="col-sm-2 pall-zero"><h3>Expenses</h3></div>
-       <!-- <div class="col-xs-8 col-xs-push-1 pall-zero">
-            <div class="col-sm-8">
-                <form>
-                <div class="input-group stylish-input-group">
-                    <input type="text" class="form-control" ng-model="truckNumber1" placeholder="Search By Vehicle Number">
-                    <span class="input-group-addon">
-                    <button type="submit" ng-click="searchByVechicleNumber(truckNumber1);">
-                            <i class="fa fa-search sear" aria-hidden="true"></i>
-                    </button>
-                </span>
+        <ul class="col-sm-10 pall-zero list-inline">
+            <li class="col-sm-3 pall-zero">
+                <date-picker class="'paymentscontrol'" ban-future="'banFutureDate'" ng-model="fromDate"
+                ></date-picker>
+            </li>
+            <li class="col-sm-3 pall-zero">
+                <date-picker ng-model="toDate" class="'paymentscontrol'" ban-future="'banFutureDate'"></date-picker>
+            </li>
+            <li class="col-sm-1 pall-zero">
+                <button type="submit" ng-click="searchByVechicleNumber(truckNumber1);" class="btn go">
+                    <i class="fa fa-search sear" aria-hidden="true"></i>
+                </button>
+            </li>
+            <li class="pos-relative col-sm-3 pall-zero">
+                <div class="select-box erp-box">
+                    <ui-select ng-model="truckName" theme="select2"
+                               title="Choose a person" append-to-body="true"
+                               ng-change="searchByVechicleNumber(truckName.registrationNo);">
+                        <ui-select-match placeholder=" Select a Truck" class="form-control ui-select-control">
+                            {{$select.selected.registrationNo || registrationNo}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
+                            <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
                 </div>
-                </form>
-            </div>
-            <div class="col-sm-4 pall-zero pos-relative">
-                <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
-                    <option value="" selected>All Vehicles</option>
-                    <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
-                </select>
-            </div>
-        </div>-->
-        <div class="col-sm-9 pall-zero ">
-            <ul class="list-inline ">
-                <li class="col-sm-3">
-                    <date-picker class="'paymentscontrol'" ban-future="'banFutureDate'" ng-model="fromDate"
-                    ></date-picker>
-                </li>
-                <li class="col-sm-3">
-                    <date-picker ng-model="toDate" class="'paymentscontrol'" ban-future="'banFutureDate'"></date-picker>
-                </li>
-                <li class="col-sm-3">
-                    <form>
-                        <div class="">
-                            <input type="text" ng-model="truckNumber1" class="form-control"
-                                   placeholder="Search By Party Name" ng-change="searchByVechicleNumber(truckNumber1)">
-                        </div>
-                    </form>
-                </li>
-                <li class="col-sm-1">
-                    <button type="submit" ng-click="searchByVechicleNumber(truckNumber1);" class="btn go">
-                        <i class="fa fa-search sear" aria-hidden="true"></i>
-                    </button>
-                </li>
-                <li class="pall-zero pos-relative col-sm-2">
-                    <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                    <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
-                        <option value="" selected>All Vehicles</option>
-                        <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
-                    </select>
-                </li>
-            </ul>
-        </div>
-        <div class="col-sm-1 list-inline mailDownload">
-            <button  style="margin-left:7px" type="button" ng-click="shareDetailsViaEmail()"
-                     class="btn mailImage"><img src="images/Reports_Mail.png">
-            </button>
-        </div>
-        <div>
-            <button type="button" ng-click="downloadDetails();" class="btn mailImage">
-                <img src="images/Reports_Download.png"></button>
-        </div>
+
+                <!--  <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                  <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
+                      <option value="" selected>All Vehicles</option>
+                      <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
+                  </select>-->
+            </li>
+
+            <li class="col-sm-1">
+                <button type="button" ng-click="shareDetailsViaEmail()"
+                        class="btn mailImage"><img src="images/Reports_Mail.png">
+                </button>
+            </li>
+            <li class="col-sm-1">
+                <button type="button" ng-click="downloadDetails();" class="btn mailImage">
+                    <img src="images/Reports_Download.png"></button>
+            </li>
+        </ul>
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="expenseParams">
         <tr ng-repeat="maintanence in currentPageOfMaintanence" style="text-align: center;">
@@ -89,9 +73,11 @@
                 class="clickable-item">{{ maintanence.attrs.createdByName }}
             </td>
             <td data-title="'Action'" class="col-sm-2">
-                <a href="#" ng-show="userType=='account' || userId==maintanence.createdBy" class="btn" ng-click="goToEditExpensePage(maintanence._id)">
+                <a href="#" ng-show="userType=='account' || userId==maintanence.createdBy" class="btn"
+                   ng-click="goToEditExpensePage(maintanence._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
-                <a href="#" ng-show="userType=='account' || userId==maintanence.createdBy" class="btn" ng-click="deleteExpenseRecord(maintanence._id)">
+                <a href="#" ng-show="userType=='account' || userId==maintanence.createdBy" class="btn"
+                   ng-click="deleteExpenseRecord(maintanence._id)">
 
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
