@@ -28,8 +28,10 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
         condition = {
             $or:
                 [
-                    {"firstName": new RegExp(params.customerLeadSearch, "gi")},
-                    {"leadStatus": new RegExp(params.customerLeadSearch, "gi")},
+                    {"firstName": new RegExp("^"+params.customerLeadSearch, "i")},
+                    {"leadStatus": new RegExp("^"+params.customerLeadSearch, "i")},
+                    {"contactPhone": new RegExp("^"+params.customerLeadSearch, "i")},
+
                 ], "status": {$eq: null}
         };
 
@@ -46,6 +48,7 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
                 .skip(skipNumber)
                 .limit(limit)
                 .exec(function (err, docs) {
+                    console.log(err,docs)
                     customerLeadsCallback(err, docs);
 
                 })

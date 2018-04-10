@@ -9,6 +9,7 @@ var Events = function () {
 };
 var pool = mysql.createPool(config.mysql);
 var pool_crm = mysql.createPool(config.mysql_crm);
+var traccar_mysql = mysql.createPool(config.traccar_mysql);
 var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
@@ -450,7 +451,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
         if (employeeErr) {
             retObj.status = false;
             retObj.messages.push('Error fetching data');
-            retObj.messages.push(JSON.stringify(err));
+            retObj.messages.push(JSON.stringify(employeeErr));
             callback(retObj);
         } else {
             var deviceDataQuery = "select accountId, deviceId, installedById, devicePaymentStatus, currentPlanId, isDamaged, equipmentType, vehicleModel, vehicleId, licenseExpire, insuranceExpire, fitnessExpire, NPExpire, fuelCapacity, installTime, resetTime, expirationTime, serialNumber, simPhoneNumber, simID, imeiNumber, isActive, lastStopTime from Device where installedById<>0";
@@ -548,7 +549,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                             lastStopTime: devicesDataResult.lastStopTime,
                                             fuelCapacity: devicesDataResult.fuelCapacity,
                                             installTime: devicesDataResult.installTime,
-                                        }
+                                        };
                                         deviceCallback(null, deviceData);
 
                                     }
@@ -580,6 +581,12 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                             data.device.assignedTo = data.employeeId;
 
                                             var deviceDataDoc = new DeviceColl(data.device);
+                                            if(data.device.imei && data.device.deviceId){
+                                                traccar_mysql.query("INSERT INTO devices (name, uniqueid) VALUES ('"+data.device.deviceId.toString()+"','"+data.device.imei.toString()+"')", function (err, result) {
+                                                    if (err) console.log("Err",err);
+                                                });
+                                            }
+
                                             deviceDataDoc.save(function (err, doc) {
                                                 deviceDocCallBack(err, 'saved');
                                             });

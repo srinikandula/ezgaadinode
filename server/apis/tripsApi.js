@@ -351,7 +351,7 @@ Trips.prototype.updateTrip = function (jwt, tripDetails,req, callback) {
     }
     if (giveAccess) {
         tripDetails = Utils.removeEmptyFields(tripDetails);
-        tripDetails.tripLane = tripDetails.tripLane.name;
+       /* tripDetails.tripLane = tripDetails.tripLane.name;*/
         TripCollection.findOneAndUpdate({_id: tripDetails._id},
             {$set: tripDetails},
             {new: true}, function (err, trip) {
