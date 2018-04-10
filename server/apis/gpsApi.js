@@ -821,20 +821,20 @@ Gps.prototype.getDailyReports = function (req,callback) {
         messages: []
     };
     var startDate=new Date()/*req.params.date*/;
-    startDate.setDate(7);
-    startDate.setMonth(3);
-    startDate.setFullYear(2018);
-    startDate.setHours(5);
-    startDate.setMinutes(30);
-    startDate.setSeconds(0);
+    // startDate.setDate(7);
+    // startDate.setMonth(3);
+    // startDate.setFullYear(2018);
+    // startDate.setHours(5);
+    // startDate.setMinutes(30);
+    // startDate.setSeconds(0);
     var endDate=new Date();
-    endDate.setDate(6);
-    endDate.setMonth(3);
-    endDate.setFullYear(2018);
+    // endDate.setDate(6);
+    // endDate.setMonth(3);
+    // endDate.setFullYear(2018);
     endDate.setDate(startDate.getDate()-1);
-    endDate.setHours(5);
-    endDate.setMinutes(30);
-    endDate.setSeconds(0);
+    // endDate.setHours(5);
+    // endDate.setMinutes(30);
+    // endDate.setSeconds(0);
     var gps=new Gps();
 
     AccountsColl.find({dailyReports:true},function (err,accounts) {
@@ -879,8 +879,9 @@ Gps.prototype.getDailyReports = function (req,callback) {
                                         }
                                     }
                                 }
+                                totalString=totalString.replace(/[^\x00-\xFF]/g, " ");
                                 retObj.data=totalString;
-                                mailerApi.sendEmailWithAttachment2({to:'snehathallapaka@gmail.com',subject:'Daily-Report',data:totalString},function (result) {
+                                mailerApi.sendEmailWithAttachment2({to:account.email,subject:'Daily-Report',data:totalString},function (result) {
                                     if(result.status){
                                     retObj.status=true;
                                     retObj.messages.push('Daily Report sent successfully');
