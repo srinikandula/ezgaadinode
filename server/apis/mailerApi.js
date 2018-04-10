@@ -148,7 +148,8 @@ function mailObject(data) {
 }
 
 EmailService.prototype.sendEmailWithAttachment2 = function (data,callback) {
-    data.base64Data=base64.encode(data.data)
+    console.log('-----> ',data.data);
+    data.base64Data=base64.encode(data.data);   //Buffer.from('Hello World').toString(base64);
     send(mailObject(data),function (result) {
         callback(result);
     });
@@ -163,6 +164,7 @@ function send(toSend,callback) {
     requestPost.path = '/v3/mail/send';
     requestPost.body = requestBody;
     sg.API(requestPost, function (error, response) {
+        console.log(response);
         if(error){
             callback({status:false,message:'Error while sending trip report'});
         }else{

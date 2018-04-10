@@ -358,17 +358,15 @@ var devicePositions = new mongoose.Schema({
     speed: String,
     course: String,
     statusCode: String,
-    attributes: {
-        batteryLevel: String,
-        distance: Number,
-        totalDistance: Number,
-        motion: Number
-    },
+    attributes: {},
     address: String,
-    isIdle: Boolean,
-    isStopped: Boolean
+    isIdle:Boolean,
+    isStopped:Boolean,
+    distance:{type:Number,default:0},
+    totalDistance:{type:Number,default:0}
     // isViewed : Boolean
-}, {timestamps: true, versionKey: false});
+}, { timestamps: true, versionKey: false });
+
 
 var archivedDevicePositions = new mongoose.Schema({
     // _id: ObjectId,

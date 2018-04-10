@@ -622,8 +622,8 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                     origins: origins,
                                     destinations: destinations
                                 }, function (err, result) {
-                                    distance = result.rows[0].elements[0].distance.text;
                                     if (result) {
+                                        distance = result.rows[0].elements[0].distance.text;
                                         retObj.status = true;
                                         retObj.messages.push('Success');
                                         retObj.results = {
@@ -699,6 +699,43 @@ Gps.prototype.downloadReport = function (truckId,startDate,endDate,req,callback)
         }
     })
 };
+
+Gps.prototype.truckReportInString = function (truckId,startDate,endDate,req,callback) {
+    var retObj={status: false,
+        messages: []
+    };
+    var gps=new Gps();
+    gps.gpsTrackingByTruck(truckId,startDate,endDate,req,function (result) {
+        if(result.status){
+            var output = [];
+            var positions=result.results.positions;
+            var reportString='Date,Status,Address,Speed,Odo'+'\n';
+            for(var i=0;i<positions.length;i++){
+                var status;
+                if(positions[i].isStopped){
+                    status='Stopped'
+                }else if(positions[i].isIdle){
+                    status='Idle'
+                }else{
+                    status='Moving'
+                }
+                if(i === positions.length - 1){
+                    reportString=reportString+positions[i].createdAt+','+status+','+'"'+positions[i].address+'"'+','+positions[i].speed+','+positions[i].totalDistance;
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.data=reportString;
+                    callback(retObj);
+                }else{
+                    reportString=reportString+positions[i].createdAt+','+status+','+'"'+positions[i].address+'"'+','+positions[i].speed+','+positions[i].totalDistance+'\n';
+                }
+
+            }
+        }else{
+            callback(result);
+        }
+    })
+}
+
 
 Gps.prototype.getAllVehiclesLocation = function (jwt,req,callback) {
     var retObj={status: false,
@@ -783,33 +820,99 @@ Gps.prototype.getDailyReports = function (req,callback) {
     var retObj={status: false,
         messages: []
     };
-    var startDate=req.params.date;
-    startDate.setHours(0);
-    startDate.setMinutes(0);
-    startDate.setSeconds(0);
+    var startDate=new Date()/*req.params.date*/;
+    // startDate.setDate(7);
+    // startDate.setMonth(3);
+    // startDate.setFullYear(2018);
+    // startDate.setHours(5);
+    // startDate.setMinutes(30);
+    // startDate.setSeconds(0);
     var endDate=new Date();
-    endDate.setDate(startDate.getDate()+1);
-    endDate.setHours(0);
-    endDate.setMinutes(0);
-    endDate.setSeconds(0);
-    console.log(startDate,endDate);
-    // TrucksColl.find({accountId:req.jwt.id},function (err,trucks) {
-    //     if(err){
-    //         retObj.messages.push('Error retrieving trucks for account');
-    //         callback(retObj);
-    //     }else if(trucks.length){
-    //         async.map(trucks,function (truck,asyncCallback) {
-    //             GpsColl.find({deviceId: truck.deviceId, createdAt: {$gte: startDate, $lte: endDate}}, function () {
-    //
-    //             })
-    //         },function (err,results) {
-    //
-    //         });
-    //     }else{
-    //         retObj.messages.push('No trucks found for account');
-    //         callback(retObj);
-    //     }
-    // })
+    // endDate.setDate(6);
+    // endDate.setMonth(3);
+    // endDate.setFullYear(2018);
+    endDate.setDate(startDate.getDate()-1);
+    // endDate.setHours(5);
+    // endDate.setMinutes(30);
+    // endDate.setSeconds(0);
+    var gps=new Gps();
+
+    AccountsColl.find({dailyReports:true},function (err,accounts) {
+        if(err){
+            retObj.messages.push('Error retrieving accounts for sending daily reports');
+            callback(retObj);
+        }else{
+            async.map(accounts,function (account,accountCallback) {
+                TrucksColl.find({accountId:account._id},function (err,trucks) {
+                    if(err){
+                        retObj.messages.push('Error retrieving trucks for account');
+                        callback(retObj);
+                    }else if(trucks.length){
+                        async.map(trucks,function (truck,asyncCallback) {
+                            gps.gpsTrackingByTruck(truck.registrationNo,endDate,startDate,req,function (result) {
+                                if(result.status){
+                                    var positions=result.results.positions;
+                                    var distance= positions[positions.length-1].totalDistance-positions[0].totalDistance;
+                                    var reportString=truck.registrationNo+','+distance+','+'"'+positions[0].address+'"'+','+'"'+positions[positions.length-1].address+'"';
+                                    asyncCallback(null,reportString);
+                                }else{
+                                    asyncCallback(err,null);
+                                }
+                            })
+                        },function (err,results) {
+                            if(err){
+                                retObj.status=false;
+                                retObj.messages.push('Error sending daily report');
+                                accountCallback(retObj);
+                            }else{
+                                retObj.status=true;
+                                retObj.messages.push('Success');
+                                var totalString='Truck Reg No,Distance Travelled,Start Location,End Location'+'\n';
+                                for(var i=0;i<results.length;i++){
+                                    if(i!==results.length-1){
+                                        if(results[i]!==null){
+                                            totalString=totalString+results[i]+'\n';
+                                        }
+                                    }else{
+                                        if(results[i]!==null){
+                                            totalString=totalString+results[i];
+                                        }
+                                    }
+                                }
+                                totalString=totalString.replace(/[^\x00-\xFF]/g, " ");
+                                retObj.data=totalString;
+                                mailerApi.sendEmailWithAttachment2({to:account.email,subject:'Daily-Report',data:totalString},function (result) {
+                                    if(result.status){
+                                    retObj.status=true;
+                                    retObj.messages.push('Daily Report sent successfully');
+                                    accountCallback(null,retObj);
+                                }else{
+                                    retObj.status = false;
+                                    retObj.messages.push( "Error , Please try again.");
+                                    accountCallback(err,retObj);
+                                }
+                                });
+                                // accountCallback(retObj);
+                            }
+                        });
+                    }else{
+                        retObj.messages.push('No trucks found for account');
+                        accountCallback(retObj);
+                    }
+                })
+            },function (err,accountResults) {
+                if (err){
+                    retObj.status=false;
+                    retObj.messages.push('Error sending daily report');
+                    callback(retObj);
+                }else{
+                    retObj.status=true;
+                    retObj.messages.push('Daily reports sent to all accounts successfully');
+                    callback(retObj);
+                }
+            })
+        }
+    })
 };
 
 Gps.prototype.shareTripDetailsByVechicleViaEmail = function (req,callback) {
@@ -818,7 +921,7 @@ Gps.prototype.shareTripDetailsByVechicleViaEmail = function (req,callback) {
     };
     var gps=new Gps();
 
-    gps.downloadReport(req.body.regNumber,req.body.fromDate,req.body.toDate,req,function (result) {
+    gps.truckReportInString(req.body.regNumber,req.body.fromDate,req.body.toDate,req,function (result) {
         if(result.status){
             mailerApi.sendEmailWithAttachment2({to:req.body.email,subject:'Trip-Report',data:result.data},function (result) {
                 if(result.status){
