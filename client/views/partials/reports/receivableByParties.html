@@ -139,15 +139,17 @@
                                    class="form-control textfield" typeahead-min-length="1"
                                    typeahead-on-select="selectPartyId($item)"
                                    ng-change="resetPartyName();"
-                                   typeahead-select-on-exact="true" placeholder="Party Name"
+                                   typeahead-select-on-exact="true" placeholder="Type Party Name"
                                    typeahead-no-results="noParty" autocomplete="false">
                             <div ng-show="noTrucks">
                                 <i class="glyphicon glyphicon-remove red"></i>
                                 <span class="red"> No Results Found </span>
                             </div>
                         </li>
-                        <li class="col-xs-1">
-                            <button ng-click="getAmountsBypartyWithFilters()" type="button" class="btn go">Go</button>
+                        <li class="col-xs-1 pall-zero">
+                            <button ng-click="getAmountsBypartyWithFilters()" type="button" class="btn go">
+                                <i class="fa fa-search sear" aria-hidden="true"></i>
+                            </button>
                         </li>
                     </ul>
                     <ul class="list-inline mailDownload">

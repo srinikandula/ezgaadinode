@@ -6,7 +6,7 @@
                 <div class="col-sm-2 pall-zero">
                     <div class="form-details ">
                         <date-picker class="'textfield br-one'" ban-future="'banFutureDate'"
-                                     ng-model="reportParams.startDate" placeholder="'From Date'"></date-picker>
+                                     ng-model="reportParams.startDate"></date-picker>
                     </div>
                 </div>
                 <div class="col-sm-2 pall-zero">
@@ -22,7 +22,7 @@
                                    style="min-width: 95%;"
                                    title="Search by truck no" reset-search-input="false">
 
-                            <ui-select-match placeholder="Search by truck no" class="form-control order-form-control">
+                            <ui-select-match placeholder="Search by truck no" class="form-control ui-select-control">
                                 {{$select.selected.registrationNo}}
                             </ui-select-match>
                             <ui-select-choices
@@ -57,7 +57,7 @@
 
             </div>
             <div class="col-xs-12 mt-25">
-                <a ui-sref="devices" class="btn btn-info pull-right mb-10">Devices</a>
+       <!--             <a ui-sref="devices" class="btn btn-info pull-right mb-10">Devices</a>-->
                 <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
                     <tr style="text-align: center;" ng-repeat="report in truckReports">
                         <td data-title="'Date & Time'" sortable="'partyName'" class="clickable-item col-sm-2">

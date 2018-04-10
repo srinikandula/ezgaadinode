@@ -10,25 +10,31 @@
                 <td data-title="'S No'">
                     {{$index+1}}
                 </td>
-                <td data-title="'Accounts'" sortable="'employeeName'" class="clickable-item">
+                <td data-title="'Accounts'" sortable="'userName'" class="clickable-item">
                     {{device.userName}}
                 </td>
-                <td data-title="'Device ID'" sortable="'totalDevices'" class="clickable-item">
+               <!-- <td data-title="'Registration No'" sortable="'registrationNo'" class="clickable-item">
+                    {{device.registrationNo || '&#45;&#45;'}}
+                </td>-->
+                <td data-title="'Device ID'" class="clickable-item">
                     {{device.deviceId || '--'}}
                 </td>
                 <td data-title="'SIM Id'" class="clickable-item">
                     {{device.simNumber || '--'}}
                 </td>
-                <td data-title="'SIM No'" sortable="'installedDevices'" class="clickable-item">
+                <td data-title="'SIM No'" class="clickable-item">
                     {{device.simPhoneNumber || '--'}}
                 </td>
-                <td data-title="'IMEI Number'" sortable="'installedDevices'" class="clickable-item">
+                <td data-title="'IMEI Number'" class="clickable-item">
                     {{device.imei || '--'}}
                 </td>
-                <td data-title="'Date Created'" sortable="'damagedDevices'" class="clickable-item">
+                <td data-title="'Installed By'" class="clickable-item" sortable="'installedBy'">
+                    {{device.installedBy.userName || '--'}}
+                </td>
+                <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">
                     {{device.createdAt | date:'dd-MM-yyyy' || '--'}}
                 </td>
-                <td data-title="'Status'" sortable="'damagedDevices'" class="clickable-item">
+                <td data-title="'Status'" sortable="'isActive'" class="clickable-item">
                     {{device.isActive || '--'}}
                 </td>
             </tr>

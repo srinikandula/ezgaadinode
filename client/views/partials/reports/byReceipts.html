@@ -53,7 +53,7 @@
     </div>
 
     <div class="col-sm-3 col-xs-12">
-        <div class="reports-panel payments" ui-sref="receivableByParty">
+        <div class="reports-panel payments">
 
             <div class="reports-image">
                 <figure>
@@ -144,15 +144,17 @@
                                    class="form-control textfield" typeahead-min-length="1"
                                    typeahead-on-select="selectPartyId($item)"
                                    ng-change="resetPartyName();"
-                                   typeahead-select-on-exact="true" placeholder="Party Name"
+                                   typeahead-select-on-exact="true" placeholder="Type Party Name"
                                    typeahead-no-results="noParty" autocomplete="false">
                             <div ng-show="noTrucks">
                                 <i class="glyphicon glyphicon-remove red"></i>
                                 <span class="red"> No Results Found </span>
                             </div>
                         </li>
-                        <li class="col-xs-1">
-                            <button ng-click="getAmountByReceiptsFilters()" type="button" class="btn go">Go</button>
+                        <li class="col-sm-1 pall-zero">
+                            <button type="submit" ng-click="getAmountByReceiptsFilters();" class="btn go">
+                                <i class="fa fa-search sear" aria-hidden="true"></i>
+                            </button>
                         </li>
                     </ul>
                     <ul class="list-inline mailDownload">

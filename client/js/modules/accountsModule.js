@@ -124,7 +124,6 @@ app.factory('AccountServices',['$http', '$cookies', function ($http, $cookies) {
             }).then(success, error)
         },
         getAccountHomeLocation: function (success, error) {
-            console.log('home location...')
             $http({
                 url: '/v1/admin/getHomeLocation',
                 method: "GET"
@@ -412,7 +411,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     };
 
     $scope.deleteKeyPair  = function (key,accountId) {
-        console.log(accountId);
         AccountServices.deleteKeyPair(key._id,accountId,function (success) {
             if(success.data.status){
                 swal('', success.data.message, 'success' );
@@ -452,9 +450,9 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             params.errors.push('Invalid Mobile Number');
         }
 
-        if (!params.profile.email) {
+      /*  if (!params.profile.email) {
             params.errors.push('Invalid Email');
-        }
+        }*/
         if (params.oldPassword) {
             if (!params.newPassword) {
                 params.errors.push('Please Provide New Password');
@@ -500,7 +498,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         TrucksService.getAllTrucks({}, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
-                console.log("$scope.group",$scope.group);
 
                 if ($scope.group.truckIds.length > 0) {
                     for (var i = 0; i < $scope.trucks.length; i++) {
@@ -648,7 +645,6 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     function getKeyPairsForAccount() {
         AccountServices.getKeyPairsForAccount($scope.addNewAccount._id,function (success) {
             if(success.data.status){
-                console.log(success.data.results);
                 $scope.keys=success.data.results;
             }else{
 
@@ -686,8 +682,6 @@ app.controller('userProfilePicCtrl', ['$scope', '$uibModalInstance', 'AccountSer
             imageReader.onload = function (image) {
                 $scope.$apply(function ($scope) {
                     $scope.myImage = image.target.result;
-
-                    console.log($scope.myImage)
                 });
             };
             imageReader.readAsDataURL(file);
@@ -775,7 +769,6 @@ app.controller('ERPSettingsCtrl', ['$scope', 'AccountServices', 'Notification', 
                     $scope.settings.expiry.fromDate=new Date($scope.settings.expiry.fromDate);
                     $scope.settings.expiry.toDate=new Date($scope.settings.expiry.toDate);
                 }
-                //console.log('getErpSettings',$scope.settings)
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);

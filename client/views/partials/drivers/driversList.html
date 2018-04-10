@@ -1,37 +1,45 @@
 <div class="main-right col-xs-12" ng-controller="DriversListCtrl">
 
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-3 pall-zero"><h3 style="padding:0">Driver Details</h3></div>
-        <div class="col-xs-8 col-xs-push-1 pall-zero">
-            <div class="col-sm-7">
+        <div class="col-sm-3 pall-zero"><h3>Driver Details</h3></div>
+        <ul class="col-sm-9 pall-zero list-inline">
+            <li class="col-sm-6">
                 <form>
-                <div class="input-group stylish-input-group">
-                    <input type="text" ng-model="driver2"  class="form-control" placeholder="Search By Driver Name">
-                    <span class="input-group-addon">
+                    <div class="input-group stylish-input-group">
+                        <input type="text" ng-model="driver2" class="form-control" placeholder="Search By Driver Name">
+                        <span class="input-group-addon">
                         <button type="submit" ng-click="searchByDriverName(driver2)">
                            <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
                     </span>
-                </div>
+                    </div>
                 </form>
-            </div>
-        <div class="col-sm-3 pall-zero pos-relative">
-            <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-            <select class="form-control" ng-model="driver1" ng-change="searchByDriverName(driver1);">
-                <option value="" selected>All Drivers</option>
-                <option ng-repeat="drivers in driversList ">{{drivers.fullName}}</option>
-            </select>
-        </div>
-            <div class="col-sm-1 list-inline mailDownload">
-                <button  style="margin-left:7px" type="button" ng-click="shareDetailsViaEmail()"
+            </li>
+            <li class="col-sm-4 ">
+                <div class="select-box erp-box">
+                    <ui-select ng-model="driverName" theme="select2"
+                               title="Choose a person" append-to-body="true"
+                               ng-change="searchByDriverName(driverName.fullName);">
+                        <ui-select-match placeholder=" Select a Driver" class="form-control ui-select-control">
+                            {{$select.selected.fullName || fullName}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="drivers in driversList  | propsFilter: {fullName: $select.search}">
+                            <div ng-bind-html="drivers.fullName | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </li>
+            <li class="col-sm-1">
+                <button type="button" ng-click="shareDetailsViaEmail()"
                         class="btn mailImage"><img src="images/Reports_Mail.png">
                 </button>
-            </div>
-            <div>
+            </li>
+            <li class="col-sm-1">
                 <button type="button" ng-click="downloadDetails();" class="btn mailImage">
                     <img src="images/Reports_Download.png"></button>
-            </div>
-        </div>
+            </li>
+        </ul>
     </div>
     <div class="mt-10">
         <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
@@ -64,10 +72,12 @@
                 </td>
 
                 <td data-title="'Action'" class="col-sm-2">
-                    <a href="#" ng-show="userType=='account' || userId==drivers.createdBy" class="btn" ng-click="goToEditDriverPage(drivers._id)">
+                    <a href="#" ng-show="userType=='account' || userId==drivers.createdBy" class="btn"
+                       ng-click="goToEditDriverPage(drivers._id)">
                         <span class="glyphicon glyphicon-pencil"></span></a>
 
-                    <a href="#" ng-show="userType=='account' || userId==drivers.createdBy" class="btn" ng-click="deleteDriver(drivers._id)">
+                    <a href="#" ng-show="userType=='account' || userId==drivers.createdBy" class="btn"
+                       ng-click="deleteDriver(drivers._id)">
 
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
@@ -81,7 +91,8 @@
     <div class="clearfix"></div>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ng-click="goToEditDriverPage()"><img src="images/Add_Driver.png" alt="Add Driver" title="Add Driver"></a>
+            <a href="#" ng-click="goToEditDriverPage()"><img src="images/Add_Driver.png" alt="Add Driver"
+                                                             title="Add Driver"></a>
         </figure>
     </div>
 </div>
