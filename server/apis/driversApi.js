@@ -24,7 +24,8 @@ function dateToStringFormat(date) {
 function value(x){
     if(!x)
         return '--';
-
+else 
+    return x;
 }
 
 Drivers.prototype.addDriver = function (jwt, driverInfo, req, callback) {

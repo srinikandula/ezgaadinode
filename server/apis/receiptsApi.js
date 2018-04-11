@@ -19,10 +19,12 @@ function dateToStringFormat(date) {
         return '--';
     }
 }
-function value (x){
-    if(!x)
+function value(x){
+    if(x){
+        return x;
+    }else{
         return '--';
-
+    }
 }
 
 Receipts.prototype.totalReceipts = function (req, callback) {

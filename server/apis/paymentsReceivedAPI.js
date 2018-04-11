@@ -30,10 +30,12 @@ function dateToStringFormat(date) {
         return '--';
     }
 }
-function value (x){
-    if(!x)
+function value(x){
+    if(x){
+        return x;
+    }else{
         return '--';
-
+    }
 }
 /**
  * Find total of the payments received in the account

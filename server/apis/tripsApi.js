@@ -26,10 +26,12 @@ var SmsService = require('./smsApi');
 
 var Trips = function () {
 };
-function value (x){
-    if(!x)
+function value(x){
+    if(x){
+        return x;
+    }else{
         return '--';
-
+    }
 }
 function dateToStringFormat(date) {
     if (date instanceof Date) {

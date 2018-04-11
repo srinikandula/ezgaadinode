@@ -1367,7 +1367,7 @@ Trucks.prototype.downloadDetails = function (jwt, params,req, callback) {
             var output = [];
             for (var i = 0; i < response.trucks.length; i++) {
                 output.push({
-                    Reg_No: dateToStringFormat(response.trucks[i].registrationNo),
+                    Reg_No: response.trucks[i].registrationNo,
                     Permit: dateToStringFormat(response.trucks[i].permitExpiry),
                     Pollution: dateToStringFormat(response.trucks[i].pollutionExpiry),
                     Insurance: dateToStringFormat(response.trucks[i].insuranceExpiry),

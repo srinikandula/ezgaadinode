@@ -19,12 +19,13 @@ var Utils = require('./utils');
 
 var Expenses = function () {
 };
-function value (x){
-    if(!x)
-        return '--';
-
-}
-function dateToStringFormat(date) {
+function value(x){
+    if(!x || ''){
+        return '---';
+    }else{
+        return x;
+    }
+}function dateToStringFormat(date) {
     if (date instanceof Date) {
         return date.toLocaleDateString();
     } else {
@@ -1527,6 +1528,7 @@ Expenses.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         retObj.messages.push("Invalid email....");
     }else{
         Expenses.prototype.getExpenseCosts(jwt,params,req,function(response){
+            console.log("response..expenses",response);
             if(response.status){
                 var output = [];
                 if(response.expenses.length){
@@ -1537,7 +1539,7 @@ Expenses.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
                             expenseType:response.expenses[i].attrs.expenseName,
                             amount:response.expenses[i].cost,
                             mode:response.expenses[i].mode,
-                            description:response.expenses[i].description
+                            description:value(response.expenses[i].description)
                         });
                         if (i === response.expenses.length - 1) {
                             var emailparams = {
@@ -1586,7 +1588,7 @@ Expenses.prototype.downloadDetails = function (jwt, params,req, callback) {
                     Expense_Type:response.expenses[i].attrs.expenseName,
                     Amount:response.expenses[i].cost,
                     Mode:response.expenses[i].mode,
-                    Description:value(response.expenses[i].description)
+                    Description:response.expenses[i].description
                 });
             }
             retObj.data = output;
