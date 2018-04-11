@@ -89,10 +89,11 @@ app.factory('DeviceService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getAllAccountsForDropdown: function (success, error) {
+        getAllAccountsForDropdown: function (params, success, error) {
             $http({
                 url: '/v1/admin/accounts/getAllAccountsForDropdown',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         getAllTrucksOfAccount: function (truckId, success, error) {
@@ -298,15 +299,16 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
     }
 
     getAccounts();*/
-    $scope.searchAccountOwner = function (search) {
-        $scope.currentElement = 0;
-        $scope.search = search;
+
+
+    $scope.loadMore = function () {
+        $scope.currentElement = $scope.currentElement + 10;
         DeviceService.getAllAccountsForDropdown({
             name: $scope.search,
             size: $scope.currentElement
         }, function (success) {
             if (success.data.status) {
-                $scope.accounts = success.data.accounts;
+                $scope.accounts = $scope.accounts.concat(success.data.accounts);
             } else {
                 $scope.accounts = [];
             }
@@ -315,8 +317,27 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
 
         });
     };
+    function getAccounts() {
+        $scope.searchAccountOwner = function (search) {
+            $scope.currentElement = 0;
+            $scope.search = search;
+            DeviceService.getAllAccountsForDropdown({
+                name: $scope.search,
+                size: $scope.currentElement
+            }, function (success) {
+                if (success.data.status) {
+                    $scope.accounts = success.data.accounts;
+                    console.log("$scope.accounts", $scope.accounts)
+                } else {
+                    $scope.accounts = [];
+                }
 
+            }, function (error) {
 
+            });
+        };
+    }
+    getAccounts();
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
@@ -333,7 +354,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
     getEmployees();
 
     $scope.getTrucksOfAccount = function () {
-        DeviceService.getAllTrucksOfAccount($scope.deviceDetails.accountId, function (success) {
+        DeviceService.getAllTrucksOfAccount($scope.deviceDetails.accountId._id, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
             }
