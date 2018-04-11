@@ -2019,4 +2019,10 @@ Events.prototype.getDevicesFromTracker=function (callback) {
     }
     })
 };
+
+Events.prototype.addDeviceToTracker=function (body,callback) {
+  var retObj={
+      status:fa
+  };
+};
 module.exports = new Events();

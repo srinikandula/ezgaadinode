@@ -291,11 +291,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         DeviceService.getAllAccountsForDropdown(function (success) {
             if (success.data.status) {
                 $scope.accounts = success.data.accounts;
-                $scope.accounts.sort(function(a, b){
-                    if(a.userName < b.userName) return -1;
-                    if(a.userName > b.firstname) return 1;
-                    return 0;
-                })
+
 
             }
         });

@@ -217,8 +217,17 @@ Accounts.prototype.getAllAccountsForDropdown = function (req, callback) {
         status: false,
         messages: []
     };
-
-    AccountsColl.find({}, {userName: 1}, function (err, accounts) {
+    var params = req.query;
+    var skipNumber = params.size ? parseInt(params.size) : 0;
+    if (params.name) {
+        condition = {userName: {$regex: '.*' + params.name + '.*'},role: "Truck Owner"}
+    } else {
+        condition = {role: "Truck Owner"}
+    }
+    AccountsColl.find(condition, {userName: 1})
+        .sort({userName:1})
+        .skip(skipNumber)
+        .limit(10).exec( function (err, accounts) {
         if (err) {
             retObj.messages.push('Error retrieving accounts');
             analyticsService.create(req, serviceActions.get_all_accounts_err, {
