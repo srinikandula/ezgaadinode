@@ -348,6 +348,14 @@ OpenRouter.get('/get/getDevicesFromTracker', function (request, res) {
         res.json(results);
     });
 });
+
+OpenRouter.post('/get/addDeviceToTracker', function (request, res) {
+    Events.addDeviceToTracker(req.body,function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
