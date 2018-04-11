@@ -342,6 +342,12 @@ OpenRouter.get('/get/mapInstalledByToDevice', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/getDevicesFromTracker', function (request, res) {
+    Events.getDevicesFromTracker(function(results){
+        //console.log(results);
+        res.json(results);
+    });
+});
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
