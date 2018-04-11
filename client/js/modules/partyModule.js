@@ -128,7 +128,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         PartyService.getAllPartiesForFilter(function (success) {
             if (success.data.status) {
                 $scope.partiesList = success.data.parties;
-                console.log("$scope.partiesList", $scope.partiesList);
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});

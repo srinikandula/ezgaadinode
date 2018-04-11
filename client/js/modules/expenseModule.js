@@ -356,9 +356,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                 });
                 if (selectedTruck) {
                     $scope.truckRegNo = selectedTruck.registrationNo;
-                    console.log('success', $scope.truckRegNo)
-
-                }
+                    }
 
             } else {
                 Notification.error(success.data.message);

@@ -420,6 +420,11 @@ Utils.prototype.getErpSettings = function (erp, accountId) {
             }
         }
     }
+    else if (erp.filterType === "default") {
+        condition = {
+            "accountId": accountId,
+        }
+    }
     return condition;
 }
 
@@ -465,6 +470,13 @@ Utils.prototype.getErpSettingsForTruckExpiry = function (erp) {
             fromDate: erp.fromDate,
             toDate: erp.toDate
         }
+    }
+    else if (erp.filterType === "default") {
+        output = {
+            condition: { $lte: new Date(new Date().setDate(new Date().getDate() + 30))},
+            type: 'default'
+        };
+
     }
     return output;
 };
