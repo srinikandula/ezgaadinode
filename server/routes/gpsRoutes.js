@@ -108,7 +108,7 @@ AuthRouter.get('/getGpsSettings',function (req,res) {
 });
 
 OpenRouter.get('/getDailyReport',function (req,res) {
-    gps.getDailyReports(req,function (result) {
+    gps.emailDayGPSReport(req,function (result) {
         res.send(result);
     });
 });
@@ -134,6 +134,13 @@ var job = cronjob.schedule('0 1,30 * * * *', function() {      //runs everyday m
     });*/
 });
 job.start();
+
+var task = cronjob.schedule('0 1,30 * * * *', function() {
+    gps.emailDayGPSReport({},function (result) {
+        console.log("emailDayGPSReport..",result);
+    });
+});
+task.start();
 
 /*gps.moveDevicePositions(function (result) {
     res.send(result);
