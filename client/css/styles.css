@@ -2647,7 +2647,8 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 }
 .focus-effect-for-input-trucks {
     position: absolute;
-    top:-10px;
+    top:11px;
+    left:10px;
     color: #989898;
     font-size: 15px;
     font-weight: lighter;
@@ -2677,6 +2678,7 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
     -moz-transition: all 0.5s ease-in-out; /** Firefox **/
     -o-transition: all 0.5s ease-in-out; /** Opera **/
+    top: -7px;
 }
 
 .ng-not-empty + .focus-effect-for-input {
@@ -2692,10 +2694,13 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 .ng-not-empty + .focus-effect-for-input-trucks {
     color: #1E4495;
     font-size: 13px;
+    top: -7px;
     transition: all 0.5s ease-in-out;
-    -webkit-transition: all 0.5s ease-in-out; /** Chrome & Safari **/
-    -moz-transition: all 0.5s ease-in-out; /** Firefox **/
-    -o-transition: all 0.5s ease-in-out; /** Opera **/
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition: all 0.5s ease-in-out;
+    -o-transition: all 0.5s ease-in-out;
+    background-color: #fff;
+    padding: 0 5px;
 }
 
 /*sign-up input css*/

@@ -129,12 +129,12 @@
                     <ul class="list-inline report-expense">
                         <li class="filterFromDate">
                             <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
-                                         class="'textfield'">
+                                         class="'textfield'" placeholder="'from date'">
                             </date-picker>
                         </li>
                         <li class="filterToDate">
-                            <date-picker ng-model="filters.toDate" ban-future="'banFutureDate'"
-                                         class="'textfield'"></date-picker>
+                            <date-picker ng-model="filters.toDate" past-present="'pastPresentDate'"
+                                         class="'textfield'" placeholder="'to date'"></date-picker>
                         </li>
                         <li class="filterToDate pall-zero pos-relative">
                             <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
