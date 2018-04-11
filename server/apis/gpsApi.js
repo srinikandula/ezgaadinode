@@ -618,12 +618,13 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                     }
                                 }
                                 averageSpeed = (sum / counter);
-                                googlemaps.distance({
-                                    origins: origins,
-                                    destinations: destinations
-                                }, function (err, result) {
-                                    if (result) {
-                                        distance = result.rows[0].elements[0].distance.text;
+                                distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;
+                                // googlemaps.distance({
+                                //     origins: origins,
+                                //     destinations: destinations
+                                // }, function (err, result) {
+                                //     if (result) {
+                                //         distance = result.rows[0].elements[0].distance.text;
                                         retObj.status = true;
                                         retObj.messages.push('Success');
                                         retObj.results = {
@@ -633,12 +634,12 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                             averageSpeed: averageSpeed
                                         };
                                         callback(retObj);
-                                    } else {
-                                        retObj.status = false;
-                                        retObj.messages.push('Error finding distance');
-                                        callback(retObj);
-                                    }
-                                });
+                                //     } else {
+                                //         retObj.status = false;
+                                //         retObj.messages.push('Error finding distance');
+                                //         callback(retObj);
+                                //     }
+                                // });
                             }else{
                                 retObj.status = false;
                                 retObj.messages.push('No records found for that period');
@@ -816,7 +817,7 @@ Gps.prototype.getGpsSettings = function (id,req,callback) {
     })
 };
 
-Gps.prototype.getDailyReports = function (req,callback) {
+Gps.prototype.emailDayGPSReport = function (req,callback) {
     var retObj={status: false,
         messages: []
     };
@@ -868,31 +869,40 @@ Gps.prototype.getDailyReports = function (req,callback) {
                                 retObj.status=true;
                                 retObj.messages.push('Success');
                                 var totalString='Truck Reg No,Distance Travelled,Start Location,End Location'+'\n';
-                                for(var i=0;i<results.length;i++){
-                                    if(i!==results.length-1){
-                                        if(results[i]!==null){
-                                            totalString=totalString+results[i]+'\n';
-                                        }
-                                    }else{
-                                        if(results[i]!==null){
-                                            totalString=totalString+results[i];
+                                if(results.length>0) {
+                                    for (var i = 0; i < results.length; i++) {
+                                        if (i !== results.length - 1) {
+                                            if (results[i] !== null) {
+                                                totalString = totalString + results[i] + '\n';
+                                            }
+                                        } else {
+                                            if (results[i] !== null) {
+                                                totalString = totalString + results[i];
+                                            }
                                         }
                                     }
+                                    totalString = totalString.replace(/[^\x00-\xFF]/g, " ");
+                                    retObj.data = totalString;
+                                    mailerApi.sendEmailWithAttachment2({
+                                        to: 'snehathallapaka@gmail.com',//account.email,
+                                        subject: 'Daily-Report',
+                                        data: totalString
+                                    }, function (result) {
+                                        if (result.status) {
+                                            retObj.status = true;
+                                            retObj.messages.push('Daily Report sent successfully');
+                                            accountCallback(null, retObj);
+                                        } else {
+                                            retObj.status = false;
+                                            retObj.messages.push("Error , Please try again.");
+                                            accountCallback(err, retObj);
+                                        }
+                                    });
+                                }else {
+                                    retObj.status = true;
+                                    retObj.messages.push('No records found');
+                                    accountCallback(null, retObj);
                                 }
-                                totalString=totalString.replace(/[^\x00-\xFF]/g, " ");
-                                retObj.data=totalString;
-                                mailerApi.sendEmailWithAttachment2({to:account.email,subject:'Daily-Report',data:totalString},function (result) {
-                                    if(result.status){
-                                    retObj.status=true;
-                                    retObj.messages.push('Daily Report sent successfully');
-                                    accountCallback(null,retObj);
-                                }else{
-                                    retObj.status = false;
-                                    retObj.messages.push( "Error , Please try again.");
-                                    accountCallback(err,retObj);
-                                }
-                                });
-                                // accountCallback(retObj);
                             }
                         });
                     }else{
