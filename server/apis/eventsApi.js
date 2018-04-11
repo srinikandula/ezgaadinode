@@ -2002,4 +2002,21 @@ Events.prototype.getMappingGpsStatusToAccount = function (req, callback) {
     });
 };
 
+Events.prototype.getDevicesFromTracker=function (callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+    traccar_mysql.query('select * from devices',function (err,docs) {
+    if(err){
+        console.log("errr===>",JSON.stringify(err));
+        retObj.messages.push("Please try again");
+        callback(retObj);
+    }else{
+        retObj.status=true;
+        retObj.data=docs;
+        callback(retObj);
+    }
+    })
+};
 module.exports = new Events();
