@@ -36,8 +36,17 @@ AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
 });
 
 AuthRouter.get('/downloadDetails', function (req, res) {
+    // toTimeString()
     Trips.downloadDetails(req.jwt,req.query,req, function (result) {
+        // console.log("trips downloads...",result);
         if(result.status){
+            // var d = new Date();
+            // for(var i =0;i<result.data.length;i++){
+            //     result.data[i].Contact = d.toTimeString(result.data[i].Contact);
+            //
+            // }
+            // console.log("trips downloads..data...",result.data);
+
             res.xls('trip details'+new Date().toLocaleDateString()+'.xlsx', result.data);
 
         }else{

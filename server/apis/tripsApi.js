@@ -26,7 +26,18 @@ var SmsService = require('./smsApi');
 
 var Trips = function () {
 };
+function value (x){
+    if(!x)
+        return '--';
 
+}
+function dateToStringFormat(date) {
+    if (date instanceof Date) {
+        return date.toLocaleDateString();
+    } else {
+        return '--';
+    }
+}
 function addTripDetailsToNotification(data, callback) {
     var retObj = {
         status: false,
@@ -1497,29 +1508,48 @@ Trips.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         status: false,
         messages: []
     };
-    console.log("shareDetailsViaEmail",params);
     if(!params.email || !Utils.isEmail(params.email)){
         retObj.messages.push("Invalid email....");
         callback(retObj);
     }else{
         Trips.prototype.getAllAccountTrips(jwt,params,req,function(response){
-            // console.log("response...",response);
             if(response.status){
-                var emailparams = {
-                    templateName: 'tripDetails',
-                    subject: "Trip Details",
-                    to: params.email,
-                    data:response.trips
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        retObj.status = true;
-                        retObj.messages.push(' Details shared successfully');
-                        callback(retObj);
-                    } else {
-                        callback(emailResponse);
+                var output = [];
+// console.log("response...",response);
+                if(response.trips.length){
+                    for(var i=0;i<response.trips.length;i++) {
+                        output.push({
+                            date:value(dateToStringFormat(response.trips[i].date)),
+                            truckName:value(response.trips[i].attrs.truckName),
+                            partyName:value(response.trips[i].attrs.partyName),
+                            fullName:value(response.trips[i].attrs.fullName),
+                            freightAmount:value(response.trips[i].freightAmount),
+                            mobile:value(response.trips[i].attrs.mobile)
+                        });
+                        if (i === response.trips.length - 1) {
+                            var emailparams = {
+                                templateName: 'tripDetails',
+                                subject: "Trip Details",
+                                to: params.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
-                });
+                }else{
+                    retObj.messages.push("No records found....");
+                    retObj.status = false;
+                    callback(retObj);
+                }
+
             }else{
                 callback(response);
 
@@ -1534,16 +1564,16 @@ Trips.prototype.downloadDetails = function (jwt, params,req, callback) {
         messages: []
     };
     Trips.prototype.getAllAccountTrips(jwt,params,req,function(response){
+        console.log("response...trips....",response);
         if(response.status){
             var output = [];
             for(var i=0;i<response.trips.length;i++){
                 output.push({
-                    Trip_Date:response.trips[i].date,
+                    Trip_Date:dateToStringFormat(response.trips[i].date),
                     Reg_No:response.trips[i].attrs.truckName,
                     Party_Name:response.trips[i].attrs.partyName,
                     Driver:response.trips[i].attrs.fullName,
                     Freight:response.trips[i].freightAmount,
-                    trip_Lane:response.trips[i].tripLane,
                     Contact:response.trips[i].attrs.mobile
                 });
             }

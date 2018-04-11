@@ -14,6 +14,19 @@ var Utils = require('./utils');
 var Drivers = function () {
 };
 
+function dateToStringFormat(date) {
+    if (date instanceof Date) {
+        return date.toLocaleDateString();
+    } else {
+        return '--';
+    }
+}
+function value(x){
+    if(!x)
+        return '--';
+
+}
+
 Drivers.prototype.addDriver = function (jwt, driverInfo, req, callback) {
     var retObj = {
         status: false,
@@ -508,21 +521,39 @@ Drivers.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
     }else{
         Drivers.prototype.getDrivers(jwt,params,req,function(response){
             if(response.status){
-                var emailparams = {
-                    templateName: 'driverDetails',
-                    subject: "Driver Details",
-                    to: params.email,
-                    data:response.drivers
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        retObj.status = true;
-                        retObj.messages.push(' Details shared successfully');
-                        callback(retObj);
-                    } else {
-                        callback(emailResponse);
+                var output = [];
+                if(response.drivers.length){
+                    for(var i=0;i<response.drivers.length;i++) {
+                        output.push({
+                            fullName:response.drivers[i].fullName,
+                            mobile:response.drivers[i].mobile,
+                            licenseValidity:dateToStringFormat(response.drivers[i].licenseValidity),
+                            salary:value(response.drivers[i].salary),
+                            licenseNumber:value(response.drivers[i].licenseNumber)
+                        });
+                        if (i === response.drivers.length - 1) {
+                            var emailparams = {
+                                templateName: 'driverDetails',
+                                subject: "Driver Details",
+                                to: params.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
-                });
+                }else{
+                    retObj.messages.push("No drivers found....");
+                    retObj.status = false;
+                    callback(retObj);
+                }
             }else{
                 callback(response);
             }
@@ -538,9 +569,10 @@ Drivers.prototype.downloadDetails = function (jwt, params,req, callback) {
          if(response.status){
             var output = [];
             for(var i=0;i<response.drivers.length;i++){
-                output.push({fullName:response.drivers[i].fullName,
+                output.push({
+                    fullName:response.drivers[i].fullName,
                     Mobile:response.drivers[i].mobile,
-                    License_Validity:response.drivers[i].licenseValidity,
+                    License_Validity:dateToStringFormat(response.drivers[i].licenseValidity),
                     Salary:response.drivers[i].salary,
                     License_Number:response.drivers[i].licenseNumber});
             }

@@ -5,7 +5,7 @@ var async = require('async');
 const ObjectId = mongoose.Types.ObjectId;
 var expenseColl = require('./../models/schemas').ExpenseCostColl;
 var expenseMasterColl = require('./../models/schemas').expenseMasterColl;
-var expenseMasterApi = require('./expenseMasterApi')
+var expenseMasterApi = require('./expenseMasterApi');
 var trucksCollection = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var analyticsService = require('./../apis/analyticsApi');
@@ -19,7 +19,18 @@ var Utils = require('./utils');
 
 var Expenses = function () {
 };
+function value (x){
+    if(!x)
+        return '--';
 
+}
+function dateToStringFormat(date) {
+    if (date instanceof Date) {
+        return date.toLocaleDateString();
+    } else {
+        return '--';
+    }
+}
 function save(expenseDetails, result, req, callback) {
     var expenseDoc = new expenseColl(expenseDetails);
     expenseDoc.save(function (err, expense) {
@@ -1516,23 +1527,42 @@ Expenses.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         retObj.messages.push("Invalid email....");
     }else{
         Expenses.prototype.getExpenseCosts(jwt,params,req,function(response){
-            console.log("response...",response);
             if(response.status){
-                var emailparams = {
-                    templateName: 'expenseDetails',
-                    subject: "Expense Details",
-                    to: params.email,
-                    data:response.expenses
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        retObj.status = true;
-                        retObj.messages.push(' Details shared successfully');
-                        callback(retObj);
-                    } else {
-                        callback(emailResponse);
+                var output = [];
+                if(response.expenses.length){
+                    for(var i=0;i<response.expenses.length;i++) {
+                        output.push({
+                            date:dateToStringFormat(response.expenses[i].date),
+                            vehicleNumber:response.expenses[i].attrs.truckName,
+                            expenseType:response.expenses[i].attrs.expenseName,
+                            amount:response.expenses[i].cost,
+                            mode:response.expenses[i].mode,
+                            description:response.expenses[i].description
+                        });
+                        if (i === response.expenses.length - 1) {
+                            var emailparams = {
+                                templateName: 'expenseDetails',
+                                subject: "Expense Details",
+                                to: params.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
-                });
+                }else{
+                    retObj.messages.push("No records found....");
+                    retObj.status = false;
+                    callback(retObj);
+                }
+
             }else{
                 callback(response);
 
@@ -1551,12 +1581,12 @@ Expenses.prototype.downloadDetails = function (jwt, params,req, callback) {
             var output = [];
             for(var i=0;i<response.expenses.length;i++){
                 output.push({
-                    Date:response.expenses[i].date,
+                    Date:dateToStringFormat(response.expenses[i].date),
                     Vehicle_Number:response.expenses[i].attrs.truckName,
                     Expense_Type:response.expenses[i].attrs.expenseName,
                     Amount:response.expenses[i].cost,
                     Mode:response.expenses[i].mode,
-                    Description:response.expenses[i].description
+                    Description:value(response.expenses[i].description)
                 });
             }
             retObj.data = output;

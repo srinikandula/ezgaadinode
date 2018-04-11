@@ -18,10 +18,11 @@
         #foreach($record in $emailData)
         <tr>
             <td>$record.date</td>
-            <td>$record.attrs.partyName</td>
+            <td>$record.party</td>
             <td>$record.amount</td>
             <td>$record.paymentType</td>
             <td>$record.paymentRefNo</td>
+            <td>$record.description</td>
         </tr>
         #end
     </table>

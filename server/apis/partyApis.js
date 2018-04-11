@@ -20,7 +20,11 @@ var serviceActions=require('./../constants/constants');
 const ObjectId = mongoose.Types.ObjectId;
 var Party = function () {
 };
-
+function value (x){
+    if(!x){
+        return '--';
+    }
+}
 Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
 
     var result = {messages: [], status: true};
@@ -533,21 +537,40 @@ Party.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         Party.prototype.getAccountParties(jwt,params,req,function(response){
             // console.log("response...",response);
             if(response.status){
-                var emailparams = {
-                    templateName: 'partyDetails',
-                    subject: "Party Details",
-                    to: params.email,
-                    data:response.parties
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        retObj.status = true;
-                        retObj.messages.push(' Details shared successfully');
-                        callback(retObj);
-                    } else {
-                        callback(emailResponse);
+                var output = [];
+                if(response.parties.length){
+                    for(var i=0;i<response.parties.length;i++) {
+                        output.push({
+                            name:response.parties[i].name,
+                            contact:response.parties[i].contact,
+                            email:value(response.parties[i].email),
+                            city:value(response.parties[i].city),
+                            partyType:response.parties[i].partyType
+                        });
+                        if (i === response.parties.length - 1) {
+                            var emailparams = {
+                                templateName: 'partyDetails',
+                                subject: "Party Details",
+                                to: params.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
-                });
+                }else{
+                    retObj.messages.push("No parties found....");
+                    retObj.status = false;
+                    callback(retObj);
+                }
+
             }else{
                 callback(response);
 
@@ -568,7 +591,8 @@ Party.prototype.downloadDetails = function (jwt, params,req, callback) {
         if(response.status){
             var output = [];
             for(var i=0;i<response.parties.length;i++){
-                output.push({Party_Name:response.parties[i].name,
+                output.push({
+                    Party_Name:response.parties[i].name,
                     Contact:response.parties[i].contact,
                     Email:response.parties[i].email,
                     City:response.parties[i].city,

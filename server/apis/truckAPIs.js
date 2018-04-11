@@ -23,7 +23,13 @@ var Utils = require('./utils');
 
 var Trucks = function () {
 };
-
+function value(x){
+    if(x){
+        return x;
+    }else{
+        return '--';
+    }
+}
 Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
     var retObj = {
         status: false,
@@ -1305,21 +1311,44 @@ Trucks.prototype.shareDetailsViaEmail123 = function (jwt,params, req, callback) 
     }else{
         Trucks.prototype.getTrucks(jwt,params,req,function(response){
             if(response.status){
-                var emailparams = {
-                    templateName: 'truckDetails',
-                    subject: "Truck Details",
-                    to: params.email,
-                    data:response.trucks
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        retObj.status = true;
-                        retObj.messages.push(' Details shared successfully');
-                        callback(retObj);
-                    } else {
-                        callback(emailResponse);
+                var output = [];
+                if(response.trucks.length){
+                    for(var i=0;i<response.trucks.length;i++) {
+                        output.push({
+                            Reg_No: response.trucks[i].registrationNo,
+                            Permit: dateToStringFormat(response.trucks[i].permitExpiry),
+                            Pollution: dateToStringFormat(response.trucks[i].pollutionExpiry),
+                            Insurance: dateToStringFormat(response.trucks[i].insuranceExpiry),
+                            Fitness: dateToStringFormat(response.trucks[i].fitnessExpiry),
+                            Tax: dateToStringFormat(response.trucks[i].taxDueDate),
+                            Driver: value(response.trucks[i].attrs.fullName),
+                            Mobile: value(response.trucks[i].attrs.mobile)
+                        })
+                        if (i === response.trucks.length - 1) {
+                            var emailparams = {
+                                templateName: 'truckDetails',
+                                subject: "Truck Details",
+                                to: params.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
-                });
+                }else{
+                    retObj.messages.push("No trucks found....");
+                    retObj.status = false;
+                    callback(retObj);
+                }
+
+
             }else{
                 callback(response);
             }
@@ -1338,12 +1367,12 @@ Trucks.prototype.downloadDetails = function (jwt, params,req, callback) {
             var output = [];
             for (var i = 0; i < response.trucks.length; i++) {
                 output.push({
-                    Reg_No: response.trucks[i].registrationNo,
-                    Permit: response.trucks[i].permitExpiry,
-                    Pollution: response.trucks[i].pollutionExpiry,
-                    Insurance: response.trucks[i].insuranceExpiry,
-                    Fitness: response.trucks[i].fitnessExpiry,
-                    Tax: response.trucks[i].taxDueDate,
+                    Reg_No: dateToStringFormat(response.trucks[i].registrationNo),
+                    Permit: dateToStringFormat(response.trucks[i].permitExpiry),
+                    Pollution: dateToStringFormat(response.trucks[i].pollutionExpiry),
+                    Insurance: dateToStringFormat(response.trucks[i].insuranceExpiry),
+                    Fitness: dateToStringFormat(response.trucks[i].fitnessExpiry),
+                    Tax: dateToStringFormat(response.trucks[i].taxDueDate),
                     Driver: response.trucks[i].attrs.fullName,
                     Mobile: response.trucks[i].attrs.mobile
                 });
