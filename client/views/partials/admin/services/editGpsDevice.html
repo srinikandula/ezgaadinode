@@ -10,12 +10,32 @@
                 <div class="col-xs-12">
                     <div class="col-xs-12 col-sm-6">
                         <div class="form-group styling-input-list">
-                            <select class="form-control custom-form-control" ng-model="deviceDetails.accountId"
+                          <!--  <select class="form-control custom-form-control" ng-model="deviceDetails.accountId"
                                     ng-change="getTrucksOfAccount()">
                                 <option ng-repeat="account in accounts" value="{{account._id}}">{{account.userName}}
                                 </option>
 
-                            </select>
+                            </select>-->   <div class="form-group select-box">
+                            <ui-select ng-model="deviceDetails.accountId" theme="select2"
+                                       style="min-width: 390px;"
+                                       title="Customer *" reset-search-input="false">
+
+                                <ui-select-match placeholder="Customer *" class="form-control order-form-control">
+                                    {{$select.selected.firstName || firstName}}
+                                </ui-select-match>
+                                <ui-select-choices
+                                        repeat="account in accounts " refresh="searchAccountOwner($select.search)"
+                                        refresh-delay="0" scroll-detector="loadMore()">
+                                    <b>
+                                        <div ng-bind-html="account.userName "></div>
+                                    </b>
+                                  <!--  <small>
+                                        Mobile: {{truck.contactPhone || '-&#45;&#45;'}}
+                                    </small>-->
+                                </ui-select-choices>
+                            </ui-select>
+
+                        </div>
                             <label class="focus-effect-for-input">Account</label>
                             <!--<ui-select ng-model="deviceDetails.accountId" theme="select2"
                                        style="min-width: 390px;"

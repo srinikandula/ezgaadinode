@@ -287,7 +287,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         });
     }
 
-    function getAccounts() {
+ /*   function getAccounts() {
         DeviceService.getAllAccountsForDropdown(function (success) {
             if (success.data.status) {
                 $scope.accounts = success.data.accounts;
@@ -297,7 +297,25 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         });
     }
 
-    getAccounts();
+    getAccounts();*/
+    $scope.searchAccountOwner = function (search) {
+        $scope.currentElement = 0;
+        $scope.search = search;
+        DeviceService.getAllAccountsForDropdown({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.accounts = success.data.accounts;
+            } else {
+                $scope.accounts = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+
 
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
