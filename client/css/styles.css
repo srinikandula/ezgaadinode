@@ -2533,6 +2533,10 @@ select {
     padding-right: 0;
     text-align: center;
 }
+.settings ul li img{
+    width:60px ;
+    height: auto;
+}
 
 .settings ul li p {
     margin: 6px 0 0px;
@@ -2592,6 +2596,8 @@ label > input + img { /* IMAGE STYLES */
 
 label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     background-image: url(../images/Reports_Calendar_Selected.png);
+    width: 66px;
+    height: auto;
 }
 
 .gpssettings-right h3 {
