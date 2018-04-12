@@ -266,7 +266,38 @@ Utils.prototype.populateNameInExpenseColl = function (documents, fieldTopopulate
         }
     });
 };
+Utils.prototype.populatePartyNameInExpenseColl = function (documents, fieldTopopulate, callback) {
+    var result = {};
+    var ids = _.pluck(documents, fieldTopopulate);
+    PartyColl.find({'_id': {$in: ids}}, {"name": 1}, function (err, names) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error retrieving ExpenseNames';
+            result.err = err;
+            callback(result);
+        } else {
+            for (var i = 0; i < documents.length; i++) {
+                var item = documents[i];
+                var supplier = _.find(names, function (users) {
 
+                    if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
+                });
+                if(supplier){
+                    if (!item.attrs) {
+                        item.attrs = {};
+                    }
+                    item.attrs.partyName =supplier.name;
+                }
+
+            }
+            result.status = true;
+            result.message = 'Error retrieving names';
+            result.documents = documents;
+            result.err = err;
+            callback(result);
+        }
+    });
+};
 Utils.prototype.populateNameInRolesColl = function (documents, fieldToPopulate, callback) {
     var result = {};
     var ids = _.pluck(documents, fieldToPopulate);
@@ -473,8 +504,10 @@ Utils.prototype.getErpSettingsForTruckExpiry = function (erp) {
     }
     else if (erp.filterType === "default") {
         output = {
-            condition: { $lte: new Date(new Date().setDate(new Date().getDate() + 30))},
-            type: 'default'
+            condition: {
+                $lte: new Date(new Date().setDate(new Date().getDate() + 30))
+            }, type: 'default',
+            date: new Date(new Date().setDate(new Date().getDate() + 30))
         };
 
     }

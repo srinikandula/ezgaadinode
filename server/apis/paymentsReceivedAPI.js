@@ -191,7 +191,55 @@ PaymentsReceived.prototype.getPayments = function (jwt, params,req, callback) {
         messages:[]
     };
     var condition = {};
-    if (!params.partyName) {
+    if (params.fromDate && params.toDate && params.partyName) {
+        PartyCollection.find({name: new RegExp("^" + params.partyName, "i")}, function (err, partys) {
+            if (err) {
+                result.status = false;
+                result.messages.push("Please try again");
+                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                var partIds = _.pluck(partys, "_id");
+                condition = {
+                    "accountId": ObjectId(jwt.accountId), date: {
+                        $gte: new Date(params.fromDate),
+                        $lte: new Date(params.toDate),
+                    }, "partyId": {$in: partIds}
+                };
+                getPayments(condition, jwt, params, function (paymentResp) {
+                    if(paymentResp.status){
+                        analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                    }else{
+                        analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
+                    }
+                    callback(paymentResp);
+                });
+
+            }
+        });
+    } else if (params.fromDate && params.toDate) {
+        condition = {
+            "accountId": ObjectId(jwt.accountId),
+            date: {
+                $gte: new Date(params.fromDate),
+                $lte: new Date(params.toDate),
+            }
+        };
+        getPayments(condition, jwt, params, function (paymentResp) {
+            if(paymentResp.status){
+                analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
+            }
+            callback(paymentResp);
+        });
+    } else if (!params.partyName) {
         getPayments({'accountId': jwt.accountId}, jwt, params, function (paymentResp) {
             if(paymentResp.status){
                 analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });

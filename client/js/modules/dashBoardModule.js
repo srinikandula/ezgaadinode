@@ -371,7 +371,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
         $scope.validateFilters = function (paramType) {
             var params = $scope.filters;
-            params.error=[];
+            params.error = [];
             if ((!params.fromDate || !params.toDate) && !params.regNumber) {
                 params.error.push('Please Select Dates or Register Number');
             }
@@ -387,9 +387,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 }
             }
         };
-        $scope.getAmountByReceiptsFilters=function () {
+        $scope.getAmountByReceiptsFilters = function () {
             var params = $scope.filters;
-            params.error=[];
+            params.error = [];
             if ((!params.fromDate || !params.toDate) && !params.partyName) {
                 params.error.push('Please Select Dates or Party name');
             }
@@ -397,7 +397,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 params.error.push('Invalid Date Selection');
             }
             if (!params.error.length) {
-               $scope.getAmountByReceipts();
+                $scope.getAmountByReceipts();
             }
         };
         $scope.selectTruckId = function (truck) {
@@ -588,7 +588,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             ExpenseService.findExpensesbyVehicleId($stateParams.id, function (success) {
                 if (success.data.status) {
                     $scope.expensesByVehicleId = success.data.expenses;
-                    $scope.totalExpenses = success.data.totalExpenses;
+                    $scope.totalExpenses = success.data.total;
                     $scope.table = $('#expenseByPartylist').DataTable({
                         destroy: true,
                         responsive: true,
@@ -617,49 +617,18 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                                 }
                             },
-                            {
-                                title: 'Diesel', "data": "attrs.expenseName",
-                                "render": function (data, type, row) {
-                                    if (data.toLowerCase() == 'diesel' ) {
-                                        return row.totalAmount;
-                                    } else {
-                                        return '0';
-                                    }
 
-                                }
+                            {
+                                title: 'Expense Type', "data": "attrs.expenseName",
+
                             },
                             {
-                                title: "Toll", "data": "attrs.expenseName",
-                                "render": function (data, type, row) {
-                                    if (data.toLowerCase() == 'toll' ) {
-                                        return row.totalAmount;
-                                    } else {
-                                        return '0';
-                                    }
+                                title: "Description", "data": "description",
 
-                                }
                             },
                             {
-                                title: "Maintenance", "data": "attrs.expenseName",
-                                "render": function (data, type, row) {
-                                    if (data.toLowerCase() == 'maintenance' ) {
-                                        return row.totalAmount;
-                                    } else {
-                                        return '0';
-                                    }
+                                title: 'Amount', "data": "cost",
 
-                                }
-                            },
-                            {
-                                title: "Miscellaneous", "data": "attrs.expenseName",
-                                "render": function (data, type, row) {
-                                    if ((data.toLowerCase() == 'diesel') || (data.toLowerCase() == 'toll') || (data.toLowerCase() == 'maintenance')) {
-                                        return 0;
-                                    } else {
-                                        return row.totalAmount;
-                                    }
-
-                                }
                             }
 
                         ],
@@ -705,7 +674,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             responsivePriority: 1
                         }],
 
-                        data:success.data.results,
+                        data: success.data.results,
                         columns: [
                             {
                                 "title": "Date",
@@ -798,7 +767,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             responsivePriority: 1
                         }],
 
-                        data:success.data.partyData,
+                        data: success.data.partyData,
                         columns: [
                             {
                                 "title": "Date",
@@ -1128,9 +1097,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
 
         $scope.getAmountByReceipts = function () {
-            ReceiptServices.getReceiptsByParties($scope.filters,function (success) {
+            ReceiptServices.getReceiptsByParties($scope.filters, function (success) {
                 if (success.data.status) {
-                   // $scope.amounts = success.data.data;
+                    // $scope.amounts = success.data.data;
                     $scope.table = $('#amountByReceipts').DataTable({
                         destroy: true,
                         responsive: true,
@@ -1143,10 +1112,10 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             responsivePriority: 1
                         }],
 
-                        data: success.data.data ,
+                        data: success.data.data,
                         columns: [
                             {
-                                title: 'Party Name', "data":"_id.name",
+                                title: 'Party Name', "data": "_id.name",
                                 "render": function (data, type, row) {
                                     return '<a href="#" class="ui-sref" >' + data + '</a>';
 
@@ -1163,7 +1132,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                                 }
                             }
-                            ],
+                        ],
 
                         searching: true
 
@@ -1187,7 +1156,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             ReceiptServices.getReceiptByPartyName($stateParams.receiptId, function (success) {
                 if (success.data.status) {
                     $scope.amounts = success.data.data;
-                    $scope.total= success.data.total;
+                    $scope.total = success.data.total;
                     $scope.table = $('#bypartyNames').DataTable({
                         destroy: true,
                         responsive: true,
@@ -1200,10 +1169,10 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             responsivePriority: 1
                         }],
 
-                        data: $scope.amounts ,
+                        data: $scope.amounts,
                         columns: [
                             {
-                                title: 'Date', "data":"date",
+                                title: 'Date', "data": "date",
                                 "render": function (data, type, row) {
                                     if (data) {
                                         return new Date(data).toLocaleDateString();
@@ -1214,7 +1183,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 }
                             },
                             {
-                                title: 'Party Name', "data":"partyId.name",
+                                title: 'Party Name', "data": "partyId.name",
                                 "render": function (data, type, row) {
                                     if (data) {
                                         return data;
@@ -1261,7 +1230,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
             });
         };
-
 
 
     }]);
