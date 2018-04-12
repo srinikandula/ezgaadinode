@@ -132,7 +132,11 @@ Expenses.prototype.addExpense = function (jwt, expenseDetails, req, callback) {
         expenseDetails.createdBy = jwt.id;
         expenseDetails.updatedBy = jwt.id;
         expenseDetails.accountId = jwt.accountId;
-
+        if(expenseDetails.mode === 'Cash'){
+            expenseDetails.totalAmount=0;
+        }else{
+            expenseDetails.cost=0;
+        }
         saveExpense(expenseDetails, jwt, result, req, callback);
     }
 };
@@ -211,10 +215,16 @@ Expenses.prototype.updateExpenseCost = function (jwt, expense, req, callback) {
         callback(result);
     }
     if (giveAccess) {
+        if(expense.mode === 'Cash'){
+            expense.totalAmount=0;
+        }else{
+            expense.cost=0;
+        }
         if (expense.expenseType === 'others' && expense.expenseName) {
             expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
                 if (eTResult.status) {
                     expense.expenseType = eTResult.newDoc._id.toString();
+
                     updateExpense(expense, jwt, req, callback);
                 } else {
                     result.status = false;
@@ -818,26 +828,17 @@ Expenses.prototype.findExpensesForVehicle = function (jwt, vehicleId, req, callb
             Utils.populateNameInExpenseColl(expenses, 'expenseType', function (results) {
                 result.status = true;
                 result.expenses = results.documents;
+                result.total=0;
                 for (var i = 0; i < result.expenses.length; i++) {
                     if (result.expenses[i].mode === 'Cash') {
-                        result.expenses[i].totalAmount = result.expenses[i].cost;
+                        result.total+= result.expenses[i].cost;
+                    }else{
+                        result.total+= result.expenses[i].totalAmount;
+                        result.expenses[i].cost=result.expenses[i].totalAmount;
                     }
-                    if (result.expenses[i].attrs.expenseName.toLowerCase() === 'diesel') {
-                        totalDieselExpense = totalDieselExpense + result.expenses[i].totalAmount;
-                    } else if (result.expenses[i].attrs.expenseName.toLowerCase() === 'toll') {
-                        totaltollExpense = totaltollExpense + result.expenses[i].totalAmount;
-                    } else if (result.expenses[i].attrs.expenseName.toLowerCase() === 'maintenance') {
-                        totalmExpense = totalmExpense + result.expenses[i].totalAmount;
-                    } else {
-                        totalmisc = totalmisc + result.expenses[i].totalAmount;
-                    }
+
                 }
-                result.totalExpenses = {
-                    totalDieselExpense: totalDieselExpense,
-                    totaltollExpense: totaltollExpense,
-                    totalmExpense: totalmExpense,
-                    totalmisc: totalmisc
-                };
+
                 analyticsService.create(req, serviceActions.find_expenses_by_veh, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
@@ -871,6 +872,11 @@ Expenses.prototype.findVehicleExpenses = function (jwt, vehicleId, req, callback
                 truckName: function (truckscallback) {
                     Helpers.populateNameInTrucksColl(expenses, 'vehicleNumber', function (response) {
                         truckscallback(response.err, response.documents);
+                    })
+                },
+                supplierName:function (supplierCallback) {
+                    Helpers.populatePartyNameInExpenseColl(expenses, 'partyId', function (response) {
+                        supplierCallback(response.err, response.documents);
                     })
                 }
             }, function (populateErr, populateResults) {

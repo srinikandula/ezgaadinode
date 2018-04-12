@@ -139,7 +139,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
             sort: tableParams.sorting(),
             regNumber:tableParams.truckNumber,
             fromDate:$scope.fromDate,
-            oDate:$scope.toDate};
+            toDate:$scope.toDate};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 

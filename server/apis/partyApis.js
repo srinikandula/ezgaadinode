@@ -483,7 +483,13 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
                 totalFreight = totalFreight + tripsAndExpenses.trips[i].freightAmount;
             }
             for (var i = 0; i < tripsAndExpenses.expenses.length; i++) {
-                totalExpenses = totalExpenses + tripsAndExpenses.expenses[i].cost;
+                if (tripsAndExpenses.expenses[i] === 'Cash') {
+                    totalExpenses = totalExpenses + tripsAndExpenses.expenses[i].cost;
+
+                }else{
+                    totalExpenses = totalExpenses + tripsAndExpenses.expenses[i].totalAmount;
+                    tripsAndExpenses.expenses[i].cost=tripsAndExpenses.expenses[i].totalAmount;
+                }
             }
             Utils.populateNameInPartyColl(tripsAndExpenses.trips, "partyId", function (partyDocuments) {
                 retObj.trips = retObj.trips.concat(partyDocuments.documents);
