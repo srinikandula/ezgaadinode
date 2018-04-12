@@ -29,64 +29,64 @@
             </form>
         </li>
         <div class="clearfix"></div>
-   </ul>
+    </ul>
     <div class="table-res">
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
-           ng-table="deviceParams">
-        <tr ng-repeat="device in currentPageOfDevices" style="text-align: center;">
-            <td data-title="'Account ID'" sortable="'accountId'" class="clickable-item">
-                {{device.accountId.userName}}
-            </td>
-            <td data-title="'SIM Phone No'" sortable="'simPhoneNumber'" class="clickable-item">
-                {{device.simPhoneNumber}}
-            </td>
-            <td data-title="'SIM No'" sortable="'simPhoneNumber'" class="clickable-item">
-                {{device.simNumber}}
-            </td>
-            <td data-title="'IMEI'" sortable="'imei'" class="clickable-item">
-                {{device.imei}}
-            </td>
-            <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
-                {{device.updatedAt | date:'dd-MM-yyyy'}}
-            </td>
-            <td data-title="'Plan Expiry'" sortable="'expiryTime'" class="clickable-item">
-                {{device.expiryTime | date:'dd-MM-yyyy'}}
-            </td>
-            <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">
-                {{device.createdAt | date:'dd-MM-yyyy'}}
-            </td>
-            <td data-title="'Installed By'" sortable="'installedBy'" class="clickable-item">
-                {{device.installedBy.userName |limitTo:5}}
-            </td>
-            <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
-                <a href="#" data-toggle="modal" data-target="#latestLocation" ng-click="getLatestLocation(device);">
-                    {{device.registrationNo || '--' | uppercase}}
-                </a>
-            </td>
-            <!-- <td data-title="'Latest Loc'" class="clickable-item">
-                 <a href="#" data-toggle="modal" data-target="#latestLocation"
-                    ng-click="getLatestLocation(device.latestLocation.address);">
-                     {{device.latestLocation.address | limitTo:10 || "&#45;&#45;"}}</a>
-             </td>-->
-            <!--<td data-title="'Payment'" sortable="'received'" class="clickable-item">
-                {{device.received}}
-            </td>-->
-            <td data-title="'Status'" sortable="'isDamaged'" class="clickable-item">
-                {{device.isDamaged == '0' && 'working' || 'Not working'}}
-            </td>
-            <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
-                <a href="#" ui-sref="services.editGpsDevice({device: device._id})" class="edit_icon">
-                    <span class="glyphicon glyphicon-pencil"></span>
-                </a>
-                <a href="#" ng-click="deleteDevice($index)" class="delete_icon">
-                    <span class="glyphicon glyphicon-trash"></span>
-                </a>
-            </td>
-        </tr>
-        <tr ng-if="!currentPageOfDevices || currentPageOfDevices.length === 0" class="text-center">
-            <td colspan="10">No GPS Devices exist.</td>
-        </tr>
-    </table>
+        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
+               ng-table="deviceParams">
+            <tr ng-repeat="device in currentPageOfDevices" style="text-align: center;">
+                <td data-title="'Account ID'" sortable="'accountId'" class="clickable-item">
+                    {{device.accountId.userName}}
+                </td>
+                <td data-title="'SIM Phone No'" sortable="'simPhoneNumber'" class="clickable-item">
+                    {{device.simPhoneNumber}}
+                </td>
+                <td data-title="'SIM No'" sortable="'simPhoneNumber'" class="clickable-item">
+                    {{device.simNumber}}
+                </td>
+                <td data-title="'IMEI'" sortable="'imei'" class="clickable-item">
+                    {{device.imei}}
+                </td>
+                <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
+                    {{device.updatedAt | date:'dd-MM-yyyy'}}
+                </td>
+                <td data-title="'Plan Expiry'" sortable="'expiryTime'" class="clickable-item">
+                    {{device.expiryTime | date:'dd-MM-yyyy'}}
+                </td>
+                <td data-title="'Date Created'" sortable="'createdAt'" class="clickable-item">
+                    {{device.createdAt | date:'dd-MM-yyyy'}}
+                </td>
+                <td data-title="'Installed By'" sortable="'installedBy'" class="clickable-item">
+                    {{device.installedBy.userName |limitTo:5}}
+                </td>
+                <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
+                    <a href="#" data-toggle="modal" data-target="#latestLocation" ng-click="getLatestLocation(device);">
+                        {{device.registrationNo || '--' | uppercase}}
+                    </a>
+                </td>
+                <!-- <td data-title="'Latest Loc'" class="clickable-item">
+                     <a href="#" data-toggle="modal" data-target="#latestLocation"
+                        ng-click="getLatestLocation(device.latestLocation.address);">
+                         {{device.latestLocation.address | limitTo:10 || "&#45;&#45;"}}</a>
+                 </td>-->
+                <!--<td data-title="'Payment'" sortable="'received'" class="clickable-item">
+                    {{device.received}}
+                </td>-->
+                <td data-title="'Status'" sortable="'isDamaged'" class="clickable-item">
+                    {{device.isDamaged == '0' && 'working' || 'Not working'}}
+                </td>
+                <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
+                    <a href="#" ui-sref="services.editGpsDevice({device: device._id})" class="edit_icon">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </a>
+                    <a href="#" ng-click="deleteDevice($index)" class="delete_icon">
+                        <span class="glyphicon glyphicon-trash"></span>
+                    </a>
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfDevices || currentPageOfDevices.length === 0" class="text-center">
+                <td colspan="10">No GPS Devices exist.</td>
+            </tr>
+        </table>
     </div>
     <div class="modal fade" id="latestLocation" role="dialog">
         <div class="modal-dialog modal-md">
@@ -95,14 +95,14 @@
                     <h4 class="modal-title">Latest Location</h4>
                 </div>
                 <div class="modal-body ">
-                    <p style="font-size: 15px;"><b>Register number</b> : {{latestLocation.deviceId | uppercase}}</p>
-
-                    <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.attrs.latestLocation.address}}</p>
-                    <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.latestLocation.speed | number:0}} KMPH</p>
-
-                    <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.attrs.deviceTime |date:'dd-MM-yyyy HH:mm:ss '}}</p>
-
-
+                    <p style="font-size: 15px;"><b>Register number</b> : {{latestLocation.attrs.latestLocation.deviceId
+                        | uppercase}}</p>
+                    <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.attrs.latestLocation.address}}
+                    </p>
+                    <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.attrs.latestLocation.speed | number:0}}
+                        KMPH</p>
+                    <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.attrs.latestLocation.deviceTime
+                        |date:'dd-MM-yyyy HH:mm:ss '}}</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
