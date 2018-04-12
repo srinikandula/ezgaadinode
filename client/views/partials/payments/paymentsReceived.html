@@ -4,11 +4,11 @@
         <ul class="col-sm-10 pall-zero list-inline">
             <li class="col-sm-3 pall-zero">
                 <date-picker ng-model="fromDate" class="'paymentscontrol'"
-                             ban-future="'banFutureDate'"></date-picker>
+                             past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
             </li>
             <li class="col-sm-3 pall-zero">
-                <date-picker class="'paymentscontrol'" ban-future="'banFutureDate'" ng-model="toDate"
-                ></date-picker>
+                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="toDate"
+                             placeholder="'to date'" ></date-picker>
             </li>
             <li class="col-sm-1 pall-zero">
                 <button type="submit" ng-click="searchByPartyName(partyName1);" class="btn go">

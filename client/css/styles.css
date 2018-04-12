@@ -2917,6 +2917,7 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 .select2 > .select2-choice.ui-select-match {
     /* Because of the inclusion of Bootstrap */
     height: 45px;
+    cursor: pointer;
 }
 .gpsSearch .select2 > .select2-choice.ui-select-match {
     height: 40px;

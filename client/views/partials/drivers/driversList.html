@@ -6,7 +6,7 @@
             <li class="col-sm-6">
                 <form>
                     <div class="input-group stylish-input-group">
-                        <input type="text" ng-model="driver2" class="form-control" placeholder="Search By Driver Name">
+                        <input type="text" ng-model="driver2" class="form-control" placeholder="Search by Driver Id and Name">
                         <span class="input-group-addon">
                         <button type="submit" ng-click="searchByDriverName(driver2)">
                            <i class="fa fa-search sear" aria-hidden="true"></i>
@@ -55,7 +55,7 @@
                     drivers.mobile || '--' }}
                 </td>
                 <td data-title="'V No'" sortable="'truckId'" class="clickable-item">{{
-                    drivers.truckId.registrationNo || '--' }}
+                    drivers.truckId.registrationNo  || '--'| uppercase }}
                 </td>
                 <td data-title="'Salary'" sortable="'salary'" class="clickable-item">{{
                     drivers.salary || '--'}}

@@ -333,7 +333,11 @@ Devices.prototype.getDevices = function (req, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
-    if (params.searchString) query.$or = [{"simPhoneNumber": new RegExp(params.searchString, "gi")}, {"imei": new RegExp(params.searchString, "gi")}];
+    if (params.searchString) query.$or =
+            [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
+            {"imei": new RegExp(params.searchString, "gi")},
+            {"simNumber": new RegExp(params.searchString, "gi")},
+            {"deviceId": new RegExp(params.searchString, "gi")}];
     async.parallel({
         devices: function (devicescallback) {
             DevicesColl.find(query)
@@ -533,8 +537,8 @@ Devices.prototype.updateDevice = function (req, callback) {
                 $set: {
                     accountId: params.accountId,
                     installedBy: params.installedBy,
-                    simNumber:params.simNumber,
-                    simPhoneNumber:params.simPhoneNumber
+                    simNumber: params.simNumber,
+                    simPhoneNumber: params.simPhoneNumber
 
                 }
             }, function (errAddedAccount, accountAdded) {
@@ -1060,7 +1064,7 @@ Devices.prototype.getGpsDevicesByStatus = function (req, callback) {
             condition = {installedBy: params.accountId}
 
         } else if (params.type === 'inHand') {
-            condition={assignedTo:params.accountId,installedBy:{$exists:false}}
+            condition = {assignedTo: params.accountId, installedBy: {$exists: false}}
         }
         async.parallel({
             devices: function (devicesCallback) {

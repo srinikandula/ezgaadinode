@@ -159,7 +159,11 @@ Drivers.prototype.getDrivers = function (jwt, params, req, callback) {
         if (!params.driverName) {
             condition = {accountId: jwt.accountId}
         } else {
-            condition = {accountId: jwt.accountId, fullName: new RegExp("^" + params.driverName, "i")}
+            condition = {
+                $and : [{accountId: jwt.accountId},
+                    {$or:[{fullName: new RegExp("^" + params.driverName, "i")},
+                            {driverId: new RegExp("^" + params.driverName, "i")}]}]
+            }
         }
 
         async.parallel({

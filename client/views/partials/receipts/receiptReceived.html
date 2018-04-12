@@ -4,10 +4,10 @@
         <ul class="col-sm-10 pall-zero list-inline">
                 <li class="col-sm-3 pall-zero">
                     <date-picker ng-model="filters.fromDate" class="'paymentscontrol'"
-                                 ban-future="'banFutureDate'"></date-picker>
+                                 past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
                 </li>
                 <li class="col-sm-3 pall-zero">
-                    <date-picker class="'paymentscontrol'" ban-future="'banFutureDate'"
+                    <date-picker class="'paymentscontrol'"  past-present="'pastPresentDate'" placeholder="'to date'"
                                  ng-model="filters.toDate"></date-picker>
                 </li>
                 <li class="col-sm-1 pall-zero">
