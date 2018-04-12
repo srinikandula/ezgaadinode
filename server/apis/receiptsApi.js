@@ -12,6 +12,20 @@ var Utils = require('./utils');
 var _ = require("underscore");
 var Receipts = function () {
 };
+function dateToStringFormat(date) {
+    if (date instanceof Date) {
+        return date.toLocaleDateString();
+    } else {
+        return '--';
+    }
+}
+function value(x){
+    if(x){
+        return x;
+    }else{
+        return '--';
+    }
+}
 
 Receipts.prototype.totalReceipts = function (req, callback) {
     var retObj = {
@@ -719,21 +733,38 @@ Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
     }else{
         Receipts.prototype.getReceipts(req,function(response){
             if(response.status){
-                var emailparams = {
-                    templateName: 'receiptDetails',
-                    subject: "Receipt Details",
-                    to: params.email,
-                    data:response.receipts
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        retObj.status = true;
-                        retObj.messages.push(' Details shared successfully');
-                        callback(retObj);
-                    } else {
-                        callback(emailResponse);
+                var output = [];
+                if(response.receipts.length){
+                    for(var i=0;i<response.receipts.length;i++) {
+                        output.push({
+                            date:dateToStringFormat(response.receipts[i].date),
+                            partyId:response.receipts[i].partyId.name,
+                            amount:response.receipts[i].amount,
+                            description:value(response.receipts[i].description)
+                        });
+                        if (i === response.receipts.length - 1) {
+                            var emailparams = {
+                                templateName: 'receiptDetails',
+                                subject: "Receipt Details",
+                                to: params.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
-                });
+                }else{
+                    retObj.messages.push("No records found....");
+                    retObj.status = false;
+                    callback(retObj);
+                }
             }else{
                 callback(response);
 
@@ -753,7 +784,8 @@ Receipts.prototype.downloadDetails = function (jwt, params,req, callback) {
         if(response.status){
             var output = [];
             for(var i=0;i<response.receipts.length;i++){
-               output.push({Date:response.receipts[i].date,
+               output.push({
+                   Date:dateToStringFormat(response.receipts[i].date),
                Party:response.receipts[i].partyId.name,
                Amount:response.receipts[i].amount,
                Description:response.receipts[i].description});

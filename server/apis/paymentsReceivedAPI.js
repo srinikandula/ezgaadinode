@@ -23,7 +23,20 @@ log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 
 var PaymentsReceived = function () {
 };
-
+function dateToStringFormat(date) {
+    if (date instanceof Date) {
+        return date.toLocaleDateString();
+    } else {
+        return '--';
+    }
+}
+function value(x){
+    if(x){
+        return x;
+    }else{
+        return '--';
+    }
+}
 /**
  * Find total of the payments received in the account
  * @param accId
@@ -693,29 +706,47 @@ PaymentsReceived.prototype.shareDetailsViaEmail = function (jwt,params, req, cal
         status: false,
         messages: []
     };
-    console.log("shareDetailsViaEmail",params);
     if(!params.email || !Utils.isEmail(params.email)){
         retObj.messages.push("Invalid email....");
         callback(retObj);
     }else{
         PaymentsReceived.prototype.getPayments(jwt,params,req,function(response){
-            // console.log("response...",response);
             if(response.status){
-                var emailparams = {
-                    templateName: 'paymentDetails',
-                    subject: "Payment Details",
-                    to: params.email,
-                    data:response.paymentsCosts
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        retObj.status = true;
-                        retObj.messages.push(' Details shared successfully');
-                        callback(retObj);
-                    } else {
-                        callback(emailResponse);
+                var output = [];
+                if(response.paymentsCosts.length){
+                    for(var i=0;i<response.paymentsCosts.length;i++) {
+                        output.push({
+                            date:dateToStringFormat(response.paymentsCosts[i].date),
+                            party:response.paymentsCosts[i].attrs.partyName,
+                            amount:response.paymentsCosts[i].amount,
+                            paymentType:response.paymentsCosts[i].paymentType,
+                            paymentRefNo:value(response.paymentsCosts[i].paymentRefNo),
+                            description:value(response.paymentsCosts[i].description)
+                        });
+                        if (i === response.paymentsCosts.length - 1) {
+                            var emailparams = {
+                                templateName: 'paymentDetails',
+                                subject: "Payments Details",
+                                to: params.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
                     }
-                });
+                }else{
+                    retObj.messages.push("No records found....");
+                    retObj.status = false;
+                    callback(retObj);
+                }
+
             }else{
                 callback(response);
 
@@ -729,12 +760,6 @@ PaymentsReceived.prototype.downloadDetails = function (jwt, params,req, callback
         status: false,
         messages: []
     };
-// <td>Date</td>
-//     <td>Party</td>
-//     <td>Amount</td>
-//     <td>Payment Type</td>
-//     <td>Payment Ref.No</td>
-//     <td>Description</td>
     console.log("share details download....");
     PaymentsReceived.prototype.getPayments(jwt,params,req,function(response){
         console.log("response....",response);
@@ -742,7 +767,7 @@ PaymentsReceived.prototype.downloadDetails = function (jwt, params,req, callback
             var output = [];
             for(var i=0;i<response.paymentsCosts.length;i++){
                 output.push({
-                    Date:response.paymentsCosts[i].date,
+                    Date:dateToStringFormat(response.paymentsCosts[i].date),
                     Party:response.paymentsCosts[i].attrs.partyName,
                     Amount:response.paymentsCosts[i].amount,
                     Payment_Type:response.paymentsCosts[i].paymentType,

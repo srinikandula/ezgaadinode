@@ -13,18 +13,16 @@
             <td>Party Name</td>
             <td>Driver</td>
             <td>Freight</td>
-            <td>Trip Lane</td>
             <td>Contact</td>
         </tr>
         #foreach($record in $emailData)
         <tr>
             <td>$record.date</td>
-            <td>$record.attrs.truckName</td>
-            <td>$record.attrs.partyName</td>
-            <td>$record.attrs.fullName</td>
+            <td>$record.truckName</td>
+            <td>$record.partyName</td>
+            <td>$record.fullName</td>
             <td>$record.freightAmount</td>
-            <td>$record.tripLane</td>
-            <td>$record.attrs.mobile</td>
+            <td>$record.mobile</td>
         </tr>
         #end
     </table>
