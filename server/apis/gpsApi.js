@@ -587,7 +587,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
             callback(retObj);
         }else if(truckDetails){
             GpsColl.find({
-                deviceId: truckDetails.deviceId,
+                uniqueId: truckDetails.deviceId,
                 createdAt: {$gte: startDate, $lte: endDate}
             }).sort({createdAt: 1}).exec(function (err, positions) {
                 if(err){
@@ -595,7 +595,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                     retObj.messages.push('Error fetching truck positions');
                     callback(retObj);
                 }else{
-                    archivedDevicePositions.find({deviceId: truckDetails.deviceId,
+                    archivedDevicePositions.find({uniqueId: truckDetails.deviceId,
                         createdAt: {$gte: startDate, $lte: endDate}}).sort({createdAt: 1}).exec(function (err, archivedPositions) {
                         if(err){
                             retObj.status=false;
