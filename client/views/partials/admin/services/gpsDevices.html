@@ -29,7 +29,8 @@
             </form>
         </li>
         <div class="clearfix"></div>
-    </ul>
+   </ul>
+    <div class="table-res">
     <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
            ng-table="deviceParams">
         <tr ng-repeat="device in currentPageOfDevices" style="text-align: center;">
@@ -39,7 +40,10 @@
             <td data-title="'SIM Phone No'" sortable="'simPhoneNumber'" class="clickable-item">
                 {{device.simPhoneNumber}}
             </td>
-            <td data-title="'imei'" sortable="'imei'" class="clickable-item">
+            <td data-title="'SIM No'" sortable="'simPhoneNumber'" class="clickable-item">
+                {{device.simNumber}}
+            </td>
+            <td data-title="'IMEI'" sortable="'imei'" class="clickable-item">
                 {{device.imei}}
             </td>
             <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
@@ -84,7 +88,7 @@
             <td colspan="10">No GPS Devices exist.</td>
         </tr>
     </table>
-
+    </div>
     <div class="modal fade" id="latestLocation" role="dialog">
         <div class="modal-dialog modal-md">
             <div class="modal-content">

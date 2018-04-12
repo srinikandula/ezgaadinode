@@ -11,8 +11,8 @@ app.directive('datePicker', function () {
         template: '<div class="pos-relative  styling-input-list-trucks">\n' +
         '                <span class="date-pick" ng-click="open($event)">' +
         '                  <img src="images/date-icon.png" width="30" height="24" /> </span>\n' +
-        '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="{{dateFormat}}" ng-model="ngModel" is-open="opened"                           ng-required="true" ng-click="open($event)"/>\n' +
-        '<label class="focus-effect-for-input-trucks" aria-hidden="true">{{placeholder || Date}}</label> \n' +
+        '          <input type="text"  readonly class="form-control {{class}}" datepicker-options="options"                                show-button-bar="false" uib-datepicker-popup="dd-MM-yyyy" ng-model="ngModel" is-open="opened"                           ng-required="true" ng-click="open($event)"/>\n' +
+        '<label class="focus-effect-for-input-trucks" aria-hidden="true">{{placeholder}}</label> \n' +
         '        </div>\n',
         require: 'ngModel',
         link: function (scope, element, attributes) {

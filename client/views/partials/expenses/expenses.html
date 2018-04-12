@@ -3,11 +3,13 @@
         <div class="col-sm-2 pall-zero"><h3>Expenses</h3></div>
         <ul class="col-sm-10 pall-zero list-inline">
             <li class="col-sm-3 pall-zero">
-                <date-picker class="'paymentscontrol'" ban-future="'banFutureDate'" ng-model="fromDate"
+                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" placeholder="'from date'"
+                             ng-model="fromDate"
                 ></date-picker>
             </li>
             <li class="col-sm-3 pall-zero">
-                <date-picker ng-model="toDate" class="'paymentscontrol'" ban-future="'banFutureDate'"></date-picker>
+                <date-picker ng-model="toDate" class="'paymentscontrol'" past-present="'pastPresentDate'"
+                             placeholder="'to date'"></date-picker>
             </li>
             <li class="col-sm-1 pall-zero">
                 <button type="submit" ng-click="searchByVechicleNumber(truckNumber1);" class="btn go">
@@ -28,12 +30,6 @@
                         </ui-select-choices>
                     </ui-select>
                 </div>
-
-                <!--  <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                  <select class="form-control" ng-model="truckNumber" ng-change="searchByVechicleNumber(truckNumber);">
-                      <option value="" selected>All Vehicles</option>
-                      <option ng-repeat="truck in trucksList">{{truck.registrationNo}}</option>
-                  </select>-->
             </li>
 
             <li class="col-sm-1">

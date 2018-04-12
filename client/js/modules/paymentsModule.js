@@ -84,7 +84,6 @@ app.factory('PaymentsService',['$http', function ($http) {
 app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService) {
 
     $scope.goToEditPaymentsPage = function (paymentsId) {
-        console.log("sdckj");
         $state.go('paymentsEdit', { paymentsId: paymentsId });
     };
     $scope.count = 0;
@@ -223,7 +222,7 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
                 PaymentsService.shareDetailsViaEmail({
                 email:email
             },function(success){
-                console.log("success...",success);
+                // console.log("success...",success);
                 if (success.data.status) {
                     resolve()
                 } else {
@@ -330,7 +329,7 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
     };
     $scope.AddorUpdatePayments = function () {
         var params = $scope.paymentsDetails;
-        console.log(params);
+        // console.log(params);
         params.error = [];
         params.success = [];
 
