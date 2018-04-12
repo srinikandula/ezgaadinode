@@ -125,7 +125,7 @@ AuthRouter.post('/shareTripDetailsByVechicleViaEmail',function (req,res) {
     });
 });*/
 
-var job = cronjob.schedule('0 1,30 * * * *', function() {      //runs everyday midnight at 12AM.
+var job = cronjob.schedule('0 1,30 * * * *', function() {      //runs every hour 1st and 30th Minute
     gps.moveDevicePositions(function (result) {
         console.log(result.messages[0]);
     });
@@ -135,7 +135,7 @@ var job = cronjob.schedule('0 1,30 * * * *', function() {      //runs everyday m
 });
 job.start();
 
-var task = cronjob.schedule('0 1,30 * * * *', function() {
+var task = cronjob.schedule('0 0 5 * * *', function() {
     gps.emailDayGPSReport({},function (result) {
         console.log("emailDayGPSReport..",result);
     });
