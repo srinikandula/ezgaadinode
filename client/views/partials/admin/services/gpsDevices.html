@@ -1,4 +1,4 @@
-<div ng-controller="DeviceCtrl" xmlns="http://www.w3.org/1999/html">
+<div ng-controller="DeviceCtrl">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">GPS Device</li>
         <li class="pull-right">
@@ -59,8 +59,7 @@
                 {{device.installedBy.userName |limitTo:5}}
             </td>
             <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
-                <a href="#" data-toggle="modal" data-target="#latestLocation"
-                   ng-click="getLatestLocation(device);">
+                <a href="#" data-toggle="modal" data-target="#latestLocation" ng-click="getLatestLocation(device);">
                     {{device.registrationNo || '--' | uppercase}}
                 </a>
             </td>
@@ -98,10 +97,10 @@
                 <div class="modal-body ">
                     <p style="font-size: 15px;"><b>Register number</b> : {{latestLocation.deviceId | uppercase}}</p>
 
-                    <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.latestLocation.address}}</p>
+                    <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.attrs.latestLocation.address}}</p>
                     <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.latestLocation.speed | number:0}} KMPH</p>
 
-                    <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.latestLocation.deviceTime |date:'dd-MM-yyyy HH:mm:ss '}}</p>
+                    <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.attrs.deviceTime |date:'dd-MM-yyyy HH:mm:ss '}}</p>
 
 
                 </div>

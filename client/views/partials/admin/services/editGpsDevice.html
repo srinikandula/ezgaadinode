@@ -36,24 +36,14 @@
                             </ui-select>
 
                         </div>
-                            <!--<label class="focus-effect-for-input">Account</label>-->
-                            <!--<ui-select ng-model="deviceDetails.accountId" theme="select2"
-                                       style="min-width: 390px;"
-                                       title="Choose a person" append-to-body="true">
-                                <ui-select-match placeholder="Select an account*" class="form-control custom-form-control">
-                                    {{$select.selected.userName}}
-                                </ui-select-match>
-                                <ui-select-choices
-                                        repeat="account in accounts | propsFilter: {userName: $select.search}">
-                                    <div ng-bind-html="account.userName | highlight: $select.search"></div>
-                                </ui-select-choices>
-                            </ui-select>-->
+
                         </div>
-                       <!-- <div class="form-group styling-input-list">
+
+                        <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control"
                                    ng-model="deviceDetails.imei"/>
                             <label class="focus-effect-for-input">Device Id</label>
-                        </div>-->
+                        </div>
                         <div class="form-group ">
                             <select class="form-control custom-form-control" ng-model="deviceDetails.truckId"
                                     ng-change="getSelectedTruckDetails()">

@@ -1,36 +1,33 @@
 <div ng-controller="settingsCtrl" ng-init="getGpsPlanCount('gps')">
-    <div>
-        <p class="pull-left name-head">GPS Renewal Plans</p>
-        <div class="row mt-20">
-            <div class="col-sm-7 pull-right pall-zero">
-                <div class="col-sm-5">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" ng-model="gpsPlan1">
-                        <span class="input-group-addon" ng-click="searchByPlan('gps','',gpsPlan1);"><i class="glyphicon glyphicon-search"></i></span>
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">GPS Renewal Plans</li>
+        <li class="pull-right">
+            <button class="btn btn-primary" ng-click="saveRenewalPlan()">Create New</button>
+        </li>
+        <li class="pull-right col-xs-3">
+            <select class="form-control" ng-model="status1" ng-change="searchByPlan('gps',status1,'');">
+                <option value="" selected>Select by Status</option>
+                <option ng-value="true">Enabled</option>
+                <option ng-value="false">Disabled</option>
+            </select>
+        </li>
+        <li class="pull-right col-xs-4">
+            <form role="search">
+                <div class="input-group add-on">
+                    <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
+                           ng-model="gpsPlan1">
+                    <div class="input-group-btn" ng-click="searchByPlan('gps','',gpsPlan1);">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <select class="form-control" ng-model="status1" ng-change="searchByPlan('gps',status1,'');">
-                        <option value="" selected>Select by Status</option>
-                        <option ng-value="true">Enabled</option>
-                        <option ng-value="false">Disabled</option>
-                    </select>
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-primary" ng-click="saveRenewalPlan()">Add New</button>
-                </div>
-            </div>
-        </div>
-    </div>
+            </form>
+        </li>
+    </ul>
     <div class="clearfix"></div>
-       <input type="checkbox" class="btn btn-warning" va ng-change="checkAll()" ng-model="checkAllStatus" />
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+    <table class="table table-bordered table-striped table-condensed table-hover text-center"
            ng-table="settingParams" >
-
         <tr ng-repeat="plan in currentPageOfgpsPlans">
-            <td header="'checkbox.html'">
-                <input type="checkbox" ng-model="plan.checkStatus" checked="checked" />
-            </td>
             <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Plan Name'" sortable="'planName'" class="clickable-item">{{plan.planName}}</td>
             <td data-title="'Duration in Months'" sortable="'durationInMonths'" class="clickable-item">

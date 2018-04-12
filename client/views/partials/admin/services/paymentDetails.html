@@ -1,6 +1,6 @@
 <div ng-controller="paymentListCrtl">
-    ERP Payment
     <div class="col-xs-12 mt-20">
+        <h4>ERP Payment</h4>
         <table class="table table-bordered">
             <thead>
             <th>Date</th>
@@ -24,8 +24,8 @@
             </tbody>
         </table>
     </div>
-    GPS Payment
     <div class="col-xs-12 mt-20">
+        <h4>GPS Payment</h4>
         <table class="table table-bordered">
             <thead>
             <th>Date</th>
@@ -37,7 +37,7 @@
             <th>Paid</th>
             </thead>
             <tbody>
-            <tr ng-repeat="gpsPayment in paymentDetails.erp">
+            <tr ng-repeat="gpsPayment in paymentDetails.gps">
                 <td>{{gpsPayment.createdAt | date:'dd/MM/yyyy'}}</td>
                 <td>{{gpsPayment.planId.planName}}</td>
                 <td>{{gpsPayment.amountPaid}}</td>

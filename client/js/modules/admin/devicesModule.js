@@ -457,6 +457,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
 }]);
 
 app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notification', '$state', function ($scope, DeviceService, Notification, $state) {
+
     $scope.devicesToAdd = [];
     for (var i = 0; i < 30; i++) {
         $scope.devicesToAdd.push({
@@ -783,6 +784,7 @@ app.controller('paymentCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTab
 }]);
 
 app.controller('paymentListCrtl', ['$scope', 'DeviceService', 'Notification', '$stateParams', function ($scope, DeviceService, Notification, $stateParams) {
+
     function getPaymentDetails() {
         DeviceService.getPaymentDetails($stateParams.id, function (success) {
             if (success.data.status) {
