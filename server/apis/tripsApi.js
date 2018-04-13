@@ -100,9 +100,9 @@ function shareTripDetails(tripDetails, trip, callback) {
                                 var smsParams = {
                                     contact: partyData.contact,
                                     message: "Hi " + partyData.name + ",\n" +
-                                    "Date : " + new Date(tripDetails.date).toLocaleString() + ",\n" +
-                                    "Vehicle No:" + truckData.registrationNo + ",\n" +
-                                    "Driver Name:" + driverData.fullName + ",\n" +
+                                    "Date : " + new Date(tripDetails.date).toDateString() + ",\n" +
+                                    "Vehicle No:" + truckData.registrationNo.toUpperCase() + ",\n" +
+                                    "Driver Name:" + driverData.fullName.toUpperCase() + ",\n" +
                                     "Driver Number:" + driverData.mobile + ",\n" +
                                     "Source:" + tripDetails.source + ",\n" +
                                     "Destination:" + tripDetails.destination + ",\n" +
@@ -119,10 +119,10 @@ function shareTripDetails(tripDetails, trip, callback) {
                                                 subject: "Easygaadi Trip Details",
                                                 to: partyData.email,
                                                 data: {
-                                                    "date": new Date(tripDetails.date).toLocaleDateString(),
-                                                    "name": partyData.name,
-                                                    "vehicleNo": truckData.registrationNo,
-                                                    "driverName": driverData.fullName,
+                                                    "date": new Date(tripDetails.date).toDateString(),
+                                                    "name": partyData.name.toUpperCase(),
+                                                    "vehicleNo": truckData.registrationNo.toUpperCase(),
+                                                    "driverName": driverData.fullName.toUpperCase(),
                                                     "driverNumber": driverData.mobile,
                                                     "source": tripDetails.source,
                                                     "destination": tripDetails.destination,

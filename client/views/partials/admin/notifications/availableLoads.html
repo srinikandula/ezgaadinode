@@ -6,10 +6,9 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+    <table class="table table-bordered table-striped table-condensed table-hover text-center"
            ng-table="loadNtfnsparams">
         <tr ng-repeat="plan in currentPageOfLoadNtfns">
-            <td><input type="checkbox"/></td>
             <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Source'" sortable="'sourceCity'" class="clickable-item">{{plan.sourceCity}}</td>
             <td data-title="'Destination'" sortable="'destination'" class="clickable-item">{{plan.destinationCity}}</td>
@@ -39,44 +38,54 @@
         </div>
         <div class="modal-body" id="modal-body" ng-init="initLoadNotification();">
             <div class="row">
-                <div class="col-xs-6">
+                <div class="col-sm-6">
                     <div class="form-group styling-input-list">
                         <input type="text" class="form-control order-form-control"
                                ng-model="loadNotification.sourceCity"/>
                         <label class="order-effect-for-input">Source City*</label>
                     </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group styling-input-list">
+                        <input type="text" class="form-control order-form-control"
+                               ng-model="loadNotification.destinationCity"/>
+                        <label class="order-effect-for-input">Destination City*</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
                     <div class="form-group styling-input-list" ng-init="getTruckTypes();">
                         <select class="form-control order-form-control" ng-model="loadNotification.truckType">
                             <option ng-repeat="trucks in getTruckTypes">{{trucks.title}}</option>
                         </select>
                         <label class="order-effect-for-input">Truck Type</label>
                     </div>
-                    <div class="form-group styling-input-list">
-                        <input type="text" class="form-control order-form-control"
-                               ng-model="loadNotification.dateAvailable"/>
-                        <label class="order-effect-for-input">Date Available*</label>
-                    </div>
-                    <div class="form-group styling-input-list">
-                        <textarea class="form-control" ng-model="loadNotification.message"></textarea>
-                        <label class="focus-effect-for-input">Message</label>
-                    </div>
                 </div>
-                <div class="col-xs-6">
-                    <div class="form-group styling-input-list">
-                        <input type="text" class="form-control order-form-control"
-                               ng-model="loadNotification.destinationCity"/>
-                        <label class="order-effect-for-input">Destination City*</label>
-                    </div>
+                <div class="col-sm-6">
                     <div class="form-group styling-input-list" ng-init="getGoodsTypes();">
                         <select class="form-control order-form-control" ng-model="loadNotification.goodsType">
                             <option ng-repeat="goods in getGoodsTypes">{{goods.title}}</option>
                         </select>
                         <label class="order-effect-for-input">Goods Type</label>
                     </div>
+                </div>
+                <div class="col-sm-6">
+                        <div class="form-group">
+                            <admin-date-picker class="'form-control order-form-control'"
+                                               ng-model="loadNotification.dateAvailable" placeholder="'Date Available'"></admin-date-picker>
+                        </div>
+                </div>
+                <div class="col-sm-6">
                     <div class="form-group styling-input-list">
                         <input type="number" class="form-control order-form-control" ng-model="loadNotification.price"/>
                         <label class="order-effect-for-input">Price*</label>
                     </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <label>Message</label>
+                        <textarea class="form-control" ng-model="loadNotification.message"></textarea>
+                    </div>
+                </div>
                     <div class="form-group">
                         <p class="smsenabled">Send To All*:</p>
                         <ul class="list-inline">
