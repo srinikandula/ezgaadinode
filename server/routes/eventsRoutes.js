@@ -356,6 +356,17 @@ OpenRouter.post('/get/addDeviceToTracker', function (request, res) {
     });
 });
 
+OpenRouter.get('/get/generateReportsByAccount', function (req, res) {
+    Events.generateReportsByAccount(req.query,function(results){
+        res.json(results);
+    });
+});
+
+OpenRouter.get('/get/generateReportsGroupByTruck',function (req,res) {
+   Events.generateReportsGroupByTruck(req.query,function (result) {
+       res.json(result);
+   })
+});
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
