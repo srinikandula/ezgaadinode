@@ -111,7 +111,10 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 $scope.timeTravelled= success.data.results.timeTravelled;
                 renderPolyline();
             }else{
-                Notification.error({message:success.data.message});
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message:message});
+
+                });
             }
         },function (err) {
 
