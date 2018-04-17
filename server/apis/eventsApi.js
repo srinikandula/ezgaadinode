@@ -7,6 +7,8 @@ var json2xls = require('json2xls');
 var fs = require('fs');
 var request = require('request');
 var config = require('./../config/config');
+var nodeGeocoder = require('node-geocoder');
+
 var Events = function () {
 };
 var pool = mysql.createPool(config.mysql);
@@ -2142,6 +2144,31 @@ Events.prototype.generateReportsByAccount = function (params, callback) {
 
 };
 
+function resolveAddress(position, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var options = {
+        provider: 'google',
+        httpAdapter: 'https'
+    };
+    options.apiKey = config.googleKey;
+    var geocoder = nodeGeocoder(options);
+    geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
+        if (location) {
+            retObj.status = true;
+            retObj.address = location[0]['formattedAddress'];
+            callback(retObj);
+        } else {
+            retObj.messages.push("address finding error");
+            callback(retObj);
+        }
+
+    });
+}
+
+
 Events.prototype.generateReportsGroupByTruck = function (params, callback) {
     var retObj = {
         status: false,
@@ -2157,89 +2184,200 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        async.parallel({
-            startLocation: function (startCallback) {
-                pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as startDate,\n" +
-                    "latitude as slat,longitude as slan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
-                    "order by timestamp asc limit 1;", function (err, startDocs) {
-                    startCallback(err, startDocs);
-                });
-            },
-            endLocation: function (endCallback) {
-                pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as endDate,\n" +
-                    "latitude as elat,longitude as elan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
-                    "order by timestamp desc limit 1;", function (err, endDocs) {
-                    endCallback(err, endDocs);
-                });
-            }
-        }, function (err, result) {
+        pool_crm.query("select  distinct deviceID as truckNo from EventDataTemp where accountID='" + params.accountId + "'", function (err, devices) {
             if (err) {
-                console.log(err);
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else if (devices.length > 0) {
+                var c=0;
+                async.eachSeries(devices, function (device, deviceCallback) {
+                    c++;
+                    console.log("ccc123",c);
 
-            } else {
-                var output = _.map(result.startLocation, function (element) {
-                    var match = _.findWhere(result.endLocation, {deviceID: element.deviceID});
+                    pool_crm.query("(select deviceID,FROM_UNIXTIME(timestamp) as date," +
+                        "latitude as lat,longitude as lan from EventDataTemp where deviceID='" + device.truckNo + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')" +
+                        "order by timestamp asc limit 1)" +
+                        "union" +
+                        "(select deviceID,FROM_UNIXTIME(timestamp) as date,latitude as lat,longitude as lan from EventDataTemp where deviceID='" + device.truckNo + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y') order by timestamp desc limit 1)", function (err, devicePostions) {
+                        if (err) {
+                            deviceCallback(err);
+                        } else if(devicePostions.length>0){
+                            async.parallel({
+                                startAddress: function (startCallback) {
 
-                    return _.extend(element, match);
-                });
-                async.eachSeries(output, function (device, deviceCallback) {
-                    async.parallel({
-                        startAdd: function (startAddCallback) {
-                            console.log("sd",device.slat,device.slan);
-                            getOSMAddress({latitude: device.slat, longitude: device.slan}, function (resp) {                            console.log("11");
+                                    resolveAddress({latitude: devicePostions[0].lat, longitude: devicePostions[0].lan}, function (resp) {
+                                        if (resp.status) {
+                                            device.startTime= new Date(devicePostions[0].date).toLocaleString();
+                                            device.startAddress= resp.address;
+                                            startCallback(false);
 
-                                if (resp.status) {
-                                    device.startAddress=resp.address;
-                                    startAddCallback(false);
+                                        } else {
+                                            startCallback(true);
 
-                                } else {
-                                    startAddCallback(true);
+                                        }
+
+                                    })
+
+                                },
+                                endAddress: function (endCallback) {
+                                    if(devicePostions[1]){
+                                        resolveAddress({latitude: devicePostions[1].lat, longitude: devicePostions[1].lan}, function (resp) {
+                                            if (resp.status) {
+                                                device.endTime=new Date(devicePostions[1].date).toLocaleString();
+                                                device.endAddress= resp.address;
+                                                endCallback(false);
+
+                                            } else {
+                                                endCallback(true);
+
+                                            }
+
+                                        })
+                                    }else{
+                                        device.startTime= new Date(devicePostions[0].date).toLocaleString();
+                                        device.startAddress= resp.address;
+                                        endCallback(false);
+                                    }
+
+                                },
+                                distance:function (distanceCallback) {
+                                    if(devicePostions.length>=2){
+                                        device.km=Math.round(1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((devicePostions[1].lat-devicePostions[0].lat)*Math.PI/180 /2),2)+Math.cos(devicePostions[0].lat*Math.PI/180)*Math.cos(devicePostions[1].lat*Math.PI/180)*Math.pow(Math.sin((devicePostions[1].lan-devicePostions[0].lan)*Math.PI/180/2),2))));
+                                        distanceCallback(false)
+                                    }else{
+                                        distanceCallback(false)
+
+                                    }
 
                                 }
 
-                            })
-                        }, endAdd: function (endAddCallback) {
-                            getOSMAddress({latitude: device.elat, longitude: device.elan}, function (resp) {                            console.log("122");
+                            }, function (err, adress) {
+                                if(err){
+                                    console.log("finding address failed");
+                                    deviceCallback("finding address failed");
+                                }else{
 
-                                if (resp.status) {
-                                    device.endAddress=resp.address;
-                                    endAddCallback(false);
-
-                                } else {
-                                    endAddCallback(true);
-
+                                    deviceCallback(false);
                                 }
-
                             })
-                        },distance:function (distanceCallback) {
-                            device.distance=1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((device.elat-device.slat)*Math.PI/180 /2),2)+Math.cos(device.slat*Math.PI/180)*Math.cos(device.elat*Math.PI/180)*Math.pow(Math.sin((device.elan-device.slan)*Math.PI/180/2),2)))
-                            console.log(device.distance);
-                            distanceCallback(false)
-                        }
-                    }, function (err) {
-                        if(err){
-                            console.log("errrr==========>>>>>>>>>>>>>>>>.");
                         }else{
-                            console.log("44");
-
-                            setTimeout(function () {
-                                deviceCallback(false);
-
-
-                            }, 10);
+                            console.log("error===>");
+                            deviceCallback(false);
                         }
-                    })
+                    });
                 }, function (err) {
                     if (err) {
-                        console.log("errrr==========<<<<<<<<<<<<<<<<<<<<<<<<<,,,,,,.");
-
+                        retObj.messages.push(err);
+                        callback(retObj);
                     } else {
-                        console.log("end out put",output);
+                        console.log("final:");
+                        var xls = json2xls(devices);
+
+                        fs.writeFileSync(`server/reports/${params.accountId}_${params.date}.xlsx`, xls, 'binary', function (err) {
+                            if (err) {
+                                retObj.messages.push("Excel file failed");
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages.push("Excel Created successfully");
+                                callback(retObj);
+                            }
+                        });
                     }
                 })
+
+            } else {
+                retObj.messages.push("No trucks found for this account");
+                callback(retObj);
             }
         });
 
+
     }
 };
+
+
+/* async.parallel({
+                    startLocation: function (startCallback) {
+                        pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as startDate,\n" +
+                            "latitude as slat,longitude as slan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
+                            "order by timestamp asc limit 1;", function (err, startDocs) {
+                            startCallback(err, startDocs);
+                        });
+                    },
+                    endLocation: function (endCallback) {
+                        pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as endDate,\n" +
+                            "latitude as elat,longitude as elan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
+                            "order by timestamp desc limit 1;", function (err, endDocs) {
+                            endCallback(err, endDocs);
+                        });
+                    }
+                }, function (err, result) {
+                    if (err) {
+                        console.log(err);
+
+                    } else {
+                        var output = _.map(result.startLocation, function (element) {
+                            var match = _.findWhere(result.endLocation, {deviceID: element.deviceID});
+
+                            return _.extend(element, match);
+                        });
+                        async.eachSeries(output, function (device, deviceCallback) {
+                            async.parallel({
+                                startAdd: function (startAddCallback) {
+                                    console.log("sd",device.slat,device.slan);
+                                    resolveAddress({latitude: device.slat, longitude: device.slan}, function (resp) {                            console.log("11");
+
+                                        if (resp.status) {
+                                            console.log("address",resp.address)
+                                            device.startAddress=resp.address;
+                                            startAddCallback(false);
+
+                                        } else {
+                                            startAddCallback(true);
+
+                                        }
+
+                                    })
+                                }, endAdd: function (endAddCallback) {
+                                    resolveAddress({latitude: device.elat, longitude: device.elan}, function (resp) {                            console.log("122");
+
+                                        if (resp.status) {
+                                            device.endAddress=resp.address;
+                                            endAddCallback(false);
+
+                                        } else {
+                                            endAddCallback(true);
+
+                                        }
+
+                                    })
+                                },distance:function (distanceCallback) {
+                                    device.distance=1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((device.elat-device.slat)*Math.PI/180 /2),2)+Math.cos(device.slat*Math.PI/180)*Math.cos(device.elat*Math.PI/180)*Math.pow(Math.sin((device.elan-device.slan)*Math.PI/180/2),2)))
+                                    console.log(device.distance);
+                                    distanceCallback(false)
+                                }
+                            }, function (err) {
+                                if(err){
+                                    console.log("errrr==========>>>>>>>>>>>>>>>>.");
+                                }else{
+                                    console.log("44");
+
+                                    setTimeout(function () {
+                                        deviceCallback(false);
+
+
+                                    }, 10);
+                                }
+                            })
+                        }, function (err) {
+                            if (err) {
+                                console.log("errrr==========<<<<<<<<<<<<<<<<<<<<<<<<<,,,,,,.");
+
+                            } else {
+                                console.log("end out put",output);
+                            }
+                        })
+                    }
+                });*/
 module.exports = new Events();

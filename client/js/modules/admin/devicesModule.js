@@ -327,7 +327,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }, function (success) {
                 if (success.data.status) {
                     $scope.accounts = success.data.accounts;
-                    console.log("$scope.accounts", $scope.accounts)
                 } else {
                     $scope.accounts = [];
                 }

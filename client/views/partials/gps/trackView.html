@@ -81,15 +81,17 @@
                 <!--</center>-->
 
                 <div class="mt-20">
-                    <ul class="list-group" ng-show="distance">
+                    <ul class="list-group" ng-show="averageSpeed">
                         <li class="list-group-item">
                             <strong>Summary </strong>
                         </li>
 
                         <li class="list-group-item">
-                            Distance Travelled : <b>{{distance}}</b>
+                            Distance Travelled : <b>{{distanceTravelled}}</b>
                         </li>
-
+                        <li class="list-group-item">
+                           Top Speed : <b>{{topSpeed | number:2}}</b>
+                        </li>
                         <li class="list-group-item">
                             Average Speed : <b>{{averageSpeed | number : 2}}</b>
                         </li>
@@ -116,7 +118,7 @@
                 <!--<label>Legends</label>-->
 
                 <div class="mt-10">
-                    <ul class="list-group" ng-show="distance">
+                    <ul class="list-group" ng-show="averageSpeed">
 
                         <li class="list-group-item">
                             <label>                         Pushpin Legend

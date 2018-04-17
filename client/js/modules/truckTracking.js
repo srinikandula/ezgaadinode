@@ -109,6 +109,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 $scope.distance=success.data.results.distanceTravelled;
                 $scope.averageSpeed=success.data.results.averageSpeed;
                 $scope.timeTravelled= success.data.results.timeTravelled;
+                $scope.topSpeed= success.data.results.topSpeed;
                 renderPolyline();
             }else{
                 success.data.messages.forEach(function (message) {

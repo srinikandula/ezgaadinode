@@ -611,10 +611,14 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                 var diffDays = timeDiff / (1000 * 3600 * 24);
                                 var averageSpeed = _.pluck(positions, 'speed');
                                 var sum = 0, counter = 0;
+                                var topSpeed=0;
                                 for (var i = 0; i < averageSpeed.length; i++) {
                                     if (Number(averageSpeed[i]) !== 0.0) {
                                         sum = sum + Number(averageSpeed[i]);
                                         counter++;
+                                    }
+                                    if(topSpeed<averageSpeed[i]){
+                                        topSpeed=averageSpeed[i];
                                     }
                                 }
                                 averageSpeed = (sum / counter);
@@ -625,12 +629,14 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                 // }, function (err, result) {
                                 //     if (result) {
                                 //         distance = result.rows[0].elements[0].distance.text;
+
                                         retObj.status = true;
                                         retObj.messages.push('Success');
                                         retObj.results = {
                                             positions: positions,
                                             distanceTravelled: distance,
                                             timeTravelled: (diffDays * 24),
+                                            topSpeed:topSpeed,
                                             averageSpeed: averageSpeed
                                         };
                                         callback(retObj);

@@ -1725,18 +1725,17 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
     };
     var printHtml = function (html) {
         var hiddenFrame = $('<iframe style="display: none"></iframe>').appendTo('body')[0];
-
-        hiddenFrame.contentWindow.printAndRemove = function () {
+        hiddenFrame.contentWindow.printAndRemove = function() {
             hiddenFrame.contentWindow.focus();
             hiddenFrame.contentWindow.print();
             $(hiddenFrame).remove();
         };
 
-        var htmlDocument = "<!doctype html>" +
-            "<html>" +
+        var htmlDocument = "<!doctype html>"+
+            "<html>"+
             '<body onload="printAndRemove();">' + // Print only after document is loaded
             html +
-            '</body>' +
+            '</body>'+
             "</html>";
         var doc = hiddenFrame.contentWindow.document.open("text/html", "replace");
         doc.write(htmlDocument);
@@ -1760,7 +1759,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     printHtml(element.html());
                     printScope.$destroy(); // To avoid memory leaks from scope create by $rootScope.$new()
                 }
-            }
+            };
             waitForRenderAndPrint();
         });
     };
@@ -1781,7 +1780,20 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
                     printHtml(element.html());
                     printScope.$destroy(); // To avoid memory leaks from scope create by $rootScope.$new()
                 }
-            }
+            };
+            waitForRenderAndPrint();
+        });
+        $http.get(templateUrl).success(function(template){
+            var printScope = angular.extend($rootScope.$new(), data);
+            var element = $compile($('<div>' + template + '</div>'))(printScope);
+            var waitForRenderAndPrint = function() {
+                if(printScope.$$phase || $http.pendingRequests.length) {
+                    $timeout(waitForRenderAndPrint);
+                } else {
+                    printHtml(element.html());
+                    printScope.$destroy(); // To avoid memory leaks from scope create by $rootScope.$new()
+                }
+            };
             waitForRenderAndPrint();
         });
     };
