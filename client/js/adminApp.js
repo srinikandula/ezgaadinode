@@ -1,4 +1,4 @@
-var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies','ui.select','angularjs-dropdown-multiselect', 'ngSanitize']);
+var app = angular.module('easygaadiAdmin', ['ui.router', 'ui.bootstrap', 'ui-notification', 'ngFileUpload', 'ngTable','ngCookies','ui.select','angularjs-dropdown-multiselect', 'ngSanitize','ngMap']);
 
 app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);

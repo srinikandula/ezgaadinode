@@ -48,8 +48,62 @@ app.factory('AccountService', ['$http', function ($http) {
         }
     }
 }]);
+app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','DeviceService','accountId', function ($scope,$uibModalInstance,NgMap,DeviceService,accountId) {
+    // console.log("accountId",accountId);
+    $scope.reloadPage = function(){
+        window.location.reload();
+    };
+    DeviceService.getAllTrucksOfAccount(accountId,function(success){
+        // console.log("get account location controller..successs...",success.data.trucks);
+        if(success.data.trucks){
+            var geocoder = new google.maps.Geocoder;
+            NgMap.getMap().then(function(map) {
+                var truckList=success.data.trucks;
+                for(var i=0;i<truckList.length;i++){
+                    if(truckList[i].attrs){
+                        var latestLocation =truckList[i].attrs.latestLocation;
+                        var location = latestLocation.location;
+                        var latlng = location.coordinates;
+                        console.log("lat..lng...",latlng,"i=",i);
+                        var marker = new google.maps.Marker(
+                            {position:new google.maps.LatLng(latlng[1],latlng[0]),icon:{
+                                    url:'/images/red_marker.svg',
+                                    scaledSize: new google.maps.Size(40, 40),
+                                    labelOrigin: new google.maps.Point(20, -2)}});
+                        marker.setMap(map);
+                        // var infowindow = new google.maps.InfoWindow();
+                        //
+                        //  $scope.geocodeLatLng(i,latlng,geocoder, map, infowindow,marker);
 
-app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', 'NgTableParams', function ($scope, $stateParams, AccountService, Notification, NgTableParams) {
+                    }
+                    }
+            });
+        }else {
+            Notification.error(success.data.message);
+        }
+    });
+    // $scope.geocodeLatLng=function(i,latlng,geocoder, map, infowindow,marker){
+    //     var latlng = {lat: parseFloat(latlng[1]), lng: parseFloat(latlng[0])};
+    //     geocoder.geocode({'location': latlng}, function(results, status) {
+    //         console.log("status...",status,"i=",i);
+    //         // if(status === 'OVER_QUERY_LIMIT'){
+    //         //     return status;
+    //         // }
+    //         if(status === 'OK'){
+    //             if(results[0]){
+    //                 infowindow.setContent(results[0].formatted_address);
+    //                 infowindow.open(map, marker);
+    //             }
+    //         }
+    //     });
+    // };
+    $scope.cancel = function () {
+        $uibModalInstance.close();
+        $scope.reloadPage();
+
+    };
+}]);
+app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', 'NgTableParams','$uibModal', function ($scope, $stateParams, AccountService, Notification, NgTableParams,$uibModal) {
     $scope.searchString = '';
     $scope.sortableString = '';
     $scope.count = 0;
@@ -101,6 +155,27 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
             }
         });
     };
+    $scope.getMap = function(accountId){
+        var modalInstance = $uibModal.open({
+            templateUrl: 'getLocation.html',
+            controller: 'getLocationController',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: true,
+            resolve: {
+                accountId: function () {
+                    if(accountId){
+                        return accountId;
+                    }
+                }
+            }
+        });
+        modalInstance.result.then(function (accountId) {
+            if(accountId){
+                accountId = accountId;
+            }
+        }, function () {});
+    }
 }]);
 
 app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', 'SettingServices', 'Utils', function ($scope, $stateParams, AccountService, Notification, $state, SettingServices, Utils) {
@@ -131,7 +206,6 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         isOpenTwo: true,
         isOpenThre: true,
     };
-
     function initAccountDetails() {
         $scope.accountDetails = {
             userName: '',
