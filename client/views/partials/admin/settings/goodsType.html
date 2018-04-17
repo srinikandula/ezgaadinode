@@ -1,32 +1,33 @@
 <div ng-controller="settingsCtrl" ng-init="getGoodsTypeCount()">
-    <div>
-        <p class="pull-left name-head">Goods Type</p>
-        <div class="row mt-20">
-            <div class="col-sm-7 pull-right pall-zero">
-                <div class="col-sm-5">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search" ng-model="goodsType1">
-                        <span class="input-group-addon" ng-click="searchByGoodsType('',goodsType1);"><i class="glyphicon glyphicon-search"></i></span>
+    <ul class="list-inline title-ul">
+        <li class="pull-left name-head">Truck Types</li>
+        <li class="pull-right">
+            <button class="btn btn-primary" ng-click="saveGoodsType()">Create New</button>
+        </li>
+        <li class="pull-right col-xs-3">
+            <select class="form-control" ng-model="status1" ng-change="searchByGoodsType(status1,'');">
+                <option value="" selected>Select by Status</option>
+                <option ng-value="true">Enabled</option>
+                <option ng-value="false">Disabled</option>
+            </select>
+        </li>
+        <li class="pull-right col-xs-4">
+            <form role="search">
+                <div class="input-group add-on">
+                    <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
+                           ng-model="goodsType1">
+                    <div class="input-group-btn"  ng-click="searchByGoodsType('',goodsType1);">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                        </button>
                     </div>
                 </div>
-                <div class="col-sm-4">
-                    <select class="form-control" ng-model="status1" ng-change="searchByGoodsType(status1,'');">
-                        <option value="" selected>Select by Status</option>
-                        <option ng-value="true">Enabled</option>
-                        <option ng-value="false">Disabled</option>
-                    </select>
-                </div>
-                <div class="col-sm-2">
-                    <button class="btn btn-primary" ng-click="saveGoodsType()">Add New</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="clearfix"></div>
-    <table class="table table-bordered table-striped table-condensed table-hover mt-20 text-center"
+            </form>
+        </li>
+        <div class="clearfix"></div>
+    </ul>
+    <table class="table table-bordered table-striped table-condensed table-hover text-center"
            ng-table="goodsTypeParams">
         <tr ng-repeat="type in currentPageOfGoodsTypes">
-            <td><input type="checkbox"/></td>
             <td data-title="'S No'">{{$index+1}}</td>
             <td data-title="'Title'" sortable="'title'" class="clickable-item">{{type.title}}</td>
             <td data-title="'Status'" sortable="'status'" class="clickable-item">{{type.status?'Enabled':'Disabled'}}</td>

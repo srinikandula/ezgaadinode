@@ -328,6 +328,12 @@
                                 <td data-title="'Pollution Expiry'" sortable="'pollutionExpiry'" class="clickable-item">
                                     {{trucks.pollutionExpiry ||'--' | date:'dd-MM-yyyy'}}
                                 </td>
+                                <td data-title="'Tax Expiry'" sortable="'taxDueDate'" class="clickable-item">
+                                    {{trucks.taxDueDate ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
+                                <td data-title="'Fitness Expiry'" sortable="'fitnessExpiry'" class="clickable-item">
+                                    {{trucks.fitnessExpiry ||'--' | date:'dd-MM-yyyy'}}
+                                </td>
                                 <td data-title="'Action'">
                                     <a href="#" ng-click="editTruck(trucks._id)"
                                        class="edit_icon">
@@ -339,7 +345,7 @@
                                 </td>
                             </tr>
                             <tr ng-if="!currentPageOfTrucks || currentPageOfTrucks.length === 0">
-                                <td colspan="8">There is no Trucks for this Account</td>
+                                <td colspan="10">There is no Trucks for this Account</td>
                             </tr>
                             </tbody>
                         </table>
@@ -361,12 +367,13 @@
         </div>
         <div class="modal-body" id="modal-body">
             <div class="row">
-                <div class="col-sm-6 truckAdding">
-                    <div class="form-group styling-input-list">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <span>Registration Num*:</span>
                         <input type="text" class="form-control order-form-control" ng-model="addTruck.registrationNo"/>
-                        <label class="order-effect-for-input">Registration Num*</label>
                     </div>
                     <div class="form-group styling-input-list">
+                        <span>Select Vehicle Type:</span>
                         <select class="form-control order-form-control" ng-model="addTruck.vehicleType">
                             <option value="" selected>--Select Vehicle Type--</option>
                             <option value="Car">Car</option>
@@ -375,6 +382,7 @@
                         </select>
                     </div>
                     <div class="form-group styling-input-list">
+                        <span>Select Truck Type:</span>
                         <select class="form-control order-form-control" ng-model="addTruck.truckType"
                                 ng-init="getTruckTypes()">
                             <option value="" selected>--Select Truck Type--</option>
@@ -382,27 +390,31 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Fitness Expiry:</label>
-                        <input type="date" class="form-control order-form-control" ng-model="addTruck.fitnessExpiry">
+                        <span>Fitness Expiry:</span>
+                        <admin-date-picker class="'order-form-control'"
+                                           ng-model="addTruck.fitnessExpiry"></admin-date-picker>
                     </div>
                     <div class="form-group">
-                        <label>Permit Expiry:</label>
-                        <input type="date" class="form-control order-form-control" ng-model="addTruck.permitExpiry">
+                        <span>Permit Expiry:</span>
+                        <admin-date-picker class="'order-form-control'"
+                                           ng-model="addTruck.permitExpiry"></admin-date-picker>
                     </div>
-
                 </div>
-                <div class="col-sm-6 truckAdding">
-                    <div class="form-group styling-input-list">
-                        <label>Insurance Expiry:</label>
-                        <input type="date" class="form-control order-form-control" ng-model="addTruck.insuranceExpiry">
+                <div class="col-sm-6">
+                    <div class="form-group">
+                        <span>Insurance Expiry:</span>
+                        <admin-date-picker class="'order-form-control'"
+                                           ng-model="addTruck.insuranceExpiry"></admin-date-picker>
                     </div>
                     <div class="form-group">
-                        <label>Pollution Expiry:</label>
-                        <input type="date" class="form-control order-form-control" ng-model="addTruck.pollutionExpiry">
+                        <span>Pollution Expiry:</span>
+                        <admin-date-picker class="'order-form-control'"
+                                           ng-model="addTruck.pollutionExpiry"></admin-date-picker>
                     </div>
-                    <div class="form-group styling-input-list">
-                        <label>Tax Expiry</label>
-                        <input type="date" class="form-control order-form-control" ng-model="addTruck.taxDueDate">
+                    <div class="form-group">
+                        <span>Tax Expiry:</span>
+                        <admin-date-picker class="'order-form-control'"
+                                           ng-model="addTruck.taxDueDate"></admin-date-picker>
                     </div>
                 </div>
 
