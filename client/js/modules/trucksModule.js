@@ -435,7 +435,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
             params.errors.push('Invalid Modal and Year');
         }*/
 
-        if (!params.fitnessExpiry) {
+      /*  if (!params.fitnessExpiry) {
             params.errors.push('Invalid Fitness Expiry');
         }
         if (!params.permitExpiry) {
@@ -449,7 +449,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         }
         if (!params.taxDueDate) {
             params.errors.push('Invalid Tax due date');
-        }
+        }*/
 
         if (!params.errors.length) {
             if(typeof params.truckType==="object"){
