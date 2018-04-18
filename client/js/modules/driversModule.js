@@ -295,9 +295,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
 
             params.errors.push('Please provide driver\'s full name')
         }
-        if (!Utils.isValidPhoneNumber(params.mobile)) {
+        /*if (!Utils.isValidPhoneNumber(params.mobile)) {
             params.errors.push('Please provide valid mobile number');
-        }
+        }*/
 
        /* if (!params.licenseValidity) {
             params.errors.push('Please provide license validity date');

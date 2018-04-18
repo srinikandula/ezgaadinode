@@ -39,9 +39,9 @@ Drivers.prototype.addDriver = function (jwt, driverInfo, req, callback) {
     if (!driverInfo.fullName || !_.isString(driverInfo.fullName)) {
         retObj.messages.push('Invalid full name');
     }
-    if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
+   /* if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
         retObj.messages.push('Mobile number should be of ten digits');
-    }
+    }*/
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_driver_err, {
             body: JSON.stringify(req.body),
@@ -298,9 +298,9 @@ Drivers.prototype.updateDriver = function (jwt, driverInfo, req, callback) {
             retObj.messages.push('Invalid driverId');
         }
 
-        if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
+     /*   if (!driverInfo.mobile || !Utils.isValidPhoneNumber(driverInfo.mobile)) {
             retObj.messages.push('Mobile number should be of ten digits');
-        }
+        }*/
 
         if (retObj.messages.length) {
             analyticsService.create(req, serviceActions.update_driver_err, {

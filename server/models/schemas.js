@@ -186,7 +186,8 @@ var tripSchema = new mongoose.Schema({
     source:String,
     sourceAddress:String,
     destination:String,
-    destinationAddress:String
+    destinationAddress:String,
+    deductAmount:Number
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({

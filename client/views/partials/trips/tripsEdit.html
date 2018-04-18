@@ -5,7 +5,7 @@
             <div class="col-sm-6 col-xs-12">
                 <div class="form-group col-xs-12">
                     <div class="">
-                        <date-picker id="permitExpiry" ng-model="trip.date" past-present="'pastPresentDate'"
+                        <date-picker id="permitExpiry" ng-model="trip.date" ban-future="'banFutureDate'"
                                      placeholder="'Trip Date*'" class="'custom-form-control'">
                         </date-picker>
                     </div>
@@ -44,7 +44,7 @@
                             </ui-select-choices>
                         </ui-select>
 
-                        <label class="focus-effect-for-input-trucks">Driver Name*</label>
+                        <label class="focus-effect-for-input-trucks">Driver Name</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
@@ -95,7 +95,7 @@
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
                         <input ng-model="trip.tonnage" type="number" class="form-control custom-form-control"
-                               id="tonnage" readonly>
+                               id="tonnage">
                         <label class="focus-effect-for-input" aria-hidden="true">Tonnage*</label>
                     </div>
                 </div>
@@ -108,8 +108,16 @@
                 </div>
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
+                        <input ng-model="trip.deductAmount" type="number" class="form-control custom-form-control"
+                               id="deductAmount">
+                        <label class="focus-effect-for-input" aria-hidden="true">Deductions*</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
                         <input ng-model="trip.freightAmount" type="number" class="form-control custom-form-control"
-                               id="freightAmount" readonly >
+                               id="freightAmount">
                         <label class="focus-effect-for-input" aria-hidden="true">Fight amount</label>
 
                     </div>
