@@ -341,10 +341,11 @@ Devices.prototype.getDevices = function (req, callback) {
     async.parallel({
         devices: function (devicescallback) {
             DevicesColl.find(query)
+
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                // .populate('accountId', {userName: 1})//, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
+                 //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate({
                     path: 'accountId',
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
@@ -470,7 +471,7 @@ Devices.prototype.getDevice = function (req, callback) {
         status: false,
         messages: []
     };
-    DevicesColl.findOne({_id: req.params.deviceId}).lean().exec(function (errdevice, device) {
+    DevicesColl.findOne({_id: req.params.deviceId}).populate( {path:"accountId",select:"userName"}).lean().exec(function (errdevice, device) {
         if (errdevice) {
             retObj.messages.push("Unable to get device, please try again");
             analyticsService.create(req, serviceActions.get_device_err, {

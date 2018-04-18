@@ -3,8 +3,12 @@ var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('underscore');
 const ObjectId = mongoose.Types.ObjectId;
-
+var json2xls = require('json2xls');
+var fs = require('fs');
+var request = require('request');
 var config = require('./../config/config');
+var nodeGeocoder = require('node-geocoder');
+
 var Events = function () {
 };
 var pool = mysql.createPool(config.mysql);
@@ -581,9 +585,9 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                             data.device.assignedTo = data.employeeId;
 
                                             var deviceDataDoc = new DeviceColl(data.device);
-                                            if(data.device.imei && data.device.deviceId){
-                                                traccar_mysql.query("INSERT INTO devices (name, uniqueid) VALUES ('"+data.device.deviceId.toString()+"','"+data.device.imei.toString()+"')", function (err, result) {
-                                                    if (err) console.log("Err",err);
+                                            if (data.device.imei && data.device.deviceId) {
+                                                traccar_mysql.query("INSERT INTO devices (name, uniqueid) VALUES ('" + data.device.deviceId.toString() + "','" + data.device.imei.toString() + "')", function (err, result) {
+                                                    if (err) console.log("Err", err);
                                                 });
                                             }
 
@@ -1037,10 +1041,10 @@ Events.prototype.getAccountOperatingRoutes = function (request, callback) {
             callback(retObj);
         } else {
             async.map(AccountOperatingRoutes, function (AccountOperatingRoute, AccountOperatingRoutesCallBack) {
-                AccountsColl.findOne({"userName": { $regex: '.*' + AccountOperatingRoute.accountID + '.*' }}, function (err, account) {
-                    if(err) {
+                AccountsColl.findOne({"userName": {$regex: '.*' + AccountOperatingRoute.accountID + '.*'}}, function (err, account) {
+                    if (err) {
                         AccountOperatingRoutesCallBack(err);
-                    } else if(account) {
+                    } else if (account) {
                         OperatingRoutesColl.findOne({
                             accountId: account._id,
                             source: AccountOperatingRoute.source,
@@ -1662,10 +1666,10 @@ Events.prototype.getCustomerOperatingRoutes = function (request, callback) {
             callback(retObj);
         } else {
             async.map(CustomerOperatingRoutes, function (CustomerOperatingRoute, CustomerOperatingRoutesCallBack) {
-                AccountsColl.findOne({"userName": { $regex: '.*' + CustomerOperatingRoute.gps_account_id + '.*' }}, function (err, account) {
-                    if(err) {
+                AccountsColl.findOne({"userName": {$regex: '.*' + CustomerOperatingRoute.gps_account_id + '.*'}}, function (err, account) {
+                    if (err) {
                         AccountOperatingRoutesCallBack(err);
-                    } else if(account) {
+                    } else if (account) {
                         OperatingRoutesColl.findOne({
                             accountId: account._id,
                             source: CustomerOperatingRoute.source,
@@ -2002,27 +2006,378 @@ Events.prototype.getMappingGpsStatusToAccount = function (req, callback) {
     });
 };
 
-Events.prototype.getDevicesFromTracker=function (callback) {
-  var retObj={
-      status:false,
-      messages:[]
-  };
-    traccar_mysql.query('select * from devices',function (err,docs) {
-    if(err){
-        console.log("errr===>",JSON.stringify(err));
-        retObj.messages.push("Please try again");
-        callback(retObj);
-    }else{
-        retObj.status=true;
-        retObj.data=docs;
-        callback(retObj);
-    }
+Events.prototype.getDevicesFromTracker = function (callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    traccar_mysql.query('select * from devices', function (err, docs) {
+        if (err) {
+            console.log("errr===>", JSON.stringify(err));
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.data = docs;
+            callback(retObj);
+        }
     })
 };
 
-Events.prototype.addDeviceToTracker=function (body,callback) {
-  var retObj={
-      status:fa
-  };
+function getOSMAddress(position, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    request({
+        method: 'GET',
+        url: 'http://13.127.89.224/reverse.php?format=json&lat=' + position.latitude + '&lon=' + position.longitude
+    }, function (errAddress, address) {  //{"error":"Unable to geocode"}
+        if (errAddress) {
+            console.error('Error resolving OSM address');
+            callback(retObj);
+        } else {
+            if (address) {
+                try {
+                    address = JSON.parse(address.body);
+                    position.address = address.display_name;
+
+                    retObj.status = true;
+                    retObj.address = position.address;
+                    retObj.messages.push('Success');
+                    callback(retObj);
+                } catch (error) {
+                    retObj.messages.push(JSON.stringify(error));
+                    console.error("OSM error{$position.latitude " + JSON.stringify(error));
+                    callback(retObj);
+
+                }
+            }
+
+        }
+    });
+}
+
+Events.prototype.generateReportsByAccount = function (params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+
+    };
+
+    if (!params.accountId) {
+        retObj.messages.push("Enter account id");
+    }
+    if (!params.fromDate) {
+        retObj.messages.push("Enter from date");
+    }
+    if (!params.toDate) {
+        retObj.messages.push("Enter to date");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+
+        pool_crm.query("select deviceID,distanceKM,statusCode,FROM_UNIXTIME(timestamp) as timestamp,speedKPH,latitude,longitude from EventDataTemp where accountID='" + params.accountId +
+            "' and timestamp >= UNIX_TIMESTAMP(STR_TO_DATE('" + params.fromDate + "', '%M-%d-%Y'))" +
+            "and timestamp <= UNIX_TIMESTAMP(STR_TO_DATE('" + params.toDate + "', '%M-%d-%Y'));", function (err, docs) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else {
+                var c = 0;
+                var data = [];
+                async.eachSeries(docs, function (doc, docCallback) {
+                    if (doc.latitude && doc.longitude) {
+                        getOSMAddress({latitude: doc.latitude, longitude: doc.longitude}, function (resp) {
+                            if (resp.status) {
+                                setTimeout(function () {
+                                    c++;
+                                    console.log("==", c, doc.timestamp);
+                                    data.push({
+                                        "Truck No": doc.deviceID,
+                                        "Date & Time": new Date(doc.timestamp).toLocaleString(),
+                                        "Address": resp.address,
+                                        "Speed": parseInt(doc.speedKPH),
+                                        "Distance": doc.distanceKM.toFixed(2)
+                                    });
+                                    docCallback(false);
+
+
+                                }, 10);
+
+                            } else {
+                                docCallback(true);
+
+                            }
+
+                        })
+                    } else {
+                        console.log('no lan lat-------------------------------------------------->')
+                        docCallback(doc);
+                    }
+
+                }, function (err) {
+
+                    if (err) {
+                        console.log('error', err);
+                    } else {
+                        var xls = json2xls(data);
+
+                        fs.writeFileSync('server/reports/data.xlsx', xls, 'binary', function (err) {
+                            if (err) {
+                                retObj.messages.push("Excel file failed");
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages.push("Excel Created successfully");
+                                callback(retObj);
+                            }
+                        });
+                    }
+                });
+
+            }
+        })
+    }
+
+
 };
+
+function resolveAddress(position, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var options = {
+        provider: 'google',
+        httpAdapter: 'https'
+    };
+    options.apiKey = config.googleKey;
+    var geocoder = nodeGeocoder(options);
+    geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
+        if (location) {
+            retObj.status = true;
+            retObj.address = location[0]['formattedAddress'];
+            callback(retObj);
+        } else {
+            retObj.messages.push("address finding error");
+            callback(retObj);
+        }
+
+    });
+}
+
+
+Events.prototype.generateReportsGroupByTruck = function (params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!params.accountId) {
+        retObj.messages.push("Enter account id");
+    }
+    if (!params.date) {
+        retObj.messages.push("Enter date");
+    }
+
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        pool_crm.query("select  distinct deviceID as truckNo from EventDataTemp where accountID='" + params.accountId + "'", function (err, devices) {
+            if (err) {
+                retObj.messages.push("Please try again");
+                callback(retObj);
+            } else if (devices.length > 0) {
+                var c=0;
+                async.eachSeries(devices, function (device, deviceCallback) {
+                    c++;
+                    console.log("ccc123",c);
+
+                    pool_crm.query("(select deviceID,FROM_UNIXTIME(timestamp) as date," +
+                        "latitude as lat,longitude as lan from EventDataTemp where deviceID='" + device.truckNo + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')" +
+                        "order by timestamp asc limit 1)" +
+                        "union" +
+                        "(select deviceID,FROM_UNIXTIME(timestamp) as date,latitude as lat,longitude as lan from EventDataTemp where deviceID='" + device.truckNo + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y') order by timestamp desc limit 1)", function (err, devicePostions) {
+                        if (err) {
+                            deviceCallback(err);
+                        } else if(devicePostions.length>0){
+                            async.parallel({
+                                startAddress: function (startCallback) {
+
+                                    resolveAddress({latitude: devicePostions[0].lat, longitude: devicePostions[0].lan}, function (resp) {
+                                        if (resp.status) {
+                                            device.startTime= new Date(devicePostions[0].date).toLocaleString();
+                                            device.startAddress= resp.address;
+                                            startCallback(false);
+
+                                        } else {
+                                            startCallback(true);
+
+                                        }
+
+                                    })
+
+                                },
+                                endAddress: function (endCallback) {
+                                    if(devicePostions[1]){
+                                        resolveAddress({latitude: devicePostions[1].lat, longitude: devicePostions[1].lan}, function (resp) {
+                                            if (resp.status) {
+                                                device.endTime=new Date(devicePostions[1].date).toLocaleString();
+                                                device.endAddress= resp.address;
+                                                endCallback(false);
+
+                                            } else {
+                                                endCallback(true);
+
+                                            }
+
+                                        })
+                                    }else{
+                                        device.startTime= new Date(devicePostions[0].date).toLocaleString();
+                                        device.startAddress= resp.address;
+                                        endCallback(false);
+                                    }
+
+                                },
+                                distance:function (distanceCallback) {
+                                    if(devicePostions.length>=2){
+                                        device.km=Math.round(1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((devicePostions[1].lat-devicePostions[0].lat)*Math.PI/180 /2),2)+Math.cos(devicePostions[0].lat*Math.PI/180)*Math.cos(devicePostions[1].lat*Math.PI/180)*Math.pow(Math.sin((devicePostions[1].lan-devicePostions[0].lan)*Math.PI/180/2),2))));
+                                        distanceCallback(false)
+                                    }else{
+                                        distanceCallback(false)
+
+                                    }
+
+                                }
+
+                            }, function (err, adress) {
+                                if(err){
+                                    console.log("finding address failed");
+                                    deviceCallback(false);
+                                }else{
+
+                                    deviceCallback(false);
+                                }
+                            })
+                        }else{
+                            console.log("error===>");
+                            deviceCallback(false);
+                        }
+                    });
+                }, function (err) {
+                    if (err) {
+                        retObj.messages.push(err);
+                        callback(retObj);
+                    } else {
+                        console.log("final:");
+                        var xls = json2xls(devices);
+
+                        fs.writeFileSync(`server/reports/${params.accountId}_${params.date}.xlsx`, xls, 'binary', function (err) {
+                            if (err) {
+                                retObj.messages.push("Excel file failed");
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages.push("Excel Created successfully");
+                                callback(retObj);
+                            }
+                        });
+                    }
+                })
+
+            } else {
+                retObj.messages.push("No trucks found for this account");
+                callback(retObj);
+            }
+        });
+
+
+    }
+};
+
+
+/* async.parallel({
+                    startLocation: function (startCallback) {
+                        pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as startDate,\n" +
+                            "latitude as slat,longitude as slan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
+                            "order by timestamp asc limit 1;", function (err, startDocs) {
+                            startCallback(err, startDocs);
+                        });
+                    },
+                    endLocation: function (endCallback) {
+                        pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as endDate,\n" +
+                            "latitude as elat,longitude as elan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
+                            "order by timestamp desc limit 1;", function (err, endDocs) {
+                            endCallback(err, endDocs);
+                        });
+                    }
+                }, function (err, result) {
+                    if (err) {
+                        console.log(err);
+
+                    } else {
+                        var output = _.map(result.startLocation, function (element) {
+                            var match = _.findWhere(result.endLocation, {deviceID: element.deviceID});
+
+                            return _.extend(element, match);
+                        });
+                        async.eachSeries(output, function (device, deviceCallback) {
+                            async.parallel({
+                                startAdd: function (startAddCallback) {
+                                    console.log("sd",device.slat,device.slan);
+                                    resolveAddress({latitude: device.slat, longitude: device.slan}, function (resp) {                            console.log("11");
+
+                                        if (resp.status) {
+                                            console.log("address",resp.address)
+                                            device.startAddress=resp.address;
+                                            startAddCallback(false);
+
+                                        } else {
+                                            startAddCallback(true);
+
+                                        }
+
+                                    })
+                                }, endAdd: function (endAddCallback) {
+                                    resolveAddress({latitude: device.elat, longitude: device.elan}, function (resp) {                            console.log("122");
+
+                                        if (resp.status) {
+                                            device.endAddress=resp.address;
+                                            endAddCallback(false);
+
+                                        } else {
+                                            endAddCallback(true);
+
+                                        }
+
+                                    })
+                                },distance:function (distanceCallback) {
+                                    device.distance=1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((device.elat-device.slat)*Math.PI/180 /2),2)+Math.cos(device.slat*Math.PI/180)*Math.cos(device.elat*Math.PI/180)*Math.pow(Math.sin((device.elan-device.slan)*Math.PI/180/2),2)))
+                                    console.log(device.distance);
+                                    distanceCallback(false)
+                                }
+                            }, function (err) {
+                                if(err){
+                                    console.log("errrr==========>>>>>>>>>>>>>>>>.");
+                                }else{
+                                    console.log("44");
+
+                                    setTimeout(function () {
+                                        deviceCallback(false);
+
+
+                                    }, 10);
+                                }
+                            })
+                        }, function (err) {
+                            if (err) {
+                                console.log("errrr==========<<<<<<<<<<<<<<<<<<<<<<<<<,,,,,,.");
+
+                            } else {
+                                console.log("end out put",output);
+                            }
+                        })
+                    }
+                });*/
 module.exports = new Events();
