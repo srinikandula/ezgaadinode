@@ -158,7 +158,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         DeviceService.getDevices(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
-                tableParams.total(response.data.count);
+                $scope.count = response.data.count;
                 tableParams.data = response.data.devices;
                 $scope.currentPageOfDevices = response.data.devices;
             } else {
@@ -172,7 +172,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             page: 1, // show first page
             size: 10,
             sorting: {
-                createdAt: -1
+                updatedAt: -1
             }
         }, {
             counts: [10, 50, 100, 200],
@@ -221,7 +221,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
     };
     $scope.getLatestLocation = function (device) {
         $scope.latestLocation = device;
-        console.log($scope.latestLocation);
+        //console.log($scope.latestLocation);
 
     }
 }]);
@@ -327,7 +327,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             }, function (success) {
                 if (success.data.status) {
                     $scope.accounts = success.data.accounts;
-                    console.log("$scope.accounts", $scope.accounts)
+                   // console.log("$scope.accounts", $scope.accounts)
                 } else {
                     $scope.accounts = [];
                 }
@@ -524,7 +524,7 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
         var params = $scope.devicesToAdd;
         for (var i = 0; i < params.length ; i++) {
             if(!params[i].imei && !params[i].simPhoneNumber && !params[i].simNumber){
-                console.log("$scope.assignedTo", i,params.length)
+               // console.log("$scope.assignedTo", i,params.length)
 
                 params.splice(i,1);
                 if(i!==0){
