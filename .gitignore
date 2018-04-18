@@ -72,3 +72,6 @@ typings/
 
 #package-lock.json
 package-lock.json
+
+#ignore reports
+server/reports

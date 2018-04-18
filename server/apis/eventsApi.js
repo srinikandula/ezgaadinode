@@ -2254,7 +2254,7 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
                             }, function (err, adress) {
                                 if(err){
                                     console.log("finding address failed");
-                                    deviceCallback("finding address failed");
+                                    deviceCallback(false);
                                 }else{
 
                                     deviceCallback(false);
