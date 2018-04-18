@@ -336,6 +336,7 @@ Accounts.prototype.addAccount = function (req, callback) {
                 callback(retObj);
             } else {
                 accountInfo.userId = newId.userId;
+                delete accountInfo.__v;
                 AccountsColl.update(query, accountInfo, {upsert: true},
                     function (errSaved, saved) {
                     if (errSaved) {

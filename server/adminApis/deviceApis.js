@@ -327,7 +327,7 @@ Devices.prototype.getDevices = function (req, callback) {
     }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    var sort = params.sort ? JSON.parse(params.sort) : {updatedAt: -1};
     var query = {};
     if (params.sortableString === 'damaged') query.isDamaged = true;
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
