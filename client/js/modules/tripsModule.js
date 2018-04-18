@@ -259,6 +259,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         partyId: '',
         registrationNo: '',
         freightAmount: '',
+        deductAmount:0,
         tripLane: '',  //new..//new...
         tonnes: '',    //new...
         rate: '',   //new...
@@ -453,18 +454,18 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!params.registrationNo) {
             params.errors.push('Please Select a Vehicle');
         }
-        if (!params.driverId) {
+        /*if (!params.driverId) {
             params.errors.push('Please Select a Driver');
-        }
+        }*/
         if (!params.partyId) {
             params.errors.push('Please Select a Party');
         }
-        if (!params.source) {
+     /*   if (!params.source) {
             params.errors.push('Please Select a Trip Lane');
         }
         if (!params.destination) {
             params.errors.push('Please Select a Trip Lane');
-        }
+        }*/
         if (!params.errors.length) {
             params.partyId=params.partyId._id;
             if (params._id) {
@@ -508,9 +509,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.$watch("trip.rate", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
     });
+    $scope.$watch("trip.deductAmount", function (newValue, oldValue) {
+        $scope.calculateFreightAmount();
+    });
     $scope.calculateFreightAmount = function () {
-        if ($scope.trip.tonnage > 0 && $scope.trip.rate > 0) {
-            $scope.trip.freightAmount = $scope.trip.tonnage * $scope.trip.rate;
+        if ($scope.trip.tonnage > 0 && $scope.trip.rate > 0 && $scope.trip.deductAmount >= 0) {
+            $scope.trip.freightAmount = ($scope.trip.tonnage * $scope.trip.rate) - $scope.trip.deductAmount;
         }
         return $scope.trip.freightAmount;
     };
