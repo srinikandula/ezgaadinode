@@ -55,7 +55,7 @@
                         <div class="form-group ">
                             <select class="form-control custom-form-control" ng-model="deviceDetails.installedBy">
                                 <option value="" >Select Employee</option>
-                                <option ng-repeat="employee in employees" value="{{employee.id_admin}}">
+                                <option ng-repeat="employee in employees" value="{{employee._id}}">
                                     {{employee.displayName}}
                                 </option>
                             </select>

@@ -30,7 +30,6 @@ CustomerLeads.prototype.getCustomerLeads = function (req, callback) {
                 [
                     {"firstName": new RegExp("^"+params.customerLeadSearch, "i")},
                     {"leadStatus": new RegExp("^"+params.customerLeadSearch, "i")},
-                    {"contactPhone": new RegExp("^"+params.customerLeadSearch, "i")},
 
                 ], "status": {$eq: null}
         };

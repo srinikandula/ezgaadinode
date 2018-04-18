@@ -1255,7 +1255,6 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
         messages: []
     };
     var params = req.query;
-    console.log(params);
     var skipNumber = params.size ? parseInt(params.size) : 0;
     var sort = {createdAt: -1};
     var condition = {};

@@ -1113,7 +1113,7 @@ $scope.selectTruckTypes=[];
         customerServices.getTruckOwners(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
-                tableParams.total=response.data.count;
+               $scope.total=response.data.count;
                 tableParams.data = response.data.data;
                 $scope.currentPageOfTruckOwners = response.data.data;
             } else {
