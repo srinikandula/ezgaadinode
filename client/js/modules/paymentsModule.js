@@ -1,63 +1,63 @@
-app.factory('ReceiptServices', ['$http', function ($http) {
+app.factory('PaymentService', ['$http', function ($http) {
     return {
         addReceipt: function (params, success, error) {
             $http({
-                url: '/v1/receipts/addReceipt',
+                url: '/v1/payments/addReceipt',
                 method: "POST",
                 data: params,
             }).then(success, error)
         },
         getReceipts: function (pageable, success, error) {
             $http({
-                url: '/v1/receipts/getReceipts',
+                url: '/v1/payments/getReceipts',
                 method: "GET",
                 params: pageable
             }).then(success, error)
         },
         getReceiptDetails: function (id, success, error) {
             $http({
-                url: '/v1/receipts/getReceiptDetails',
+                url: '/v1/payments/getReceiptDetails',
                 method: "GET",
                 params: {_id: id}
             }).then(success, error)
         },
         updateReceipt: function (params, success, error) {
             $http({
-                url: '/v1/receipts/updateReceipt',
+                url: '/v1/payments/updateReceipt',
                 method: "PUT",
                 data: params
             }).then(success, error)
         },
         deleteReceipt: function (receiptId, success, error) {
             $http({
-                url: '/v1/receipts/deleteReceipt',
+                url: '/v1/payments/deleteReceipt',
                 method: "DELETE",
                 params: {_id: receiptId}
             }).then(success, error)
         },
-        totalReceipts: function (success, error) {
+        totalPayments: function (success, error) {
             $http({
-                url: '/v1/receipts/totalReceipts',
+                url: '/v1/payments/totalPayments',
                 method: "GET"
             }).then(success, error)
         },
         getReceiptsByParties: function (params,success, error) {
             $http({
-                url: '/v1/receipts/getReceiptsByParties',
+                url: '/v1/payments/getReceiptsByParties',
                 method: "GET",
                 params:params
             }).then(success, error)
         },
         getReceiptByPartyName: function (receiptId, success, error) {
             $http({
-                url: '/v1/receipts/getReceiptByPartyName',
+                url: '/v1/payments/getReceiptByPartyName',
                 method: "GET",
                 params: {_id: receiptId}
             }).then(success, error)
         },
         shareReceiptsDetailsByPartyViaEmail:function (params,success,error) {
             $http({
-                url: '/v1/receipts/shareReceiptsDetailsByPartyViaEmail',
+                url: '/v1/payments/shareReceiptsDetailsByPartyViaEmail',
                 method: "GET",
                 params: params
             }).then(success, error)
@@ -65,7 +65,7 @@ app.factory('ReceiptServices', ['$http', function ($http) {
         },
         shareDetailsViaEmail:function(params,success,error){
             $http({
-                url: '/v1/receipts/shareDetailsViaEmail',
+                url: '/v1/payments/shareDetailsViaEmail',
                 method: "GET",
                 params:params
             }).then(success, error)
@@ -73,7 +73,7 @@ app.factory('ReceiptServices', ['$http', function ($http) {
     }
 }]);
 
-app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'ReceiptServices', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService, ReceiptServices) {
+app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'PaymentService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService, PaymentService) {
 
     $scope.goToEditReceiptsPage = function (id) {
         $state.go('receiptEdit', {receiptId: id});
@@ -100,7 +100,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
 
     $scope.count = 0;
     $scope.getReceiptCount = function () {
-        ReceiptServices.totalReceipts(function (success) {
+        PaymentService.totalPayments(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.data;
                 $scope.init();
@@ -120,12 +120,12 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             toDate: tableParams.toDate,
             partyName: tableParams.partyName
         };
-        ReceiptServices.getReceipts(pageable, function (response) {
+        PaymentService.getReceipts(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
                 tableParams.total(response.data.count);
                 tableParams.data = response.data.receipts;
-                $scope.currentPageOfReceipts = response.data.receipts;
+                $scope.currentPageOfPayments = response.data.receipts;
             } else {
                 $scope.currentPageOfReceipts = response.data.receipts;
                 Notification.error({message: response.data.messages[0]});
@@ -163,7 +163,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-                ReceiptServices.deleteReceipt(receiptId, function (success) {
+                PaymentService.deleteReceipt(receiptId, function (success) {
                     if (success.data.status) {
                         swal(
                             'Deleted!',
@@ -218,7 +218,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             showLoaderOnConfirm: true,
             preConfirm: (email) => {
             return new Promise((resolve) => {
-                ReceiptServices.shareDetailsViaEmail({
+                PaymentService.shareDetailsViaEmail({
                 email:email
             },function(success){
                 console.log("success...",success);
@@ -250,7 +250,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
     };
 
 }]);
-app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', 'ReceiptServices', function ($scope, $state, $stateParams, PaymentsService, Notification, NgTableParams, paginationService, PartyService, TripServices, ReceiptServices) {
+app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', 'PaymentService', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices, PaymentService) {
 
     $scope.pageTitle = "Add Receipt";
 
@@ -265,7 +265,7 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
 
     if ($stateParams.receiptId) {
         $scope.pageTitle = "Edit Receipts";
-        ReceiptServices.getReceiptDetails($stateParams.receiptId, function (success) {
+        PaymentService.getReceiptDetails($stateParams.receiptId, function (success) {
             if (success.data.status) {
                 $scope.receiptDetails = success.data.data;
                 $scope.receiptDetails.date = new Date($scope.receiptDetails.date);
@@ -327,7 +327,7 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
         } else {
             $scope.receiptDetails.partyId = $scope.receiptDetails.partyId._id;
             if ($stateParams.receiptId) {
-                ReceiptServices.updateReceipt(params, function (success) {
+                PaymentService.updateReceipt(params, function (success) {
                     if (success.data.status) {
                         Notification.success({message: success.data.messages[0]});
                         $state.go('receipts');
@@ -341,7 +341,7 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
                 }, function (err) {
                 });
             } else {
-                ReceiptServices.addReceipt(params, function (success) {
+                PaymentService.addReceipt(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
                         Notification.success({message: success.data.messages[0]});
