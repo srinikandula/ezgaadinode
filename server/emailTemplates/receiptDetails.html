@@ -6,22 +6,22 @@
 </head>
 <body>
 <div>
-    <table border="1">
-        <tr>
-            <td>Date</td>
-            <td>Party</td>
-            <td>Amount</td>
-            <td>Payment Type</td>
-            <td>Payment Ref.No</td>
-            <td>Description</td>
-        </tr>
+    <table border="1" style="text-align: center;">
+        <thead>
+            <th>Date</th>
+            <th>Party</th>
+            <th>Amount</th>
+            <th>Payment Type</th>
+            <th>Receipt Ref.No</th>
+            <th>Description</th>
+        </thead>
         #foreach($record in $emailData)
         <tr>
             <td>$record.date</td>
             <td>$record.party</td>
             <td>$record.amount</td>
             <td>$record.paymentType</td>
-            <td>$record.paymentRefNo</td>
+            <td>$record.receiptRefNo</td>
             <td>$record.description</td>
         </tr>
         #end

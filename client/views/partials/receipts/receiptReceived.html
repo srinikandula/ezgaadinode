@@ -56,8 +56,8 @@
             <td data-title="'Payment Type'" sortable="'paymentType'" class="clickable-item">{{
                 receipt.paymentType}}
             </td>
-            <td data-title="'Payment Ref No'" sortable="'paymentRefNo'" class="clickable-item">{{
-                receipt.paymentRefNo || '---' }}
+            <td data-title="'Receipt Ref No'" sortable="'receiptRefNo'" class="clickable-item">{{
+                receipt.receiptRefNo || '---' }}
             </td>
             <td data-title="'Description'" sortable="'description'" class="clickable-item">{{
                 receipt.description || '---'}}
@@ -84,7 +84,8 @@
     </table>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ng-click="goToEditReceiptsPage()"><img src="images/Add_Payments.png" alt="Add Receipt"
+            <a href="#" ng-click="goToEditReceiptsPage()">
+                <img src="images/Add_Payments.png" alt="Add Receipt"
                                                                title="Add Payment"></a>
         </figure>
     </div>
