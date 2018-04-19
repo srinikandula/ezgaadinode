@@ -10,7 +10,7 @@ var serviceActions = require('./../constants/constants');
 var analyticsService = require('./../apis/analyticsApi');
 var Utils = require('./utils');
 var _ = require("underscore");
-var Receipts = function () {
+var Payments = function () {
 };
 function dateToStringFormat(date) {
     if (date instanceof Date) {
@@ -27,7 +27,7 @@ function value(x){
     }
 }
 
-Receipts.prototype.totalReceipts = function (req, callback) {
+Payments.prototype.totalPayments = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -57,7 +57,7 @@ Receipts.prototype.totalReceipts = function (req, callback) {
     })
 };
 
-Receipts.prototype.getReceipts = function (req, callback) {
+Payments.prototype.getPayments = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -189,7 +189,7 @@ function getReceipts(candition, req, callback) {
     });
 }
 
-Receipts.prototype.getReceiptDetails = function (req, callback) {
+Payments.prototype.getPaymentDetails = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -238,7 +238,7 @@ Receipts.prototype.getReceiptDetails = function (req, callback) {
     }
 };
 
-Receipts.prototype.addReceipt = function (req, callback) {
+Payments.prototype.addPayment = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -292,7 +292,7 @@ Receipts.prototype.addReceipt = function (req, callback) {
     }
 };
 
-Receipts.prototype.updateReceipt = function (req, callback) {
+Payments.prototype.updatePayment = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -347,7 +347,7 @@ Receipts.prototype.updateReceipt = function (req, callback) {
 
 };
 
-Receipts.prototype.deleteReceipt = function (req, callback) {
+Payments.prototype.deletePayment = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -402,7 +402,7 @@ Receipts.prototype.deleteReceipt = function (req, callback) {
  * Find the Total receipts from the receipts in the account
  */
 
-Receipts.prototype.findTotalReceipts = function (erpSettingsCondition, req, callback) {
+Payments.prototype.findTotalReceipts = function (erpSettingsCondition, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -439,7 +439,7 @@ Receipts.prototype.findTotalReceipts = function (erpSettingsCondition, req, call
 
 };
 
-Receipts.prototype.getReceiptsByParties = function (req, callback) {
+Payments.prototype.getPaymentsByParties = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -583,7 +583,7 @@ function getReceiptsByParties(req, condition, callback) {
         });
 }
 
-Receipts.prototype.getReceiptByPartyName = function (req, callback) {
+Payments.prototype.getPaymentsByPartyName = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -625,7 +625,7 @@ Receipts.prototype.getReceiptByPartyName = function (req, callback) {
                 }
 
             } else {
-                retObj.messages.push("No Receipts found");
+                retObj.messages.push("No Payments found");
                 analyticsService.create(req, serviceActions.get_receipts_by_party_name_err, {
                     body: JSON.stringify(req.params),
                     accountId: req.jwt.id,
@@ -639,12 +639,12 @@ Receipts.prototype.getReceiptByPartyName = function (req, callback) {
     }
 };
 
-Receipts.prototype.downloadReceiptsDetailsByParty = function (req, callback) {
+Payments.prototype.downloadPaymentsDetailsByParty = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    Receipts.prototype.getReceiptsByParties(req, function (response) {
+    Payments.prototype.getReceiptsByParties(req, function (response) {
         if (response.status) {
             var output = [];
             for (var i = 0; i < response.data.length; i++) {
@@ -679,7 +679,7 @@ Receipts.prototype.downloadReceiptsDetailsByParty = function (req, callback) {
     })
 };
 
-Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (req, callback) {
+Payments.prototype.sharePaymentsDetailsByPartyViaEmail = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -692,11 +692,11 @@ Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (req, callback
         analyticsService.create(req,serviceActions.share_receipts_by_party_via_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Receipts.prototype.getReceiptsByParties(req, function (revenueResponse) {
+        Payments.prototype.getReceiptsByParties(req, function (revenueResponse) {
             if (revenueResponse.status) {
                 var emailparams = {
                     templateName: 'shareReceiptsDetailsByParty',
-                    subject: "Easygaadi Receipts Details",
+                    subject: "Easygaadi Payments Details",
                     to: params.email,
                     data: {
                         receipts: revenueResponse.data
@@ -705,7 +705,7 @@ Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (req, callback
                 emailService.sendEmail(emailparams, function (emailResponse) {
                     if (emailResponse.status) {
                         retObj.status = true;
-                        retObj.messages.push('Receipts details shared successfully');
+                        retObj.messages.push('Payments details shared successfully');
                         analyticsService.create(req,serviceActions.share_receipts_by_party_via_email,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
                         callback(retObj);
                     } else {
@@ -721,7 +721,7 @@ Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (req, callback
     }
 
 };
-Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
+Payments.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -731,7 +731,7 @@ Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         retObj.messages.push("Invalid email....");
         callback(retObj);
     }else{
-        Receipts.prototype.getReceipts(req,function(response){
+        Payments.prototype.getReceipts(req,function(response){
             if(response.status){
                 var output = [];
                 if(response.receipts.length){
@@ -773,13 +773,13 @@ Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
     }
 
 };
-Receipts.prototype.downloadDetails = function (jwt, params,req, callback) {
+Payments.prototype.downloadDetails = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     console.log("share details download....");
-    Receipts.prototype.getReceipts(req,function(response){
+    Payments.prototype.getReceipts(req,function(response){
         console.log("response....",response);
         if(response.status){
             var output = [];
@@ -799,4 +799,4 @@ Receipts.prototype.downloadDetails = function (jwt, params,req, callback) {
         }
     })
 };
-module.exports = new Receipts();
+module.exports = new Payments();

@@ -1,59 +1,59 @@
 var express = require('express');
 var AuthRouter = express.Router();
-var Receipts = require('../apis/erpPayments');
+var Payments = require('../apis/erpPayments');
 
-AuthRouter.get("/totalReceipts",function (req,res) {
-    Receipts.totalReceipts(req,function (result) {
+AuthRouter.get("/totalPayments",function (req,res) {
+    Payments.totalPayments(req,function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.get("/getReceipts",function (req,res) {
-   Receipts.getReceipts(req,function (result) {
+AuthRouter.get("/getPayments",function (req,res) {
+   Payments.getPayments(req,function (result) {
        res.send(result);
    })
 });
 
-AuthRouter.get("/getReceiptDetails",function (req,res) {
-    Receipts.getReceiptDetails(req,function (result) {
+AuthRouter.get("/getPaymentDetails",function (req,res) {
+    Payments.getReceiptDetails(req,function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.post("/addReceipt",function (req,res) {
-    Receipts.addReceipt(req,function (result) {
+AuthRouter.post("/addPayment",function (req,res) {
+    Payments.addReceipt(req,function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.put("/updateReceipt",function (req,res) {
-    Receipts.updateReceipt(req,function (result) {
+AuthRouter.put("/updatePayment",function (req,res) {
+    Payments.updatePayment(req,function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.delete("/deleteReceipt",function (req,res) {
-    Receipts.deleteReceipt(req,function (result) {
+AuthRouter.delete("/deletePayment",function (req,res) {
+    Payments.deletePayment(req,function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.get("/getReceiptsbyParties",function (req,res) {
-   Receipts.getReceiptsByParties(req,function (result) {
+AuthRouter.get("/getPaymentsByParties",function (req,res) {
+   Payments.getPaymentsByParties(req,function (result) {
        res.send(result);
    })
 });
 
-AuthRouter.get("/getReceiptByPartyName",function (req,res) {
-    Receipts.getReceiptByPartyName(req,function (result) {
+AuthRouter.get("/getPaymentsByPartyName",function (req,res) {
+    Payments.getPaymentsByPartyName(req,function (result) {
         res.send(result);
     })
 });
 
-AuthRouter.get("/downloadReceiptsDetailsByParty",function (req,res) {
-    Receipts.downloadReceiptsDetailsByParty(req, function (result) {
+AuthRouter.get("/downloadPaymentsDetailsByParty",function (req,res) {
+    Payments.downloadPaymentsDetailsByParty(req, function (result) {
         if (result.status) {
-            res.xls('Receipts' + new Date().toLocaleDateString() + '.xlsx', result.data);
+            res.xls('Payments' + new Date().toLocaleDateString() + '.xlsx', result.data);
         } else {
             res.send(result);
         }
@@ -61,19 +61,19 @@ AuthRouter.get("/downloadReceiptsDetailsByParty",function (req,res) {
     });
 });
 
-AuthRouter.get('/shareReceiptsDetailsByPartyViaEmail',function (req,res) {
-   Receipts.shareReceiptsDetailsByPartyViaEmail(req,function (result) {
+AuthRouter.get('/sharePaymentsDetailsByPartyViaEmail',function (req,res) {
+   Payments.sharePaymentsDetailsByPartyViaEmail(req,function (result) {
        res.send(result);
    }) 
 });
 
 AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
-    Receipts.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
+    Payments.shareDetailsViaEmail(req.jwt, req.query, req, function (result) {
         res.send(result);
     });
 });
 AuthRouter.get('/downloadDetails', function (req, res) {
-    Receipts.downloadDetails(req.jwt,req.query,req, function (result) {
+    Payments.downloadDetails(req.jwt,req.query,req, function (result) {
         if(result.status){
             res.xls('receipts details'+new Date().toLocaleDateString()+'.xlsx', result.data);
 
