@@ -1,38 +1,38 @@
 app.factory('PaymentService', ['$http', function ($http) {
     return {
-        addReceipt: function (params, success, error) {
+        addPayment: function (params, success, error) {
             $http({
-                url: '/v1/payments/addReceipt',
+                url: '/v1/payments/addPayment',
                 method: "POST",
                 data: params,
             }).then(success, error)
         },
-        getReceipts: function (pageable, success, error) {
+        getPayments: function (pageable, success, error) {
             $http({
-                url: '/v1/payments/getReceipts',
+                url: '/v1/payments/getPayments',
                 method: "GET",
                 params: pageable
             }).then(success, error)
         },
-        getReceiptDetails: function (id, success, error) {
+        getPaymentDetails: function (id, success, error) {
             $http({
-                url: '/v1/payments/getReceiptDetails',
+                url: '/v1/payments/getPaymentDetails',
                 method: "GET",
                 params: {_id: id}
             }).then(success, error)
         },
-        updateReceipt: function (params, success, error) {
+        updatePayment: function (params, success, error) {
             $http({
-                url: '/v1/payments/updateReceipt',
+                url: '/v1/payments/updatePayment',
                 method: "PUT",
                 data: params
             }).then(success, error)
         },
-        deleteReceipt: function (receiptId, success, error) {
+        deletePayment: function (paymentId, success, error) {
             $http({
-                url: '/v1/payments/deleteReceipt',
+                url: '/v1/payments/deletePayment',
                 method: "DELETE",
-                params: {_id: receiptId}
+                params: {_id: paymentId}
             }).then(success, error)
         },
         totalPayments: function (success, error) {
@@ -73,10 +73,10 @@ app.factory('PaymentService', ['$http', function ($http) {
     }
 }]);
 
-app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'PaymentService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService, PaymentService) {
+app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService) {
 
-    $scope.goToEditReceiptsPage = function (id) {
-        $state.go('receiptEdit', {receiptId: id});
+    $scope.goToEditPaymentsPage = function (id) {
+        $state.go('paymentsEdit', {paymentId: id});
     };
 
     $scope.filters = {
@@ -99,7 +99,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
     }
 
     $scope.count = 0;
-    $scope.getReceiptCount = function () {
+    $scope.getPaymentCount = function () {
         PaymentService.totalPayments(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.data;
@@ -120,12 +120,12 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
             toDate: tableParams.toDate,
             partyName: tableParams.partyName
         };
-        PaymentService.getReceipts(pageable, function (response) {
+        PaymentService.getPayments(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
                 tableParams.total(response.data.count);
-                tableParams.data = response.data.receipts;
-                $scope.currentPageOfPayments = response.data.receipts;
+                tableParams.data = response.data.payments;
+                $scope.currentPageOfPayments = response.data.payments;
             } else {
                 $scope.currentPageOfReceipts = response.data.receipts;
                 Notification.error({message: response.data.messages[0]});
@@ -133,7 +133,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
         });
     };
     $scope.init = function () {
-        $scope.receiptParams = new NgTableParams({
+        $scope.paymentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
@@ -152,7 +152,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
     };
 
 
-    $scope.deleteReceipt = function (receiptId) {
+    $scope.deletePayment = function (paymentId) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -163,14 +163,14 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-                PaymentService.deleteReceipt(receiptId, function (success) {
+                PaymentService.deletePayment(paymentId, function (success) {
                     if (success.data.status) {
                         swal(
                             'Deleted!',
-                            'Receipt deleted successfully.',
+                            'Payment deleted successfully.',
                             'success'
                         );
-                        $scope.getReceiptCount();
+                        $scope.getPaymentCount();
                     } else {
                         success.data.messages.forEach(function (message) {
                             swal(
@@ -191,7 +191,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
 
 
     $scope.searchByPartyName = function (partyName) {
-        $scope.receiptParams = new NgTableParams({
+        $scope.paymentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
@@ -211,7 +211,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
     };
     $scope.shareDetailsViaEmail=function(){
         swal({
-            title: 'Share receipts data using mail',
+            title: 'Share Payments data using mail',
             input: 'email',
             showCancelButton: true,
             confirmButtonText: 'Submit',
@@ -246,29 +246,29 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
     };
 
     $scope.downloadDetails = function () {
-        window.open('/v1/receipts/downloadDetails');
+        window.open('/v1/payments/downloadDetails');
     };
 
 }]);
-app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', 'PaymentService', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices, PaymentService) {
+app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices) {
 
-    $scope.pageTitle = "Add Receipt";
+    $scope.pageTitle = "Add Payment";
 
     $scope.cancel = function () {
-        $state.go('receipts')
+        $state.go('payments')
     }
 
-    $scope.receiptDetails = {
+    $scope.paymentDetails = {
         partyId: '',
         error: []
     }
 
-    if ($stateParams.receiptId) {
-        $scope.pageTitle = "Edit Receipts";
-        PaymentService.getReceiptDetails($stateParams.receiptId, function (success) {
+    if ($stateParams.paymentId) {
+        $scope.pageTitle = "Edit Payment";
+        PaymentService.getPaymentDetails($stateParams.paymentId, function (success) {
             if (success.data.status) {
-                $scope.receiptDetails = success.data.data;
-                $scope.receiptDetails.date = new Date($scope.receiptDetails.date);
+                $scope.paymentDetails = success.data.data;
+                $scope.paymentDetails.date = new Date($scope.paymentDetails.date);
                 getPartyIds();
             } else {
                 success.data.messages.forEach(function (message) {
@@ -284,7 +284,7 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
             if (success.data.status) {
                 $scope.parties = success.data.partyList;
                 var selectedParty = _.find($scope.parties, function (party) {
-                    return party._id.toString() === $scope.receiptDetails.partyId;
+                    return party._id.toString() === $scope.paymentDetails.partyId;
                 });
                 if (selectedParty) {
                     $scope.partyName = selectedParty.name;
@@ -303,11 +303,12 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
     getPartyIds();
 
     $scope.selectPartyId = function (party) {
-        $scope.receiptDetails.partyId = party._id;
+        $scope.paymentDetails.partyId = party._id;
     }
 
-    $scope.AddorUpdateReceipt = function () {
-        var params = $scope.receiptDetails;
+    $scope.AddorUpdatePayment = function () {
+        console.log("Welcome")
+        var params = $scope.paymentDetails;
         params.error = [];
         params.success = [];
 
@@ -321,13 +322,13 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
             params.error.push('Please enter an Amount');
         }
         if (params.error.length > 0) {
-            // params.error.forEach(function (message) {
-            //     Notification.error({ message: message });
-            // });
+            params.error.forEach(function (message) {
+                Notification.error({ message: message });
+            });
         } else {
-            $scope.receiptDetails.partyId = $scope.receiptDetails.partyId._id;
-            if ($stateParams.receiptId) {
-                PaymentService.updateReceipt(params, function (success) {
+            $scope.paymentDetails.partyId = $scope.paymentDetails.partyId._id;
+            if ($stateParams.paymentId) {
+                PaymentService.updatePayment(params, function (success) {
                     if (success.data.status) {
                         Notification.success({message: success.data.messages[0]});
                         $state.go('receipts');
@@ -336,12 +337,12 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
                             Notification.error({message: message});
                         });
                     }
-                    $state.go('receipts');
+                    $state.go('payments');
 
                 }, function (err) {
                 });
             } else {
-                PaymentService.addReceipt(params, function (success) {
+                PaymentService.addPayment(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
                         Notification.success({message: success.data.messages[0]});

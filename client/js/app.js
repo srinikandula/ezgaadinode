@@ -248,7 +248,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         }
     }).state({
         name: 'paymentsEdit',
-        url: '/paymentsEdit/:paymentsId',
+        url: '/paymentsEdit/:paymentId',
         templateUrl: 'views/partials/payments/paymentsEdit.html',
         data: {
             activeTab: 'payments',
@@ -256,7 +256,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            paymentsId: null
+            paymentId: null
         }
     }).state({
         name: 'receipts',

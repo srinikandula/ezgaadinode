@@ -1,4 +1,4 @@
-var ReceiptsColl = require('./../models/schemas').ReceiptsColl;
+var ErpPaymentsColl = require('./../models/schemas').erpPaymentsColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var PartyColl = require('./../models/schemas').PartyCollection;
 
@@ -32,7 +32,7 @@ Payments.prototype.totalPayments = function (req, callback) {
         status: false,
         messages: []
     };
-    ReceiptsColl.count({}, function (err, count) {
+    ErpPaymentsColl.count({}, function (err, count) {
         if (err) {
             retObj.messages.push("Please try again");
             analyticsService.create(req, serviceActions.total_receipts_err, {
@@ -86,7 +86,7 @@ Payments.prototype.getPayments = function (req, callback) {
                         $lte: new Date(params.toDate),
                     }, "partyId": {$in: partIds}
                 }
-                getReceipts(condition, req, callback)
+                getPayments(condition, req, callback)
 
             }
         });
@@ -98,7 +98,7 @@ Payments.prototype.getPayments = function (req, callback) {
                 $lte: new Date(params.toDate),
             }
         };
-        getReceipts(condition, req, callback)
+        getPayments(condition, req, callback)
     } else if (params.partyName) {
         PartyColl.find({name: new RegExp("^" + params.partyName, "i")}, function (err, partys) {
             if (err) {
@@ -117,19 +117,19 @@ Payments.prototype.getPayments = function (req, callback) {
                 condition = {
                     "accountId": ObjectId(jwt.accountId), "partyId": {$in: partIds}
                 };
-                getReceipts(condition, req, callback)
+                getPayments(condition, req, callback)
 
             }
         });
     } else {
         condition = {accountId: req.jwt.accountId};
-        getReceipts(condition, req, callback);
+        getPayments(condition, req, callback);
 
     }
 
 };
 
-function getReceipts(candition, req, callback) {
+function getPayments(candition, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -144,8 +144,8 @@ function getReceipts(candition, req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
     async.parallel({
-        receipts: function (receiptsCallback) {
-            ReceiptsColl.find(candition)
+        payments: function (receiptsCallback) {
+            ErpPaymentsColl.find(candition)
                 .populate({path: "partyId", select: "name"})
                 .populate({
                     path: "createdBy",
@@ -157,8 +157,8 @@ function getReceipts(candition, req, callback) {
                     receiptsCallback(err, docs);
                 })
         },
-        totalReceipts: function (totalReceiptsCallback) {
-            ReceiptsColl.count(candition, function (err, count) {
+        totalPayments: function (totalReceiptsCallback) {
+            ErpPaymentsColl.count(candition, function (err, count) {
                 totalReceiptsCallback(err, count);
             })
         }
@@ -180,8 +180,8 @@ function getReceipts(candition, req, callback) {
                 success: true
             }, function (response) {
             });
-            retObj.receipts = results.receipts;
-            retObj.count = results.totalReceipts;
+            retObj.payments = results.payments;
+            retObj.count = results.totalPayments;
             retObj.status = true;
             callback(retObj);
 
@@ -202,7 +202,7 @@ Payments.prototype.getPaymentDetails = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        ReceiptsColl.findOne({_id: params._id}).populate({path: "partyId", select: "name"}).exec(function (err, doc) {
+        ErpPaymentsColl.findOne({_id: params._id}).populate({path: "partyId", select: "name"}).exec(function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_receipt_details_err, {
@@ -255,7 +255,7 @@ Payments.prototype.addPayment = function (req, callback) {
     } else {
         params.accountId = req.jwt.accountId;
         params.createdBy = req.jwt.accountId;
-        var receipt = new ReceiptsColl(params);
+        var receipt = new ErpPaymentsColl(params);
         receipt.save(function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
@@ -310,7 +310,7 @@ Payments.prototype.updatePayment = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        ReceiptsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
+        ErpPaymentsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.update_receipts_err, {
@@ -360,7 +360,7 @@ Payments.prototype.deletePayment = function (req, callback) {
         callback(retObj);
     } else {
 
-        ReceiptsColl.remove({_id: params._id}, function (err, doc) {
+        ErpPaymentsColl.remove({_id: params._id}, function (err, doc) {
             if (err) {
                 retObj.messages.push("please try again");
                 analyticsService.create(req, serviceActions.delete_receipt_details_err, {
@@ -407,7 +407,7 @@ Payments.prototype.findTotalReceipts = function (erpSettingsCondition, req, call
         status: false,
         messages: []
     };
-    ReceiptsColl.aggregate([{$match: erpSettingsCondition},
+    ErpPaymentsColl.aggregate([{$match: erpSettingsCondition},
             {$group: {_id: null, totalReceipts: {$sum: "$amount"}}}],
         function (err, receipt) {
             if (err) {
@@ -548,7 +548,7 @@ function getReceiptsByParties(req, condition, callback) {
         status: false,
         messages: []
     };
-    ReceiptsColl.aggregate(condition,
+    ErpPaymentsColl.aggregate(condition,
         {
             "$lookup": {
                 "from": "parties",
@@ -595,7 +595,7 @@ Payments.prototype.getPaymentsByPartyName = function (req, callback) {
     if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
-        ReceiptsColl.find({partyId: params._id}).populate({path: 'partyId', select: "name"}).exec(function (err, docs) {
+        ErpPaymentsColl.find({partyId: params._id}).populate({path: 'partyId', select: "name"}).exec(function (err, docs) {
             if (err) {
                 retObj.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_receipts_by_party_name_err, {
@@ -731,21 +731,21 @@ Payments.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         retObj.messages.push("Invalid email....");
         callback(retObj);
     }else{
-        Payments.prototype.getReceipts(req,function(response){
+        Payments.prototype.getPayments(req,function(response){
             if(response.status){
                 var output = [];
-                if(response.receipts.length){
-                    for(var i=0;i<response.receipts.length;i++) {
+                if(response.payments.length){
+                    for(var i=0;i<response.payments.length;i++) {
                         output.push({
-                            date:dateToStringFormat(response.receipts[i].date),
-                            partyId:response.receipts[i].partyId.name,
-                            amount:response.receipts[i].amount,
-                            description:value(response.receipts[i].description)
+                            date:dateToStringFormat(response.payments[i].date),
+                            partyId:response.payments[i].partyId.name,
+                            amount:response.payments[i].amount,
+                            description:value(response.payments[i].description)
                         });
-                        if (i === response.receipts.length - 1) {
+                        if (i === response.payments.length - 1) {
                             var emailparams = {
-                                templateName: 'receiptDetails',
-                                subject: "Receipt Details",
+                                templateName: 'paymentDetails',
+                                subject: "Payment Details",
                                 to: params.email,
                                 data: output
                             };
@@ -779,16 +779,16 @@ Payments.prototype.downloadDetails = function (jwt, params,req, callback) {
         messages: []
     };
     console.log("share details download....");
-    Payments.prototype.getReceipts(req,function(response){
+    Payments.prototype.getPayments(req,function(response){
         console.log("response....",response);
         if(response.status){
             var output = [];
-            for(var i=0;i<response.receipts.length;i++){
+            for(var i=0;i<response.payments.length;i++){
                output.push({
-                   Date:dateToStringFormat(response.receipts[i].date),
-               Party:response.receipts[i].partyId.name,
-               Amount:response.receipts[i].amount,
-               Description:response.receipts[i].description});
+                   Date:dateToStringFormat(response.payments[i].date),
+               Party:response.payments[i].partyId.name,
+               Amount:response.payments[i].amount,
+               Description:response.payments[i].description});
             }
             retObj.data = output;
             retObj.status=true;
