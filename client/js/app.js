@@ -274,7 +274,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         url: '/receiptEdit/:receiptId',
         templateUrl: 'views/partials/receipts/receiptEdit.html',
         data: {
-            activeTab: 'payments',
+            activeTab: 'receipts',
             subTab: 'ERP'
         },
         params: {

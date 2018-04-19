@@ -1,17 +1,18 @@
-<div class="main-right col-xs-12" ng-controller="paymentsEditController" >
+<div class="main-right col-xs-12" ng-controller="paymentsEditCtrl">
     <div class="col-xs-12 account-edit">
-        <h2 class="title-name">{{pagetitle}}</h2>
+        <h2 class="title-name">{{pageTitle}}</h2>
         <form class="mt-10">
             <div class="col-xs-12 col-sm-6">
-                <div class="form-group">
-                    <div class="col-xs-12">
-                        <date-picker id="date" ban-future="'banFutureDate'" ng-model="paymentsDetails.date"
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <date-picker id="date" ban-future="'banFutureDate'" ng-model="receiptDetails.date"
                                      placeholder="'Date*'" class="'custom-form-control'"></date-picker>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-                    <div class="select-box">
-                        <ui-select ng-model="paymentsDetails.partyId" theme="select2"
+                    <div class=" select-box">
+                        <ui-select ng-model="receiptDetails.partyId" theme="select2"
+                                   style="min-width: 390px;"
                                    title="Choose a Party" append-to-body="true">
                             <ui-select-match placeholder="Select a Party*" class="form-control custom-form-control">
                                 {{$select.selected.name || partyName}}
@@ -24,63 +25,44 @@
                     </div>
 
                 </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
                 <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <input ng-model="paymentsDetails.amount" type="number" class="form-control custom-form-control"
+                    <div class=" styling-input-list">
+                        <input ng-model="receiptDetails.amount" type="number" class="form-control custom-form-control"
                                id="amount">
                         <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
 
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-12 col-sm-6">
                 <div class="form-group col-xs-12">
-                    <div class="">
-                        <select class="form-control custom-form-control" ng-model="paymentsDetails.paymentType">
-                            <option value="">Payment Type *</option>
-                            <option>NEFT</option>
-                            <option>Cheque</option>
-                            <option>Cash</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group col-xs-12"
-                     ng-show="paymentsDetails.paymentType == 'NEFT' || paymentsDetails.paymentType == 'Cheque'">
-                    <div class="col-xs-12">
-                        <input type="text" class="form-control" ng-model="paymentsDetails.paymentRefNo" placeholder="Reference Number for Cheque/NEFT"/>
-
-                    </div>
-                </div>
-
-                <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <textarea ng-model="paymentsDetails.description" type="textarea"
+                    <div class=" styling-input-list">
+                        <textarea ng-model="receiptDetails.description" type="textarea"
                                   class="form-control custom-form-control"
                                   id="description"></textarea>
                         <label class="focus-effect-for-input" aria-hidden="true">Remarks</label>
 
                     </div>
                 </div>
-
             </div>
             <div class="clearfix"></div>
 
             <div class="col-xs-6 col-xs-push-3">
-                <div class="alert alert-danger" role="alert" ng-show="paymentsDetails.error.length">
+                <div class="alert alert-danger" role="alert" ng-show="receiptDetails.error.length">
                     <ul>
-                        <li ng-repeat="error in paymentsDetails.error">{{error}}</li>
+                        <li ng-repeat="error in receiptDetails.error">{{error}}</li>
                     </ul>
                 </div>
-                <div class="alert alert-success" role="alert" ng-show="paymentsDetails.success.length">
+                <div class="alert alert-success" role="alert" ng-show="receiptDetails.success.length">
                     <ul>
-                        <li ng-repeat="success in paymentsDetails.success">{{success}}</li>
+                        <li ng-repeat="success in receiptDetails.success">{{success}}</li>
                     </ul>
                 </div>
             </div>
             <div class="col-xs-12">
                 <div class="col-xs-4 mtb-25 sub-can">
                     <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
-                    <button type="submit" class="btn can last" ng-click="AddorUpdatePayments()">Submit</button>
+                    <button type="submit" class="btn can last" ng-click="AddorUpdateReceipt()">Submit</button>
 
                 </div>
             </div>

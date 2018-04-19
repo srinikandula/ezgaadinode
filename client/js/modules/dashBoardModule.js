@@ -1,5 +1,5 @@
-app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'PaymentsService', 'AccountServices', '$stateParams', 'ReceiptServices',
-    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, PaymentsService, AccountServices, $stateParams, ReceiptServices) {
+app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', 'Notification', '$state', 'paginationService', 'NgTableParams', 'TripServices', 'ExpenseService', 'PartyService', 'AccountServices', '$stateParams', 'ReceiptsService',
+    function ($scope, $uibModal, TrucksService, Notification, $state, paginationService, NgTableParams, TripServices, ExpenseService, PartyService, AccountServices, $stateParams, ReceiptsService) {
 
         $scope.vehicleId = $stateParams.vehicleId;
         $scope.id = $stateParams.id;
@@ -468,7 +468,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
         $scope.getAmountsByparty = function () {
 
-            PaymentsService.getDuesByParty({
+            ReceiptsService.getDuesByParty({
                 fromDate: $scope.filters.fromDate,
                 toDate: $scope.filters.toDate,
                 partyId: $scope.partyId
@@ -524,7 +524,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         };
 
         $scope.getTotalAmountReceivable = function () {
-            PaymentsService.getTotalPaymentsReceivable(function (success) {
+            ReceiptsService.getTotalPaymentsReceivable(function (success) {
                 if (success.data.status) {
                     $scope.amounts = success.data.amounts;
                 } else {

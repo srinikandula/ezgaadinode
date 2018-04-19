@@ -1,7 +1,7 @@
 <div class="col-xs-12 pall-zero" ng-controller="dashboardController"
      ng-init="getReceiptsAmountByParty();getAllTrucks();">
     <div class="col-sm-3 col-xs-12">
-        <div class="reports-panel activated payments"   >
+        <div class="reports-panel activated payments">
             <div class="reports-image">
                 <figure>
                     <img src="images/revenue-report.png">
@@ -10,11 +10,11 @@
             <div class="reports-text">
                 <h3>Revenue</h3>
                 <p>From All Vehicles</p>
-                <!-- <small><i class="fa fa-inr"></i>
-
-                 </small>-->
+                <small><i class="fa fa-inr"></i>
+                    {{totals.totalRevenue}}
+                </small>
             </div>
-            <div class="col-xs-12 pall-zero">
+          <!--  <div class="col-xs-12 pall-zero">
                 <ul class="list-inline">
                     <li class="payble" ui-sref="reports">
                         <span class="payable">By Trips</span><br>
@@ -30,7 +30,7 @@
                     </li>
 
                 </ul>
-            </div>
+            </div>-->
 
         </div>
     </div>
@@ -131,8 +131,8 @@
                    cellspacing="0" width="100%">
                 <tfoot>
                 <tr>
-                <th colspan="3" style="text-align: right;">Total</th>
-                <th><i class="fa fa-inr"></i> {{total}}</th>
+                    <th colspan="3" style="text-align: right;">Total</th>
+                    <th><i class="fa fa-inr"></i> {{total}}</th>
                 </tr>
                 </tfoot>
             </table>
