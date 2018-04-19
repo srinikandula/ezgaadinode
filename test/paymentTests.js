@@ -4,7 +4,7 @@ var async = require('async');
 var mongoose = require("mongoose");
 var User = require('./../server/models/schemas').AccountsColl;
 var PartyCollection = require('./../server/models/schemas').PartyCollection;
-let paymentsReceivedColl = require('./../server/models/schemas').paymentsReceivedColl;
+let ReceiptsColl = require('./../server/models/schemas').ReceiptsColl;
 
 var chai = require('chai');
 var chaiHttp = require('chai-http');
@@ -57,7 +57,7 @@ describe('PaymentTest', () => {
         * Test the /GET route Retrieving Empty Payment Information Success
         */
         it('Retrieving Empty Payment Information', (done) => {
-            paymentsReceivedColl.remove({}, function (error, result) {
+            ReceiptsColl.remove({}, function (error, result) {
                 chai.request(server)
                     .get('/v1/payments')
                     .set(headerData)
@@ -113,7 +113,7 @@ describe('PaymentTest', () => {
                             "paymentType": "NEFT",
                             "paymentRefNo": "abcd123456",
                         };
-                        paymentsReceivedColl.remove({}, function (error, result) {
+                        ReceiptsColl.remove({}, function (error, result) {
                             chai.request(server)
                                 .post('/v1/payments/addPayments')
                                 .send(paymentData)
@@ -185,7 +185,7 @@ describe('PaymentTest', () => {
                             "paymentType": "Check",
                             "paymentRefNo": "abcd123456",
                         };
-                        paymentsReceivedColl.remove({}, function (error, result) {
+                        ReceiptsColl.remove({}, function (error, result) {
                             chai.request(server)
                                 .post('/v1/payments/addPayments')
                                 .send(paymentData2)
@@ -257,7 +257,7 @@ describe('PaymentTest', () => {
                             "paymentType": "Cash",
                             "paymentRefNo": "abcd123456",
                         };
-                        paymentsReceivedColl.remove({}, function (error, result) {
+                        ReceiptsColl.remove({}, function (error, result) {
                             chai.request(server)
                                 .post('/v1/payments/addPayments')
                                 .send(paymentData3)
