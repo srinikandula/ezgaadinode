@@ -268,17 +268,14 @@ var expenseMaster = new mongoose.Schema({
     attrs: {}
 }, {timestamps: String});
 
-var payments = mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+var erpPaymentsSchema = mongoose.Schema({
+    createdBy:{type: ObjectId, ref: 'accounts'},
+    updatedBy:{type: ObjectId, ref: 'accounts'},
+    accountId:{type: ObjectId, ref: 'accounts'},
     partyId: {type: ObjectId, ref: 'parties'},
-    description: String,
-    amount: Number,
-    updatedBy: String,
-    createdBy: String,
-    date: Date,
-    paymentType: String,
-    paymentRefNo: String,
-    attrs: {}
+    amount:Number,
+    date:Date,
+    description:String
 }, {timestamps: String});
 
 var otpSchema = mongoose.Schema({
@@ -875,14 +872,19 @@ var orderLocationSchema=new mongoose.Schema({
 });
 
 var receiptSchema=new mongoose.Schema({
-    createdBy:{type: ObjectId, ref: 'accounts'},
-    updatedBy:{type: ObjectId, ref: 'accounts'},
-    accountId:{type: ObjectId, ref: 'accounts'},
+    accountId: {type: ObjectId, ref: 'accounts'},
     partyId: {type: ObjectId, ref: 'parties'},
-    amount:Number,
-    date:Date,
-    description:String
+    description: String,
+    amount: Number,
+    updatedBy: String,
+    createdBy: String,
+    date: Date,
+    paymentType: String,
+    receiptRefNo: String,
+    attrs: {}
 });
+
+
 
 /*author : Naresh
 **Auto increment order id sequence*/
@@ -939,7 +941,7 @@ module.exports = {
     DriversColl: mongoose.model('drivers', driverSchema, 'drivers'),
     Roles: mongoose.model('roles', rolesSchema, 'roles'),
     expenseMasterColl: mongoose.model('expenseMaster', expenseMaster, 'expenseMaster'),
-    paymentsReceivedColl: mongoose.model('payments', payments, 'payments'),
+    erpPaymentsColl: mongoose.model('erpPayments', erpPaymentsSchema, 'erpPayments'),
     GroupsColl: mongoose.model('groups', groupSchema, 'groups'),
     OtpColl: mongoose.model('otps', otpSchema, 'otps'),
     NotificationColl: mongoose.model('notifications', notificationsSchema, 'notifications'),

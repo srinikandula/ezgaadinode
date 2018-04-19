@@ -13,9 +13,9 @@ var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 
 var Trips = require('./tripsApi');
 var Expenses = require('./expensesApi');
-var PaymentsReceived = require('./paymentsReceivedAPI');
+var PaymentsReceived = require('./receiptsApi');
 var Trucks = require('./truckAPIs');
-var Receipts = require('./receiptsApi');
+var Receipts = require('./erpPayments');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 

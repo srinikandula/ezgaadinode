@@ -9,7 +9,7 @@ var PartyCollection = require('./../server/models/schemas').PartyCollection;
 var TripCollection = require('./../server/models/schemas').TripCollection;
 var expenseMasterColl = require('./../server/models/schemas').expenseMasterColl;
 var ExpenseCostColl = require('./../server/models/schemas').ExpenseCostColl;
-var paymentsReceivedColl = require('./../server/models/schemas').paymentsReceivedColl;
+var ReceiptsColl = require('./../server/models/schemas').ReceiptsColl;
 
 var chai = require('chai');
 var chaiHttp = require('chai-http');
@@ -75,7 +75,7 @@ describe('DashboardTest', () => {
             TrucksColl.remove({}, function (error, result) {
                 TripCollection.remove({}, function (error, result) {
                     ExpenseCostColl.remove({}, function (error, result) {
-                        paymentsReceivedColl.remove({}, function (error, result) {
+                        ReceiptsColl.remove({}, function (error, result) {
                             chai.request(server)
                                 .get('/v1/admin/erpDashboard')
                                 .set(headerData)

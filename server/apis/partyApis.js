@@ -7,7 +7,7 @@ var PartyCollection = require('./../models/schemas').PartyCollection;
 var config = require('./../config/config');
 var Utils = require('./utils');
 var Trips = require('./tripsApi');
-var PaymentsReceived = require('./paymentsReceivedAPI');
+var PaymentsReceived = require('./receiptsApi');
 var emailService = require('./mailerApi');
 
 var Utils = require('./utils');

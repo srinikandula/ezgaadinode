@@ -1,6 +1,6 @@
 var express = require('express');
 var AuthRouter = express.Router();
-var Receipts = require('../apis/receiptsApi');
+var Receipts = require('../apis/erpPayments');
 
 AuthRouter.get("/totalReceipts",function (req,res) {
     Receipts.totalReceipts(req,function (result) {

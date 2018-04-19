@@ -2235,7 +2235,7 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
                                         })
                                     }else{
                                         device.startTime= new Date(devicePostions[0].date).toLocaleString();
-                                        device.startAddress= resp.address;
+                                      //  device.startAddress= resp.address;
                                         endCallback(false);
                                     }
 
