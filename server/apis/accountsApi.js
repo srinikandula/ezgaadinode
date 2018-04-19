@@ -13,9 +13,9 @@ var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 
 var Trips = require('./tripsApi');
 var Expenses = require('./expensesApi');
-var PaymentsReceived = require('./receiptsApi');
+var Receipts = require('./receiptsApi');
 var Trucks = require('./truckAPIs');
-var Receipts = require('./erpPayments');
+var Payments = require('./erpPayments');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 
@@ -470,7 +470,7 @@ Accounts.prototype.erpDashBoardContent = function (jwt, req, callback) {
                     });
                 },
                 pendingDue: function (pendingDueCallback) {
-                    PaymentsReceived.findPendingDueForAccount(Utils.getErpSettings(erpSettings.payment, erpSettings.accountId), req, function (response) {
+                    Receipts.findPendingDueForAccount(Utils.getErpSettings(erpSettings.payment, erpSettings.accountId), req, function (response) {
                         pendingDueCallback(response.error, response.pendingDue);
                     });
                 },
@@ -485,7 +485,7 @@ Accounts.prototype.erpDashBoardContent = function (jwt, req, callback) {
                     });
                 },
                 receiptsAmount: function (receiptsAmountCallback) {
-                    Receipts.findTotalReceipts(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId), req, function (response) {
+                    Payments.findTotalReceipts(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId), req, function (response) {
                         receiptsAmountCallback(!response.status, response.totalReceipts);
                     });
                 }
