@@ -1,0 +1,384 @@
+app.factory('PaymentsService',['$http', function ($http) {
+    return {
+        addPayments: function (object, success, error) {
+            $http({
+                url: '/v1/payments/addPayments',
+                method: "POST",
+                data: object
+            }).then(success, error)
+        },
+        getPaymentsRecords: function (pageNumber, success, error) {
+            $http({
+                url: '/v1/payments/' + pageNumber,
+                method: "GET"
+            }).then(success, error)
+        },
+        getAllRecords: function (success, error) {
+            $http({
+                url: '/v1/payments/getAll',
+                method: "GET"
+            }).then(success, error)
+        },
+        getPaymentsRecord: function (paymentsId, success, error) {
+            $http({
+                url: '/v1/payments/getPaymentsRecord/' + paymentsId,
+                method: "GET"
+            }).then(success, error)
+        },
+        getPayments: function (pageable, success, error) {
+            $http({
+                url: '/v1/payments/getPayments/',
+                method: "GET",
+                params: pageable
+            }).then(success, error)
+        },
+        getTotalPaymentsReceivable: function (success, error) {
+            $http({
+                url: '/v1/payments/getTotalAmount/',
+                method: "GET"
+            }).then(success, error)
+        },
+        getDuesByParty: function (params, success, error) {
+            $http({
+                url: '/v1/payments/getDuesByParty/',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        updateRecord: function (object, success, error) {
+            $http({
+                url: '/v1/payments/updatePayments',
+                method: "PUT",
+                data: object
+            }).then(success, error)
+        },
+        deletePaymentsRecord: function (paymentsId, success, error) {
+            $http({
+                url: '/v1/payments/' + paymentsId,
+                method: "DELETE"
+            }).then(success, error)
+        },
+        count: function (success, error) {
+            $http({
+                url: '/v1/payments/countPayments',
+                method: "GET"
+            }).then(success, error)
+        },
+        sharePaymentsDetailsByPartyViaEmail: function (params, success, error) {
+            $http({
+                url: '/v1/payments/sharePaymentsDetailsByPartyViaEmail',
+                method: "GET",
+                params: params
+            }).then(success, error);
+        },
+        shareDetailsViaEmail:function(params,success,error){
+            $http({
+                url: '/v1/payments/shareDetailsViaEmail',
+                method: "GET",
+                params:params
+            }).then(success, error)
+        }
+    }
+}]);
+
+app.controller('receiptCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService) {
+
+    $scope.goToEditReceiptsPage = function (receiptId) {
+        $state.go('receiptEdit', { receiptId: receiptId });
+    };
+    $scope.count = 0;
+    $scope.getCount = function () {
+        PaymentsService.count(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.count;
+                $scope.init();
+
+            } else {
+                Notification.error({ message: success.data.message });
+            }
+        });
+    };
+    $scope.getCount();
+
+    var pageable;
+
+    var loadTableData = function (tableParams) {
+        pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            partyName: tableParams.partyName,
+            fromDate:$scope.fromDate,
+            toDate:$scope.toDate
+        };
+        $scope.loading = true;
+        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+        PaymentsService.getPayments(pageable, function (response) {
+            $scope.invalidCount = 0;
+
+            if (angular.isArray(response.data.paymentsCosts)) {
+                $scope.loading = false;
+                $scope.payments = response.data.paymentsCosts;
+                $scope.userId=response.data.userId;
+                $scope.userType=response.data.userType;
+                tableParams.total(response.totalElements);
+                tableParams.data = $scope.payments;
+                $scope.currentPageOfReceipts = $scope.payments;
+            }
+        });
+    };
+    $scope.getAllParties = function () {
+        PartyService.getAllPartiesForFilter(function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (err) {
+
+        });
+    }
+
+    $scope.init = function () {
+        $scope.receiptParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    loadTableData(params);
+                    $scope.getAllParties();
+                }
+            });
+    };
+
+    $scope.deletePaymentsRecord = function (id) {
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+                PaymentsService.deletePaymentsRecord(id, function (success) {
+                    if (success.data.status) {
+                        swal(
+                            'Deleted!',
+                            'Party deleted successfully.',
+                            'success'
+                        );
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal(
+                                'Error!',
+                                message,
+                                'error'
+                            );
+                        });
+                    }
+
+                    ;
+                });
+
+            };
+        });
+    };
+
+    $scope.searchByPartyName = function (partyName) {
+        $scope.receiptParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    params.partyName = partyName;
+                    loadTableData(params);
+                }
+            });
+    };
+    $scope.shareDetailsViaEmail=function(){
+        swal({
+            title: 'Share payments data using mail',
+            input: 'email',
+            showCancelButton: true,
+            confirmButtonText: 'Submit',
+            showLoaderOnConfirm: true,
+            preConfirm: (email) => {
+            return new Promise((resolve) => {
+                PaymentsService.shareDetailsViaEmail({
+                email:email
+            },function(success){
+                // console.log("success...",success);
+                if (success.data.status) {
+                    resolve()
+                } else {
+
+                }
+            },function(error){
+
+            })
+        })
+
+    },
+        allowOutsideClick: false
+
+    }).then((result) => {
+            if (result.value) {
+            swal({
+                type: 'success',
+                html: ' sent successfully'
+            })
+        }
+    })
+    };
+    $scope.downloadDetails = function () {
+        window.open('/v1/payments/downloadDetails');
+    };
+
+
+
+        
+}]);
+
+app.controller('receiptsEditController', ['$scope', 'PaymentsService', '$stateParams', '$state', 'Notification', 'TripServices', 'TrucksService', 'PartyService', function ($scope, PaymentsService, $stateParams, $state, Notification, TripServices, TrucksService, PartyService) {
+    $scope.paymentRefNumber = false;
+
+    $scope.refNum = function () {
+        $scope.paymentRefNumber = true;
+    };
+
+    $scope.pagetitle = "Add Receipts";
+    $scope.dateCallback = "past";
+
+    $scope.receiptDetails = {
+        date: '',
+        partyId: '',
+        description: '',
+        amount: '',
+        paymentType: '',
+        paymentRefNo: '',
+        error: [],
+        success: []
+    };
+
+    $scope.cancel = function () {
+        $state.go('receipts');
+    };
+    
+
+    function getPartyIds() {
+        TripServices.getPartiesByTrips(function (success) {
+            if (success.data.status) {
+                $scope.parties = success.data.partyList;
+                 var selectedParty = _.find($scope.parties, function (party) {
+                    return party._id.toString() === $scope.receiptDetails.partyId;
+                });
+                
+                if (selectedParty) {
+                    $scope.partyName = selectedParty.name;
+                }
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+               
+            }
+        }, function (error) {
+
+        });
+    }
+    getPartyIds();
+
+    $scope.selectPartyId = function (party) {
+        $scope.receiptDetails.partyId = party._id;
+    }
+
+    if ($stateParams.receiptId) {
+        $scope.pagetitle = "Edit Receipts";
+        PaymentsService.getPaymentsRecord($stateParams.receiptId, function (success) {
+            if (success.data.status) {
+                $scope.receiptDetails = success.data.paymentsDetails;
+                //console.log(success.data);
+                $scope.receiptDetails.date = new Date($scope.receiptDetails.date);
+                $scope.receiptDetails.amount = parseInt($scope.receiptDetails.amount);
+                getPartyIds();
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (err) {
+        })
+    }
+    $scope.cancel = function () {
+        $state.go('receipts');
+    };
+    $scope.AddorUpdateReceipt = function () {
+        var params = $scope.receiptDetails;
+        // console.log(params);
+        params.error = [];
+        params.success = [];
+
+        if (!params.date) {
+            params.error.push('Please select Receipt Date');
+        }
+        if (!params.partyId) {
+            params.error.push('Please Select Party');
+        }
+        if (!(params.amount)) {
+            params.error.push('Please enter an Amount');
+        }
+        if (!params.paymentType) {
+            params.error.push('Please Select Payment Type');
+        }
+        if ((params.paymentType === 'NEFT' || params.paymentType === 'Cheque') && !params.paymentRefNo) {
+            params.error.push('Enter payment reference number');
+        }
+        if (!params.error.length) {
+            if ($stateParams.receiptId) {
+                PaymentsService.updateRecord(params, function (success) {
+                    if (success.data.status) {
+                        // params.success = success.data.message[0];
+                        Notification.success({ message: success.data.messages[0] });
+                        $state.go('receipts');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
+                    }
+                    $state.go('receipts');
+
+                }, function (err) {
+                    console.log(err);
+                });
+            } else {
+                PaymentsService.addPayments(params, function (success) {
+
+                    if (success.data.status) {
+                        params.success = success.data.message;
+                        Notification.success({ message: success.data.messages[0] });
+                        $state.go('receipts');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
+                    }
+                });
+            }
+        }
+    }
+}]);

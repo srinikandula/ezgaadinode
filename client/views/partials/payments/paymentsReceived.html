@@ -1,14 +1,14 @@
-<div class="main-right col-xs-12" ng-controller="PaymentsCtrl">
+<div class="main-right col-xs-12" ng-controller="paymentsCtrl" ng-init="getReceiptCount();">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-2 pall-zero"><h3>Payments</h3></div>
+        <div class="col-sm-2 pall-zero"><h3>Receipts</h3></div>
         <ul class="col-sm-10 pall-zero list-inline">
             <li class="col-sm-3 pall-zero">
-                <date-picker ng-model="fromDate" class="'paymentscontrol'"
+                <date-picker ng-model="filters.fromDate" class="'paymentscontrol'"
                              past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
             </li>
             <li class="col-sm-3 pall-zero">
-                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="toDate"
-                             placeholder="'to date'" ></date-picker>
+                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" placeholder="'to date'"
+                             ng-model="filters.toDate"></date-picker>
             </li>
             <li class="col-sm-1 pall-zero">
                 <button type="submit" ng-click="searchByPartyName(partyName1);" class="btn go">
@@ -41,52 +41,41 @@
             </li>
         </ul>
     </div>
-
-    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentParams">
-        <tr ng-repeat="payments in currentPageOfPayments" style="text-align: center;">
-            <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ payments.date |
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="receiptParams">
+        <tr ng-repeat="receipts in currentPageOfReceipts" style="text-align: center;">
+            <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ receipts.date |
                 date:'dd-MM-yyyy'}}
             </td>
-            <td data-title="'Party'" sortable="'partyName'" class="clickable-item">{{
-                payments.attrs.partyName }}
+            <td data-title="'Party'" sortable="'name'" class="clickable-item">{{
+                receipts.partyId.name }}
             </td>
             <td data-title="'Amount'" sortable="'amount'" class="clickable-item">{{
-                payments.amount }}
-            </td>
-            <td data-title="'Payment Type'" sortable="'paymentType'" class="clickable-item">{{
-                payments.paymentType}}
-            </td>
-            <td data-title="'Payment Ref No'" sortable="'paymentRefNo'" class="clickable-item">{{
-                payments.paymentRefNo || '---' }}
+                receipts.amount }}
             </td>
             <td data-title="'Description'" sortable="'description'" class="clickable-item">{{
-                payments.description || '---'}}
+                receipts.description || '---'}}
             </td>
-            <td data-title="'Created By'" sortable="'createdByName'"
-                class="clickable-item">{{ payments.attrs.createdByName }}
+            <td data-title="'Created By'" sortable="'firstName'"
+                class="clickable-item">{{ receipts.createdBy.firstName }}
             </td>
 
             <td data-title="'Action'" class="">
-                <a href="#" ng-show="userType=='account' || userId==payments.createdBy" class="btn"
-                   ng-click="goToEditPaymentsPage(payments._id)">
+                <a href="#" class="btn" ng-click="goToEditReceiptsPage(receipts._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
-
-                <a href="#" ng-show="userType=='account' || userId==payments.createdBy" class="btn"
-                   ng-click="deletePaymentsRecord(payments._id)">
-
+                <a href="#" class="btn" ng-click="deleteReceipt(receipts._id)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
             </td>
         </tr>
-        <tr ng-if="!currentPageOfPayments || currentPageOfPayments.length === 0">
-            <td colspan="8">No Payments Records exist.</td>
+        <tr ng-if="!currentPageOfReceipts || currentPageOfReceipts.length === 0">
+            <td colspan="6">No Receipts Records exist.</td>
         </tr>
     </table>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ng-click="goToEditPaymentsPage()"><img src="images/Add_Payments.png" alt="Add Payment"
-                                                               title="Add Payment"></a>
+            <a href="#" ui-sref="receiptEdit">
+                <img src="images/Add_Payments.png" alt="Add Receipt"
+                     title="Add Receipt"></a>
         </figure>
     </div>
-</div>
 </div>

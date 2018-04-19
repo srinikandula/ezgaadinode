@@ -1,21 +1,21 @@
-<div class="main-right col-xs-12" ng-controller="receiptEditCtrl">
+
+<div class="main-right col-xs-12" ng-controller="receiptsEditController" >
     <div class="col-xs-12 account-edit">
-        <h2 class="title-name">{{pageTitle}}</h2>
+        <h2 class="title-name">{{pagetitle}}</h2>
         <form class="mt-10">
             <div class="col-xs-12 col-sm-6">
-                <div class="form-group col-xs-12">
-                    <div class="">
+                <div class="form-group">
+                    <div class="col-xs-12">
                         <date-picker id="date" ban-future="'banFutureDate'" ng-model="receiptDetails.date"
                                      placeholder="'Date*'" class="'custom-form-control'"></date-picker>
                     </div>
+                    <div class="clearfix"></div>
                 </div>
-                <div class="form-group col-xs-12">
-
-                    <div class=" select-box">
+                <div class=" col-xs-12">
+                    <div class="select-box styling-input-list form-group">
                         <ui-select ng-model="receiptDetails.partyId" theme="select2"
-                                   style="min-width: 390px;"
                                    title="Choose a Party" append-to-body="true">
-                            <ui-select-match placeholder="Select a Party*" class="form-control custom-form-control">
+                            <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.name || partyName}}
                             </ui-select-match>
                             <ui-select-choices
@@ -23,23 +23,41 @@
                                 <div ng-bind-html="party.name | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
+                        <label class="focus-effect-for-input">Select a Party*</label>
                     </div>
 
                 </div>
-            </div>
-            <div class="col-xs-12 col-sm-6">
                 <div class="form-group col-xs-12">
-                    <div class=" styling-input-list">
+                    <div class="styling-input-list">
                         <input ng-model="receiptDetails.amount" type="number" class="form-control custom-form-control"
                                id="amount">
                         <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
 
                     </div>
                 </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list bg-arrow">
+                        <select class="form-control custom-form-control" ng-model="receiptDetails.paymentType">
+                            <option>Payment Type *</option>
+                            <option>NEFT</option>
+                            <option>Cheque</option>
+                            <option>Cash</option>
+                        </select>
+                        <label class="focus-effect-for-input" aria-hidden="true">Payment Type *</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12"
+                     ng-show="receiptDetails.paymentType == 'NEFT' || receiptDetails.paymentType == 'Cheque'">
+                    <div class="col-xs-12">
+                        <input type="text" class="form-control" ng-model="receiptDetails.paymentRefNo" placeholder="Reference Number for Cheque/NEFT"/>
 
+                    </div>
+                </div>
 
                 <div class="form-group col-xs-12">
-                    <div class=" styling-input-list">
+                    <div class="styling-input-list">
                         <textarea ng-model="receiptDetails.description" type="textarea"
                                   class="form-control custom-form-control"
                                   id="description"></textarea>
@@ -47,9 +65,8 @@
 
                     </div>
                 </div>
+
             </div>
-
-
             <div class="clearfix"></div>
 
             <div class="col-xs-6 col-xs-push-3">
@@ -76,4 +93,3 @@
 
 
 </div>
-
