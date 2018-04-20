@@ -153,6 +153,7 @@ app.controller('ExpenseCtrl', ['$scope', '$state', 'ExpenseService', 'Notificati
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.maintanenceCosts;
                 $scope.currentPageOfMaintanence = $scope.maintanenceCosts;
+                console.log("kjdhasfjknasdf", $scope.currentPageOfMaintanence);
             }
 
         });
@@ -307,6 +308,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         PartyService.getAllPartiesBySupplier (function (success) {
             if(success.data.status){
                 $scope.partyBySupplier = success.data.parties;
+                console.log("Parties", $scope.partyBySupplier);
                 var selectedParty = _.find($scope.partyBySupplier, function (party) {
                     return party._id.toString() === $scope.expenseDetails.partyId;
                 });

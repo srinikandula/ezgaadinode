@@ -251,7 +251,7 @@ function getExpenseCosts(condition, jwt, params, callback) {
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                //.populate('expenseCostId')
+                .populate({path:"partyId",select:'name'})
                 .lean()
                 .exec(function (err, mCosts) {
                     async.parallel({

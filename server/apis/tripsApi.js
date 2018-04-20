@@ -1659,14 +1659,14 @@ Trips.prototype.getPartiesByTrips = function (jwt, req, callback) {
         } else {
             condition = {accountId: jwt.groupAccountId}
         }
-        /* TripCollection.distinct('partyId', condition, function (err, partyIds) {
+         TripCollection.distinct('partyId', condition, function (err, partyIds) {
              if (err) {
                  retObj.status = false;
                  retObj.messages.push("Please try again");
                  analyticsService.create(req,serviceActions.get_parties_by_trips_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
                  callback(retObj);
-             } else if (partyIds.length > 0) {*/
-        PartyCollection.find(condition, {name: 1, contact: 1}, function (err, partyList) {
+             } else if (partyIds.length > 0) {
+        PartyCollection.find({_id:{$in:partyIds}}, {name: 1, contact: 1}, function (err, partyList) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
@@ -1703,13 +1703,13 @@ Trips.prototype.getPartiesByTrips = function (jwt, req, callback) {
             }
         })
 
-        /*  } else {
+          } else {
               retObj.status = false;
               retObj.messages.push("No parties found");
               analyticsService.create(req,serviceActions.get_parties_by_trips_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
               callback(retObj);
           }
-      })*/
+      })
     }
 
 };
