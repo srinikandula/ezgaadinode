@@ -9,6 +9,7 @@ var erpPaymentsColl = require('./../models/schemas').erpPaymentsColl;
 var expenseMasterApi = require('./expenseMasterApi');
 var trucksCollection = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var PartyCollection = require('./../models/schemas').PartyCollection;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 
@@ -1710,11 +1711,81 @@ Expenses.prototype.downloadDetails = function (jwt, params, req, callback) {
 };
 
 Expenses.prototype.getPartiesFromExpense=function (req,callback) {
-    var retObj={
-        status:faslse,
-        messages:[]
+    var retObj = {
+        status: false,
+        messages: []
     };
-    Ec
+    var condition = {};
+    var jwt=req.jwt;
+    if (!jwt.accountId || !ObjectId.isValid(jwt.accountId)) {
+        retObj.status = false;
+        retObj.messages.push("Invalid Login");
+        analyticsService.create(req, serviceActions.get_parties_by_trips_err, {
+            body: JSON.stringify(req.query),
+            accountId: jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
+        callback(retObj);
+    } else {
+        if (jwt.type === "account") {
+            condition = {accountId: jwt.accountId};
+        } else {
+            condition = {accountId: jwt.groupAccountId}
+        }
+        expenseColl.distinct('partyId', condition, function (err, partyIds) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push("Please try again");
+                analyticsService.create(req,serviceActions.get_parties_by_expense_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                callback(retObj);
+            } else if (partyIds.length > 0) {
+                PartyCollection.find({_id:{$in:partyIds}}, {name: 1, contact: 1}, function (err, partyList) {
+                    if (err) {
+                        retObj.status = false;
+                        retObj.messages.push("Please try again");
+                        analyticsService.create(req, serviceActions.get_parties_by_expense_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else if (partyList.length > 0) {
+                        retObj.status = true;
+                        retObj.partyList = partyList;
+                        retObj.messages.push("success");
+                        analyticsService.create(req, serviceActions.get_parties_by_expense, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.status = false;
+                        retObj.messages.push("No parties found");
+                        analyticsService.create(req, serviceActions.get_parties_by_expense_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                })
+
+            } else {
+                retObj.status = false;
+                retObj.messages.push("No parties found");
+                analyticsService.create(req,serviceActions.get_parties_by_trips_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                callback(retObj);
+            }
+        })
+    }
 
 };
 module.exports = new Expenses();

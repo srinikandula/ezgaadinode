@@ -75,18 +75,7 @@
                 </div>
                 <div ng-show="expenseDetails.mode == 'Credit'">
                 <div class="form-group col-xs-12">
-            <!--        <div class="">
-                        <input type="text" ng-model="partyName"
-                               uib-typeahead="party.name for party in partyBySupplier | filter:$viewValue"
-                               class="form-control custom-form-control" typeahead-min-length="1"
-                               typeahead-on-select="selectPartyId($item)"
-                               typeahead-select-on-exact="true"
-                               typeahead-no-results="noParty" autocomplete="false" placeholder="Party Name*">
-                        <div ng-show="noParty">
-                            <i class="glyphicon glyphicon-remove red"></i>
-                            <span class="red"> No Results Found </span>
-                        </div>
-                    </div>-->
+
                     <div class="select-box styling-input-list">
                         <ui-select ng-model="partyName" theme="select2"
                                    style="min-width: 390px;"

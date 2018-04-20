@@ -70,10 +70,11 @@ app.factory('PaymentService', ['$http', function ($http) {
                 params:params
             }).then(success, error)
         }
+
     }
 }]);
 
-app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService) {
+app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService','ExpenseService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService,ExpenseService) {
 
     $scope.goToEditPaymentsPage = function (id) {
         $state.go('paymentsEdit', {paymentId: id});
@@ -250,7 +251,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
     };
 
 }]);
-app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices) {
+app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices','ExpenseService', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices,ExpenseService) {
 
     $scope.pageTitle = "Add Payment";
 
@@ -280,7 +281,7 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
     }
 
     function getPartyIds() {
-        TripServices.getPartiesByTrips(function (success) {
+        ExpenseService.getPartiesFromExpense(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.partyList;
                 var selectedParty = _.find($scope.parties, function (party) {
