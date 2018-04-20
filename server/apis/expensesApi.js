@@ -1195,15 +1195,20 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
            retObj.status = false;
            retObj.messages.push('Error');
            callback(retObj)
-       }else if( results.payments.length>0){
+       }else if(results.expenses.totalAmount && results.payments){
            retObj.status = true;
            retObj.messages.push('Success');
            retObj.paybleCount = results.expenses[0].totalAmount - results.payments[0].totalPaid;
            callback(retObj);
+       }else if(results.expenses.totalAmount){
+           retObj.status = true;
+           retObj.messages.push('Success');
+           retObj.paybleCount = results.expenses[0].totalAmount;
+           callback(retObj);
        }else{
            retObj.status = true;
            retObj.messages.push('Success');
-           retObj.paybleCount =results.expenses[0].totalAmount;
+           retObj.paybleCount =0;
            callback(retObj);
        }
     });
