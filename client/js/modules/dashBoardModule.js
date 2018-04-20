@@ -753,6 +753,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             ExpenseService.getPaybleAmountByPartyId($stateParams.partyId, function (success) {
                 if (success.data.status) {
                     $scope.totalAmount = success.data.totalAmount;
+                    $scope.totalPaid = success.data.totalPaid;
                     $scope.table = $('#payableByPartylist').DataTable({
                         destroy: true,
                         responsive: true,
@@ -783,12 +784,34 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             },
 
                             {
-                                title: "Amount", "data": "amount",
+                                title: "Expense", "data": "totalAmount",
                                 "render": function (data, type, row) {
                                     if (data) {
                                         return data;
                                     } else {
-                                        return '0';
+                                        return   '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Paid", "data": "amount",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data;
+                                    } else {
+                                        return  '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Type", "data": "expenseType",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.expenseName;
+                                    } else {
+                                        return 'Paid';
                                     }
 
                                 }
