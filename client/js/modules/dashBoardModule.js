@@ -324,7 +324,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             {title: 'Party Mobile', "data": "_id.contact"},
                             {title: "Total Amount", "data": "totalAmount"},
                             {title: "Paid Amount", "data": "paidAmount"},
-                            {title: "Payable", "data": "payableAmount"}
+                            {title: "Due Amount", "data": "dueAmount"}
 
 
                         ],
@@ -752,7 +752,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
         $scope.getPaybleAmountByPartyId = function () {
             ExpenseService.getPaybleAmountByPartyId($stateParams.partyId, function (success) {
                 if (success.data.status) {
-                    $scope.grossAmounts = success.data.grossAmounts;
+                    $scope.totalAmount = success.data.totalAmount;
                     $scope.table = $('#payableByPartylist').DataTable({
                         destroy: true,
                         responsive: true,
@@ -781,8 +781,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                                 }
                             },
+
                             {
-                                title: 'Expense Type', "data": "expenseType.expenseName",
+                                title: "Amount", "data": "amount",
                                 "render": function (data, type, row) {
                                     if (data) {
                                         return data;
@@ -792,35 +793,14 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                                 }
                             },
-                            {
-                                title: "Total Amount", "data": "totalAmount",
-                                "render": function (data, type, row) {
-                                    if (data) {
-                                        return data;
-                                    } else {
-                                        return '0';
-                                    }
 
-                                }
-                            },
                             {
-                                title: "Paid Amount", "data": "paidAmount",
+                                title: "Description", "data": "description",
                                 "render": function (data, type, row) {
                                     if (data) {
                                         return data;
                                     } else {
-                                        return '0';
-                                    }
-
-                                }
-                            },
-                            {
-                                title: "Payable", "data": "payableAmount",
-                                "render": function (data, type, row) {
-                                    if (data) {
-                                        return data;
-                                    } else {
-                                        return '0';
+                                        return '--';
                                     }
 
                                 }
