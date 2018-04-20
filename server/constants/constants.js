@@ -565,6 +565,8 @@ const serviceActions = {
     get_gps_devices_by_status_err:"GET_GPS_DEVICES_BY_STATUS_ERR",
     get_gps_devices_count_by_status:"GET_GPS_DEVICES_COUNT_BY_STATUS",
     get_gps_devices_count_by_status_err:"GET_GPS_DEVICES_COUNT_BY_STATUS_ERR",
+    get_parties_by_expense: 'GET_PARTIES_BY_EXPENSE',
+    get_parties_by_expense_err: 'GET_PARTIES_BY_EXPENSE_ERR',
 
 
 };

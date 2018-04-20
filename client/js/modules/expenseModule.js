@@ -106,6 +106,12 @@ app.factory('ExpenseService',['$http', function ($http) {
                 method: "GET",
                 params:params
             }).then(success, error)
+        },
+        getPartiesFromExpense:function (success,error) {
+            $http({
+                url: '/v1/expense/getPartiesFromExpense',
+                method: "GET",
+            }).then(success, error)
         }
     }
 }]);
