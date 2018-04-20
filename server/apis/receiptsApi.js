@@ -110,7 +110,7 @@ Receipts.prototype.addReceipts = function (jwt, details,req, callback) {
                 callback(retObj);
             } else {
                 retObj.status = true;
-                retObj.messages.push("Successfully Added");
+                retObj.messages.push("Receipt added successfully");
                 retObj.payments = payment;
                 analyticsService.create(req,serviceActions.add_payment,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
@@ -376,12 +376,12 @@ Receipts.prototype.updateReceipts = function (jwt, paymentDetails,req, callback)
             _id: paymentDetails._id
         }, {$set: paymentDetails}, {new: true}, function (err, payment) {
             if (err) {
-                retObj.messages.push("Error while updating payment, try Again");
+                retObj.messages.push("Error while updating Receipt, try Again");
                 analyticsService.create(req,serviceActions.update_payments_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (payment) {
                 retObj.status = true;
-                retObj.messages.push("Payment updated successfully");
+                retObj.messages.push("Receipt updated successfully");
                 analyticsService.create(req,serviceActions.update_payments,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {

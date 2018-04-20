@@ -1,6 +1,6 @@
-<div class="main-right col-xs-12" ng-controller="paymentsCtrl" ng-init="getReceiptCount();">
+<div class="main-right col-xs-12" ng-controller="paymentsCtrl" ng-init="getPaymentCount();">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-2 pall-zero"><h3>Receipts</h3></div>
+        <div class="col-sm-2 pall-zero"><h3>Payments</h3></div>
         <ul class="col-sm-10 pall-zero list-inline">
             <li class="col-sm-3 pall-zero">
                 <date-picker ng-model="filters.fromDate" class="'paymentscontrol'"
@@ -41,40 +41,40 @@
             </li>
         </ul>
     </div>
-    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="receiptParams">
-        <tr ng-repeat="receipts in currentPageOfReceipts" style="text-align: center;">
-            <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ receipts.date |
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="paymentParams">
+        <tr ng-repeat="payment in currentPageOfPayments" style="text-align: center;">
+            <td data-title="'Date'" sortable="'date'" class="clickable-item">{{ payment.date |
                 date:'dd-MM-yyyy'}}
             </td>
             <td data-title="'Party'" sortable="'name'" class="clickable-item">{{
-                receipts.partyId.name }}
+                payment.partyId.name }}
             </td>
             <td data-title="'Amount'" sortable="'amount'" class="clickable-item">{{
-                receipts.amount }}
+                payment.amount }}
             </td>
             <td data-title="'Description'" sortable="'description'" class="clickable-item">{{
-                receipts.description || '---'}}
+                payment.description || '---'}}
             </td>
             <td data-title="'Created By'" sortable="'firstName'"
-                class="clickable-item">{{ receipts.createdBy.firstName }}
+                class="clickable-item">{{ payment.createdBy.firstName }}
             </td>
 
             <td data-title="'Action'" class="">
-                <a href="#" class="btn" ng-click="goToEditReceiptsPage(receipts._id)">
+                <a href="#" class="btn" ng-click="goToEditPaymentsPage(payment._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
-                <a href="#" class="btn" ng-click="deleteReceipt(receipts._id)">
+                <a href="#" class="btn" ng-click="deletePayment(payment._id)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
             </td>
         </tr>
-        <tr ng-if="!currentPageOfReceipts || currentPageOfReceipts.length === 0">
-            <td colspan="6">No Receipts Records exist.</td>
+        <tr ng-if="!currentPageOfPayments || currentPageOfPayments.length === 0">
+            <td colspan="6">No Payment Records exist.</td>
         </tr>
     </table>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ui-sref="receiptEdit">
-                <img src="images/Add_Payments.png" alt="Add Receipt"
+            <a href="#" ui-sref="paymentsEdit">
+                <img src="images/Add_Payments.png" alt="Add Payment"
                      title="Add Receipt"></a>
         </figure>
     </div>

@@ -15,13 +15,13 @@ AuthRouter.get("/getPayments",function (req,res) {
 });
 
 AuthRouter.get("/getPaymentDetails",function (req,res) {
-    Payments.getReceiptDetails(req,function (result) {
+    Payments.getPaymentDetails(req,function (result) {
         res.send(result);
     })
 });
 
 AuthRouter.post("/addPayment",function (req,res) {
-    Payments.addReceipt(req,function (result) {
+    Payments.addPayment(req,function (result) {
         res.send(result);
     })
 });
