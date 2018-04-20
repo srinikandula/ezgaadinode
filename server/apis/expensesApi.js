@@ -5,6 +5,7 @@ var async = require('async');
 const ObjectId = mongoose.Types.ObjectId;
 var expenseColl = require('./../models/schemas').ExpenseCostColl;
 var expenseMasterColl = require('./../models/schemas').expenseMasterColl;
+var erpPaymentsColl = require('./../models/schemas').erpPaymentsColl;
 var expenseMasterApi = require('./expenseMasterApi');
 var trucksCollection = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
@@ -1184,51 +1185,103 @@ function getPaybleAmountByParty(condition, params, req, callback) {
         status: false,
         messages: []
     };
-    condition.mode = "Credit";
-    expenseColl.aggregate({$match: condition},
-        {
-            "$lookup": {
-                "from": "parties",
-                "localField": "partyId",
-                "foreignField": "_id",
-                "as": "partyId"
-            }
-        }, {"$unwind": "$partyId"}, {
-            $group: {
-                _id: "$partyId",
-                totalAmount: {$sum: "$totalAmount"},
-                paidAmount: {$sum: "$paidAmount"},
-                payableAmount: {$sum: {$subtract: ["$totalAmount", "$paidAmount"]}}
-            }
-        }, {"$sort": {createdAt: -1}},
 
-        function (err, payble) {
+    async.parallel({
+        payments:function (paymentsCallback) {
+           var paymentsCond={
+               accountId:condition.accountId,
+            };
+           if(condition.date){
+               paymentsCond.date=condition.date;
+           }
+           if(condition.partyId){
+               paymentsCond.partyId=condition.partyId;
+           }
+            erpPaymentsColl.aggregate({$match: paymentsCond},
+                {
+                    $group: {
+                        _id: "$partyId",
+                        amount: {$sum: "$amount"}
+                    }
+                }, {"$sort": {createdAt: -1}},
 
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push('Error');
-                analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
+                function (err, payble) {
+                    paymentsCallback(err, payble)
                 });
-                callback(retObj);
-            } else if (payble.length > 0) {
+        },
+        expenses:function (expensCallback) {
+            condition.mode = "Credit";
+            expenseColl.aggregate({$match: condition},
+                {
+                    "$lookup": {
+                        "from": "parties",
+                        "localField": "partyId",
+                        "foreignField": "_id",
+                        "as": "partyId"
+                    }
+                }, {"$unwind": "$partyId"}, {
+                    $group: {
+                        _id: "$partyId",
+                        totalAmount: {$sum: "$totalAmount"},
+                        paidAmount: {$sum: "$paidAmount"},
+                        dueAmount: {$sum: {$subtract: ["$totalAmount", "$paidAmount"]}}
+                    }
+                }, {"$sort": {createdAt: -1}},
+
+                function (err, payble) {
+                    expensCallback(err,payble);
+
+                });
+        }
+
+
+    },function(err,results){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push('Error');
+            analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }else{
+            if(results.expenses.length>0){
                 var gross = {
                     totalAmount: 0,
                     paidAmount: 0,
-                    payableAmount: 0
+                    dueAmount: 0
                 };
-                for (var i = 0; i < payble.length; i++) {
-                    gross.totalAmount += payble[i].totalAmount;
-                    gross.paidAmount += payble[i].paidAmount;
-                    gross.payableAmount += payble[i].payableAmount;
-                    if (i === payble.length - 1) {
+                async.map(results.expenses,function (expense,expenseCallback) {
+                    var payment=_.find(results.payments, function(pay){
+                        return pay._id.toString()==expense._id._id.toString();
+                    });
+                    if(payment){
+                        expense.paidAmount+=payment.amount;
+                        expense.dueAmount=expense.totalAmount-expense.paidAmount;
+                    }
+                    gross.totalAmount += expense.totalAmount;
+                    gross.paidAmount += expense.paidAmount;
+                    gross.dueAmount += expense.dueAmount;
+                    expenseCallback(false);
+                },function (err) {
+                    if(err){
+                        retObj.status = false;
+                        retObj.messages.push('Please try again');
+                        analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }else{
                         retObj.status = true;
                         retObj.messages.push('Success');
-                        retObj.paybleAmounts = payble;
+                        retObj.paybleAmounts = results.expenses;
                         retObj.gross = gross;
                         analyticsService.create(req, serviceActions.get_payable_amnt_by_party, {
                             body: JSON.stringify(req.query),
@@ -1239,9 +1292,8 @@ function getPaybleAmountByParty(condition, params, req, callback) {
                         });
                         callback(retObj);
                     }
-                }
-
-            } else {
+                })
+            }else{
                 retObj.status = false;
                 retObj.messages.push('No Expense found');
                 analyticsService.create(req, serviceActions.get_payable_amnt_by_party_err, {
@@ -1254,7 +1306,9 @@ function getPaybleAmountByParty(condition, params, req, callback) {
                 callback(retObj);
             }
 
-        });
+        }
+    });
+
 }
 
 Expenses.prototype.getPaybleAmountByParty = function (jwt, params, req, callback) {
@@ -1339,8 +1393,8 @@ Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params, req, ca
                     Mobile: payableResponse.paybleAmounts[i]._id.contact,
                     Total_Amount: payableResponse.paybleAmounts[i].totalAmount,
                     Paid_Amount: payableResponse.paybleAmounts[i].paidAmount,
-                    Payale_Amount: payableResponse.paybleAmounts[i].payableAmount
-                })
+                    Due_Amount: payableResponse.paybleAmounts[i].dueAmount
+                });
                 if (i === payableResponse.paybleAmounts.length - 1) {
                     retObj.status = true;
                     output.push({
@@ -1348,8 +1402,9 @@ Expenses.prototype.downloadPaybleDetailsByParty = function (jwt, params, req, ca
                         Mobile: '',
                         Total_Amount: payableResponse.gross.totalAmount,
                         Paid_Amount: payableResponse.gross.paidAmount,
-                        Payale_Amount: payableResponse.gross.payableAmount
-                    })
+                        Payale_Amount: payableResponse.gross.payableAmount,
+                        Due_Amount: payableResponse.gross.dueAmount
+                    });
                     retObj.data = output;
                     analyticsService.create(req, serviceActions.dwnld_payable_det_by_party, {
                         body: JSON.stringify(req.query),
@@ -1466,10 +1521,10 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, req, callba
         });
         callback(retObj);
     } else {
-        expenseColl.find({
+        erpPaymentsColl.find({
             accountId: jwt.accountId,
             partyId: params.partyId
-        }).populate('partyId').populate('expenseType').lean().exec(function (err, partyData) {
+        },{amount:1,date:1,description:1}).lean().exec(function (err, partyData) {
             if (err) {
                 retObj.status = false;
                 retObj.message.push("Please try again");
@@ -1484,18 +1539,11 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, req, callba
             } else if (partyData.length > 0) {
                 retObj.status = true;
                 retObj.message.push("success");
-                retObj.grossAmounts = {
-                    totalAmount: 0,
-                    paidAmount: 0,
-                    payableAmount: 0
-
-                }
+                retObj.totalAmount =0;
                 for (var i = 0; i < partyData.length > 0; i++) {
-                    partyData[i].payableAmount = partyData[i].totalAmount - (partyData[i].paidAmount || 0);
 
-                    retObj.grossAmounts.totalAmount += partyData[i].totalAmount;
-                    retObj.grossAmounts.paidAmount += partyData[i].paidAmount;
-                    retObj.grossAmounts.payableAmount += partyData[i].payableAmount;
+                    retObj.totalAmount += partyData[i].amount;
+
                     if (i === partyData.length - 1) {
 
                         retObj.partyData = partyData;
@@ -1511,7 +1559,7 @@ Expenses.prototype.getPaybleAmountByPartyId = function (jwt, params, req, callba
 
             } else {
                 retObj.status = false;
-                retObj.message.push("No Expenses found");
+                retObj.message.push("No payments found");
                 analyticsService.create(req, serviceActions.get_payable_amnt_by_party_id_err, {
                     body: JSON.stringify(req.query),
                     accountId: req.jwt.id,

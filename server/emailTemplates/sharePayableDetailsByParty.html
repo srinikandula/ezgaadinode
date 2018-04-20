@@ -14,7 +14,7 @@
                 <td>Mobile</td>
                 <td>Total Amount</td>
                 <td>Paid Amount</td>
-                <td>Payable Amount</td>
+                <td>Due Amount</td>
             </tr>
             #foreach($record in $emailData.paybleAmounts)
             <tr>
@@ -22,7 +22,7 @@
                 <td>$record._id.contact</td>
                 <td>$record.totalAmount</td>
                 <td>$record.paidAmount</td>
-                <td>$record.payableAmount</td>
+                <td>$record.dueAmount</td>
                 
             </tr>
             #end
@@ -30,7 +30,7 @@
                 <td colspan="2" ><b>Total</b></td>
                 <td><b>$emailData.gross.totalAmount</b></td>
                 <td><b>$emailData.gross.paidAmount</b></td>
-                <td><b>$emailData.gross.payableAmount</b></td>
+                <td><b>$emailData.gross.dueAmount</b></td>
             </tr>
 
         </table>

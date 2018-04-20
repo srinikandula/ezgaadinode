@@ -346,7 +346,7 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
                     if (success.data.status) {
                         params.success = success.data.message;
                         Notification.success({message: success.data.messages[0]});
-                        $state.go('receipts');
+                        $state.go('payments');
                     } else {
                         success.data.messages.forEach(function (message) {
                             Notification.error({message: message});
