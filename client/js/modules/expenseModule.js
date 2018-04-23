@@ -314,19 +314,19 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         PartyService.getAllPartiesBySupplier (function (success) {
             if(success.data.status){
                 $scope.partyBySupplier = success.data.parties;
-                console.log("Parties", $scope.partyBySupplier);
                 var selectedParty = _.find($scope.partyBySupplier, function (party) {
                     return party._id.toString() === $scope.expenseDetails.partyId;
                 });
+             
+                $scope.selectPartyId(selectedParty);
                 if (selectedParty) {
-                    $scope.partyName = selectedParty.name;
+                    $scope.name = selectedParty.name;
                 }
             }else {
                 Notification.error(success.data.message);
             }
         })
     }
-
 
     $scope.selectPartyId = function (party) {
         $scope.expenseDetails.partyId = party._id;
@@ -403,7 +403,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         var params = $scope.expenseDetails;
         params.error = [];
         params.success = [];
-
+    
         if (!params.vehicleNumber) {
             params.error.push('Invalid vehicle Number');
         }
