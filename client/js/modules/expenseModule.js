@@ -317,7 +317,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
                 var selectedParty = _.find($scope.partyBySupplier, function (party) {
                     return party._id.toString() === $scope.expenseDetails.partyId;
                 });
-                console.log("dsfcds",selectedParty);
+             
                 $scope.selectPartyId(selectedParty);
                 if (selectedParty) {
                     $scope.name = selectedParty.name;
@@ -403,7 +403,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         var params = $scope.expenseDetails;
         params.error = [];
         params.success = [];
-        console.log
+    
         if (!params.vehicleNumber) {
             params.error.push('Invalid vehicle Number');
         }
