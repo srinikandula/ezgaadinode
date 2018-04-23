@@ -134,7 +134,11 @@ AuthRouter.get('/downloadDetails', function (req, res) {
     });
 });
 
-
+AuthRouter.get('/getPartiesFromExpense', function (req, res) {
+    ExpenseCost.getPartiesFromExpense(req, function (result) {
+        res.send(result);
+    });
+});
 
 module.exports = {
     OpenRouter: OpenRouter,

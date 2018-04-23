@@ -1,15 +1,26 @@
-var ReceiptsColl = require('./../models/schemas').ReceiptsColl;
-var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
-var PartyColl = require('./../models/schemas').PartyCollection;
-
-var mongoose = require("mongoose");
+var mongoose = require('mongoose');
+var jwt = require('jsonwebtoken');
+var _ = require('underscore');
+var async = require('async');
 const ObjectId = mongoose.Types.ObjectId;
-var async = require("async");
-var emailService = require('./mailerApi');
-var serviceActions = require('./../constants/constants');
-var analyticsService = require('./../apis/analyticsApi');
+var ReceiptsColl = require('./../models/schemas').ReceiptsColl;
+var TripColl = require('./../models/schemas').TripCollection;
+var PartyCollection = require('./../models/schemas').PartyCollection;
+var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
+var analyticsService=require('./../apis/analyticsApi');
+var serviceActions=require('./../constants/constants');
+
+
+var config = require('./../config/config');
+var Helpers = require('./utils');
+var pageLimits = require('./../config/pagination');
 var Utils = require('./utils');
-var _ = require("underscore");
+var emailService = require('./mailerApi');
+
+var log4js = require('log4js')
+    , logger = log4js.getLogger("file-log");
+log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
+
 var Receipts = function () {
 };
 function dateToStringFormat(date) {
@@ -26,50 +37,165 @@ function value(x){
         return '--';
     }
 }
-
-Receipts.prototype.totalReceipts = function (req, callback) {
+/**
+ * Find total of the payments received in the account
+ * @param accId
+ * @param callback
+ */
+Receipts.prototype.getTotalAmount = function (accId,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    ReceiptsColl.count({}, function (err, count) {
+    ReceiptsColl.aggregate([
+        {
+            "$match": {accountId: ObjectId(accId)}
+        },
+        {
+            "$group": {
+                "_id": null,
+                "total": {"$sum": "$amount"}
+            }
+        }
+    ], function (err, sum) {
         if (err) {
-            retObj.messages.push("Please try again");
-            analyticsService.create(req, serviceActions.total_receipts_err, {
-                body: JSON.stringify(req.params),
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
+            retObj.messages.push("Error while getting amount details, try Again");
+            analyticsService.create(req,serviceActions.get_total_amnt_err,{accountId:req.jwt.accountId,success:false,messages:retObj.messages},function(response){ });
             callback(retObj);
+            logger.error("Error:   failed find amount total by account" + JSON.stringify(err));
         } else {
             retObj.status = true;
             retObj.messages.push("Success");
-            analyticsService.create(req, serviceActions.total_receipts, {
-                accountId: req.id,
-                success: true
-            }, function (response) {
-            });
-            retObj.data = count;
+            retObj.amounts = sum;
+            analyticsService.create(req,serviceActions.get_total_amnt,{accountId:req.jwt.accountId,success:true},function(response){ });
             callback(retObj);
         }
-    })
+    });
 };
 
-Receipts.prototype.getReceipts = function (req, callback) {
+Receipts.prototype.addReceipts = function (jwt, details,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var condition = {};
-    var params = req.query;
-    var jwt = req.jwt;
-    if (params.fromDate && params.toDate && params.partyName) {
-        PartyColl.find({name: new RegExp("^" + params.partyName, "i")}, function (err, partys) {
+    if (!details.date) {
+        retObj.messages.push("Please provide Date");
+    }
+    if (!details.partyId) {
+        retObj.messages.push("Please provide Party");
+    }
+    if (!details.amount) {
+        retObj.messages.push("Please provide amount");
+    }
+    if (!details.paymentType) {
+        retObj.messages.push('Select payment type');
+    }
+    if ((details.paymentType === 'NEFT' || details.paymentType === 'Cheque') && !details.receiptRefNo) {
+        retObj.messages.push('Enter payment reference number');
+    }
+    if (retObj.messages.length) {
+        analyticsService.create(req,serviceActions.add_payment_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        callback(retObj);
+    } else {
+        details.date = new Date(details.date);
+        details.createdBy = jwt.id;
+        details.updatedBy = jwt.id;
+        details.accountId = jwt.accountId;
+
+        var insertDoc = new ReceiptsColl(details);
+        insertDoc.save(function (err, payment) {
             if (err) {
-                retObj.status = false;
-                retObj.messages.push("Please try again");
+                retObj.messages.push("Error, try Again");
+                analyticsService.create(req,serviceActions.add_payment_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                callback(retObj);
+            } else {
+                retObj.status = true;
+                retObj.messages.push("Receipt added successfully");
+                retObj.payments = payment;
+                analyticsService.create(req,serviceActions.add_payment,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
+                callback(retObj);
+            }
+        });
+    }
+};
+
+function getReceipts(condition, jwt, params, callback) {
+    var result = {
+        status:false,
+        messages:[]
+    };
+    if (!params.page) {
+        params.page = 1;
+    } else if (!_.isNumber(Number(params.page))) {
+        result.status = false;
+        result.messages.push('Invalid page number');
+        return callback(result);
+    }
+    var skipNumber = (params.page - 1) * params.size;
+
+    async.parallel({
+        mCosts: function (mCostsCallback) {
+            var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+            var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+            ReceiptsColl
+                .find(condition)
+                .sort(sort)
+                .skip(skipNumber)
+                .limit(limit)
+                //.populate('paymentsCostId')
+                .lean()
+                .exec(function (err, mCosts) {
+                    if (mCosts) {
+                        async.parallel({
+                            createdbyname: function (createdbyCallback) {
+                                Helpers.populateNameInUsersColl(mCosts, "createdBy", function (response) {
+                                    createdbyCallback(response.err, response.documents);
+                                });
+                            },
+                            partyId: function (partiescallback) {
+                                Helpers.populateNameInPartyColl(mCosts, 'partyId', function (response) {
+                                    partiescallback(response.err, response.documents);
+                                })
+                            },
+                        }, function (populateErr, populateResults) {
+                            mCostsCallback(populateErr, populateResults);
+                        });
+                    }
+                });
+        },
+        count: function (countCallback) {
+            ReceiptsColl.count({'accountId': jwt.accountId}, function (err, count) {
+                countCallback(err, count);
+            });
+        }
+    }, function (err, results) {
+        if (err) {
+            result.status = false;
+            result.messages.push('Error retrieving Receipts Costs');
+            callback(retObj);
+        } else {
+            result.status = true;
+            result.messages.push('Success');
+            result.count = results.count;
+            result.userId = jwt.id;
+            result.userType = jwt.type;
+            result.paymentsCosts = results.mCosts.createdbyname;
+            callback(result);
+        }
+    });
+}
+
+Receipts.prototype.getReceipts = function (jwt, params,req, callback) {
+    var result = {
+        status:false,
+        messages:[]
+    };
+    var condition = {};
+    if (params.fromDate && params.toDate && params.partyName) {
+        PartyCollection.find({name: new RegExp("^" + params.partyName, "i")}, function (err, partys) {
+            if (err) {
+                result.status = false;
+                result.messages.push("Please try again");
                 analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
                     body: JSON.stringify(req.query),
                     accountId: jwt.id,
@@ -85,8 +211,15 @@ Receipts.prototype.getReceipts = function (req, callback) {
                         $gte: new Date(params.fromDate),
                         $lte: new Date(params.toDate),
                     }, "partyId": {$in: partIds}
-                }
-                getReceipts(condition, req, callback)
+                };
+                getReceipts(condition, jwt, params, function (paymentResp) {
+                    if(paymentResp.status){
+                        analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                    }else{
+                        analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
+                    }
+                    callback(paymentResp);
+                });
 
             }
         });
@@ -98,383 +231,383 @@ Receipts.prototype.getReceipts = function (req, callback) {
                 $lte: new Date(params.toDate),
             }
         };
-        getReceipts(condition, req, callback)
-    } else if (params.partyName) {
-        PartyColl.find({name: new RegExp("^" + params.partyName, "i")}, function (err, partys) {
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                var partIds = _.pluck(partys, "_id");
-                condition = {
-                    "accountId": ObjectId(jwt.accountId), "partyId": {$in: partIds}
-                };
-                getReceipts(condition, req, callback)
-
+        getReceipts(condition, jwt, params, function (paymentResp) {
+            if(paymentResp.status){
+                analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
             }
+            callback(paymentResp);
+        });
+    } else if (!params.partyName) {
+        getReceipts({'accountId': jwt.accountId}, jwt, params, function (paymentResp) {
+            if(paymentResp.status){
+                analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.message},function(response){ });
+            }
+            callback(paymentResp);
         });
     } else {
-        condition = {accountId: req.jwt.accountId};
-        getReceipts(condition, req, callback);
-
+        PartyCollection.findOne({name:new RegExp("^" + params.partyName, "i") }, function (err, partyData) {
+            if (err) {
+                result.status = false;
+                result.messages.push('Error retrieving Payments Costs');
+                analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.messages},function(response){ });
+                callback(retObj);
+            } else if (partyData) {
+                getReceipts({'accountId': jwt.accountId, partyId: partyData._id}, jwt, params, function (paymentResp) {
+                    if(paymentResp.status){
+                        analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                    }else{
+                        analyticsService.create(req,serviceActions.get_payments_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:paymentResp.messages},function(response){ });
+                    }
+                    callback(paymentResp);
+                });
+            } else {
+                result.status = true;
+                result.messages.push('Success');
+                result.count = 0;
+                result.paymentsCosts = [];
+                analyticsService.create(req,serviceActions.get_payments,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                callback(result);
+            }
+        })
     }
-
 };
 
-function getReceipts(candition, req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
+Receipts.prototype.getReceiptRecord = function (jwt, paymentsId,req, callback) {
+    var result = {
+        status:false,
+        messages:[]
     };
-    var params = req.query;
-    if (!params.page) {
-        params.page = 1;
+    var condition = {};
+    if (jwt.type === "account") {
+        condition = {_id: paymentsId, 'accountId': jwt.accountId};
+    } else {
+        condition = {_id: paymentsId, 'createdBy': jwt.id};
     }
-
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-
-    async.parallel({
-        receipts: function (receiptsCallback) {
-            ReceiptsColl.find(candition)
-                .populate({path: "partyId", select: "name"})
-                .populate({
-                    path: "createdBy",
-                    select: "firstName"
-                }).sort(sort)
-                .skip(skipNumber)
-                .limit(limit)
-                .exec(function (err, docs) {
-                    receiptsCallback(err, docs);
-                })
-        },
-        totalReceipts: function (totalReceiptsCallback) {
-            ReceiptsColl.count(candition, function (err, count) {
-                totalReceiptsCallback(err, count);
-            })
-        }
-    }, function (err, results) {
+    ReceiptsColl.findOne(condition, function (err, paymentsReceived) {
         if (err) {
-            retObj.messages.push("Please try again");
-            analyticsService.create(req, serviceActions.get_receipts_list_err, {
-                body: JSON.stringify(req.params),
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(retObj);
+            result.status = false;
+            result.messages.push("Error while finding Payments, try Again");
+            analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+            callback(result);
+        } else if (paymentsReceived) {
+            result.status = true;
+            result.messages.push("Payment found successfully");
+            result.paymentsDetails = paymentsReceived;
+            analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            callback(result);
         } else {
-            retObj.messages.push("Success");
-            analyticsService.create(req, serviceActions.get_receipts_list_err, {
-                accountId: req.id,
-                success: true
-            }, function (response) {
-            });
-            retObj.receipts = results.receipts;
-            retObj.count = results.totalReceipts;
-            retObj.status = true;
-            callback(retObj);
-
+            result.status = false;
+            result.message.push("Unauthorized access or Payment is not found!");
+            analyticsService.create(req,serviceActions.find_payments_recieved_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+            callback(result);
         }
     });
-}
+};
 
-Receipts.prototype.getReceiptDetails = function (req, callback) {
+Receipts.prototype.getAllAccountReceipts = function (jwt,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var params = req.query;
-
-    if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.push("Invalid Receipt ID");
-    }
-    if (retObj.messages.length > 0) {
-        callback(retObj);
-    } else {
-        ReceiptsColl.findOne({_id: params._id}).populate({path: "partyId", select: "name"}).exec(function (err, doc) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipt_details_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (doc) {
-                retObj.status = true;
-                retObj.messages.push("Success");
-                analyticsService.create(req, serviceActions.get_receipt_details, {
-                    accountId: req.id,
-                    success: true
-                }, function (response) {
-                });
-                retObj.data = doc;
-                callback(retObj);
-            } else {
-                retObj.messages.push("Receipt details not found");
-                analyticsService.create(req, serviceActions.get_receipt_details_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
-    }
+    ReceiptsColl.find({accountId: jwt.accountId}, function (err, receipts) {
+        if (err) {
+            retObj.messages.push('Error getting payments');
+            analyticsService.create(req,serviceActions.get_all_acc_payments_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.receipts = receipts;
+            analyticsService.create(req,serviceActions.get_all_acc_payments,{accountId:req.jwt.id,success:true},function(response){ });
+            callback(retObj);
+        }
+    });
 };
-
-Receipts.prototype.addReceipt = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.body;
-    if (!params.partyId || !ObjectId.isValid(params.partyId)) {
-        retObj.messages.push("Please select party");
-    }
-    if (!params.amount) {
-        retObj.messages.push("Please enter amount");
-    }
-    if (retObj.messages.length > 0) {
-        callback(retObj);
-    } else {
-        params.accountId = req.jwt.accountId;
-        params.createdBy = req.jwt.accountId;
-        var receipt = new ReceiptsColl(params);
-        receipt.save(function (err, doc) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.add_receipts_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (doc) {
-                retObj.status = true;
-                analyticsService.create(req, serviceActions.add_receipts, {
-                    accountId: req.id,
-                    success: true
-                }, function (response) {
-                });
-                retObj.messages.push("Receipt added successfully");
-                retObj.data = doc;
-                callback(retObj);
-            } else {
-                retObj.messages.push("Receipt not added");
-                analyticsService.create(req, serviceActions.add_receipts_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
-    }
-};
-
-Receipts.prototype.updateReceipt = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.body;
-    if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.push("Invalid request");
-    }
-    if (!params.partyId || !ObjectId.isValid(params.partyId)) {
-        retObj.messages.push("Please select party");
-    }
-    if (!params.amount) {
-        retObj.messages.push("Please enter amount");
-    }
-    if (retObj.messages.length > 0) {
-        callback(retObj);
-    } else {
-        ReceiptsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.update_receipts_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (doc) {
-                retObj.status = true;
-                retObj.messages.push("Receipt updated successfully");
-                analyticsService.create(req, serviceActions.update_receipts, {
-                    accountId: req.id,
-                    success: true
-                }, function (response) {
-                });
-                retObj.data = doc;
-                callback(retObj);
-            } else {
-                retObj.messages.push("Receipt not updated");
-                analyticsService.create(req, serviceActions.update_receipts_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
-    }
-
-};
-
-Receipts.prototype.deleteReceipt = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.push("Invalid request")
-    }
-    if (retObj.messages.length > 0) {
-        callback(retObj);
-    } else {
-
-        ReceiptsColl.remove({_id: params._id}, function (err, doc) {
-            if (err) {
-                retObj.messages.push("please try again");
-                analyticsService.create(req, serviceActions.delete_receipt_details_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (doc && doc.result.n == 1) {
-                retObj.status = true;
-                retObj.messages.push("Receipt deleted successfully");
-                analyticsService.create(req, serviceActions.delete_receipt_details, {
-                    accountId: req.id,
-                    success: true
-                }, function (response) {
-                });
-
-                callback(retObj);
-            } else {
-                retObj.messages.push("Receipt not deleted");
-                analyticsService.create(req, serviceActions.delete_receipt_details_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
-
-    }
-};
-
 
 /**
- * Find the Total receipts from the receipts in the account
+ * Find payments made by a party
+ * @param jwt
+ * @param callback
  */
 
-Receipts.prototype.findTotalReceipts = function (erpSettingsCondition, req, callback) {
+Receipts.prototype.findPartyPayments = function (jwt, partyId, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    ReceiptsColl.aggregate([{$match: erpSettingsCondition},
-            {$group: {_id: null, totalReceipts: {$sum: "$amount"}}}],
-        function (err, receipt) {
+    ReceiptsColl.find({accountId: jwt.accountId, partyId: partyId}, function (err, payments) {
+        if (err) {
+            retObj.messages.push('Error getting payments');
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.payments = payments;
+            callback(retObj);
+        }
+    });
+};
+
+Receipts.prototype.updateReceipts = function (jwt, paymentDetails,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var giveAccess = false;
+    if (jwt.type === "account" && paymentDetails.accountId === jwt.accountId) {
+        giveAccess = true;
+    } else if (jwt.type === "group" && paymentDetails.createdBy === jwt.id) {
+        giveAccess = true;
+
+    } else {
+        retObj.status = false;
+        retObj.messages.push("Unauthorized access");
+        analyticsService.create(req,serviceActions.update_payments_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        callback(result);
+    }
+    if (giveAccess) {
+        paymentDetails = Utils.removeEmptyFields(paymentDetails);
+        paymentDetails.updatedBy = jwt.id;
+        ReceiptsColl.findOneAndUpdate({
+            _id: paymentDetails._id
+        }, {$set: paymentDetails}, {new: true}, function (err, payment) {
             if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.find_total_receipts_by_account_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                retObj.messages.push("Error while updating Receipt, try Again");
+                analyticsService.create(req,serviceActions.update_payments_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                callback(retObj);
+            } else if (payment) {
+                retObj.status = true;
+                retObj.messages.push("Receipt updated successfully");
+                analyticsService.create(req,serviceActions.update_payments,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
                 callback(retObj);
             } else {
-                retObj.status = true;
-                if (receipt[0]) {
-                    retObj.totalReceipts = receipt[0].totalReceipts;
-                } else {
-                    retObj.totalReceipts = 0;
-
-                }
-                analyticsService.create(req, serviceActions.find_total_receipts_by_account, {
-                    accountId: req.id,
-                    success: true
-                }, function (response) {
-                });
+                retObj.messages.push("Error, finding payment");
+                analyticsService.create(req,serviceActions.update_payments_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
-
+    }
 };
 
-Receipts.prototype.getReceiptsByParties = function (req, callback) {
+Receipts.prototype.deleteReceiptsRecord = function (jwt, id,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var condition = {};
-    var params = req.query;
-    var jwt = req.jwt;
+    var giveAccess = false;
+    if (jwt.type === "account") {
+        condition = {accountId: jwt.accountId, _id: id};
+        giveAccess = true;
+    } else if (jwt.type === "group") {
+        condition = {_id: id, createdBy: jwt.id};
+        giveAccess = true;
+    } else {
+        retObj.status = false;
+        retObj.messages.push("Unauthorized access");
+        analyticsService.create(req,serviceActions.del_payments_record_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        callback(result);
+    }
 
-    if (params.fromDate && params.toDate && params.partyName) {
-        PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
+    if (giveAccess) {
+        ReceiptsColl.remove(condition, function (err, returnValue) {
             if (err) {
+                retObj.messages.push('Error deleting payment');
+                analyticsService.create(req,serviceActions.del_payments_record_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                callback(retObj);
+            } else if (returnValue.result.n === 0) {
                 retObj.status = false;
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                retObj.messages.push('Unauthorized access or Error deleting payment Record');
+                analyticsService.create(req,serviceActions.del_payments_record_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else {
-                var partIds = _.pluck(partys, "_id");
-                condition = {
-                    $match: {
-                        "accountId": ObjectId(jwt.accountId), date: {
-                            $gte: new Date(params.fromDate),
-                            $lte: new Date(params.toDate),
-                        }, "partyId": {$in: partIds}
-                    }
-                };
-                getReceiptsByParties(req, condition, callback);
-
+                retObj.status = true;
+                retObj.messages.push('payment successfully Deleted');
+                analyticsService.create(req,serviceActions.del_payments_record,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                callback(retObj);
             }
         });
+    }
+};
+
+Receipts.prototype.countReceipts = function (jwt,req, callback) {
+    var result = {};
+    ReceiptsColl.count({'accountId': jwt.accountId}, function (err, data) {
+        if (err) {
+            result.status = false;
+            result.message = 'Error getting count';
+            analyticsService.create(req,serviceActions.count_payments_err,{accountId:req.jwt.id,success:false,messages:result.message},function(response){ });
+            callback(result);
+        } else {
+            result.status = true;
+            result.message = 'Success';
+            result.count = data;
+            analyticsService.create(req,serviceActions.count_payments,{accountId:req.jwt.id,success:true},function(response){ });
+            callback(result);
+        }
+    })
+};
+
+
+/**
+ * Find the total of pending payments in the account using the below formula
+ * sum(total_trips_frieght) - sum(payment amount)
+ */
+Receipts.prototype.findPendingDueForAccount = function (condition,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        tripFrightTotal: function (callback) {
+            TripColl.aggregate({$match: condition},
+                {$group: {_id: null, totalFright: {$sum: "$freightAmount"}}},
+                function (err, totalFrieght) {
+                    callback(err, totalFrieght);
+                });
+        },
+        paymentsTotal: function (callback) {
+            ReceiptsColl.aggregate({$match: condition},
+                {$group: {_id: null, totalPayments: {$sum: "$amount"}}},
+                function (err, totalPayments) {
+                    callback(err, totalPayments);
+                });
+        }
+    }, function (populateErr, populateResults) {
+        if (populateErr) {
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(populateErr));
+            analyticsService.create(req,serviceActions.get_account_due_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            var totalFright = 0;
+            var totalPayments = 0;
+            if (Object.keys(populateResults).length > 0) {
+                if (populateResults.tripFrightTotal[0]) {
+                    totalFright = populateResults.tripFrightTotal[0].totalFright;
+                }
+                if (populateResults.paymentsTotal[0]) {
+                    totalPayments = populateResults.paymentsTotal[0].totalPayments;
+                }
+                retObj.pendingDue = totalFright - totalPayments;
+            } else {
+                retObj.pendingDue = 0 //populateResults.tripFreightTotal[0].totalFreight - populateResults.expensesTotal[0].totalExpenses;
+            }
+            // retObj.pendingDue = populateResults.tripFrightTotal[0].totalFright - populateResults.paymentsTotal[0].totalPayments;
+            analyticsService.create(req,serviceActions.get_account_due,{accountId:req.jwt.id,success:true},function(response){ });
+            callback(retObj);
+        }
+    });
+}
+
+/**
+ * Find the dues grouped by party
+ * @param jwt
+ * @param callback
+ */
+function getDuesByParty(jwt, condition, params, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    async.parallel({
+        tripFrightTotal: function (callback) {
+            TripColl.aggregate(condition,
+                {$group: {_id: "$partyId", totalFright: {$sum: "$freightAmount"}}},
+                {"$sort": {createdAt: -1}},
+                function (err, totalFrieght) {
+                    callback(err, totalFrieght);
+                });
+        },
+        paymentsTotal: function (callback) {
+            ReceiptsColl.aggregate(condition,
+                {$group: {_id: "$partyId", totalPayments: {$sum: "$amount"}}},
+                function (err, totalPayments) {
+                    callback(err, totalPayments);
+                });
+        }
+    }, function (populateErr, populateResults) {
+        if (populateErr) {
+            retObj.status = true;
+            retObj.messages.push(JSON.stringify(populateErr));
+            callback(retObj);
+        } else {
+            var partyIds = _.pluck(populateResults.tripFrightTotal, "_id");
+            var parties = [];
+            var grossFreight = 0;
+            var grossExpenses = 0;
+            var grossDue = 0;
+
+            for (var i = 0; i < partyIds.length; i++) {
+                var party = {"id": partyIds[i], "totalPayment": 0, "totalFright": 0};
+                var partyInfo = _.find(populateResults.tripFrightTotal, function (total) {
+                    if (total._id === party.id) {
+                        return total;
+                    }
+                });
+                if (partyInfo && partyInfo.totalFright) {
+                    party.totalFright = partyInfo.totalFright;
+                }
+                partyInfo = _.find(populateResults.paymentsTotal, function (payment) {
+                    if (payment._id.toString() === party.id.toString()) {
+                        return payment;
+                    }
+                });
+                if (partyInfo && partyInfo.totalPayments) {
+                    party.totalPayment = partyInfo.totalPayments;
+                }
+                party.totalDue = parseFloat(party.totalFright) - parseFloat(party.totalPayment);
+                parties.push(party);
+
+                grossFreight = grossFreight + party.totalFright;
+                grossExpenses = grossExpenses + party.totalPayment;
+                grossDue = grossDue + party.totalDue;
+            }
+            Utils.populateNameInPartyColl(parties, 'id', function (result) {
+                retObj.status = true;
+                retObj.messages.push('Success');
+                retObj.parties = result.documents;
+                retObj.grossAmounts = {grossFreight: grossFreight, grossExpenses: grossExpenses, grossDue: grossDue};
+                callback(retObj);
+            })
+
+        }
+    });
+}
+
+Receipts.prototype.getDuesByParty = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {};
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (params.fromDate != '' && params.toDate != '' && params.partyId != '') {
+        condition = {
+            $match: {
+                "accountId": ObjectId(jwt.accountId), date: {
+                    $gte: new Date(params.fromDate),
+                    $lte: new Date(params.toDate),
+                }, "partyId": ObjectId(params.partyId)
+            }
+        };
+        getDuesByParty(jwt, condition, params, function (response) {
+            if(response.status){
+                analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
+            }
+            callback(response);
+        })
     } else if (params.fromDate && params.toDate) {
         condition = {
             $match: {
@@ -483,242 +616,137 @@ Receipts.prototype.getReceiptsByParties = function (req, callback) {
                     $lte: new Date(params.toDate),
                 }
             }
-        };
-        getReceiptsByParties(req, condition, callback);
-    } else if (params.partyName) {
-        PartyColl.find({name: {$regex: '.*' + params.partyName + '.*'}}, function (err, partys) {
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                var partIds = _.pluck(partys, "_id");
-                condition = {
-                    $match: {
-                        "accountId": ObjectId(jwt.accountId), "partyId": {$in: partIds}
-                    }
-                };
-                getReceiptsByParties(req, condition, callback);
-
+        }
+        getDuesByParty(jwt, condition, params, function (response) {
+            if(response.status){
+                analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
             }
-        });
+            callback(response);
+        })
+    } else if (params.partyId) {
+        condition = {$match: {"accountId": ObjectId(jwt.accountId), "partyId": ObjectId(params.partyId)}}
+        getDuesByParty(jwt, condition, params, function (response) {
+            if(response.status){
+                analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+            }else{
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
+            }
+            callback(response);
+        })
     } else {
+        condition = {$match: {"accountId": ObjectId(jwt.accountId)}}
         ErpSettingsColl.findOne({accountId: jwt.accountId}, function (err, erpSettings) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             } else if (erpSettings) {
-                condition = {$match: Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId)};
-                getReceiptsByParties(req, condition, callback);
+
+                condition = {$match: Utils.getErpSettings(erpSettings.payment, erpSettings.accountId)}
+                getDuesByParty(jwt, condition, params, function (response) {
+                    if(response.status){
+                        analyticsService.create(req,serviceActions.get_dues_by_party,{accountId:req.jwt.id,success:true},function(response){ });
+                    }else{
+                        analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:response.messages},function(response){ });
+                    }
+                    callback(response);
+                })
             } else {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
+                analyticsService.create(req,serviceActions.get_dues_by_party_err,{accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
                 callback(retObj);
             }
         });
-    }
 
+    }
 
 };
 
-function getReceiptsByParties(req, condition, callback) {
+Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (jwt, params,req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    ReceiptsColl.aggregate(condition,
-        {
-            "$lookup": {
-                "from": "parties",
-                "localField": "partyId",
-                "foreignField": "_id",
-                "as": "partyId"
-            }
-        }, {"$unwind": "$partyId"},
-        {$group: {_id: "$partyId", amount: {$sum: "$amount"}}},
-        function (err, receipts) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipts_by_parties_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.status = true;
-                retObj.messages.push("Success");
-                analyticsService.create(req, serviceActions.get_receipts_by_parties, {
-                    accountId: req.id,
-                    success: true
-                }, function (response) {
-                });
-                retObj.data = receipts;
-                callback(retObj);
-            }
-        });
-}
-
-Receipts.prototype.getReceiptByPartyName = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var params = req.query;
-    if (!params._id || !ObjectId.isValid(params._id)) {
-        retObj.messages.push("Invalid party");
-    }
-    if (retObj.messages.length > 0) {
-        callback(retObj);
-    } else {
-        ReceiptsColl.find({partyId: params._id}).populate({path: 'partyId', select: "name"}).exec(function (err, docs) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_receipts_by_party_name_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (docs.length > 0) {
-                var total = 0;
-                retObj.status = true;
-                retObj.messages.push("Success");
-                for (var i = 0; i < docs.length; i++) {
-                    total += docs[i].amount;
-                    if (i === docs.length - 1) {
-                        retObj.data = docs;
-                        retObj.total = total;
-                        analyticsService.create(req, serviceActions.get_receipts_by_party_name, {
-                            accountId: req.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }
-                }
-
-            } else {
-                retObj.messages.push("No Receipts found");
-                analyticsService.create(req, serviceActions.get_receipts_by_party_name_err, {
-                    body: JSON.stringify(req.params),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
-    }
-};
-
-Receipts.prototype.downloadReceiptsDetailsByParty = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    Receipts.prototype.getReceiptsByParties(req, function (response) {
-        if (response.status) {
-            var output = [];
-            for (var i = 0; i < response.data.length; i++) {
-                output.push({
-                    Party_Name: response.data[i]._id.name,
-                    amount: response.data[i].amount
-
-                });
-                if (i === response.data.length - 1) {
-                    retObj.status = true;
-                    retObj.data = output;
-                    analyticsService.create(req, serviceActions.download_receipt_by_party, {
-                        body: JSON.stringify(req.query),
-                        accountId: req.jwt.id,
-                        success: true
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                }
-            }
-        } else {
-            retObj.messages.push("Receipt not downloaded");
-            analyticsService.create(req, serviceActions.download_receipt_by_party_err, {
-                body: JSON.stringify(req.params),
-                accountId: req.jwt.id,
-                success: false,
-                messages: retObj.messages
-            }, function (response) {
-            });
-            callback(response);
-        }
-    })
-};
-
-Receipts.prototype.shareReceiptsDetailsByPartyViaEmail = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var jwt=req.jwt;
-    var params=req.query;
     if (!params.email || !Utils.isEmail(params.email)) {
         retObj.status = false;
         retObj.messages.push('Please enter valid email');
-        analyticsService.create(req,serviceActions.share_receipts_by_party_via_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
     } else {
-        Receipts.prototype.getReceiptsByParties(req, function (revenueResponse) {
+        Receipts.prototype.getDuesByParty(jwt, params,req, function (revenueResponse) {
             if (revenueResponse.status) {
                 var emailparams = {
-                    templateName: 'shareReceiptsDetailsByParty',
-                    subject: "Easygaadi Receipts Details",
+                    templateName: 'sharesPaymentsDetailsByParty',
+                    subject: "Easygaadi Payments Details",
                     to: params.email,
                     data: {
-                        receipts: revenueResponse.data
+                        parties: revenueResponse.parties,
+                        grossAmounts: revenueResponse.grossAmounts
                     }
                 };
                 emailService.sendEmail(emailparams, function (emailResponse) {
                     if (emailResponse.status) {
                         retObj.status = true;
-                        retObj.messages.push('Receipts details shared successfully');
-                        analyticsService.create(req,serviceActions.share_receipts_by_party_via_email,{body:JSON.stringify(req.query),accountId:jwt.id,success:true},function(response){ });
+                        retObj.messages.push('Payments details share successfully');
+                        analyticsService.create(req,serviceActions.share_party_payment_det_by_email,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
                         callback(retObj);
                     } else {
-                        analyticsService.create(req,serviceActions.share_receipts_by_party_via_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:emailResponse.messages},function(response){ });
+                        analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:emailResponse.messages},function(response){ });
                         callback(emailResponse);
                     }
                 });
             } else {
-                analyticsService.create(req,serviceActions.share_receipts_by_party_via_email_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:revenueResponse.messages},function(response){ });
+                analyticsService.create(req,serviceActions.share_party_payment_det_by_email_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:revenueResponse.messages},function(response){ });
                 callback(revenueResponse);
             }
         })
     }
+
+};
+
+
+Receipts.prototype.downloadReceiptsDetailsByParty = function (jwt, params,req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    Receipts.prototype.getDuesByParty(jwt, params,req, function (paymentsResponse) {
+        if (paymentsResponse.status) {
+
+            var output = [];
+            for (var i = 0; i < paymentsResponse.parties.length; i++) {
+                output.push({
+                    Party_Name: paymentsResponse.parties[i].attrs.partyName,
+                    Party_Mobile: paymentsResponse.parties[i].attrs.partyContact,
+                    Total_Fright: paymentsResponse.parties[i].totalFright,
+                    Paid_Amount: paymentsResponse.parties[i].totalPayment,
+                    Due_Amount: paymentsResponse.parties[i].totalDue
+                })
+                if (i === paymentsResponse.parties.length - 1) {
+                    retObj.status = true;
+                    output.push({
+                        Party_Name: 'Total',
+                        Party_Mobile: '',
+                        Total_Fright: paymentsResponse.grossAmounts.grossFreight,
+                        Paid_Amount: paymentsResponse.grossAmounts.grossExpenses,
+                        Due_Amount: paymentsResponse.grossAmounts.grossDue
+                    })
+                    retObj.data = output;
+                    analyticsService.create(req,serviceActions.dwnld_party_payment_det,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:true},function(response){ });
+                    callback(retObj);
+                }
+            }
+        } else {
+            analyticsService.create(req,serviceActions.dwnld_party_payment_det_err,{body:JSON.stringify(req.query),accountId:req.jwt.id,success:false,messages:paymentsResponse.messages},function(response){ });
+            callback(paymentsResponse);
+        }
+    })
+
 
 };
 Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
@@ -726,26 +754,27 @@ Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         status: false,
         messages: []
     };
-    // console.log("shareDetailsViaEmail",params);
     if(!params.email || !Utils.isEmail(params.email)){
         retObj.messages.push("Invalid email....");
         callback(retObj);
     }else{
-        Receipts.prototype.getReceipts(req,function(response){
+        Receipts.prototype.getReceipts(jwt,params,req,function(response){
             if(response.status){
                 var output = [];
-                if(response.receipts.length){
-                    for(var i=0;i<response.receipts.length;i++) {
+                if(response.paymentsCosts.length){
+                    for(var i=0;i<response.paymentsCosts.length;i++) {
                         output.push({
-                            date:dateToStringFormat(response.receipts[i].date),
-                            partyId:response.receipts[i].partyId.name,
-                            amount:response.receipts[i].amount,
-                            description:value(response.receipts[i].description)
+                            date:dateToStringFormat(response.paymentsCosts[i].date),
+                            party:response.paymentsCosts[i].attrs.partyName,
+                            amount:response.paymentsCosts[i].amount,
+                            paymentType:response.paymentsCosts[i].paymentType,
+                            receiptRefNo:value(response.paymentsCosts[i].receiptRefNo),
+                            description:value(response.paymentsCosts[i].description)
                         });
-                        if (i === response.receipts.length - 1) {
+                        if (i === response.paymentsCosts.length - 1) {
                             var emailparams = {
                                 templateName: 'receiptDetails',
-                                subject: "Receipt Details",
+                                subject: "Receipts Details",
                                 to: params.email,
                                 data: output
                             };
@@ -765,6 +794,7 @@ Receipts.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
                     retObj.status = false;
                     callback(retObj);
                 }
+
             }else{
                 callback(response);
 
@@ -779,16 +809,18 @@ Receipts.prototype.downloadDetails = function (jwt, params,req, callback) {
         messages: []
     };
     console.log("share details download....");
-    Receipts.prototype.getReceipts(req,function(response){
-        console.log("response....",response);
+    Receipts.prototype.getReceipts(jwt,params,req,function(response){
         if(response.status){
             var output = [];
-            for(var i=0;i<response.receipts.length;i++){
-               output.push({
-                   Date:dateToStringFormat(response.receipts[i].date),
-               Party:response.receipts[i].partyId.name,
-               Amount:response.receipts[i].amount,
-               Description:response.receipts[i].description});
+            for(var i=0;i<response.paymentsCosts.length;i++){
+                output.push({
+                    Date:dateToStringFormat(response.paymentsCosts[i].date),
+                    Party:response.paymentsCosts[i].attrs.partyName,
+                    Amount:response.paymentsCosts[i].amount,
+                    Payment_Type:response.paymentsCosts[i].paymentType,
+                    Receipt_Ref_No:response.paymentsCosts[i].receiptRefNo,
+                    Description:response.paymentsCosts[i].description
+                });
             }
             retObj.data = output;
             retObj.status=true;
@@ -799,4 +831,5 @@ Receipts.prototype.downloadDetails = function (jwt, params,req, callback) {
         }
     })
 };
+
 module.exports = new Receipts();

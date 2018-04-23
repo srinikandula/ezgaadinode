@@ -611,14 +611,15 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                 var diffDays = timeDiff / (1000 * 3600 * 24);
                                 var averageSpeed = _.pluck(positions, 'speed');
                                 var sum = 0, counter = 0;
-                                var topSpeed=0;
+                                var topSpeed=0.0;
                                 for (var i = 0; i < averageSpeed.length; i++) {
                                     if (Number(averageSpeed[i]) !== 0.0) {
                                         sum = sum + Number(averageSpeed[i]);
                                         counter++;
                                     }
-                                    if(topSpeed<averageSpeed[i]){
-                                        topSpeed=averageSpeed[i];
+                                    if(topSpeed<parseFloat(averageSpeed[i])){
+
+                                        topSpeed=parseFloat(averageSpeed[i]);
                                     }
                                 }
                                 averageSpeed = (sum / counter);

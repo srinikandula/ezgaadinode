@@ -11,17 +11,13 @@
             <td>Date</td>
             <td>Party</td>
             <td>Amount</td>
-            <td>Payment Type</td>
-            <td>Payment Ref.No</td>
             <td>Description</td>
         </tr>
         #foreach($record in $emailData)
         <tr>
             <td>$record.date</td>
-            <td>$record.party</td>
+            <td>$record.partyId</td>
             <td>$record.amount</td>
-            <td>$record.paymentType</td>
-            <td>$record.paymentRefNo</td>
             <td>$record.description</td>
         </tr>
         #end

@@ -1,75 +1,67 @@
-app.factory('PaymentsService',['$http', function ($http) {
+app.factory('PaymentService', ['$http', function ($http) {
     return {
-        addPayments: function (object, success, error) {
+        addPayment: function (params, success, error) {
             $http({
-                url: '/v1/payments/addPayments',
+                url: '/v1/payments/addPayment',
                 method: "POST",
-                data: object
-            }).then(success, error)
-        },
-        getPaymentsRecords: function (pageNumber, success, error) {
-            $http({
-                url: '/v1/payments/' + pageNumber,
-                method: "GET"
-            }).then(success, error)
-        },
-        getAllRecords: function (success, error) {
-            $http({
-                url: '/v1/payments/getAll',
-                method: "GET"
-            }).then(success, error)
-        },
-        getPaymentsRecord: function (paymentsId, success, error) {
-            $http({
-                url: '/v1/payments/getPaymentsRecord/' + paymentsId,
-                method: "GET"
+                data: params,
             }).then(success, error)
         },
         getPayments: function (pageable, success, error) {
             $http({
-                url: '/v1/payments/getPayments/',
+                url: '/v1/payments/getPayments',
                 method: "GET",
                 params: pageable
             }).then(success, error)
         },
-        getTotalPaymentsReceivable: function (success, error) {
+        getPaymentDetails: function (id, success, error) {
             $http({
-                url: '/v1/payments/getTotalAmount/',
-                method: "GET"
-            }).then(success, error)
-        },
-        getDuesByParty: function (params, success, error) {
-            $http({
-                url: '/v1/payments/getDuesByParty/',
+                url: '/v1/payments/getPaymentDetails',
                 method: "GET",
-                params: params
+                params: {_id: id}
             }).then(success, error)
         },
-        updateRecord: function (object, success, error) {
+        updatePayment: function (params, success, error) {
             $http({
-                url: '/v1/payments/updatePayments',
+                url: '/v1/payments/updatePayment',
                 method: "PUT",
-                data: object
+                data: params
             }).then(success, error)
         },
-        deletePaymentsRecord: function (paymentsId, success, error) {
+        deletePayment: function (paymentId, success, error) {
             $http({
-                url: '/v1/payments/' + paymentsId,
-                method: "DELETE"
+                url: '/v1/payments/deletePayment',
+                method: "DELETE",
+                params: {_id: paymentId}
             }).then(success, error)
         },
-        count: function (success, error) {
+        totalPayments: function (success, error) {
             $http({
-                url: '/v1/payments/countPayments',
+                url: '/v1/payments/totalPayments',
                 method: "GET"
             }).then(success, error)
         },
-        sharePaymentsDetailsByPartyViaEmail: function (params, success, error) {
+        getReceiptsByParties: function (params,success, error) {
             $http({
-                url: '/v1/payments/sharePaymentsDetailsByPartyViaEmail',
+                url: '/v1/payments/getReceiptsByParties',
+                method: "GET",
+                params:params
+            }).then(success, error)
+        },
+        getReceiptByPartyName: function (receiptId, success, error) {
+            $http({
+                url: '/v1/payments/getReceiptByPartyName',
+                method: "GET",
+                params: {_id: receiptId}
+            }).then(success, error)
+        },
+        shareReceiptsDetailsByPartyViaEmail:function (params,success,error) {
+            $http({
+                url: '/v1/payments/shareReceiptsDetailsByPartyViaEmail',
                 method: "GET",
                 params: params
-            }).then(success, error);
+            }).then(success, error)
+
         },
         shareDetailsViaEmail:function(params,success,error){
             $http({
@@ -78,62 +70,28 @@ app.factory('PaymentsService',['$http', function ($http) {
                 params:params
             }).then(success, error)
         }
+
     }
 }]);
 
-app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, PaymentsService, Notification, NgTableParams, paginationService, PartyService) {
+app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService','ExpenseService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService,ExpenseService) {
 
-    $scope.goToEditPaymentsPage = function (paymentsId) {
-        $state.go('paymentsEdit', { paymentsId: paymentsId });
+    $scope.goToEditPaymentsPage = function (id) {
+        $state.go('paymentsEdit', {paymentId: id});
     };
-    $scope.count = 0;
-    $scope.getCount = function () {
-        PaymentsService.count(function (success) {
-            if (success.data.status) {
-                $scope.count = success.data.count;
-                $scope.init();
 
-            } else {
-                Notification.error({ message: success.data.message });
-            }
-        });
+    $scope.filters = {
+        fromDate: "",
+        toDate: ""
     };
-    $scope.getCount();
 
-    var pageable;
-
-    var loadTableData = function (tableParams) {
-        pageable = {
-            page: tableParams.page(),
-            size: tableParams.count(),
-            sort: tableParams.sorting(),
-            partyName: tableParams.partyName,
-            fromDate:$scope.fromDate,
-            toDate:$scope.toDate
-        };
-        $scope.loading = true;
-        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
-        PaymentsService.getPayments(pageable, function (response) {
-            $scope.invalidCount = 0;
-
-            if (angular.isArray(response.data.paymentsCosts)) {
-                $scope.loading = false;
-                $scope.payments = response.data.paymentsCosts;
-                $scope.userId=response.data.userId;
-                $scope.userType=response.data.userType;
-                tableParams.total(response.totalElements);
-                tableParams.data = $scope.payments;
-                $scope.currentPageOfPayments = $scope.payments;
-            }
-        });
-    };
     $scope.getAllParties = function () {
         PartyService.getAllPartiesForFilter(function (success) {
             if (success.data.status) {
                 $scope.partiesList = success.data.parties;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
         }, function (err) {
@@ -141,24 +99,61 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
         });
     }
 
+    $scope.count = 0;
+    $scope.getPaymentCount = function () {
+        PaymentService.totalPayments(function (success) {
+            if (success.data.status) {
+                $scope.count = success.data.data;
+                $scope.init();
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        });
+    };
+    var loadTableData = function (tableParams) {
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            fromDate: tableParams.fromDate,
+            toDate: tableParams.toDate,
+            partyName: tableParams.partyName
+        };
+        PaymentService.getPayments(pageable, function (response) {
+            $scope.invalidCount = 0;
+            if (response.data.status) {
+                tableParams.total(response.data.count);
+                tableParams.data = response.data.payments;
+                $scope.currentPageOfPayments = response.data.payments;
+            } else {
+                $scope.currentPageOfReceipts = response.data.receipts;
+                Notification.error({message: response.data.messages[0]});
+            }
+        });
+    };
     $scope.init = function () {
         $scope.paymentParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
                 createdAt: -1
-            }
+            },
+            fromDate: $scope.filters.fromDate,
+            toDate: $scope.filters.toDate
         }, {
-                counts: [],
-                total: $scope.count,
-                getData: function (params) {
-                    loadTableData(params);
-                    $scope.getAllParties();
-                }
-            });
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+                $scope.getAllParties();
+            }
+        });
     };
 
-    $scope.deletePaymentsRecord = function (id) {
+
+    $scope.deletePayment = function (paymentId) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -169,14 +164,14 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-                PaymentsService.deletePaymentsRecord(id, function (success) {
+                PaymentService.deletePayment(paymentId, function (success) {
                     if (success.data.status) {
                         swal(
                             'Deleted!',
-                            'Party deleted successfully.',
+                            'Payment deleted successfully.',
                             'success'
                         );
-                        $scope.getCount();
+                        $scope.getPaymentCount();
                     } else {
                         success.data.messages.forEach(function (message) {
                             swal(
@@ -190,9 +185,11 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
                     ;
                 });
 
-            };
+            }
+            ;
         });
     };
+
 
     $scope.searchByPartyName = function (partyName) {
         $scope.paymentParams = new NgTableParams({
@@ -201,28 +198,31 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
             sorting: {
                 createdAt: -1
             }
+
         }, {
-                counts: [],
-                total: $scope.count,
-                getData: function (params) {
-                    params.partyName = partyName;
-                    loadTableData(params);
-                }
-            });
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                params.partyName = partyName;
+                params.fromDate = $scope.filters.fromDate;
+                params.toDate = $scope.filters.toDate;
+                loadTableData(params);
+            }
+        });
     };
     $scope.shareDetailsViaEmail=function(){
         swal({
-            title: 'Share payments data using mail',
+            title: 'Share Payments data using mail',
             input: 'email',
             showCancelButton: true,
             confirmButtonText: 'Submit',
             showLoaderOnConfirm: true,
             preConfirm: (email) => {
             return new Promise((resolve) => {
-                PaymentsService.shareDetailsViaEmail({
+                PaymentService.shareDetailsViaEmail({
                 email:email
             },function(success){
-                // console.log("success...",success);
+                console.log("success...",success);
                 if (success.data.status) {
                     resolve()
                 } else {
@@ -245,49 +245,48 @@ app.controller('PaymentsCtrl', ['$scope', '$state', 'PaymentsService', 'Notifica
         }
     })
     };
+
     $scope.downloadDetails = function () {
         window.open('/v1/payments/downloadDetails');
     };
 
-
-
-        
 }]);
+app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices','ExpenseService', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices,ExpenseService) {
 
-app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$stateParams', '$state', 'Notification', 'TripServices', 'TrucksService', 'PartyService', function ($scope, PaymentsService, $stateParams, $state, Notification, TripServices, TrucksService, PartyService) {
-    $scope.paymentRefNumber = false;
-
-    $scope.refNum = function () {
-        $scope.paymentRefNumber = true;
-    };
-
-    $scope.pagetitle = "Add Payments";
-    $scope.dateCallback = "past";
-
-    $scope.paymentsDetails = {
-        date: '',
-        partyId: '',
-        description: '',
-        amount: '',
-        paymentType: '',
-        paymentRefNo: '',
-        error: [],
-        success: []
-    };
+    $scope.pageTitle = "Add Payment";
 
     $scope.cancel = function () {
-        $state.go('payments');
-    };
-    
+        $state.go('payments')
+    }
+
+    $scope.paymentDetails = {
+        partyId: '',
+        error: []
+    }
+
+    if ($stateParams.paymentId) {
+        $scope.pageTitle = "Edit Payment";
+        PaymentService.getPaymentDetails($stateParams.paymentId, function (success) {
+            if (success.data.status) {
+                $scope.paymentDetails = success.data.data;
+                $scope.paymentDetails.date = new Date($scope.paymentDetails.date);
+                getPartyIds();
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+        })
+    }
 
     function getPartyIds() {
-        TripServices.getPartiesByTrips(function (success) {
+        ExpenseService.getPartiesFromExpense(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.partyList;
-                 var selectedParty = _.find($scope.parties, function (party) {
-                    return party._id.toString() === $scope.paymentsDetails.partyId;
+                var selectedParty = _.find($scope.parties, function (party) {
+                    return party._id.toString() === $scope.paymentDetails.partyId;
                 });
-                
                 if (selectedParty) {
                     $scope.partyName = selectedParty.name;
                 }
@@ -295,46 +294,27 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
                 });
-               
+
             }
         }, function (error) {
 
         });
     }
+
     getPartyIds();
 
     $scope.selectPartyId = function (party) {
-        $scope.paymentsDetails.partyId = party._id;
+        $scope.paymentDetails.partyId = party._id;
     }
 
-    if ($stateParams.paymentsId) {
-        $scope.pagetitle = "Edit Payments";
-        PaymentsService.getPaymentsRecord($stateParams.paymentsId, function (success) {
-            if (success.data.status) {
-                $scope.paymentsDetails = success.data.paymentsDetails;
-                //console.log(success.data);
-                $scope.paymentsDetails.date = new Date($scope.paymentsDetails.date);
-                $scope.paymentsDetails.amount = parseInt($scope.paymentsDetails.amount);
-                getPartyIds();
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
-                });
-            }
-        }, function (err) {
-        })
-    }
-    $scope.cancel = function () {
-        $state.go('payments');
-    };
-    $scope.AddorUpdatePayments = function () {
-        var params = $scope.paymentsDetails;
-        // console.log(params);
+    $scope.AddorUpdatePayment = function () {
+        console.log("Welcome")
+        var params = $scope.paymentDetails;
         params.error = [];
         params.success = [];
 
         if (!params.date) {
-            params.error.push('Please select Payment Date');
+            params.error.push('Please Select Date');
         }
         if (!params.partyId) {
             params.error.push('Please Select Party');
@@ -342,43 +322,41 @@ app.controller('paymentsEditController', ['$scope', 'PaymentsService', '$statePa
         if (!(params.amount)) {
             params.error.push('Please enter an Amount');
         }
-        if (!params.paymentType) {
-            params.error.push('Please Select Payment Type');
-        }
-        if ((params.paymentType === 'NEFT' || params.paymentType === 'Cheque') && !params.paymentRefNo) {
-            params.error.push('Enter payment reference number');
-        }
-        if (!params.error.length) {
-            if ($stateParams.paymentsId) {
-                PaymentsService.updateRecord(params, function (success) {
+        if (params.error.length > 0) {
+            params.error.forEach(function (message) {
+                Notification.error({ message: message });
+            });
+        } else {
+            $scope.paymentDetails.partyId = $scope.paymentDetails.partyId._id;
+            if ($stateParams.paymentId) {
+                PaymentService.updatePayment(params, function (success) {
                     if (success.data.status) {
-                        // params.success = success.data.message[0];
-                        Notification.success({ message: success.data.messages[0] });
-                        $state.go('payments');
+                        Notification.success({message: success.data.messages[0]});
+                        $state.go('receipts');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                     $state.go('payments');
 
                 }, function (err) {
-                    console.log(err);
                 });
             } else {
-                PaymentsService.addPayments(params, function (success) {
-
+                PaymentService.addPayment(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        Notification.success({ message: success.data.messages[0] });
+                        Notification.success({message: success.data.messages[0]});
                         $state.go('payments');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({ message: message });
+                            Notification.error({message: message});
                         });
                     }
                 });
             }
         }
     }
+
 }]);
+
