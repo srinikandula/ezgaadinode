@@ -7,7 +7,7 @@
         <li class="pull-right">
             <button class="btn btn-primary" ui-sref="services.addDevice">Add Devices</button>
         </li>
-        <li class="pull-right col-xs-2">
+        <li class="pull-right col-sm-2 col-xs-12 mobile-mar">
             <select class="form-control" ng-model="sortableString" ng-change="init()">
                 <option selected value="">Select</option>
                 <option value="damaged">Damaged</option>
@@ -16,7 +16,7 @@
                 <option value="inactive">Inactive</option>
             </select>
         </li>
-        <li class="col-xs-4 pull-right">
+        <li class="col-sm-4 col-xs-12 pull-right">
             <form role="search">
                 <div class="input-group add-on">
                     <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
@@ -31,7 +31,7 @@
         <div class="clearfix"></div>
     </ul>
     <div class="table-res">
-        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
+        <table class="table table-bordered table-striped table-condensed table-hover"
                ng-table="deviceParams">
             <tr ng-repeat="device in currentPageOfDevices" style="text-align: center;">
                 <td data-title="'Account ID'" sortable="'accountId'" class="clickable-item">
@@ -97,8 +97,7 @@
                     <h4 class="modal-title">Latest Location</h4>
                 </div>
                 <div class="modal-body ">
-                    <p style="font-size: 15px;"><b>Register number</b> : {{latestLocation.attrs.latestLocation.deviceId
-                        | uppercase}}</p>
+                    <p style="font-size: 15px;"><b>Vehicle number</b> : {{latestLocation.deviceId | uppercase}}</p>
                     <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.attrs.latestLocation.address}}
                     </p>
                     <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.attrs.latestLocation.speed | number:0}}

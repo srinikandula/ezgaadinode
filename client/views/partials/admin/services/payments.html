@@ -24,32 +24,34 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
-           ng-table="accountParams">
-        <tr ng-repeat="payment in currentPageOfAccounts" style="text-align: center;">
-            <td data-title="'S No'">
-                {{$index+1}}
-            </td>
-            <td data-title="'Customer name'" sortable="'userName'" class="clickable-item">
-                {{payment.userName}}
-            </td>
-            <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
-                {{payment.contactPhone }}
-            </td>
-            <td data-title="'GPS Reg Date'" sortable="'gpsDate'" class="clickable-item">
-                {{payment.gpsDate | date:'dd/MM/yyyy'}}
-            </td>
-            <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
-                {{payment.gpsEnabled}}
-            </td>
-            <td data-title="'ERP Reg Date'" sortable="'erpDate'" class="clickable-item">
-                {{payment.erpDate  | date:'dd/MM/yyyy'}}
-            <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
-                {{payment.erpEnabled}}
-            </td>
-            <td data-title="'Payment'" class="clickable-item">
-                <a href="#" ui-sref="services.paymentDetails({id:payment._id})">Payment Details</a>
-            </td>
-        </tr>
-    </table>
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover"
+               ng-table="accountParams">
+            <tr ng-repeat="payment in currentPageOfAccounts" style="text-align: center;">
+                <td data-title="'S No'">
+                    {{$index+1}}
+                </td>
+                <td data-title="'Customer name'" sortable="'userName'" class="clickable-item">
+                    {{payment.userName}}
+                </td>
+                <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
+                    {{payment.contactPhone }}
+                </td>
+                <td data-title="'GPS Reg Date'" sortable="'gpsDate'" class="clickable-item">
+                    {{payment.gpsDate | date:'dd/MM/yyyy'}}
+                </td>
+                <td data-title="'GPS'" sortable="'gpsEnabled'" class="clickable-item">
+                    {{payment.gpsEnabled}}
+                </td>
+                <td data-title="'ERP Reg Date'" sortable="'erpDate'" class="clickable-item">
+                    {{payment.erpDate | date:'dd/MM/yyyy'}}
+                <td data-title="'ERP'" sortable="'erpEnabled'" class="clickable-item">
+                    {{payment.erpEnabled}}
+                </td>
+                <td data-title="'Payment'" class="clickable-item">
+                    <a href="#" ui-sref="services.paymentDetails({id:payment._id})">Payment Details</a>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>

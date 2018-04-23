@@ -1,7 +1,7 @@
 <div ng-controller="accountsListCrtl">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">GPS Accounts</li>
-        <li class="pull-right col-xs-3">
+        <li class="pull-right col-sm-3 mobile-mar col-xs-12">
             <select class="form-control" ng-model="sortableString" ng-change="init()">
                 <option selected value="">Select</option>
                 <option value="Trucks">Trucks</option>
@@ -13,7 +13,7 @@
                 <option value="statusDisbled">Status Disbaled</option>
             </select>
         </li>
-        <li class="col-xs-4 pull-right">
+        <li class="col-sm-4 pull-right col-xs-12 mobile-mar">
             <form role="search">
                 <div class="input-group add-on">
                     <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
@@ -91,7 +91,7 @@
                 </td>
             </tr>
             <tr ng-if="!currentPageOfAccounts || currentPageOfAccounts.length === 0">
-                <td colspan="8">No GPS Accounts exist</td>
+                <td colspan="12">No GPS Accounts exist</td>
             </tr>
         </table>
     </div>
