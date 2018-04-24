@@ -172,7 +172,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             page: 1, // show first page
             size: 10,
             sorting: {
-                updatedAt: -1
+                createdAt: -1
             }
         }, {
             counts: [10, 50, 100, 200],

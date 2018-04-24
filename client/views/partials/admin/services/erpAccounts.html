@@ -1,7 +1,7 @@
 <div ng-controller="accountsListCrtl">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">ERP Accounts</li>
-        <li class="pull-right col-xs-3">
+        <li class="pull-right col-sm-3 col-xs-12 mobile-mar">
             <select class="form-control" ng-model="sortableString" ng-change="init()">
                 <option selected value="">Select</option>
                 <option value="Trucks">Trucks</option>
@@ -13,7 +13,7 @@
                 <option value="statusDisbled">Status Disbaled</option>
             </select>
         </li>
-        <li class="col-xs-4 pull-right">
+        <li class="col-sm-4 col-xs-12 mobile-mar pull-right">
             <form role="search">
                 <div class="input-group add-on">
                     <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
@@ -28,7 +28,7 @@
         <div class="clearfix"></div>
     </ul>
     <div class="table-res">
-        <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
+        <table class="table table-bordered table-striped table-condensed table-hover "
                ng-table="accountParams">
             <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
                 <!--<td data-title="'S No'">

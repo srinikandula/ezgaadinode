@@ -60,6 +60,9 @@
     padding: 2px 0px;
     cursor: pointer;
 }
+.main-body{
+    margin-top: 75px;
+}
 
 .mtb-0{
     margin-top: 0 !important;
@@ -397,7 +400,6 @@ body {
 footer {
     background-color: #615f5f;
     color: #fff;
-    height: 50px;
     line-height: 50px;
 }
 
@@ -1390,19 +1392,115 @@ textarea.custom-form-control{
     top: 42%;
     left: 42%;
 }
+.ac-form-control{
+height: 42px !important;
+}
+.account-select-box{
+    min-width: 348px;
+    margin-left: 42px;
+}
+.select2-dropdown-open .ac-form-control{
+    width: 100% !important;
+}
 
 /* Responsive Design */
 
 @media only screen and (max-width: 767px) {
-    .left-nav {
-        position: static !important;
+    .admin-login{
+        padding: 25px 0px 0 25px;
+    }
+    .login-form{
+     padding: 0 !important;
+    }
+    .login-form li{
+        width: 100%;
+    }
+    .left-nav{
+        position: relative !important;
+        top: 0px;
+        z-index: 0 !important;
     }
     .right-nav{
-        left: 15px !important;
+        left: 0 !important;
+        top: 30px;
+    }
+    .mobile-mar{
+        margin: 10px 0;
+    }
+    .profile-nav{
+        float: right;
+        width: 160px;
+    }
+    .navbar-nav .open .dropdown-menu{
+        background-color:#fff !important;
+        margin-top: -7px !important;
+    }
+    .logo img{
+        width: 75%;
+        padding-top: 12px;
+        padding-left: 10px;
+    }
+    .nav>li>a:focus, .nav>li>a:hover{
+        background-color: transparent !important;
+
+    }
+    .nav .open>a, .nav .open>a:focus, .nav .open>a:hover{
+        background-color: transparent !important;
+    }
+    .name-head{
+        width: 100%;
+    }
+    .custom-form-control{
+     width: 100% !important;
+    }
+    .mob-pad .col-sm-6{
+        padding: 0 !important;
+    }
+    .focus-effect-for-input{
+        left:5px !important;
+    }
+    .plans li{
+        width: 100% !important;
+    }
+    .menu_icon{
+        position: absolute;
+        right: 0;
+        z-index: 99;
+        top: 76px;
+    }
+    .menu_icon img{
+        width: 55px;
+        height: 45px;
+    }
+    footer{
+        background-color: #615f5f;
+        color: #fff;
+        padding: 35px 0 0 0 !important;
+    }
+    .account-select-box{
+        min-width: 232px !important;
+        margin-left: 0;
     }
 }
+@media only screen and (max-width: 992px) {
+    .admin-login {
+        padding: 25px 0px 0 25px;
+    }
 
+    .login-form {
+        padding: 0 !important;
+    }
 
+    .login-form li {
+        width: 100%;
+    }
+}
+@media screen and (max-width: 10000px) and (min-width: 768px) {
+    .menu_icon{
+        display: none;
+    }
+
+}
 
 
 
