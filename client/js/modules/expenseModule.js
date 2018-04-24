@@ -314,6 +314,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         PartyService.getAllPartiesBySupplier (function (success) {
             if(success.data.status){
                 $scope.partyBySupplier = success.data.parties;
+                console.log("Parties", $scope.partyBySupplier);
                 var selectedParty = _.find($scope.partyBySupplier, function (party) {
                     return party._id.toString() === $scope.expenseDetails.partyId;
                 });
