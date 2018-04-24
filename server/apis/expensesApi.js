@@ -1191,16 +1191,16 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
                 })
         }
     },function (err,results) {
-       if(err){
+        if(err){
            retObj.status = false;
            retObj.messages.push('Error');
            callback(retObj)
-       }else if(results.expenses.totalAmount && results.payments){
+       }else if(results.expenses[0] && results.payments[0]){
            retObj.status = true;
            retObj.messages.push('Success');
            retObj.paybleCount = results.expenses[0].totalAmount - results.payments[0].totalPaid;
            callback(retObj);
-       }else if(results.expenses.totalAmount){
+       }else if(results.expenses[0]){
            retObj.status = true;
            retObj.messages.push('Success');
            retObj.paybleCount = results.expenses[0].totalAmount;

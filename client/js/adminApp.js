@@ -126,9 +126,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         params: {type: 'erp'}
     }).state({
         name: 'services.gpsDevices',
-        url: '/gpsDevices',
+        url: '/gpsDevices/:searchString',
         templateUrl: 'views/partials/admin/services/gpsDevices.html',
-        data: {activeTab: 'services'}
+        data: {activeTab: 'services'},
+        params:{
+            searchString:null
+        }
     }).state({
         name: 'services.editGpsDevice',
         url: '/editGpsDevice/:device',

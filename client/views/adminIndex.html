@@ -48,29 +48,34 @@
             </div>
         </nav>
     </div>
-
-    <div class="container-fluid">
+<div class="clearfix"></div>
+    <div class="container-fluid main-body">
         <div class="row">
-            <div class="main-table">
-                <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
+            <div class="icon">
+                    <span id="myNav" class="menu_icon">
+                        <a href="#">
+                            <img src="../images/menu_icon.png" alt="Menu Icon">
+                        </a>
+                    </span>
+            </div>
+            <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
+                <div id="myLeftNav" class="menu-left">
                     <adminleft-menu label="Dashboard"></adminleft-menu>
                     <adminleft-menu label="Customers" ui-sref="customers.customersLead"></adminleft-menu>
                     <adminleft-menu label="Services" ui-sref="services.gpsAccounts"></adminleft-menu>
                     <adminleft-menu label="OrderProcess" ui-sref="orderprocess.truckRequest"></adminleft-menu>
                     <adminleft-menu label="Settings" ui-sref="settings.gpsSettings"></adminleft-menu>
-                    <adminleft-menu label="Notifications" ui-sref="notifications.availableTrucks    "></adminleft-menu>
+                    <adminleft-menu label="Notifications" ui-sref="notifications.availableTrucks"></adminleft-menu>
                     <adminleft-menu label="Admin" ui-sref="admin.administrators"></adminleft-menu>
-
+                </div>
                     <div class="clearfix"></div>
                 </div>
                 <div class="col-xs-12 col-sm-10 right-nav pall-zero">
                     <div ui-view></div>
                 </div>
-            </div>
         </div>
     </div>
-
-</div>
+  </div>
 <div class="clearfix"></div>
 <footer>
     <div class="container-fluid">
@@ -131,6 +136,9 @@
 
 <script>
     $(document).ready(function () {
+        $("#myNav").click(function () {
+            $("#myLeftNav").slideToggle();
+        })
         $("#top").hide();
         $(function toTop() {
             $(window).scroll(function () {
@@ -149,6 +157,7 @@
             });
         });
     });
+
 </script>
 
 </body>

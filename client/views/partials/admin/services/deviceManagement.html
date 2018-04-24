@@ -15,40 +15,43 @@
         </li>
         <div class="clearfix"></div>
     </ul>
-    <table class="table table-bordered table-striped table-condensed table-hover ng-table-responsive"
-           ng-table="deviceManagementParams">
-        <tr ng-repeat="employee in currentPageOfDeviceDetails" style="text-align: center;">
+    <div class="table-res">
+        <table class="table table-bordered table-striped table-condensed table-hover"
+               ng-table="deviceManagementParams">
+            <tr ng-repeat="employee in currentPageOfDeviceDetails" style="text-align: center;">
 
-            <td data-title="'S No'">
-                {{$index+1}}
-            </td>
-            <td data-title="'Field Executive'" sortable="'employeeName'" class="clickable-item">
-                {{employee._id.employeeName[0]}}
-            </td>
-            <td data-title="'Assigned Devices'" sortable="'totalDevices'" class="clickable-item">
-                {{employee.totalDevices}}
-            </td>
-            <td data-title="'Devices Inhand'" class="clickable-item">
-                <a href="#"
-                   ui-sref="services.inHandGpsDevices({type:'inHand', accountId:employee._id.assignedTo, Name:employee._id.employeeName[0]})">
-                    {{employee.totalDevices - employee.installedDevices}}</a>
-            </td>
-            <td data-title="'Devices Sold'" sortable="'installedDevices'" class="clickable-item">
-                <a href="#" ui-sref="services.installedGpsDevices({type:'sold', accountId:employee._id.assignedTo, Name:employee._id.employeeName[0]})">
-                    {{employee.installedDevices}}</a>
-            </td>
-            <td data-title="'Installed/Payment Deposited'" sortable="'installedDevices'" class="clickable-item">
-                {{employee.installedDevices}}/{{employee.installedDevices}}
-            </td>
-            <td data-title="'Inactive'" sortable="'inactiveDevices'" class="clickable-item">
-                {{employee.inactiveDevices}}
-            </td>
-            <td data-title="'Damaged'" sortable="'damagedDevices'" class="clickable-item">
-                {{employee.damagedDevices}}
-            </td>
-        </tr>
-        <tr ng-if="!currentPageOfDeviceDetails || currentPageOfDeviceDetails.length === 0">
-            <td colspan="8">No Records exist.</td>
-        </tr>
-    </table>
+                <td data-title="'S No'">
+                    {{$index+1}}
+                </td>
+                <td data-title="'Field Executive'" sortable="'employeeName'" class="clickable-item">
+                    {{employee._id.employeeName[0]}}
+                </td>
+                <td data-title="'Assigned Devices'" sortable="'totalDevices'" class="clickable-item">
+                    {{employee.totalDevices}}
+                </td>
+                <td data-title="'Devices Inhand'" class="clickable-item">
+                    <a href="#"
+                       ui-sref="services.inHandGpsDevices({type:'inHand', accountId:employee._id.assignedTo, Name:employee._id.employeeName[0]})">
+                        {{employee.totalDevices - employee.installedDevices}}</a>
+                </td>
+                <td data-title="'Devices Sold'" sortable="'installedDevices'" class="clickable-item">
+                    <a href="#"
+                       ui-sref="services.installedGpsDevices({type:'sold', accountId:employee._id.assignedTo, Name:employee._id.employeeName[0]})">
+                        {{employee.installedDevices}}</a>
+                </td>
+                <td data-title="'Installed/Payment Deposited'" sortable="'installedDevices'" class="clickable-item">
+                    {{employee.installedDevices}}/{{employee.installedDevices}}
+                </td>
+                <td data-title="'Inactive'" sortable="'inactiveDevices'" class="clickable-item">
+                    {{employee.inactiveDevices}}
+                </td>
+                <td data-title="'Damaged'" sortable="'damagedDevices'" class="clickable-item">
+                    {{employee.damagedDevices}}
+                </td>
+            </tr>
+            <tr ng-if="!currentPageOfDeviceDetails || currentPageOfDeviceDetails.length === 0">
+                <td colspan="8">No Records exist.</td>
+            </tr>
+        </table>
+    </div>
 </div>
