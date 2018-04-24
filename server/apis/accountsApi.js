@@ -460,18 +460,18 @@ Accounts.prototype.erpDashBoardContent = function (jwt, req, callback) {
             async.parallel({
                 expensesTotal: function (expensesTotalCallback) {
                     Expenses.findTotalExpenses(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId), req, function (response) {
-                        expensesTotalCallback(response.error, response.totalExpenses);
+                        expensesTotalCallback(response.error, response.totalExpenses.toFixed(2));
                     });
                 },
                 totalRevenue: function (totalRevenueCallback) {
                     Trips.findTotalRevenue(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId), req, function (response) {
 
-                        totalRevenueCallback(response.error, response.totalRevenue);
+                        totalRevenueCallback(response.error, response.totalRevenue.toFixed(2));
                     });
                 },
                 pendingDue: function (pendingDueCallback) {
                     Receipts.findPendingDueForAccount(Utils.getErpSettings(erpSettings.payment, erpSettings.accountId), req, function (response) {
-                        pendingDueCallback(response.error, response.pendingDue);
+                        pendingDueCallback(response.error, response.pendingDue.toFixed(2));
                     });
                 },
                 expiring: function (expiringCallback) {
@@ -481,12 +481,12 @@ Accounts.prototype.erpDashBoardContent = function (jwt, req, callback) {
                 },
                 paybleAmount: function (paybleCallback) {
                     Expenses.findPaybleAmountForAccount(Utils.getErpSettings(erpSettings.expense, erpSettings.accountId), req, function (response) {
-                        paybleCallback(response.error, response.paybleCount);
+                        paybleCallback(response.error, response.paybleCount.toFixed(2));
                     });
                 },
                 receiptsAmount: function (receiptsAmountCallback) {
                     Payments.findTotalReceipts(Utils.getErpSettings(erpSettings.revenue, erpSettings.accountId), req, function (response) {
-                        receiptsAmountCallback(!response.status, response.totalReceipts);
+                        receiptsAmountCallback(!response.status, response.totalReceipts.toFixed(2));
                     });
                 }
             }, function (error, dashboardContent) {
