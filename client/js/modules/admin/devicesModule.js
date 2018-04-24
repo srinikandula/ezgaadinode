@@ -131,7 +131,7 @@ app.factory('DeviceService', function ($http) {
     }
 });
 
-app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', function ($scope, DeviceService, Notification, NgTableParams, $uibModal) {
+app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal','$stateParams', function ($scope, DeviceService, Notification, NgTableParams, $uibModal,$stateParams) {
     $scope.searchString = '';
     $scope.sortableString = '';
     $scope.count = 0;
@@ -168,11 +168,17 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
     };
 
     $scope.init = function () {
+
+        if(!$stateParams.searchString && $scope.searchString){
+            $stateParams.searchString=$scope.searchString;
+        }else{
+            $scope.searchString=$stateParams.searchString;
+        }
         $scope.deviceParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
             sorting: {
-                updatedAt: -1
+                createdAt: -1
             }
         }, {
             counts: [10, 50, 100, 200],

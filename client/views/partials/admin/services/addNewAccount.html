@@ -3,14 +3,13 @@
     <div class="col-xs-12">
 
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpen">
+            <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpen">
                 <uib-accordion-heading>
                     User Information <i class="pull-right glyphicon"
                                         ng-class="{'glyphicon-chevron-down':status.isOpen, 'glyphicon-chevron-right': !status.isOpen}"></i>
                 </uib-accordion-heading>
-                <div class="col-xs-12">
                     <div class="col-sm-6">
-                        <div class="styling-input-list">
+                        <div class="styling-input-list form-group">
                             <input type="text" class="form-control custom-form-control"
                                    ng-model="accountDetails.userName" ng-change="checkAvailablity()"/>
                             <label class="focus-effect-for-input">User Name*</label>
@@ -57,19 +56,16 @@
                             <label class="focus-effect-for-input">Email*</label>
                         </div>
                     </div>
-                </div>
-
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpenOne">
+            <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenOne">
                 <uib-accordion-heading>
                     Address <i class="pull-right glyphicon"
                                ng-class="{'glyphicon-chevron-down': status.isOpenOne,
                                'glyphicon-chevron-right': !status.isOpenOne}"></i>
                 </uib-accordion-heading>
-                <div class="col-xs-12">
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-sm-6">
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control"
                                    ng-model="accountDetails.companyName"/>
@@ -98,18 +94,15 @@
                             <label class="focus-effect-for-input">Pincode</label>
                         </div>
                     </div>
-                </div>
-
             </div>
         </uib-accordion>
         <uib-accordion>
-            <div uib-accordion-group class="panel-default" is-open="status.isOpenTwo">
+            <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenTwo">
                 <uib-accordion-heading>
                     Service Info <i class="pull-right glyphicon"
                                     ng-class="{'glyphicon-chevron-down': status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
                 </uib-accordion-heading>
-                <div class="col-xs-12">
-                    <div class="col-xs-12 col-sm-6">
+                    <div class="col-sm-6">
                         <div class="form-group">
                             <ul class="list-inline">
                                 <li>
@@ -215,12 +208,12 @@
                         </div>
                         <div class="clearfix"></div>
                         <div ng-repeat="route in operatingRoutes">
-                            <div class="form-group col-xs-5">
+                            <div class="form-group col-xs-12">
                                 <input id="{{$index}}s" type="text" class="form-control order-form-control"
                                        placeholder="Source" ng-model="route.sourceAddress"
                                        ng-change="getLonLat($index, 'source')"/>
                             </div>
-                            <div class="form-group col-xs-5">
+                            <div class="form-group col-xs-12">
                                 <input id="{{$index}}d" type="text" class="form-control order-form-control"
                                        placeholder="Destination" ng-model="route.destinationAddress"
                                        ng-change="getLonLat($index, 'destination')"/>
@@ -232,25 +225,15 @@
                         </div>
                     </div>
                 </div>
-
-            </div>
         </uib-accordion>
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpenThre"
                  ng-show="accountDetails.erpEnabled && pageTitle ==='Edit GPS / ERP Account'">
                 <uib-accordion-heading>Assign ERP Plan<i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.isOpenThre, 'glyphicon-chevron-right': !status.isOpenThre}"></i>
                 </uib-accordion-heading>
-                <div class="col-xs-12" ng-show="enableForm">
+                <div ng-show="enableForm">
                     <ul class="list-inline plans">
-                        <!--<li>
-                            <select class="form-control custom-form-control planfc" ng-change="getPlansOfService()" ng-model="serviceSelected">
-                                <option selected value="">Select Service*</option>
-                                <option value="gps">GPS</option>
-                                <option value="erp">ERP</option>
-                                <option value="both">GPS & ERP</option>
-                            </select>
-                        </li>-->
-                        <li>
+                        <li class="form-group">
                             <select class="form-control custom-form-control planfc" ng-model="ERPPlanDEtails.planId">
                                 <option selected value="">Plans*</option>
                                 <option ng-repeat="plan in plans" value="{{plan._id}}">{{plan.planName}} -
@@ -258,20 +241,20 @@
                                 </option>
                             </select>
                         </li>
-                        <li>
+                        <li class="form-group">
                             <admin-date-picker ng-model="ERPPlanDEtails.startTime" placeholder="'Start Time *'"
                                                class="'custom-form-control planfc'"></admin-date-picker>
                         </li>
-                        <li>
+                        <li class="form-group">
                             <admin-date-picker ng-model="ERPPlanDEtails.expiryTime" placeholder="'Expiry Time *'"
                                                class="'custom-form-control planfc'"></admin-date-picker>
                         </li>
-                        <li class="styling-input-list">
+                        <li class="styling-input-list form-group">
                             <input type="text" class="form-control custom-form-control planfc"
                                    ng-model="ERPPlanDEtails.amount"/>
                             <label class="focus-effect-for-input">Amount</label>
                         </li>
-                        <li class="styling-input-list">
+                        <li class="styling-input-list form-group">
                             <input type="text" class="form-control custom-form-control planfc"
                                    ng-model="ERPPlanDEtails.remark"/>
                             <label class="focus-effect-for-input">Remark</label>
