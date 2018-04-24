@@ -143,6 +143,7 @@ app.controller('TruckTrackingController', ['$scope', '$state', 'truckTrackingSer
                     strokeOpacity: 1.0,
                     strokeWeight: 2
                 });
+                markerIndex++;
                 map.setCenter(flightPathCoordinates[0]);
                 flightPath.setMap(map);
             }
@@ -167,47 +168,41 @@ app.controller('TruckTrackingController', ['$scope', '$state', 'truckTrackingSer
         });
         id = animateTrigger();
     };
-    //addMarker(locations[i].location.coordinates[1], locations[i].location.coordinates[0],
-    // locations[i].fixTime, locations[i].address, locations[i].speed, i,
-    // locations.length, locations[i].course);
 
-    function addMarker(location, index, length) {
-        var icon = {
-            url:'', // url
-            scaledSize: new google.maps.Size(30,30)
+    function addMarker(location,i,length){
+        var icon ={
+            url:'',
+            scaledSize: new google.maps.Size(35, 35)
         };
-        if (index === 0) {
-            icon.url = '/images/start.png';
-            console.log('adding start marker');
-        } else if(index === length-1){
-            console.log('adding end marker');
-            icon.url = '/images/stop.png';
-        }else {
-            if (location.course >= 0 && location.course < 25) {
-                icon.url = '/images/h0.png';
-            }
-            else if (location.course >= 25 && location.course < 70) {
-                icon.url = '/images/h1.png';
-            } else if (location.course >= 70 && location.course < 110) {
-                icon.url = '/images/h2.png';
-            } else if (location.course >= 110 && location.course < 160) {
-                icon.url = '/images/h3.png';
-            } else if (location.course >= 160 && location.course < 200) {
-                icon.url = '/images/h4.png';
-            } else if (location.course >= 200 && location.course < 240) {
-                icon.url = '/images/h5.png';
-            } else if (location.course >= 240 && location.course < 290) {
-                icon.url = '/images/h6.png';
-            } else if (location.course >= 290 && location.course < 330) {
-                icon.url = '/images/h7.png';
-            } else if (location.course >= 330 && location.course < 390) {
-                icon.url = '/images/h0.png';
-            } else if (location.course >= 390 && location.course < 420) {
-                icon.url = '/images/h1.png';
-            } else if (location.course >= 420 && location.course < 450) {
-                icon.url = '/images/h2.png';
-            } else if (location.course >= 450 && location.course < 500) {
-                icon.url = '/images/h3.png';
+        if(i === 0){
+            icon.url = '/images/start.png'
+        }else if(i === length-1){
+            icon.url= '/images/stop.png'
+        }else{
+            if(location.course=0 && location.course<25){
+                icon.url= '/images/h0.png'
+            } else if(location.course>=25 && location.course<70){
+                icon.url= '/images/h1.png'
+            } else if(location.course>=70 && location.course<110){
+                icon.url= '/images/h2.png'
+            } else if(location.course>=110 && location.course<160){
+                icon.url= '/images/h3.png'
+            } else if(location.course>=160 && location.course<200){
+                icon.url= '/images/h4.png'
+            } else if(location.course>=200 && location.course<240){
+                icon.url= '/images/h5.png'
+            } else if(location.course>=240 && location.course<290){
+                icon.url= '/images/h6.png'
+            } else if(location.course>=290 && location.course<330){
+                icon.url= '/images/h7.png'
+            } else if(location.course>=330 && location.course<390){
+                icon.url= '/images/h0.png'
+            }  else if(location.course>=390 && location.course<420){
+                icon.url= '/images/h1.png'
+            } else if(location.course>=420 && location.course<450){
+                icon.url= '/images/h2.png'
+            } else if(location.course>=450 && location.course<500){
+                icon.url= '/images/h3.png'
             }
         }
         marker[markerIndex] = new google.maps.Marker({
@@ -219,6 +214,10 @@ app.controller('TruckTrackingController', ['$scope', '$state', 'truckTrackingSer
         var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
         var infowindow = new google.maps.InfoWindow();
         var functionContent = '<div><span> <b>'+ index +' Address:</b></span>' + location.address + '<span><br></span>' + '<span><b>Speed:</b></span>' + location.speed + '<span><br></span>' + '<span> <b>Time:</b></span>' + time + '<span><br> </span>' + '</div>';
+        var d =new Date(location.fixTime);
+        var time = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
+        var infowindow = new google.maps.InfoWindow();
+        var functionContent = '<div>'+'<span> <b>Address:</b></span>'+location.address+'<span><br></span>'+'<span><b>Speed:</b></span>'+location.speed+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'</div>';
         var compiledContent = $compile(functionContent)($scope);
         google.maps.event.addListener(marker[markerIndex], 'click', (function (marker, i, content) {
             return function () {
