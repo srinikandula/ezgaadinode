@@ -213,10 +213,6 @@ app.controller('TruckTrackingController', ['$scope', '$state', 'truckTrackingSer
         var d = new Date(location.fixTime);
         var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
         var infowindow = new google.maps.InfoWindow();
-        var functionContent = '<div><span> <b>'+ index +' Address:</b></span>' + location.address + '<span><br></span>' + '<span><b>Speed:</b></span>' + location.speed + '<span><br></span>' + '<span> <b>Time:</b></span>' + time + '<span><br> </span>' + '</div>';
-        var d =new Date(location.fixTime);
-        var time = d.getHours()+':'+d.getMinutes()+':'+d.getSeconds();
-        var infowindow = new google.maps.InfoWindow();
         var functionContent = '<div>'+'<span> <b>Address:</b></span>'+location.address+'<span><br></span>'+'<span><b>Speed:</b></span>'+location.speed+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'</div>';
         var compiledContent = $compile(functionContent)($scope);
         google.maps.event.addListener(marker[markerIndex], 'click', (function (marker, i, content) {
@@ -224,7 +220,7 @@ app.controller('TruckTrackingController', ['$scope', '$state', 'truckTrackingSer
                 infowindow.setContent(content);
                 infowindow.open(map, marker);
             }
-        })(marker[markerIndex], index, compiledContent[0], $scope));
+        })(marker[markerIndex],i, compiledContent[0], $scope));
     }
     function animateTrigger() {
         var line = flightPath;
