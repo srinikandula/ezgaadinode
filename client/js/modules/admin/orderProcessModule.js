@@ -1742,7 +1742,9 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         doc.close();
     };
 
-    $scope.printTruckOwnerBill = function () {
+
+
+   /* $scope.printTruckOwnerBill = function () {
         $http.get("/views/partials/admin/templates/printTruckOwnerBill.html").then(function (template) {
             var printScope = angular.extend($rootScope.$new(), {
                 orderDetails: $scope.orderDetails,
@@ -1762,8 +1764,20 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             };
             waitForRenderAndPrint();
         });
-    };
-    $scope.printLoadOwnerBill = function () {
+    };*/
+    $scope.printTruckOwnerBill = function() {
+        var w=window.open();
+        w.document.write(document.getElementsByClassName('report_left_inner')[0].innerHTML);
+        w.print();
+        w.close();
+    }
+    $scope.printLoadOwnerBill = function() {
+        var w=window.open();
+        w.document.write(document.getElementsByClassName('load_owner_details')[0].innerHTML);
+        w.print();
+        w.close();
+    }
+  /*  $scope.printLoadOwnerBill = function () {
         $http.get("/views/partials/admin/templates/printLoadOwnerBill.html").then(function (template) {
             var printScope = angular.extend($rootScope.$new(), {
                 orderDetails: $scope.orderDetails,
@@ -1796,7 +1810,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
             };
             waitForRenderAndPrint();
         });
-    };
+    };*/
     $scope.deleteOrderLocation = function (index, loc) {
 
         swal({
