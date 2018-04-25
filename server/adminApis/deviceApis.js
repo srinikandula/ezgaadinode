@@ -347,10 +347,10 @@ Devices.prototype.getDevices = function (req, callback) {
                 .limit(limit)
                 //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate({
-                    path: 'accountId',
+                    path: 'accountId',select: "userName"
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
                 }).populate({
-                path: 'assignedTo',
+                path: 'assignedTo', select: "displayName"
             })
             //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate('installedBy', {userName: 1})
@@ -538,6 +538,9 @@ Devices.prototype.updateDevice = function (req, callback) {
         messages: []
     };
     var params = req.body;
+    TrucksColl.findOneAndUpdate({deviceId: params.imei}, {$set: {deviceId: null}}, function (errassaindevice, assigned) {
+
+    });
     TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
         if (errassaindevice) {
             retObj.messages.push("Unable to assign device to truck, please try again");
