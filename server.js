@@ -38,7 +38,6 @@ var pushNotifications= require('./server/routes/notifications');
 var groupsApi = require('./server/apis/loginApi');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
-var kafkaConsumer = require('./server/apis/testkafka/kafkaConsumer');
 
 app.set('port', config.port);
 // app.use(morgan('dev'));
