@@ -1148,7 +1148,7 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params, req
     })
 
 
-}
+};
 
 Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callback) {
     var retObj = {
@@ -1194,7 +1194,7 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
         if(err){
            retObj.status = false;
            retObj.messages.push('Error');
-           callback(retObj)
+           callback(retObj);
        }else if(results.expenses[0] && results.payments[0]){
            retObj.status = true;
            retObj.messages.push('Success');
@@ -1212,8 +1212,6 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
            callback(retObj);
        }
     });
-
-
 };
 
 function getPaybleAmountByParty(condition, params, req, callback) {
