@@ -488,7 +488,7 @@ Devices.prototype.getDevice = function (req, callback) {
             }, function (response) {
             });
             callback(retObj);
-        } else {
+        } else if(device) {
             TrucksColl.findOne({deviceId: device.imei}, {
                 insuranceExpiry: 1,
                 fitnessExpiry: 1,
@@ -518,6 +518,16 @@ Devices.prototype.getDevice = function (req, callback) {
                     callback(retObj);
                 }
             });
+        }else{
+            retObj.messages.push("Device details not found");
+            analyticsService.create(req, serviceActions.get_device_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
         }
     });
 };
