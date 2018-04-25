@@ -32,6 +32,7 @@ var GoodsTypesColl = require('./../models/schemas').GoodsTypesColl;
 var LoadTypesColl = require('./../models/schemas').LoadTypesColl;
 var OrderStatusColl = require('./../models/schemas').OrderStatusColl;
 var CustomerLeadsColl = require('./../models/schemas').CustomerLeadsColl;
+var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 
 
 Events.prototype.getEventData = function (accountId, startDate, endDate, request, callback) {
@@ -2189,10 +2190,10 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
                 retObj.messages.push("Please try again");
                 callback(retObj);
             } else if (devices.length > 0) {
-                var c=0;
+                var c = 0;
                 async.eachSeries(devices, function (device, deviceCallback) {
                     c++;
-                    console.log("ccc123",c);
+                    console.log("ccc123", c);
 
                     pool_crm.query("(select deviceID,FROM_UNIXTIME(timestamp) as date," +
                         "latitude as lat,longitude as lan from EventDataTemp where deviceID='" + device.truckNo + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')" +
@@ -2201,14 +2202,17 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
                         "(select deviceID,FROM_UNIXTIME(timestamp) as date,latitude as lat,longitude as lan from EventDataTemp where deviceID='" + device.truckNo + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y') order by timestamp desc limit 1)", function (err, devicePostions) {
                         if (err) {
                             deviceCallback(err);
-                        } else if(devicePostions.length>0){
+                        } else if (devicePostions.length > 0) {
                             async.parallel({
                                 startAddress: function (startCallback) {
 
-                                    resolveAddress({latitude: devicePostions[0].lat, longitude: devicePostions[0].lan}, function (resp) {
+                                    resolveAddress({
+                                        latitude: devicePostions[0].lat,
+                                        longitude: devicePostions[0].lan
+                                    }, function (resp) {
                                         if (resp.status) {
-                                            device.startTime= new Date(devicePostions[0].date).toLocaleString();
-                                            device.startAddress= resp.address;
+                                            device.startTime = new Date(devicePostions[0].date).toLocaleString();
+                                            device.startAddress = resp.address;
                                             startCallback(false);
 
                                         } else {
@@ -2220,11 +2224,14 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
 
                                 },
                                 endAddress: function (endCallback) {
-                                    if(devicePostions[1]){
-                                        resolveAddress({latitude: devicePostions[1].lat, longitude: devicePostions[1].lan}, function (resp) {
+                                    if (devicePostions[1]) {
+                                        resolveAddress({
+                                            latitude: devicePostions[1].lat,
+                                            longitude: devicePostions[1].lan
+                                        }, function (resp) {
                                             if (resp.status) {
-                                                device.endTime=new Date(devicePostions[1].date).toLocaleString();
-                                                device.endAddress= resp.address;
+                                                device.endTime = new Date(devicePostions[1].date).toLocaleString();
+                                                device.endAddress = resp.address;
                                                 endCallback(false);
 
                                             } else {
@@ -2233,18 +2240,18 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
                                             }
 
                                         })
-                                    }else{
-                                        device.startTime= new Date(devicePostions[0].date).toLocaleString();
-                                      //  device.startAddress= resp.address;
+                                    } else {
+                                        device.startTime = new Date(devicePostions[0].date).toLocaleString();
+                                        //  device.startAddress= resp.address;
                                         endCallback(false);
                                     }
 
                                 },
-                                distance:function (distanceCallback) {
-                                    if(devicePostions.length>=2){
-                                        device.km=Math.round(1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((devicePostions[1].lat-devicePostions[0].lat)*Math.PI/180 /2),2)+Math.cos(devicePostions[0].lat*Math.PI/180)*Math.cos(devicePostions[1].lat*Math.PI/180)*Math.pow(Math.sin((devicePostions[1].lan-devicePostions[0].lan)*Math.PI/180/2),2))));
+                                distance: function (distanceCallback) {
+                                    if (devicePostions.length >= 2) {
+                                        device.km = Math.round(1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((devicePostions[1].lat - devicePostions[0].lat) * Math.PI / 180 / 2), 2) + Math.cos(devicePostions[0].lat * Math.PI / 180) * Math.cos(devicePostions[1].lat * Math.PI / 180) * Math.pow(Math.sin((devicePostions[1].lan - devicePostions[0].lan) * Math.PI / 180 / 2), 2))));
                                         distanceCallback(false)
-                                    }else{
+                                    } else {
                                         distanceCallback(false)
 
                                     }
@@ -2252,15 +2259,15 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
                                 }
 
                             }, function (err, adress) {
-                                if(err){
+                                if (err) {
                                     console.log("finding address failed");
                                     deviceCallback(false);
-                                }else{
+                                } else {
 
                                     deviceCallback(false);
                                 }
                             })
-                        }else{
+                        } else {
                             console.log("error===>");
                             deviceCallback(false);
                         }
@@ -2296,88 +2303,72 @@ Events.prototype.generateReportsGroupByTruck = function (params, callback) {
     }
 };
 
-
-/* async.parallel({
-                    startLocation: function (startCallback) {
-                        pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as startDate,\n" +
-                            "latitude as slat,longitude as slan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
-                            "order by timestamp asc limit 1;", function (err, startDocs) {
-                            startCallback(err, startDocs);
-                        });
-                    },
-                    endLocation: function (endCallback) {
-                        pool_crm.query("select deviceID,FROM_UNIXTIME(timestamp) as endDate,\n" +
-                            "latitude as elat,longitude as elan from EventDataTemp where accountID='" + params.accountId + "' and date(FROM_UNIXTIME(timestamp)) = STR_TO_DATE('" + params.date + "', '%M-%d-%Y')\n" +
-                            "order by timestamp desc limit 1;", function (err, endDocs) {
-                            endCallback(err, endDocs);
-                        });
-                    }
-                }, function (err, result) {
-                    if (err) {
-                        console.log(err);
-
-                    } else {
-                        var output = _.map(result.startLocation, function (element) {
-                            var match = _.findWhere(result.endLocation, {deviceID: element.deviceID});
-
-                            return _.extend(element, match);
-                        });
-                        async.eachSeries(output, function (device, deviceCallback) {
-                            async.parallel({
-                                startAdd: function (startAddCallback) {
-                                    console.log("sd",device.slat,device.slan);
-                                    resolveAddress({latitude: device.slat, longitude: device.slan}, function (resp) {                            console.log("11");
-
-                                        if (resp.status) {
-                                            console.log("address",resp.address)
-                                            device.startAddress=resp.address;
-                                            startAddCallback(false);
-
-                                        } else {
-                                            startAddCallback(true);
-
-                                        }
-
-                                    })
-                                }, endAdd: function (endAddCallback) {
-                                    resolveAddress({latitude: device.elat, longitude: device.elan}, function (resp) {                            console.log("122");
-
-                                        if (resp.status) {
-                                            device.endAddress=resp.address;
-                                            endAddCallback(false);
-
-                                        } else {
-                                            endAddCallback(true);
-
-                                        }
-
-                                    })
-                                },distance:function (distanceCallback) {
-                                    device.distance=1.609344 * 3956 * 2 * Math.asin(Math.sqrt(Math.pow(Math.sin((device.elat-device.slat)*Math.PI/180 /2),2)+Math.cos(device.slat*Math.PI/180)*Math.cos(device.elat*Math.PI/180)*Math.pow(Math.sin((device.elan-device.slan)*Math.PI/180/2),2)))
-                                    console.log(device.distance);
-                                    distanceCallback(false)
-                                }
-                            }, function (err) {
-                                if(err){
-                                    console.log("errrr==========>>>>>>>>>>>>>>>>.");
+Events.prototype.gpsSettingFromAccount = function (callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var count = 0;
+    pool_crm.query("select stopDurationLimit,overSpeedLimit,accountID FROM Account", function (err, accounts) {
+        if (err) {
+            retObj.messages.push("Please try again," + JSON.stringify(err));
+            callback(retObj);
+        } else if (accounts.length > 0) {
+            async.eachSeries(accounts, function (account, accountCallback) {
+                if (account.stopDurationLimit && account.overSpeedLimit && account.accountID) {
+                    AccountsColl.findOne({userName: account.accountID}, function (err, accData) {
+                        if (err) {
+                            retObj.messages.push("Please try again" + JSON.stringify(err));
+                            accountCallback(true);
+                        } else if (accData) {
+                            GpsSettingsColl.findOne({accountId: accData._id},function (gpsErr,gpsDoc) {
+                                if (gpsErr) {
+                                    retObj.messages.push("Please try again" + JSON.stringify(gpsErr));
+                                    accountCallback(true);
+                                } else if(gpsDoc){
+                                    console.log(account.accountID+ " account exits");
+                                    accountCallback(false);
                                 }else{
-                                    console.log("44");
+                                    var gps = new GpsSettingsColl({
+                                        accountId: accData._id,
+                                        stopTime: account.stopDurationLimit,
+                                        overSpeedLimit: account.overSpeedLimit
+                                    });
+                                    gps.save(function (saveErr, saveGPS) {
+                                        if (saveErr) {
+                                            retObj.messages.push("Please try again" + JSON.stringify(saveErr));
+                                            accountCallback(true);
+                                        } else {
+                                            count++;
+                                            accountCallback(false);
 
-                                    setTimeout(function () {
-                                        deviceCallback(false);
-
-
-                                    }, 10);
+                                        }
+                                    })
                                 }
-                            })
-                        }, function (err) {
-                            if (err) {
-                                console.log("errrr==========<<<<<<<<<<<<<<<<<<<<<<<<<,,,,,,.");
+                            });
 
-                            } else {
-                                console.log("end out put",output);
-                            }
-                        })
-                    }
-                });*/
+                        } else {
+                            accountCallback(false);
+
+                        }
+                    })
+                } else {
+                    accountCallback(false);
+                }
+            }, function (err) {
+                if (err) {
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push(count + " accounts gps settings added");
+                    callback(retObj);
+                }
+            })
+        } else {
+            retObj.messages.push("No Accounts found in mysql database");
+            callback(retObj);
+        }
+    });
+};
+
 module.exports = new Events();

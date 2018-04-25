@@ -92,6 +92,7 @@ app.controller('RouteConfigListCtrl', ['$scope','$state','RouteConfigService', f
 }]);
 app.controller('PickRouteLocationController', ['$scope','$state','RouteConfigService','$uibModalInstance','NgMap','data','AccountServices', function ($scope,$state,RouteConfigService,$uibModalInstance,NgMap,data,AccountServices) {
     $scope.latlng =[];
+    console.log("Postion",data);
     if(data && data.position){
         $scope.position = data.position || {};
     }else{
@@ -103,7 +104,6 @@ app.controller('PickRouteLocationController', ['$scope','$state','RouteConfigSer
         $scope.latlng = success.data.data.homeLocation.latlng;
         // console.log(" home location latlng.....",$scope.latlng);
         $scope.accountHomeLocation = [parseFloat($scope.latlng[0]), parseFloat($scope.latlng[1])];
-        console.log("home location "+ $scope.accountHomeLocation);
     },function(error){
 
     });
@@ -202,10 +202,19 @@ app.controller('AddEditConfigCtrl', ['$scope','$state','RouteConfigService','$ui
             resolve: {
                 data: function () {
                     if(type ==='source' && $scope.route.source){
-                        return {position:$scope.route.source,type:type};
+                        if($scope.route.source){
+                            return {position:{latlng: $scope.route.source.coordinates},type:type};
+                        }else{
+                            return {position:{},type:type};
+                        }
+
                         //return $scope.route.source;
                     } else if(type ==='destination' && $scope.route.destination){
-                        return {position:$scope.route.destination,type:type};
+                        if($scope.route.destination){
+                            return {position:{latlng: $scope.route.destination.coordinates},type:type};
+                        }else{
+                            return {position:{},type:type};
+                        }
                         // return $scope.route.destination;
                     } else {
                         return {type:type};
@@ -216,9 +225,15 @@ app.controller('AddEditConfigCtrl', ['$scope','$state','RouteConfigService','$ui
         modalInstance.result.then(function (data) {
             if(data) {
                 if(type === 'source'){
-                    $scope.route.source = data;
+                    $scope.route.source ={
+                        coordinates:data.latlng
+                    };
+                    $scope.route.sourceAddress=data.address;
                 } else {
-                    $scope.route.destination = data;
+                    $scope.route.destination ={
+                        coordinates:data.latlng
+                    };
+                    $scope.route.destinationAddress=data.address;
                 }
             }
         }, function () {

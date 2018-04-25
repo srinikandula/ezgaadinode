@@ -367,6 +367,12 @@ OpenRouter.get('/get/generateReportsGroupByTruck',function (req,res) {
        res.json(result);
    })
 });
+
+OpenRouter.get('/get/gpsSettingFromAccount',function (req,res) {
+    Events.gpsSettingFromAccount(function (result) {
+        res.json(result);
+    })
+});
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter
