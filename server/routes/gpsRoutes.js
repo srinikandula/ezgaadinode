@@ -5,17 +5,6 @@ var OpenRouter = express.Router();
 
 var gps = require('../apis/gpsApi');
 var devices = require('../apis/devicesApi');
-var kafka = require('./../apis/testkafka/kafkaProducer');
-
-OpenRouter.get('/AddDevicePositions', function (req, res) {
-    kafka.sendRecord(req.query, function (result) {
-        res.send(result);
-    });
-    // console.log(req.query);
-    // gps.AddDevicePositions(req.query, function (result) {
-    //     res.send(result);
-    // });
-});
 
 AuthRouter.post('/addSecret', function (req, res) {
     gps.addSecret(req.body.secret, req.body.email, function (result) {
