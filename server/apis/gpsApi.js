@@ -374,20 +374,20 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                         }else {
                             positions = positions.concat(archivedPositions);
                             if (positions.length>0) {
-                                var distance;
                                 var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
                                 var diffDays = timeDiff / (1000 * 3600 * 24);
                                 var speedValues = _.pluck(positions, 'speed');
                                 var topSpeed = Math.max.apply(Math, speedValues);
-                                var sum = 0, counter = 0;
+                                var sum = 0, counter = 0, distance = 0;
                                 for (var i = 0; i < speedValues.length; i++) {
                                     if (Number(speedValues[i]) !== 0.0) {
                                         sum = sum + Number(speedValues[i]);
                                         counter++;
                                     }
+                                    distance += positions[i].distance;
                                 }
                                 averageSpeed = (sum / counter);
-                                distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;
+                                //distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;
                                 retObj.status = true;
                                 retObj.messages.push('Success');
                                 retObj.results = {
