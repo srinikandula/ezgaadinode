@@ -2321,21 +2321,32 @@ Events.prototype.gpsSettingFromAccount = function (callback) {
                             retObj.messages.push("Please try again" + JSON.stringify(err));
                             accountCallback(true);
                         } else if (accData) {
-                            var gps = new GpsSettingsColl({
-                                accountId: accData._id,
-                                stopTime: account.stopDurationLimit,
-                                overSpeedLimit: account.overSpeedLimit
-                            });
-                            gps.save(function (saveErr, saveGPS) {
-                                if (saveErr) {
-                                    retObj.messages.push("Please try again" + JSON.stringify(saveErr));
+                            GpsSettingsColl.findOne({accountId: accData._id},function (gpsErr,gpsDoc) {
+                                if (gpsErr) {
+                                    retObj.messages.push("Please try again" + JSON.stringify(gpsErr));
                                     accountCallback(true);
-                                } else {
-                                    count++;
+                                } else if(gpsDoc){
+                                    console.log(account.accountID+ " account exits");
                                     accountCallback(false);
+                                }else{
+                                    var gps = new GpsSettingsColl({
+                                        accountId: accData._id,
+                                        stopTime: account.stopDurationLimit,
+                                        overSpeedLimit: account.overSpeedLimit
+                                    });
+                                    gps.save(function (saveErr, saveGPS) {
+                                        if (saveErr) {
+                                            retObj.messages.push("Please try again" + JSON.stringify(saveErr));
+                                            accountCallback(true);
+                                        } else {
+                                            count++;
+                                            accountCallback(false);
 
+                                        }
+                                    })
                                 }
-                            })
+                            });
+
                         } else {
                             accountCallback(false);
 
