@@ -169,11 +169,14 @@ function sendNotificationToDevices(body,regIdArray,callback) {
 }
 
 Notifications.prototype.getPushNotifications=function (req,callback) {
-    var retObj={};
+    var retObj={
+        status:false,
+        messages:[]
+    };
     DeviceIdColl.findOne({accountId:req.jwt.id},{messages:1},function (err,device) {
         if(err){
             retObj.status = false;
-            retObj.message = 'Error while retrieving notifications';
+            retObj.messages.push('Error while retrieving notifications');
             callback(retObj);
         }else if(device){
             var messages=[];
@@ -183,12 +186,12 @@ Notifications.prototype.getPushNotifications=function (req,callback) {
                 messages=device.messages;
             }
             retObj.status = true;
-            retObj.message = 'Success';
+            retObj.messages.push('Success');
             retObj.data=messages;
             callback(retObj);
         }else{
             retObj.status = false;
-            retObj.message = 'No device registered for this account.';
+            retObj.messages.push('No device registered for this account.');
             callback(retObj);
         }
     })
