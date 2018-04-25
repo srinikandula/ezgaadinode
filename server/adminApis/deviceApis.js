@@ -334,7 +334,7 @@ Devices.prototype.getDevices = function (req, callback) {
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
     if (params.searchString) query.$or =
-            [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
+        [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
             {"imei": new RegExp(params.searchString, "gi")},
             {"simNumber": new RegExp(params.searchString, "gi")},
             {"deviceId": new RegExp(params.searchString, "gi")}];
@@ -345,11 +345,14 @@ Devices.prototype.getDevices = function (req, callback) {
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                 //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
+                //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate({
                     path: 'accountId',
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
-                })//, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
+                }).populate({
+                path: 'assignedTo',
+            })
+            //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate('installedBy', {userName: 1})
                 .lean()
                 .exec(function (errdevices, devices) {
@@ -471,7 +474,10 @@ Devices.prototype.getDevice = function (req, callback) {
         status: false,
         messages: []
     };
-    DevicesColl.findOne({_id: req.params.deviceId}).populate( {path:"accountId",select:"userName"}).lean().exec(function (errdevice, device) {
+    DevicesColl.findOne({_id: req.params.deviceId}).populate({
+        path: "accountId",
+        select: "userName"
+    }).lean().exec(function (errdevice, device) {
         if (errdevice) {
             retObj.messages.push("Unable to get device, please try again");
             analyticsService.create(req, serviceActions.get_device_err, {

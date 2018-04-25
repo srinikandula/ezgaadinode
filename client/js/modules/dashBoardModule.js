@@ -193,7 +193,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Frieight Amount", "data": "freightAmount",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
                                         return '--';
                                     }
@@ -204,7 +204,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Expenses", "data": "cost",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
                                         return '--';
                                     }
@@ -263,9 +263,40 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                                 }
                             },
-                            {title: 'Total Freight', "data": "totalFreight"},
-                            {title: "Total Expense", "data": "totalExpense"},
-                            {title: "Net Revenue", "data": "totalRevenue"}
+                            {
+                                title: 'Total Freight',
+                                "data": "totalFreight",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '--';
+                                    }
+
+                                }
+                            },
+                            {
+                                title: "Total Expense",
+                                "data": "totalExpense",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Net Revenue",
+                                "data": "totalRevenue",
+                                "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            }
 
                         ],
 
@@ -322,9 +353,33 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 }
                             },
                             {title: 'Party Mobile', "data": "_id.contact"},
-                            {title: "Total Amount", "data": "totalAmount"},
-                            {title: "Paid Amount", "data": "paidAmount"},
-                            {title: "Due Amount", "data": "dueAmount"}
+                            {
+                                title: "Total Amount", "data": "totalAmount", "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Paid Amount", "data": "paidAmount", "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Due Amount", "data": "dueAmount", "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            }
 
 
                         ],
@@ -433,7 +488,6 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                             responsivePriority: 1
                         }],
-
                         data: success.data.expenses,
                         columns: [
                             {
@@ -443,10 +497,42 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                     return '<a href="#" class="ui-sref" style="text-transform: uppercase;">' + data + '</a>';
                                 }
                             },
-                            {title: 'Diesel', "data": "exps[0].dieselExpense"},
-                            {title: "Toll", "data": "exps[0].tollExpense"},
-                            {title: "Maintenance", "data": "exps[0].mExpense"},
-                            {title: "Miscellaneous", "data": "exps[0].misc"}
+                            {
+                                title: 'Diesel', "data": "exps[0].dieselExpense", "render": function (data, type, row) {
+                                    if (data) {
+                                        return parseFloat(data).toFixed(2);
+                                    } else {
+                                        return '0';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Toll", "data": "exps[0].tollExpense", "render": function (data, type, row) {
+                                    if (data) {
+                                        return parseFloat(data).toFixed(2);
+                                    } else {
+                                        return '0';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Maintenance", "data": "exps[0].mExpense", "render": function (data, type, row) {
+                                    if (data) {
+                                        return parseFloat(data).toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Miscellaneous", "data": "exps[0].misc", "render": function (data, type, row) {
+                                    if (data) {
+                                        return parseFloat(data).toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            }
 
 
                         ],
@@ -502,9 +588,33 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 }
                             },
                             {title: 'Party Mobile', "data": "attrs.partyContact"},
-                            {title: "Total Fright", "data": "totalFright"},
-                            {title: "Paid Amount", "data": "totalPayment"},
-                            {title: "Due Amount", "data": "totalDue"}
+                            {
+                                title: "Total Fright", "data": "totalFright", "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Paid Amount", "data": "totalPayment", "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            },
+                            {
+                                title: "Due Amount", "data": "totalDue", "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
+                            }
 
 
                         ],
@@ -627,7 +737,13 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
 
                             },
                             {
-                                title: 'Amount', "data": "cost",
+                                title: 'Amount', "data": "cost", "render": function (data, type, row) {
+                                    if (data) {
+                                        return data.toFixed(2);
+                                    } else {
+                                        return '---';
+                                    }
+                                }
 
                             }
 
@@ -714,7 +830,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Freight Amount", "data": "freightAmount",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
                                         return '';
                                     }
@@ -725,7 +841,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Paid Amount", "data": "amount",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
                                         return '';
                                     }
@@ -787,9 +903,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Expense", "data": "totalAmount",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
-                                        return   '--';
+                                        return '--';
                                     }
 
                                 }
@@ -798,9 +914,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Paid", "data": "amount",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
-                                        return  '--';
+                                        return '--';
                                     }
 
                                 }
@@ -1128,7 +1244,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Amount", "data": "amount",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
                                         return '0';
                                     }
@@ -1211,7 +1327,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 title: "Amount", "data": "amount",
                                 "render": function (data, type, row) {
                                     if (data) {
-                                        return data;
+                                        return data.toFixed(2);
                                     } else {
                                         return '0';
                                     }

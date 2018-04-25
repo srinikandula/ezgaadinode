@@ -1032,6 +1032,9 @@ Employees.prototype.addEmployee = function (req, callback) {
     if (!employeeInfo.lastName || !_.isString(employeeInfo.lastName)) {
         retObj.messages.push('Invalid Last Name');
     }
+    if (!employeeInfo.userName || !_.isString(employeeInfo.userName)) {
+        retObj.messages.push('Invalid User Name');
+    }
     if (!employeeInfo.password) {
         retObj.messages.push('Invalid Password');
     }
@@ -1048,7 +1051,8 @@ Employees.prototype.addEmployee = function (req, callback) {
         retObj.messages.push('Invalid Role');
     }
     if (!employeeInfo.franchiseId) {
-        retObj.messages.push('Invalid Franchise');
+        employeeInfo.franchiseId = undefined;
+        //retObj.messages.push('Invalid Franchise');
     }
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.add_employee_err, {
@@ -1069,7 +1073,7 @@ Employees.prototype.addEmployee = function (req, callback) {
                     employeeInfo.accountId = req.jwt.id;
                     employeeInfo.type = "account";
                     employeeInfo.role = "employee";
-                    employeeInfo.userName = employeeInfo.email;
+                    //  employeeInfo.userName = employeeInfo.email;
                     employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
                     saveEmployee(req, employeeInfo, callback);
                 } else {
@@ -1089,7 +1093,7 @@ Employees.prototype.addEmployee = function (req, callback) {
             employeeInfo.accountId = req.jwt.id;
             employeeInfo.type = "account";
             employeeInfo.role = "employee";
-            employeeInfo.userName = employeeInfo.email;
+            //  employeeInfo.userName = employeeInfo.email;
             employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
             saveEmployee(req, employeeInfo, callback);
         }
@@ -1263,7 +1267,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
                         if (uploadResp.status) {
                             employeeInfo.profilePic = uploadResp.fileName;
                             employeeInfo.updatedBy = req.jwt.id;
-                            employeeInfo.userName = employeeInfo.email;
+                            employeeInfo.userName = employeeInfo.userName;
                             employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
                             updateEmployee(req, employeeInfo, callback);
                         } else {
@@ -1292,7 +1296,7 @@ Employees.prototype.updateEmployee = function (req, callback) {
             });
         } else {
             employeeInfo.updatedBy = req.jwt.id;
-            employeeInfo.userName = employeeInfo.email;
+            employeeInfo.userName = employeeInfo.userName;
             employeeInfo.contactName = employeeInfo.firstName + ' ' + employeeInfo.lastName;
             updateEmployee(req, employeeInfo, callback);
         }

@@ -213,7 +213,7 @@ AuthRouter.delete('/deleteOperatingRoutes',function (req,res) {
 });
 
 AuthRouter.delete('/deleteTrafficManager',function (req,res) {
-    CustomerLeads.deleteTrafficManager(req,function (result) {
+    CustomerLeads.deleteTrafficManagers(req,function (result) {
         res.send(result);
     })
 });
