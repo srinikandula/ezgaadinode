@@ -92,7 +92,8 @@ Accounts.prototype.getAccounts = function (req, callback) {
     else if (params.sortableString === 'Trucks') query.truckType = 'Trucks';
     else if (params.sortableString === 'Non Trucks') query.truckType = 'Non Trucks';
     else if (params.sortableString === 'Both') query.truckType = 'Both';
-    if (params.searchString) query.$or = [{"contactName": new RegExp(params.searchString, "gi")}];
+    if (params.searchString) query.$or = [{"contactName": new RegExp(params.searchString, "gi")},
+        {"userName": new RegExp(params.searchString, "gi")}];
     async.parallel({
         accounts: function (accountsCallback) {
             AccountsColl
