@@ -304,10 +304,8 @@ var notificationsSchema = mongoose.Schema({
 
 var gpsSettingsSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    idleTime: {type: Number, default: 10},
     stopTime: {type: Number, default: 15},
     overSpeedLimit: {type: Number, default: 60},
-    routeNotificationInterval: {type: Number, default: 10}
 });
 
 var erpSettingsSchema = mongoose.Schema({
