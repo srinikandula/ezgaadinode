@@ -23,8 +23,16 @@ var routeConfigSchema = new mongoose.Schema({
     name:String,
     distance:Number,
     accountId: {type: ObjectId, ref: 'accounts'},
-    source:{},
-    destination:{},
+    source:{
+        'type': {type: String, default: "Point"},
+        coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    },
+    destination:{
+        'type': {type: String, default: "Point"},
+        coordinates: [Number]
+    },
+    sourceAddress:String,
+    destinationAddress:String,
     attrs: {}
 }, {
     timestamps: true
