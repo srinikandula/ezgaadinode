@@ -50,7 +50,8 @@
                     {{device.accountId.userName}}
                 </td>
                 <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
-                    <a href="#" data-toggle="modal" data-target="#latestLocation" ng-click="getLatestLocation(device);">
+                    <a href="#" data-toggle="modal" data-target="#latestLocation"
+                       ng-click="getLatestLocation(device._id);">
                         {{device.registrationNo || '--' | uppercase}}
                     </a>
                 </td>
@@ -93,29 +94,29 @@
             </tr>
         </table>
     </div>
-    <div class="modal fade" id="latestLocation" role="dialog">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title">Latest Location</h4>
-                </div>
-                <div class="modal-body ">
-                    <p style="font-size: 15px;"><b>Vehicle number</b> : {{latestLocation.registrationNo | uppercase}}</p>
-                    <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.attrs.latestLocation.address}}
-                    </p>
-                    <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.attrs.latestLocation.speed | number:0}}
-                        KMPH</p>
-                    <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.attrs.latestLocation.deviceTime
-                        |date:'dd-MM-yyyy HH:mm:ss '}}</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                </div>
-            </div>
+
+</div>
+<script type="text/ng-template" id="latestLocationModal.html">
+    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
+    <div class="modal-header">
+        <h3 class="modal-title">Device Location</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row" style="padding: 20px;">
+            <p style="font-size: 15px;"><b>Vehicle number</b> : {{latestLocation.latestLocation.deviceId | uppercase}}</p>
+            <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.latestLocation.address}}
+            </p>
+            <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.latestLocation.speed | number:0}}
+                KMPH</p>
+            <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.latestLocation.deviceTime
+                |date:'dd-MM-yyyy HH:mm:ss '}}</p>
         </div>
     </div>
-</div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="button" ng-click="cancel();">Cancel</button>
+    </div>
 
+</script>
 
 <script type="text/ng-template" id="assignDevicesModal.html">
     <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->

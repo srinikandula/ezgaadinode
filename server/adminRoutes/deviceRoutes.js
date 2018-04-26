@@ -116,6 +116,11 @@ AuthRouter.get('/getGpsDevicesCountByStatus',function (req,res) {
         res.json(result);
     })
 });
+AuthRouter.get('/getLatestLocationFromDevice',function (req,res) {
+    Devices.getLatestLocationFromDevice(req,function (result) {
+        res.json(result);
+    })
+});
 
 module.exports = {
     AuthRouter: AuthRouter

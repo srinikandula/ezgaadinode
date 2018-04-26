@@ -93,7 +93,7 @@ app.factory('DeviceService', function ($http) {
             $http({
                 url: '/v1/admin/accounts/getAllAccountsForDropdown',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
         getAllTrucksOfAccount: function (truckId, success, error) {
@@ -125,13 +125,20 @@ app.factory('DeviceService', function ($http) {
             $http({
                 url: '/v1/cpanel/devices/getGpsDevicesCountByStatus',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
+        getLatestLocationFromDevice: function (params, success, error) {
+            $http({
+                url: '/v1/cpanel/devices/getLatestLocationFromDevice',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        }
     }
 });
 
-app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal','$stateParams', function ($scope, DeviceService, Notification, NgTableParams, $uibModal,$stateParams) {
+app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', '$stateParams', function ($scope, DeviceService, Notification, NgTableParams, $uibModal, $stateParams) {
     $scope.searchString = '';
     $scope.searchAccount = '';
     $scope.sortableString = '';
@@ -154,7 +161,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             size: tableParams.count(),
             sort: tableParams.sorting(),
             searchString: $scope.searchString,
-            searchAccount:$scope.searchAccount,
+            searchAccount: $scope.searchAccount,
             sortableString: $scope.sortableString
         };
         DeviceService.getDevices(pageable, function (response) {
@@ -197,6 +204,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
 
     };
 
+
     $scope.deleteDevice = function (index) {
         swal({
             title: 'Are you sure?',
@@ -221,12 +229,45 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             }
         });
     };
-    $scope.getLatestLocation = function (device) {
-        $scope.latestLocation = device;
-        //console.log($scope.latestLocation);
+    $scope.getLatestLocation = function (deviceId) {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'latestLocationModal.html',
+            controller: 'FindDeviceLocationController',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+            resolve: {
+                deviceId: function () {
+                    return deviceId;
+                }
+            }
+        });
+
 
     }
 }]);
+app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$state','$uibModal', 'deviceId','$uibModalInstance', function ($scope, DeviceService,$state,$uibModal, deviceId, $uibModalInstance) {
+
+    DeviceService.getLatestLocationFromDevice({_id:deviceId},function (success) {
+        if(success.data.status){
+            $scope.latestLocation = success.data.latestLocation;
+            console.log("$scope.latestLocation", $scope.latestLocation);
+        }else{
+            swal(
+                '',
+                success.data.messages[0],
+                'error'
+            );
+        }
+    },function (error) {
+
+    });
+    $scope.cancel = function () {
+        $uibModalInstance.close();
+    };
+
+}])
+
 
 app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$stateParams', '$filter', '$state', 'SettingServices', 'AccountService', function ($scope, DeviceService, Notification, NgTableParams, $stateParams, $filter, $state, SettingServices, AccountService) {
 
@@ -255,7 +296,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         npAvailable: '',
         npExpiry: '',
         error: '',
-        registrationNo:""
+        registrationNo: ""
     };
 
     function getDevice() {
@@ -291,17 +332,17 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         });
     }
 
- /*   function getAccounts() {
-        DeviceService.getAllAccountsForDropdown(function (success) {
-            if (success.data.status) {
-                $scope.accounts = success.data.accounts;
+    /*   function getAccounts() {
+           DeviceService.getAllAccountsForDropdown(function (success) {
+               if (success.data.status) {
+                   $scope.accounts = success.data.accounts;
 
 
-            }
-        });
-    }
+               }
+           });
+       }
 
-    getAccounts();*/
+       getAccounts();*/
 
 
     $scope.loadMore = function () {
@@ -320,6 +361,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
 
         });
     };
+
     function getAccounts() {
         $scope.searchAccountOwner = function (search) {
             $scope.currentElement = 0;
@@ -339,16 +381,18 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             });
         };
     }
+
     getAccounts();
+
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
                 $scope.employees = success.data.employees;
-               /* $scope.employees.sort(function(a, b){
-                    if(a.displayName < b.displayName) return -1;
-                    if(a.displayName > b.displayName) return 1;
-                    return 0;
-                })*/
+                /* $scope.employees.sort(function(a, b){
+                     if(a.displayName < b.displayName) return -1;
+                     if(a.displayName > b.displayName) return 1;
+                     return 0;
+                 })*/
             }
         });
     }
@@ -368,8 +412,8 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             var truck = _.find($scope.trucks, function (truck) {
                 return truck._id === $scope.deviceDetails.truckId;
             });
-            $scope.deviceDetails.truckId=truck._id;
-            $scope.deviceDetails.registrationNo=truck.registrationNo;
+            $scope.deviceDetails.truckId = truck._id;
+            $scope.deviceDetails.registrationNo = truck.registrationNo;
             $scope.deviceDetails.truck = {};
             $scope.deviceDetails.truck.insuranceExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
             $scope.deviceDetails.truck.fitnessExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
@@ -482,9 +526,9 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
     $scope.addImeiNumbers = function (index, imeiNos) {
         if (index === 0) {
             var imeiNumbers = imeiNos.split(' ');
-             for (var i = 0; i < imeiNumbers.length; i++) {
-                 $scope.devicesToAdd[i].imei = imeiNumbers[i];
-             }
+            for (var i = 0; i < imeiNumbers.length; i++) {
+                $scope.devicesToAdd[i].imei = imeiNumbers[i];
+            }
 
         }
     };
@@ -526,17 +570,17 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
     $scope.addDevices = function () {
         $scope.errors = [];
         var params = $scope.devicesToAdd;
-        for (var i = 0; i < params.length ; i++) {
-            if(!params[i].imei && !params[i].simPhoneNumber && !params[i].simNumber){
-               // console.log("$scope.assignedTo", i,params.length)
+        for (var i = 0; i < params.length; i++) {
+            if (!params[i].imei && !params[i].simPhoneNumber && !params[i].simNumber) {
+                // console.log("$scope.assignedTo", i,params.length)
 
-                params.splice(i,1);
-                if(i!==0){
-                    i=i-1;
+                params.splice(i, 1);
+                if (i !== 0) {
+                    i = i - 1;
 
                 }
 
-            }else{
+            } else {
                 for (var j = i + 1; j < params.length; j++) {
 
                     if (params[i].imei === params[j].imei) {
@@ -579,6 +623,7 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
     $scope.cancel = function () {
         $uibModalInstance.close();
     };
+
     function getEmployees() {
         DeviceService.getEmployees(function (success) {
             if (success.data.status) {
@@ -632,7 +677,7 @@ app.controller('transferDevicesCrtl', ['$scope', 'DeviceService', 'Notification'
     }
 }]);
 
-app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', 'Notification','$stateParams', function ($scope, DeviceService, NgTableParams, Notification,$stateParams) {
+app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParams', 'Notification', '$stateParams', function ($scope, DeviceService, NgTableParams, Notification, $stateParams) {
     $scope.searchString = '';
     $scope.sortableString = '';
     $scope.count = 0;
@@ -656,7 +701,7 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
                 createdAt: -1
             }
         }, {
-            counts:[10, 20, 50],
+            counts: [10, 20, 50],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
@@ -684,9 +729,12 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
         });
     };
 
-$scope.getAssignedDevices= function () {
-    $scope.Name = $stateParams.Name;
-        DeviceService.getGpsDevicesCountByStatus({type:$stateParams.type, accountId:$stateParams.accountId}, function (success) {
+    $scope.getAssignedDevices = function () {
+        $scope.Name = $stateParams.Name;
+        DeviceService.getGpsDevicesCountByStatus({
+            type: $stateParams.type,
+            accountId: $stateParams.accountId
+        }, function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
                 $scope.initDevices();
@@ -704,7 +752,7 @@ $scope.getAssignedDevices= function () {
                 createdAt: -1
             }
         }, {
-            counts:[],
+            counts: [],
             total: $scope.count,
             getData: function (params) {
                 devicesloadTableData(params);
