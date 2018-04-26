@@ -1009,7 +1009,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 showLoaderOnConfirm: true,
                 preConfirm: (email) => {
                     return new Promise((resolve) => {
-                        PaymentsService.sharePaymentsDetailsByPartyViaEmail({
+                        ReceiptsService.shareReceiptsDetailsByPartyViaEmail({
                             fromDate: $scope.filters.fromDate,
                             toDate: $scope.filters.toDate,
                             partyId: $scope.partyId,

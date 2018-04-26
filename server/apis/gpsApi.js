@@ -434,21 +434,15 @@ Gps.prototype.downloadReport = function (truckId,startDate,endDate,req,callback)
                     status='Moving'
                 }
                 output.push({
-                    Date:positions[i].createdAt,
+                    Date:positions[i].createdAt.toLocaleString(),
                     Status:status,
                     Address:positions[i].address,
-                    Speed:positions[i].speed,
-                    Odo:positions[i].totalDistance
+                    Speed:Math.round(positions[i].speed)+" Kmph",
+                    Odo:Math.round(positions[i].totalDistance)+" KM"
                 });
                 if (i === positions.length - 1) {
                     retObj.status = true;
-                    output.push({
-                        Date:positions[i].createdAt,
-                        Status:status,
-                        Address:positions[i].address,
-                        Speed:positions[i].speed,
-                        Odo:positions[i].totalDistance
-                    });
+
                     retObj.data = output;
                     callback(retObj);
                 }
@@ -526,7 +520,6 @@ Gps.prototype.getTruckReports = function (params,req,callback) {
     };
     var gps=new Gps();
     gps.gpsTrackingByTruck(params.truckNo,params.startDate,params.endDate,req,function (result) {
-        console.log(result);
         if(result.status){
             var positions=result.results.positions;
             retObj.status = true;
