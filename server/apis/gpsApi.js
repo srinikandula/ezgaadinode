@@ -359,14 +359,14 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
             devicePostions.find({
                 uniqueId: truckDetails.deviceId,
                 createdAt: {$gte: startDate, $lte: endDate}
-            }).sort({createdAt: 1}).exec(function (err, positions) {
+            }).sort({deviceTime: 1}).exec(function (err, positions) {
                 if(err){
                     retObj.status=false;
                     retObj.messages.push('Error fetching truck positions');
                     callback(retObj);
                 }else{
                     archivedDevicePositions.find({uniqueId: truckDetails.deviceId,
-                        createdAt: {$gte: startDate, $lte: endDate}}).sort({createdAt: 1}).exec(function (err, archivedPositions) {
+                        createdAt: {$gte: startDate, $lte: endDate}}).sort({deviceTime: 1}).exec(function (err, archivedPositions) {
                         if(err){
                             retObj.status=false;
                             retObj.messages.push('Error fetching truck positions');
