@@ -13,6 +13,7 @@ var config = require('./../config/config');
 var mysql = require('mysql');
 var traccar_mysql = mysql.createPool(config.traccar_mysql);
 
+
 var Devices = function () {
 };
 
@@ -315,16 +316,11 @@ Devices.prototype.count = function (req, callback) {
         }
     });
 };
-
-Devices.prototype.getDevices = function (req, callback) {
+function findDevices(req,params,accounts,callback){
     var retObj = {
         status: false,
         messages: []
     };
-    var params = req.query;
-    if (!params.page) {
-        params.page = 1;
-    }
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
@@ -333,19 +329,22 @@ Devices.prototype.getDevices = function (req, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
-    if (params.searchString) query.$or =
-        [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
-            {"imei": new RegExp(params.searchString, "gi")},
-            {"simNumber": new RegExp(params.searchString, "gi")},
-            {"deviceId": new RegExp(params.searchString, "gi")}];
+    if (params.searchString){
+        query.$or =
+            [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
+                {"imei": new RegExp(params.searchString, "gi")},
+                {"simNumber": new RegExp(params.searchString, "gi")},
+                {"deviceId": new RegExp(params.searchString, "gi")}];
+    }
+    if(params.searchAccount){
+        query.accountId={$in:accounts}
+    }
     async.parallel({
         devices: function (devicescallback) {
             DevicesColl.find(query)
-
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate({
                     path: 'accountId',select: "userName"
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
@@ -374,11 +373,9 @@ Devices.prototype.getDevices = function (req, callback) {
                 messages: retObj.messages
             }, function (response) {
             });
-            callback(retObj);
         } else {
             async.parallel({
                 planhistory: function (planHistoryCallack) {
-
                     var deviceIds = _.pluck(results.devices, '_id');
                     AccountDevicePlanHistoryColl.aggregate([
                         {"$match": {"deviceId": {"$in": deviceIds}}},
@@ -393,7 +390,6 @@ Devices.prototype.getDevices = function (req, callback) {
                     ], function (err, planHistory) {
                         planHistoryCallack(err, planHistory);
                     })
-
                 },
                 truckDetails: function (truckCallBack) {
                     var imeis = _.pluck(results.devices, 'imei');
@@ -418,8 +414,8 @@ Devices.prototype.getDevices = function (req, callback) {
                     }, function (response) {
                     });
                     callback(retObj);
-                } else {
 
+                } else {
                     async.map(results.devices, function (device, deviceCallback) {
                         var planhistory = {};
                         planhistory = _.find(success.planhistory, function (plan) {
@@ -461,12 +457,66 @@ Devices.prototype.getDevices = function (req, callback) {
                             callback(retObj);
                         }
                     });
-
                 }
             });
-
         }
     });
+}
+Devices.prototype.getDevices = function (req, callback) {
+    var params = req.query;
+    if (!params.page) {
+        params.page = 1;
+    }
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var accounts = [];
+    var query = {};
+    if (params.sortableString === 'damaged') query.isDamaged = true;
+    else if (params.sortableString === 'notdamaged') query.isDamaged = false;
+    else if (params.sortableString === 'active') query.isActive = true;
+    else if (params.sortableString === 'inactive') query.isActive = false;
+    if(params.searchAccount){
+        AccountsColl.find({userName:new RegExp(params.searchAccount,"gi")},{"_id":1},function(err,result){
+            console.log("the resultant account is...",result);
+            if(err){
+                retObj.status=false;
+                retObj.messages.push("error in finding account..");
+                callback(retObj);
+            }else{
+                if(result){
+                    accounts= _.pluck(result,'_id');
+                    findDevices(req,params,accounts,function(devices){
+                        if(devices){
+                            retObj.status=true;
+                            retObj.messages.push("Devices fetched successfully....");
+                            retObj.data = devices;
+                            callback(retObj);
+                        }else{
+                            retObj.status=false;
+                            retObj.messages.push(" No Devices found......");
+                            callback(retObj);
+                        }
+                    });
+                }
+            }
+        });
+    }else{
+        findDevices(req,params,accounts,function(devices){
+            if(devices){
+                retObj.status=true;
+                retObj.messages.push("Devices fetched successfully....");
+                retObj.data = devices;
+                callback(retObj);
+            }else{
+                retObj.status=false;
+                retObj.messages.push(" No Devices found......");
+                callback(retObj);
+            }
+
+        });
+    }
 };
 
 Devices.prototype.getDevice = function (req, callback) {

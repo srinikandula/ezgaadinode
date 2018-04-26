@@ -16,11 +16,23 @@
                 <option value="inactive">Inactive</option>
             </select>
         </li>
-        <li class="col-sm-4 col-xs-12 pull-right">
+        <li class="col-sm-2 col-xs-12 pull-right">
             <form role="search">
                 <div class="input-group add-on">
                     <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
                            ng-model="searchString">
+                    <div class="input-group-btn" ng-click="init();">
+                        <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </li>
+        <li class="col-sm-2 col-xs-12 pull-right">
+            <form role="search">
+                <div class="input-group add-on">
+                    <input type="text" class="form-control" placeholder="Search by accountName" name="srch-term"
+                           ng-model="searchAccount">
                     <div class="input-group-btn" ng-click="init();">
                         <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i>
                         </button>
@@ -64,15 +76,6 @@
                 <td data-title="'Installed By'" sortable="'installedBy'" class="clickable-item">
                     {{device.assignedTo.displayName}}
                 </td>
-
-                <!-- <td data-title="'Latest Loc'" class="clickable-item">
-                     <a href="#" data-toggle="modal" data-target="#latestLocation"
-                        ng-click="getLatestLocation(device.latestLocation.address);">
-                         {{device.latestLocation.address | limitTo:10 || "&#45;&#45;"}}</a>
-                 </td>-->
-                <!--<td data-title="'Payment'" sortable="'received'" class="clickable-item">
-                    {{device.received}}
-                </td>-->
                 <td data-title="'Status'" sortable="'isDamaged'" class="clickable-item">
                     {{device.isDamaged == '0' && 'working' || 'Not working'}}
                 </td>
@@ -115,11 +118,8 @@
 
 
 <script type="text/ng-template" id="assignDevicesModal.html">
-
     <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
     <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
-
-
     <div class="modal-header">
         <h3 class="modal-title" id="modal-title">Transfer Devices</h3>
     </div>
@@ -132,7 +132,6 @@
             </div>-->
             <div class="col-sm-6">
                 <textarea ng-model="selectedDevices" class="form-control" cols="22" rows="15">
-
                 </textarea>
             </div>
             <div class="col-sm-4 col-xs-12">
@@ -146,7 +145,6 @@
                 <div ng-show="error" style="color: red;">{{error}}</div>
             </div>
         </div>
-
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary" type="button" ng-click="transferDevices()">Submit</button>
