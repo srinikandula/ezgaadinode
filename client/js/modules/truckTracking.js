@@ -126,12 +126,11 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         for (var i = 0; i< locations.length; i++) {
             flightPathCoordinates.push({lat:locations[i].location.coordinates[1],lng: locations[i].location.coordinates[0]})
             if(i===0){
-                marker[markerIndex] = new google.maps.Marker({
+                marker = new google.maps.Marker({
                     position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
-                    icon: green_marker_icon,
+                    icon: '/images/start.png',
                     map: map
                 });
-                markerIndex++;
             } else if(i===locations.length-1){
                 flightPath = new google.maps.Polyline({
                     path: flightPathCoordinates,
@@ -140,12 +139,11 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                     strokeOpacity: 1.0,
                     strokeWeight: 2
                 });
-                marker[markerIndex] = new google.maps.Marker({
+                marker = new google.maps.Marker({
                     position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
-                    icon: red_marker_icon,
+                    icon: '/images/stop.png',
                     map: map
                 });
-                markerIndex++;
                 map.setCenter(flightPathCoordinates[0]);
                 flightPath.setMap(map);
             } else{
@@ -177,24 +175,23 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 } else if(course>=450 && course<500){
                     icon.url= '/images/h3.png'
                 }
-                marker[markerIndex] = new google.maps.Marker({
+                marker = new google.maps.Marker({
                     position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
                     icon: icon,
                     map: map
                 });
-                markerIndex++;
-                /*
+
                 var d = new Date(locations[i].fixTime);
                 var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
                 var infowindow = new google.maps.InfoWindow();
                 var functionContent = '<div>'+'<span> <b>Address:</b></span>'+locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+locations[i].speed+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'</div>';
                 var compiledContent = $compile(functionContent)($scope);
-                google.maps.event.addListener(marker[markerIndex], 'click', (function (marker, i, content) {
+                google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
                     return function () {
                         infowindow.setContent(content);
                         infowindow.open(map, marker);
                     }
-                })(marker[markerIndex],i, compiledContent[0], $scope)); */
+                })(marker,i, compiledContent[0], $scope));
             }
         }
     }
