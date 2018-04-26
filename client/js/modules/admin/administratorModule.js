@@ -143,6 +143,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
     $scope.employee = {
         firstName: '',
         lastName: '',
+        userName:'',
         password: '',
         confirmPassword: '',
         contactAddress: '',
@@ -262,12 +263,14 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
 
     $scope.addUpdateEmployee = function () {
         var params = $scope.employee;
-
         if (!params.firstName || !_.isString(params.firstName)) {
             Notification.error('Invalid First Name');
         }
         if (!params.lastName || !_.isString(params.lastName)) {
             Notification.error('Invalid Last Name');
+        }
+        if (!params.userName || !_.isString(params.userName)) {
+            Notification.error('Invalid User Name');
         }
         if (!params.password) {
             Notification.error('Invalid Password');
@@ -278,6 +281,9 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         if (params.password !== params.confirmPassword) {
             Notification.error('Password not match');
         }
+        if(!params.contactAddress){
+            Notification.error('Please enter Address')
+        }
         if (!params.email) {
             Notification.error('Invalid Email');
         }
@@ -287,11 +293,11 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         if (!params.adminRoleId) {
             Notification.error('Invalid Role');
         }
-        if (!params.franchiseId) {
-            Notification.error('Invalid Franchise');
-        }
         if (params.isActive === undefined) {
             Notification.error('Invalid Status');
+        }
+        if (!params.newProfilePic) {
+            Notification.error('Please upload any Identity Proof(Adhar, Driving licence, etc) !!');
         }
         else {
             if ($stateParams.employeeId) {

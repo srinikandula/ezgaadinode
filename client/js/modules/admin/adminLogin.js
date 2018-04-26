@@ -6,14 +6,14 @@ app.controller('adminNavCtrl', ['$scope', 'CommonServices', '$state', '$cookies'
     $scope.logout = function () {
         $cookies.remove('token');
         $cookies.remove('userName');
-        $scope.displayName = "";
+        $scope.userName = "";
         $state.go('login');
     };
     $scope.isLoggedIn = function () {
         return $cookies.get('token') != undefined;
     };
     $scope.loggedInName = function () {
-        $scope.displayName = $cookies.get('userName');
+        $scope.userName = $cookies.get('userName');
 
     };
     $scope.loggedInName();

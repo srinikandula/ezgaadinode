@@ -19,13 +19,17 @@
         </li>
         <div class="clearfix"></div>
     </ul>
+    <div class="table-res">
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="employeeParams">
         <tr ng-repeat="employee in currentPageOfEmployees" style="text-align: center;">
-            <td data-title="'First Name'" sortable="'firstName'" class="clickable-item">
-                {{employee.firstName}}
+            <td data-title="'Name'" sortable="'firstName'" class="clickable-item">
+                {{employee.contactName}}
             </td>
-            <td data-title="'Last Name'" sortable="'lastName'" class="clickable-item">
-                {{employee.lastName}}
+            <td data-title="'User Name'" sortable="'userName'" class="clickable-item">
+                {{employee.userName}}
+            </td>
+            <td data-title="'Password'" sortable="'password'" class="clickable-item">
+                {{employee.password}}
             </td>
             <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">
                 {{employee.contactPhone}}
@@ -54,4 +58,5 @@
             <td colspan="8">No Employees Records exist.</td>
         </tr>
     </table>
+    </div>
 </div>

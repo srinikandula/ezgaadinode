@@ -1,27 +1,6 @@
 <div class="col-xs-12 gpsListView" ng-controller="TruckTrackingController">
     <div class="col-xs-12">
         <div class="lisk-block col-xs-12">
-            <!--<div class="col-xs-12">-->
-                <!--<ul>-->
-
-                    <!--<li class="vehicle1"><h2>All Vehicles Location</h2></li>-->
-
-                    <!--<li class="sea-wid1">-->
-                        <!--<div class="search-box1">-->
-                            <!--<input type="text" class="form-control textfiled1" placeholder="search">-->
-                            <!--<input type="button" class="sea-btn">-->
-                        <!--</div>-->
-                        <!--<div class="clearfix"></div>-->
-                    <!--</li>-->
-
-                    <!--<li class="map-wid"><a href="#" class="map activeView" ui-sref="mapView">Map view</a></li>-->
-
-                    <!--<li class="map-wid"><a href="#" class="map" ui-sref="listView">List view</a></li>-->
-
-                    <!--<li  class="mar-rgt-space pull-right map-wid"><a href="#" class="map" ui-sref="gpsReports">Reports</a></li>-->
-
-                <!--</ul>-->
-            <!--</div>-->
             <div class="col-xs-12">
                 <ul class="list-inline">
                     <li class="col-sm-4"><h2>All Vehicles Location</h2></li>
@@ -81,13 +60,13 @@
                 <!--</center>-->
 
                 <div class="mt-20">
-                    <ul class="list-group" ng-show="averageSpeed">
+                    <ul class="list-group">
                         <li class="list-group-item">
                             <strong>Summary </strong>
                         </li>
 
                         <li class="list-group-item">
-                            Distance Travelled : <b>{{distanceTravelled}}</b>
+                            Distance Travelled : <b>{{distance| number:2}}</b>
                         </li>
                         <li class="list-group-item">
                            Top Speed : <b>{{topSpeed | number:2}}</b>
@@ -101,22 +80,6 @@
                         </li>
                     </ul>
                 </div>
-
-                <!--<div class="mt-10 text-center" ng-show="distance">-->
-                <!--<label>Distance Travelled :</label> <label>{{distance}} </label>-->
-                <!--</div>-->
-
-                <!--<div class="mt-10 text-center" ng-show="distance">-->
-                <!--<label>Average Speed :</label> <label>{{averageSpeed}} </label>-->
-                <!--</div>-->
-
-                <!--<div class="mt-10 text-center" ng-show="distance">-->
-                <!--<label>Total Time :</label> <label>{{timeTravelled}} </label>-->
-                <!--</div>-->
-
-
-                <!--<label>Legends</label>-->
-
                 <div class="mt-10">
                     <ul class="list-group" ng-show="averageSpeed">
 

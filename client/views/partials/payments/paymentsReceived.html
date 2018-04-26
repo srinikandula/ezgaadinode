@@ -50,7 +50,7 @@
                 payment.partyId.name }}
             </td>
             <td data-title="'Amount'" sortable="'amount'" class="clickable-item">{{
-                payment.amount }}
+                payment.amount | number:2 }}
             </td>
             <td data-title="'Description'" sortable="'description'" class="clickable-item">{{
                 payment.description || '---'}}

@@ -159,7 +159,7 @@
                         </li>
 
                         <li>
-                            <button type="button" ng-click="downloadPaymentDetailsByParty();" class="btn mailImage"><img
+                            <button type="button" ng-click="downloadReceiptsDetailsByParty();" class="btn mailImage"><img
                                     src="images/Reports_Download.png"></button>
                         </li>
                     </ul>
@@ -186,9 +186,9 @@
                 <tfoot>
                 <tr>
                     <th colspan="2">Total</th>
-                    <th>{{partiesAmount.grossFreight}}</th>
-                    <th>{{partiesAmount.grossExpenses}}</th>
-                    <th>{{partiesAmount.grossDue}}</th>
+                    <th>{{partiesAmount.grossFreight | number:2}}</th>
+                    <th>{{partiesAmount.grossExpenses | number:2}}</th>
+                    <th>{{partiesAmount.grossDue | number:2}}</th>
                 </tr>
                 </tfoot>
             </table>

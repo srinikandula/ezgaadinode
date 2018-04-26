@@ -325,6 +325,10 @@ function findDevices(req,params,accounts,callback){
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
     var query = {};
+    if (params.sortableString === 'damaged') query.isDamaged = true;
+    else if (params.sortableString === 'notdamaged') query.isDamaged = false;
+    else if (params.sortableString === 'active') query.isActive = true;
+    else if (params.sortableString === 'inactive') query.isActive = false;
     if (params.searchString){
         query.$or =
             [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
@@ -332,7 +336,7 @@ function findDevices(req,params,accounts,callback){
                 {"simNumber": new RegExp(params.searchString, "gi")},
                 {"deviceId": new RegExp(params.searchString, "gi")}];
     }
-    else if(params.searchAccount){
+    if(params.searchAccount){
         query.accountId={$in:accounts}
     }
     async.parallel({
@@ -342,9 +346,12 @@ function findDevices(req,params,accounts,callback){
                 .skip(skipNumber)
                 .limit(limit)
                 .populate({
-                    path: 'accountId',
+                    path: 'accountId',select: "userName"
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
-                })//, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
+                }).populate({
+                path: 'assignedTo', select: "displayName"
+            })
+            //, {userName: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}})
                 .populate('installedBy', {userName: 1})
                 .lean()
                 .exec(function (errdevices, devices) {
@@ -517,7 +524,10 @@ Devices.prototype.getDevice = function (req, callback) {
         status: false,
         messages: []
     };
-    DevicesColl.findOne({_id: req.params.deviceId}).populate( {path:"accountId",select:"userName"}).lean().exec(function (errdevice, device) {
+    DevicesColl.findOne({_id: req.params.deviceId}).populate({
+        path: "accountId",
+        select: "userName"
+    }).lean().exec(function (errdevice, device) {
         if (errdevice) {
             retObj.messages.push("Unable to get device, please try again");
             analyticsService.create(req, serviceActions.get_device_err, {
@@ -528,7 +538,7 @@ Devices.prototype.getDevice = function (req, callback) {
             }, function (response) {
             });
             callback(retObj);
-        } else {
+        } else if(device) {
             TrucksColl.findOne({deviceId: device.imei}, {
                 insuranceExpiry: 1,
                 fitnessExpiry: 1,
@@ -558,6 +568,16 @@ Devices.prototype.getDevice = function (req, callback) {
                     callback(retObj);
                 }
             });
+        }else{
+            retObj.messages.push("Device details not found");
+            analyticsService.create(req, serviceActions.get_device_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
         }
     });
 };
@@ -568,6 +588,9 @@ Devices.prototype.updateDevice = function (req, callback) {
         messages: []
     };
     var params = req.body;
+    TrucksColl.findOneAndUpdate({deviceId: params.imei}, {$set: {deviceId: null}}, function (errassaindevice, assigned) {
+
+    });
     TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
         if (errassaindevice) {
             retObj.messages.push("Unable to assign device to truck, please try again");

@@ -441,7 +441,7 @@ Trucks.prototype.getAllTrucksOfAccount = function (req, callback) {
         status: false,
         messages: []
     };
-    TrucksColl.find({accountId: req.params.truckId}, {registrationNo: 1, fitnessExpiry:1, insuranceExpiry:1, 'attrs.latestLocation.address': 1}, function (errtrucks, trucks) {
+    TrucksColl.find({accountId: req.params.truckId}, {registrationNo: 1, fitnessExpiry:1, insuranceExpiry:1, 'attrs.latestLocation': 1}, function (errtrucks, trucks) {
         if(errtrucks) {
             retObj.messages.push('Error getting trucks');
             analyticsService.create(req,serviceActions.all_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });

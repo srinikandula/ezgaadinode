@@ -51,7 +51,7 @@
                 receipt.attrs.partyName }}
             </td>
             <td data-title="'Amount'" sortable="'amount'" class="clickable-item">{{
-                receipt.amount }}
+                receipt.amount | number:2 }}
             </td>
             <td data-title="'Payment Type'" sortable="'paymentType'" class="clickable-item">{{
                 receipt.paymentType}}
