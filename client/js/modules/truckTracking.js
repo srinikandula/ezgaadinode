@@ -149,7 +149,6 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 map.setCenter(flightPathCoordinates[0]);
                 flightPath.setMap(map);
             } else{
-
                 var icon ={
                     url: '/images/h0.png', // url
                     scaledSize: new google.maps.Size(15, 15),
