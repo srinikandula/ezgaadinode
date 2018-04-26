@@ -133,6 +133,7 @@ app.factory('DeviceService', function ($http) {
 
 app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal','$stateParams', function ($scope, DeviceService, Notification, NgTableParams, $uibModal,$stateParams) {
     $scope.searchString = '';
+    $scope.searchAccount = '';
     $scope.sortableString = '';
     $scope.count = 0;
     $scope.getCount = function () {
@@ -153,14 +154,15 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             size: tableParams.count(),
             sort: tableParams.sorting(),
             searchString: $scope.searchString,
+            searchAccount:$scope.searchAccount,
             sortableString: $scope.sortableString
         };
         DeviceService.getDevices(pageable, function (response) {
             $scope.invalidCount = 0;
             if (response.data.status) {
-                $scope.count = response.data.count;
-                tableParams.data = response.data.devices;
-                $scope.currentPageOfDevices = response.data.devices;
+                $scope.count = response.data.data.count;
+                tableParams.data = response.data.data.devices;
+                $scope.currentPageOfDevices = response.data.data.devices;
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
