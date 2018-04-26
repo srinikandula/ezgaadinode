@@ -97,7 +97,7 @@
                     <h4 class="modal-title">Latest Location</h4>
                 </div>
                 <div class="modal-body ">
-                    <p style="font-size: 15px;"><b>Vehicle number</b> : {{latestLocation.deviceId | uppercase}}</p>
+                    <p style="font-size: 15px;"><b>Vehicle number</b> : {{latestLocation.registrationNo | uppercase}}</p>
                     <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.attrs.latestLocation.address}}
                     </p>
                     <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.attrs.latestLocation.speed | number:0}}

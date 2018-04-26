@@ -55,19 +55,22 @@
                 <div class="form-group">
                     <select class="form-control custom-form-control" ng-model="employee.adminRoleId">
                         <option value="" selected>Select Role *</option>
-                        <option ng-repeat="adminRole in adminRoles" value="{{adminRole._id}}">{{adminRole.role}}</option>
+                        <option ng-repeat="adminRole in adminRoles" value="{{adminRole._id}}">{{adminRole.role}}
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
                     <select class="form-control custom-form-control" ng-model="employee.franchiseId">
                         <option value="" selected>Select Franchise</option>
-                        <option ng-repeat="franchise in franchises" value="{{franchise._id}}">{{franchise.fullName}}</option>
+                        <option ng-repeat="franchise in franchises" value="{{franchise._id}}">{{franchise.fullName}}
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Identity Proof* :
-                    <input type="file" ngf-select class="form-control custom-form-control"
-                           ng-model="employee.newProfilePic" name="profilePic" ngf-pattern="'image/*'" ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}" />
+                        <input type="file" ngf-select class="form-control custom-form-control"
+                               ng-model="employee.newProfilePic" name="profilePic" ngf-pattern="'image/*'"
+                               ngf-accept="'image/*'" ngf-resize="{width: 100, height: 100}"/>
                     </label>
                     <img src="{{employee.profilePic}}" ng-if="employee.profilePic">
                 </div>
