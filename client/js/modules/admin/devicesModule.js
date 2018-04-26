@@ -254,7 +254,8 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         insuranceAmount: '',
         npAvailable: '',
         npExpiry: '',
-        error: ''
+        error: '',
+        registrationNo:""
     };
 
     function getDevice() {
@@ -367,6 +368,8 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             var truck = _.find($scope.trucks, function (truck) {
                 return truck._id === $scope.deviceDetails.truckId;
             });
+            $scope.deviceDetails.truckId=truck._id;
+            $scope.deviceDetails.registrationNo=truck.registrationNo;
             $scope.deviceDetails.truck = {};
             $scope.deviceDetails.truck.insuranceExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
             $scope.deviceDetails.truck.fitnessExpiry = $filter("date")(truck.fitnessExpiry, 'dd-MM-yyyy');
