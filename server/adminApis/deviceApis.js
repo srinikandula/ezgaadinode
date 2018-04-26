@@ -12,6 +12,7 @@ var PaymentsColl = require('./../models/schemas').PaymentsColl;
 var config = require('./../config/config');
 var mysql = require('mysql');
 var traccar_mysql = mysql.createPool(config.traccar_mysql);
+var nodeGeocoder = require('node-geocoder');
 
 
 var Devices = function () {
@@ -390,19 +391,8 @@ function findDevices(req,params,accounts,callback){
                     ], function (err, planHistory) {
                         planHistoryCallack(err, planHistory);
                     })
-                },
-                truckDetails: function (truckCallBack) {
-                    var imeis = _.pluck(results.devices, 'imei');
-                    TrucksColl.find({deviceId: {$in: imeis}}, {
-                        registrationNo: 1,
-                        attrs: 1,
-                        deviceId: 1
-                    }, function (errTruck, trucks) {
-
-                        truckCallBack(errTruck, trucks);
-                    });
-
                 }
+
             }, function (errpopulated, success) {
                 if (errpopulated) {
                     retObj.messages.push("Unable to populate devices, please try again");
@@ -416,7 +406,7 @@ function findDevices(req,params,accounts,callback){
                     callback(retObj);
 
                 } else {
-                    async.map(results.devices, function (device, deviceCallback) {
+                    async.eachSeries(results.devices, function (device, deviceCallback) {
                         var planhistory = {};
                         planhistory = _.find(success.planhistory, function (plan) {
                             return plan._id.toString() === device._id.toString();
@@ -425,13 +415,30 @@ function findDevices(req,params,accounts,callback){
                             device.expiryTime = planhistory.expiryTime;
                             device.received = planhistory.received;
                         }
-                        var truck = {};
-                        truck = _.findWhere(success.truckDetails, {deviceId: device.imei});
-                        if (truck) {
-                            device.registrationNo = truck.registrationNo;
-                            device.latestLocation = truck.attrs.latestLocation;
+                        if (device.attrs && device.attrs.latestLocation) {
+                            device.latestLocation = device.attrs.latestLocation;
+                            if (device.attrs.latestLocation.address !== '{address}') {
+                                deviceCallback(false, "success");
+                            } else {
+                                resolveAddress({
+                                    latitude: device.attrs.latestLocation.location.coordinates[0],
+                                    longitude: device.attrs.latestLocation.location.coordinates[1]
+                                }, function (addressResp) {
+                                    if(addressResp.status){
+                                        device.latestLocation.address=addressResp.address;
+                                        //device.attrs.latestLocation.address=addressResp.address;
+                                        updateAddressToDevice({deviceId:device._id,address:addressResp.address,truckId:device.truckId});
+                                        deviceCallback(false, "success");
+
+                                    }else{
+                                        deviceCallback(false, "success");
+                                    }
+                                });
+                            }
+                        } else {
+                            deviceCallback(false, "success");
                         }
-                        deviceCallback(false, "success");
+
                     }, function (deviceErr, deviceResult) {
                         if (deviceErr) {
                             retObj.messages.push("Unable to populate devices, please try again");
@@ -519,6 +526,42 @@ Devices.prototype.getDevices = function (req, callback) {
     }
 };
 
+function resolveAddress(position, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var options = {
+        provider: 'google',
+        httpAdapter: 'https'
+    };
+    options.apiKey = config.googleKey;
+    var geocoder = nodeGeocoder(options);
+    geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
+        if (location) {
+            retObj.status = true;
+            retObj.address = location[0]['formattedAddress'];
+            callback(retObj);
+        } else {
+            retObj.messages.push("address finding error");
+            callback(retObj);
+        }
+
+    });
+}
+function updateAddressToDevice(params){
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    DevicesColl.update({_id:ObjectId(params.deviceId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,deviceDoc) {
+        console.log("device ",err,deviceDoc);
+    });
+    TrucksColl.update({_id:ObjectId(params.truckId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
+        console.log("TrucksColl Err,Doc",err,params.truckId);
+    });
+}
+
 Devices.prototype.getDevice = function (req, callback) {
     var retObj = {
         status: false,
@@ -538,7 +581,7 @@ Devices.prototype.getDevice = function (req, callback) {
             }, function (response) {
             });
             callback(retObj);
-        } else if(device) {
+        } else if (device) {
             TrucksColl.findOne({deviceId: device.imei}, {
                 insuranceExpiry: 1,
                 fitnessExpiry: 1,
@@ -568,7 +611,7 @@ Devices.prototype.getDevice = function (req, callback) {
                     callback(retObj);
                 }
             });
-        }else{
+        } else {
             retObj.messages.push("Device details not found");
             analyticsService.create(req, serviceActions.get_device_err, {
                 body: JSON.stringify(req.body),
@@ -608,7 +651,9 @@ Devices.prototype.updateDevice = function (req, callback) {
                     accountId: params.accountId,
                     installedBy: params.installedBy,
                     simNumber: params.simNumber,
-                    simPhoneNumber: params.simPhoneNumber
+                    simPhoneNumber: params.simPhoneNumber,
+                    registrationNo: params.registrationNo,
+                    truckId:params.truckId
 
                 }
             }, function (errAddedAccount, accountAdded) {

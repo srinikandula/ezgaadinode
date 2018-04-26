@@ -431,7 +431,8 @@ var deviceSchema = new mongoose.Schema({
     equipmentType: String,
     serialNumber: String,
     isActive: {type: Boolean, default: true},
-    remarks: String
+    remarks: String,
+    registrationNo:String
 }, {timestamps: true, versionKey: false});
 
 var secretKeys = new mongoose.Schema({
