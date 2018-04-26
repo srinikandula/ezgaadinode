@@ -420,7 +420,6 @@ function findDevices(req,params,accounts,callback){
                             if (device.attrs.latestLocation.address !== '{address}') {
                                 deviceCallback(false, "success");
                             } else {
-
                                 resolveAddress({
                                     latitude: device.attrs.latestLocation.location.coordinates[0],
                                     longitude: device.attrs.latestLocation.location.coordinates[1]
