@@ -186,7 +186,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 var infowindow = new google.maps.InfoWindow();
                 var functionContent = '<div>'+'<span> <b>Address:</b></span>'+locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+locations[i].speed+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'</div>';
                 var compiledContent = $compile(functionContent)($scope);
-                google.maps.event.addListener(marker,'click', (function (marker, i, content) {
+                google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
                     return function () {
                         infowindow.setContent(content);
                         infowindow.open(map, marker);

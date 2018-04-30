@@ -439,6 +439,7 @@ function findDevices(req,params,accounts,callback){
                             deviceCallback(false, "success");
                         }
 
+                        deviceCallback(false, "success");
                     }, function (deviceErr, deviceResult) {
                         if (deviceErr) {
                             retObj.messages.push("Unable to populate devices, please try again");
@@ -560,6 +561,15 @@ function updateAddressToDevice(params){
     TrucksColl.update({_id:ObjectId(params.truckId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
         console.log("TrucksColl Err,Doc",err,params.truckId);
     });
+    console.log("updating deviceId "+ params.imei);
+    DevicesColl.findOne({"imei":params.imei},function (err,deviceDoc) {
+        console.log("device ",err,deviceDoc.attrs);
+    });
+    if(params.truckId) {
+        TrucksColl.update({_id:ObjectId(params.truckId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
+            console.log("TrucksColl Err,Doc",err,params.truckId);
+        });
+    }
 }
 
 Devices.prototype.getDevice = function (req, callback) {
@@ -632,7 +642,53 @@ Devices.prototype.updateDevice = function (req, callback) {
     };
     var params = req.body;
     TrucksColl.findOneAndUpdate({deviceId: params.imei}, {$set: {deviceId: null}}, function (errassaindevice, assigned) {
+        TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
+            if (errassaindevice) {
+                retObj.messages.push("Unable to assign device to truck, please try again");
+                analyticsService.create(req, serviceActions.edit_device_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
+                callback(retObj);
+            } else {
+                DevicesColl.findOneAndUpdate({_id: params._id}, {
+                    $set: {
+                        accountId: params.accountId,
+                        installedBy: params.installedBy,
+                        simNumber: params.simNumber,
+                        simPhoneNumber: params.simPhoneNumber,
+                        registrationNo: params.registrationNo,
+                        truckId: params.truckId
 
+                    }
+                }, function (errAddedAccount, accountAdded) {
+                    if (errAddedAccount) {
+                        retObj.messages.push("Unable to assign device to truck, please try again");
+                        analyticsService.create(req, serviceActions.edit_device_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages = "Success";
+                        analyticsService.create(req, serviceActions.edit_device_err, {
+                            body: JSON.stringify(req.body),
+                            accountId: req.jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                });
+            }
+        });
     });
     TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
         if (errassaindevice) {
@@ -653,32 +709,10 @@ Devices.prototype.updateDevice = function (req, callback) {
                     simNumber: params.simNumber,
                     simPhoneNumber: params.simPhoneNumber,
                     registrationNo: params.registrationNo,
-                    truckId:params.truckId
+                    truckId: params.truckId
+                }
+            })
 
-                }
-            }, function (errAddedAccount, accountAdded) {
-                if (errAddedAccount) {
-                    retObj.messages.push("Unable to assign device to truck, please try again");
-                    analyticsService.create(req, serviceActions.edit_device_err, {
-                        body: JSON.stringify(req.body),
-                        accountId: req.jwt.id,
-                        success: false,
-                        messages: retObj.messages
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                } else {
-                    retObj.status = true;
-                    retObj.messages = "Success";
-                    analyticsService.create(req, serviceActions.edit_device_err, {
-                        body: JSON.stringify(req.body),
-                        accountId: req.jwt.id,
-                        success: true
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                }
-            });
         }
     });
 };
