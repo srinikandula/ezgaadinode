@@ -1596,17 +1596,17 @@ Trips.prototype.downloadRevenueDetailsByVechicle = function (jwt, params, req, c
             for (var i = 0; i < revenueResponse.revenue.length; i++) {
                 output.push({
                     RegistrationNo: revenueResponse.revenue[i].attrs.truckName,
-                    Total_Freight: revenueResponse.revenue[i].totalFreight,
-                    Total_Expense: revenueResponse.revenue[i].totalExpense,
-                    Total_Revenue: revenueResponse.revenue[i].totalRevenue
+                    Total_Freight: revenueResponse.revenue[i].totalFreight.toFixed(2),
+                    Total_Expense: revenueResponse.revenue[i].totalExpense.toFixed(2),
+                    Total_Revenue: revenueResponse.revenue[i].totalRevenue.toFixed(2)
                 });
                 if (i === revenueResponse.revenue.length - 1) {
                     retObj.status = true;
                     output.push({
                         RegistrationNo: 'Total',
-                        Total_Freight: revenueResponse.grossAmounts.grossFreight,
-                        Total_Expense: revenueResponse.grossAmounts.grossExpenses,
-                        Total_Revenue: revenueResponse.grossAmounts.grossRevenue
+                        Total_Freight: revenueResponse.grossAmounts.grossFreight.toFixed(2),
+                        Total_Expense: revenueResponse.grossAmounts.grossExpenses.toFixed(2),
+                        Total_Revenue: revenueResponse.grossAmounts.grossRevenue.toFixed(2)
                     });
                     retObj.data = output;
                     analyticsService.create(req, serviceActions.revenue_det_by_veh_dwnld, {

@@ -18,7 +18,7 @@
         #foreach($record in $emailData.receipts)
         <tr>
             <td>$record._id.name</td>
-            <td>$record.amount</td>
+            <td>$record.amount.toFixed(2)</td>
 
 
         </tr>

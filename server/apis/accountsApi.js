@@ -912,7 +912,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, req, callba
                 }, function (err, data) {
                     if (err) {
                         retObj.status = false;
-                        retObj.message = "Please try again";
+                        retObj.messages.push("Please try again");
                         analyticsService.create(req, serviceActions.upld_usr_profile_pic_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -923,7 +923,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, req, callba
                         callback(retObj);
                     } else if (data) {
                         retObj.status = true;
-                        retObj.message.push("Image uploaded successfully");
+                        retObj.messages.push("Image uploaded successfully");
                         retObj.profilePic = accountId + '.jpg';
                         analyticsService.create(req, serviceActions.upld_usr_profile_pic, {
                             body: JSON.stringify(req.body),
@@ -934,7 +934,7 @@ Accounts.prototype.uploadUserProfilePic = function (accountId, body, req, callba
                         callback(retObj);
                     } else {
                         retObj.status = false;
-                        retObj.message.push("Please try again latter");
+                        retObj.messages.push("Please try again latter");
                         analyticsService.create(req, serviceActions.upld_usr_profile_pic_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,

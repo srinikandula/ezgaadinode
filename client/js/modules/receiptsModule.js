@@ -64,9 +64,9 @@ app.factory('ReceiptsService',['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        sharePaymentsDetailsByPartyViaEmail: function (params, success, error) {
+        shareReceiptsDetailsByPartyViaEmail: function (params, success, error) {
             $http({
-                url: '/v1/receipts/sharePaymentsDetailsByPartyViaEmail',
+                url: '/v1/receipts/shareReceiptsDetailsByPartyViaEmail',
                 method: "GET",
                 params: params
             }).then(success, error);

@@ -20,19 +20,19 @@
             #foreach($record in $emailData.expenses)
             <tr>
                 <td>$record.regNumber</td>
-                <td>$record.exps[0].dieselExpense</td>
-                <td>$record.exps[0].tollExpense</td>
-                <td>$record.exps[0].mExpense</td>
-                <td>$record.exps[0].misc</td>
+                <td>$record.exps[0].dieselExpense.toFixed(2)</td>
+                <td>$record.exps[0].tollExpense.toFixed(2)</td>
+                <td>$record.exps[0].mExpense.toFixed(2)</td>
+                <td>$record.exps[0].misc.toFixed(2)</td>
                 
             </tr>
             #end
             <tr>
                 <td ><b>Total</b></td>
-                <td><b>$emailData.totalExpenses.totalDieselExpense</b></td>
-                <td><b>$emailData.totalExpenses.totaltollExpense</b></td>
-                <td><b>$emailData.totalExpenses.totalmExpense</b></td>
-                <td><b>$emailData.totalExpenses.totalmisc</b></td>
+                <td><b>$emailData.totalExpenses.totalDieselExpense.toFixed(2)</b></td>
+                <td><b>$emailData.totalExpenses.totaltollExpense.toFixed(2)</b></td>
+                <td><b>$emailData.totalExpenses.totalmExpense.toFixed(2)</b></td>
+                <td><b>$emailData.totalExpenses.totalmisc.toFixed(2)</b></td>
                 
             </tr>
 

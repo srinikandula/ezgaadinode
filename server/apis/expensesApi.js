@@ -1111,19 +1111,19 @@ Expenses.prototype.downloadExpenseDetailsByVechicle = function (jwt, params, req
             for (var i = 0; i < expensesResponse.expenses.length; i++) {
                 output.push({
                     Registration_No: expensesResponse.expenses[i].regNumber,
-                    Diesel: expensesResponse.expenses[i].exps[0].dieselExpense,
-                    Toll: expensesResponse.expenses[i].exps[0].tollExpense,
-                    Maintenance: expensesResponse.expenses[i].exps[0].mExpense,
-                    Miscellaneous: expensesResponse.expenses[i].exps[0].misc
+                    Diesel: expensesResponse.expenses[i].exps[0].dieselExpense.toFixed(2),
+                    Toll: expensesResponse.expenses[i].exps[0].tollExpense.toFixed(2),
+                    Maintenance: expensesResponse.expenses[i].exps[0].mExpense.toFixed(2),
+                    Miscellaneous: expensesResponse.expenses[i].exps[0].misc.toFixed(2)
                 })
                 if (i === expensesResponse.expenses.length - 1) {
                     retObj.status = true;
                     output.push({
                         Registration_No: 'Total',
-                        Diesel: expensesResponse.totalExpenses.totalDieselExpense,
-                        Toll: expensesResponse.totalExpenses.totaltollExpense,
-                        Maintenance: expensesResponse.totalExpenses.totalmExpense,
-                        Miscellaneous: expensesResponse.totalExpenses.totalmisc
+                        Diesel: expensesResponse.totalExpenses.totalDieselExpense.toFixed(2),
+                        Toll: expensesResponse.totalExpenses.totaltollExpense.toFixed(2),
+                        Maintenance: expensesResponse.totalExpenses.totalmExpense.toFixed(2),
+                        Miscellaneous: expensesResponse.totalExpenses.totalmisc.toFixed(2)
                     })
                     retObj.data = output;
                     analyticsService.create(req, serviceActions.dwnld_expense_det, {

@@ -63,7 +63,6 @@ AuthRouter.get('/gpsTrackingByTruck/:truckId/:startDate/:endDate',function (req,
 AuthRouter.get('/downloadReport/:truckId/:startDate/:endDate',function (req,res) {
     gps.downloadReport(req.params.truckId,req.params.startDate,req.params.endDate,req,function (results) {
         if(results.status){
-            console.log('Success ');
             res.xls('tripReport'+new Date().toLocaleDateString()+'.xlsx', results.data);
         }else{
             console.log('Error');
