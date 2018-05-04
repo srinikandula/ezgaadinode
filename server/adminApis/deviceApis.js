@@ -1358,7 +1358,6 @@ Devices.prototype.getLatestLocationFromDevice=function(req,callback){
                 retObj.messages.push("Please try again");
                 callback(retObj);
             }else if(deviceDoc){
-                console.log("qwww",deviceDoc)
 
                 if(deviceDoc.attrs && deviceDoc.attrs.latestLocation && deviceDoc.attrs.latestLocation.address==="{address}"){
                     resolveAddress({
