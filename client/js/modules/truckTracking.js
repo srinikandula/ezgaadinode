@@ -23,8 +23,11 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         showOnlyStops:false
     };
 
-
-    var map,marker=[],markerIndex=0;
+    $scope.locations=[];
+    $scope.bounds = new google.maps.LatLngBounds();
+    $scope.markers=[]
+    var flightPath;
+    var map,markerIndex=0;
     $scope.loadData = function () {
         map = new google.maps.Map(document.getElementById('map'), {
             zoom: 9,
@@ -33,7 +36,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         });
     };
 
-    var locations=[],flightPath,flag=false;
+
 
     var green_marker_icon={
         url: '/images/green_marker.svg', // url
@@ -46,8 +49,8 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     };
 
     function setMapOnAll(map) {
-        for (var i = 0; i < marker.length; i++) {
-            marker[i].setMap(map);
+        for (var i = 0; i < $scope.markers.length; i++) {
+            $scope.markers[i].setMap(map);
         }
     }
 
@@ -56,7 +59,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
             if (flightPath) {
                 flightPath.setMap(null);
                 setMapOnAll(null);
-                marker = [];
+                $scope.markers = [];
                 markerIndex = 0;
             }
             var icon = {
@@ -64,17 +67,17 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 scaledSize: new google.maps.Size(35, 35),
             };
             var flightPathCoordinates=[];
-            for (var i = 0; i < locations.length; i++) {
-                flightPathCoordinates.push({lat:locations[i].location.coordinates[1],lng: locations[i].location.coordinates[0]})
-                if (locations[i].isStopped) {
-                    marker[markerIndex] = new google.maps.Marker({
-                        position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
+            for (var i = 0; i < $scope.locations.length; i++) {
+                flightPathCoordinates.push({lat:$scope.locations[i].location.coordinates[1],lng: $scope.locations[i].location.coordinates[0]})
+                if ($scope.locations[i].isStopped) {
+                    $scope.locations[markerIndex] = new google.maps.Marker({
+                        position: new google.maps.LatLng($scope.locations[i].location.coordinates[1], $scope.locations[i].location.coordinates[0]),
                         icon: icon,
                         map: map
                     });
                     markerIndex++;
                 }
-                if(i===locations.length-1){
+                if(i===$scope.locations.length-1){
                     flightPath = new google.maps.Polyline({
                         path: flightPathCoordinates,
                         geodesic: true,
@@ -103,12 +106,13 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 if(flightPath){
                     flightPath.setMap(null);
                     setMapOnAll(null);
-                    marker=[];
-                    markerIndex=0;
+                    //$scope.markers=[];
+                    //markerIndex=0;
                 }
-                locations=success.data.results.positions;
+                $scope.locations=success.data.results.positions;
                 $scope.distance=success.data.results.distanceTravelled;
                 $scope.averageSpeed=success.data.results.averageSpeed;
+                $scope.topSpeed=success.data.results.topSpeed;
                 $scope.timeTravelled= success.data.results.timeTravelled;
                 renderPolyline();
             }else{
@@ -130,20 +134,20 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
             center: new google.maps.LatLng(18.2699, 78.0489),
             mapTypeId: google.maps.MapTypeId.ROADMAP
         });
-        for (var i = 0; i< locations.length; i++) {
-            var d = new Date(locations[i].fixTime);
+        for (var i = 0; i< $scope.locations.length; i++) {
+            var d = new Date($scope.locations[i].fixTime);
             var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-            var functionContent = '<div>'+'<span> <b>Address:</b></span>'+locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+parseInt(locations[i].speed)+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'<span><br></span>'+'</div>';
+            var functionContent = '<div>'+'<span> <b>Address:</b></span>'+$scope.locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+parseInt($scope.locations[i].speed)+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'<span><br></span>'+'</div>';
             var compiledContent = $compile(functionContent)($scope);
-            flightPathCoordinates.push({lat:locations[i].location.coordinates[1],lng: locations[i].location.coordinates[0]});
+            flightPathCoordinates.push(new google.maps.LatLng($scope.locations[i].location.coordinates[1],$scope.locations[i].location.coordinates[0]));
             if(i===0){
                 marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
+                    position: new google.maps.LatLng($scope.locations[i].location.coordinates[1], $scope.locations[i].location.coordinates[0]),
                     icon: '/images/start.png',
                     map: map
                 });
                 click(marker,i,functionContent,compiledContent,map);
-            } else if(i===locations.length-1){
+            } else if(i===$scope.locations.length-1){
                 flightPath = new google.maps.Polyline({
                     path: flightPathCoordinates,
                     geodesic: true,
@@ -152,7 +156,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                     strokeWeight: 2
                 });
                 marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
+                    position: new google.maps.LatLng($scope.locations[i].location.coordinates[1], $scope.locations[i].location.coordinates[0]),
                     icon: '/images/stop.png',
                     map: map
                 });
@@ -164,7 +168,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                     url: '/images/h0.png', // url
                     scaledSize: new google.maps.Size(15, 15),
                 };
-                var course = parseFloat(locations[i].course);
+                var course = parseFloat($scope.locations[i].course);
                 if(course >=25 && course<70){
                     icon.url= '/images/h1.png'
                 } else if(course >=70 && course<110){
@@ -189,7 +193,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                     icon.url= '/images/h3.png'
                 }
                 marker = new google.maps.Marker({
-                    position: new google.maps.LatLng(locations[i].location.coordinates[1], locations[i].location.coordinates[0]),
+                    position: new google.maps.LatLng($scope.locations[i].location.coordinates[1], $scope.locations[i].location.coordinates[0]),
                     icon: icon,
                     map: map
                 });
