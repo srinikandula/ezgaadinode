@@ -1576,17 +1576,17 @@ OrderProcess.prototype.getAllAccountsExceptTruckOwners = function (req, callback
     AccountsColl.find(condition, {firstName: 1, contactPhone: 1, contactName: 1, userName: 1})
 
         .skip(skipNumber)
-        .limit(10).exec(function (err, truckOwnersList) {
+        .limit(10).exec(function (err, loadOwnersList) {
         if (err) {
             retObj.messages.push("Please try again");
             callback(retObj);
-        } else if (truckOwnersList.length) {
+        } else if (loadOwnersList.length) {
             retObj.status = true;
             retObj.messages.push("Success");
-            retObj.data = truckOwnersList;
+            retObj.data = loadOwnersList;
             callback(retObj);
         } else {
-            retObj.messages.push("No truck owners found");
+            retObj.messages.push("No load owners found");
             callback(retObj);
         }
     })
@@ -2961,8 +2961,10 @@ OrderProcess.prototype.getTruckOwnersAndCommisionAgents = function (req, callbac
     var skipNumber = params.size ? parseInt(params.size) : 0;
     var sort = {createdAt: -1};
     var condition = {};
-    if (params.name) {
-        condition = {firstName: {$regex: '.*' + params.name + '.*'}, role: {$in: ["Truck Owner","Commission Agent"]}}
+    if (params.name){
+        condition = {$and:[{$or:[{firstName:{$regex: params.name, $options: 'i'}},{userName:{$regex: params.name, $options: 'i'}}]},{role: {$in: ["Truck Owner","Commission Agent"]}}]}
+
+        //
     } else {
         condition = {role: {$in: ["Truck Owner","Commission Agent"]}}
     }

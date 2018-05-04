@@ -54,7 +54,7 @@ Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
             result.status = false;
             result.messages.push(" Please select notification type");
         }
-        if (partyDetails.tripLanes.length > 0) {
+        if (partyDetails.tripLanes && partyDetails.tripLanes.length > 0) {
             for (var i = 0; i < partyDetails.tripLanes.length; i++) {
                 if (!partyDetails.tripLanes[i].name) {
                     result.status = false;
@@ -71,10 +71,10 @@ Party.prototype.addParty = function (jwt, partyDetails,req, callback) {
                     result.messages.push('Please provide To Name');
                 }
             }
-        } else {
+        }/* else {
             result.status = false;
             result.messages.push('Please add triplane');
-        }
+        }*/
     }else{
         partyDetails.tripLanes=[];
     }

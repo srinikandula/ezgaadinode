@@ -62,7 +62,7 @@
                         </div>
 
                         <div class="col-sm-6" ng-show="newOrderRequest.loadOwnerType === 'Registered'">
-                            <div class="form-group ordernew" ng-init="getTransportersList();">
+                            <div class="form-group ordernew">
                                 <ui-select ng-model="newOrderRequest.loadOwnerId" theme="select2"
                                            style="min-width: 390px;"
                                            title="Customer *" reset-search-input="false">
@@ -70,7 +70,7 @@
                                         {{$select.selected.firstName || firstName}}
                                     </ui-select-match>
                                     <ui-select-choices
-                                            repeat="names in getTransporters"
+                                            repeat="names in loadOwnersList"
                                             refresh="searchAccountOwner($select.search)"
                                             refresh-delay="0" scroll-detector="loadMore()">
                                         <b>
@@ -89,14 +89,14 @@
                                 <ui-select ng-model="newOrderRequest.truckOwnerId" theme="select2"
                                            style="min-width: 390px;"
                                            title="Customer *" reset-search-input="false">
-                                    <ui-select-match placeholder="Trcuk Owner *"
+                                    <ui-select-match placeholder="Truck Owner *"
                                                      class="form-control order-form-control">
                                         {{$select.selected.firstName || firstName}}
                                     </ui-select-match>
                                     <ui-select-choices
                                             repeat="truck in truckOwnersList "
-                                            refresh="searchAccountOwner($select.search)"
-                                            refresh-delay="0" scroll-detector="loadMore()">
+                                            refresh="searchTruckOwner($select.search)"
+                                            refresh-delay="0" scroll-detector="loadMoreTruckOwners()">
                                         <b>
                                             <div ng-bind-html="truck.firstName "></div>
                                         </b>
