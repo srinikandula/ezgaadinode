@@ -69,6 +69,7 @@ app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','D
                         var latestLocation =truckList[i].attrs.latestLocation;
                         var location = latestLocation.location;
                         var latlng = location.coordinates;
+                        console.log("address...",latestLocation);
                         marker = new google.maps.Marker(
                             {position:new google.maps.LatLng(latlng[1],latlng[0]),icon:{
                                     url:'/images/red_marker.svg',
@@ -76,7 +77,7 @@ app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','D
                                     labelOrigin: new google.maps.Point(20, -2)}});
                         marker.setMap(map);
                         var infowindow = new google.maps.InfoWindow();
-                        var functionContent = '<div>'+'<span><b>TruckNo:</b></span>'+truckList[i].registrationNo+'<span><br></span>'+'<span><b>Speed:</b></span>'+latestLocation.speed+'</div>';
+                        var functionContent = '<div>'+'<span><b>TruckNo:</b></span>'+truckList[i].registrationNo+'<span><br></span>'+'<span><b>Speed:</b></span>'+latestLocation.speed+'<span><br></span>'+'<span><b>Address:</b></span>'+latestLocation.address+'</div>';
                         var compiledContent = $compile(functionContent)($scope);
                         google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
                             return function () {
