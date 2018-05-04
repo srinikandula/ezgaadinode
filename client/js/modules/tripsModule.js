@@ -94,7 +94,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     };
 
     $scope.count = 0;
-    $scope.getCount = function () {0
+    $scope.getCount = function () {
         TripServices.count(function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
@@ -246,7 +246,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 }]);
 
 
-app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', 'TrucksService','ExpenseMasterServices', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService,ExpenseMasterServices) {
+app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', 'TrucksService','ExpenseMasterServices', '$uibModal', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService,ExpenseMasterServices, $uibModal) {
     $scope.pagetitle = "Add Trip";
 
     $scope.drivers = [];
@@ -297,7 +297,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     }
 
     $scope.addExpense=function () {
-        console.log("asd",$scope.trip.expense);
       if(!$scope.trip.expense[$scope.trip.expense.length-1].type || !$scope.trip.expense[$scope.trip.expense.length-1].amount){
           Notification.error("Please enter expense details");
 
@@ -566,5 +565,178 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         }
         return $scope.trip.freightAmount;
     };
+    /*---------------Adding Trucks From Trips Controller-------------------*/
+
+
+    $scope.addTruckFromTrips = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addTruck.html',
+            controller: 'truckDriverPartyCtrl',
+            size: 'md',
+            /* windowClass: 'window-custom',*/
+            backdrop: 'static',
+            keyboard: false,
+        });
+        modalInstance.result.then(function () {
+            getTruckIds();
+        }, function () {
+        });
+    };
+
+
+    /*---------------Adding Driver From Trips Controller-------------------*/
+
+
+    $scope.addDriverFromTrip = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addDriver.html',
+            controller: 'truckDriverPartyCtrl',
+            size: 'md',
+            /* windowClass: 'window-custom',*/
+            backdrop: 'static',
+            keyboard: false,
+        });
+        modalInstance.result.then(function () {
+            getDriverIds();
+        }, function () {
+        });
+    };
+
+
+    /*---------------Adding party From Trips Controller-------------------*/
+
+
+    $scope.addPartyFromTrip = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addParty.html',
+            controller: 'truckDriverPartyCtrl',
+            size: 'md',
+            /* windowClass: 'window-custom',*/
+            backdrop: 'static',
+            keyboard: false,
+        });
+        modalInstance.result.then(function () {
+            getParties();
+        }, function () {
+        });
+    };
+}]);
+
+app.controller('truckDriverPartyCtrl', ['$scope', '$uibModalInstance', 'TripServices', '$state', 'Notification', 'TrucksService', 'DriverService', 'PartyService','Utils', function ($scope, $uibModalInstance, TripServices, $state, Notification,  TrucksService, DriverService, PartyService, Utils) {
+
+    $scope.close = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+
+    function getTruckTypes() {
+        TrucksService.getTruckTypes(function (success) {
+            if (success.data.status) {
+                $scope.truckTypesList = success.data.data;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        })
+    }
+
+    getTruckTypes();
+
+    $scope.truck = {};
+
+    $scope.addNewTruck = function () {
+        var params = $scope.truck;
+        params.errors = [];
+
+        if (!params.registrationNo) {
+            params.errors.push('Invalid Registration Number');
+        }
+        if (!params.truckType) {
+            params.errors.push('Invalid Truck Type');
+        }
+        if (!params.errors.length) {
+            if (typeof params.truckType === "object") {
+                params.tonnage = params.truckType.tonnes;
+                params.truckTypeId = params.truckType._id;
+                params.truckType = params.truckType.title;
+            }
+            if (!params._id) {
+                TrucksService.addTruck(params, function (success) {
+                    if (success.data.status) {
+                        Notification.success({message: "Truck Added Successfully"});
+                        $uibModalInstance.close({status: true, message: success.data.message});
+                    } else {
+                        params.errors = success.data.messages;
+                    }
+                }, function (err) {
+                });
+            } else {
+                console.log("Thank You")
+            }
+        }
+    };
+
+    $scope.driver= {};
+
+    $scope.addNewDriver = function () {
+        var params = $scope.driver;
+        params.errors = [];
+        if (!params.fullName) {
+            params.errors.push('Please provide driver\'s full name')
+        }
+        if (params.errors.length > 0) {
+
+        } else {
+            DriverService.addDriver(params, function (success) {
+                if (success.data.status) {
+                    Notification.success({message: "Driver Added Successfully"});
+                    $uibModalInstance.close({status: true, message: success.data.message});
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error(message)
+                    });
+                }
+            }, function (error) {
+
+            });
+
+        }
+    };
+
+    $scope.party = {
+        name:'',
+        contact:'',
+        partyType:'Transporter',
+        error:[]
+    }
+
+    $scope.addNewParty = function () {
+        var params = $scope.party;
+        params.error = [];
+
+        if (!params.name) {
+            params.error.push('Please enter Party Name');
+        }
+        if (!Utils.isValidPhoneNumber(params.contact)) {
+            params.error.push('Please enter Party mobile number');
+        }
+        if (!params.error.length) {
+            PartyService.addParty(params, function (success) {
+                if (success.data.status) {
+                    Notification.success({message: "Party Added Successfully"});
+                    $uibModalInstance.close({status: true, message: success.data.message});
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            }, function (err) {
+            });
+
+        }
+    };
+
 }]);
 

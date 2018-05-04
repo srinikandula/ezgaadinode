@@ -321,7 +321,10 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.partyType) {
             params.error.push('Please select Party Type');
         }
-        if (params.partyType === 'Transporter') {
+        if (!params.partyType) {
+            params.error.push('Please select Party Type');
+        }
+      /*  if (params.partyType === 'Transporter') {
             if (!params.isSms && !params.isEmail) {
                 params.error.push('Please select Notification Type');
             }
@@ -338,7 +341,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                     params.error.push('Please provide Destination Name');
                 }
             }
-        }
+        }*/
 
         if (!params.error.length) {
             if (params._id) {
