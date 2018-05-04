@@ -81,6 +81,36 @@
 
                     </div>
                 </div>
+                <div class="form-group col-xs-12" ng-repeat="exp in trip.expense">
+
+                    <div class="col-xs-6 pall-zero">
+
+                        <div class=" styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="exp.type">
+                                <option value="" selected>Select Expense Type*</option>
+                                <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
+                                <option value="others">Others</option>
+                            </select>
+                        </div>
+                        <div class=" styling-input-list" ng-show="exp.type==='others'">
+                            <input ng-model="exp.expenseName" type="number" class="form-control custom-form-control"
+                            >
+                            <label class="focus-effect-for-input" aria-hidden="true">Expense Type *</label>
+                        </div>
+                    </div>
+                    <div class=" col-xs-5 pall-zero">
+                        <div class=" styling-input-list">
+                            <input ng-model="exp.amount" type="number" class="form-control custom-form-control"
+                                   >
+                            <label class="focus-effect-for-input" aria-hidden="true">Amount *</label>
+                        </div>
+                    </div>
+                    <div class=" col-xs-1 pall-zero">
+                        <button class="btn btn-xs btn-info" ng-click="addExpense()" ng-show="$index==0">+</button>
+                        <button class="btn btn-xs btn-danger" ng-click="deleteExpense($index)" ng-show="$index>0">-</button>
+
+                    </div>
+                </div>
                 <div class="form-group col-xs-12" ng-show="partyType=='Commission'" >
                     <div class=" styling-input-list">
                         <input ng-model="trip.commission" type="number" class="form-control custom-form-control"
