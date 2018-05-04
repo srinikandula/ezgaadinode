@@ -132,7 +132,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         for (var i = 0; i< locations.length; i++) {
             var d = new Date(locations[i].fixTime);
             var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-            var functionContent = '<div>'+'<span> <b>Address:</b></span>'+locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+parseInt(locations[i].speed)+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'<span><br></span>'+'<a ng-click="trackFromHere('+locations[i].fixTime+')">Track from here</a>'+'</div>';
+            var functionContent = '<div>'+'<span> <b>Address:</b></span>'+locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+parseInt(locations[i].speed)+'<span><br></span>'+'<span> <b>Time:</b></span>'+time+'<span><br></span>'+'</div>';
             var compiledContent = $compile(functionContent)($scope);
             flightPathCoordinates.push({lat:locations[i].location.coordinates[1],lng: locations[i].location.coordinates[0]});
             if(i===0){
