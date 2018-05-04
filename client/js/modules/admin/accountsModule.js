@@ -45,18 +45,23 @@ app.factory('AccountService', ['$http', function ($http) {
                 method: "POST",
                 data: plan
             }).then(success, error);
+        },
+        getTruckLocations: function (body,success, error) {
+            $http({
+                url: '/v1/cpanel/accounts/gpsTrackingByTruck/'+body.regNo+'/'+body.startDate+'/'+body.endDate,
+                method: "GET"
+            }).then(success, error)
         }
     }
 }]);
-app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','DeviceService','accountId', function ($scope,$uibModalInstance,NgMap,DeviceService,accountId) {
-    // console.log("accountId",accountId);
+app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','DeviceService','accountId','$compile', function ($scope,$uibModalInstance,NgMap,DeviceService,accountId,$compile) {
     $scope.reloadPage = function(){
         window.location.reload();
     };
+    var marker;
+
     DeviceService.getAllTrucksOfAccount(accountId,function(success){
-        // console.log("get account location controller..successs...",success.data.trucks);
         if(success.data.trucks){
-            var geocoder = new google.maps.Geocoder;
             NgMap.getMap().then(function(map) {
                 var truckList=success.data.trucks;
                 for(var i=0;i<truckList.length;i++){
@@ -64,39 +69,30 @@ app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','D
                         var latestLocation =truckList[i].attrs.latestLocation;
                         var location = latestLocation.location;
                         var latlng = location.coordinates;
-                        console.log("lat..lng...",latlng,"i=",i);
-                        var marker = new google.maps.Marker(
+                        console.log("address...",latestLocation);
+                        marker = new google.maps.Marker(
                             {position:new google.maps.LatLng(latlng[1],latlng[0]),icon:{
                                     url:'/images/red_marker.svg',
                                     scaledSize: new google.maps.Size(40, 40),
                                     labelOrigin: new google.maps.Point(20, -2)}});
                         marker.setMap(map);
-                        // var infowindow = new google.maps.InfoWindow();
-                        //
-                        //  $scope.geocodeLatLng(i,latlng,geocoder, map, infowindow,marker);
-
-                    }
-                    }
+                        var infowindow = new google.maps.InfoWindow();
+                        var functionContent = '<div>'+'<span><b>TruckNo:</b></span>'+truckList[i].registrationNo+'<span><br></span>'+'<span><b>Speed:</b></span>'+latestLocation.speed+'<span><br></span>'+'<span><b>Address:</b></span>'+latestLocation.address+'</div>';
+                        var compiledContent = $compile(functionContent)($scope);
+                        google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
+                            return function () {
+                                infowindow.setContent(content);
+                                infowindow.open(map, marker);
+                            }
+                        })(marker,i, compiledContent[0], $scope));
+                        }
+                }
             });
         }else {
             Notification.error(success.data.message);
         }
     });
-    // $scope.geocodeLatLng=function(i,latlng,geocoder, map, infowindow,marker){
-    //     var latlng = {lat: parseFloat(latlng[1]), lng: parseFloat(latlng[0])};
-    //     geocoder.geocode({'location': latlng}, function(results, status) {
-    //         console.log("status...",status,"i=",i);
-    //         // if(status === 'OVER_QUERY_LIMIT'){
-    //         //     return status;
-    //         // }
-    //         if(status === 'OK'){
-    //             if(results[0]){
-    //                 infowindow.setContent(results[0].formatted_address);
-    //                 infowindow.open(map, marker);
-    //             }
-    //         }
-    //     });
-    // };
+
     $scope.cancel = function () {
         $uibModalInstance.close();
         $scope.reloadPage();
