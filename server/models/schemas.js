@@ -199,7 +199,8 @@ var tripSchema = new mongoose.Schema({
     expense:[{
         type:{type: ObjectId, ref: 'expenseMaster'},
         amount:Number
-    }]
+    }],
+    totalExpense:Number
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({

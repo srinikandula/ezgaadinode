@@ -97,8 +97,10 @@
                             </select>
                             <label class="focus-effect-for-input" aria-hidden="true">Expense Type *</label>
                         </div>
-                        <div class="form-group styling-input-list" ng-show="exp.type==='others'">
-                            <input ng-model="exp.expenseName" type="text" class="form-control custom-form-control">
+
+                        <div class=" styling-input-list" ng-show="exp.type==='others'">
+                            <input ng-model="exp.expenseName" type="text" class="form-control custom-form-control"
+                            >
                             <label class="focus-effect-for-input" aria-hidden="true">Expense Type *</label>
                         </div>
                     </div>
@@ -308,6 +310,14 @@
                         <input ng-model="party.contact" type="number" class="form-control custom-form-control"
                                id="contactPhone">
                         <label class="focus-effect-for-input" aria-hidden="true">Contact Phone*</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="party.email" type="number" class="form-control custom-form-control"
+                               id="email">
+                        <label class="focus-effect-for-input" aria-hidden="true">Email</label>
 
                     </div>
                 </div>
