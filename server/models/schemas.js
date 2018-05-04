@@ -195,7 +195,11 @@ var tripSchema = new mongoose.Schema({
     sourceAddress:String,
     destination:String,
     destinationAddress:String,
-    deductAmount:Number
+    deductAmount:Number,
+    expense:[{
+        type:{type: ObjectId, ref: 'expenseMaster'},
+        amount:Number
+    }]
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
