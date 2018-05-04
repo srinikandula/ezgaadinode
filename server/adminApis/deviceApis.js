@@ -143,6 +143,9 @@ Devices.prototype.deleteDevice = function (req, callback) {
                 success: true
             }, function (response) {
             });
+           /* traccar_mysql.query("delete from devices where uniqueid="+req.params.imei, function (err, tracker) {
+                cosnsole.log("err",err,)
+            });*/
             callback(retObj);
         }
     });

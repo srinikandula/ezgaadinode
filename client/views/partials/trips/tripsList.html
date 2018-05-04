@@ -63,9 +63,9 @@
             <td data-title="'Freight'" sortable="'freightAmount'" class="clickable-item">{{
                 trips.freightAmount | number:2 }}
             </td>
-          <!--  <td data-title="'Trip Lane'" sortable="'tripLane'" class="clickable-item">{{
-                trips.tripLane }}
-            </td>-->
+            <td data-title="'Expanse'" class="clickable-item">{{
+                trips.totalExpense || 0 }}
+            </td>
             <td data-title="'Created By'" sortable="'createdByName'"
                 class="clickable-item">{{ trips.attrs.createdByName }}
             </td>

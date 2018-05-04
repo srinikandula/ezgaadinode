@@ -275,9 +275,13 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
         tripDetails.groupId = jwt.id;
         tripDetails.accountId = jwt.accountId;
         tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
+        tripDetails.totalExpense=0;
         //tripDetails.tripLane = tripDetails.tripLane.name;
         if(tripDetails.expense && tripDetails.expense.length>0){
             async.eachSeries(tripDetails.expense,function (expense,expenseCallback) {
+                if(expense.amount>0){
+                    tripDetails.totalExpense+=expense.amount;
+                }
                 if(expense.type==='others'){
                     expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
                         if (eTResult.status) {
@@ -290,7 +294,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
                                 body: JSON.stringify(req.body),
                                 accountId: req.jwt.id,
                                 success: false,
-                                messages: result.messages
+                                messages: retObj.messages
                             }, function (response) {
                             });
                             callback(result);
@@ -458,8 +462,12 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         callback(retObj);
     }
     if (giveAccess) {
+        tripDetails.totalExpense=0;
         if(tripDetails.expense && tripDetails.expense.length>0){
             async.eachSeries(tripDetails.expense,function (expense,expenseCallback) {
+                if(expense.amount>0){
+                    tripDetails.totalExpense+=expense.amount;
+                }
                 if(expense.type==='others'){
                     expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
                         if (eTResult.status) {
@@ -472,7 +480,7 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
                                 body: JSON.stringify(req.body),
                                 accountId: req.jwt.id,
                                 success: false,
-                                messages: result.messages
+                                messages: retObj.messages
                             }, function (response) {
                             });
                             callback(result);
