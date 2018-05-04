@@ -2648,7 +2648,7 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 .focus-effect-for-input-trucks {
     position: absolute;
     top:11px;
-    left:10px;
+    /*left:10px;*/
     color: #989898;
     font-size: 15px;
     font-weight: lighter;
@@ -3079,4 +3079,21 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 }
 .select2-dropdown-open .select2-choice .select2-arrow b{
     top: -15px;
+}
+.addingMaster{
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 25px;
+}
+.trip-select-box{
+    width: 94% !important;
+}
+.popup-center{
+    margin: 0 auto;
+    float: none;
+    display: block;
+}
+.modal-content{
+    border-radius:0;
 }

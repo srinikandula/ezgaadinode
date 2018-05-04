@@ -1364,7 +1364,7 @@ Devices.prototype.getLatestLocationFromDevice=function(req,callback){
                         latitude: deviceDoc.attrs.latestLocation.location.coordinates[0],
                         longitude: deviceDoc.attrs.latestLocation.location.coordinates[1]
                     }, function (addressResp) {
-                        console.log("addressResp",addressResp);
+                        //console.log("addressResp",addressResp);
 
                         if(addressResp.status){
                             retObj.status=true;

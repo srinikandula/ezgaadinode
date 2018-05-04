@@ -229,7 +229,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             }
         });
     };
-    $scope.getLatestLocation = function (deviceId) {
+    $scope.getLatestLocation = function (id) {
         var modalInstance = $uibModal.open({
             templateUrl: 'latestLocationModal.html',
             controller: 'FindDeviceLocationController',
@@ -238,7 +238,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             keyboard: false,
             resolve: {
                 deviceId: function () {
-                    return deviceId;
+                    return id;
                 }
             }
         });
@@ -246,13 +246,14 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
 
     }
 }]);
-app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$state','$uibModal', 'deviceId','$uibModalInstance', function ($scope, DeviceService,$state,$uibModal, deviceId, $uibModalInstance) {
-
-    DeviceService.getLatestLocationFromDevice({_id:deviceId},function (success) {
+app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$state','$uibModal', 'deviceId','$uibModalInstance','$stateParams', function ($scope, DeviceService,$state,$uibModal, deviceId, $uibModalInstance, $stateParams) {
+    DeviceService.getLatestLocationFromDevice({_id:deviceId._id},function (success) {
         if(success.data.status){
+            $scope.regNo= deviceId.regNo;
             $scope.latestLocation = success.data.latestLocation;
-            console.log("$scope.latestLocation", $scope.latestLocation);
         }else{
+            $scope.regNo= deviceId.regNo;
+
             swal(
                 '',
                 success.data.messages[0],

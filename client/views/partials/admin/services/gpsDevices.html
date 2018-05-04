@@ -51,7 +51,7 @@
                 </td>
                 <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
                     <a href="#" data-toggle="modal" data-target="#latestLocation"
-                       ng-click="getLatestLocation(device._id);">
+                       ng-click="getLatestLocation({_id:device._id, regNo:device.registrationNo});">
                         {{device.registrationNo || '--' | uppercase}}
                     </a>
                 </td>
@@ -64,9 +64,8 @@
                 <td data-title="'SIM No'" sortable="'simPhoneNumber'" class="clickable-item">
                     {{device.simNumber}}
                 </td>
-
                 <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
-                    {{device.updatedAt | date:'yyyy-MM-dd HH:mm'}}
+                    {{device.updatedAt | date:'yyyy-MM-d HH:mm'}}
                 </td>
                 <td data-title="'Plan Expiry'" sortable="'expiryTime'" class="clickable-item">
                     {{device.expiryTime | date:'dd-MM-yyyy'}}
@@ -103,7 +102,7 @@
     </div>
     <div class="modal-body">
         <div class="row" style="padding: 20px;">
-            <p style="font-size: 15px;"><b>Vehicle number</b> : {{latestLocation.latestLocation.deviceId | uppercase}}</p>
+            <p style="font-size: 15px;"><b>Vehicle number</b> : {{regNo | uppercase}}</p>
             <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.latestLocation.address}}
             </p>
             <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.latestLocation.speed | number:0}}
@@ -152,3 +151,17 @@
         <button class="btn btn-danger" type="button" ng-click="cancel();">Cancel</button>
     </div>
 </script>
+
+<ul ng-controller="dateController">
+    <div class="form-group">
+        <label class="col-sm-2 control-label">Both</label>
+        <div class="col-sm-10">
+            <p class="input-group">
+                <input type="text" class="form-control" datetime-picker="MM/dd/yyyy HH:mm" ng-model="picker3.date" is-open="picker3.open" />
+                <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="openCalendar($event, 'picker3')"><i class="fa fa-calendar"></i></button>
+          </span>
+            </p>
+        </div>
+    </div>
+</ul>

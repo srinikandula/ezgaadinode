@@ -18,10 +18,11 @@ app.factory('truckTrackingService',['$http','$cookies', function ($http, $cookie
 app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingService','$stateParams','Notification','$compile', function ($scope, $state,truckTrackingService,$stateParams,Notification,$compile) {
     $scope.truckTrackingParams={
         regNo: $stateParams.truckNo,
-        startDate:new Date(),
+        startDate:new Date(new Date().setHours(0,0,0,0)),
         endDate:new Date(),
         showOnlyStops:false
     };
+
 
     var map,marker=[],markerIndex=0;
     $scope.loadData = function () {
@@ -256,4 +257,30 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     };
 
     $scope.loadData();
+
+
+    var that = this;
+    // date and time picker
+    $scope.pickerStart = {
+        date: new Date()
+    };
+    $scope.pickerEnd = {
+        date: new Date()
+    };
+
+    $scope.openCalendarStartDate = function (e, picker) {
+        $scope[picker].open = true;
+    };
+
+
+    $scope.openCalendarEndDate = function (e, picker) {
+        $scope[picker].open = true;
+    };
+    // destroy watcher
+ /*   $scope.$on('$destroy', function () {
+        unwatchMinMaxValues();
+    });*/
+    $scope.options = {
+        showWeeks: false
+    };
 }]);
