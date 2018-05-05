@@ -20,17 +20,17 @@
             <tr>
                 <td>$record.attrs.partyName</td>
                 <td>$record.attrs.partyContact</td>
-                <td>$record.totalFright</td>
-                <td>$record.totalPayment</td>
-                <td>$record.totalDue</td>
+                <td>$record.totalFright.toFixed(2)</td>
+                <td>$record.totalPayment.toFixed(2)</td>
+                <td>$record.totalDue.toFixed(2)</td>
                 
             </tr>
             #end
             <tr>
                 <td colspan="2"><b>Total</b></td>
-                <td><b>$emailData.grossAmounts.grossFreight</b></td>
-                <td><b>$emailData.grossAmounts.grossExpenses</b></td>
-                <td><b>$emailData.grossAmounts.grossDue</b></td>
+                <td><b>$emailData.grossAmounts.grossFreight.toFixed(2)</b></td>
+                <td><b>$emailData.grossAmounts.grossExpenses.toFixed(2)</b></td>
+                <td><b>$emailData.grossAmounts.grossDue.toFixed(2)</b></td>
             </tr>
 
         </table>

@@ -19,17 +19,17 @@
             #foreach($record in $emailData.revenue)
             <tr>
                 <td>$record.attrs.truckName</td>
-                <td>$record.totalFreight</td>
-                <td>$record.totalExpense</td>
-                <td>$record.totalRevenue</td>
+                <td>$record.totalFreight.toFixed(2)</td>
+                <td>$record.totalExpense.toFixed(2)</td>
+                <td>$record.totalRevenue.toFixed(2)</td>
                 
             </tr>
             #end
             <tr>
                 <td ><b>Total</b></td>
-                <td><b>$emailData.grossAmounts.grossFreight</b></td>
-                <td><b>$emailData.grossAmounts.grossExpenses</b></td>
-                <td><b>$emailData.grossAmounts.grossRevenue</b></td>
+                <td><b>$emailData.grossAmounts.grossFreight.toFixed(2)</b></td>
+                <td><b>$emailData.grossAmounts.grossExpenses.toFixed(2)</b></td>
+                <td><b>$emailData.grossAmounts.grossRevenue.toFixed(2)</b></td>
             </tr>
 
         </table>

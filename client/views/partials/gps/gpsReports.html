@@ -60,23 +60,26 @@
        <!--             <a ui-sref="devices" class="btn btn-info pull-right mb-10">Devices</a>-->
                 <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
                     <tr style="text-align: center;" ng-repeat="report in truckReports">
-                        <td data-title="'Date & Time'" sortable="'partyName'" class="clickable-item col-sm-2">
+                        <td data-title="'Vehicle Num'" class="clickable-item">
+                            {{reportParams.truckNo}}
+                        </td>
+                        <td data-title="'Date & Time'" class="clickable-item">
                             <a href="#"></a>
                             {{report.createdAt |date : "dd/MM/y HH:mm"}}
                         </td>
-                        <td data-title="'Status'" sortable="'partyContact'" class="clickable-item col-sm-3">
+                        <td data-title="'Status'" class="clickable-item">
                             <span ng-show="report.isStopped">Stopped</span>
                             <span ng-show="!report.isStopped && report.isIdle">Idle</span>
                             <span ng-show="!report.isStopped && !report.isIdle">Moving</span>
                         </td>
-                        <td data-title="'Address'" sortable="'totalFright'" class="clickable-item col-sm-3">
+                        <td data-title="'Address'" class="clickable-item">
                             {{report.address}}
                         </td>
-                        <td data-title="'Speed Km/hr'" sortable="'totalPayment'" class="clickable-item col-sm-3">
-                            {{report.speed}}
+                        <td data-title="'Speed Km/hr'" class="clickable-item">
+                            {{report.speed | number:0}}
                         </td>
-                        <td data-title="'Odo Km/hr'" sortable="'totalPayment'" class="clickable-item col-sm-3">
-                            {{report.totalDistance}}
+                        <td data-title="'Odo Km/hr'" class="clickable-item">
+                            {{report.totalDistance | number:0}}
                         </td>
                     </tr>
                     <!-- <tr ng-if="!parties || parties.length === 0">

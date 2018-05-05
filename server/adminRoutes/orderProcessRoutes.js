@@ -138,6 +138,11 @@ AuthRouter.get('/getAllAccountsExceptTruckOwners',function (req,res) {
    })
 });
 
+AuthRouter.get('/getAllAccountsTruckOwners',function (req,res) {
+    OrderProcess.getAllAccountsTruckOwners(req,function (result) {
+        res.send(result);
+    })
+});
 AuthRouter.get('/getAdminTruckOrdersList',function (req,res) {
    OrderProcess.getAdminTruckOrdersList(req,function (result) {
      res.send(result);

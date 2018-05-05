@@ -190,11 +190,12 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 }
                             },
                             {
-                                title: "Frieight Amount", "data": "freightAmount",
+                                title: "Freight Amount", "data": "freightAmount",
                                 "render": function (data, type, row) {
                                     if (data) {
                                         return data.toFixed(2);
                                     } else {
+
                                         return '--';
                                     }
 
@@ -203,8 +204,9 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             {
                                 title: "Expenses", "data": "cost",
                                 "render": function (data, type, row) {
+                                    console.log('asda',data)
                                     if (data) {
-                                        return data.toFixed(2);
+                                        return data;
                                     } else {
                                         return '--';
                                     }
@@ -1009,7 +1011,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 showLoaderOnConfirm: true,
                 preConfirm: (email) => {
                     return new Promise((resolve) => {
-                        PaymentsService.sharePaymentsDetailsByPartyViaEmail({
+                        ReceiptsService.shareReceiptsDetailsByPartyViaEmail({
                             fromDate: $scope.filters.fromDate,
                             toDate: $scope.filters.toDate,
                             partyId: $scope.partyId,

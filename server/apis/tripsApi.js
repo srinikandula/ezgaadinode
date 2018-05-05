@@ -17,7 +17,7 @@ var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var LoadRequestColl = require('./../models/schemas').LoadRequestColl;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
-
+var expenseMasterApi=require('./expenseMasterApi');
 
 var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
@@ -275,59 +275,111 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
         tripDetails.groupId = jwt.id;
         tripDetails.accountId = jwt.accountId;
         tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
+        tripDetails.totalExpense=0;
         //tripDetails.tripLane = tripDetails.tripLane.name;
-        var tripDoc = new TripCollection(tripDetails);
-        tripDoc.save(function (err, trip) {
-            if (err) {
-                retObj.messages.push("Error while adding trip, try Again");
-                analyticsService.create(req, serviceActions.add_trip_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                if (tripDetails.share) {
-                    retObj.status = true;
-                    retObj.messages.push("Trip Added Successfully");
-                    retObj.trips = trip;
-                    analyticsService.create(req, serviceActions.add_trip, {
-                        body: JSON.stringify(req.body),
-                        accountId: jwt.id,
-                        success: true
-                    }, function (response) {
-                    });
-                    callback(retObj);
-                    shareTripDetails(tripDetails, trip, function (shareResponse) {
-                        // callback(shareResponse);
-                    })
-
-                } else {
-                    retObj.status = true;
-                    retObj.messages.push("Trip Added Successfully");
-                    retObj.trips = trip;
-                    analyticsService.create(req, serviceActions.add_trip, {
-                        body: JSON.stringify(req.body),
-                        accountId: jwt.id,
-                        success: true
-                    }, function (response) {
-                    });
-                    callback(retObj);
+        if(tripDetails.expense && tripDetails.expense.length>0){
+            async.eachSeries(tripDetails.expense,function (expense,expenseCallback) {
+                if(expense.amount>0){
+                    tripDetails.totalExpense+=expense.amount;
                 }
-            }
-        });
+                if(expense.type==='others'){
+                    expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
+                        if (eTResult.status) {
+                            expense.type = eTResult.newDoc._id.toString();
+                            expenseCallback(false);
+                        } else {
+                            retObj.status = false;
+                            retObj.messages.push("Expense already exists or Error creating new expense type");
+                            analyticsService.create(req, serviceActions.add_expense_err, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(result);
+                        }
+                    });
+                }else{
+                    expenseCallback(false);
+                }
+            },function (err) {
+                if(err){
+                    retObj.messages.push("Error while adding trip, try Again");
+                    analyticsService.create(req, serviceActions.add_trip_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }else{
+                    saveTrip(req,tripDetails,callback)
+                }
+            });
+        }else{
+            saveTrip(req,tripDetails,callback)
+        }
     }
 };
 
+function saveTrip(req,tripDetails,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    var tripDoc = new TripCollection(tripDetails);
+    tripDoc.save(function (err, trip) {
+        if (err) {
+            console.log("error",err);
+            retObj.messages.push("Error while adding trip, try Again");
+            analyticsService.create(req, serviceActions.add_trip_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            if (tripDetails.share) {
+                retObj.status = true;
+                retObj.messages.push("Trip Added Successfully");
+                retObj.trips = trip;
+                analyticsService.create(req, serviceActions.add_trip, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+                shareTripDetails(tripDetails, trip, function (shareResponse) {
+                    // callback(shareResponse);
+                })
+
+            } else {
+                retObj.status = true;
+                retObj.messages.push("Trip Added Successfully");
+                retObj.trips = trip;
+                analyticsService.create(req, serviceActions.add_trip, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: true
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        }
+    });
+}
 Trips.prototype.findTrip = function (jwt, tripId, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    TripCollection.findOne({_id: tripId}, function (err, trip) {
+    TripCollection.findOne({_id: tripId}).populate({path:"expense.type"}).exec(function (err, trip) {
         if (err) {
             retObj.messages.push("Error while finding trip, try Again");
             analyticsService.create(req, serviceActions.find_trip_err, {
@@ -410,77 +462,129 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         callback(retObj);
     }
     if (giveAccess) {
-        tripDetails = Utils.removeEmptyFields(tripDetails);
-        /* tripDetails.tripLane = tripDetails.tripLane.name;*/
-        TripCollection.findOneAndUpdate({_id: tripDetails._id},
-            {$set: tripDetails},
-            {new: true}, function (err, trip) {
-                if (err) {
-                    retObj.messages.push("Error while updating Trip, try Again");
-                    analyticsService.create(req, serviceActions.update_trips_err, {
+        tripDetails.totalExpense=0;
+        if(tripDetails.expense && tripDetails.expense.length>0){
+            async.eachSeries(tripDetails.expense,function (expense,expenseCallback) {
+                if(expense.amount>0){
+                    tripDetails.totalExpense+=expense.amount;
+                }
+                if(expense.type==='others'){
+                    expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
+                        if (eTResult.status) {
+                            expense.type = eTResult.newDoc._id.toString();
+                            expenseCallback(false);
+                        } else {
+                            retObj.status = false;
+                            retObj.messages.push("Expense already exists or Error creating new expense type");
+                            analyticsService.create(req, serviceActions.add_expense_err, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(result);
+                        }
+                    });
+                }else{
+                    expenseCallback(false);
+                }
+            },function (err) {
+                if(err){
+                    retObj.messages.push("Error while adding trip, try Again");
+                    analyticsService.create(req, serviceActions.add_trip_err, {
                         body: JSON.stringify(req.body),
                         accountId: jwt.id,
                         success: false,
-                        messages: retObj.message
+                        messages: retObj.messages
                     }, function (response) {
                     });
                     callback(retObj);
-                } else if (trip) {
-                    if (tripDetails.share) {
-                        retObj.status = true;
-                        retObj.messages.push("Trip updated successfully");
-                        retObj.trip = trip;
-                        analyticsService.create(req, serviceActions.update_trips, {
-                            body: JSON.stringify(req.body),
-                            accountId: jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                        shareTripDetails(tripDetails, trip, function (shareResponse) {
+                }else{
+                    updateTrip(req,tripDetails,callback)
+                }
+            });
+        }else{
+            updateTrip(req,tripDetails,callback)
+        }
+    }
+};
 
-                            if (shareResponse.status) {
-                                retObj.status = true;
-                                retObj.messages.push("Trip updated successfully");
-                                retObj.trip = trip;
-                                analyticsService.create(req, serviceActions.update_trips, {
-                                    body: JSON.stringify(req.body),
-                                    accountId: jwt.id,
-                                    success: true
-                                }, function (response) {
-                                });
-                                // callback(retObj);
-                            } else {
-                                shareResponse.trip = trip;
-                                //callback(shareResponse);
-                            }
-                        })
-                    } else {
-                        retObj.status = true;
-                        retObj.messages.push("Trip updated successfully");
-                        retObj.trip = trip;
-                        analyticsService.create(req, serviceActions.update_trips, {
-                            body: JSON.stringify(req.body),
-                            accountId: jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }
-                } else {
-                    retObj.messages.push("Error, finding trip");
-                    analyticsService.create(req, serviceActions.update_trips_err, {
+function updateTrip(req,tripDetails,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    tripDetails = Utils.removeEmptyFields(tripDetails);
+    /* tripDetails.tripLane = tripDetails.tripLane.name;*/
+    TripCollection.findOneAndUpdate({_id: tripDetails._id},
+        {$set: tripDetails},
+        {new: true}, function (err, trip) {
+            if (err) {
+                retObj.messages.push("Error while updating Trip, try Again");
+                analyticsService.create(req, serviceActions.update_trips_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.message
+                }, function (response) {
+                });
+                callback(retObj);
+            } else if (trip) {
+                if (tripDetails.share) {
+                    retObj.status = true;
+                    retObj.messages.push("Trip updated successfully");
+                    retObj.trip = trip;
+                    analyticsService.create(req, serviceActions.update_trips, {
                         body: JSON.stringify(req.body),
                         accountId: jwt.id,
-                        success: false,
-                        messages: retObj.message
+                        success: true
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                    shareTripDetails(tripDetails, trip, function (shareResponse) {
+
+                        if (shareResponse.status) {
+                            retObj.status = true;
+                            retObj.messages.push("Trip updated successfully");
+                            retObj.trip = trip;
+                            analyticsService.create(req, serviceActions.update_trips, {
+                                body: JSON.stringify(req.body),
+                                accountId: jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
+                            // callback(retObj);
+                        } else {
+                            shareResponse.trip = trip;
+                            //callback(shareResponse);
+                        }
+                    })
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push("Trip updated successfully");
+                    retObj.trip = trip;
+                    analyticsService.create(req, serviceActions.update_trips, {
+                        body: JSON.stringify(req.body),
+                        accountId: jwt.id,
+                        success: true
                     }, function (response) {
                     });
                     callback(retObj);
                 }
-            });
-    }
-};
+            } else {
+                retObj.messages.push("Error, finding trip");
+                analyticsService.create(req, serviceActions.update_trips_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.message
+                }, function (response) {
+                });
+                callback(retObj);
+            }
+        });
+}
 
 /** this is to be used with super user login
  *
@@ -1596,17 +1700,17 @@ Trips.prototype.downloadRevenueDetailsByVechicle = function (jwt, params, req, c
             for (var i = 0; i < revenueResponse.revenue.length; i++) {
                 output.push({
                     RegistrationNo: revenueResponse.revenue[i].attrs.truckName,
-                    Total_Freight: revenueResponse.revenue[i].totalFreight,
-                    Total_Expense: revenueResponse.revenue[i].totalExpense,
-                    Total_Revenue: revenueResponse.revenue[i].totalRevenue
+                    Total_Freight: revenueResponse.revenue[i].totalFreight.toFixed(2),
+                    Total_Expense: revenueResponse.revenue[i].totalExpense.toFixed(2),
+                    Total_Revenue: revenueResponse.revenue[i].totalRevenue.toFixed(2)
                 });
                 if (i === revenueResponse.revenue.length - 1) {
                     retObj.status = true;
                     output.push({
                         RegistrationNo: 'Total',
-                        Total_Freight: revenueResponse.grossAmounts.grossFreight,
-                        Total_Expense: revenueResponse.grossAmounts.grossExpenses,
-                        Total_Revenue: revenueResponse.grossAmounts.grossRevenue
+                        Total_Freight: revenueResponse.grossAmounts.grossFreight.toFixed(2),
+                        Total_Expense: revenueResponse.grossAmounts.grossExpenses.toFixed(2),
+                        Total_Revenue: revenueResponse.grossAmounts.grossRevenue.toFixed(2)
                     });
                     retObj.data = output;
                     analyticsService.create(req, serviceActions.revenue_det_by_veh_dwnld, {

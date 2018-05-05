@@ -1,4 +1,3 @@
-
 app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$cookies', '$rootScope', function ($scope, $state, Utils, AccountServices, $cookies, $rootScope) {
     $scope.logout = function () {
         Utils.logout();

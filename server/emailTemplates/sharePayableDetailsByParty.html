@@ -20,17 +20,17 @@
             <tr>
                 <td>$record._id.name</td>
                 <td>$record._id.contact</td>
-                <td>$record.totalAmount</td>
-                <td>$record.paidAmount</td>
-                <td>$record.dueAmount</td>
+                <td>$record.totalAmount.toFixed(2)</td>
+                <td>$record.paidAmount.toFixed(2)</td>
+                <td>$record.dueAmount.toFixed(2)</td>
                 
             </tr>
             #end
             <tr>
                 <td colspan="2" ><b>Total</b></td>
-                <td><b>$emailData.gross.totalAmount</b></td>
-                <td><b>$emailData.gross.paidAmount</b></td>
-                <td><b>$emailData.gross.dueAmount</b></td>
+                <td><b>$emailData.gross.totalAmount.toFixed(2)</b></td>
+                <td><b>$emailData.gross.paidAmount.toFixed(2)</b></td>
+                <td><b>$emailData.gross.dueAmount.toFixed(2)</b></td>
             </tr>
 
         </table>

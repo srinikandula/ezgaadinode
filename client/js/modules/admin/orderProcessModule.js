@@ -297,6 +297,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
                 insuranceAvailable: ""
             }]
         };
+    }
         SettingServices.getTruckTypes({}, function (success) {
             if (success.data.status) {
                 $scope.truckTypesList = success.data.data;
@@ -320,55 +321,7 @@ app.controller('orderProcessCtrl', ['$scope', '$state', 'SettingServices', 'cust
 
         });
 
-        OrderProcessServices.getAllAccountsExceptTruckOwners({
-            name: $scope.search,
-            size: $scope.currentElement
-        }, function (success) {
-            if (success.data.status) {
-                $scope.truckOwnersList = success.data.data;
-            } else {
-                $scope.truckOwnersList = [];
-            }
 
-        }, function (error) {
-
-        });
-
-
-    };
-    $scope.loadMore = function () {
-        $scope.currentElement = $scope.currentElement + 10;
-        OrderProcessServices.getAllAccountsExceptTruckOwners({
-            name: $scope.search,
-            size: $scope.currentElement
-        }, function (success) {
-            if (success.data.status) {
-                $scope.truckOwnersList = $scope.truckOwnersList.concat(success.data.data);
-            } else {
-                $scope.truckOwnersList = [];
-            }
-
-        }, function (error) {
-
-        });
-    };
-    $scope.searchAccountOwner = function (search) {
-        $scope.currentElement = 0;
-        $scope.search = search;
-        OrderProcessServices.getAllAccountsExceptTruckOwners({
-            name: $scope.search,
-            size: $scope.currentElement
-        }, function (success) {
-            if (success.data.status) {
-                $scope.truckOwnersList = success.data.data;
-            } else {
-                $scope.truckOwnersList = [];
-            }
-
-        }, function (error) {
-
-        });
-    };
 
     $scope.initializeEditTruckRequest = function () {
         $scope.loadBooking = {
@@ -1343,13 +1296,110 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         $state.go('orderprocess.viewOrder');
     };
 
-    $scope.getTransportersList = function () {
+    /*$scope.getTransportersList = function () {
         customerServices.getTransporter({}, function (response) {
             if (response.data.status) {
                 $scope.getTransporters = response.data.data;
             } else {
                 Notification.error({message: response.data.messages[0]});
             }
+        });
+    };*/
+
+    OrderProcessServices.getAllAccountsExceptTruckOwners({
+        name: $scope.search,
+        size: $scope.currentElement
+    }, function (success) {
+        if (success.data.status) {
+            $scope.loadOwnersList = success.data.data;
+        } else {
+            $scope.loadOwnersList = [];
+        }
+
+    }, function (error) {
+
+    });
+
+    $scope.loadMore = function () {
+        $scope.currentElement = $scope.currentElement + 10;
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.loadOwnersList = $scope.loadOwnersList.concat(success.data.data);
+            } else {
+                $scope.loadOwnersList = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+    $scope.searchAccountOwner = function (search) {
+        $scope.currentElement = 0;
+        $scope.search = search;
+        OrderProcessServices.getAllAccountsExceptTruckOwners({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.loadOwnersList = success.data.data;
+            } else {
+                $scope.loadOwnersList = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+
+
+    OrderProcessServices.getTruckOwnersAndCommisionAgents({
+        name: $scope.search,
+        size: $scope.currentElement
+    }, function (success) {
+        if (success.data.status) {
+            $scope.truckOwnersList = success.data.data;
+        } else {
+            $scope.truckOwnersList = [];
+        }
+
+    }, function (error) {
+
+    });
+
+    $scope.loadMoreTruckOwners = function () {
+        $scope.currentElement = $scope.currentElement + 10;
+        OrderProcessServices.getTruckOwnersAndCommisionAgents({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.truckOwnersList = $scope.truckOwnersList.concat(success.data.data);
+            } else {
+                $scope.truckOwnersList = [];
+            }
+
+        }, function (error) {
+
+        });
+    };
+    $scope.searchTruckOwner = function (search) {
+        $scope.currentElement = 0;
+        $scope.search = search;
+        OrderProcessServices.getTruckOwnersAndCommisionAgents({
+            name: $scope.search,
+            size: $scope.currentElement
+        }, function (success) {
+            if (success.data.status) {
+                $scope.truckOwnersList = success.data.data;
+            } else {
+                $scope.truckOwnersList = [];
+            }
+
+        }, function (error) {
+
         });
     };
 

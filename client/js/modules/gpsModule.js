@@ -195,7 +195,6 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
 
     $scope.gpsTrackingByMapView=function () {
         GpsService.gpsTrackingByMapView(function (success) {
-            console.log('response',success);
         },function (error) {
 
         })

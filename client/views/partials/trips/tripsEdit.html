@@ -11,10 +11,9 @@
                     </div>
                 </div>
 
-                <div class="form-group col-xs-12">
-                    <div class=" select-box">
+                <div class="form-group col-xs-12 styling-input-list">
+                    <div class="trip-select-box search-box">
                         <ui-select ng-model="trip.registrationNo" theme="select2" ng-change="selectedTruckTonnage()"
-                                   style="min-width: 390px;"
                                    title="Choose a Truck" append-to-body="true">
                             <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.registrationNo || truckRegNo}}
@@ -25,17 +24,19 @@
                             </ui-select-choices>
                         </ui-select>
                         <label class="focus-effect-for-input-trucks">Select a Truck*</label>
-
+                    </div>
+                    <div class="addingMaster">
+                        <a href="#" ng-click="addTruckFromTrips();"><i class="fa fa-plus-square"></i> </a>
                     </div>
 
                     <div class="clearfix"></div>
                 </div>
                 <div class="form-group col-xs-12 styling-input-list">
-                    <div class=" select-box ">
+                    <div class="trip-select-box select-box ">
                         <ui-select ng-model="trip.driverId" theme="select2"
                                    style="min-width: 390px;"
                                    title="Choose a person" append-to-body="true">
-                            <ui-select-match  class="form-control custom-form-control">
+                            <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.fullName || driverName}}
                             </ui-select-match>
                             <ui-select-choices
@@ -43,29 +44,33 @@
                                 <div ng-bind-html="driver.fullName | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
-
                         <label class="focus-effect-for-input-trucks">Driver Name</label>
+                    </div>
+                    <div class="addingMaster">
+                        <a href="#" ng-click="addDriverFromTrip();"><i class="fa fa-plus-square"></i> </a>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
 
-                    <div class=" select-box">
-                        <ui-select ng-model="trip.partyId" theme="select2" ng-change="selectParty(trip)"
+                    <div class="trip-select-box select-box">
+                        <ui-select ng-model="trip.partyId" theme="select2"
                                    style="min-width: 390px;"
                                    title="Choose a Party" append-to-body="true">
                             <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.name || partyName}}
                             </ui-select-match>
                             <ui-select-choices
-                                    repeat="party in parties | propsFilter: {name: $select.search}" >
-                                <div ng-bind-html="party.name | highlight: $select.search" ></div>
+                                    repeat="party in parties | propsFilter: {name: $select.search}">
+                                <div ng-bind-html="party.name | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
                         <label class="focus-effect-for-input-trucks">Select Party*</label>
-
+                    </div>
+                    <div class="addingMaster">
+                        <a href="#" ng-click="addPartyFromTrip();"><i class="fa fa-plus-square"></i> </a>
                     </div>
                 </div>
-                <div class="form-group col-xs-6" >
+                <div class="form-group col-xs-6">
                     <div class="styling-input-list">
                         <input ng-model="trip.source" type="text" class="form-control custom-form-control" id="source"
                                ng-change="searchSource()">
@@ -73,15 +78,48 @@
 
                     </div>
                 </div>
-                <div class="form-group col-xs-6" >
+                <div class="form-group col-xs-6">
                     <div class="styling-input-list">
-                        <input ng-model="trip.destination" type="text" class="form-control custom-form-control" id="destination"
+                        <input ng-model="trip.destination" type="text" class="form-control custom-form-control"
+                               id="destination"
                                ng-change="searchDestination()">
                         <label class="focus-effect-for-input" aria-hidden="true">Destination</label>
 
                     </div>
                 </div>
-                <div class="form-group col-xs-12" ng-show="partyType=='Commission'" >
+                <div class="clearfix"></div>
+                <div class="form-group pos-relative" ng-repeat="exp in trip.expense">
+                    <div class="col-xs-6">
+                        <div class=" styling-input-list">
+                            <select class="form-control custom-form-control" ng-model="exp.type">
+                                <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
+                                <option value="others">Others</option>
+                            </select>
+                            <label class="focus-effect-for-input" aria-hidden="true">Expense Type *</label>
+                        </div>
+
+                        <div class=" styling-input-list" ng-show="exp.type==='others'">
+                            <input ng-model="exp.expenseName" type="text" class="form-control custom-form-control"
+                            >
+                            <label class="focus-effect-for-input" aria-hidden="true">Expense Type *</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-6">
+                        <div class="styling-input-list">
+                            <input ng-model="exp.amount" type="number" class="form-control custom-form-control">
+                            <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
+                        </div>
+                    </div>
+                        <a href="#" class="addingMaster" ng-click="addExpense()" ng-show="$index==0">
+                            <i class="fa fa-plus-square"></i> </a>
+                        <a href="#" class="addingMaster" ng-click="deleteExpense($index)" ng-show="$index>0">
+                            <i class="fa fa-minus-square"></i> </a>
+                        <div class="clearfix"></div>
+
+                </div>
+                <div class="clearfix"></div>
+
+                <div class="form-group col-xs-12" ng-show="partyType=='Commission'">
                     <div class=" styling-input-list">
                         <input ng-model="trip.commission" type="number" class="form-control custom-form-control"
                                id="commission">
@@ -159,7 +197,171 @@
             </div>
         </form>
     </div>
-
-
 </div>
 <div class="clearfix"></div>
+<script type="text/ng-template" id="addTruck.html">
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Add Truck</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="row">
+            <div class="col-sm-9 popup-center">
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input type="text" class="form-control custom-form-control" ng-readonly="userType==='group'"
+                               ng-disabled="userType==='group'" ng-model="truck.registrationNo"/>
+                        <label class="focus-effect-for-input" aria-hidden="true">Truck Number *</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <ui-select ng-model="truck.truckType" theme="select2"
+                                   title="Choose a Truck Type" append-to-body="true">
+                            <ui-select-match class="form-control custom-form-control">
+                                {{$select.selected.title || title}} , {{$select.selected.tonnes || tonnes}} Tonnes
+                            </ui-select-match>
+                            <ui-select-choices
+                                    repeat="truck in truckTypesList | propsFilter: {title: $select.search}">
+                                <b>
+                                    <div ng-bind-html="truck.title | highlight: $select.search"></div>
+                                </b>
+                                <small>
+                                    Tones: {{truck.tonnes || '---'}}
+                                </small>
+                            </ui-select-choices>
+                        </ui-select>
+                        <label class="focus-effect-for-input">Select Truck Type*</label>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="margin-top-20">
+                    <div>
+                        <div class="alert alert-danger" role="alert" ng-show="truck.errors.length">
+                            <ul class="">
+                                <li ng-repeat="error in truck.errors">{{error}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="addNewTruck();">Submit</button>
+            <button class="btn btn-danger" type="button" ng-click="close();">Cancel</button>
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="addDriver.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Add Driver</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-9 popup-center">
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="driver.fullName" type="text" class="form-control custom-form-control"
+                               id="fullName">
+                        <label class="focus-effect-for-input" aria-hidden="true">Full Name*</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="driver.mobile" type="number" class="form-control custom-form-control"
+                               id="mobile">
+                        <label class="focus-effect-for-input" aria-hidden="true">Contact Number</label>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="margin-top-20">
+                    <div>
+                        <div class="alert alert-danger" role="alert" ng-show="driver.errors.length">
+                            <ul class="">
+                                <li ng-repeat="error in driver.errors">{{error}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="addNewDriver();">Submit</button>
+            <button class="btn btn-danger" type="button" ng-click="close();">Cancel</button>
+        </div>
+    </div>
+</script>
+<script type="text/ng-template" id="addParty.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Add Party</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-10 popup-center">
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="party.name" type="text" class="form-control custom-form-control"
+                               id="accountId">
+                        <label class="focus-effect-for-input" aria-hidden="true">Party Name*</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="party.contact" type="number" class="form-control custom-form-control"
+                               id="contactPhone">
+                        <label class="focus-effect-for-input" aria-hidden="true">Contact Phone*</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="party.email" type="number" class="form-control custom-form-control"
+                               id="email">
+                        <label class="focus-effect-for-input" aria-hidden="true">Email</label>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="form-group sms-email">
+                        <div class="sms">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="party.isSms">
+                                    <span class="cr ntfns">
+                                        <i class="cr-icon ntfns-icon fa fa-check"></i>
+                                    </span>
+                                    SMS Notification
+                                </label>
+                            </div>
+                        </div>
+                        <div class="email">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" ng-model="party.isEmail">
+                                    <span class="cr ntfns">
+                                        <i class="cr-icon ntfns-icon fa fa-check"></i>
+                                    </span>
+                                    Email Notification
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <div class="margin-top-20">
+                    <div>
+                        <div class="alert alert-danger" role="alert" ng-show="party.errors.length">
+                            <ul class="">
+                                <li ng-repeat="error in party.errors">{{error}}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="addNewParty();">Submit</button>
+        <button class="btn btn-danger" type="button" ng-click="close();">Cancel</button>
+    </div>
+</script>
