@@ -1773,6 +1773,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         }
 
     };
+/*
     var printHtml = function (html) {
         var hiddenFrame = $('<iframe style="display: none"></iframe>').appendTo('body')[0];
         hiddenFrame.contentWindow.printAndRemove = function() {
@@ -1791,6 +1792,7 @@ app.controller('viewOrderCtrl', ['$scope', '$state', 'OrderProcessServices', 'cu
         doc.write(htmlDocument);
         doc.close();
     };
+*/
 
 
 
