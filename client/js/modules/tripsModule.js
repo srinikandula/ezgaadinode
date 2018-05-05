@@ -258,11 +258,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         driverId: '',
         partyId: '',
         registrationNo: '',
-        freightAmount: '',
+        freightAmount: 0,
         deductAmount:0,
+        advanceAmount:0,
         tripLane: '',  //new..//new...
-        tonnes: '',    //new...
-        rate: '',   //new...
+        tonnes: 0,    //new...
+        rate: 0,   //new...
         remarks: '',    //new
         error: [],
         success: [],
@@ -298,7 +299,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.addExpense=function () {
       if(!$scope.trip.expense[$scope.trip.expense.length-1].type || !$scope.trip.expense[$scope.trip.expense.length-1].amount){
-          Notification.error("Please enter expense details");
+          Notification.error("Please enter Additional Charges details");
 
       } else{
           $scope.trip.expense.push({});
@@ -309,7 +310,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if ($scope.trip.expense.length > 1) {
             $scope.trip.expense.splice(index, 1);
         } else {
-            Notification.error("Please add at least one expense");
+            Notification.error("Please add at least one Additional Charge");
         }
 
     };
