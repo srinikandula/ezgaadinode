@@ -25,7 +25,9 @@ var AWS = require('aws-sdk');
 var s3 = new AWS.S3({
     apiVersion: '2006-03-01',
     accessKeyId : config.s3.accessKeyId,
-    secretAccessKey : config.s3.secretAccessKey
+    secretAccessKey : config.s3.secretAccessKey,
+    signatureVersion: 'v4',
+    region: 'ap-south-1'
 });
 
 var Utils = function () {
@@ -761,4 +763,51 @@ Utils.prototype.uploadAttachmentsToS3 = function (accountId,folderName,files, ca
     }
 };
 
+Utils.prototype.getS3FilePath=function (fileKey,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+     s3.getSignedUrl('getObject', {
+        Bucket: config.s3.bucketName,
+        Key: fileKey
+    },function (err,doc) {
+       if(err){
+           retObj.messages("Please try again",err.message);
+       }else{
+           retObj.status=true;
+           retObj.messages.push('success');
+           retObj.data=doc;
+           callback(retObj);
+       }
+    });
+};
+
+Utils.prototype.deleteS3BucketFile=function (key,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    var params = {
+        Bucket: config.s3.bucketName,
+        Delete: { // required
+            Objects: [ // required
+                {
+                    Key: key // required
+                }
+            ]
+        },
+    };
+
+    s3.deleteObjects(params, function(err, data) {
+        if (err){
+            retObj.messages.push("please try again , "+err.message);
+            callback(retObj);
+        }else{
+            console.log("data",data);
+            retObj.status=true;
+            callback(retObj);
+        }
+    });
+};
 module.exports = new Utils();

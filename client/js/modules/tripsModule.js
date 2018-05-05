@@ -84,7 +84,21 @@ app.factory('TripServices', ['$http', function ($http) {
                 method: "GET",
                 params: params
             }).then(success, error)
-        }
+        },
+        viewTripDocument: function (params, success, error) {
+            $http({
+                url: '/v1/trips/viewTripDocument',
+                method: "GET",
+                params: params
+            }).then(success, error)
+        },
+        deleteTripImage:function (params, success, error) {
+            $http({
+                url: '/v1/trips/deleteTripImage',
+                method: "DELETE",
+                params: params
+            }).then(success, error)
+        },
     }
 }]);
 
@@ -265,8 +279,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         partyId: '',
         registrationNo: '',
         freightAmount: 0,
-        deductAmount:0,
-        advanceAmount:0,
+        deductAmount: 0,
+        advanceAmount: 0,
         tripLane: '',  //new..//new...
         tonnes: 0,    //new...
         rate: 0,   //new...
@@ -304,9 +318,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         });
     }
 
-    $scope.addExpense=function () {
-      if(!$scope.trip.expense[$scope.trip.expense.length-1].type || !$scope.trip.expense[$scope.trip.expense.length-1].amount){
-          Notification.error("Please enter Additional Charges details");
+    $scope.addExpense = function () {
+        if (!$scope.trip.expense[$scope.trip.expense.length - 1].type || !$scope.trip.expense[$scope.trip.expense.length - 1].amount) {
+            Notification.error("Please enter Additional Charges details");
         } else {
             $scope.trip.expense.push({
                 type: undefined,
@@ -324,6 +338,50 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     };
     getExpenseMaster();
+    $scope.viewAttachment = function (keyPath) {
+        TripServices.viewTripDocument({filePath: keyPath}, function (success) {
+
+            if (success.data.status) {
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'viewS3Image.html',
+                    controller: 'ViewS3ImageCtrl',
+                    size: 'lg',
+                    backdrop: 'static',
+                    keyboard: false,
+                    resolve: {
+                        path: function () {
+                            return success.data.data
+                        }
+                    }
+                });
+
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (err) {
+
+        })
+    };
+
+    $scope.deleteTripImage = function (key,index) {
+        TripServices.deleteTripImage({tripId:$scope.trip._id,key:key},function (success) {
+            if(success.data.status){
+                $scope.trip.attachments.splice(index, 1);
+                success.data.messages.forEach(function (message) {
+                    Notification.success(message);
+                });
+
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        },function (error) {
+
+        })
+    };
 
     function getTruckTypes() {
         TrucksService.getTruckTypes(function (success) {
@@ -541,18 +599,18 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                         });
                     }
                 });
-               /* TripServices.updateTrip($scope.trip, function (success) {
-                    if (success.data.status) {
-                        Notification.success({message: 'Trip updated successfully'});
-                        $state.go('trips');
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error(message);
-                        });
-                    }
-                }, function (err) {
+                /* TripServices.updateTrip($scope.trip, function (success) {
+                     if (success.data.status) {
+                         Notification.success({message: 'Trip updated successfully'});
+                         $state.go('trips');
+                     } else {
+                         success.data.messages.forEach(function (message) {
+                             Notification.error(message);
+                         });
+                     }
+                 }, function (err) {
 
-                });*/
+                 });*/
             } else {
                 Upload.upload({
                     url: '/v1/trips/addTrip',
@@ -768,3 +826,13 @@ app.controller('truckDriverPartyCtrl', ['$scope', '$uibModalInstance', 'TripServ
 
 }]);
 
+
+app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
+
+    $scope.path = path;
+    $scope.close = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+
+
+}]);

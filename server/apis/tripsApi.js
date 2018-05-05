@@ -271,26 +271,26 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
         });
         callback(retObj);
     } else {
-        if(req.files.files && req.files.files.length>0){
-            Utils.uploadAttachmentsToS3(req.jwt.accountId,'trip',req.files.files,function (fileUploadResp) {
-                if(fileUploadResp.status){
-                    tripDetails.attachments=fileUploadResp.attachments;
-                    createTripDetails(req,tripDetails,callback)
-                }else{
+        if (req.files.files && req.files.files.length > 0) {
+            Utils.uploadAttachmentsToS3(req.jwt.accountId, 'trip', req.files.files, function (fileUploadResp) {
+                if (fileUploadResp.status) {
+                    tripDetails.attachments = fileUploadResp.attachments;
+                    createTripDetails(req, tripDetails, callback)
+                } else {
                     callback(fileUploadResp);
                 }
             })
-        }else{
-            createTripDetails(req,tripDetails,callback);
+        } else {
+            createTripDetails(req, tripDetails, callback);
         }
 
     }
 };
 
-function createTripDetails(req,tripDetails,callback) {
-    var retObj={
-        status:false,
-        messages:[]
+function createTripDetails(req, tripDetails, callback) {
+    var retObj = {
+        status: false,
+        messages: []
     };
     tripDetails.createdBy = req.jwt.id;
     tripDetails.groupId = req.jwt.id;
@@ -347,6 +347,7 @@ function createTripDetails(req,tripDetails,callback) {
         saveTrip(req, tripDetails, callback)
     }
 }
+
 function saveTrip(req, tripDetails, callback) {
     var retObj = {
         status: false,
@@ -476,25 +477,25 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         callback(retObj);
     }
     if (giveAccess) {
-        if(req.files.files && req.files.files.length>0){
-            Utils.uploadAttachmentsToS3(req.jwt.accountId,'trip',req.files.files,function (fileUploadResp) {
-                if(fileUploadResp.status){
-                    tripDetails.attachments=tripDetails.attachments.concat(fileUploadResp.attachments);
-                    updateTripDetails(req,tripDetails,callback)
-                }else{
+        if (req.files.files && req.files.files.length > 0) {
+            Utils.uploadAttachmentsToS3(req.jwt.accountId, 'trip', req.files.files, function (fileUploadResp) {
+                if (fileUploadResp.status) {
+                    tripDetails.attachments = tripDetails.attachments.concat(fileUploadResp.attachments);
+                    updateTripDetails(req, tripDetails, callback)
+                } else {
                     callback(fileUploadResp);
                 }
             })
-        }else{
-            updateTripDetails(req,tripDetails,callback);
+        } else {
+            updateTripDetails(req, tripDetails, callback);
         }
     }
 };
 
 function updateTripDetails(req, tripDetails, callback) {
-    var retObj={
-        status:false,
-        messages:[]
+    var retObj = {
+        status: false,
+        messages: []
     };
     tripDetails.totalExpense = 0;
     if (tripDetails.expense && tripDetails.expense.length > 0) {
@@ -554,8 +555,8 @@ function updateTrip(req, tripDetails, callback) {
         {$set: tripDetails},
         {new: true}, function (err, trip) {
             if (err) {
-                console.log("errrr",err);
-                retObj.messages.push("Error while updating Trip, try Again",err.message);
+                console.log("errrr", err);
+                retObj.messages.push("Error while updating Trip, try Again", err.message);
                 analyticsService.create(req, serviceActions.update_trips_err, {
                     body: JSON.stringify(req.body),
                     accountId: jwt.id,
@@ -2128,8 +2129,65 @@ Trips.prototype.downloadDetails = function (jwt, params, req, callback) {
     })
 };
 
-Trips.prototype.viewTripDocumnet=function (req,callback) {
+Trips.prototype.viewTripDocumnet = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!req.query.filePath) {
+        retObj.messages.push("Invalid file path");
+        callback(retObj);
+    } else {
+        Utils.getS3FilePath(req.query.filePath, function (resp) {
+            callback(resp);
+        })
 
+    }
+};
+
+Trips.prototype.deleteTripImage = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    if (!req.query.tripId) {
+        retObj.messages.push("Invalid file");
+        callback(retObj);
+    }
+    if (!req.query.key) {
+        retObj.messages.push("Invalid file");
+        callback(retObj);
+    }
+    if (retObj.messages.length>0) {
+        callback(retObj);
+    } else {
+        Utils.deleteS3BucketFile(req.query.key, function (resp) {
+           if(resp.status){
+               TripCollection.update(
+                   { "_id":req.query._id },
+                   { "$pull": { "attachments": { "_id": req.query.tripId } } },
+                   { safe: true },
+                   function(err, numAffected) {
+                       if(err){
+                           retObj.messages.push("Please try again, "+err.message);
+                           callback(retObj);
+                       } else if(numAffected) {
+                           console.log("numAffected",numAffected);
+                           retObj.status=true;
+                           retObj.messages.push("Trip image deleted successfully");
+                           callback(retObj);
+                       }else{
+                           retObj.messages.push("Trip image not deleted");
+                           callback(retObj);
+                       }
+                   }
+               );
+           }else{
+               callback(resp);
+           }
+        })
+
+    }
 };
 
 module.exports = new Trips();
