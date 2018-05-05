@@ -200,6 +200,11 @@ var tripSchema = new mongoose.Schema({
         type:{type: ObjectId, ref: 'expenseMaster'},
         amount:Number
     }],
+    attachments:[{
+        fileName:String,
+        key:String,
+        path:String
+    }],
     totalExpense:Number
 }, {timestamps: true});
 
