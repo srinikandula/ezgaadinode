@@ -25,8 +25,8 @@
                         </ui-select>
                         <label class="focus-effect-for-input-trucks">Select a Truck*</label>
                     </div>
-                    <div class="addingMaster">
-                        <a href="#" ng-click="addTruckFromTrips();"><i class="fa fa-plus-square"></i> </a>
+                    <div class="addingData">
+                        <a href="#" ng-click="addTruckFromTrips();">+ Add Truck</a>
                     </div>
 
                     <div class="clearfix"></div>
@@ -34,7 +34,6 @@
                 <div class="form-group col-xs-12 styling-input-list">
                     <div class="trip-select-box select-box ">
                         <ui-select ng-model="trip.driverId" theme="select2"
-                                   style="min-width: 390px;"
                                    title="Choose a person" append-to-body="true">
                             <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.fullName || driverName}}
@@ -46,15 +45,13 @@
                         </ui-select>
                         <label class="focus-effect-for-input-trucks">Driver Name</label>
                     </div>
-                    <div class="addingMaster">
-                        <a href="#" ng-click="addDriverFromTrip();"><i class="fa fa-plus-square"></i> </a>
+                    <div class="addingData">
+                        <a href="#" ng-click="addDriverFromTrip();">+ Add Driver </a>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
-
                     <div class="trip-select-box select-box">
                         <ui-select ng-model="trip.partyId" theme="select2"
-                                   style="min-width: 390px;"
                                    title="Choose a Party" append-to-body="true">
                             <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.name || partyName}}
@@ -66,8 +63,8 @@
                         </ui-select>
                         <label class="focus-effect-for-input-trucks">Select Party*</label>
                     </div>
-                    <div class="addingMaster">
-                        <a href="#" ng-click="addPartyFromTrip();"><i class="fa fa-plus-square"></i> </a>
+                    <div class="addingData">
+                        <a href="#" ng-click="addPartyFromTrip();">+ Add Party </a>
                     </div>
                 </div>
                 <div class="form-group col-xs-6">
@@ -88,20 +85,20 @@
                     </div>
                 </div>
                 <div class="clearfix"></div>
+                <h2 class="inner-title">Additional Charges</h2>
                 <div class="form-group pos-relative" ng-repeat="exp in trip.expense">
                     <div class="col-xs-6">
-                        <div class=" styling-input-list">
+                        <div class=" styling-input-list form-group">
                             <select class="form-control custom-form-control" ng-model="exp.type">
                                 <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
                                 <option value="others">Others</option>
                             </select>
-                            <label class="focus-effect-for-input" aria-hidden="true">Expense Type *</label>
+                            <label class="focus-effect-for-input" aria-hidden="true">Type *</label>
                         </div>
 
-                        <div class=" styling-input-list" ng-show="exp.type==='others'">
-                            <input ng-model="exp.expenseName" type="text" class="form-control custom-form-control"
-                            >
-                            <label class="focus-effect-for-input" aria-hidden="true">Expense Type *</label>
+                        <div class="styling-input-list form-group" ng-show="exp.type==='others'">
+                            <input ng-model="exp.expenseName" type="text" class="form-control custom-form-control">
+                            <label class="focus-effect-for-input" aria-hidden="true"> Type *</label>
                         </div>
                     </div>
                     <div class="form-group col-xs-6">
@@ -134,21 +131,21 @@
                     <div class=" styling-input-list">
                         <input ng-model="trip.tonnage" type="number" class="form-control custom-form-control"
                                id="tonnage">
-                        <label class="focus-effect-for-input" aria-hidden="true">Tonnage*</label>
+                        <label class="focus-effect-for-input" aria-hidden="true">Tonnage</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
                         <input ng-model="trip.rate" type="number" class="form-control custom-form-control"
                                id="rate">
-                        <label class="focus-effect-for-input" aria-hidden="true">Rate*</label>
+                        <label class="focus-effect-for-input" aria-hidden="true">Rate</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
                         <input ng-model="trip.deductAmount" type="number" class="form-control custom-form-control"
                                id="deductAmount">
-                        <label class="focus-effect-for-input" aria-hidden="true">Deductions*</label>
+                        <label class="focus-effect-for-input" aria-hidden="true">Deductions</label>
 
                     </div>
                 </div>
@@ -157,6 +154,14 @@
                         <input ng-model="trip.freightAmount" type="number" class="form-control custom-form-control"
                                id="freightAmount">
                         <label class="focus-effect-for-input" aria-hidden="true">Fight amount</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
+                        <input ng-model="trip.advanceAmount" type="number" class="form-control custom-form-control"
+                               id="advanceAmount">
+                        <label class="focus-effect-for-input" aria-hidden="true">Advance amount</label>
 
                     </div>
                 </div>
