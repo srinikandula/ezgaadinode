@@ -81,7 +81,7 @@
     <div class="body-section" ng-controller="LeftNavCtrl" ng-if="subTab === 'ERP'">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-xs-12">
+          <!--  <div class="col-xs-12">
                 <div class="col-sm-2 col-xs-12 left-nav" ng-if="isLoggedIn()">
                     <left-menu label="Reports" ui-sref="reports"></left-menu>
                     <left-menu label="Trucks" ui-sref="trucks"></left-menu>
@@ -90,7 +90,6 @@
                      <left-menu label="Trips" ui-sref="trips"></left-menu>
                     <left-menu label="Receipts" ui-sref="receipts"></left-menu>
                     <left-menu label="Payments" ui-sref="payments"></left-menu>
-                    <!--<left-menu label="Expense-Master"></left-menu>-->
                     <left-menu label="Expenses" ui-sref="expenses"></left-menu>
                     <left-menu label="Route-Config" ui-sref="routeConfig"
                                ng-show="routeConfigEnabled === 'true'"></left-menu>
@@ -99,7 +98,65 @@
                 <div class="col-xs-12 col-sm-10">
                     <ui-view></ui-view>
                 </div>
-            </div>
+            </div>-->
+            <div class="col-xs-12">
+                        <div class="col-sm-2 col-xs-12 left-nav">
+                            <left-menu label="Reports" ui-sref="reports"></left-menu>
+                             <div class="panel-group" id="accordion">
+                                    <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"                                                          class="left-menu-anchor">
+                                                    <span class="glyphicon glyphicon-chevron-down pull-right">
+                                                </span>Master</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseOne" class="panel-collapse collapse in">
+                                            <div class="panel-body custom-panel-body">
+                                                 <left-menu label="Trucks" ui-sref="trucks"></left-menu>
+                                                <left-menu label="Drivers" ui-sref="drivers"></left-menu>
+                                                <left-menu label="Parties" ui-sref="parties"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"
+                                                class="left-menu-anchor">
+                                                    <span class="glyphicon glyphicon-chevron-down pull-right">
+                                                </span>Maintanance</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseTwo" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                <left-menu label="Trips" ui-sref="trips"></left-menu>
+                                                <left-menu label="Expenses" ui-sref="expenses"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                   <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"
+                                                   class="left-menu-anchor">
+                                                    <span class="glyphicon glyphicon-chevron-down pull-right">
+                                                </span>Transactions</a>
+                                            </h4>
+                                        </div>
+                                        <div id="collapseThree" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                 <left-menu label="Receipts" ui-sref="receipts"></left-menu>
+                                                <left-menu label="Payments" ui-sref="payments"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                             </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-10">
+                            <ui-view></ui-view>
+                        </div>
+                    </div>
         </div>
     </div>
 </div>
@@ -127,6 +184,7 @@
 <!--controllers-->
 <script src="dist/js/main.min.js"></script>
 <script>
+
     $(document).ready(function () {
         $("#top").hide();
         $(function toTop() {
