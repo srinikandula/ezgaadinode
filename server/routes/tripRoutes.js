@@ -1,10 +1,13 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
+
 var Trips = require('../apis/tripsApi');
 
-AuthRouter.post('/addTrip', function (req, res) {
-    Trips.addTrip(req.jwt, req.body,req, function (result) {
+AuthRouter.post('/addTrip',multipartyMiddleware, function (req, res) {
+    Trips.addTrip(req.jwt,req.body.content,req, function (result) {
         res.send(result);
     });
 });
@@ -19,8 +22,8 @@ AuthRouter.get('/getAllTrips', function (req, res) {
         res.json(result);
     });
 });
-AuthRouter.put('/', function (req, res) {
-    Trips.updateTrip(req.jwt, req.body,req, function (result) {
+AuthRouter.post('/updateTrip',multipartyMiddleware, function (req, res) {
+    Trips.updateTrip(req.jwt, req.body.content,req, function (result) {
         res.send(result);
     });
 });
@@ -136,7 +139,11 @@ AuthRouter.post('/loockingForTripRequest', function (req, res) {
     });
 });
 
-
+AuthRouter.get("/viewTripDocument",function (req,res) {
+   Trips.viewTripDocumnet(req,function (result) {
+       res.send(result);
+   })
+});
 
 module.exports = {
     OpenRouter: OpenRouter,
