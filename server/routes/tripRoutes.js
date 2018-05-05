@@ -75,9 +75,20 @@ AuthRouter.get('/getPartiesByTrips',function(req,res){
     Trips.getPartiesByTrips(req.jwt,req,function(result){
         res.send(result);
     })
-})
+});
+
+AuthRouter.get("/viewTripDocument",function (req,res) {
+    Trips.viewTripDocumnet(req,function (result) {
+        res.send(result);
+    })
+});
 AuthRouter.get('/:tripId', function (req, res) {
     Trips.findTrip(req.jwt, req.params.tripId,req, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.delete("/deleteTripImage",function (req,res) {
+    Trips.deleteTripImage(req, function (result) {
         res.send(result);
     });
 });
@@ -139,11 +150,7 @@ AuthRouter.post('/loockingForTripRequest', function (req, res) {
     });
 });
 
-AuthRouter.get("/viewTripDocument",function (req,res) {
-   Trips.viewTripDocumnet(req,function (result) {
-       res.send(result);
-   })
-});
+
 
 module.exports = {
     OpenRouter: OpenRouter,

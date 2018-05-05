@@ -205,6 +205,7 @@ var tripSchema = new mongoose.Schema({
         key:String,
         path:String
     }],
+    advanceAmount:Number,
     totalExpense:Number
 }, {timestamps: true});
 
