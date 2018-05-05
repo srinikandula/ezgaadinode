@@ -373,6 +373,9 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                             callback(retObj);
                         }else {
                             positions = positions.concat(archivedPositions);
+                            //take only positions that have totalDistance changed
+                            positions = _.uniq(positions, 'totalDistance');
+                            //sort the positions based of deviceTime
                             positions = _.sortBy(positions, function(position) { return position.deviceTime; })
                             if (positions.length>0) {
                                 var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
