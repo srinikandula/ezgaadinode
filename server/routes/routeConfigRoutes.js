@@ -6,7 +6,6 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 
 var routeConfigAPI = require('../apis/routeConfigApi');
-var AccountServices=require('./../apis/accountsApi');
 
 AuthRouter.post('/',function(req,res){
     // console.log('req.body',req.body);
@@ -21,7 +20,6 @@ AuthRouter.get('/get',function(req,res){
 });
 AuthRouter.delete('/:Id',function(req,res){
     routeConfigAPI.deleteRouteConfigs(req.params.Id,function(result){
-        console.log("Id...",req.params.Id);
         res.send(result);
     });
 });

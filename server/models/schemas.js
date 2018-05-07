@@ -461,20 +461,35 @@ var secretKeysCounter = new mongoose.Schema({
     counter: Number
 }, {timestamps: true, versionKey: false});
 
+// var loadRequestSchema = new mongoose.Schema({
+//         createdBy: {type: ObjectId, ref: 'accounts'},
+//         accountId: {type: ObjectId, ref: 'accounts'},
+//         truckId: {type: ObjectId, ref: 'trucks'},
+//         tripLane: String,
+//         possibleStartDate: {type: Date},
+//         active: {type: Boolean, default: false},
+//         createdDate: {type: Date, default: new Date()},
+//     },
+//     {
+//         timestamps: true, versionKey:
+//             false
+//     }
+// );
 var loadRequestSchema = new mongoose.Schema({
-        createdBy: {type: ObjectId, ref: 'accounts'},
-        accountId: {type: ObjectId, ref: 'accounts'},
-        truckId: {type: ObjectId, ref: 'trucks'},
-        tripLane: String,
-        possibleStartDate: {type: Date},
-        active: {type: Boolean, default: false},
-        createdDate: {type: Date, default: new Date()},
-    },
-    {
-        timestamps: true, versionKey:
-        false
-    }
-);
+    source:{},
+    destination:{},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    truckType: {type: ObjectId, ref: 'trucksTypes'},
+    // truckType:String,
+    regNo:String,
+    makeYear:String,
+    dateAvailable:Date,
+    price:Number,
+    expectedDateReturn:Date
+},{
+    timestamps: true, versionKey:
+            false
+    });
 
 var analyticsSchema = mongoose.Schema({
     action: String,
