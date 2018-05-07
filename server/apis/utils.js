@@ -18,7 +18,17 @@ var TripsColl = require('./../models/schemas').TripCollection;
 var ExpenseMasterColl = require('./../models/schemas').expenseMasterColl;
 var adminRoleColl = require('./../models/schemas').adminRoleColl;
 var fse = require('fs-extra');
+var fs=require('fs');
 
+var AWS = require('aws-sdk');
+
+var s3 = new AWS.S3({
+    apiVersion: '2006-03-01',
+    accessKeyId : config.s3.accessKeyId,
+    secretAccessKey : config.s3.secretAccessKey,
+    signatureVersion: 'v4',
+    region: 'ap-south-1'
+});
 
 var Utils = function () {
 };
@@ -282,11 +292,11 @@ Utils.prototype.populatePartyNameInExpenseColl = function (documents, fieldTopop
 
                     if (item[fieldTopopulate]) return users._id.toString() === item[fieldTopopulate].toString();
                 });
-                if(supplier){
+                if (supplier) {
                     if (!item.attrs) {
                         item.attrs = {};
                     }
-                    item.attrs.partyName =supplier.name;
+                    item.attrs.partyName = supplier.name;
                 }
 
             }
@@ -684,20 +694,20 @@ Utils.prototype.assignTruckTypeToAccount = function (body) {
         status: false,
         messages: []
     }
-    AccountsColl.findOne({_id:body.accountId,truckTypes:body.truckType},function (err,doc) {
-        if(err){
+    AccountsColl.findOne({_id: body.accountId, truckTypes: body.truckType}, function (err, doc) {
+        if (err) {
             console.log("Please try again");
-        }else if(doc){
+        } else if (doc) {
             console.log("Type exist");
-        }else{
+        } else {
             AccountsColl.update(
-                { _id: body.accountId },
-                { $push: { truckTypes: body.truckType } },
-                function (err,updated) {
-                    if(err){
+                {_id: body.accountId},
+                {$push: {truckTypes: body.truckType}},
+                function (err, updated) {
+                    if (err) {
                         console.log("Error ocurred");
-                    }else{
-                        console.log("truck type added successfully",updated);
+                    } else {
+                        console.log("truck type added successfully", updated);
                     }
                 }
             );
@@ -706,4 +716,98 @@ Utils.prototype.assignTruckTypeToAccount = function (body) {
 
 };
 
+Utils.prototype.uploadAttachmentsToS3 = function (accountId,folderName,files, callcack) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    if (files.length > 0) {
+       var attachments=[];
+        async.eachSeries(files, function (file, fileCallback) {
+            fs.readFile(file.path, function (err, data) {
+                if (err) {
+                retObj.messages.push("File upload failed");
+                fileCallback(err);
+                }else{
+                    var newFileKey=accountId+"/"+folderName+"/"+Date.now();
+                    let base64Data = new Buffer(data,'binary');
+                    var params = {Bucket:config.s3.bucketName, Key: newFileKey, Body: base64Data};
+                    s3.upload(params,function (err,s3data) {
+                        if(err){
+                            retObj.messages.push("File upload failed,"+err.message);
+                            fileCallback(err);
+                        }else{
+                            attachments.push({
+                                fileName:file.originalFilename,
+                                key:s3data.key,
+                                path:s3data.Location
+                            });
+                            fileCallback(false);
+                        }
+                    })
+                }
+            });
+        }, function (err) {
+            if (err) {
+                callcack(retObj);
+            } else {
+                retObj.status=true;
+                retObj.attachments=attachments;
+                callcack(retObj);
+            }
+        })
+    } else {
+        retObj.messages.push("Please provide attachments");
+        callcack(retObj);
+    }
+};
+
+Utils.prototype.getS3FilePath=function (fileKey,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+     s3.getSignedUrl('getObject', {
+        Bucket: config.s3.bucketName,
+        Key: fileKey
+    },function (err,doc) {
+       if(err){
+           retObj.messages("Please try again",err.message);
+       }else{
+           retObj.status=true;
+           retObj.messages.push('success');
+           retObj.data=doc;
+           callback(retObj);
+       }
+    });
+};
+
+Utils.prototype.deleteS3BucketFile=function (key,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    var params = {
+        Bucket: config.s3.bucketName,
+        Delete: { // required
+            Objects: [ // required
+                {
+                    Key: key // required
+                }
+            ]
+        },
+    };
+
+    s3.deleteObjects(params, function(err, data) {
+        if (err){
+            retObj.messages.push("please try again , "+err.message);
+            callback(retObj);
+        }else{
+            console.log("data",data);
+            retObj.status=true;
+            callback(retObj);
+        }
+    });
+};
 module.exports = new Utils();
