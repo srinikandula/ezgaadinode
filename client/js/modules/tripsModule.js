@@ -92,7 +92,7 @@ app.factory('TripServices', ['$http', function ($http) {
                 params: params
             }).then(success, error)
         },
-        deleteTripImage:function (params, success, error) {
+        deleteTripImage: function (params, success, error) {
             $http({
                 url: '/v1/trips/deleteTripImage',
                 method: "DELETE",
@@ -293,7 +293,11 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         expense: [{
             type: undefined,
             amount: undefined
-        }]
+        }],
+        totalExpense: 0,
+        totalAmount: 0,
+        receivableAmount:0,
+        truckType:undefined
     };
 
     $scope.cancel = function () {
@@ -365,20 +369,20 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         })
     };
 
-    $scope.deleteTripImage = function (key,index) {
-        TripServices.deleteTripImage({tripId:$scope.trip._id,key:key},function (success) {
-            if(success.data.status){
+    $scope.deleteTripImage = function (key, index) {
+        TripServices.deleteTripImage({tripId: $scope.trip._id, key: key}, function (success) {
+            if (success.data.status) {
                 $scope.trip.attachments.splice(index, 1);
                 success.data.messages.forEach(function (message) {
                     Notification.success(message);
                 });
 
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
                 });
             }
-        },function (error) {
+        }, function (error) {
 
         })
     };
@@ -494,6 +498,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 getTruckIds();
                 getParties();
                 getDriverIds();
+                $scope.calculateReceivleAmount();
                 for (var i = 0; i < $scope.trip.expense.length > 0; i++) {
                     $scope.trip.expense[i].type = $scope.trip.expense[i].type._id;
                 }
@@ -557,7 +562,18 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 $scope.trip.destinationAddress = place.formatted_address;
             });
     };
+    $scope.calculateReceivleAmount = function () {
+        if($scope.trip.freightAmount>0){
+            $scope.trip.expense.forEach(function (expanse) {
+                if (expanse.amount) {
+                    $scope.trip.totalExpense=expanse.amount;
+                }
+            });
+            $scope.trip.totalAmount=$scope.trip.freightAmount+$scope.trip.totalExpense;
+            $scope.trip.receivableAmount=$scope.trip.totalAmount-$scope.trip.advanceAmount;
+        }
 
+    };
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
         params.errors = [];
@@ -638,12 +654,17 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.$watch("trip.tonnage", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
+       $scope.calculateReceivleAmount();
     });
     $scope.$watch("trip.rate", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
+        $scope.calculateReceivleAmount();
+
     });
     $scope.$watch("trip.deductAmount", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
+        $scope.calculateReceivleAmount();
+
     });
     $scope.calculateFreightAmount = function () {
         if ($scope.trip.tonnage > 0 && $scope.trip.rate > 0 && $scope.trip.deductAmount >= 0) {
