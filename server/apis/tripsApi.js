@@ -301,7 +301,7 @@ function createTripDetails(req, tripDetails, callback) {
     if (tripDetails.expense && tripDetails.expense.length > 0) {
         async.eachSeries(tripDetails.expense, function (expense, expenseCallback) {
             if (expense.amount > 0) {
-                tripDetails.totalExpense += expense.amount;
+                tripDetails.totalExpense += parseFloat(expense.amount);
             }
             if (expense.type === 'others') {
                 expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
@@ -353,6 +353,8 @@ function saveTrip(req, tripDetails, callback) {
         status: false,
         messages: []
     };
+    tripDetails.totalAmount=parseFloat(tripDetails.freightAmount)+parseFloat(tripDetails.totalExpense);
+
     var tripDoc = new TripCollection(tripDetails);
     tripDoc.save(function (err, trip) {
         if (err) {
@@ -501,7 +503,7 @@ function updateTripDetails(req, tripDetails, callback) {
     if (tripDetails.expense && tripDetails.expense.length > 0) {
         async.eachSeries(tripDetails.expense, function (expense, expenseCallback) {
             if (expense.amount > 0) {
-                tripDetails.totalExpense += expense.amount;
+                tripDetails.totalExpense += parseFloat(expense.amount);
             }
             if (expense.type === 'others') {
                 expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
@@ -550,6 +552,10 @@ function updateTrip(req, tripDetails, callback) {
         messages: []
     };
     tripDetails = Utils.removeEmptyFields(tripDetails);
+    console.log("sdc",typeof tripDetails.freightAmount,tripDetails.freightAmount);
+    console.log("sdc",typeof tripDetails.totalExpense,tripDetails.totalExpense)
+
+    tripDetails.totalAmount=parseFloat(tripDetails.freightAmount)+parseFloat(tripDetails.totalExpense);
     /* tripDetails.tripLane = tripDetails.tripLane.name;*/
     TripCollection.findOneAndUpdate({_id: tripDetails._id},
         {$set: tripDetails},
