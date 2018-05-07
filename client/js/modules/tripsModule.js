@@ -564,11 +564,14 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     };
     $scope.calculateReceivleAmount = function () {
         if($scope.trip.freightAmount>0){
-            $scope.trip.expense.forEach(function (expanse) {
-                if (expanse.amount) {
-                    $scope.trip.totalExpense=expanse.amount;
+            console.log("$scope.trip.expense.length",$scope.trip.expense.length)
+            $scope.trip.totalExpense=0;
+            for(var i=0;i<$scope.trip.expense.length;i++){
+                if ($scope.trip.expense[i].amount) {
+
+                    $scope.trip.totalExpense+=$scope.trip.expense[i].amount;
                 }
-            });
+            };
             $scope.trip.totalAmount=$scope.trip.freightAmount+$scope.trip.totalExpense;
             $scope.trip.receivableAmount=$scope.trip.totalAmount-$scope.trip.advanceAmount;
         }
@@ -654,19 +657,24 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.$watch("trip.tonnage", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
-       $scope.calculateReceivleAmount();
     });
     $scope.$watch("trip.rate", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
-        $scope.calculateReceivleAmount();
 
     });
     $scope.$watch("trip.deductAmount", function (newValue, oldValue) {
         $scope.calculateFreightAmount();
+
+    });
+    $scope.$watch("trip.freightAmount", function (newValue, oldValue) {
         $scope.calculateReceivleAmount();
 
     });
+    $scope.$watch("trip.advanceAmount", function (newValue, oldValue) {
+        $scope.calculateReceivleAmount();
+    });
     $scope.calculateFreightAmount = function () {
+
         if ($scope.trip.tonnage > 0 && $scope.trip.rate > 0 && $scope.trip.deductAmount >= 0) {
             $scope.trip.freightAmount = ($scope.trip.tonnage * $scope.trip.rate) - $scope.trip.deductAmount;
         }
