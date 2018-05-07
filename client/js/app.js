@@ -193,6 +193,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             access: 'open'
         }
     }).state({
+        name: 'loadRequest',
+        url: '/loadRequest',
+        templateUrl: 'views/partials/loadRequests/load-list.html',
+        data: {
+            activeTab: 'loadRequest',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'addLoadRequest',
+        url: '/addLoadRequest/:ID',
+        templateUrl: 'views/partials/loadRequests/createRequest.html',
+        data: {
+            activeTab: 'loadRequest',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            ID:null
+        }
+    }).state({
         name: 'editParty',
         url: '/editParty/:partyId',
         templateUrl: 'views/partials/party/edit-party.html',

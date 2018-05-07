@@ -10,6 +10,7 @@ var app = express();
 var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 var RouteConfig = require('./server/routes/routeConfigRoutes');
+var  LoadRequest= require('./server/routes/loadRequestRoutes');
 
 
 var Trips = require('./server/routes/tripRoutes');
@@ -135,6 +136,8 @@ app.use('/v1/cpanel/employees', Employees.AuthRouter);
 app.use('/v1/cpanel/devices', Devices.AuthRouter);
 app.use('/v1/global/',globalApi.AuthRouter);
 app.use('/v1/routeConfigs',RouteConfig.AuthRouter);
+app.use('/v1/loadRequest',LoadRequest.AuthRouter);
+
 
 
 var server = app.listen(app.get('port'), function () {

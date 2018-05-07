@@ -1,0 +1,81 @@
+<div class="main-right col-xs-12" ng-controller="loadRequestCtrl"ng-init="getTruckTypes()">
+        <h2 class="title-name ">{{pageTitle}}</h2>
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" name="sourceAddress" ng-model="loadRequest.source.sourceAddress" id="source"
+                    ng-change="addSearchSource()" placeholder="Source"/>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" name="destinationAddress" ng-model="loadRequest.destination.destinationAddress"
+                    id="destination" ng-change="addSearchDestination()" placeholder="Destination"/>
+                </div>
+            </div>
+            <!--<div class="form-group col-xs-12">-->
+                <!--<div class="styling-input-list">-->
+                    <!--<input type="text" class="form-control custom-form-control"/>-->
+
+                <!--</div>-->
+            <!--</div>-->
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <ui-select ng-model="loadRequest.truckType" theme="select2"
+                               style="min-width: 390px;"
+                               title="Choose a Truck Type" append-to-body="true">
+                        <ui-select-match class="form-control custom-form-control">
+                            {{$select.selected.title || title}} , {{$select.selected.tonnes || tonnes}} Tonnes
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="truck in trucksList | propsFilter: {title: $select.search}">
+                            <b>
+                                <div ng-bind-html="truck.title | highlight: $select.search"></div>
+                            </b>
+                            <small>
+                                Tones: {{truck.tonnes || '---'}}
+                            </small>
+                        </ui-select-choices>
+                    </ui-select>
+                    <label class="focus-effect-for-input">Select Truck Type*</label>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="loadRequest.regNo"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Registration No</label>
+                </div>
+            </div>
+        </div>
+    <div class="col-sm-6 col-xs-12 mt-10">
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="loadRequest.price"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Price</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="loadRequest.makeYear"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Make Year</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <date-picker  ng-model="loadRequest.dateAvailable"
+                             class="'custom-form-control'" placeholder="'Date Time Available'"></date-picker>
+        </div>
+        <div class="form-group col-xs-12">
+            <date-picker  ng-model="loadRequest.expectedDateReturn"
+                              class="'custom-form-control'" placeholder="'Expected Date Return'"></date-picker>
+        </div>
+        </div>
+        <div class="col-xs-12">
+            <div class="col-xs-4 mtb-25 sub-can">
+                <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+                <button type="submit" class="btn can  last" ng-click="addOrUpdateLoadRequest()">Submit</button>
+            </div>
+        </div>
+
+
+</div>
+</div>
