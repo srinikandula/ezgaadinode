@@ -103,7 +103,7 @@
                     </div>
                     <div class="form-group col-xs-6">
                         <div class="styling-input-list">
-                            <input ng-model="exp.amount" type="number" class="form-control custom-form-control">
+                            <input ng-model="exp.amount" ng-change="calculateReceivleAmount()" type="number" class="form-control custom-form-control">
                             <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
                         </div>
                     </div>
@@ -134,6 +134,16 @@
             <div class="col-sm-6 col-xs-12">
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
+                        <select ng-model="trip.truckType" class="form-control custom-form-control">
+                            <option value="">Select truck type</option>
+                            <option >Own</option>
+                            <option>Market</option>
+                        </select>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
                         <input ng-model="trip.tonnage" type="number" class="form-control custom-form-control"
                                id="tonnage">
                         <label class="focus-effect-for-input" aria-hidden="true">Tonnage</label>
@@ -146,17 +156,10 @@
                         <label class="focus-effect-for-input" aria-hidden="true">Rate</label>
                     </div>
                 </div>
-                <div class="form-group col-xs-12">
-                    <div class=" styling-input-list">
-                        <input ng-model="trip.deductAmount" type="number" class="form-control custom-form-control"
-                               id="deductAmount">
-                        <label class="focus-effect-for-input" aria-hidden="true">Deductions</label>
 
-                    </div>
-                </div>
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
-                        <input ng-model="trip.freightAmount" type="number" class="form-control custom-form-control"
+                        <input ng-model="trip.freightAmount" type="number" ng-change="calculateReceivleAmount()" class="form-control custom-form-control"
                                id="freightAmount">
                         <label class="focus-effect-for-input" aria-hidden="true">Fight amount</label>
 
@@ -167,6 +170,22 @@
                         <input ng-model="trip.advanceAmount" type="number" class="form-control custom-form-control"
                                id="advanceAmount">
                         <label class="focus-effect-for-input" aria-hidden="true">Advance amount</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
+                        <input ng-model="trip.totalAmount"  readonly type="number" class="form-control custom-form-control"
+                               id="totalAmount">
+                        <label class="focus-effect-for-input"  aria-hidden="true">Total amount</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
+                        <input ng-model="trip.receivableAmount" readonly type="number" class="form-control custom-form-control"
+                               id="receivableAmount">
+                        <label class="focus-effect-for-input" aria-hidden="true">Receivable amount </label>
 
                     </div>
                 </div>

@@ -206,7 +206,9 @@ var tripSchema = new mongoose.Schema({
         path:String
     }],
     advanceAmount:Number,
-    totalExpense:Number
+    totalExpense:Number,
+    totalAmount:Number,
+    truckType:String
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({
