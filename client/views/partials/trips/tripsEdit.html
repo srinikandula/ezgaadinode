@@ -5,8 +5,7 @@
             <div class="col-sm-6 col-xs-12">
                 <div class="form-group col-xs-12">
                     <div class="">
-                        <date-picker id="permitExpiry" ng-model="trip.date" ban-future="'banFutureDate'"
-                                     placeholder="'Trip Date*'" class="'custom-form-control'">
+                        <date-picker id="permitExpiry" ng-model="trip.date" placeholder="'Trip Date*'" class="'custom-form-control'" past-present="'pastPresentDate'">
                         </date-picker>
                     </div>
                 </div>
@@ -85,35 +84,7 @@
                     </div>
                 </div>
                 <div class="clearfix"></div>
-                <h2 class="inner-title">Additional Charges</h2>
-                <div class="form-group pos-relative" ng-repeat="exp in trip.expense">
-                    <div class="col-xs-6">
-                        <div class=" styling-input-list form-group">
-                            <select class="form-control custom-form-control" ng-model="exp.type">
-                                <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
-                                <option value="others">Others</option>
-                            </select>
-                            <label class="focus-effect-for-input" aria-hidden="true">Type *</label>
-                        </div>
 
-                        <div class="styling-input-list form-group" ng-show="exp.type==='others'">
-                            <input ng-model="exp.expenseName" type="text" class="form-control custom-form-control">
-                            <label class="focus-effect-for-input" aria-hidden="true"> Type *</label>
-                        </div>
-                    </div>
-                    <div class="form-group col-xs-6">
-                        <div class="styling-input-list">
-                            <input ng-model="exp.amount" ng-change="calculateReceivleAmount()" type="number" class="form-control custom-form-control">
-                            <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
-                        </div>
-                    </div>
-                        <a href="#" class="addingMaster" ng-click="addExpense()" ng-show="$index==0">
-                            <i class="fa fa-plus-square"></i> </a>
-                        <a href="#" class="addingMaster" ng-click="deleteExpense($index)" ng-show="$index>0">
-                            <i class="fa fa-minus-square"></i> </a>
-                        <div class="clearfix"></div>
-
-                </div>
                 <div class="clearfix"></div>
 
                 <div class="form-group col-xs-12" ng-show="partyType=='Commission'">
@@ -124,24 +95,34 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
+                        <input type="file" class="form-control custom-form-control" multiple
+                               ng-model="files" ngf-select >
+                        <label class="focus-effect-for-input" aria-hidden="true">Attachments</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
                     <div ng-repeat="attch in trip.attachments">
                       <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span><button class="btn btn-danger btn-xs" ng-click="deleteTripImage(attch.key,$index);">x</button>
 
                     </div>
                 </div>
-            </div>
-
-            <div class="col-sm-6 col-xs-12">
                 <div class="form-group col-xs-12">
-                    <div class=" styling-input-list">
+                    <div class=" styling-input-list pos-relative">
                         <select ng-model="trip.truckType" class="form-control custom-form-control">
                             <option value="">Select truck type</option>
                             <option >Own</option>
                             <option>Market</option>
                         </select>
-
                     </div>
+                    <span class="bot-arrow">
+                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                             </span>
                 </div>
+            </div>
+
+            <div class="col-sm-6 col-xs-12">
+
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
                         <input ng-model="trip.tonnage" type="number" class="form-control custom-form-control"
@@ -167,20 +148,21 @@
                 </div>
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
-                        <input ng-model="trip.advanceAmount" type="number" class="form-control custom-form-control"
-                               id="advanceAmount">
-                        <label class="focus-effect-for-input" aria-hidden="true">Advance amount</label>
-
-                    </div>
-                </div>
-                <div class="form-group col-xs-12">
-                    <div class=" styling-input-list">
                         <input ng-model="trip.totalAmount"  readonly type="number" class="form-control custom-form-control"
                                id="totalAmount">
                         <label class="focus-effect-for-input"  aria-hidden="true">Total amount</label>
 
                     </div>
                 </div>
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
+                        <input ng-model="trip.advanceAmount" type="number" class="form-control custom-form-control"
+                               id="advanceAmount">
+                        <label class="focus-effect-for-input" aria-hidden="true">Advance Received</label>
+
+                    </div>
+                </div>
+
                 <div class="form-group col-xs-12">
                     <div class=" styling-input-list">
                         <input ng-model="trip.receivableAmount" readonly type="number" class="form-control custom-form-control"
@@ -196,14 +178,39 @@
                         <label class="focus-effect-for-input" aria-hidden="true">Remarks</label>
                     </div>
                 </div>
-                <div class="form-group col-xs-12">
-                    <div class=" styling-input-list">
+                <h2 class="inner-title">Additional Charges</h2>
+                <div class="form-group pos-relative" ng-repeat="exp in trip.expense">
+                    <div class="col-xs-6">
+                        <div class=" styling-input-list form-group pos-relative">
+                            <select class="form-control custom-form-control" ng-model="exp.type">
+                                <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
+                                <option value="others">Others</option>
+                            </select>
+                            <span class="bot-arrow">
+                                <i class="fa fa-angle-down" aria-hidden="true"></i>
+                             </span>
+                            <label class="focus-effect-for-input" aria-hidden="true">Type *</label>
+                        </div>
 
-                        <input type="file" class="form-control custom-form-control" multiple
-                               ng-model="files" ngf-select >
-                        <label class="focus-effect-for-input" aria-hidden="true">Attachments</label>
+                        <div class="styling-input-list form-group" ng-show="exp.type==='others'">
+                            <input ng-model="exp.expenseName" type="text" class="form-control custom-form-control">
+                            <label class="focus-effect-for-input" aria-hidden="true"> Type *</label>
+                        </div>
                     </div>
+                    <div class="form-group col-xs-6">
+                        <div class="styling-input-list">
+                            <input ng-model="exp.amount" ng-change="calculateReceivleAmount()" type="number" class="form-control custom-form-control">
+                            <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
+                        </div>
+                    </div>
+                    <a href="#" class="addingMaster" ng-click="addExpense()" ng-show="$index==0">
+                        <i class="fa fa-plus-square"></i> </a>
+                    <a href="#" class="addingMaster" ng-click="deleteExpense($index)" ng-show="$index>0">
+                        <i class="fa fa-minus-square"></i> </a>
+                    <div class="clearfix"></div>
+
                 </div>
+
                 <div class="form-group col-xs-12">
                     <div class=" trip-share">
                         <div class="checkbox">
