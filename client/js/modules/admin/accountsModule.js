@@ -62,6 +62,10 @@ app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','D
 
     DeviceService.getAllTrucksOfAccount(accountId,function(success){
         if(success.data.trucks){
+            var icon = {
+                url:'',
+                scaledSize: new google.maps.Size(40, 40),
+                labelOrigin: new google.maps.Point(20, -2)};
             NgMap.getMap().then(function(map) {
                 var truckList=success.data.trucks;
                 for(var i=0;i<truckList.length;i++){
@@ -69,12 +73,16 @@ app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','D
                         var latestLocation =truckList[i].attrs.latestLocation;
                         var location = latestLocation.location;
                         var latlng = location.coordinates;
-                        console.log("address...",latestLocation);
+                        console.log("address......",latestLocation);
+                        if(latestLocation.isStopped || latestLocation.isIdle ){
+                            icon.url = '/images/red_marker.svg';
+                        }else{
+                            icon.url = '/images/green_marker.svg';
+                        }
                         marker = new google.maps.Marker(
-                            {position:new google.maps.LatLng(latlng[1],latlng[0]),icon:{
-                                    url:'/images/red_marker.svg',
-                                    scaledSize: new google.maps.Size(40, 40),
-                                    labelOrigin: new google.maps.Point(20, -2)}});
+                            {position:new google.maps.LatLng(latlng[1],latlng[0]),
+                                icon:icon
+                            });
                         marker.setMap(map);
                         var infowindow = new google.maps.InfoWindow();
                         var functionContent = '<div>'+'<span><b>TruckNo:</b></span>'+truckList[i].registrationNo+'<span><br></span>'+'<span><b>Speed:</b></span>'+latestLocation.speed+'<span><br></span>'+'<span><b>Address:</b></span>'+latestLocation.address+'</div>';
