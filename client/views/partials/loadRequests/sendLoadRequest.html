@@ -1,0 +1,21 @@
+<div class="main-right col-xs-12" ng-controller="loadRequestCtrl"ng-init="getAllParties()">
+    <h2 class="title-name ">Share Load Request</h2>
+    <div class="form-group col-xs-12">
+        <div class="styling-input-list">
+            <input type="text" class="form-control custom-form-control" ng-model="shareDetails.load"/>
+            <label class="focus-effect-for-input" aria-hidden="true">Looking for load</label>
+        </div>
+    </div>
+    <div class="form-group col-xs-12">
+        <input type="checkbox" ng-model="all">Select all parties<br>
+        <div ng-repeat="party in parties">
+            <input type="checkbox" ng-model="party.ischecked" ng-checked="all">{{party.name}}({{party.contact}})<br>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="col-xs-4 mtb-25 sub-can">
+            <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+            <button type="submit" class="btn can  last" ng-click="shareLoadRequest(parties)">Share</button>
+        </div>
+    </div>
+</div>

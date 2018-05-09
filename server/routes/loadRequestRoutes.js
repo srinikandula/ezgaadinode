@@ -5,7 +5,7 @@ var AuthRouter = express.Router();
 var loadRequestAPI = require('../apis/loadRequestApi');
 
 AuthRouter.post('/add',function(req,res){
-    loadRequestAPI.addLoad(req.jwt,req.body,function(result){
+    loadRequestAPI.addLoadRequest(req.jwt,req.body,function(result){
         res.json(result);
     });
 });
@@ -30,8 +30,8 @@ AuthRouter.delete('/deleteLoadRequest/:id',function(req,res){
         res.json(result);
     });
 });
-AuthRouter.get('/getTruckTypes', function (req, res) {
-    loadRequestAPI.getTruckTypes(req, function (result) {
+AuthRouter.get('/shareDetails/:id', function (req, res) {
+    loadRequestAPI.shareLoadRequest(req.params.id,req.query.parties, function (result) {
         res.send(result);
     })
 });

@@ -32,25 +32,50 @@ app.factory('LoadRequestService',['$http',function($http){
                 method: "DELETE"
             }).then(successCallback, errorCallback)
         },
-        getTruckTypes:function(params,successCallback,errorCallback){
+        shareLoadRequest:function(id,params,successCallback,errorCallback){
             $http({
-                url: '/v1/loadRequest/getTruckTypes',
+                url: '/v1/loadRequest/shareDetails/'+id,
                 method: "GET",
-                params:params
+                params:{parties:params}
             }).then(successCallback, errorCallback)
         }
     }
 
 }]);
-app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stateParams','Notification',function($scope,LoadRequestService,$state,$stateParams,Notification){
+app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stateParams','Notification','PartyService','TrucksService',function($scope,LoadRequestService,$state,$stateParams,Notification,PartyService,TrucksService){
     $scope.pageTitle = 'Add Load Request';
     $scope.loadRequest = {accountId:''};
     $scope.trucksList = [];
+    $scope.parties = [];
 
     $scope.getTruckTypes = function(){
-        LoadRequestService.getTruckTypes({},function(successCallback){
-            $scope.trucksList = successCallback.data.data;
+        TrucksService.getTruckTypes(function(successCallback){
+            if(successCallback.data.status){
+                $scope.trucksList = successCallback.data.data;
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
             },function(errorCallback){
+            });
+    };
+    $scope.getAllParties = function(){
+        PartyService.getAllPartiesForFilter(function(successCallback){
+            if(successCallback.data.status){
+                $scope.parties = successCallback.data.parties;
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+            },function(errorCallback){
+            });
+    };
+    $scope.shareLoadRequest = function(parties){
+        LoadRequestService.shareLoadRequest($stateParams.Id,parties,function(successCallback){
+
+        },function(errorCallback){
 
         });
     };
@@ -77,12 +102,17 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
     if($stateParams.ID) {
         $scope.pageTitle = 'Update Load Request';
         LoadRequestService.getLoadRequest($stateParams.ID,function(successCallback){
-            $scope.loadRequest = successCallback.data.data;
-            $scope.loadRequest.dateAvailable = new Date($scope.loadRequest.dateAvailable);
-            $scope.loadRequest.expectedDateReturn = new Date($scope.loadRequest.expectedDateReturn);
-        },function(errorCallback){
-
-        });
+            if(successCallback.data.status) {
+                $scope.loadRequest = successCallback.data.data;
+                $scope.loadRequest.dateAvailable = new Date($scope.loadRequest.dateAvailable);
+                $scope.loadRequest.expectedDateReturn = new Date($scope.loadRequest.expectedDateReturn);
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+            },function(errorCallback){
+            });
     }
 
     $scope.addOrUpdateLoadRequest = function () {
@@ -90,52 +120,63 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
         if($stateParams.ID){
             LoadRequestService.updateLoadRequest(params,function(successCallback){
                 if(successCallback.data.status){
+                    $state.go('loadRequests');
                     Notification.success({message:"Updated Successfully"});
+                }else{
+                    successCallback.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
                 }
             },function(errorCallback){
             });
         }else{
             LoadRequestService.addLoadRequest(params, function (successCallback) {
                 if(successCallback.data.status){
+                    $state.go('loadRequests');
                     Notification.success({message:"Added Successfully"});
                 }else{
                     successCallback.data.errors.forEach(function (message) {
                         Notification.error({ message: message });
                     });
                 }
-
-            }, function (errorCallback) {
-
-            });
+                }, function (errorCallback) {
+                });
         }
-        $state.go('loadRequest');
         };
 
     $scope.cancel = function(){
-        $state.go('loadRequest');
+        $state.go('loadRequests');
     }
 }]);
 app.controller('loadRequestListCtrl',['$scope','LoadRequestService','$state','Notification',function($scope,LoadRequestService,$state,Notification){
     $scope.loadRequests = [];
-    $scope.reloadPage = function(){
-        window.location.reload();
-    };
     $scope.goToEditPage = function(id){
-        $state.go('addLoadRequest',{ID:id});
+        $state.go('add-editLoadRequest',{ID:id});
     };
-
+    $scope.share = function(id){
+        $state.go('sendLoadRequest',{Id:id});
+    };
     LoadRequestService.getLoadRequests(function(successCallback){
-        $scope.loadRequests = successCallback.data.data
-
-    },function(errorCallback){
-
-    });
+        if(successCallback.data.status){
+            $scope.loadRequests = successCallback.data.data;
+        }else{
+            successCallback.data.messages.forEach(function (message) {
+                Notification.error({ message: message });
+            });
+        }
+        },function(errorCallback){
+        });
     $scope.delete = function(id){
         LoadRequestService.deleteLoadRequest(id,function(successCallback){
-
+            if(successCallback.data.status){
+                Notification.success({message:"deleted Successfully"});
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
         },function(errorCallback){
 
         });
-        $scope.reloadPage();
     }
 }]);
