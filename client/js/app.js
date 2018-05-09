@@ -193,9 +193,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             access: 'open'
         }
     }).state({
-        name: 'loadRequest',
-        url: '/loadRequest',
-        templateUrl: 'views/partials/loadRequests/load-list.html',
+        name: 'loadRequests',
+        url: '/loadRequests',
+        templateUrl: 'views/partials/loadRequests/loadRequestsList.html',
         data: {
             activeTab: 'loadRequest',
             subTab: 'ERP'
@@ -204,9 +204,9 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             access: 'open'
         }
     }).state({
-        name: 'addLoadRequest',
-        url: '/addLoadRequest/:ID',
-        templateUrl: 'views/partials/loadRequests/createRequest.html',
+        name: 'add-editLoadRequest',
+        url: '/add-editLoadRequest/:ID',
+        templateUrl: 'views/partials/loadRequests/add-editLoadRequest.html',
         data: {
             activeTab: 'loadRequest',
             subTab: 'ERP'
@@ -214,6 +214,18 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         params: {
             access: 'open',
             ID:null
+        }
+    }).state({
+        name: 'sendLoadRequest',
+        url: '/sendLoadRequest/:Id',
+        templateUrl: 'views/partials/loadRequests/sendLoadRequest.html',
+        data: {
+            activeTab: 'loadRequest',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            Id:null
         }
     }).state({
         name: 'editParty',
@@ -588,7 +600,6 @@ app.run(['$transitions', '$rootScope', '$cookies','$state',function ($transition
 app.filter('propsFilter', function () {
     return function (items, props) {
         var out = [];
-
         if (angular.isArray(items)) {
             var keys = Object.keys(props);
 

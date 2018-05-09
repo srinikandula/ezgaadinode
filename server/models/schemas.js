@@ -303,8 +303,9 @@ var notificationsSchema = mongoose.Schema({
     notificationType: Number, // 0 -SMS, 1-EMAIL, 2-BOTH
     content: String,
     status: {type: Boolean, default: false},
-    tripId: {type: ObjectId, ref: 'trips'},
-    message: String
+    refId:String,
+    refType:String, //LR for load request , TR for trip request
+    message: String,
 }, {timestamps: String});
 
 var gpsSettingsSchema = mongoose.Schema({
@@ -472,7 +473,6 @@ var loadRequestSchema = new mongoose.Schema({
     destination:{},
     accountId: {type: ObjectId, ref: 'accounts'},
     truckType: {type: ObjectId, ref: 'trucksTypes'},
-    // truckType:String,
     regNo:String,
     makeYear:String,
     dateAvailable:Date,

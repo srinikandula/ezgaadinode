@@ -1,12 +1,31 @@
 var LoadRequestColl = require('./../models/schemas').LoadRequestColl;
-var analyticsService = require('./../apis/analyticsApi');
-var TrucksTypesColl = require("../models/schemas").TrucksTypesColl;
-var serviceActions = require('./../constants/constants');
+var SmsService = require('./smsApi');
+var emailService = require('./mailerApi');
+var NotificationColl = require('./../models/schemas').NotificationColl;
+
 
 var Loads = function () {
 };
-
-Loads.prototype.addLoad = function(jwt,info,callback){
+function addTripDetailsToNotification(data, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var notification = new NotificationColl(data);
+    notification.save(function (err, notiData) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("Please try again");
+            callback(retObj);
+        } else {
+            console.log("notiData.......",notiData);
+            retObj.status = true;
+            retObj.messages.push("LoadRequest Added Successfully");
+            callback(retObj);
+        }
+    });
+}
+Loads.prototype.addLoadRequest = function(jwt,info,callback){
   var retObj = {
       status:false,
       messages:[],
@@ -32,9 +51,8 @@ Loads.prototype.addLoad = function(jwt,info,callback){
         var insertDoc = new LoadRequestColl(info);
         insertDoc.save(function (err, result) {
             if (err) {
-                console.log("error...", err);
                 retObj.status = false;
-                retObj.messages.push("error in saving");
+                retObj.messages.push("error in saving"+JSON.stringify(err));
                 callback(retObj);
             } else {
                 retObj.status = true;
@@ -44,22 +62,21 @@ Loads.prototype.addLoad = function(jwt,info,callback){
             }
         });
     }
-
 };
 Loads.prototype.getLoadRequests = function(jwt,req,callback){
     var retObj={
         status:false,
         messages:[]
     };
-    // var query = {accountId:jwt.accountId};
-    LoadRequestColl.find({},function(err,result){
+    var query = {accountId:jwt.accountId};
+    LoadRequestColl.find(query,function(err,result){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error");
+            retObj.messages.push("error in getting load requests"+JSON.stringify(err));
             callback(retObj);
         }else{
             retObj.status=true;
-            retObj.messages.push("successfull");
+            retObj.messages.push("Success");
             retObj.data=result;
             callback(retObj);
         }
@@ -74,11 +91,11 @@ Loads.prototype.getLoadRequest = function(id,req,callback){
     LoadRequestColl.findOne(query).populate({path:"truckType"}).exec(function(err,result){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error");
+            retObj.messages.push("error in getting load request"+JSON.stringify(err));
             callback(retObj);
         }else{
             retObj.status=true;
-            retObj.messages.push("successfull");
+            retObj.messages.push("Success");
             retObj.data=result;
             callback(retObj);
         }
@@ -90,19 +107,19 @@ Loads.prototype.updateLoadRequest = function(info,req,callback){
         messages:[]
     };
     var query = {_id:info._id};
-    LoadRequestColl.findOneAndUpdate(query,info,function(err,result){
+    LoadRequestColl.findOneAndUpdate(query,{$set:{source:info.source,destination:info.destination,
+            truckType:info.truckType,regNo:info.regNo,price:info.price,makeYear:info.makeYear,dateAvailable:info.dateAvailable,expectedDateReturn:info.expectedDateReturn}},function(err,result){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error");
+            retObj.messages.push("error while updating..."+ JSON.stringify(err));
             callback(retObj);
         }else{
-            retObj.status=true;
-            retObj.messages.push("successfull");
+            retObj.status=false;
+            retObj.messages.push("successfully updated...");
             retObj.data=result;
             callback(retObj);
         }
     });
-
 };
 Loads.prototype.deleteLoadRequest = function(id,callback){
     var retObj={
@@ -113,79 +130,88 @@ Loads.prototype.deleteLoadRequest = function(id,callback){
     LoadRequestColl.remove(query,function(err,result){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error");
+            retObj.messages.push("error while deleting load request"+JSON.stringify(err));
             callback(retObj);
         }else{
             retObj.status=true;
-            retObj.messages.push("successfull");
+            retObj.messages.push("successfully deleted");
             retObj.data=result;
             callback(retObj);
         }
     });
 };
-Loads.prototype.getTruckTypes = function (req, callback) {
-    var retObj = {
-        status: false,
-        messages: []
+Loads.prototype.shareLoadRequest = function (id,parties, callback) {
+    var retObj={
+        status:false,
+        messages:[]
     };
-    var params = req.query;
-    var condition = {};
-    var skipNumber = (params.page - 1) * params.size;
-    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
-    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
-
-    if (params.trucksType) {
-        condition = {
-            $or:
-                [
-                    {"title": new RegExp(params.trucksType, "gi")},
-                    //{"tonnes": new RegExp(params.trucksType, "gi")},
-                    // {"mileage": new RegExp(parseFloat(params.trucksType),"gi")},
-                ]
-        };
-    } else if (params.status) {
-        condition = {"status": params.status}
+    for(var i=0;i<parties.length;i++) {
+      var party =  JSON.parse(parties[i]);
+        if (party.ischecked === true) {
+            var notificationParams = {
+                // accountId: party._id,
+                notificationType: 0,
+                content: "Party Name: " + party.name + "," +
+                "Contact:" + party.contact + "," ,
+                status: true,
+                refType:'LR',
+                refId:id,
+                message: "success"
+            };
+            var smsParams = {
+                contact: party.contact,
+                message: "Hi " + party.name + ",\n"
+            };
+            SmsService.sendSMS(smsParams, function (smsResponse) {
+                if(smsResponse.status){
+                    if(party.email){
+                        var output=[];
+                        output.push({
+                            partyName:party.name,
+                            contact:party.contact
+                        });
+                        var emailparams = {
+                            templateName: 'LoadRequestDetails',
+                            subject: "load request Details",
+                            to: party.email,
+                            data:output
+                        };
+                        emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    notificationParams.notificationType = 2;
+                                    notificationParams.status = true;
+                                    notificationParams.message = "success";
+                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                        callback(notificationResponse);
+                                    })
+                                } else {
+                                    notificationParams.notificationType = 2;
+                                    notificationParams.status = false;
+                                    notificationParams.message = "SMS sent,but email failed";
+                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                        callback(notificationResponse);
+                                    })
+                                }
+                        });
+                    }else{
+                        notificationParams.notificationType = 0;
+                        notificationParams.status = true;
+                        notificationParams.message = "success";
+                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                            callback(notificationResponse);
+                        })
+                    }
+                }else{
+                    notificationParams.notificationType = 0;
+                    notificationParams.status = false;
+                    notificationParams.message = "SMS failed";
+                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                        callback(notificationResponse);
+                    })
+                }
+            });
+        }
     }
-
-    TrucksTypesColl.find(condition).sort(sort)
-        .skip(skipNumber)
-        .limit(limit)
-        .exec(function (err, docs) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_truck_types_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (docs.length > 0) {
-                retObj.status = true;
-                retObj.messages.push("Success");
-                retObj.data = docs;
-                analyticsService.create(req, serviceActions.get_truck_types, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.messages.push("No truck types found");
-                retObj.data = docs;
-                analyticsService.create(req, serviceActions.get_truck_types_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
 };
-
 module.exports=new Loads();
 
