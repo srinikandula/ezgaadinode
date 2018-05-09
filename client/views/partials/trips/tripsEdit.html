@@ -175,8 +175,8 @@
             </div>
             <div class="col-xs-12 col-sm-4">
                 <h2 class="inner-title">Additional Charges</h2>
-                <div class="form-group" ng-repeat="exp in trip.expense">
-                    <div>
+                <div class="form-group pos-relative" ng-repeat="exp in trip.expense">
+                    <div >
                         <div class=" styling-input-list form-group pos-relative">
                             <select class="form-control custom-form-control" ng-model="exp.type">
                                 <option value="" selected>Charge Type</option>
@@ -209,7 +209,7 @@
                 <div class="pos-relative">
                     <div ng-show="trip.truckType === 'Market'">
                         <h2 class="inner-title">Truck Owner Charges</h2>
-                        <div class="form-group" ng-repeat="exp in trip.expense">
+                        <div class="form-group pos-relative" ng-repeat="exp in trip.truckOwnerCharges">
                             <div>
                                 <div class=" styling-input-list form-group pos-relative">
                                     <select class="form-control custom-form-control" ng-model="exp.type">
@@ -233,10 +233,10 @@
                                     <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
                                 </div>
                             </div>
-                            <a href="#" class="addingMaster" ng-click="addExpense()" ng-show="$index==0">
+                            <a href="#" class="addingMaster" ng-click="addTruckOwnerCharges()" ng-show="$index==0">
                                 <i class="fa fa-plus-square"></i>
                             </a>
-                            <a href="#" class="addingMaster" ng-click="deleteExpense($index)" ng-show="$index>0">
+                            <a href="#" class="addingMaster" ng-click="deleteTruckOwnerCharges($index)" ng-show="$index>0">
                                 <i class="fa fa-minus-square"></i>
                             </a>
                         </div>
