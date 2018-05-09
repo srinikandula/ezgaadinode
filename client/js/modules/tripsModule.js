@@ -297,7 +297,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         totalExpense: 0,
         totalAmount: 0,
         receivableAmount:0,
-        truckType:undefined
+        truckType:'',
     };
 
     $scope.cancel = function () {
@@ -349,7 +349,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 var modalInstance = $uibModal.open({
                     templateUrl: 'viewS3Image.html',
                     controller: 'ViewS3ImageCtrl',
-                    size: 'lg',
+                    size: 'sm',
                     backdrop: 'static',
                     keyboard: false,
                     resolve: {
