@@ -3076,9 +3076,9 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 }
 .addingMaster{
     position: absolute;
-    top: 10px;
-    right: 0px;
-    font-size: 20px;
+    top: -10px;
+    right: -20px;
+    font-size: 20px
 }
 .trip-select-box{
     width: 68% !important;

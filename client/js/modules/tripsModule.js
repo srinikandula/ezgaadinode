@@ -290,6 +290,10 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         share: false,
         vechicleNo: "",
         driverName: "",
+        truckOwnerCharges:[{
+            type: undefined,
+            amount: undefined
+        }],
         expense: [{
             type: undefined,
             amount: undefined
@@ -298,6 +302,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         totalAmount: 0,
         receivableAmount:0,
         truckType:'',
+
     };
 
     $scope.cancel = function () {
@@ -321,7 +326,25 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
         });
     }
+    $scope.addTruckOwnerCharges = function () {
+        if (!$scope.trip.truckOwnerCharges[$scope.trip.truckOwnerCharges.length - 1].type || !$scope.trip.truckOwnerCharges[$scope.trip.truckOwnerCharges.length - 1].amount) {
+            Notification.error("Please enter Additional Charges details");
+        } else {
+            $scope.trip.truckOwnerCharges.push({
+                type: undefined,
+                amount: undefined
+            });
+        }
+    };
 
+    $scope.deleteTruckOwnerCharges = function (index) {
+        if ($scope.trip.truckOwnerCharges.length > 1) {
+            $scope.trip.truckOwnerCharges.splice(index, 1);
+        } else {
+            Notification.error("Please add at least one Truck owner Charge");
+        }
+
+    };
     $scope.addExpense = function () {
         if (!$scope.trip.expense[$scope.trip.expense.length - 1].type || !$scope.trip.expense[$scope.trip.expense.length - 1].amount) {
             Notification.error("Please enter Additional Charges details");
@@ -502,6 +525,21 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 for (var i = 0; i < $scope.trip.expense.length > 0; i++) {
                     $scope.trip.expense[i].type = $scope.trip.expense[i].type._id;
                 }
+                for (var i = 0; i < $scope.trip.truckOwnerCharges.length > 0; i++) {
+                    $scope.trip.truckOwnerCharges[i].type = $scope.trip.truckOwnerCharges[i].type._id;
+                }
+                if($scope.trip.truckOwnerCharges.length==0){
+                    $scope.trip.truckOwnerCharges=[{
+                        type: undefined,
+                        amount: undefined
+                    }]
+                }
+                if($scope.trip.expense.length==0){
+                    $scope.trip.expense=[{
+                        type: undefined,
+                        amount: undefined
+                    }]
+                }
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -564,7 +602,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     };
     $scope.calculateReceivleAmount = function () {
         if($scope.trip.freightAmount>0){
-            console.log("$scope.trip.expense.length",$scope.trip.expense.length)
             $scope.trip.totalExpense=0;
             for(var i=0;i<$scope.trip.expense.length;i++){
                 if ($scope.trip.expense[i].amount) {

@@ -200,6 +200,10 @@ var tripSchema = new mongoose.Schema({
         type:{type: ObjectId, ref: 'expenseMaster'},
         amount:Number
     }],
+    truckOwnerCharges:[{
+        type:{type: ObjectId, ref: 'expenseMaster'},
+        amount:Number
+    }],
     attachments:[{
         fileName:String,
         key:String,
@@ -207,6 +211,7 @@ var tripSchema = new mongoose.Schema({
     }],
     advanceAmount:Number,
     totalExpense:Number,
+    totalTruckOwnerCharges:Number,
     totalAmount:Number,
     truckType:String
 }, {timestamps: true});

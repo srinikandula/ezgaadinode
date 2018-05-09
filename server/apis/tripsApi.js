@@ -249,6 +249,13 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
     if (!tripDetails.registrationNo) {
         retObj.messages.push("Please select a vechile");
     }
+
+    if (!_.isNumber(tripDetails.tonnage)) {
+        tripDetails.tonnage = 0;
+    }
+    if (!_.isNumber(tripDetails.rate)) {
+        tripDetails.rate = 0;
+    }
     /* if (!tripDetails.driverId) {
          retObj.messages.push("Please select a driver");
      }*/
@@ -297,55 +304,89 @@ function createTripDetails(req, tripDetails, callback) {
     tripDetails.accountId = req.jwt.accountId;
     tripDetails.tripId = "TR" + parseInt(Math.random() * 100000);
     tripDetails.totalExpense = 0;
-
-    if (tripDetails.expense && tripDetails.expense.length > 0) {
-        async.eachSeries(tripDetails.expense, function (expense, expenseCallback) {
-            if (expense.amount > 0) {
-                tripDetails.totalExpense += parseFloat(expense.amount);
-            }
-            if (expense.type === 'others') {
-                expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
-                    if (eTResult.status) {
-                        expense.type = eTResult.newDoc._id.toString();
-                        expenseCallback(false);
-                    } else {
-                        retObj.status = false;
-                        retObj.messages.push("Expense already exists or Error creating new expense type");
-                        analyticsService.create(req, serviceActions.add_expense_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
+    tripDetails.totalTruckOwnerCharges = 0;
+    async.parallel({
+        expenses: function (expenseCallback) {
+            if (tripDetails.expense && tripDetails.expense.length > 0) {
+                async.eachSeries(tripDetails.expense, function (expense, eackExpenseCallback) {
+                    if (expense.amount > 0) {
+                        tripDetails.totalExpense += parseFloat(expense.amount);
+                    }
+                    if (expense.type === 'others') {
+                        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
+                            if (eTResult.status) {
+                                expense.type = eTResult.newDoc._id.toString();
+                                eackExpenseCallback(false);
+                            } else {
+                                eackExpenseCallback("Expense already exists or Error creating new expense type");
+                            }
                         });
-                        callback(result);
+                    } else {
+                        eackExpenseCallback(false);
+                    }
+                }, function (err) {
+                    if (err) {
+                        expenseCallback(err);
+                    } else {
+                        expenseCallback(false);
+
                     }
                 });
+
+
             } else {
                 expenseCallback(false);
             }
-        }, function (err) {
-            if (err) {
-                retObj.messages.push("Error while adding trip, try Again");
-                analyticsService.create(req, serviceActions.add_trip_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
+        },
+        truckOwnerCharges: function (truckOwnerChargesCallback) {
+            if (tripDetails.truckOwnerCharges && tripDetails.truckOwnerCharges.length > 0) {
+                async.eachSeries(tripDetails.truckOwnerCharges, function (expense, eackExpenseCallback) {
+                    if (expense.amount > 0) {
+                        tripDetails.totalTruckOwnerCharges += parseFloat(expense.amount);
+                    }
+                    if (expense.type === 'others') {
+                        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
+                            if (eTResult.status) {
+                                expense.type = eTResult.newDoc._id.toString();
+                                eackExpenseCallback(false);
+                            } else {
+                                eackExpenseCallback("Truck owner charges type allready exist");
+                            }
+                        });
+                    } else {
+                        eackExpenseCallback(false);
+                    }
+                }, function (err) {
+                    if (err) {
+                        truckOwnerChargesCallback(err);
+                    } else {
+                        truckOwnerChargesCallback(false);
+
+                    }
                 });
-                callback(retObj);
+
+
             } else {
-                saveTrip(req, tripDetails, callback)
-
-
+                truckOwnerChargesCallback(false);
             }
-        });
+        }
 
+    }, function (err) {
+        if (err) {
+            retObj.messages.push("Error while adding trip, try Again", JSON.stringify(err));
+            analyticsService.create(req, serviceActions.add_trip_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            saveTrip(req, tripDetails, callback)
+        }
+    });
 
-    } else {
-        saveTrip(req, tripDetails, callback)
-    }
 }
 
 function saveTrip(req, tripDetails, callback) {
@@ -353,13 +394,12 @@ function saveTrip(req, tripDetails, callback) {
         status: false,
         messages: []
     };
-    tripDetails.totalAmount=parseFloat(tripDetails.freightAmount)+parseFloat(tripDetails.totalExpense);
+    tripDetails.totalAmount = parseFloat(tripDetails.freightAmount) + parseFloat(tripDetails.totalExpense) - parseFloat(tripDetails.totalTruckOwnerCharges);
 
     var tripDoc = new TripCollection(tripDetails);
     tripDoc.save(function (err, trip) {
         if (err) {
-            console.log("error", err);
-            retObj.messages.push("Error while adding trip, try Again");
+            retObj.messages.push("Error while adding trip," + JSON.stringify(err.message));
             analyticsService.create(req, serviceActions.add_trip_err, {
                 body: JSON.stringify(req.body),
                 accountId: jwt.id,
@@ -396,7 +436,7 @@ Trips.prototype.findTrip = function (jwt, tripId, req, callback) {
         messages: []
     };
 
-    TripCollection.findOne({_id: tripId}).populate({path: "expense.type"}).exec(function (err, trip) {
+    TripCollection.findOne({_id: tripId}).populate({path: "truckOwnerCharges.type"}).populate({path: "expense.type"}).exec(function (err, trip) {
         if (err) {
             retObj.messages.push("Error while finding trip, try Again");
             analyticsService.create(req, serviceActions.find_trip_err, {
@@ -460,6 +500,13 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         status: false,
         messages: []
     };
+    if (!_.isNumber(tripDetails.tonnage)) {
+        tripDetails.tonnage = 0;
+    }
+    if (!_.isNumber(tripDetails.rate)) {
+        tripDetails.rate = 0;
+    }
+
     var giveAccess = false;
     if (jwt.type === "account" && tripDetails.accountId === jwt.accountId) {
         giveAccess = true;
@@ -492,6 +539,7 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
             updateTripDetails(req, tripDetails, callback);
         }
     }
+
 };
 
 function updateTripDetails(req, tripDetails, callback) {
@@ -500,50 +548,89 @@ function updateTripDetails(req, tripDetails, callback) {
         messages: []
     };
     tripDetails.totalExpense = 0;
-    if (tripDetails.expense && tripDetails.expense.length > 0) {
-        async.eachSeries(tripDetails.expense, function (expense, expenseCallback) {
-            if (expense.amount > 0) {
-                tripDetails.totalExpense += parseFloat(expense.amount);
-            }
-            if (expense.type === 'others') {
-                expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
-                    if (eTResult.status) {
-                        expense.type = eTResult.newDoc._id.toString();
-                        expenseCallback(false);
-                    } else {
-                        retObj.status = false;
-                        retObj.messages.push("Expense already exists or Error creating new expense type");
-                        analyticsService.create(req, serviceActions.add_expense_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
+    tripDetails.totalTruckOwnerCharges = 0;
+    async.parallel({
+        expenses: function (expenseCallback) {
+            if (tripDetails.expense && tripDetails.expense.length > 0) {
+                async.eachSeries(tripDetails.expense, function (expense, eackExpenseCallback) {
+                    if (expense.amount > 0) {
+                        tripDetails.totalExpense += parseFloat(expense.amount);
+                    }
+                    if (expense.type === 'others') {
+                        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
+                            if (eTResult.status) {
+                                expense.type = eTResult.newDoc._id.toString();
+                                eackExpenseCallback(false);
+                            } else {
+                                eackExpenseCallback("Expense already exists or Error creating new expense type");
+                            }
                         });
-                        callback(result);
+                    } else {
+                        eackExpenseCallback(false);
+                    }
+                }, function (err) {
+                    if (err) {
+                        expenseCallback(err);
+                    } else {
+                        expenseCallback(false);
+
                     }
                 });
+
+
             } else {
                 expenseCallback(false);
             }
-        }, function (err) {
-            if (err) {
-                retObj.messages.push("Error while updating trip, try Again");
-                analyticsService.create(req, serviceActions.add_trip_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
+        },
+        truckOwnerCharges: function (truckOwnerChargesCallback) {
+            if (tripDetails.truckOwnerCharges && tripDetails.truckOwnerCharges.length > 0) {
+                async.eachSeries(tripDetails.truckOwnerCharges, function (expense, eackExpenseCallback) {
+                    if (expense.amount > 0) {
+                        tripDetails.totalTruckOwnerCharges += parseFloat(expense.amount);
+                    }
+                    if (expense.type === 'others') {
+                        expenseMasterApi.addExpenseType(jwt, {"expenseName": expense.expenseName}, req, function (eTResult) {
+                            if (eTResult.status) {
+                                expense.type = eTResult.newDoc._id.toString();
+                                eackExpenseCallback(false);
+                            } else {
+                                eackExpenseCallback("Truck owner charges type allready exist");
+                            }
+                        });
+                    } else {
+                        eackExpenseCallback(false);
+                    }
+                }, function (err) {
+                    if (err) {
+                        truckOwnerChargesCallback(err);
+                    } else {
+                        truckOwnerChargesCallback(false);
+
+                    }
                 });
-                callback(retObj);
+
+
             } else {
-                updateTrip(req, tripDetails, callback)
+                truckOwnerChargesCallback(false);
             }
-        });
-    } else {
-        updateTrip(req, tripDetails, callback)
-    }
+        }
+
+    }, function (err) {
+        if (err) {
+            retObj.messages.push("Error while adding trip, try Again", JSON.stringify(err));
+            analyticsService.create(req, serviceActions.add_trip_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            updateTrip(req, tripDetails, callback)
+        }
+    });
+
 }
 
 function updateTrip(req, tripDetails, callback) {
@@ -551,18 +638,16 @@ function updateTrip(req, tripDetails, callback) {
         status: false,
         messages: []
     };
-    tripDetails = Utils.removeEmptyFields(tripDetails);
-    console.log("sdc",typeof tripDetails.freightAmount,tripDetails.freightAmount);
-    console.log("sdc",typeof tripDetails.totalExpense,tripDetails.totalExpense)
+    if (tripDetails.tonnage)
+        tripDetails = Utils.removeEmptyFields(tripDetails);
 
-    tripDetails.totalAmount=parseFloat(tripDetails.freightAmount)+parseFloat(tripDetails.totalExpense);
+    tripDetails.totalAmount = parseFloat(tripDetails.freightAmount) + parseFloat(tripDetails.totalExpense) - parseFloat(tripDetails.totalTruckOwnerCharges);
     /* tripDetails.tripLane = tripDetails.tripLane.name;*/
     TripCollection.findOneAndUpdate({_id: tripDetails._id},
         {$set: tripDetails},
         {new: true}, function (err, trip) {
             if (err) {
-                console.log("errrr", err);
-                retObj.messages.push("Error while updating Trip, try Again", err.message);
+                retObj.messages.push("Error while updating Trip," + JSON.stringify(err.message));
                 analyticsService.create(req, serviceActions.update_trips_err, {
                     body: JSON.stringify(req.body),
                     accountId: jwt.id,
@@ -2164,33 +2249,33 @@ Trips.prototype.deleteTripImage = function (req, callback) {
         retObj.messages.push("Invalid file");
         callback(retObj);
     }
-    if (retObj.messages.length>0) {
+    if (retObj.messages.length > 0) {
         callback(retObj);
     } else {
         Utils.deleteS3BucketFile(req.query.key, function (resp) {
-           if(resp.status){
-               TripCollection.update(
-                   { "_id":req.query._id },
-                   { "$pull": { "attachments": { "_id": req.query.tripId } } },
-                   { safe: true },
-                   function(err, numAffected) {
-                       if(err){
-                           retObj.messages.push("Please try again, "+err.message);
-                           callback(retObj);
-                       } else if(numAffected) {
-                           console.log("numAffected",numAffected);
-                           retObj.status=true;
-                           retObj.messages.push("Trip image deleted successfully");
-                           callback(retObj);
-                       }else{
-                           retObj.messages.push("Trip image not deleted");
-                           callback(retObj);
-                       }
-                   }
-               );
-           }else{
-               callback(resp);
-           }
+            if (resp.status) {
+                TripCollection.update(
+                    {"_id": req.query._id},
+                    {"$pull": {"attachments": {"_id": req.query.tripId}}},
+                    {safe: true},
+                    function (err, numAffected) {
+                        if (err) {
+                            retObj.messages.push("Please try again, " + err.message);
+                            callback(retObj);
+                        } else if (numAffected) {
+                            console.log("numAffected", numAffected);
+                            retObj.status = true;
+                            retObj.messages.push("Trip image deleted successfully");
+                            callback(retObj);
+                        } else {
+                            retObj.messages.push("Trip image not deleted");
+                            callback(retObj);
+                        }
+                    }
+                );
+            } else {
+                callback(resp);
+            }
         })
 
     }
