@@ -6,6 +6,8 @@ var devicePostions = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var DevicesColl = require('./../models/schemas').DeviceColl;
+
 var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
@@ -639,7 +641,7 @@ Gps.prototype.emailDayGPSReport = function (req,callback) {
                                     totalString = totalString.replace(/[^\x00-\xFF]/g, " ");
                                     retObj.data = totalString;
                                     mailerApi.sendEmailWithAttachment2({
-                                        to: 'snehathallapaka@gmail.com',//account.email,
+                                        to: 'srini@easygaadi.com',//account.email,
                                         subject: 'Daily-Report',
                                         data: totalString
                                     }, function (result) {
@@ -706,4 +708,26 @@ Gps.prototype.shareTripDetailsByVechicleViaEmail = function (req,callback) {
     });
 };
 
+Gps.prototype.identifyNotWorkingDevices = function() {
+    var currentTime = new Date();
+    currentTime = currentTime.setMinutes(currentTime.getMinutes()-30);
+    TrucksColl.updateMany({$or:[{"attrs.latestLocation":{$exists:false}},
+            {"attrs.latestLocation.createdAt":{$exists:false}},
+            {"attrs.latestLocation.createdAt":{$lte:currentTime}}]},
+            {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true}},function (err,updatedCounts) {
+            console.log(updatedCounts.n +" trucks to be updated");
+            DevicesColl.updateMany(//{$or:[
+                        {"attrs.latestLocation":{$exists:false}},
+                        //,{"attrs.latestLocation.createdAt":{$exists:false}}
+                        //,{"attrs.latestLocation.createdAt":{$lte:currentTime}}
+                        //]},
+                {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true}},function (err,updatedDevices) {
+                    console.log(updatedDevices.n +" devices to be updated");
+                    DevicesColl.count({"attrs.latestLocation":{$exists:false}},function(error, count){
+                        console.log("count "+ count);
+                    });
+                });
+    });
+
+}
 module.exports = new Gps();
