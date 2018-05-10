@@ -35,6 +35,11 @@ AuthRouter.get('/shareDetails/:id', function (req, res) {
         res.send(result);
     })
 });
+AuthRouter.get('/shareDetailsViaSMS', function (req, res) {
+    loadRequestAPI.shareDetailsViaSMS(req.query,function (result) {
+        res.send(result);
+    })
+});
 
 
 

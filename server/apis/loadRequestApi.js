@@ -2,6 +2,7 @@ var LoadRequestColl = require('./../models/schemas').LoadRequestColl;
 var SmsService = require('./smsApi');
 var emailService = require('./mailerApi');
 var NotificationColl = require('./../models/schemas').NotificationColl;
+var async = require('async');
 
 
 var Loads = function () {
@@ -18,7 +19,6 @@ function addTripDetailsToNotification(data, callback) {
             retObj.messages.push("Please try again");
             callback(retObj);
         } else {
-            console.log("notiData.......",notiData);
             retObj.status = true;
             retObj.messages.push("LoadRequest Added Successfully");
             callback(retObj);
@@ -141,10 +141,6 @@ Loads.prototype.deleteLoadRequest = function(id,callback){
     });
 };
 Loads.prototype.shareLoadRequest = function (id,parties, callback) {
-    var retObj={
-        status:false,
-        messages:[]
-    };
     for(var i=0;i<parties.length;i++) {
       var party =  JSON.parse(parties[i]);
         if (party.ischecked === true) {
@@ -211,6 +207,66 @@ Loads.prototype.shareLoadRequest = function (id,parties, callback) {
                 }
             });
         }
+    }
+};
+Loads.prototype.shareDetailsViaSMS = function(info,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    var numbers = info.contact.split(',');
+    if(info.text.length>160){
+        retObj.status =false;
+        retObj.messages.push("Message is too long...Cannot send SMS");
+        callback(retObj);
+    }else {
+        async.each(numbers,
+            function (number, asyncCallback) {
+                var smsParams = {
+                    contact: number,
+                    message: info.text + ",\n"
+                };
+                var notificationParams = {
+                    notificationType: 0,
+                    content: "Contact:" + number + ","+"\n" + info.text,
+                    status: true,
+                    message: "success"
+                };
+                SmsService.sendSMS(smsParams, function (smsResponse) {
+                    if (smsResponse.status) {
+                        notificationParams.notificationType = 0;
+                        notificationParams.status = true;
+                        notificationParams.message = "SMS sent successfully";
+                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                            if (notificationResponse.status) {
+                                asyncCallback(false);
+                            } else {
+                                asyncCallback(notificationResponse);
+
+                            }
+                        })
+                    } else {
+                        notificationParams.notificationType = 0;
+                        notificationParams.status = false;
+                        notificationParams.message = "SMS failed";
+                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                            if (notificationResponse.status) {
+                                asyncCallback(false);
+                            } else {
+                                asyncCallback(notificationResponse);
+                            }
+                        })
+                    }
+                })
+            }, function (err) {
+                if (err) {
+                    callback(err);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push("SMS sent successfully..");
+                    callback(retObj);
+                }
+            });
     }
 };
 module.exports=new Loads();

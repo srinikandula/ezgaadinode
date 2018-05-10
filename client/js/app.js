@@ -228,6 +228,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             Id:null
         }
     }).state({
+        name: 'sendSMS',
+        url: '/sendSMS',
+        templateUrl: 'views/partials/sendSMS/createSMS.html',
+        data: {
+            activeTab: 'sendSMS',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+        }
+    }).state({
         name: 'editParty',
         url: '/editParty/:partyId',
         templateUrl: 'views/partials/party/edit-party.html',

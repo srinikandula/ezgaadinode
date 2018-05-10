@@ -38,6 +38,13 @@ app.factory('LoadRequestService',['$http',function($http){
                 method: "GET",
                 params:{parties:params}
             }).then(successCallback, errorCallback)
+        },
+        shareViaSMS:function(params,successCallback,errorCallback){
+            $http({
+                url: '/v1/loadRequest/shareDetailsViaSMS',
+                method: "GET",
+                params:params
+            }).then(successCallback, errorCallback)
         }
     }
 
@@ -74,7 +81,13 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
     };
     $scope.shareLoadRequest = function(parties){
         LoadRequestService.shareLoadRequest($stateParams.Id,parties,function(successCallback){
-
+            if(successCallback.data.status){
+                Notification.success({message:"shared Successfully"});
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
         },function(errorCallback){
 
         });
@@ -180,3 +193,25 @@ app.controller('loadRequestListCtrl',['$scope','LoadRequestService','$state','No
         });
     }
 }]);
+app.controller('smsCtrl',['$scope','LoadRequestService','Notification',function($scope,LoadRequestService,Notification){
+    $scope.content = {contact:[],text:''};
+
+    $scope.sendSMS = function(){
+        var params = $scope.content;
+        LoadRequestService.shareViaSMS(params,function(successCallback){
+            if(successCallback.data.status){
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.success({ message: message });
+                    $scope.content = null;
+                });
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        },function(errorCallback){
+
+        });
+    };
+}]);
+
