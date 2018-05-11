@@ -203,9 +203,9 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
     $scope.updateOperatingRoutes=function () {
         GpsSettingsService.updateAccountRoutes($scope.operatingRoutesList,function (success) {
             if (success.data.status) {
-                success.data.messages.forEach(function (message) {
+                /*success.data.messages.forEach(function (message) {
                     Notification.success(message);
-                })
+                })*/
             }else{
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -215,5 +215,8 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
 
         })
     }
-
+    $scope.updateGpsOperatingRouteSettings=function () {
+        $scope.updateGpsSettings();
+        $scope.updateOperatingRoutes();
+    };
 }]);

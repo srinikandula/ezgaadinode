@@ -14,7 +14,7 @@
                     <h3>GPS Settings</h3>
                     <div class="form-group">
                         <div class="col-xs-12 styling-input-list">
-                            <input type="text" ng-model="gpsSettingsParams.idleTime"
+                            <input type="text" ng-model="gpsSettingsParams.minStopTime"
                                    class="form-control custom-form-control">
                             <label class="focus-effect-for-input" aria-hidden="true">Min Stop Duration 10</label>
                         </div>
@@ -52,9 +52,9 @@
                         <div class="clearfix"></div>
                     </div>
                 </div>
-                <div class="col-xs-12 pall-zero">
-                    <button class="btn can last" ng-click="updateGpsSettings()" type="submit">Submit</button>
-                </div>
+                <!--<div class="col-xs-12 pall-zero">
+                    <button class="btn can last" ng-click="updateGpsOperatingRouteSettings()" type="submit">Submit</button>
+                </div>-->
             </div>
             <div class="col-xs-12 col-sm-6  gps-settings pall-zero">
                 <h3>Operating Routes</h3>
@@ -83,7 +83,7 @@
                     </div>
                 </div>
                 <div class="col-xs-12 pall-zero">
-                    <button class="btn can last" ng-click="updateOperatingRoutes()" type="submit">Submit</button>
+                    <button class="btn can last" ng-click="updateGpsOperatingRouteSettings()" type="submit">Submit</button>
                 </div>
 
             </div>
