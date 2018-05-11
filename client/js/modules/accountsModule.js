@@ -589,6 +589,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             } else {
                 // _id doesn\'t exist => create account
                 AccountServices.addAccountGroup(params, function (success) {
+
                     if (success.data.status) {
                         params.success = success.data.messages;
                         $state.go('myGroup');

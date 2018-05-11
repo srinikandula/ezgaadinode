@@ -316,8 +316,9 @@ var notificationsSchema = mongoose.Schema({
     notificationType: Number, // 0 -SMS, 1-EMAIL, 2-BOTH
     content: String,
     status: {type: Boolean, default: false},
-    tripId: {type: ObjectId, ref: 'trips'},
-    message: String
+    refId:String,
+    refType:String, //LR for load request , TR for trip request
+    message: String,
 }, {timestamps: String});
 
 var gpsSettingsSchema = mongoose.Schema({
@@ -466,20 +467,34 @@ var secretKeysCounter = new mongoose.Schema({
     counter: Number
 }, {timestamps: true, versionKey: false});
 
+// var loadRequestSchema = new mongoose.Schema({
+//         createdBy: {type: ObjectId, ref: 'accounts'},
+//         accountId: {type: ObjectId, ref: 'accounts'},
+//         truckId: {type: ObjectId, ref: 'trucks'},
+//         tripLane: String,
+//         possibleStartDate: {type: Date},
+//         active: {type: Boolean, default: false},
+//         createdDate: {type: Date, default: new Date()},
+//     },
+//     {
+//         timestamps: true, versionKey:
+//             false
+//     }
+// );
 var loadRequestSchema = new mongoose.Schema({
-        createdBy: {type: ObjectId, ref: 'accounts'},
-        accountId: {type: ObjectId, ref: 'accounts'},
-        truckId: {type: ObjectId, ref: 'trucks'},
-        tripLane: String,
-        possibleStartDate: {type: Date},
-        active: {type: Boolean, default: false},
-        createdDate: {type: Date, default: new Date()},
-    },
-    {
-        timestamps: true, versionKey:
-        false
-    }
-);
+    source:{},
+    destination:{},
+    accountId: {type: ObjectId, ref: 'accounts'},
+    truckType: {type: ObjectId, ref: 'trucksTypes'},
+    regNo:String,
+    makeYear:String,
+    dateAvailable:Date,
+    price:Number,
+    expectedDateReturn:Date
+},{
+    timestamps: true, versionKey:
+            false
+    });
 
 var analyticsSchema = mongoose.Schema({
     action: String,

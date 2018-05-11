@@ -143,9 +143,6 @@ Devices.prototype.deleteDevice = function (req, callback) {
                 success: true
             }, function (response) {
             });
-           /* traccar_mysql.query("delete from devices where uniqueid="+req.params.imei, function (err, tracker) {
-                cosnsole.log("err",err,)
-            });*/
             callback(retObj);
         }
     });
@@ -320,8 +317,7 @@ Devices.prototype.count = function (req, callback) {
         }
     });
 };
-
-function findDevices(req, params, accounts, callback) {
+function findDevices(req,params,accounts,callback){
     var retObj = {
         status: false,
         messages: []
@@ -334,15 +330,15 @@ function findDevices(req, params, accounts, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
-    if (params.searchString) {
+    if (params.searchString){
         query.$or =
             [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
                 {"imei": new RegExp(params.searchString, "gi")},
                 {"simNumber": new RegExp(params.searchString, "gi")},
                 {"deviceId": new RegExp(params.searchString, "gi")}];
     }
-    if (params.searchAccount) {
-        query.accountId = {$in: accounts}
+    if(params.searchAccount){
+        query.accountId={$in:accounts}
     }
     async.parallel({
         devices: function (devicescallback) {
@@ -351,7 +347,7 @@ function findDevices(req, params, accounts, callback) {
                 .skip(skipNumber)
                 .limit(limit)
                 .populate({
-                    path: 'accountId', select: "userName"
+                    path: 'accountId',select: "userName"
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
                 }).populate({
                 path: 'assignedTo', select: "displayName"
@@ -419,8 +415,31 @@ function findDevices(req, params, accounts, callback) {
                             device.expiryTime = planhistory.expiryTime;
                             device.received = planhistory.received;
                         }
-                        deviceCallback(false, "success");
+                        if (device.attrs && device.attrs.latestLocation) {
+                            device.latestLocation = device.attrs.latestLocation;
+                            if (device.attrs.latestLocation.address !== '{address}') {
+                                deviceCallback(false, "success");
+                            } else {
+                                resolveAddress({
+                                    latitude: device.attrs.latestLocation.location.coordinates[0],
+                                    longitude: device.attrs.latestLocation.location.coordinates[1]
+                                }, function (addressResp) {
+                                    if(addressResp.status){
+                                        device.latestLocation.address=addressResp.address;
+                                        //device.attrs.latestLocation.address=addressResp.address;
+                                        updateAddressToDevice({deviceId:device._id,address:addressResp.address,truckId:device.truckId});
+                                        deviceCallback(false, "success");
 
+                                    }else{
+                                        deviceCallback(false, "success");
+                                    }
+                                });
+                            }
+                        } else {
+                            deviceCallback(false, "success");
+                        }
+
+                        deviceCallback(false, "success");
                     }, function (deviceErr, deviceResult) {
                         if (deviceErr) {
                             retObj.messages.push("Unable to populate devices, please try again");
@@ -451,7 +470,6 @@ function findDevices(req, params, accounts, callback) {
         }
     });
 }
-
 Devices.prototype.getDevices = function (req, callback) {
     var params = req.query;
     if (!params.page) {
@@ -467,24 +485,24 @@ Devices.prototype.getDevices = function (req, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
-    if (params.searchAccount) {
-        AccountsColl.find({userName: new RegExp(params.searchAccount, "gi")}, {"_id": 1}, function (err, result) {
-            console.log("the resultant account is...", result);
-            if (err) {
-                retObj.status = false;
+    if(params.searchAccount){
+        AccountsColl.find({userName:new RegExp(params.searchAccount,"gi")},{"_id":1},function(err,result){
+            console.log("the resultant account is...",result);
+            if(err){
+                retObj.status=false;
                 retObj.messages.push("error in finding account..");
                 callback(retObj);
-            } else {
-                if (result) {
-                    accounts = _.pluck(result, '_id');
-                    findDevices(req, params, accounts, function (devices) {
-                        if (devices) {
-                            retObj.status = true;
+            }else{
+                if(result){
+                    accounts= _.pluck(result,'_id');
+                    findDevices(req,params,accounts,function(devices){
+                        if(devices){
+                            retObj.status=true;
                             retObj.messages.push("Devices fetched successfully....");
                             retObj.data = devices;
                             callback(retObj);
-                        } else {
-                            retObj.status = false;
+                        }else{
+                            retObj.status=false;
                             retObj.messages.push(" No Devices found......");
                             callback(retObj);
                         }
@@ -492,15 +510,15 @@ Devices.prototype.getDevices = function (req, callback) {
                 }
             }
         });
-    } else {
-        findDevices(req, params, accounts, function (devices) {
-            if (devices) {
-                retObj.status = true;
+    }else{
+        findDevices(req,params,accounts,function(devices){
+            if(devices){
+                retObj.status=true;
                 retObj.messages.push("Devices fetched successfully....");
                 retObj.data = devices;
                 callback(retObj);
-            } else {
-                retObj.status = false;
+            }else{
+                retObj.status=false;
                 retObj.messages.push(" No Devices found......");
                 callback(retObj);
             }
@@ -537,6 +555,12 @@ function updateAddressToDevice(params){
         status:false,
         messages:[]
     };
+    DevicesColl.update({_id:ObjectId(params.deviceId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,deviceDoc) {
+        console.log("device ",err,deviceDoc);
+    });
+    TrucksColl.update({_id:ObjectId(params.truckId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
+        console.log("TrucksColl Err,Doc",err,params.truckId);
+    });
     console.log("updating deviceId "+ params.imei);
     DevicesColl.findOne({"imei":params.imei},function (err,deviceDoc) {
         console.log("device ",err,deviceDoc.attrs);
@@ -666,8 +690,32 @@ Devices.prototype.updateDevice = function (req, callback) {
             }
         });
     });
-};
+    TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
+        if (errassaindevice) {
+            retObj.messages.push("Unable to assign device to truck, please try again");
+            analyticsService.create(req, serviceActions.edit_device_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            DevicesColl.findOneAndUpdate({_id: params._id}, {
+                $set: {
+                    accountId: params.accountId,
+                    installedBy: params.installedBy,
+                    simNumber: params.simNumber,
+                    simPhoneNumber: params.simPhoneNumber,
+                    registrationNo: params.registrationNo,
+                    truckId: params.truckId
+                }
+            })
 
+        }
+    });
+};
 
 Devices.prototype.getAllDevices = function (req, callback) {
     var retObj = {
@@ -1345,93 +1393,4 @@ Devices.prototype.getGpsDevicesCountByStatus = function (req, callback) {
 
     }
 };
-
-Devices.prototype.getLatestLocationFromDevice=function(req,callback){
-    retObj={
-        status:false,
-        messages:[]
-    };
-    var params=req.query;
-    if(!params._id){
-      retObj.messages.push("Invalid DeviceId")
-      callback(retObj);
-    }else{
-        DevicesColl.findOne({_id:params._id}).lean().exec(function (err,deviceDoc) {
-            if(err){
-                retObj.messages.push("Please try again");
-                callback(retObj);
-            }else if(deviceDoc){
-
-                if(deviceDoc.attrs && deviceDoc.attrs.latestLocation && deviceDoc.attrs.latestLocation.address==="{address}"){
-                    resolveAddress({
-                        latitude: deviceDoc.attrs.latestLocation.location.coordinates[0],
-                        longitude: deviceDoc.attrs.latestLocation.location.coordinates[1]
-                    }, function (addressResp) {
-                        //console.log("addressResp",addressResp);
-
-                        if(addressResp.status){
-                            retObj.status=true;
-                            retObj.latestLocation=deviceDoc.attrs;
-                            retObj.latestLocation.address=addressResp.address;
-                            updateAddressToDevice({deviceId:deviceDoc._id,address:addressResp.address,truckId:deviceDoc.truckId});
-                            callback(retObj);
-
-                        }else{
-                            callback(addressResp);
-
-                        }
-                    });
-                }else{
-                    retObj.status=true;
-                    retObj.deviceId = deviceDoc.deviceId;
-                    retObj.latestLocation=deviceDoc.attrs;
-                    callback(retObj);
-
-
-                }
-            }else{
-                retObj.messages.push("address not found");
-                callback(retObj);
-            }
-        })
-    }
-
-};
-
-function resolveAddress(position, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var options = {
-        provider: 'google',
-        httpAdapter: 'https'
-    };
-    options.apiKey = config.googleKey;
-    var geocoder = nodeGeocoder(options);
-    geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
-        if (location) {
-            retObj.status = true;
-            retObj.address = location[0]['formattedAddress'];
-            callback(retObj);
-        } else {
-            retObj.messages.push("address finding error");
-            callback(retObj);
-        }
-
-    });
-}
-
-function updateAddressToDevice(params) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    DevicesColl.update({_id: params.deviceId}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, deviceDoc) {
-        console.log("device ", err, deviceDoc);
-    });
-    TrucksColl.update({_id: params.truckId}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, truckDoc) {
-        console.log("TrucksColl Err,Doc", err, params.truckId);
-    });
-}
 module.exports = new Devices();

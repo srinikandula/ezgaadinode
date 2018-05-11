@@ -513,7 +513,7 @@ Party.prototype.getAllPartiesForFilter = function (jwt,req, callback) {
         messages: []
     };
 
-    PartyCollection.find({'accountId': jwt.accountId}, {name: 1}, function (err, data) {
+    PartyCollection.find({'accountId': jwt.accountId}, {name:1,contact:1,email:1},function (err, data) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Parties');

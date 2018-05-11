@@ -286,9 +286,9 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         $scope[picker].open = true;
     };
     // destroy watcher
- /*   $scope.$on('$destroy', function () {
-        unwatchMinMaxValues();
-    });*/
+    /*   $scope.$on('$destroy', function () {
+           unwatchMinMaxValues();
+       });*/
     $scope.options = {
         showWeeks: false
     };

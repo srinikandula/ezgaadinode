@@ -3096,6 +3096,31 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
     font-size: 28px;
     line-height: 30px;
 }
+.custom-panel{
+    border:none;
+}
+.custom-panel-body{
+    padding: 0;
+}
+.custom-panel-default{
+    border-color:transparent;
+}
+.panel-default>.custom-heading{
+    background: transparent !important;
+    border-color:transparent !important;
+}
+.panel-default-custom{
+    border-color: transparent !important;
+}
+.panel-default-custom .right-arrow{
+    font-size: 25px;
+    padding-top: 2px;
+    cursor: pointer;
+}
+
+.expand .custom-heading{
+    background-color: #EDF0F5 !important;
+}
 .panel-group{
     margin: 25px 0;
 }

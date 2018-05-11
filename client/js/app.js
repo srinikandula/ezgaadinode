@@ -193,6 +193,52 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             access: 'open'
         }
     }).state({
+        name: 'loadRequests',
+        url: '/loadRequests',
+        templateUrl: 'views/partials/loadRequests/loadRequestsList.html',
+        data: {
+            activeTab: 'loadRequest',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'add-editLoadRequest',
+        url: '/add-editLoadRequest/:ID',
+        templateUrl: 'views/partials/loadRequests/add-editLoadRequest.html',
+        data: {
+            activeTab: 'loadRequest',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            ID:null
+        }
+    }).state({
+        name: 'sendLoadRequest',
+        url: '/sendLoadRequest/:Id',
+        templateUrl: 'views/partials/loadRequests/sendLoadRequest.html',
+        data: {
+            activeTab: 'loadRequest',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            Id:null
+        }
+    }).state({
+        name: 'sendSMS',
+        url: '/sendSMS',
+        templateUrl: 'views/partials/sendSMS/createSMS.html',
+        data: {
+            activeTab: 'sendSMS',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+        }
+    }).state({
         name: 'editParty',
         url: '/editParty/:partyId',
         templateUrl: 'views/partials/party/edit-party.html',
@@ -565,7 +611,6 @@ app.run(['$transitions', '$rootScope', '$cookies','$state',function ($transition
 app.filter('propsFilter', function () {
     return function (items, props) {
         var out = [];
-
         if (angular.isArray(items)) {
             var keys = Object.keys(props);
 

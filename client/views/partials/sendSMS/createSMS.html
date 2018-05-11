@@ -1,0 +1,26 @@
+<div class="main-right col-xs-12" ng-controller="smsCtrl">
+    <h2 class="title-name ">Send SMS</h2>
+    <div class="form-group col-xs-12">
+        <div class="styling-input-list">
+            <input type="text" class="form-control custom-form-control" ng-model="content.contact"/>
+            <label class="focus-effect-for-input" aria-hidden="true">Contact</label>
+        </div>
+    </div>
+    <div class="form-group col-xs-12">
+        <div class="styling-input-list">
+            <input type="text" class="form-control custom-form-control" ng-model="content.text"/>
+            <label class="focus-effect-for-input" aria-hidden="true">Text</label>
+        </div>
+    </div>
+    <!--<div class="form-group col-xs-12">-->
+        <!--<div class="styling-input-list">-->
+            <!--<textarea rows="10" cols="50" placeholder="your text here" ng-model="content.text"></textarea>-->
+            <!--&lt;!&ndash;<label class="focus-effect-for-input" aria-hidden="true">Text</label>&ndash;&gt;-->
+        <!--</div>-->
+    <!--</div>-->
+    <div class="col-xs-12">
+        <div class="col-xs-4 mtb-25 sub-can">
+            <button type="submit" class="btn can  last" ng-click="sendSMS()">sendSMS</button>
+        </div>
+    </div>
+</div>
