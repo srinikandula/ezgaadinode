@@ -548,7 +548,6 @@ Gps.prototype.editGpsSettings = function (body,req,callback) {
     }
     GpsSettingsColl.update({accountId:req.jwt.id},{$set:body},{upsert: true},function (err,settings) {
         if(err){
-            console.log("hai",err.message);
             retObj.status=false;
             retObj.messages.push('Error retrieving settings for account,'+JSON.stringify(err.message));
             callback(retObj);
