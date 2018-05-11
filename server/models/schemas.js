@@ -200,7 +200,20 @@ var tripSchema = new mongoose.Schema({
         type:{type: ObjectId, ref: 'expenseMaster'},
         amount:Number
     }],
-    totalExpense:Number
+    truckOwnerCharges:[{
+        type:{type: ObjectId, ref: 'expenseMaster'},
+        amount:Number
+    }],
+    attachments:[{
+        fileName:String,
+        key:String,
+        path:String
+    }],
+    advanceAmount:Number,
+    totalExpense:Number,
+    totalTruckOwnerCharges:Number,
+    totalAmount:Number,
+    truckType:String
 }, {timestamps: true});
 
 var partySchema = new mongoose.Schema({

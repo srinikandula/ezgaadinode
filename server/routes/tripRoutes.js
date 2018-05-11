@@ -1,10 +1,13 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
+
 var Trips = require('../apis/tripsApi');
 
-AuthRouter.post('/addTrip', function (req, res) {
-    Trips.addTrip(req.jwt, req.body,req, function (result) {
+AuthRouter.post('/addTrip',multipartyMiddleware, function (req, res) {
+    Trips.addTrip(req.jwt,req.body.content,req, function (result) {
         res.send(result);
     });
 });
@@ -19,8 +22,8 @@ AuthRouter.get('/getAllTrips', function (req, res) {
         res.json(result);
     });
 });
-AuthRouter.put('/', function (req, res) {
-    Trips.updateTrip(req.jwt, req.body,req, function (result) {
+AuthRouter.post('/updateTrip',multipartyMiddleware, function (req, res) {
+    Trips.updateTrip(req.jwt, req.body.content,req, function (result) {
         res.send(result);
     });
 });
@@ -72,9 +75,20 @@ AuthRouter.get('/getPartiesByTrips',function(req,res){
     Trips.getPartiesByTrips(req.jwt,req,function(result){
         res.send(result);
     })
-})
+});
+
+AuthRouter.get("/viewTripDocument",function (req,res) {
+    Trips.viewTripDocumnet(req,function (result) {
+        res.send(result);
+    })
+});
 AuthRouter.get('/:tripId', function (req, res) {
     Trips.findTrip(req.jwt, req.params.tripId,req, function (result) {
+        res.send(result);
+    });
+});
+AuthRouter.delete("/deleteTripImage",function (req,res) {
+    Trips.deleteTripImage(req, function (result) {
         res.send(result);
     });
 });
