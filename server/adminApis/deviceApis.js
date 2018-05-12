@@ -415,30 +415,6 @@ function findDevices(req,params,accounts,callback){
                             device.expiryTime = planhistory.expiryTime;
                             device.received = planhistory.received;
                         }
-                        if (device.attrs && device.attrs.latestLocation) {
-                            device.latestLocation = device.attrs.latestLocation;
-                            if (device.attrs.latestLocation.address !== '{address}') {
-                                deviceCallback(false, "success");
-                            } else {
-                                resolveAddress({
-                                    latitude: device.attrs.latestLocation.location.coordinates[0],
-                                    longitude: device.attrs.latestLocation.location.coordinates[1]
-                                }, function (addressResp) {
-                                    if(addressResp.status){
-                                        device.latestLocation.address=addressResp.address;
-                                        //device.attrs.latestLocation.address=addressResp.address;
-                                        updateAddressToDevice({deviceId:device._id,address:addressResp.address,truckId:device.truckId});
-                                        deviceCallback(false, "success");
-
-                                    }else{
-                                        deviceCallback(false, "success");
-                                    }
-                                });
-                            }
-                        } else {
-                            deviceCallback(false, "success");
-                        }
-
                         deviceCallback(false, "success");
                     }, function (deviceErr, deviceResult) {
                         if (deviceErr) {
@@ -555,21 +531,14 @@ function updateAddressToDevice(params){
         status:false,
         messages:[]
     };
-    DevicesColl.update({_id:ObjectId(params.deviceId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,deviceDoc) {
+    consolelog("updating device "+ params.deviceId);
+    DevicesColl.update({_id:params.deviceId},{$set:{"attrs.latestLocation.address":params.address}},function (err,deviceDoc) {
         console.log("device ",err,deviceDoc);
-    });
-    TrucksColl.update({_id:ObjectId(params.truckId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
-        console.log("TrucksColl Err,Doc",err,params.truckId);
-    });
-    console.log("updating deviceId "+ params.imei);
-    DevicesColl.findOne({"imei":params.imei},function (err,deviceDoc) {
-        console.log("device ",err,deviceDoc.attrs);
-    });
-    if(params.truckId) {
-        TrucksColl.update({_id:ObjectId(params.truckId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
+        TrucksColl.update({_id:params.truckId},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
             console.log("TrucksColl Err,Doc",err,params.truckId);
         });
-    }
+    });
+
 }
 
 Devices.prototype.getDevice = function (req, callback) {
@@ -1389,8 +1358,41 @@ Devices.prototype.getGpsDevicesCountByStatus = function (req, callback) {
                 callback(retObj);
             }
         });
-
-
     }
 };
+
+Devices.prototype.getLatestLocationFromDevice = function(req, callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    DevicesColl.findOne({"_id":params._id}, function (err, document) {
+        var device = document._doc;
+        if (device.attrs.latestLocation.address !== '{address}') {
+            retObj.status = true;
+            retObj.data = device;
+            callback(retObj);
+            return;
+        } else {
+            resolveAddress({
+                latitude: device.attrs.latestLocation.location.coordinates[0],
+                longitude: device.attrs.latestLocation.location.coordinates[1]
+            }, function (addressResp) {
+                if(addressResp.status){
+                    device.attrs.latestLocation.address=addressResp.address;
+                    //device.attrs.latestLocation.address=addressResp.address;
+                    updateAddressToDevice({deviceId:device._id,address:addressResp.address,truckId:device.truckId});
+                    retObj.status = true;
+                    retObj.data = device;
+                    callback(retObj);
+                }else{
+                    retObj.status = true;
+                    retObj.data = device;
+                    return;
+                }
+            });
+        }
+    });
+}
 module.exports = new Devices();
