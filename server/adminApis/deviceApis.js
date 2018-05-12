@@ -531,8 +531,8 @@ function updateAddressToDevice(params){
         status:false,
         messages:[]
     };
-    consolelog("updating device "+ params.deviceId);
-    DevicesColl.update({_id:params.deviceId},{$set:{"attrs.latestLocation.address":params.address}},function (err,deviceDoc) {
+    console.log("updating device "+ params.deviceId);
+    DevicesColl.update({_id:ObjectId(params.deviceId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,deviceDoc) {
         console.log("device ",err,deviceDoc);
         TrucksColl.update({_id:params.truckId},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
             console.log("TrucksColl Err,Doc",err,params.truckId);
@@ -1382,7 +1382,7 @@ Devices.prototype.getLatestLocationFromDevice = function(req, callback){
                 if(addressResp.status){
                     device.attrs.latestLocation.address=addressResp.address;
                     //device.attrs.latestLocation.address=addressResp.address;
-                    updateAddressToDevice({deviceId:device._id,address:addressResp.address,truckId:device.truckId});
+                    updateAddressToDevice({deviceId:params._id,address:addressResp.address,truckId:device.truckId});
                     retObj.status = true;
                     retObj.data = device;
                     callback(retObj);
