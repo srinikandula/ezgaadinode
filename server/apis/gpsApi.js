@@ -540,11 +540,16 @@ Gps.prototype.editGpsSettings = function (body,req,callback) {
     var retObj={status: false,
         messages: []
     };
-    body.idleTime=parseInt(body.idleTime);
+    if(body.routeNotificationInterval){
+        body.routeNotificationInterval=parseInt(body.routeNotificationInterval);
+    }
+    if(body.minStopTime){
+        body.minStopTime=parseInt(body.minStopTime);
+    }
     GpsSettingsColl.update({accountId:req.jwt.id},{$set:body},{upsert: true},function (err,settings) {
         if(err){
             retObj.status=false;
-            retObj.messages.push('Error retrieving settings for account');
+            retObj.messages.push('Error retrieving settings for account,'+JSON.stringify(err.message));
             callback(retObj);
         }else{
             retObj.status = true;
