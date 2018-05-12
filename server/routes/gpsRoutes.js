@@ -128,7 +128,7 @@ var task = cronjob.schedule('0 0 5 * * *', function() {
 task.start();
 
 
-var identifyNotWorkingDevices = cronjob.schedule('* 10 * * * *', function() {
+var identifyNotWorkingDevices = cronjob.schedule('* * * 1 * *', function() {
     console.log('identifyNotWorkingDevices');
     gps.identifyNotWorkingDevices(function (result) {
         console.log("identifyNotWorkingDevices..",result);
