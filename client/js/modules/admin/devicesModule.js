@@ -229,8 +229,9 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             }
         });
     };
-    $scope.getLatestLocation = function (id) {
+    $scope.getLatestLocation = function (location,registrationNo) {
 
+        location.registrationNo=registrationNo;
         var modalInstance = $uibModal.open({
             templateUrl: 'latestLocationModal.html',
             controller: 'FindDeviceLocationController',
@@ -238,8 +239,8 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             backdrop: 'static',
             keyboard: false,
             resolve: {
-                deviceId: function () {
-                    return id;
+                location: function () {
+                    return location;
                 }
             }
         });
@@ -247,8 +248,8 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
 
     }
 }]);
-app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$state','$uibModal', 'deviceId','$uibModalInstance','$stateParams', function ($scope, DeviceService,$state,$uibModal, deviceId, $uibModalInstance, $stateParams) {
-    DeviceService.getLatestLocationFromDevice({_id:deviceId._id},function (success) {
+app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$state','$uibModal', 'location','$uibModalInstance','$stateParams', function ($scope, DeviceService,$state,$uibModal, location, $uibModalInstance, $stateParams) {
+    /*DeviceService.getLatestLocationFromDevice({_id:deviceId._id},function (success) {
         if(success.data.status){
             $scope.regNo= deviceId.regNo;
             $scope.latestLocation = success.data.data.attrs.latestLocation;
@@ -263,12 +264,14 @@ app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$stat
         }
     },function (error) {
 
-    });
+    });*/
+    $scope.latestLocation =location;
+    $scope.regNo=location.registrationNo;
     $scope.cancel = function () {
         $uibModalInstance.close();
     };
 
-}])
+}]);
 
 
 app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$stateParams', '$filter', '$state', 'SettingServices', 'AccountService', function ($scope, DeviceService, Notification, NgTableParams, $stateParams, $filter, $state, SettingServices, AccountService) {

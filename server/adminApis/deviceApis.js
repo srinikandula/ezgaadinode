@@ -317,7 +317,8 @@ Devices.prototype.count = function (req, callback) {
         }
     });
 };
-function findDevices(req,params,accounts,callback){
+
+function findDevices(req, params, accounts, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -330,15 +331,15 @@ function findDevices(req,params,accounts,callback){
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
-    if (params.searchString){
+    if (params.searchString) {
         query.$or =
             [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
                 {"imei": new RegExp(params.searchString, "gi")},
                 {"simNumber": new RegExp(params.searchString, "gi")},
                 {"deviceId": new RegExp(params.searchString, "gi")}];
     }
-    if(params.searchAccount){
-        query.accountId={$in:accounts}
+    if (params.searchAccount) {
+        query.accountId = {$in: accounts}
     }
     async.parallel({
         devices: function (devicescallback) {
@@ -347,7 +348,7 @@ function findDevices(req,params,accounts,callback){
                 .skip(skipNumber)
                 .limit(limit)
                 .populate({
-                    path: 'accountId',select: "userName"
+                    path: 'accountId', select: "userName"
                     // match: {$or: [{"userName": new RegExp(params.searchString, "gi")}]}
                 }).populate({
                 path: 'assignedTo', select: "displayName"
@@ -415,7 +416,34 @@ function findDevices(req,params,accounts,callback){
                             device.expiryTime = planhistory.expiryTime;
                             device.received = planhistory.received;
                         }
-                        deviceCallback(false, "success");
+                        if (device.attrs && device.attrs.latestLocation) {
+                            device.latestLocation = device.attrs.latestLocation;
+                            if (device.attrs.latestLocation.address !== '{address}') {
+                                deviceCallback(false, "success");
+                            } else {
+                                resolveAddress({
+                                    latitude: device.attrs.latestLocation.location.coordinates[0],
+                                    longitude: device.attrs.latestLocation.location.coordinates[1]
+                                }, function (addressResp) {
+                                    if (addressResp.status) {
+                                        device.latestLocation.address = addressResp.address;
+                                        //device.attrs.latestLocation.address=addressResp.address;
+                                        updateAddressToDevice({
+                                            deviceId: device._id,
+                                            address: addressResp.address,
+                                            truckId: device.truckId
+                                        });
+                                        deviceCallback(false, "success");
+
+                                    } else {
+                                        deviceCallback(false, "success");
+                                    }
+                                });
+                            }
+                        } else {
+                            deviceCallback(false, "success");
+                        }
+
                     }, function (deviceErr, deviceResult) {
                         if (deviceErr) {
                             retObj.messages.push("Unable to populate devices, please try again");
@@ -446,6 +474,7 @@ function findDevices(req,params,accounts,callback){
         }
     });
 }
+
 Devices.prototype.getDevices = function (req, callback) {
     var params = req.query;
     if (!params.page) {
@@ -461,24 +490,23 @@ Devices.prototype.getDevices = function (req, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
-    if(params.searchAccount){
-        AccountsColl.find({userName:new RegExp(params.searchAccount,"gi")},{"_id":1},function(err,result){
-            console.log("the resultant account is...",result);
-            if(err){
-                retObj.status=false;
+    if (params.searchAccount) {
+        AccountsColl.find({userName: new RegExp(params.searchAccount, "gi")}, {"_id": 1}, function (err, result) {
+            if (err) {
+                retObj.status = false;
                 retObj.messages.push("error in finding account..");
                 callback(retObj);
-            }else{
-                if(result){
-                    accounts= _.pluck(result,'_id');
-                    findDevices(req,params,accounts,function(devices){
-                        if(devices){
-                            retObj.status=true;
+            } else {
+                if (result) {
+                    accounts = _.pluck(result, '_id');
+                    findDevices(req, params, accounts, function (devices) {
+                        if (devices) {
+                            retObj.status = true;
                             retObj.messages.push("Devices fetched successfully....");
                             retObj.data = devices;
                             callback(retObj);
-                        }else{
-                            retObj.status=false;
+                        } else {
+                            retObj.status = false;
                             retObj.messages.push(" No Devices found......");
                             callback(retObj);
                         }
@@ -486,15 +514,15 @@ Devices.prototype.getDevices = function (req, callback) {
                 }
             }
         });
-    }else{
-        findDevices(req,params,accounts,function(devices){
-            if(devices){
-                retObj.status=true;
+    } else {
+        findDevices(req, params, accounts, function (devices) {
+            if (devices) {
+                retObj.status = true;
                 retObj.messages.push("Devices fetched successfully....");
                 retObj.data = devices;
                 callback(retObj);
-            }else{
-                retObj.status=false;
+            } else {
+                retObj.status = false;
                 retObj.messages.push(" No Devices found......");
                 callback(retObj);
             }
@@ -526,18 +554,19 @@ function resolveAddress(position, callback) {
 
     });
 }
-function updateAddressToDevice(params){
-    var retObj={
-        status:false,
-        messages:[]
+
+function updateAddressToDevice(params) {
+    var retObj = {
+        status: false,
+        messages: []
     };
-    console.log("updating device "+ params.deviceId);
-    DevicesColl.update({_id:ObjectId(params.deviceId)},{$set:{"attrs.latestLocation.address":params.address}},function (err,deviceDoc) {
-        console.log("device ",err,deviceDoc);
-        TrucksColl.update({_id:params.truckId},{$set:{"attrs.latestLocation.address":params.address}},function (err,truckDoc) {
-            console.log("TrucksColl Err,Doc",err,params.truckId);
-        });
+    DevicesColl.update({_id: ObjectId(params.deviceId)}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, deviceDoc) {
+        console.log("deviceDoc",deviceDoc);
     });
+    TrucksColl.update({_id: ObjectId(params.truckId)}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, truckDoc) {
+        console.log("truckDoc",truckDoc);
+    });
+
 
 }
 
@@ -1361,13 +1390,13 @@ Devices.prototype.getGpsDevicesCountByStatus = function (req, callback) {
     }
 };
 
-Devices.prototype.getLatestLocationFromDevice = function(req, callback){
+Devices.prototype.getLatestLocationFromDevice = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var params = req.query;
-    DevicesColl.findOne({"_id":params._id}, function (err, document) {
+    DevicesColl.findOne({"_id": params._id}, function (err, document) {
         var device = document._doc;
         if (device.attrs.latestLocation.address !== '{address}') {
             retObj.status = true;
@@ -1379,14 +1408,18 @@ Devices.prototype.getLatestLocationFromDevice = function(req, callback){
                 latitude: device.attrs.latestLocation.location.coordinates[0],
                 longitude: device.attrs.latestLocation.location.coordinates[1]
             }, function (addressResp) {
-                if(addressResp.status){
-                    device.attrs.latestLocation.address=addressResp.address;
+                if (addressResp.status) {
+                    device.attrs.latestLocation.address = addressResp.address;
                     //device.attrs.latestLocation.address=addressResp.address;
-                    updateAddressToDevice({deviceId:params._id,address:addressResp.address,truckId:device.truckId});
+                    updateAddressToDevice({
+                        deviceId: params._id,
+                        address: addressResp.address,
+                        truckId: device.truckId
+                    });
                     retObj.status = true;
                     retObj.data = device;
                     callback(retObj);
-                }else{
+                } else {
                     retObj.status = true;
                     retObj.data = device;
                     return;
