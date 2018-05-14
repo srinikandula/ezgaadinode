@@ -1,15 +1,40 @@
-<div class="main-right col-xs-12" ng-controller="loadRequestCtrl"ng-init="getAllParties()">
+<div class="main-right col-xs-12" ng-controller="loadRequestCtrl" ng-init="getAllParties()">
     <h2 class="title-name ">Share Load Request</h2>
-    <div class="form-group col-xs-12">
-        <div class="styling-input-list">
-            <input type="text" class="form-control custom-form-control" ng-model="shareDetails.load"/>
-            <label class="focus-effect-for-input" aria-hidden="true">Looking for load</label>
+    <div class="col-xs-12">
+        <div class="form-group col-xs-12">
+            <div class="leftLabel">
+                <label>Enter Message Here* </label>
+            </div>
+            <div class="styling-input-list rightLabel">
+                <!-- <input type="text" class="form-control cust" ng-model="shareDetails.load"/>-->
+                <textarea class="form-control"
+                          ng-model="shareDetails.load"></textarea>
+            </div>
         </div>
-    </div>
-    <div class="form-group col-xs-12">
-        <input type="checkbox" ng-model="all">Select all parties<br>
-        <div ng-repeat="party in parties">
-            <input type="checkbox" ng-model="party.ischecked" ng-checked="all">{{party.name}}({{party.contact}})<br>
+        <div class="form-group col-xs-12">
+            <h2 class="inner-title">Please Select the Parties from List:</h2>
+
+            <div class="sms">
+                <div class="checkbox">
+                    <label class="allParties">
+                        <input type="checkbox" ng-model="all" ng-click="selectAllParties()">
+                        <span class="cr ntfns"><i class="cr-icon ntfns-icon fa fa-check"></i></span>
+                        <span ng-show="all" >All Parties Selected</span>
+                        <span ng-hide="all" >Select All</span>
+                    </label>
+                </div>
+            </div>
+            <div ng-repeat="party in parties">
+                <div class="sms col-xs-4">
+                    <div class="checkbox">
+                        <label>
+                            <input type="checkbox" ng-model="party.isChecked"  ng-change="checkParties();">
+                            <span class="cr ntfns"><i class="cr-icon ntfns-icon fa fa-check"></i></span>
+                            {{party.name}}({{party.contact}})
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="col-xs-12">
