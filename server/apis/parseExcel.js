@@ -100,6 +100,5 @@ async.map(parties,function(party,asyncCallback){
 },function(err){
 
 });
-console.log("parties.....99999++++.......",parties);
 
 
