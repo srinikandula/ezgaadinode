@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="images/fav.png" type="image/png" sizes="32x32">
     <link href="components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" type="text/css" href="dist/components/components.min.css">
-    <link rel="stylesheet" type="text/css" href="dist/css/all.css">
+    <link rel="stylesheet" type="text/css" href="dist/components/components.min.css" type="text/css">
+    <link rel="stylesheet" type="text/css" href="dist/css/all.css" type="text/css">
 </head>
 
 <body ng-app="EasyGaadi" ng-cloak>
@@ -101,18 +101,30 @@
             </div>-->
             <div class="col-xs-12">
                         <div class="col-sm-2 col-xs-12 left-nav">
-
-                            <left-menu label="Reports" ui-sref="reports"></left-menu>
                              <div class="panel-group" id="accordion">
+                                 <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion"
+                                                   href="#reports" class="left-menu-anchor">
+                                                Reports</a>
+                                            </h4>
+                                        </div>
+                                        <div id="reports" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                 <left-menu label="Reports" ui-sref="reports"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="panel panel-default custom-panel-default custom-panel">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne"                                                          class="left-menu-anchor">
-                                                    <span class="glyphicon glyphicon-chevron-down pull-right">
-                                                </span>Master</a>
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#master"
+                                                   class="left-menu-anchor">
+                                                   Master</a>
                                             </h4>
                                         </div>
-                                        <div id="collapseOne" class="panel-collapse collapse in">
+                                        <div id="master" class="panel-collapse collapse">
                                             <div class="panel-body custom-panel-body">
                                                  <left-menu label="Trucks" ui-sref="trucks"></left-menu>
                                                 <left-menu label="Drivers" ui-sref="drivers"></left-menu>
@@ -123,38 +135,52 @@
                                     <div class="panel panel-default custom-panel-default custom-panel">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo"
-                                                class="left-menu-anchor">
-                                                    <span class="glyphicon glyphicon-chevron-down pull-right">
-                                                </span>Maintanance</a>
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#Maintanance"
+                                                   class="left-menu-anchor">
+                                                   Maintanance</a>
                                             </h4>
                                         </div>
-                                        <div id="collapseTwo" class="panel-collapse collapse">
+                                        <div id="Maintanance" class="panel-collapse collapse">
                                             <div class="panel-body custom-panel-body">
                                                 <left-menu label="Trips" ui-sref="trips"></left-menu>
                                                 <left-menu label="Expenses" ui-sref="expenses"></left-menu>
                                             </div>
                                         </div>
                                     </div>
+
+
                                    <div class="panel panel-default custom-panel-default custom-panel">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree"
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#Transactions"
                                                    class="left-menu-anchor">
-                                                    <span class="glyphicon glyphicon-chevron-down pull-right">
-                                                </span>Transactions</a>
+                                                   Transactions</a>
                                             </h4>
                                         </div>
-                                        <div id="collapseThree" class="panel-collapse collapse">
+                                        <div id="Transactions" class="panel-collapse collapse">
                                             <div class="panel-body custom-panel-body">
-                                                <left-menu label="Receipts" ui-sref="receipts"></left-menu>
+                                                 <left-menu label="Receipts" ui-sref="receipts"></left-menu>
                                                 <left-menu label="Payments" ui-sref="payments"></left-menu>
-                                                <left-menu label="LoadRequest" ui-sref="loadRequests"></left-menu>
-                                                <left-menu label="Send SMS" ui-sref="sendSMS"></left-menu>
-
                                             </div>
                                         </div>
                                     </div>
+
+                                 <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#Request"
+                                                   class="left-menu-anchor">
+                                                     Load Request</a>
+                                            </h4>
+                                        </div>
+                                        <div id="Request" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                  <left-menu label="LoadRequest" ui-sref="loadRequests"></left-menu>
+                                                <left-menu label="Send SMS" ui-sref="sendSMS"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+
                              </div>
                         </div>
                         <div class="col-xs-12 col-sm-10">

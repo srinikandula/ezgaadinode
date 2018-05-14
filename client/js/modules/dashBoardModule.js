@@ -591,7 +591,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                             },
                             {title: 'Party Mobile', "data": "attrs.partyContact"},
                             {
-                                title: "Total Fright", "data": "totalFright", "render": function (data, type, row) {
+                                title: "Total Freight   ", "data": "totalFright", "render": function (data, type, row) {
                                     if (data) {
                                         return data.toFixed(2);
                                     } else {

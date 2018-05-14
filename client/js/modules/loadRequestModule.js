@@ -159,7 +159,24 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
 
     $scope.cancel = function(){
         $state.go('loadRequests');
-    }
+    };
+
+    $scope.selectAllParties=function () {
+        $scope.parties.forEach(function (party) {
+            party.isChecked=$scope.all;
+        })
+    };
+
+    $scope.checkParties = function () {
+        $scope.all=true;
+        $scope.parties.forEach(function (party) {
+
+            if(!party.isChecked){
+                $scope.all=false;
+            }
+        })
+    };
+
 }]);
 app.controller('loadRequestListCtrl',['$scope','LoadRequestService','$state','Notification',function($scope,LoadRequestService,$state,Notification){
     $scope.loadRequests = [];
@@ -213,5 +230,7 @@ app.controller('smsCtrl',['$scope','LoadRequestService','Notification',function(
 
         });
     };
+
+
 }]);
 
