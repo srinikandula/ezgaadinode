@@ -230,6 +230,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         });
     };
     $scope.getLatestLocation = function (id) {
+
         var modalInstance = $uibModal.open({
             templateUrl: 'latestLocationModal.html',
             controller: 'FindDeviceLocationController',
@@ -250,10 +251,10 @@ app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$stat
     DeviceService.getLatestLocationFromDevice({_id:deviceId._id},function (success) {
         if(success.data.status){
             $scope.regNo= deviceId.regNo;
-            $scope.latestLocation = success.data.latestLocation;
+            $scope.latestLocation = success.data.data.attrs.latestLocation;
+            console.log($scope.latestLocation);
         }else{
             $scope.regNo= deviceId.regNo;
-
             swal(
                 '',
                 success.data.messages[0],

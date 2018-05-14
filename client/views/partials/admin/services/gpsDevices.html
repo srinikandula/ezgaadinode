@@ -50,10 +50,11 @@
                     {{device.accountId.userName}}
                 </td>
                 <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
-                    <a href="#" data-toggle="modal" data-target="#latestLocation"
+                    <a href="#" data-toggle="modal" data-target="#latestLocation" ng-if="device.attrs.latestLocation"
                        ng-click="getLatestLocation({_id:device._id, regNo:device.registrationNo});">
                         {{device.registrationNo || '--' | uppercase}}
                     </a>
+                    <span ng-if="!device.attrs.latestLocation">{{device.registrationNo || '--' | uppercase}}</span>
                 </td>
                 <td data-title="'IMEI'" sortable="'imei'" class="clickable-item">
                     {{device.imei}}
@@ -103,11 +104,11 @@
     <div class="modal-body">
         <div class="row" style="padding: 20px;">
             <p style="font-size: 15px;"><b>Vehicle number</b> : {{regNo | uppercase}}</p>
-            <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.latestLocation.address}}
+            <p style="font-size: 15px;"><b>Latest Location </b>: {{latestLocation.address}}
             </p>
-            <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.latestLocation.speed | number:0}}
+            <p style="font-size: 15px;"><b>Speed </b>: {{latestLocation.speed | number:0}}
                 KMPH</p>
-            <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.latestLocation.deviceTime
+            <p style="font-size: 15px;"><b>Time </b>: {{latestLocation.deviceTime
                 |date:'dd-MM-yyyy HH:mm:ss '}}</p>
         </div>
     </div>
