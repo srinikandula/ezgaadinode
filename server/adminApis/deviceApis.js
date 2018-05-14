@@ -9,6 +9,10 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var PaymentsColl = require('./../models/schemas').PaymentsColl;
+var SecretKeysColl = require('./../models/schemas').SecretKeysColl;
+var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
+
+
 var config = require('./../config/config');
 var mysql = require('mysql');
 var traccar_mysql = mysql.createPool(config.traccar_mysql);
@@ -436,7 +440,7 @@ function findDevices(req, params, accounts, callback) {
                                         deviceCallback(false, "success");
 
                                     } else {
-                                        deviceCallback(false, "success");
+                                        deviceCallback(true, "success");
                                     }
                                 });
                             }
@@ -531,6 +535,7 @@ Devices.prototype.getDevices = function (req, callback) {
     }
 };
 
+//Resolve address using google
 function resolveAddress(position, callback) {
     var retObj = {
         status: false,
@@ -540,19 +545,103 @@ function resolveAddress(position, callback) {
         provider: 'google',
         httpAdapter: 'https'
     };
-    options.apiKey = config.googleKey;
-    var geocoder = nodeGeocoder(options);
-    geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
-        if (location) {
-            retObj.status = true;
-            retObj.address = location[0]['formattedAddress'];
-            callback(retObj);
-        } else {
-            retObj.messages.push("address finding error");
-            callback(retObj);
-        }
+    var fulldate = new Date();
+    var today = fulldate.getDate() + '/' + (fulldate.getMonth() + 1) + '/' + fulldate.getFullYear();
 
+    SecretKeyCounterColl.findOne({date: today}).populate('secretId', {secret: 1}).sort({createdAt:-1}).exec(function (errsecret, secret) {
+        if (errsecret) {
+            retObj.messages.push("address finding error," + JSON.stringify(err.message));
+            callback(retObj);
+        } else if (secret) {/*if key is available search address*/
+            if (secret.counter < config.googleSecretKeyLimit) {/*if key count < config key limit*/
+                options.apiKey = secret.secretId.secret;
+                var geocoder = nodeGeocoder(options);
+                geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
+                    if (location) {
+                        retObj.status = true;
+                        retObj.address = location[0]['formattedAddress'];
+                        SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
+                            if (incerr) {
+                                retObj.messages.push('Error incrementing secret');
+                            } else {
+                                retObj.status=true;
+                                retObj.messages.push('Secret Incremented');
+                            }
+                            callback(retObj);
+                        });
+                    } else {
+                        retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                        callback(retObj);
+                    }
+
+                });
+            } else {/*if key count is grater then config count assign new key*/
+                SecretKeyCounterColl.find(
+                    {
+                        date: today
+                        }, function(err,SecretDocs){
+                            if(err){
+                                retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                                callback(retObj);
+                            }else{
+                                var ids=_.pluck(SecretDocs,'secretId');
+                                SecretKeysColl.findOne({_id:{$nin:ids}}, function (err, secDoc) {
+                                    if (err) {
+                                        retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                                        callback(retObj);
+                                    } else if(secDoc) {
+                                        var secretKeyCount = new SecretKeyCounterColl({
+                                            date: today,
+                                            secretId: secDoc._id,
+                                            counter: 0
+                                        });
+                                        secretKeyCount.save(function (saveSecKeyErr, saveSecDoc) {
+                                            if (err) {
+                                                retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                                                callback(retObj);
+                                            } else {
+                                                resolveAddress(position, callback);
+                                            }
+                                        })
+                                    }else{/*if all keys completed */
+                                        console.log("no more keys")
+                                        retObj.messages.push("No more secret keys");
+                                        callback(retObj);
+                                    }
+                                })
+                            }
+                    });
+            }
+
+
+        } else {/*assign new key for day*/
+            SecretKeysColl.findOne({}, function (err, secDoc) {
+                if (err) {
+                    retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                    callback(retObj);
+                } else if(secDoc){
+                    var secretKeyCount = new SecretKeyCounterColl({
+                        date: today,
+                        secretId: secDoc._id,
+                        counter: 0
+                    });
+                    secretKeyCount.save(function (saveSecKeyErr, saveSecDoc) {
+                        if (err) {
+                            retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                            callback(retObj);
+                        } else {
+                            resolveAddress(position, callback);
+                        }
+                    })
+                }else{
+                    retObj.messages.push("No more secret keys");
+                    callback(retObj);
+                }
+            })
+        }
     });
+
+
 }
 
 function updateAddressToDevice(params) {
@@ -561,10 +650,10 @@ function updateAddressToDevice(params) {
         messages: []
     };
     DevicesColl.update({_id: ObjectId(params.deviceId)}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, deviceDoc) {
-        console.log("deviceDoc",deviceDoc);
+        console.log("deviceDoc", deviceDoc);
     });
     TrucksColl.update({_id: ObjectId(params.truckId)}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, truckDoc) {
-        console.log("truckDoc",truckDoc);
+        console.log("truckDoc", truckDoc);
     });
 
 
