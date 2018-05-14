@@ -1,54 +1,105 @@
 var XLSX = require('xlsx');
 var async = require('async');
 var _ = require('underscore');
+var Utils = require('./utils');
 
+var PartyCollection = require('./../models/schemas').PartyCollection;
 
 var workbook = XLSX.readFile('all tip top.xlsx');
-    var worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    var headers = {};
-    var data = [];
-    var parties =[];
-    for(z in worksheet) {
+var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+var headers = {};
+var data = [];
+for(z in worksheet) {
 
-        if(z[0] === '!') continue;
-        //parse out the column, row, and value
-        var tt = 0;
-        for (var i = 0; i < z.length; i++) {
-            if (!isNaN(z[i])) {
-                tt = i;
-                break;
-            }
-        };
-        var col = z.substring(0,tt);
-        var row = parseInt(z.substring(tt));
-        var value = worksheet[z].v;
-
-        //store header names
-        if(row == 1 && value) {
-            headers[col] = value;
-            continue;
+    if(z[0] === '!') continue;
+    //parse out the column, row, and value
+    var tt = 0;
+    for (var i = 0; i < z.length; i++) {
+        if (!isNaN(z[i])) {
+            tt = i;
+            break;
         }
+    };
+    var col = z.substring(0,tt);
+    var row = parseInt(z.substring(tt));
+    var value = worksheet[z].v;
 
-        if(!data[row]) data[row]={};
-        data[row][headers[col]] = value;
-    }
-    //drop those first two rows which are empty
-    data.shift();
-    data.shift();
-    // console.log("parties....",data);
-/*
-async.map(data,function(party,ayncCallback){
-     console.log("party...async...contact",party["CONTACT NO"]);
-     if(_.isNumber())
-        var numbers = party["CONTACT NO"].split(',');
-        console.log("number...",numbers);
-
-    if(numbers.length>1){
-        console.log("numbers...",numbers);
+    //store header names
+    if(row == 1 && value) {
+        headers[col] = value;
+        continue;
     }
 
-    var output =[];
+    if(!data[row]) data[row]={};
+    data[row][headers[col]] = value;
+}
+//drop those first two rows which are empty
+data.shift();
+data.shift();
 
+var parties=[];
+
+for(var i=0;i<data.length;i++){
+    var email_Id='';
+    var party={};
+
+    if(data[i]["E-mail id"]){
+        email_Id = data[i]["E-mail id"];
+        party.emailId=email_Id;
+    }
+    party.nameOfTransporter =data[i]["NAME OF TRANSPORTER"];
+    party.address=data[i]["ADDRESS"];
+    party.contactNo=data[i]["CONTACT NO"];
+    party.contactPerson=data[i]["CONTACT PERSON"];
+    parties.push(party);
+}
+
+async.map(parties,function(party,asyncCallback){
+    var contact;
+    var contacts;
+    var alternateContact =[];
+    var alternateInfo =[];
+    if(party.contactNo) {
+        var x = party.contactNo.toString();
+        contacts = x.split(',');
+     }
+     var contactStatus=1;
+    if(contacts){
+        for(var i=0;i<contacts.length;i++){
+            contacts[i]=contacts[i].replace(/ /g,'');
+            var temp =contacts[i];
+            if(contacts[i].startsWith(0)){
+               alternateInfo.push(contacts[i]);
+            }else{
+                contacts[i]=Number(contacts[i]);
+                if(!isNaN(contacts[i])){
+                    if (Utils.isValidPhoneNumber(contacts[i])) {
+                        if (contactStatus >= 2) {
+                            alternateContact.push(contacts[i]);
+                        }else{
+                            contact = contacts[i];
+                        }
+                        contactStatus++;
+                    }else{
+                        alternateInfo.push(contacts[i]);
+                    }
+                }else{
+                    alternateInfo.push(temp);
+                }
+            }
+        }
+        // party.accountId='5ab5004d824c9017c7e41d6a';
+        party.contact=contact;
+        party.alternateContact =alternateContact;
+        party.alternateInfo =alternateInfo;
+        var partyDoc = new PartyCollection(party);
+        partyDoc.save(function (err, result) {
+
+        });
+    }
 },function(err){
 
-});*/
+});
+console.log("parties.....99999++++.......",parties);
+
+

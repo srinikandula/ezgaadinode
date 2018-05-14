@@ -219,6 +219,7 @@ var tripSchema = new mongoose.Schema({
 var partySchema = new mongoose.Schema({
     name: String,
     contact: Number,
+    alternateContact:[],
     email: String,
     city: String,
     accountId: {type: ObjectId, ref: 'accounts'},
