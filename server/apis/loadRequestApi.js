@@ -26,11 +26,11 @@ function addTripDetailsToNotification(data, callback) {
     });
 }
 Loads.prototype.addLoadRequest = function(jwt,info,callback){
-  var retObj = {
-      status:false,
-      messages:[],
-      errors:[]
-  };
+    var retObj = {
+        status:false,
+        messages:[],
+        errors:[]
+    };
     info.accountId = jwt.id;
     if(!info.source){
         retObj.errors.push("select source address...");
@@ -142,7 +142,7 @@ Loads.prototype.deleteLoadRequest = function(id,callback){
 };
 Loads.prototype.shareLoadRequest = function (id,parties, callback) {
     for(var i=0;i<parties.length;i++) {
-      var party =  JSON.parse(parties[i]);
+        var party =  JSON.parse(parties[i]);
         if (party.ischecked === true) {
             var notificationParams = {
                 // accountId: party._id,
@@ -173,21 +173,21 @@ Loads.prototype.shareLoadRequest = function (id,parties, callback) {
                             data:output
                         };
                         emailService.sendEmail(emailparams, function (emailResponse) {
-                                if (emailResponse.status) {
-                                    notificationParams.notificationType = 2;
-                                    notificationParams.status = true;
-                                    notificationParams.message = "success";
-                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                        callback(notificationResponse);
-                                    })
-                                } else {
-                                    notificationParams.notificationType = 2;
-                                    notificationParams.status = false;
-                                    notificationParams.message = "SMS sent,but email failed";
-                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                        callback(notificationResponse);
-                                    })
-                                }
+                            if (emailResponse.status) {
+                                notificationParams.notificationType = 2;
+                                notificationParams.status = true;
+                                notificationParams.message = "success";
+                                addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                    callback(notificationResponse);
+                                })
+                            } else {
+                                notificationParams.notificationType = 2;
+                                notificationParams.status = false;
+                                notificationParams.message = "SMS sent,but email failed";
+                                addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                    callback(notificationResponse);
+                                })
+                            }
                         });
                     }else{
                         notificationParams.notificationType = 0;
