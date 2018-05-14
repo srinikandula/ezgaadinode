@@ -616,7 +616,6 @@ app.filter('propsFilter', function () {
 
             items.forEach(function (item) {
                 var itemMatches = false;
-
                 for (var i = 0; i < keys.length; i++) {
                     var prop = keys[i];
                     var text = props[prop].toLowerCase();
