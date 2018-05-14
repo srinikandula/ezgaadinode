@@ -560,22 +560,13 @@ function updateAddressToDevice(params) {
         status: false,
         messages: []
     };
-    console.log("updating device " + params.deviceId);
     DevicesColl.update({_id: ObjectId(params.deviceId)}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, deviceDoc) {
-        console.log("device ", err, deviceDoc);
+        console.log("deviceDoc",deviceDoc);
     });
     TrucksColl.update({_id: ObjectId(params.truckId)}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, truckDoc) {
-        console.log("TrucksColl Err,Doc", err, params.truckId);
+        console.log("truckDoc",truckDoc);
     });
-    DevicesColl.findOne({"imei": params.imei}, function (err, deviceDoc) {
-        console.log("device ", err, deviceDoc.attrs);
-    });
-    if (params.truckId) {
-        TrucksColl.update({_id: ObjectId(params.truckId)}, {$set: {"attrs.latestLocation.address": params.address}}, function (err, truckDoc) {
-            console.log("TrucksColl Err,Doc", err, params.truckId);
-        });
 
-    }
 
 }
 

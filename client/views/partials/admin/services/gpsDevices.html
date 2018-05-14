@@ -51,7 +51,7 @@
                 </td>
                 <td data-title="'Truck No'" sortable="'installedBy'" class="clickable-item">
                     <a href="#" data-toggle="modal" data-target="#latestLocation" ng-if="device.attrs.latestLocation"
-                       ng-click="getLatestLocation({_id:device._id, regNo:device.registrationNo});">
+                       ng-click="getLatestLocation(device.attrs.latestLocation,device.registrationNo);">
                         {{device.registrationNo || '--' | uppercase}}
                     </a>
                     <span ng-if="!device.attrs.latestLocation">{{device.registrationNo || '--' | uppercase}}</span>
@@ -113,7 +113,7 @@
         </div>
     </div>
     <div class="modal-footer">
-        <button class="btn btn-danger" type="button" ng-click="cancel();">Cancel</button>
+        <button class="btn btn-danger" type="button" ng-click="cancel();">Close</button>
     </div>
 
 </script>
