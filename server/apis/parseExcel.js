@@ -87,7 +87,6 @@ var workbook = XLSX.readFile('all tip top.xlsx');
     party.contact = contact;
     party.alternateContact = alternateContact;
     party.alternateInfo = alternateInfo;
-    console.log("party...",party);
         var partyDoc = new PartyCollection(party);
         partyDoc.save(function (err,result) {
 
@@ -96,4 +95,3 @@ var workbook = XLSX.readFile('all tip top.xlsx');
 },function(err){
 
 });
-// console.log("parties...",parties);
