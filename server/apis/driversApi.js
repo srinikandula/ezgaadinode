@@ -162,7 +162,8 @@ Drivers.prototype.getDrivers = function (jwt, params, req, callback) {
             condition = {
                 $and : [{accountId: jwt.accountId},
                     {$or:[{fullName: new RegExp("^" + params.driverName, "i")},
-                            {driverId: new RegExp("^" + params.driverName, "i")}]}]
+                            {driverId: new RegExp("^" + params.driverName, "i")},
+                        {mobile:params.driverName}]}]
             }
         }
 
