@@ -157,7 +157,7 @@ Gps.prototype.moveDevicePositions = function (callback) {
     };
     var fulldate = new Date();
     fulldate.setDate(fulldate.getDate() - config.devicePositionsArchiveLimit); //1 day
-    devicePostions.find({createdAt: {$lte: fulldate}}).limit(1000).exec(function (errdata, gpsdocuments) {
+    devicePostions.find({createdAt: {$lte: fulldate}}).limit(5000).exec(function (errdata, gpsdocuments) {
         if (errdata) {
             console.log(errdata);
             retObj.messages.push('Error getting data');
@@ -168,7 +168,7 @@ Gps.prototype.moveDevicePositions = function (callback) {
                     retObj.messages.push('Error saving data');
                     callback(retObj);
                 } else {
-                    devicePostions.remove({createdAt: {$lte: fulldate}}).limit(1000).exec(function (errremoved, removed) {
+                    devicePostions.remove({createdAt: {$lte: fulldate}}).limit(5000).exec(function (errremoved, removed) {
                         if (errremoved) {
                             retObj.messages.push('Error Removing data');
                             callback(retObj);
