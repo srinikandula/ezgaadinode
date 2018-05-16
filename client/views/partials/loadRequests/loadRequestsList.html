@@ -17,14 +17,8 @@
         <table class="table table-bordered table-striped table-condensed table-hover"
                ng-table="studentParams">
             <tr ng-repeat="x in loadRequests" style="text-align: center;">
-                <td data-title="'Truck No'" sortable="'regNo'" class="clickable-item">
-                    {{x.regNo}}
-                </td>
                 <td data-title="'Price'" sortable="'price'" class="clickable-item">
                     {{x.price}}
-                </td>
-                <td data-title="'Make Year'" sortable="'makeYear'" class="clickable-item">
-                    {{x.makeYear}}
                 </td>
                 <td data-title="'Source'" sortable="'source'" class="clickable-item">
                     {{x.source.sourceAddress}}

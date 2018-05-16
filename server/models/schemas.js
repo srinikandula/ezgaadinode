@@ -490,8 +490,6 @@ var loadRequestSchema = new mongoose.Schema({
     destination:{},
     accountId: {type: ObjectId, ref: 'accounts'},
     truckType: {type: ObjectId, ref: 'trucksTypes'},
-    regNo:String,
-    makeYear:String,
     dateAvailable:Date,
     price:Number,
     expectedDateReturn:Date

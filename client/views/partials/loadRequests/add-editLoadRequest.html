@@ -4,21 +4,17 @@
             <div class="form-group col-xs-12">
                 <div class="styling-input-list">
                     <input type="text" class="form-control custom-form-control" name="sourceAddress" ng-model="loadRequest.source.sourceAddress" id="source"
-                    ng-change="addSearchSource()" placeholder="Source"/>
+                    ng-change="addSearchSource()"/>
+                    <label class="focus-effect-for-input">Source</label>
                 </div>
             </div>
             <div class="form-group col-xs-12">
                 <div class="styling-input-list">
                     <input type="text" class="form-control custom-form-control" name="destinationAddress" ng-model="loadRequest.destination.destinationAddress"
-                    id="destination" ng-change="addSearchDestination()" placeholder="Destination"/>
+                    id="destination" ng-change="addSearchDestination()"/>
+                    <label class="focus-effect-for-input">Destination</label>
                 </div>
             </div>
-            <!--<div class="form-group col-xs-12">-->
-                <!--<div class="styling-input-list">-->
-                    <!--<input type="text" class="form-control custom-form-control"/>-->
-
-                <!--</div>-->
-            <!--</div>-->
             <div class="form-group col-xs-12">
                 <div class="styling-input-list">
                     <ui-select ng-model="loadRequest.truckType" theme="select2"
@@ -40,12 +36,6 @@
                     <label class="focus-effect-for-input">Select Truck Type*</label>
                 </div>
             </div>
-            <div class="form-group col-xs-12">
-                <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="loadRequest.regNo"/>
-                    <label class="focus-effect-for-input" aria-hidden="true">Registration No</label>
-                </div>
-            </div>
         </div>
     <div class="col-sm-6 col-xs-12 mt-10">
         <div class="form-group col-xs-12">
@@ -55,18 +45,12 @@
             </div>
         </div>
         <div class="form-group col-xs-12">
-            <div class="styling-input-list">
-                <input type="text" class="form-control custom-form-control" ng-model="loadRequest.makeYear"/>
-                <label class="focus-effect-for-input" aria-hidden="true">Make Year</label>
-            </div>
-        </div>
-        <div class="form-group col-xs-12">
             <date-picker  ng-model="loadRequest.dateAvailable"
-                             class="'custom-form-control'" placeholder="'Date Time Available'"></date-picker>
+                             class="'custom-form-control'" placeholder="'Expected Loading Date'"></date-picker>
         </div>
         <div class="form-group col-xs-12">
             <date-picker  ng-model="loadRequest.expectedDateReturn"
-                              class="'custom-form-control'" placeholder="'Expected Date Return'"></date-picker>
+                              class="'custom-form-control'" placeholder="'Expected Unloading Date'"></date-picker>
         </div>
         </div>
         <div class="col-xs-12">
