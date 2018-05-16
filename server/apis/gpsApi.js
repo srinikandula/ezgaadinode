@@ -157,7 +157,7 @@ Gps.prototype.moveDevicePositions = function (callback) {
     };
     var fulldate = new Date();
     fulldate.setDate(fulldate.getDate() - config.devicePositionsArchiveLimit); //1 day
-    devicePostions.find({createdAt: {$lte: fulldate}}).lean().exec(function (errdata, gpsdocuments) {
+    devicePostions.find({createdAt: {$lte: fulldate}}).limit(1000).exec(function (errdata, gpsdocuments) {
         if (errdata) {
             console.log(errdata);
             retObj.messages.push('Error getting data');
@@ -168,12 +168,12 @@ Gps.prototype.moveDevicePositions = function (callback) {
                     retObj.messages.push('Error saving data');
                     callback(retObj);
                 } else {
-                    devicePostions.remove({createdAt: {$lte: fulldate}}, function (errremoved, removed) {
+                    devicePostions.remove({createdAt: {$lte: fulldate}}).limit(1000).exec(function (errremoved, removed) {
                         if (errremoved) {
                             retObj.messages.push('Error Removing data');
                             callback(retObj);
                         } else {
-                            retObj.messages.push('Succesfully Moved ' + gpsdocuments.length + ' Documents');
+                            retObj.messages.push('Succesfully Moved ' + removed.result.n + ' Documents');
                             callback(retObj);
                         }
                     });
@@ -548,7 +548,15 @@ Gps.prototype.editGpsSettings = function (body,req,callback) {
     if(body.minStopTime){
         body.minStopTime=parseInt(body.minStopTime);
     }
-    GpsSettingsColl.update({accountId:req.jwt.id},{$set:body},{upsert: true},function (err,settings) {
+
+    /*
+    stopTime: {type: Number, default: 15},
+    overSpeedLimit: {type: Number, default: 60},
+    minStopTime:{type:Number,default:10},
+    routeNotificationInterval:{type:Number,default:30}
+     */
+    GpsSettingsColl.update({accountId:req.jwt.id},{$set:{"stopTime":body.stopTime,"overSpeedLimit":body.overSpeedLimit,
+            "minStopTime":body.minStopTime,"routeNotificationInterval":body.routeNotificationInterval }},{upsert: true},function (err,settings) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Error retrieving settings for account,'+JSON.stringify(err.message));
