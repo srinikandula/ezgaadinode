@@ -17,25 +17,18 @@
         <table class="table table-bordered table-striped table-condensed table-hover"
                ng-table="studentParams">
             <tr ng-repeat="x in loadRequests" style="text-align: center;">
-                <td data-title="'Truck No'" sortable="'regNo'" class="clickable-item">
-                    {{x.regNo}}
-                </td>
-                <td data-title="'Price'" sortable="'price'" class="clickable-item">
-                    {{x.price}}
-                </td>
-                <td data-title="'Make Year'" sortable="'makeYear'" class="clickable-item">
-                    {{x.makeYear}}
-                </td>
                 <td data-title="'Source'" sortable="'source'" class="clickable-item">
                     {{x.source.sourceAddress}}
                 </td>
                 <td data-title="'Destination'" sortable="'destination'" class="clickable-item">
                     {{x.destination.destinationAddress}}
                 </td>
-                <td data-title="'Date'" sortable="'dateAvailable'" class="clickable-item">
+                <td data-title="'Price'" sortable="'price'" class="clickable-item">
+                    {{x.price}}
+                </td>
+                <td data-title="'Expected Loading Date'" sortable="'dateAvailable'" class="clickable-item">
                     {{x.dateAvailable | date:'dd-MM-yyyy'}}
                 </td>
-
                 <td data-title="'Action'" class="col-sm-2">
                     <a href="#" class="btn" ng-click="goToEditPage(x._id)">
                         <span class="glyphicon glyphicon-pencil"></span></a>

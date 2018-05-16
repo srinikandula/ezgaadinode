@@ -220,6 +220,7 @@ var partySchema = new mongoose.Schema({
     name: String,
     contact: Number,
     alternateContact:[],
+    contactInfo:String,
     email: String,
     city: String,
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -490,8 +491,6 @@ var loadRequestSchema = new mongoose.Schema({
     destination:{},
     accountId: {type: ObjectId, ref: 'accounts'},
     truckType: {type: ObjectId, ref: 'trucksTypes'},
-    regNo:String,
-    makeYear:String,
     dateAvailable:Date,
     price:Number,
     expectedDateReturn:Date
