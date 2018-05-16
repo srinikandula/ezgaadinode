@@ -82,6 +82,7 @@ gulp.task('merge-components',function () {
     gulp.src(['./client/components/jquery/dist/jquery.min.js',
         './client/components/bootstrap/dist/js/bootstrap.min.js',
         './client/components/angular/angular.min.js',
+        './client/components/angular-sanitize/angular-sanitize.js',
         './client/components/angular-ui-router/release/angular-ui-router.min.js',
         './client/components/angular-cookies/angular-cookies.min.js',
         './client/components/angular-bootstrap/ui-bootstrap-tpls.min.js',
