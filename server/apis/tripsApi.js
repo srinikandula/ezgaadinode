@@ -500,6 +500,7 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         status: false,
         messages: []
     };
+
     if (!_.isNumber(tripDetails.tonnage)) {
         tripDetails.tonnage = 0;
     }
