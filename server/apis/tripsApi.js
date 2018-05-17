@@ -250,10 +250,10 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
         retObj.messages.push("Please select a vechile");
     }
 
-    if (!_.isNumber(tripDetails.tonnage)) {
+    if (!_.isNumber(parseInt(tripDetails.tonnage))) {
         tripDetails.tonnage = 0;
     }
-    if (!_.isNumber(tripDetails.rate)) {
+    if (!_.isNumber(parseInt(tripDetails.rate))) {
         tripDetails.rate = 0;
     }
     /* if (!tripDetails.driverId) {
@@ -500,11 +500,10 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         status: false,
         messages: []
     };
-
-    if (!_.isNumber(tripDetails.tonnage)) {
+    if (!_.isNumber(parseInt(tripDetails.tonnage))) {
         tripDetails.tonnage = 0;
     }
-    if (!_.isNumber(tripDetails.rate)) {
+    if (!_.isNumber(parseInt(tripDetails.rate))) {
         tripDetails.rate = 0;
     }
 

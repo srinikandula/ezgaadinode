@@ -482,13 +482,14 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.trips = tripsAndExpenses.expenses;
+           // retObj.trips = tripsAndExpenses.expenses;
+
 
             for (var i = 0; i < tripsAndExpenses.trips.length; i++) {
                 totalFreight = totalFreight + tripsAndExpenses.trips[i].freightAmount;
             }
             for (var i = 0; i < tripsAndExpenses.expenses.length; i++) {
-                if (tripsAndExpenses.expenses[i] === 'Cash') {
+                if (tripsAndExpenses.expenses[i].mode === 'Cash') {
                     totalExpenses = totalExpenses + tripsAndExpenses.expenses[i].cost;
 
                 }else{
@@ -497,8 +498,8 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
                 }
             }
             Utils.populateNameInPartyColl(tripsAndExpenses.trips, "partyId", function (partyDocuments) {
-                retObj.expenses = retObj.trips;
                 retObj.trips=partyDocuments.documents;
+                retObj.expenses =tripsAndExpenses.expenses;
                 /*if (retObj.trips) {
                     retObj.trips = retObj.trips.sort(function (x, y) {
                         return x.date < y.date ? 1 : -1;
