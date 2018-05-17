@@ -159,7 +159,6 @@ Drivers.prototype.getDrivers = function (jwt, params, req, callback) {
         if (!params.driverName) {
             condition = {accountId: jwt.accountId}
         } else {
-            console.log("sdcs",isNaN(parseInt(params.driverName)));
                 if(!isNaN(parseInt(params.driverName))){
                     condition = {
                         $and : [{accountId: jwt.accountId},
