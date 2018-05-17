@@ -214,7 +214,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         },function (error) {
 
         })
-    }
+    };
 
     $scope.loadMore = function () {
         $scope.reportParams.currentElement = $scope.reportParams.currentElement + 10;
@@ -223,7 +223,10 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
             size: $scope.reportParams.currentElement
         }, function (success) {
             if (success.data.status) {
-                $scope.trucks=$scope.trucks.concat(success.data.data);
+                if(success.data.data>0){
+                    $scope.trucks=$scope.trucks.concat(success.data.data);
+
+                }
             } else {
                 $scope.trucks = [];
             }

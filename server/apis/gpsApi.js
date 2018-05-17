@@ -415,7 +415,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
             });
         }else{
             retObj.status=false;
-            retObj.messages.push('No truck found');
+            retObj.messages.push('No records found for that period');
             callback(retObj);
         }
     });
