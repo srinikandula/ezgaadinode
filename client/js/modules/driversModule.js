@@ -221,6 +221,8 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
 app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams) {
     $scope.pagetitle = "Add Driver";
 
+    $scope.mobile = /^\+?\d{10}$/;
+
     $scope.trucks = [];
     $scope.driver = {
         fullName: '',

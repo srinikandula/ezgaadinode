@@ -422,24 +422,29 @@ Party.prototype.findTripsAndPaymentsForParty = function (jwt, partyId,req, callb
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
-            retObj.results = tripsAndPayments.payments;
+            retObj.receipts = tripsAndPayments.payments;
+            retObj.trips = tripsAndPayments.trips;
+
             if (tripsAndPayments.trips) {
-                retObj.results = retObj.results.concat(tripsAndPayments.trips);
-                for (var i = 0; i < retObj.results.length; i++) {
-                    if (retObj.results[i].freightAmount) {
-                        totalFreight = totalFreight + retObj.results[i].freightAmount;
+                for (var i = 0; i < retObj.trips.length; i++) {
+                    if (retObj.trips[i].freightAmount) {
+                        totalFreight = totalFreight + retObj.trips[i].freightAmount;
                     }
-                    if (retObj.results[i].amount) {
-                        totalPaid = totalPaid + retObj.results[i].amount;
+
+                }
+                for (var i = 0; i < retObj.receipts.length; i++) {
+
+                    if (retObj.receipts[i].amount) {
+                        totalPaid = totalPaid + retObj.receipts[i].amount;
                     }
                 }
                 retObj.totalPendingPayments = {totalFreight: totalFreight, totalPaid: totalPaid}
             }
-            if (retObj.results) {
+           /* if (retObj.results) {
                 retObj.results = retObj.results.sort(function (x, y) {
                     return x.date > y.date ? 1 : -1;
                 });
-            }
+            }*/
             analyticsService.create(req,serviceActions.find_trips_and_pymnts_for_parties,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
             callback(retObj);
         }
@@ -492,12 +497,13 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
                 }
             }
             Utils.populateNameInPartyColl(tripsAndExpenses.trips, "partyId", function (partyDocuments) {
-                retObj.trips = retObj.trips.concat(partyDocuments.documents);
-                if (retObj.trips) {
+                retObj.expenses = retObj.trips;
+                retObj.trips=partyDocuments.documents;
+                /*if (retObj.trips) {
                     retObj.trips = retObj.trips.sort(function (x, y) {
                         return x.date < y.date ? 1 : -1;
                     });
-                }
+                }*/
                 retObj.totalRevenue = {totalFreight: totalFreight, totalExpenses: totalExpenses};
                 analyticsService.create(req,serviceActions.find_trips_and_pymnts_for_veh,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
                 callback(retObj);
