@@ -207,6 +207,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                     if (data) {
                                         return data;
                                     } else {
+                                        console.log(row)
                                         return '--';
                                     }
 

@@ -500,12 +500,13 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         status: false,
         messages: []
     };
-    if (!_.isNumber(tripDetails.tonnage)) {
+    if (!_.isNumber(parseInt(tripDetails.tonnage))) {
         tripDetails.tonnage = 0;
     }
-    if (!_.isNumber(tripDetails.rate)) {
+    if (!_.isNumber(parseInt(tripDetails.rate))) {
         tripDetails.rate = 0;
     }
+    console.log("trips",tripDetails);
 
     var giveAccess = false;
     if (jwt.type === "account" && tripDetails.accountId === jwt.accountId) {
