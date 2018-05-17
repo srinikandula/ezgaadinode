@@ -159,12 +159,22 @@ Drivers.prototype.getDrivers = function (jwt, params, req, callback) {
         if (!params.driverName) {
             condition = {accountId: jwt.accountId}
         } else {
-            condition = {
-                $and : [{accountId: jwt.accountId},
-                    {$or:[{fullName: new RegExp("^" + params.driverName, "i")},
-                            {driverId: new RegExp("^" + params.driverName, "i")},
-                        {mobile:params.driverName}]}]
-            }
+            console.log("sdcs",isNaN(parseInt(params.driverName)));
+                if(!isNaN(parseInt(params.driverName))){
+                    condition = {
+                        $and : [{accountId: jwt.accountId},
+                            {mobile:parseInt(params.driverName)}]
+                    }
+
+                }else{
+                    condition = {
+                        $and : [{accountId: jwt.accountId},
+                            {$or:[{fullName: new RegExp("^" + params.driverName, "i")},
+                                {driverId: new RegExp("^" + params.driverName, "i")}
+                            ]}]
+                    }
+                }
+
         }
 
         async.parallel({
@@ -194,6 +204,7 @@ Drivers.prototype.getDrivers = function (jwt, params, req, callback) {
             }
         }, function (err, results) {
             if (err) {
+                console.log(err);
                 retObj.messages.push('Error retrieving accounts');
                 analyticsService.create(req, serviceActions.get_drivers_err, {
                     body: JSON.stringify(req.query),
