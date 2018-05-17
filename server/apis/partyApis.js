@@ -500,7 +500,6 @@ Party.prototype.findTripsAndPaymentsForVehicle = function (jwt, vehicleId,req, c
             Utils.populateNameInPartyColl(tripsAndExpenses.trips, "partyId", function (partyDocuments) {
                 retObj.trips=partyDocuments.documents;
                 retObj.expenses =tripsAndExpenses.expenses;
-                console.log("asd",tripsAndExpenses.expenses);
                 /*if (retObj.trips) {
                     retObj.trips = retObj.trips.sort(function (x, y) {
                         return x.date < y.date ? 1 : -1;
