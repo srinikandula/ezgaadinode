@@ -947,23 +947,20 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                 if (success.data.status) {
                     $scope.amountPaid = success.data.totalPendingPayments;
                     $scope.table = $('#receiptsByParty').DataTable({
-                        dom: 'Bfrtip',
-                        buttons: [
-                            'excelHtml5'
-                        ],
                         destroy: true,
                         responsive: true,
                         aLengthMenu: [[10, 50, 75, -1], [10, 50, 75, "All"]],
                         iDisplayLength: 10,
-
+                        sDom: 'tp',
                         order: [[0, 'des']],
                         columnDefs: [{
+
                             orderable: true,
+
                             responsivePriority: 1
                         }],
 
                         data: success.data.receipts,
-
                         columns: [
                             {
                                 "title": "Date",
