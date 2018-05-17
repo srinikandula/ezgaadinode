@@ -1712,6 +1712,12 @@ table.dataTable thead td, table.dataTable thead th{
 .top-block ul li.last {
     margin: 0 !important;
 }
+.top-block .nav-tabs{
+    border: none !important;
+}
+.top-block ul .active{
+    background-color: transparent !important;
+}
 
 .top-block ul li a {
     display: inline-block;
@@ -3080,9 +3086,16 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 }
 .addingMaster{
     position: absolute;
-    top: -10px;
-    right: -20px;
-    font-size: 20px
+    top: 7px;
+    font-size: 20px;
+    right: 80px;
+}
+.addingMasterDel{
+    position: absolute;
+    top: 10px;
+    right: -5px;
+    font-size: 20px;
+    color: red;
 }
 .trip-select-box{
     width: 68% !important;
@@ -3206,7 +3219,8 @@ a:hover, a:focus{
     font-size: 18px;
     font-family: Gotham-Medium;
     color: #838993;
-    padding: 15px 0px;
+    padding: 10px 0px;
+    position: relative;
 }
 .addingData{
     display: inline;
@@ -3239,4 +3253,40 @@ a:hover, a:focus{
 .allParties{
     padding-left: 0px !important;
     font-weight: bold !important;
+}
+.has-error .form-control{
+    border-color: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+/*.erp-tabs{
+    padding: 20px;
+}
+.erp-tabs ul li a{
+    background: #fff;
+    border-radius: 20px;
+    padding: 10px 20px;
+}
+
+.erp-tabs .tab-content{
+    background-color: #fff;
+    color: #000 !important;
+    border-radius: 5px;
+}*/
+
+.tabs-erp .active{
+    background-color: transparent !important;
+}
+.tabs-erp .nav-tabs>li>a:hover{
+    border-radius: 20px !important;
+}
+.tabs-erp .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover{
+    background-color: #000 !important;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+}
+ .nav-tabs{
+border-bottom: none;
 }

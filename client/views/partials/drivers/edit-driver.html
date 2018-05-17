@@ -1,7 +1,7 @@
 <div class="main-right col-xs-12" ng-controller="AddEditDriverCtrl">
     <div class="col-xs-12 account-edit">
         <h2 class="title-name">{{pageTitle}}</h2>
-        <form ng-submit="addOrUpdateAccount()">
+        <form ng-submit="addOrUpdateAccount()" name="driverForm">
             <div class="col-xs-6 col-xs-12 mt-10">
 
                 <div class="form-group col-xs-12">
@@ -9,16 +9,16 @@
                         <input ng-model="driver.fullName" type="text" class="form-control custom-form-control"
                                id="fullName">
                         <label class="focus-effect-for-input" aria-hidden="true">Full Name*</label>
-
                     </div>
                 </div>
 
-                <div class="form-group col-xs-12">
+                <div class="form-group col-xs-12"
+                     ng-class="{ 'has-error' : (driverForm.mobile.$invalid || driverForm.mobile.$pristine)}">
                     <div class="styling-input-list">
-                        <input ng-model="driver.mobile" type="number" class="form-control custom-form-control"
-                               id="mobile">
+                        <input ng-model="driver.mobile" type="text" class="form-control custom-form-control"
+                               id="mobile" name="mobile"  ng-pattern="mobile">
                         <label class="focus-effect-for-input" aria-hidden="true">Contact Number</label>
-
+                            <p ng-show="driverForm.mobile.$error.pattern" style="color: red;margin: 0 0 -10px;">Phone number is invalid.</p>
                     </div>
                 </div>
 

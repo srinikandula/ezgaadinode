@@ -1,4 +1,4 @@
-app.factory('GpsSettingsService',['$http', function ($http) {
+app.factory('GpsSettingsService', ['$http', function ($http) {
     return {
         addSecret: function (object, success, error) {
             $http({
@@ -19,31 +19,31 @@ app.factory('GpsSettingsService',['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        updateGpsSettings:function (body,success,error) {
+        updateGpsSettings: function (body, success, error) {
             $http({
                 url: '/v1/gps/updateGpsSettings',
                 method: "POST",
-                data:body
+                data: body
             }).then(success, error)
         },
-        getAccountRoutes:function (success,error) {
+        getAccountRoutes: function (success, error) {
             $http({
-                url:'/v1/admin/getAccountRoutes',
-                method:"GET"
+                url: '/v1/admin/getAccountRoutes',
+                method: "GET"
             }).then(success, error)
         },
-        updateAccountRoutes:function (params,success,error) {
+        updateAccountRoutes: function (params, success, error) {
             $http({
-                url:'/v1/admin/updateAccountRoutes',
-                method:"POST",
-                data:params
+                url: '/v1/admin/updateAccountRoutes',
+                method: "POST",
+                data: params
             }).then(success, error)
         },
-        deleteOperatingRoutes:function (params,success,error) {
+        deleteOperatingRoutes: function (params, success, error) {
             $http({
-                url:'/v1/admin/deleteOperatingRoutes',
-                method:"DELETE",
-                params:{_id:params}
+                url: '/v1/admin/deleteOperatingRoutes',
+                method: "DELETE",
+                params: {_id: params}
             }).then(success, error)
         }
 
@@ -53,13 +53,12 @@ app.factory('GpsSettingsService',['$http', function ($http) {
 app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification', '$state', function ($scope, GpsSettingsService, Notification, $state) {
     $scope.secretkey = '';
 
-
     $scope.addSecret = function () {
-        if(!$scope.secretkey) {
+        if (!$scope.secretkey) {
             $scope.secretkeyerror = 'Please enter a secret key'
         } else {
-            GpsSettingsService.addSecret({secret:$scope.secretkey, email: $scope.email}, function (success) {
-                if(success.data.status) {
+            GpsSettingsService.addSecret({secret: $scope.secretkey, email: $scope.email}, function (success) {
+                if (success.data.status) {
                     Notification.success(success.data.messages[0]);
                     $state.go('secretKeys')
                 } else {
@@ -70,7 +69,7 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
     };
     $scope.getAllSecrets = function () {
         GpsSettingsService.getAllSecrets(function (success) {
-            if(success.data.status) {
+            if (success.data.status) {
                 $scope.secretKeys = success.data.secretKeys;
             }
         });
@@ -79,54 +78,55 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
 
     function getGpsSettings() {
         GpsSettingsService.getGpsSettings(function (success) {
-            if(success.data.status){
+            if (success.data.status) {
 
-                $scope.gpsSettingsParams=success.data.results;
-            }else{
+                $scope.gpsSettingsParams = success.data.results;
+            } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message:message});
+                    Notification.error({message: message});
                 });
             }
-        },function (error) {
+        }, function (error) {
 
         })
     }
 
     getGpsSettings();
 
-
-    $scope.updateGpsSettings =function () {
-        GpsSettingsService.updateGpsSettings($scope.gpsSettingsParams,function (success) {
-            if(success.data.status){
+    $scope.updateGpsSettings = function () {
+        GpsSettingsService.updateGpsSettings($scope.gpsSettingsParams, function (success) {
+            if (success.data.status) {
                 success.data.messages.forEach(function (message) {
-                    Notification.success({message:message});
+                    Notification.success({message: message});
                 });
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message:message});
+                    Notification.error({message: message});
                 });
             }
-        },function (error) {
+        }, function (error) {
 
         })
     };
+
     function getAccountRoutes() {
         GpsSettingsService.getAccountRoutes(function (success) {
-            if(success.data.status){
-                if(success.data.data.length>0){
-                    $scope.operatingRoutesList=success.data.data;
-                }else{
-                    $scope.operatingRoutesList=[{}];
+            if (success.data.status) {
+                if (success.data.data.length > 0) {
+                    $scope.operatingRoutesList = success.data.data;
+                } else {
+                    $scope.operatingRoutesList = [{}];
                 }
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message:message});
+                    Notification.error({message: message});
                 });
             }
-        },function (error) {
+        }, function (error) {
 
         })
     }
+
     getAccountRoutes();
     $scope.addSearchSource = function (index) {
         var input = document.getElementById('searchSource' + index);
@@ -164,7 +164,7 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
         }
     };
     $scope.deleteOperatingRoute = function (index) {
-        if( $scope.operatingRoutesList[index]._id){
+        if ($scope.operatingRoutesList[index]._id) {
 
             swal({
                 title: 'Are you sure?',
@@ -194,28 +194,28 @@ app.controller('GpsSettingsCrtl', ['$scope', 'GpsSettingsService', 'Notification
                     });
                 }
             });
-        }else{
+        } else {
             $scope.operatingRoutesList.splice(index, 1)
 
         }
     };
 
-    $scope.updateOperatingRoutes=function () {
-        GpsSettingsService.updateAccountRoutes($scope.operatingRoutesList,function (success) {
+    $scope.updateOperatingRoutes = function () {
+        GpsSettingsService.updateAccountRoutes($scope.operatingRoutesList, function (success) {
             if (success.data.status) {
                 /*success.data.messages.forEach(function (message) {
                     Notification.success(message);
                 })*/
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
                 })
             }
-        },function (error) {
+        }, function (error) {
 
         })
     }
-    $scope.updateGpsOperatingRouteSettings=function () {
+    $scope.updateGpsOperatingRouteSettings = function () {
         $scope.updateGpsSettings();
         $scope.updateOperatingRoutes();
     };
