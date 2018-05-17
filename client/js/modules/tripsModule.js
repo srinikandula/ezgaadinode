@@ -522,10 +522,10 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 getParties();
                 getDriverIds();
                 $scope.calculateReceivleAmount();
-                for (var i = 0; i < $scope.trip.expense.length > 0; i++) {
+                for (var i = 0; i < $scope.trip.expense.length ; i++) {
                     $scope.trip.expense[i].type = $scope.trip.expense[i].type._id;
                 }
-                for (var i = 0; i < $scope.trip.truckOwnerCharges.length > 0; i++) {
+                for (var i = 0; i < $scope.trip.truckOwnerCharges.length ; i++) {
                     $scope.trip.truckOwnerCharges[i].type = $scope.trip.truckOwnerCharges[i].type._id;
                 }
                 if($scope.trip.truckOwnerCharges.length==0){
