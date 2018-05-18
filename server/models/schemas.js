@@ -175,9 +175,9 @@ var tripSchema = new mongoose.Schema({
     date: Date,
     registrationNo: String, //this will be truck id
     partyId: {type: ObjectId, ref: 'parties'},
-    freightAmount: Number, //5000
-    tonnage: Number, //new
-    rate: Number, //new
+    freightAmount: {type:Number,default:0}, //5000
+    tonnage: {type:Number,default:0}, //new
+    rate: {type:Number,default:0}, //new
     tripId: String,
     remarks: String, //new
     tripLane: String,
@@ -190,29 +190,29 @@ var tripSchema = new mongoose.Schema({
     paymentHistory: [],
     attrs: {},
     share: {type: Boolean, default: false},
-    commission:Number,
+    commission:{type:Number,default:0},
     source:String,
     sourceAddress:String,
     destination:String,
     destinationAddress:String,
-    deductAmount:Number,
+    deductAmount:{type:Number,default:0},
     expense:[{
         type:{type: ObjectId, ref: 'expenseMaster'},
-        amount:Number
+        amount:{type:Number,default:0},
     }],
     truckOwnerCharges:[{
         type:{type: ObjectId, ref: 'expenseMaster'},
-        amount:Number
+        amount:{type:Number,default:0},
     }],
     attachments:[{
         fileName:String,
         key:String,
         path:String
     }],
-    advanceAmount:Number,
-    totalExpense:Number,
-    totalTruckOwnerCharges:Number,
-    totalAmount:Number,
+    advanceAmount:{type:Number,default:0},
+    totalExpense:{type:Number,default:0},
+    totalTruckOwnerCharges:{type:Number,default:0},
+    totalAmount:{type:Number,default:0},
     truckType:String
 }, {timestamps: true});
 
