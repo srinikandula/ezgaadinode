@@ -256,6 +256,12 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
     if (!_.isNumber(parseInt(tripDetails.rate))) {
         tripDetails.rate = 0;
     }
+    if(isNaN(parseInt(tripDetails.advanceAmount)))tripDetails.advanceAmount=0;
+    if(isNaN(parseInt(tripDetails.totalAmount)))tripDetails.totalAmount=0;
+    if(isNaN(parseInt(tripDetails.receivableAmount)))tripDetails.receivableAmount=0;
+    if(isNaN(parseInt(tripDetails.freightAmount)))tripDetails.freightAmount=0
+
+    Utils.removeEmptyFields(tripDetails);
     /* if (!tripDetails.driverId) {
          retObj.messages.push("Please select a driver");
      }*/
@@ -506,7 +512,12 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
     if (!_.isNumber(parseInt(tripDetails.rate))) {
         tripDetails.rate = 0;
     }
+    if(isNaN(parseInt(tripDetails.advanceAmount)))tripDetails.advanceAmount=0;
+    if(isNaN(parseInt(tripDetails.totalAmount)))tripDetails.totalAmount=0;
+    if(isNaN(parseInt(tripDetails.receivableAmount)))tripDetails.receivableAmount=0;
+    if(isNaN(parseInt(tripDetails.freightAmount)))tripDetails.freightAmount=0
 
+    Utils.removeEmptyFields(tripDetails);
     var giveAccess = false;
     if (jwt.type === "account" && tripDetails.accountId === jwt.accountId) {
         giveAccess = true;
