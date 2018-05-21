@@ -324,11 +324,11 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         if (!params.partyType) {
             params.error.push('Please select Party Type');
         }
-      /*  if (params.partyType === 'Transporter') {
+        if (params.partyType === 'Load Owner') {
             if (!params.isSms && !params.isEmail) {
                 params.error.push('Please select Notification Type');
             }
-            for (var i = 0; i < params.tripLanes.length; i++) {
+            /*for (var i = 0; i < params.tripLanes.length; i++) {
                 if (!params.tripLanes[i].name) {
                     params.error.push('Please provide TripLane Name');
                 }
@@ -340,8 +340,8 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 if (!params.tripLanes[i].to) {
                     params.error.push('Please provide Destination Name');
                 }
-            }
-        }*/
+            }*/
+        }
 
         if (!params.error.length) {
             if (params._id) {
