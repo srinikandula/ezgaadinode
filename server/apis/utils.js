@@ -693,7 +693,7 @@ Utils.prototype.assignTruckTypeToAccount = function (body) {
     var retObj = {
         status: false,
         messages: []
-    }
+    };
     AccountsColl.findOne({_id: body.accountId, truckTypes: body.truckType}, function (err, doc) {
         if (err) {
             console.log("Please try again");
