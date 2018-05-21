@@ -31,7 +31,7 @@ AuthRouter.delete('/deleteLoadRequest/:id',function(req,res){
     });
 });
 AuthRouter.get('/shareDetails/:id', function (req, res) {
-    loadRequestAPI.shareLoadRequest(req.params.id,req.query.parties, function (result) {
+    loadRequestAPI.shareLoadRequest(req.params.id,req.query, function (result) {
         res.send(result);
     })
 });

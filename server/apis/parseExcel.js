@@ -40,7 +40,7 @@ var workbook = XLSX.readFile('all tip top.xlsx');
 
     for(var i=0;i<data.length;i++){
       var party ={};
-      party.nameOfTransporter = data[i]["NAME OF TRANSPORTER"];
+      party.name = data[i]["NAME OF TRANSPORTER"];
       party.address = data[i]["ADDRESS"];
       party.contactPerson = data[i]["CONTACT PERSON"];
       party.contactNo = data[i]["CONTACT NO"];
@@ -83,7 +83,8 @@ var workbook = XLSX.readFile('all tip top.xlsx');
         }
     }
         party.contact = contact;
-        party.nameOfTransporter = party.nameOfTransporter;
+        party.accountId = '5ad5cf744717256ff02b1d41';
+        party.name = party.nameOfTransporter;
         party.address =  party.address;
         party.contactPerson = party.contactPerson;
         party.alternateContact = alternateContact;

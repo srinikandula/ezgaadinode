@@ -1,6 +1,42 @@
 <div class="main-right col-xs-12" ng-controller="loadRequestCtrl" ng-init="getAllParties()">
     <h2 class="title-name ">Share Load Request</h2>
     <div class="col-xs-12">
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" name="sourceAddress" ng-model="loadRequest.source.sourceAddress" readonly/>
+                    <label class="focus-effect-for-input">Source</label>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" name="destinationAddress" ng-model="loadRequest.destination.destinationAddress" readonly/>
+                    <label class="focus-effect-for-input">Destination</label>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" name="Tonnes" ng-model="loadRequest.truckType" readonly/>
+                    <label class="focus-effect-for-input">Tonnage</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" name="Expected Loading Date" ng-model="dateAvailable"/>
+                    <label class="focus-effect-for-input">Expected Loading Date</label>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" name="Expected Unloading Date" ng-model="expectedDateReturn"/>
+                    <label class="focus-effect-for-input">Expected Unloading Date</label>
+                </div>
+            </div>
+        </div>
+
+
         <div class="form-group col-xs-12">
             <div class="leftLabel">
                 <label>Enter Message Here* </label>
@@ -8,7 +44,7 @@
             <div class="styling-input-list rightLabel">
                 <!-- <input type="text" class="form-control cust" ng-model="shareDetails.load"/>-->
                 <textarea class="form-control"
-                          ng-model="shareDetails.load"></textarea>
+                          ng-model="shareDetails"></textarea>
             </div>
         </div>
         <div class="form-group col-xs-12">

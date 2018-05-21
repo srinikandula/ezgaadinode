@@ -29,6 +29,9 @@
                 <td data-title="'Expected Loading Date'" sortable="'dateAvailable'" class="clickable-item">
                     {{x.dateAvailable | date:'dd-MM-yyyy'}}
                 </td>
+                <td data-title="'Expected unLoading Date'" sortable="'expectedDateReturn'" class="clickable-item">
+                    {{x.expectedDateReturn | date:'dd-MM-yyyy'}}
+                </td>
                 <td data-title="'Action'" class="col-sm-2">
                     <a href="#" class="btn" ng-click="goToEditPage(x._id)">
                         <span class="glyphicon glyphicon-pencil"></span></a>

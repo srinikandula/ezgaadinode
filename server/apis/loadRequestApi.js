@@ -20,7 +20,7 @@ function addTripDetailsToNotification(data, callback) {
             callback(retObj);
         } else {
             retObj.status = true;
-            retObj.messages.push("LoadRequest Added Successfully");
+            retObj.messages.push(notiData.message);
             callback(retObj);
         }
     });
@@ -114,7 +114,7 @@ Loads.prototype.updateLoadRequest = function(info,req,callback){
             retObj.messages.push("error while updating..."+ JSON.stringify(err));
             callback(retObj);
         }else{
-            retObj.status=false;
+            retObj.status=true;
             retObj.messages.push("successfully updated...");
             retObj.data=result;
             callback(retObj);
@@ -140,10 +140,12 @@ Loads.prototype.deleteLoadRequest = function(id,callback){
         }
     });
 };
-Loads.prototype.shareLoadRequest = function (id,parties, callback) {
-    for(var i=0;i<parties.length;i++) {
-      var party =  JSON.parse(parties[i]);
-        if (party.ischecked === true) {
+Loads.prototype.shareLoadRequest = function (id,query, callback) {
+    var retObj = {};
+    var parties = query.parties;
+    async.each(parties,function(party,asyncCallback){
+        party = JSON.parse(party);// converts string to object
+        if (party.isChecked === true) {
             var notificationParams = {
                 // accountId: party._id,
                 notificationType: 0,
@@ -156,45 +158,42 @@ Loads.prototype.shareLoadRequest = function (id,parties, callback) {
             };
             var smsParams = {
                 contact: party.contact,
-                message: "Hi " + party.name + ",\n"
+                message: "Hi " + party.name + ",\n" + query.content
+
             };
             SmsService.sendSMS(smsParams, function (smsResponse) {
                 if(smsResponse.status){
                     if(party.email){
-                        var output=[];
-                        output.push({
-                            partyName:party.name,
-                            contact:party.contact
-                        });
                         var emailparams = {
                             templateName: 'LoadRequestDetails',
-                            subject: "load request Details",
+                            subject: "Request for load",
                             to: party.email,
-                            data:output
+                            data:"Hi"+" "+party.name+",\n"+query.content
                         };
                         emailService.sendEmail(emailparams, function (emailResponse) {
-                                if (emailResponse.status) {
-                                    notificationParams.notificationType = 2;
-                                    notificationParams.status = true;
-                                    notificationParams.message = "success";
-                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                        callback(notificationResponse);
-                                    })
-                                } else {
-                                    notificationParams.notificationType = 2;
-                                    notificationParams.status = false;
-                                    notificationParams.message = "SMS sent,but email failed";
-                                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                                        callback(notificationResponse);
-                                    })
-                                }
+                            if (emailResponse.status) {
+                                notificationParams.notificationType = 2;
+                                notificationParams.status = true;
+                                notificationParams.message = " Load request Shared succesfully";
+                                addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                    asyncCallback(notificationResponse);
+
+                                })
+                            } else {
+                                notificationParams.notificationType = 2;
+                                notificationParams.status = false;
+                                notificationParams.message = "SMS sent,but email failed";
+                                addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                                    asyncCallback(notificationResponse);
+                                })
+                            }
                         });
                     }else{
                         notificationParams.notificationType = 0;
                         notificationParams.status = true;
-                        notificationParams.message = "success";
+                        notificationParams.message = "Load request Shared succesfully";
                         addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                            callback(notificationResponse);
+                            asyncCallback(notificationResponse);
                         })
                     }
                 }else{
@@ -202,18 +201,27 @@ Loads.prototype.shareLoadRequest = function (id,parties, callback) {
                     notificationParams.status = false;
                     notificationParams.message = "SMS failed";
                     addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        callback(notificationResponse);
+                        asyncCallback(notificationResponse);
                     })
                 }
             });
         }
-    }
+    },function(err){
+        if (err) {
+            callback(err);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Load request shared successfully..");
+            callback(retObj);
+        }
+    });
 };
 Loads.prototype.shareDetailsViaSMS = function(info,callback) {
     var retObj={
         status:false,
         messages:[]
     };
+    info.contact = info.contact.replace(/ /g,',');
     var numbers = info.contact.split(',');
     if(info.text.length>160){
         retObj.status =false;
@@ -224,7 +232,7 @@ Loads.prototype.shareDetailsViaSMS = function(info,callback) {
             function (number, asyncCallback) {
                 var smsParams = {
                     contact: number,
-                    message: info.text + ",\n"
+                    message: info.text
                 };
                 var notificationParams = {
                     notificationType: 0,
