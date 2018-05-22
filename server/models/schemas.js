@@ -220,6 +220,7 @@ var partySchema = new mongoose.Schema({
     name: String,
     contact: Number,
     alternateContact:[],
+    alternateInfo:[],
     contactInfo:String,
     email: String,
     city: String,

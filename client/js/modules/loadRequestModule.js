@@ -36,7 +36,8 @@ app.factory('LoadRequestService',['$http',function($http){
             $http({
                 url: '/v1/loadRequest/shareDetails/'+id,
                 method: "GET",
-                params:{parties:params}
+                // params:{parties:params}
+                params:params
             }).then(successCallback, errorCallback)
         },
         shareViaSMS:function(params,successCallback,errorCallback){
@@ -54,6 +55,31 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
     $scope.loadRequest = {accountId:''};
     $scope.trucksList = [];
     $scope.parties = [];
+    $scope.dateAvailable ;
+    $scope.expectedDateReturn;
+    $scope.shareDetails ='';
+
+    $scope.loadData = function(){
+        LoadRequestService.getLoadRequest($stateParams.Id,function(successCallback){
+            console.log("share get load...",successCallback.data.data);
+            if(successCallback.data.status) {
+                $scope.loadRequest = successCallback.data.data;
+                $scope.loadRequest.truckType = $scope.loadRequest.truckType.title+','+$scope.loadRequest.truckType.tonnes+'tonnes'
+                $scope.loadRequest.dateAvailable = new Date($scope.loadRequest.dateAvailable);
+                var dateAvailable = $scope.loadRequest.dateAvailable.getMonth()+1;
+                $scope.dateAvailable = $scope.loadRequest.dateAvailable.getDate()+"-"+dateAvailable+"-"+$scope.loadRequest.dateAvailable.getFullYear()
+                $scope.loadRequest.expectedDateReturn = new Date($scope.loadRequest.expectedDateReturn);
+                var expectedDateReturn = $scope.loadRequest.expectedDateReturn.getMonth()+1;
+                $scope.expectedDateReturn = $scope.loadRequest.expectedDateReturn.getDate()+"-"+expectedDateReturn+"-"+$scope.loadRequest.expectedDateReturn.getFullYear()
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        },function(errorCallback){
+
+        });
+    };
 
     $scope.getTruckTypes = function(){
         TrucksService.getTruckTypes(function(successCallback){
@@ -78,11 +104,15 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
             }
             },function(errorCallback){
             });
+        $scope.loadData();
     };
     $scope.shareLoadRequest = function(parties){
-        LoadRequestService.shareLoadRequest($stateParams.Id,parties,function(successCallback){
+        var params = {parties:parties,content:$scope.shareDetails};
+        LoadRequestService.shareLoadRequest($stateParams.Id,params,function(successCallback){
             if(successCallback.data.status){
-                Notification.success({message:"shared Successfully"});
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.success({ message: message });
+                });
             }else{
                 successCallback.data.messages.forEach(function (message) {
                     Notification.error({ message: message });
@@ -115,17 +145,17 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
     if($stateParams.ID) {
         $scope.pageTitle = 'Update Load Request';
         LoadRequestService.getLoadRequest($stateParams.ID,function(successCallback){
-            if(successCallback.data.status) {
-                $scope.loadRequest = successCallback.data.data;
-                $scope.loadRequest.dateAvailable = new Date($scope.loadRequest.dateAvailable);
-                $scope.loadRequest.expectedDateReturn = new Date($scope.loadRequest.expectedDateReturn);
-            }else{
-                successCallback.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
-                });
-            }
-            },function(errorCallback){
-            });
+             if(successCallback.data.status) {
+                 $scope.loadRequest = successCallback.data.data;
+                 $scope.loadRequest.dateAvailable = new Date($scope.loadRequest.dateAvailable);
+                 $scope.loadRequest.expectedDateReturn = new Date($scope.loadRequest.expectedDateReturn);
+             }else{
+                 successCallback.data.messages.forEach(function (message) {
+                     Notification.error({ message: message });
+                 });
+             }
+             },function(errorCallback){
+             });
     }
 
     $scope.addOrUpdateLoadRequest = function () {
@@ -212,7 +242,6 @@ app.controller('loadRequestListCtrl',['$scope','LoadRequestService','$state','No
 }]);
 app.controller('smsCtrl',['$scope','LoadRequestService','Notification',function($scope,LoadRequestService,Notification){
     $scope.content = {contact:[],text:''};
-
     $scope.sendSMS = function(){
         var params = $scope.content;
         LoadRequestService.shareViaSMS(params,function(successCallback){
