@@ -1447,12 +1447,7 @@ Devices.prototype.getLatestLocationFromDevice = function (req, callback) {
     var params = req.query;
     DevicesColl.findOne({"_id": params._id}, function (err, document) {
         var device = document._doc;
-        if (device.attrs.latestLocation.address !== '{address}') {
-            retObj.status = true;
-            retObj.data = device;
-            callback(retObj);
-            return;
-        } else {
+        if (device.attrs.latestLocation.address === '{address}' || !device.attrs.latestLocation.address || device.attrs.latestLocation.address.trim().length == 0) {
             resolveAddress({
                 latitude: device.attrs.latestLocation.location.coordinates[0],
                 longitude: device.attrs.latestLocation.location.coordinates[1]
@@ -1474,6 +1469,11 @@ Devices.prototype.getLatestLocationFromDevice = function (req, callback) {
                     return;
                 }
             });
+        } else {
+            retObj.status = true;
+            retObj.data = device;
+            callback(retObj);
+            return;
         }
     });
 }
