@@ -570,7 +570,7 @@ function resolveAddress(position, callback) {
                             callback(retObj);
                         });
                     } else {
-                        retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                        retObj.messages.push("address finding error," + JSON.stringify(errlocation.message));
                         callback(retObj);
                     }
 
