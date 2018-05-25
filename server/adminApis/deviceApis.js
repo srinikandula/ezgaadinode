@@ -427,8 +427,8 @@ function findDevices(req, params, accounts, callback) {
                                     console.log('wrong location');
                                 }
                                 resolveAddress({
-                                    latitude: device.attrs.latestLocation.location.coordinates[0],
-                                    longitude: device.attrs.latestLocation.location.coordinates[1]
+                                    latitude: device.attrs.latestLocation.location.coordinates[1],
+                                    longitude: device.attrs.latestLocation.location.coordinates[0]
                                 }, function (addressResp) {
                                     if (addressResp.status) {
                                         device.latestLocation.address = addressResp.address;
@@ -1455,8 +1455,8 @@ Devices.prototype.getLatestLocationFromDevice = function (req, callback) {
                 console.log('wrong location');
             }
             resolveAddress({
-                latitude: device.attrs.latestLocation.location.coordinates[0],
-                longitude: device.attrs.latestLocation.location.coordinates[1]
+                latitude: device.attrs.latestLocation.location.coordinates[1],
+                longitude: device.attrs.latestLocation.location.coordinates[0]
             }, function (addressResp) {
                 if (addressResp.status) {
                     device.attrs.latestLocation.address = addressResp.address;
