@@ -422,9 +422,10 @@ function findDevices(req, params, accounts, callback) {
                         }
                         if (device.attrs && device.attrs.latestLocation) {
                             device.latestLocation = device.attrs.latestLocation;
-                            if (device.attrs.latestLocation.address !== '{address}') {
-                                deviceCallback(false, "success");
-                            } else {
+                            if (device.attrs.latestLocation.address === '{address}' || !device.attrs.latestLocation.address || device.attrs.latestLocation.address.trim().length == 0 || (device.attrs.latestLocation.address &&device.attrs.latestLocation.address.indexOf('Svalbard') != -1 )) {
+                                if (device.attrs.latestLocation.address  && device.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
+                                    console.log('wrong location');
+                                }
                                 resolveAddress({
                                     latitude: device.attrs.latestLocation.location.coordinates[0],
                                     longitude: device.attrs.latestLocation.location.coordinates[1]
@@ -443,6 +444,8 @@ function findDevices(req, params, accounts, callback) {
                                         deviceCallback(true, "success");
                                     }
                                 });
+                            }else {
+                                deviceCallback(false, "success");
                             }
                         } else {
                             deviceCallback(false, "success");
@@ -1447,7 +1450,10 @@ Devices.prototype.getLatestLocationFromDevice = function (req, callback) {
     var params = req.query;
     DevicesColl.findOne({"_id": params._id}, function (err, document) {
         var device = document._doc;
-        if (device.attrs.latestLocation.address === '{address}' || !device.attrs.latestLocation.address || device.attrs.latestLocation.address.trim().length == 0) {
+        if (device.attrs.latestLocation.address === '{address}' || !device.attrs.latestLocation.address || device.attrs.latestLocation.address.trim().length == 0 || device.attrs.latestLocation.address.indexOf('Svalbard') != -1 ) {
+            if(device.attrs.latestLocation.address.indexOf('Svalbard') != -1){
+                console.log('wrong location');
+            }
             resolveAddress({
                 latitude: device.attrs.latestLocation.location.coordinates[0],
                 longitude: device.attrs.latestLocation.location.coordinates[1]

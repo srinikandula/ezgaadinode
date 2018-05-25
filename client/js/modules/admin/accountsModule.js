@@ -71,9 +71,11 @@ app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','D
                 for(var i=0;i<truckList.length;i++){
                     if(truckList[i].attrs){
                         var latestLocation =truckList[i].attrs.latestLocation;
+                        if(!latestLocation || !latestLocation.location){
+                            continue;
+                        }
                         var location = latestLocation.location;
                         var latlng = location.coordinates;
-                        console.log("address......",latestLocation);
                         if(latestLocation.isStopped || latestLocation.isIdle ){
                             icon.url = '/images/red_marker.svg';
                         }else{
