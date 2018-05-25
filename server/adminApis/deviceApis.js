@@ -548,19 +548,18 @@ function resolveAddress(position, callback) {
     var fulldate = new Date();
     var today = fulldate.getDate() + '/' + (fulldate.getMonth() + 1) + '/' + fulldate.getFullYear();
 
-    SecretKeyCounterColl.findOne({date: today}).populate('secretId', {secret: 1}).sort({createdAt:-1}).exec(function (errsecret, secret) {
+    SecretKeyCounterColl.findOne({date: today,counter:{$lt:config.googleSecretKeyLimit}}).exec(function (errsecret, counterEntry) {
         if (errsecret) {
             retObj.messages.push("address finding error," + JSON.stringify(err.message));
             callback(retObj);
-        } else if (secret) {/*if key is available search address*/
-            if (secret.counter < config.googleSecretKeyLimit) {/*if key count < config key limit*/
-                options.apiKey = secret.secretId.secret;
+        } else if (counterEntry) {/*if key is available search address*/
+                options.apiKey = counterEntry.secret;
                 var geocoder = nodeGeocoder(options);
                 geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                     if (location) {
                         retObj.status = true;
                         retObj.address = location[0]['formattedAddress'];
-                        SecretKeyCounterColl.findOneAndUpdate({_id: secret._id}, {$inc: {counter: 1}}, function (incerr, increased) {
+                        SecretKeyCounterColl.findOneAndUpdate({_id: counterEntry._id}, {$inc: {counter: 1}}, function (incerr, increased) {
                             if (incerr) {
                                 retObj.messages.push('Error incrementing secret');
                             } else {
@@ -569,79 +568,40 @@ function resolveAddress(position, callback) {
                             }
                             callback(retObj);
                         });
-                    } else if(errlocation){
-                        retObj.messages.push("address finding error," + JSON.stringify(errlocation.message));
+                    } else {
+                        retObj.status = true;
+                        //retObj.messages.push("address finding error," + JSON.stringify(errlocation.message));
                         callback(retObj);
                     }
-
                 });
-            } else {/*if key count is grater then config count assign new key*/
-                SecretKeyCounterColl.find(
-                    {
-                        date: today
-                        }, function(err,SecretDocs){
-                            if(err){
-                                retObj.messages.push("address finding error," + JSON.stringify(err.message));
-                                callback(retObj);
-                            }else{
-                                var ids=_.pluck(SecretDocs,'secretId');
-                                SecretKeysColl.findOne({_id:{$nin:ids}}, function (err, secDoc) {
-                                    if (err) {
-                                        retObj.messages.push("address finding error," + JSON.stringify(err.message));
-                                        callback(retObj);
-                                    } else if(secDoc) {
-                                        var secretKeyCount = new SecretKeyCounterColl({
-                                            date: today,
-                                            secretId: secDoc._id,
-                                            counter: 0
-                                        });
-                                        secretKeyCount.save(function (saveSecKeyErr, saveSecDoc) {
-                                            if (err) {
-                                                retObj.messages.push("address finding error," + JSON.stringify(err.message));
-                                                callback(retObj);
-                                            } else {
-                                                resolveAddress(position, callback);
-                                            }
-                                        })
-                                    }else{/*if all keys completed */
-                                        console.log("no more keys")
-                                        retObj.messages.push("No more secret keys");
-                                        callback(retObj);
-                                    }
-                                })
-                            }
-                    });
-            }
-
-
-        } else {/*assign new key for day*/
-            SecretKeysColl.findOne({}, function (err, secDoc) {
-                if (err) {
-                    retObj.messages.push("address finding error," + JSON.stringify(err.message));
-                    callback(retObj);
-                } else if(secDoc){
-                    var secretKeyCount = new SecretKeyCounterColl({
-                        date: today,
-                        secretId: secDoc._id,
-                        counter: 0
-                    });
-                    secretKeyCount.save(function (saveSecKeyErr, saveSecDoc) {
+            }  else {/*assign new key for day*/
+                SecretKeyCounterColl.find({date: today}, {'secret': 1}, function (error, keys) {
+                    SecretKeysColl.findOne({"secret":{$nin: [ keys ]}}, function (err, secDoc) {
                         if (err) {
                             retObj.messages.push("address finding error," + JSON.stringify(err.message));
                             callback(retObj);
-                        } else {
-                            resolveAddress(position, callback);
+                        } else if(secDoc){
+                            var secretKeyCount = new SecretKeyCounterColl({
+                                date: today,
+                                secret: secDoc.secret,
+                                counter: 0
+                            });
+                            secretKeyCount.save(function (saveSecKeyErr, saveSecDoc) {
+                                if (err) {
+                                    retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                                    callback(retObj);
+                                } else {
+                                    resolveAddress(position, callback);
+                                }
+                            })
+                        }else{
+                            retObj.messages.push("No more secret keys");
+                            callback(retObj);
                         }
-                    })
-                }else{
-                    retObj.messages.push("No more secret keys");
-                    callback(retObj);
-                }
-            })
-        }
+                    });
+                });
+            }
     });
-
-
 }
 
 function updateAddressToDevice(params) {

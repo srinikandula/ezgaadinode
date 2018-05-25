@@ -469,7 +469,7 @@ var secretKeys = new mongoose.Schema({
 
 var secretKeysCounter = new mongoose.Schema({
     date: String,
-    secretId: {type: ObjectId, ref: 'secretKeys'},
+    secret: String,
     counter: Number
 }, {timestamps: true, versionKey: false});
 
