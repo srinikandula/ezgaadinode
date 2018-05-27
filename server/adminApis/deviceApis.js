@@ -432,7 +432,7 @@ function findDevices(req, params, accounts, callback) {
                                     longitude: device.attrs.latestLocation.location.coordinates[0]
                                 }, function (addressResp) {
                                     if (addressResp.status) {
-                                        console.log('resolved address... '+ addressResp.address);
+                                        console.log('resolved address... '+ JSON.stringify(addressResp));
                                         device.latestLocation.address = addressResp.address;
                                         //device.attrs.latestLocation.address=addressResp.address;
                                         updateAddressToDevice({
@@ -562,6 +562,7 @@ function resolveAddress(position, callback) {
                 var geocoder = nodeGeocoder(options);
                 geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                     if (location) {
+                        console.log('google response '+ JSON.stringify(location));
                         retObj.status = true;
                         retObj.address = location[0]['formattedAddress'];
                         SecretKeyCounterColl.findOneAndUpdate({_id: counterEntry._id}, {$inc: {counter: 1}}, function (incerr, increased) {
