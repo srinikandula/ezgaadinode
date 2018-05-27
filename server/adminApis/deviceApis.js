@@ -426,13 +426,11 @@ function findDevices(req, params, accounts, callback) {
                                 if (device.attrs.latestLocation.address  && device.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
                                     console.log('wrong location');
                                 }
-                                console.log('resolving address... latitude:'+  device.attrs.latestLocation.location.coordinates[1] + '   longitude: '+ device.attrs.latestLocation.location.coordinates[0]);
                                 resolveAddress({
                                     latitude: device.attrs.latestLocation.location.coordinates[1],
                                     longitude: device.attrs.latestLocation.location.coordinates[0]
                                 }, function (addressResp) {
                                     if (addressResp.status) {
-                                        console.log('resolved address... '+ JSON.stringify(addressResp));
                                         device.latestLocation.address = addressResp.address;
                                         //device.attrs.latestLocation.address=addressResp.address;
                                         updateAddressToDevice({
