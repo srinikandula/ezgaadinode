@@ -561,6 +561,9 @@ function resolveAddress(position, callback) {
                 options.apiKey = counterEntry.secret;
                 var geocoder = nodeGeocoder(options);
                 geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
+                    if(errlocation) {
+                        console.error("error resolving address from lat: " + position.latitude  +"  lon: "+position.longitude);
+                    }
                     if (location) {
                         console.log('google response '+ JSON.stringify(location));
                         retObj.status = true;
