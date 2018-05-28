@@ -120,12 +120,20 @@ var job = cronjob.schedule('* */10 * * * *', function() {      //runs every hour
 });
 job.start();
 
+/*
 var task = cronjob.schedule('0 0 5 * * *', function() {
     gps.emailDayGPSReport({},function (result) {
         console.log("emailDayGPSReport..",result);
     });
 });
 task.start();
+*/
+
+OpenRouter.get('/emailDayGPSreport',function (req,res) {
+    gps.emailDayGPSReport({},function (result) {
+        console.log("emailDayGPSReport..",result);
+    });
+});
 
 
 var identifyNotWorkingDevices = cronjob.schedule('* * * 1 * *', function() {
