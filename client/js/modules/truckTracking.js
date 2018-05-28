@@ -22,21 +22,35 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         endDate:new Date(),
         showOnlyStops:false
     };
-
+    $scope.mapType='';
     $scope.locations=[];
     $scope.bounds = new google.maps.LatLngBounds();
-    $scope.markers=[]
+    $scope.markers=[];
     var flightPath;
     var map,markerIndex=0;
+    var mapOptions = {
+        zoom: 9,
+        center: new google.maps.LatLng(18.2699, 78.0489),
+        mapTypeId: 'roadmap'
+    };
     $scope.loadData = function () {
-        map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 9,
-            center: new google.maps.LatLng(18.2699, 78.0489),
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        });
+        map = new google.maps.Map(document.getElementById('map'),mapOptions);
     };
 
+    $scope.selectMapType = function(){
+        console.log("selectMapType function...",$scope.mapType);
+        if($scope.mapType == 'satellite'){
+            mapOptions.mapTypeId = $scope.mapType;
+        }else if($scope.mapType == 'terrain'){
+            mapOptions.mapTypeId = $scope.mapType;
+        }else if($scope.mapType == 'hybrid'){
+            mapOptions.mapTypeId = $scope.mapType;
+        }else{
+            mapOptions.mapTypeId = 'roadmap'
+        }
+        map = new google.maps.Map(document.getElementById('map'),mapOptions);
 
+    };
 
     var green_marker_icon={
         url: '/images/green_marker.svg', // url
@@ -129,11 +143,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     function renderPolyline() {
         var flightPathCoordinates=[];
         var marker,map;
-        map = new google.maps.Map(document.getElementById('map'), {
-            zoom: 9,
-            center: new google.maps.LatLng(18.2699, 78.0489),
-            mapTypeId: google.maps.MapTypeId.ROADMAP
-        });
+        map = new google.maps.Map(document.getElementById('map'),mapOptions);
         for (var i = 0; i< $scope.locations.length; i++) {
             var d = new Date($scope.locations[i].fixTime);
             var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();

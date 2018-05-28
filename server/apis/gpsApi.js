@@ -608,7 +608,7 @@ Gps.prototype.emailDayGPSReport = function (req,callback) {
     // endDate.setSeconds(0);
     var gps=new Gps();
 
-    AccountsColl.find({dailyReports:true},function (err,accounts) {
+    AccountsColl.find({dailyReportEnabled:true},function (err,accounts) {
         if(err){
             retObj.messages.push('Error retrieving accounts for sending daily reports');
             callback(retObj);
