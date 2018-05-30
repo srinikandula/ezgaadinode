@@ -37,9 +37,8 @@ var workbook = XLSX.readFile('all tip top.xlsx');
     //drop those first two rows which are empty
     data.shift();
     data.shift();
-
     for(var i=0;i<data.length;i++){
-      var party ={};
+        var party ={};
       party.name = data[i]["NAME OF TRANSPORTER"];
       party.address = data[i]["ADDRESS"];
       party.contactPerson = data[i]["CONTACT PERSON"];
@@ -48,7 +47,8 @@ var workbook = XLSX.readFile('all tip top.xlsx');
     }
 
     async.map(parties,function(party,ayncCallback){
-    var contacts =[];
+
+        var contacts =[];
     if(party.contactNo != undefined){
         party.contactNo = party.contactNo.toString();
         contacts = party.contactNo.split(',');
@@ -56,14 +56,14 @@ var workbook = XLSX.readFile('all tip top.xlsx');
         var contact;
         var alternateContact = [];
         var alternateInfo = [];
+        var contactStatus = 1;
 
         for(var i=0;i<contacts.length;i++){
-        var contactStatus = 1;
+            console.log("contacts...",contacts);
         var temp = contacts[i];
         contacts[i]=contacts[i].replace(/ /g,'');
         if(contacts[i].startsWith(0)){
             alternateInfo.push(contacts[i]);
-
         }else{
             contacts[i] = Number(contacts[i]);
             if(!isNaN(contacts[i])){
@@ -83,8 +83,8 @@ var workbook = XLSX.readFile('all tip top.xlsx');
         }
     }
         party.contact = contact;
-        party.accountId = '5ad5cf744717256ff02b1d41';
-        party.name = party.nameOfTransporter;
+        party.partyType = 'Load Owner';
+        party.accountId='5ad5cf744717256ff02b1d41';
         party.address =  party.address;
         party.contactPerson = party.contactPerson;
         party.alternateContact = alternateContact;

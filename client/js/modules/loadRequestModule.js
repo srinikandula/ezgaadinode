@@ -58,10 +58,10 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
     $scope.dateAvailable ;
     $scope.expectedDateReturn;
     $scope.shareDetails ='';
+    $scope.partiesToShare = [];
 
     $scope.loadData = function(){
         LoadRequestService.getLoadRequest($stateParams.Id,function(successCallback){
-            console.log("share get load...",successCallback.data.data);
             if(successCallback.data.status) {
                 $scope.loadRequest = successCallback.data.data;
                 $scope.loadRequest.truckType = $scope.loadRequest.truckType.title+','+$scope.loadRequest.truckType.tonnes+'tonnes'
@@ -97,6 +97,11 @@ app.controller('loadRequestCtrl', ['$scope','LoadRequestService','$state','$stat
         PartyService.getAllPartiesForFilter(function(successCallback){
             if(successCallback.data.status){
                 $scope.parties = successCallback.data.parties;
+                for(var i =0;i<$scope.parties.length;i++){
+                    if($scope.parties[i].partyType === "Load Owner"){
+                        $scope.partiesToShare.push($scope.parties[i]);
+                    }
+                }
             }else{
                 successCallback.data.messages.forEach(function (message) {
                     Notification.error({ message: message });
