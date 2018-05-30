@@ -71,7 +71,7 @@ var accountSchema = new mongoose.Schema({
     gpsEnabled: {type: Boolean, default: false},
     erpEnabled: {type: Boolean, default: false},
     loadEnabled: {type: Boolean, default: true},
-    dailyReportEnabled: {type: Boolean, default: true},
+    dailyReportEnabled: {type: Boolean, default: false},
     routeConfigEnabled: {type: Boolean, default: false},
     homeLocation:{},
     editAccounts: {type: Boolean, default: false},
