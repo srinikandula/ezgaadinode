@@ -420,7 +420,7 @@ function findDevices(req, params, accounts, callback) {
                             device.expiryTime = planhistory.expiryTime;
                             device.received = planhistory.received;
                         }
-                        if(device.attrs && device.attrs.latestLocation  && device.attrs.latestLocation.location.coordinates) {
+                        if(device.attrs && device.attrs.latestLocation  && device.attrs.latestLocation.location && device.attrs.latestLocation.location.coordinates) {
                             device.latestLocation = device.attrs.latestLocation;
                             if (device.attrs.latestLocation.address === '{address}' || !device.attrs.latestLocation.address || device.attrs.latestLocation.address.trim().length == 0 || (device.attrs.latestLocation.address &&device.attrs.latestLocation.address.indexOf('Svalbard') != -1 )) {
                                 if (device.attrs.latestLocation.address  && device.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
