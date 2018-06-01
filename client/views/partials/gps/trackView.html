@@ -31,15 +31,15 @@
                     <!-- Modal content-->
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" ng-click="selectMapType()">&times;</button>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
                             <h4 class="modal-title">Slect map type</h4>
                         </div>
                         <div class="modal-body">
                             <form>
-                                <input type="radio" name="mapType" value="roadmap" ng-model="mapType"> ROADMAP<br>
-                                <input type="radio" name="mapType" value="satellite" ng-model="mapType"> SATELLITE<br>
-                                <input type="radio" name="mapType" value="terrain" ng-model="mapType"> TERRAIN<br>
-                                <input type="radio" name="mapType" value="hybrid" ng-model="mapType"> HYBRID
+                                <input type="radio" name="mapType" value="ROADMAP" ng-model="mapType" ng-change="selectMapType()"> ROADMAP<br>
+                                <input type="radio" name="mapType" value="SATELLITE" ng-model="mapType" ng-change="selectMapType()"> SATELLITE<br>
+                                <input type="radio" name="mapType" value="TERRAIN" ng-model="mapType" ng-change="selectMapType()"> TERRAIN<br>
+                                <input type="radio" name="mapType" value="HYBRID" ng-model="mapType" ng-change="selectMapType()"> HYBRID
                             </form>
                         </div>
                     </div>
