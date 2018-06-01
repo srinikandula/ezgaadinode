@@ -31,25 +31,25 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     var mapOptions = {
         zoom: 9,
         center: new google.maps.LatLng(18.2699, 78.0489),
-        mapTypeId: 'roadmap'
+        mapTypeId: google.maps.MapTypeId.ROADMAP
     };
+    var infowindow = new google.maps.InfoWindow();
+
     $scope.loadData = function () {
         map = new google.maps.Map(document.getElementById('map'),mapOptions);
     };
 
     $scope.selectMapType = function(){
-        console.log("selectMapType function...",$scope.mapType);
-        if($scope.mapType == 'satellite'){
-            mapOptions.mapTypeId = $scope.mapType;
-        }else if($scope.mapType == 'terrain'){
-            mapOptions.mapTypeId = $scope.mapType;
-        }else if($scope.mapType == 'hybrid'){
-            mapOptions.mapTypeId = $scope.mapType;
+        if($scope.mapType == 'SATELLITE'){
+            mapOptions.mapTypeId = google.maps.MapTypeId.SATELLITE;
+        }else if($scope.mapType == 'TERRAIN'){
+            mapOptions.mapTypeId = google.maps.MapTypeId.TERRAIN;
+        }else if($scope.mapType == 'HYBRID'){
+            mapOptions.mapTypeId = google.maps.MapTypeId.HYBRID;
         }else{
-            mapOptions.mapTypeId = 'roadmap'
+            mapOptions.mapTypeId = google.maps.MapTypeId.ROADMAP;
         }
-        map = new google.maps.Map(document.getElementById('map'),mapOptions);
-
+        $scope.loadData();
     };
 
     var green_marker_icon={
@@ -142,8 +142,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
 
     function renderPolyline() {
         var flightPathCoordinates=[];
-        var marker,map;
-        map = new google.maps.Map(document.getElementById('map'),mapOptions);
+        var marker;
         for (var i = 0; i< $scope.locations.length; i++) {
             var d = new Date($scope.locations[i].fixTime);
             var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
@@ -218,7 +217,6 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         marker = null;
     }
     function click(marker,i,content,compiledContent,map){
-        var infowindow = new google.maps.InfoWindow();
         google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
             return function () {
                 infowindow.setContent(content);
