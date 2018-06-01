@@ -60,7 +60,7 @@
                     </label>
                 </div>
             </div>
-            <div ng-repeat="party in parties">
+            <div ng-repeat="party in partiesToShare">
                 <div class="sms col-xs-4">
                     <div class="checkbox">
                         <label>
@@ -76,7 +76,7 @@
     <div class="col-xs-12">
         <div class="col-xs-4 mtb-25 sub-can">
             <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
-            <button type="submit" class="btn can  last" ng-click="shareLoadRequest(parties)">Share</button>
+            <button type="submit" class="btn can  last" ng-click="shareLoadRequest(partiesToShare)">Share</button>
         </div>
     </div>
 </div>
