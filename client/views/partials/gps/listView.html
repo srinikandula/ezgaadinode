@@ -29,9 +29,8 @@
                             <a href="#"></a>
                             {{truck.attrs.latestLocation.createdAt |date : "dd/MM/y HH:mm" }}
                         </td>
-                        <td data-title="'Vehicle Num'" sortable="'registrationNo'" class="clickable-item col-sm-1">
-                            <a href="#"></a>
-                            {{truck.registrationNo | uppercase}}
+                        <td data-title="'Vehicle Num'" sortable="'registrationNo'" class="clickable-item col-sm-1"  ng-click="trackView(truck.registrationNo)">
+                            <a href="#">{{truck.registrationNo | uppercase}}</a>
                         </td>
                         <td data-title="'Location'" sortable="'address'" class="clickable-item col-sm-2">
                             {{truck.attrs.latestLocation.address}}
