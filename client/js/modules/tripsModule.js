@@ -431,6 +431,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         PartyService.getAllPartiesByTransporter(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
+                console.log("Parties", success.data.parties);
                 var selectedParty = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.trip.partyId;
                 });
@@ -453,6 +454,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         $scope.trip.bookedFor = booked._id;
     };
 
+    getParties();
 
     function getTruckIds() {
         TrucksService.getAllTrucksForFilter(function (success) {
@@ -860,7 +862,7 @@ app.controller('truckDriverPartyCtrl', ['$scope', '$uibModalInstance', 'TripServ
     $scope.party = {
         name: '',
         contact: '',
-        partyType: 'Transporter',
+        partyType: 'Load Owner',
         error: []
     }
 

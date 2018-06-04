@@ -1,4 +1,4 @@
-<div class="main-right col-xs-12" ng-controller="AddEditTripCtrl">
+<div class="main-right col-xs-12" ng-controller="AddEditTripCtrl" ng-init="getParties();">
     <div class="col-xs-12 account-edit">
         <h2 class="title-name">{{pagetitle}}</h2>
         <form class="mt-10" autocomplete="off">
@@ -54,7 +54,8 @@
                                 {{$select.selected.name || partyName}}
                             </ui-select-match>
                             <ui-select-choices repeat="party in parties | propsFilter: {name: $select.search}">
-                                <div ng-bind-html="party.name | highlight: $select.search"></div>
+                                <div ng-bind-html="party.name | highlight: $select.search">
+                                </div>
                             </ui-select-choices>
                         </ui-select>
                         <label class="focus-effect-for-input-trucks">Select Party*</label>
