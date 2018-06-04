@@ -43,12 +43,12 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
         var marker;
 
         for (var i = 0; i< trucksData.length; i++) {
-            console.log("trucks data",trucksData[i]);
             if (Object.keys(trucksData[i]).indexOf('attrs')!==-1) {
-                var image = '/images/';
-                if(trucksData[i].attrs.latestLocation.isStopped || trucksData[i].attrs.latestLocation.isIdle) {
+                if (trucksData[i].attrs.latestLocation.location != undefined) {
+                    var image = '/images/';
+                if (trucksData[i].attrs.latestLocation.isStopped || trucksData[i].attrs.latestLocation.isIdle) {
                     image = image + 'red_marker.svg';
-                }else{
+                } else {
                     image = image + 'green_marker.svg';
                 }
                 var icon = {
@@ -77,6 +77,7 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
                         infowindow.open(map, marker);
                     }
                 })(marker, i, compiledContent[0], $scope));
+            }
             }
         }
     };
