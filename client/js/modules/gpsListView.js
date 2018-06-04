@@ -22,4 +22,7 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
         })
     }
     getAllVehiclesLocation();
+    $scope.trackView = function(truckNo){
+        $state.go('trackView',{truckNo:truckNo});
+    }
 }]);
