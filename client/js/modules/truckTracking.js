@@ -70,37 +70,49 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     }
 
     $scope.renderStops= function () {
+        var marker;
+        var map = new google.maps.Map(document.getElementById('map'),mapOptions);
         if($scope.truckTrackingParams.showOnlyStops) {
+            var flightPathCoordinates=[];
+
             if (flightPath) {
                 flightPath.setMap(null);
                 setMapOnAll(null);
                 $scope.markers = [];
                 markerIndex = 0;
             }
-            var icon = {
-                url: '/images/' + 'red_marker.svg', // url
-                scaledSize: new google.maps.Size(35, 35),
-            };
-            var flightPathCoordinates=[];
             for (var i = 0; i < $scope.locations.length; i++) {
-                flightPathCoordinates.push({lat:$scope.locations[i].location.coordinates[1],lng: $scope.locations[i].location.coordinates[0]})
+                var d = new Date($scope.locations[i].fixTime);
+                var date = d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
+                var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
+                var functionContent = '<div>'+'<span> <b>Address:</b></span>'+$scope.locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+parseInt($scope.locations[i].speed)+'<span><br></span>'+'<span><b>Date:</b></span>'+date+'<span><br></span>'+'<span><b>Time:</b></span>'+time+'</div>';
+                var compiledContent = $compile(functionContent)($scope);
+                var latlang = new google.maps.LatLng($scope.locations[i].location.coordinates[1],$scope.locations[i].location.coordinates[0]);
+                flightPathCoordinates.push(latlang);
                 if ($scope.locations[i].isStopped) {
-                    $scope.locations[markerIndex] = new google.maps.Marker({
-                        position: new google.maps.LatLng($scope.locations[i].location.coordinates[1], $scope.locations[i].location.coordinates[0]),
-                        icon: icon,
-                        map: map
+
+                    var icon = {
+                        url:'/images/red_marker.svg', // url
+                        scaledSize: new google.maps.Size(30, 30), // scaled size
+                        origin: new google.maps.Point(0,0), // origin
+                        anchor: new google.maps.Point(0, 0) // anchor
+                    };
+                    marker = new google.maps.Marker({
+                        position: latlang,
+                        map: map,
+                        icon: icon
                     });
-                    markerIndex++;
+                    click(marker,i,functionContent,compiledContent,map);
+
                 }
-                if(i===$scope.locations.length-1){
-                    flightPath = new google.maps.Polyline({
+                if(i === $scope.locations.length-1){
+                    var flightPath = new google.maps.Polyline({
                         path: flightPathCoordinates,
                         geodesic: true,
                         strokeColor: '#393',
                         strokeOpacity: 1.0,
                         strokeWeight: 2
                     });
-                    map.setCenter(flightPathCoordinates[0]);
                     flightPath.setMap(map);
                 }
             }
