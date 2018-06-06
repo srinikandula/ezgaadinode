@@ -15,7 +15,7 @@ app.factory('truckTrackingService',['$http','$cookies', function ($http, $cookie
     }
 }]);
 
-app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingService','$stateParams','Notification','$compile', function ($scope, $state,truckTrackingService,$stateParams,Notification,$compile) {
+app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingService','$stateParams','Notification','$compile','gpsListService',function ($scope, $state,truckTrackingService,$stateParams,Notification,$compile,gpsListService) {
     $scope.truckTrackingParams={
         regNo: $stateParams.truckNo,
         startDate:new Date(new Date().setHours(0,0,0,0)),
@@ -23,6 +23,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         showOnlyStops:false
     };
     $scope.mapType='';
+    $scope.totalDistance=null;
     $scope.locations=[];
     $scope.bounds = new google.maps.LatLngBounds();
     $scope.markers=[];
@@ -37,6 +38,20 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
 
     $scope.loadData = function () {
         map = new google.maps.Map(document.getElementById('map'),mapOptions);
+        gpsListService.getAllVehiclesLocation(function (success) {
+            if(success.data.status){
+                $scope.trucksData=success.data.results;
+                for(var i=0;i<$scope.trucksData.length;i++){
+                    if($scope.trucksData[i].registrationNo == $stateParams.truckNo){
+                        $scope.totalDistance =$scope.trucksData[i].attrs.latestLocation.totalDistance;
+                    }
+                }
+            }else{
+                Notification.error({message:success.data.message});
+            }
+        },function (error) {
+
+        });
     };
 
     $scope.selectMapType = function(){
