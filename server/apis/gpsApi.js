@@ -4,7 +4,6 @@ var nodeGeocoder = require('node-geocoder');
 var config = require('./../config/config');
 var devicePostions = require('./../models/schemas').GpsColl;
 var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
-var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DevicesColl = require('./../models/schemas').DeviceColl;
 
@@ -15,8 +14,83 @@ var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 var mailerApi=require('./../apis/mailerApi');
 
+var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
+
+
 var Gps = function () {
 };
+
+function resolveAddress(position, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var options = {
+        provider: 'google',
+        httpAdapter: 'https'
+    };
+    var fulldate = new Date();
+    var today = fulldate.getDate() + '/' + (fulldate.getMonth() + 1) + '/' + fulldate.getFullYear();
+
+    SecretKeyCounterColl.findOne({date: today,counter:{$lt:config.googleSecretKeyLimit}}).exec(function (errsecret, counterEntry) {
+        if (errsecret) {
+            retObj.messages.push("address finding error," + JSON.stringify(errsecret.message));
+            callback(retObj);
+        } else if (counterEntry) {/*if key is available search address*/
+            options.apiKey = counterEntry.secret;
+            var geocoder = nodeGeocoder(options);
+            geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
+                if(errlocation) {
+                    console.error("error resolving address...err",errlocation);
+                }
+                if (location) {
+                    // console.log('google response '+ JSON.stringify(location));
+                    retObj.status = true;
+                    retObj.address = location[0]['formattedAddress'];
+                    SecretKeyCounterColl.findOneAndUpdate({_id: counterEntry._id}, {$inc: {counter: 1}}, function (incerr, increased) {
+                        if (incerr) {
+                            retObj.messages.push('Error incrementing secret');
+                        } else {
+                            retObj.status=true;
+                            retObj.messages.push('Secret Incremented');
+                        }
+                        callback(retObj);
+                    });
+                } else {
+                    retObj.status = true;
+                    //retObj.messages.push("address finding error," + JSON.stringify(errlocation.message));
+                    callback(retObj);
+                }
+            });
+        }  else {/*assign new key for day*/
+            SecretKeyCounterColl.find({date: today}, {'secret': 1}, function (error, keys) {
+                SecretKeyColl.findOne({"secret":{$nin: [ keys ]}}, function (err, secDoc) {
+                    if (err) {
+                        retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                        callback(retObj);
+                    } else if(secDoc){
+                        var secretKeyCount = new SecretKeyCounterColl({
+                            date: today,
+                            secret: secDoc.secret,
+                            counter: 0
+                        });
+                        secretKeyCount.save(function (saveSecKeyErr, saveSecDoc) {
+                            if (err) {
+                                retObj.messages.push("address finding error," + JSON.stringify(err.message));
+                                callback(retObj);
+                            } else {
+                                resolveAddress(position, callback);
+                            }
+                        })
+                    }else{
+                        retObj.messages.push("No more secret keys");
+                        callback(retObj);
+                    }
+                });
+            });
+        }
+    });
+}
 
 Gps.prototype.addSecret = function (secret, email, callback) {
     var retObj = {
@@ -361,14 +435,14 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
             devicePostions.find({
                 uniqueId: truckDetails.deviceId,
                 createdAt: {$gte: startDate, $lte: endDate}
-            }).sort({deviceTime: 1}).exec(function (err, positions) {
+            }).sort({deviceTime: 1}).lean().exec(function (err, positions) {
                 if(err){
                     retObj.status=false;
                     retObj.messages.push('Error fetching truck positions');
                     callback(retObj);
                 }else{
                     archivedDevicePositions.find({uniqueId: truckDetails.deviceId,
-                        createdAt: {$gte: startDate, $lte: endDate}}).sort({deviceTime: 1}).exec(function (err, archivedPositions) {
+                        createdAt: {$gte: startDate, $lte: endDate}}).sort({deviceTime: 1}).lean().exec(function (err, archivedPositions) {
                         if(err){
                             retObj.status=false;
                             retObj.messages.push('Error fetching truck positions');
@@ -393,17 +467,43 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                     distance += positions[i].distance;
                                 }
                                 averageSpeed = (sum / counter);
+
+                                async.each(positions, function(position, asyncCallback) {
+                                    if(position.address === '{address}'){
+                                        resolveAddress({
+                                            latitude: position.location.coordinates[1],
+                                            longitude: position.location.coordinates[0]
+                                        }, function (addressResp) {
+                                            if(addressResp.status){
+                                                position.address = addressResp.address;
+                                                asyncCallback(false);
+                                            }else{
+                                                asyncCallback(addressResp);
+                                            }
+                                        });
+                                    }else{
+                                        asyncCallback(false);
+                                    }
+                                }, function(err) {
+                                    if( err ) {
+                                        callback(err);
+                                    } else {
+                                        retObj.status = true;
+                                        retObj.messages.push('Success');
+                                        retObj.results = {
+                                            positions: positions,
+                                            distanceTravelled: distance,
+                                            timeTravelled: (diffDays * 24),
+                                            topSpeed:topSpeed,
+                                            averageSpeed: averageSpeed
+                                        };
+                                        callback(retObj);
+                                    }
+                                    // console.log("callback ret object..",retObj.results.positions);
+                                });
+
                                 //distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;
-                                retObj.status = true;
-                                retObj.messages.push('Success');
-                                retObj.results = {
-                                    positions: positions,
-                                    distanceTravelled: distance,
-                                    timeTravelled: (diffDays * 24),
-                                    topSpeed:topSpeed,
-                                    averageSpeed: averageSpeed
-                                };
-                                callback(retObj);
+
                             }else{
                                 retObj.status = false;
                                 retObj.messages.push('No records found for that period');
@@ -512,10 +612,35 @@ Gps.prototype.getAllVehiclesLocation = function (jwt,req,callback) {
             retObj.messages.push('Error retrieving trucks data');
             callback(retObj);
         }else{
-            retObj.status=true;
-            retObj.messages.push('Success');
-            retObj.results=trucksData;
-            callback(retObj);
+            async.each(trucksData,function(truck,asyncCallback){
+                if(truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1){
+                    resolveAddress({
+                        latitude:truck.attrs.latestLocation.latitude,
+                        longitude:truck.attrs.latestLocation.longitude
+                    }, function (addressResp) {
+                        if(addressResp.status){
+                            truck.attrs.latestLocation.address = addressResp.address;
+                            asyncCallback(false);
+                        }else{
+                            asyncCallback(addressResp);
+                        }
+                    });
+
+                }else{
+                    asyncCallback(false);
+                }
+            },function(err){
+                if(err){
+                    callback(err);
+                }else{
+                    retObj.status=true;
+                    retObj.messages.push('Success');
+                    retObj.results=trucksData;
+                    callback(retObj);
+                }
+
+            });
+
         }
     })
 };
