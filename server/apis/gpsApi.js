@@ -211,11 +211,32 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (trucksData) {
-            retObj.status = true;
-            retObj.data = trucksData;
-            console.log(trucksData);
-            retObj.messages.push("success");
-            callback(retObj);
+            async.each(trucksData,function (truck,asyncCallback) {
+                if(truck.attrs.latestLocation.address === '{address}'|| !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1){
+                    resolveAddress({
+                        latitude:truck.attrs.latestLocation.latitude,
+                        longitude: truck.attrs.latestLocation.longitude
+                    }, function (addressResp) {
+                        if(addressResp.status){
+                            truck.attrs.latestLocation.address = addressResp.address;
+                            asyncCallback(false);
+                        }else{
+                            asyncCallback(addressResp);
+                        }
+                    });
+                }else{
+                    asyncCallback(false);
+                }
+            },function(err){
+                if(err){
+                    callback(err);
+                }else{
+                    retObj.status = true;
+                    retObj.data = trucksData;
+                    retObj.messages.push("success");
+                    callback(retObj);
+                }
+            });
         } else {
             retObj.messages.push("Please try again");
             callback(retObj);
