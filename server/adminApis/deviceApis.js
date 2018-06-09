@@ -1500,7 +1500,9 @@ Devices.prototype.changeDeviceStatus = function(err,callback){
 
     TrucksColl.find({$or:[{"attrs.latestLocation.updatedAt":{$lt:timeDiff}},{"attrs.latestLocation.updatedAt":{$exists:false}}]},function(err,trucks){
         if(err){
-
+            retObj.status = false;
+            retObj.messages.push("Error in finding...");
+            callback(retObj);
         }else{
             async.each(trucks,function(truck,asyncCallback){
                 DevicesColl.findOneAndUpdate({"attrs.latestLocation.deviceId":truck.attrs.latestLocation.deviceId},function(err,device){
