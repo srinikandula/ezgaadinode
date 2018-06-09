@@ -2,6 +2,8 @@
 var express = require('express');
 var AuthRouter = express.Router();
 var Devices = require('./../adminApis/deviceApis');
+var cronjob = require('node-cron');
+
 
 AuthRouter.post('/addDevices', function (req, res) {
     Devices.addDevices(req, function (result) {
@@ -35,7 +37,6 @@ AuthRouter.get('/count', function (req, res) {
 
 AuthRouter.get('/getDevices', function (req, res) {
     Devices.getDevices(req, function (result) {
-        // console.log(result);
         res.json(result);
     });
 });
@@ -121,6 +122,13 @@ AuthRouter.get('/getLatestLocationFromDevice',function (req,res) {
         res.json(result);
     })
 });
+
+var job = cronjob.schedule('* */30 * * * *', function() {      //runs every hour 1st and 30th Minute
+    Devices.changeDeviceStatus(function (result) {
+        // console.log(result);
+    });
+});
+job.start();
 
 module.exports = {
     AuthRouter: AuthRouter
