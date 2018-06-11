@@ -13,7 +13,6 @@ Devices.prototype.addDevice = function (jwt, params, callback) {
         status: false,
         messages: []
     };
-
     if (!params.deviceId) {
         retObj.messages.push('Enter Device Id');
     }

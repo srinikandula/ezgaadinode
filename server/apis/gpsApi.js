@@ -873,20 +873,17 @@ Gps.prototype.identifyNotWorkingDevices = function() {
     TrucksColl.updateMany({$or:[{"attrs.latestLocation":{$exists:false}},
             {"attrs.latestLocation.createdAt":{$exists:false}},
             {"attrs.latestLocation.createdAt":{$lte:currentTime}}]},
-            {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true}},function (err,updatedCounts) {
+            {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true,"status":"Not Working"}},function (err,updatedCounts) {
             console.log(updatedCounts.n +" trucks to be updated");
-            DevicesColl.updateMany(//{$or:[
-                        {"attrs.latestLocation":{$exists:false}},
-                        //,{"attrs.latestLocation.createdAt":{$exists:false}}
-                        //,{"attrs.latestLocation.createdAt":{$lte:currentTime}}
-                        //]},
-                {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true}},function (err,updatedDevices) {
-                    console.log(updatedDevices.n +" devices to be updated");
-                    DevicesColl.count({"attrs.latestLocation":{$exists:false}},function(error, count){
-                        console.log("count "+ count);
-                    });
-                });
-    });
 
-}
+            DevicesColl.updateMany({$or:[{"attrs.latestLocation":{$exists:false}},
+                        {"attrs.latestLocation.createdAt":{$exists:false}},
+                        {"attrs.latestLocation.createdAt":{$lte:currentTime}}]},
+                {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true,"status":"Not Working"}},function (err,updatedCounts) {
+                    console.log(updatedCounts.n +" devices to be updated");
+
+                });
+
+    });
+};
 module.exports = new Gps();

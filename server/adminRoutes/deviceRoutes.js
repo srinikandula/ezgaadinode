@@ -123,12 +123,7 @@ AuthRouter.get('/getLatestLocationFromDevice',function (req,res) {
     })
 });
 
-var job = cronjob.schedule('* */30 * * * *', function() {      //runs every hour 1st and 30th Minute
-    Devices.changeDeviceStatus(function (result) {
-        // console.log(result);
-    });
-});
-job.start();
+
 
 module.exports = {
     AuthRouter: AuthRouter
