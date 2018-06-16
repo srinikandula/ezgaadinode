@@ -90,7 +90,7 @@ AuthRouter.post('/updateGpsSettings',function (req,res) {
 });
 
 AuthRouter.get('/getGpsSettings',function (req,res) {
-    gps.getGpsSettings(req.jwt.id,req,function (result) {
+    gps.getGpsSettings(req.jwt.id,function (result) {
         res.send(result);
     })
 });
@@ -113,27 +113,28 @@ OpenRouter.get('/archiveDevicePositions',function (req,res) {
     });
 });
 
-var job = cronjob.schedule('* */10 * * * *', function() {      //runs every hour 1st and 30th Minute
+var job = cronjob.schedule('* *!/10 * * * *', function() {      //runs every hour 1st and 30th Minute
     gps.moveDevicePositions(function (result) {
-        console.log("moved positions"+ result.messages[0]);
+        // console.log("moved positions"+ result.messages[0]);
     });
 });
 job.start();
 
-/*
-var task = cronjob.schedule('0 0 5 * * *', function() {
+var task = cronjob.schedule('* */30 * * *', function() {
+    console.log("daily email report...");
     gps.emailDayGPSReport({},function (result) {
         console.log("emailDayGPSReport..",result);
     });
 });
 task.start();
-*/
+
 
 OpenRouter.get('/emailDayGPSreport',function (req,res) {
     gps.emailDayGPSReport({},function (result) {
-        console.log("emailDayGPSReport..",result);
+        // console.log("emailDayGPSReport..",result);
     });
 });
+
 
 
 var identifyNotWorkingDevices = cronjob.schedule('* */30 * * * *', function() {

@@ -25,6 +25,22 @@
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
+                    <div class="select-box styling-input-list">
+                        <ui-select ng-model="expenseDetails.partyId" theme="select2"
+                                   style="min-width: 390px;"
+                                   title="Choose a Supplier" append-to-body="true">
+                            <ui-select-match class="form-control custom-form-control">
+                                {{$select.selected.name || name}}
+                            </ui-select-match>
+                            <ui-select-choices
+                                    repeat="party in partyBySupplier | propsFilter: {name: $select.search}">
+                                <div ng-bind-html="party.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <label class="focus-effect-for-input">Select a Supplier*</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
                     <div class=" pos-relative">
                         <span class="bot-arrow">
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
@@ -75,22 +91,6 @@
                 </div>
                 <div ng-show="expenseDetails.mode == 'Credit'">
                 <div class="form-group col-xs-12">
-
-                    <div class="select-box styling-input-list">
-
-                        <ui-select ng-model="expenseDetails.partyId" theme="select2"
-                                   style="min-width: 390px;"
-                                   title="Choose a Supplier" append-to-body="true">
-                            <ui-select-match class="form-control custom-form-control">
-                                {{$select.selected.name || name}}
-                            </ui-select-match>
-                            <ui-select-choices
-                                    repeat="party in partyBySupplier | propsFilter: {name: $select.search}">
-                                <div ng-bind-html="party.name | highlight: $select.search"></div>
-                            </ui-select-choices>
-                        </ui-select>
-                        <label class="focus-effect-for-input">Select a Supplier*</label>
-                    </div>
                 </div>
                     <div class="form-group col-xs-12">
                         <div class=" styling-input-list">

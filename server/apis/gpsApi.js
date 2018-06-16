@@ -3,7 +3,7 @@ var async = require('async');
 var nodeGeocoder = require('node-geocoder');
 var config = require('./../config/config');
 var devicePostions = require('./../models/schemas').GpsColl;
-var SecretKeyColl = require('./../models/schemas').SecretKeysColl;
+var SecretKeysColl = require('./../models/schemas').SecretKeysColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DevicesColl = require('./../models/schemas').DeviceColl;
 
@@ -13,6 +13,12 @@ var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 var mailerApi=require('./../apis/mailerApi');
+var SmsService = require('./smsApi');
+
+var mongoose = require('mongoose');
+
+const ObjectId = mongoose.Types.ObjectId;
+
 
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
 
@@ -31,7 +37,7 @@ function resolveAddress(position, callback) {
     };
     var fulldate = new Date();
     var today = fulldate.getDate() + '/' + (fulldate.getMonth() + 1) + '/' + fulldate.getFullYear();
-    SecretKeyCounterColl.findOne({date: today,counter:{$lt:config.googleSecretKeyLimit}}).lean().exec(function (errsecret, counterEntry) {
+    SecretKeyCounterColl.findOne({date: today,counter:{$lt:config.googleSecretKeyLimit}}).exec(function (errsecret, counterEntry) {
         if (errsecret) {
             retObj.messages.push("address finding error," + JSON.stringify(errsecret.message));
             callback(retObj);
@@ -40,7 +46,7 @@ function resolveAddress(position, callback) {
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if(errlocation) {
-                   console.error("error resolving address...err",errlocation);
+                    // console.error("error resolving address...err",errlocation);
                 }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
@@ -49,14 +55,11 @@ function resolveAddress(position, callback) {
                     SecretKeyCounterColl.findOneAndUpdate({_id: counterEntry._id}, {$inc: {counter: 1}}, function (incerr, increased) {
                         if (incerr) {
                             retObj.messages.push('Error incrementing secret');
-                        } else if(increased){
+                        } else {
                             retObj.status=true;
                             retObj.messages.push('Secret Incremented');
-                        }else{
-                            retObj.messages.push('Error incrementing secret');
                         }
                         callback(retObj);
-
                     });
                 } else {
                     retObj.status = true;
@@ -66,8 +69,8 @@ function resolveAddress(position, callback) {
             });
         }  else {/*assign new key for day*/
             SecretKeyCounterColl.find({date: today}, {'secret': 1}, function (error, keys) {
-                var secretKeys=_.pluck(keys,'secret');
-                SecretKeyColl.findOne({"secret":{$nin: secretKeys}}, function (err, secDoc) {
+
+                SecretKeysColl.findOne({"secret":{$nin: [ keys ]}}, function (err, secDoc) {
                     if (err) {
                         retObj.messages.push("address finding error," + JSON.stringify(err.message));
                         callback(retObj);
@@ -450,19 +453,23 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
     var retObj={status: false,
         messages: []
     };
+    var overSpeedLimit;
     TrucksColl.findOne({registrationNo:truckId,deviceId:{$exists:true}},function (err,truckDetails) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Error retrieving truck');
             callback(retObj);
         }else if(truckDetails){
+            Gps.prototype.getGpsSettings(truckDetails.accountId,function(callback){
+                overSpeedLimit = callback.results.overSpeedLimit;
+            });
             devicePostions.find({
                 uniqueId: truckDetails.deviceId,
                 createdAt: {$gte: startDate, $lte: endDate}
             }).sort({deviceTime: 1}).lean().exec(function (err, positions) {
+                console.log(positions.length+"device positions-------------------->");
                 if(err){
                     retObj.status=false;
-                    retObj.messages.push('Error fetching truck positions');
                     callback(retObj);
                 }else{
                     archivedDevicePositions.find({uniqueId: truckDetails.deviceId,
@@ -476,7 +483,8 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                             //take only positions that have totalDistance changed
                             positions = _.uniq(positions, 'totalDistance');
                             //sort the positions based of deviceTime
-                            positions = _.sortBy(positions, function(position) { return position.deviceTime; })
+                            positions = _.sortBy(positions, function(position) { return position.deviceTime; });
+                            console.log("archived device positions...positions...",positions.length);
                             if (positions.length>0) {
                                 var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
                                 var diffDays = timeDiff / (1000 * 3600 * 24);
@@ -491,8 +499,19 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                     distance += positions[i].distance;
                                 }
                                 averageSpeed = (sum / counter);
+                                retObj.status = true;
+                                retObj.messages.push('Success');
+                                retObj.results = {
+                                    positions: positions,
+                                    distanceTravelled: distance,
+                                    timeTravelled: (diffDays * 24),
+                                    topSpeed:topSpeed,
+                                    averageSpeed: averageSpeed,
+                                    overSpeedLimit:overSpeedLimit
+                                };
+                                callback(retObj);
 
-                                async.eachSeries(positions, function(position, asyncCallback) {
+                                /*async.each(positions, function(position, asyncCallback) {
                                     if(position.address === '{address}'){
                                         resolveAddress({
                                             latitude: position.location.coordinates[1],
@@ -526,8 +545,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                     // console.log("callback ret object..",retObj.results.positions);
                                 });
 
-                                //distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;
-
+                                //distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;*/
                             }else{
                                 retObj.status = false;
                                 retObj.messages.push('No records found for that period');
@@ -631,6 +649,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt,req,callback) {
         condition = {accountId: jwt.id, deviceId: {$ne: null}};
     }
     TrucksColl.find(condition,function (err,trucksData) {
+        console.log("trucks data...",trucksData);
         if(err){
             retObj.status=false;
             retObj.messages.push('Error retrieving trucks data');
@@ -718,7 +737,7 @@ Gps.prototype.editGpsSettings = function (body,req,callback) {
     })
 };
 
-Gps.prototype.getGpsSettings = function (id,req,callback) {
+Gps.prototype.getGpsSettings = function (id,callback) {
     var retObj={status: false,
         messages: []
     };
@@ -758,6 +777,7 @@ Gps.prototype.emailDayGPSReport = function (req,callback) {
     var gps=new Gps();
 
     AccountsColl.find({dailyReportEnabled:true},function (err,accounts) {
+        console.log("accounts.......",accounts.length);
         if(err){
             retObj.messages.push('Error retrieving accounts for sending daily reports');
             callback(retObj);
@@ -769,7 +789,8 @@ Gps.prototype.emailDayGPSReport = function (req,callback) {
                         callback(retObj);
                     }else if(trucks.length){
                         async.map(trucks,function (truck,asyncCallback) {
-                            gps.gpsTrackingByTruck(truck.registrationNo,endDate,startDate,req,function (result) {
+                            gps.gpsTrackingByTruck(truck.registrationNo,startDate,endDate,req,function (result) {
+                                console.log("gps tracking by truck....result.....",result);
                                 if(result.status){
                                     var positions=result.results.positions;
                                     var distance= positions[positions.length-1].totalDistance-positions[0].totalDistance;
@@ -803,7 +824,7 @@ Gps.prototype.emailDayGPSReport = function (req,callback) {
                                     totalString = totalString.replace(/[^\x00-\xFF]/g, " ");
                                     retObj.data = totalString;
                                     mailerApi.sendEmailWithAttachment2({
-                                        to: 'srini@easygaadi.com',//account.email,
+                                        to: 'kalyanikandula0@gmail.com',//account.email,
                                         subject: 'Daily-Report',
                                         data: totalString
                                     }, function (result) {
@@ -870,23 +891,54 @@ Gps.prototype.shareTripDetailsByVechicleViaEmail = function (req,callback) {
     });
 };
 
-Gps.prototype.identifyNotWorkingDevices = function() {
+Gps.prototype.identifyNotWorkingDevices = function(callback) {
+    var retObj = {
+        status:false,
+        messages:[]
+    };
     var currentTime = new Date();
-    currentTime = currentTime.setMinutes(currentTime.getMinutes()-30);
-    TrucksColl.updateMany({$or:[{"attrs.latestLocation":{$exists:false}},
-            {"attrs.latestLocation.createdAt":{$exists:false}},
-            {"attrs.latestLocation.createdAt":{$lte:currentTime}}]},
-            {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true,"status":"Not Working"}},function (err,updatedCounts) {
-            console.log(updatedCounts.n +" trucks to be updated");
-
-            DevicesColl.updateMany({$or:[{"attrs.latestLocation":{$exists:false}},
-                        {"attrs.latestLocation.createdAt":{$exists:false}},
-                        {"attrs.latestLocation.createdAt":{$lte:currentTime}}]},
-                {$set:{"attrs.latestLocation.isIdle":true,"attrs.latestLocation.isStopped":true,"attrs.latestLocation.isNotWorking":true,"status":"Not Working"}},function (err,updatedCounts) {
-                    console.log(updatedCounts.n +" devices to be updated");
-
+    currentTime.setMinutes(currentTime.getMinutes()-30);
+    TrucksColl.updateMany({$and:[{$or:[{"attrs.latestLocation":{$exists:false}},
+                {"attrs.latestLocation.createdAt":{$exists:false}},
+                {"attrs.latestLocation.createdAt":{$lte:currentTime}}]},{status:'Working'}]},function (err,updatedCounts) {
+    });
+    DevicesColl.find({$and:[{$or:[{"attrs.latestLocation":{$exists:false}},
+                {"attrs.latestLocation.createdAt":{$exists:false}},
+                {"attrs.latestLocation.createdAt":{$lte:currentTime}}]},{status:'Working'}]},function (err,devices) {
+        if(devices.length){
+            async.each(devices,function(device,asyncCallback){
+                DevicesColl.updateOne({"_id":device._id},{$set:{"status":'Not Working'}},function(err,result){});
+                AccountsColl.findOne({_id: ObjectId(device.accountId)}, function (err, account) {
+                    if (err) {
+                        asyncCallback(true);
+                    } else {
+                        if(account.contactPhone){
+                            var smsParams = {
+                                contact: account.contactPhone,
+                                message: "Hi "+account.contactName+","+"Device is not working."
+                            };
+                            SmsService.sendSMS(smsParams, function (smsResponse) {
+                                if(smsResponse.status){
+                                    asyncCallback(false);
+                                }else{
+                                    asyncCallback(true);
+                                }
+                            });
+                        }
+                    }
                 });
-
+            },function(err){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push("Error in sending SMS");
+                    callback(retObj);
+                }else{
+                    retObj.status = true;
+                    retObj.messages.push("SMS has been sent successfully");
+                    callback(retObj);
+                }
+            });
+        }
     });
 };
 module.exports = new Gps();
