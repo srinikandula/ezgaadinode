@@ -119,14 +119,16 @@ var job = cronjob.schedule('* *!/10 * * * *', function() {      //runs every hou
     });
 });
 job.start();
+/*
 
-var task = cronjob.schedule('* */30 * * *', function() {
+var task = cronjob.schedule('* *!/30 * * *', function() {
     console.log("daily email report...");
     gps.emailDayGPSReport({},function (result) {
         console.log("emailDayGPSReport..",result);
     });
 });
 task.start();
+*/
 
 
 OpenRouter.get('/emailDayGPSreport',function (req,res) {
