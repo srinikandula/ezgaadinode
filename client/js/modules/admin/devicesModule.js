@@ -516,7 +516,8 @@ app.controller('addAndAssignDevicesCrtl', ['$scope', 'DeviceService', 'Notificat
         $scope.devicesToAdd.push({
             imei: '',
             simPhoneNumber: '',
-            simNumber: ''
+            simNumber: '',
+            status:'Working'
         })
     }
 
