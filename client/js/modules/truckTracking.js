@@ -182,11 +182,12 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         var flightPathCoordinates=[];
        // map = new google.maps.Map(document.getElementById('map'),mapOptions);
         var marker;
+        map = new google.maps.Map(document.getElementById('map'),mapOptions);
         for (var i = 0; i< $scope.locations.length; i++) {
             var d = new Date($scope.locations[i].createdAt);
             var date = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
             var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
-            var functionContent = '<div>' + '<span> <b>Address:</b></span>' + $scope.locations[i].address + '<span><br></span>' + '<span><b>Speed:</b></span>' + parseInt($scope.locations[i].speed) + '<span><br></span>' + '<span><b>Date:</b></span>' + date + '<span><br></span>' + '<span> <b>Time:</b></span>' + time + '</div>';
+            var functionContent = '<div>' + '<span> <b>Speed:</b></span>' + parseInt($scope.locations[i].speed) + '<span><br></span>' + '<span><b>Date:</b></span>' + date + '<span><br></span>' + '<span> <b>Time:</b></span>' + time + '</div>';
             var compiledContent = $compile(functionContent)($scope);
             if ($scope.locations[i].location != undefined) {
                 var latlang = new google.maps.LatLng($scope.locations[i].location.coordinates[1], $scope.locations[i].location.coordinates[0]);
