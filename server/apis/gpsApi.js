@@ -40,7 +40,7 @@ function resolveAddress(position, callback) {
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if(errlocation) {
-                   console.error("error resolving address...err",errlocation);
+                   console.error("error resolving address...erro",errlocation);
                 }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
@@ -214,7 +214,7 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
             retObj.messages.push("Please try again");
             callback(retObj);
         } else if (trucksData) {
-            async.each(trucksData,function (truck,asyncCallback) {
+            async.eachSeries(trucksData,function (truck,asyncCallback) {
                 if(truck.attrs.latestLocation.address === '{address}'|| !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1){
                     resolveAddress({
                         latitude:truck.attrs.latestLocation.latitude,
@@ -476,7 +476,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                             //take only positions that have totalDistance changed
                             positions = _.uniq(positions, 'totalDistance');
                             //sort the positions based of deviceTime
-                            positions = _.sortBy(positions, function(position) { return position.deviceTime; })
+                            positions = _.sortBy(positions, function(position) { return position.deviceTime; });
                             if (positions.length>0) {
                                 var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
                                 var diffDays = timeDiff / (1000 * 3600 * 24);
@@ -491,8 +491,18 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                     distance += positions[i].distance;
                                 }
                                 averageSpeed = (sum / counter);
+                                retObj.status = true;
+                                retObj.messages.push('Success');
+                                retObj.results = {
+                                    positions: positions,
+                                    distanceTravelled: distance,
+                                    timeTravelled: (diffDays * 24),
+                                    topSpeed:topSpeed,
+                                    averageSpeed: averageSpeed
+                                };
+                                callback(retObj);
 
-                                async.eachSeries(positions, function(position, asyncCallback) {
+                                /*async.eachSeries(positions, function(position, asyncCallback) {
                                     if(position.address === '{address}'){
                                         resolveAddress({
                                             latitude: position.location.coordinates[1],
@@ -524,7 +534,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                         callback(retObj);
                                     }
                                     // console.log("callback ret object..",retObj.results.positions);
-                                });
+                                });*/
 
                                 //distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;
 
