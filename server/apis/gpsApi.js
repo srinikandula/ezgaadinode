@@ -484,7 +484,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                             positions = _.uniq(positions, 'totalDistance');
                             //sort the positions based of deviceTime
                             positions = _.sortBy(positions, function(position) { return position.deviceTime; });
-                            console.log("archived device positions...positions...",positions.length);
+
                             if (positions.length>0) {
                                 var timeDiff = Math.abs(positions[0].createdAt.getTime() - positions[positions.length - 1].createdAt.getTime());
                                 var diffDays = timeDiff / (1000 * 3600 * 24);
