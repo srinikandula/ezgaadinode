@@ -31,8 +31,7 @@ function resolveAddress(position, callback) {
     };
     var fulldate = new Date();
     var today = fulldate.getDate() + '/' + (fulldate.getMonth() + 1) + '/' + fulldate.getFullYear();
-
-    SecretKeyCounterColl.findOne({date: today,counter:{$lt:config.googleSecretKeyLimit}}).exec(function (errsecret, counterEntry) {
+    SecretKeyCounterColl.findOne({date: today,counter:{$lt:config.googleSecretKeyLimit}}).lean().exec(function (errsecret, counterEntry) {
         if (errsecret) {
             retObj.messages.push("address finding error," + JSON.stringify(errsecret.message));
             callback(retObj);
@@ -41,7 +40,7 @@ function resolveAddress(position, callback) {
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if(errlocation) {
-                    console.error("error resolving address...err",errlocation);
+                   console.error("error resolving address...err",errlocation);
                 }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
@@ -50,11 +49,14 @@ function resolveAddress(position, callback) {
                     SecretKeyCounterColl.findOneAndUpdate({_id: counterEntry._id}, {$inc: {counter: 1}}, function (incerr, increased) {
                         if (incerr) {
                             retObj.messages.push('Error incrementing secret');
-                        } else {
+                        } else if(increased){
                             retObj.status=true;
                             retObj.messages.push('Secret Incremented');
+                        }else{
+                            retObj.messages.push('Error incrementing secret');
                         }
                         callback(retObj);
+
                     });
                 } else {
                     retObj.status = true;
@@ -64,7 +66,8 @@ function resolveAddress(position, callback) {
             });
         }  else {/*assign new key for day*/
             SecretKeyCounterColl.find({date: today}, {'secret': 1}, function (error, keys) {
-                SecretKeyColl.findOne({"secret":{$nin: [ keys ]}}, function (err, secDoc) {
+                var secretKeys=_.pluck(keys,'secret');
+                SecretKeyColl.findOne({"secret":{$nin: secretKeys}}, function (err, secDoc) {
                     if (err) {
                         retObj.messages.push("address finding error," + JSON.stringify(err.message));
                         callback(retObj);
@@ -489,7 +492,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
                                 }
                                 averageSpeed = (sum / counter);
 
-                                async.each(positions, function(position, asyncCallback) {
+                                async.eachSeries(positions, function(position, asyncCallback) {
                                     if(position.address === '{address}'){
                                         resolveAddress({
                                             latitude: position.location.coordinates[1],

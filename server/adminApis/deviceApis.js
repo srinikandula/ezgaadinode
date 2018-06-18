@@ -371,7 +371,7 @@ function findDevices(req, params, accounts, callback) {
         }
     }, function (errasync, results) {
         if (errasync) {
-            retObj.messages.push("Unable to get or count, please try again");
+            retObj.messages.push("Unable to get or count, please try again,"+JSON.stringify(errasync));
             analyticsService.create(req, serviceActions.get_devices_err, {
                 body: JSON.stringify(params),
                 accountId: req.jwt.id,
@@ -400,7 +400,7 @@ function findDevices(req, params, accounts, callback) {
 
             }, function (errpopulated, success) {
                 if (errpopulated) {
-                    retObj.messages.push("Unable to populate devices, please try again");
+                    retObj.messages.push("Unable to populate devices, please try again,"+JSON.stringify(errpopulated));
                     analyticsService.create(req, serviceActions.get_devices_err, {
                         body: JSON.stringify(params),
                         accountId: req.jwt.id,
@@ -453,7 +453,7 @@ function findDevices(req, params, accounts, callback) {
 
                     }, function (deviceErr, deviceResult) {
                         if (deviceErr) {
-                            retObj.messages.push("Unable to populate devices, please try again");
+                            retObj.messages.push("Unable to populate devices, please try again,"+JSON.stringify(deviceErr));
                             analyticsService.create(req, serviceActions.get_devices_err, {
                                 body: JSON.stringify(params),
                                 accountId: req.jwt.id,
