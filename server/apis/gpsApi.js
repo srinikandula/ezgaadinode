@@ -46,11 +46,7 @@ function resolveAddress(position, callback) {
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if(errlocation) {
-<<<<<<< 35022dc589dffd71f06d16fc031f85e7e47c0de8
-                    // console.error("error resolving address...err",errlocation);
-=======
-                   console.error("error resolving address...erro",errlocation);
->>>>>>> address resolve removed
+                    console.error("error resolving address...err",errlocation);
                 }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
