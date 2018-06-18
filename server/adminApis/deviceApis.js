@@ -1488,44 +1488,6 @@ Devices.prototype.getLatestLocationFromDevice = function (req, callback) {
         }
     });
 };
-//To check whether GPS device is working or not
-Devices.prototype.changeDeviceStatus = function(err,callback){
-    var currentDate = new Date().getTime();
-    var timeDiff = new Date(currentDate-1800000);
-    var statusDevices =[];
-    var retObj = {
-        status:false,
-        messages:[]
-    };
 
-    TrucksColl.find({$or:[{"attrs.latestLocation.updatedAt":{$lt:timeDiff}},{"attrs.latestLocation.updatedAt":{$exists:false}}]},function(err,trucks){
-        if(err){
-
-        }else{
-            async.each(trucks,function(truck,asyncCallback){
-                DevicesColl.findOneAndUpdate({"attrs.latestLocation.deviceId":truck.attrs.latestLocation.deviceId},function(err,device){
-                    if(err){
-                        asyncCallback(true);
-                    }else{
-                        device.isActive = false;
-                        statusDevices.push(device);
-                        asyncCallback(false);
-                    }
-                });
-            },function(err){
-                if(err){
-                retObj.status = false;
-                retObj.messages.push("Error in finding...");
-                callback(retObj);
-                }else{
-                    retObj.status = true;
-                    retObj.messages.push("Successfully fetched ...");
-                    callback(retObj);
-                }
-            });
-
-        }
-    });
-};
 
 module.exports = new Devices();

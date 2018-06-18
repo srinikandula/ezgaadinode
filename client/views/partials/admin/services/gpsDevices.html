@@ -78,7 +78,7 @@
                     {{device.assignedTo.displayName}}
                 </td>
                 <td data-title="'Status'" sortable="'isDamaged'" class="clickable-item">
-                    {{device.isActive == '0' && 'working' || 'Not working'}}
+                    {{device.status}}
                 </td>
                 <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
                     <a href="#" ui-sref="services.editGpsDevice({device: device._id})" class="edit_icon">

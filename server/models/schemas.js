@@ -161,7 +161,7 @@ var truckSchema = new mongoose.Schema({
     taxDueDate: Date,
     updatedBy: String,
     createdBy: String,
-    status: Number,
+    status: String,
     attrs: {latestLocation: {}},
     // latestLocation:{type:ObjectId,ref:'devicePositions'},
     deviceId: String,
@@ -455,6 +455,8 @@ var deviceSchema = new mongoose.Schema({
     equipmentType: String,
     serialNumber: String,
     isActive: {type: Boolean, default: true},
+    status: String,
+
     remarks: String,
     registrationNo:String,
     attrs: {latestLocation: {}}
