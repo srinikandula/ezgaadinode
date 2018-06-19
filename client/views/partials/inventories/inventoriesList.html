@@ -1,0 +1,34 @@
+<div class="main-right col-xs-12" ng-controller="InventoryListCtrl">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Inventories</h3></div>
+    </div>
+    <div class="mt-10">
+        <table class="table table-bordered table-striped table-condensed table-hover"
+               ng-table="studentParams">
+            <tr ng-repeat="inventory in inventories " style="text-align: center;">
+                <td data-title="'Name'" sortable="'name'" class="clickable-item">
+                    {{inventory.name}}
+                </td>
+                <td data-title="'Inventory Id'" sortable="'id'" class="clickable-item">
+                    {{inventory.id}}
+                </td>
+                <td data-title="'Fixed Date'" sortable="'date'" class="clickable-item">
+                    {{inventory.date | date:'dd-MM-yyyy'}}
+                </td>
+                <td data-title="'Action'" class="col-sm-2">
+                    <a href="#" class="btn" ng-click="goToEditPage(inventory._id)">
+                        <span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="#" class="btn" ng-click="delete(inventory._id)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div class="add-image pull-right">
+        <figure>
+            <a href="#" ng-click="goToEditPage()"><img src="images/Add_Truck.png" alt="Add Inventory" title="Add Inventory"></a>
+        </figure>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<div class="main-right col-xs-12" ng-controller="AddEditInventoryCtrl">
+    <h2 class="title-name ">{{title}}</h2>
+
+    <div class="col-sm-6 col-xs-12 mt-10">
+
+    <div class="form-group col-xs-12">
+        <div class="styling-input-list">
+            <input type="text" class="form-control custom-form-control" ng-model="inventory.id"/>
+            <label class="focus-effect-for-input" aria-hidden="true">Inventory Id*</label>
+        </div>
+    </div>
+    <div class="form-group col-xs-12">
+        <div class="styling-input-list">
+            <input type="text" class="form-control custom-form-control" ng-model="inventory.name"/>
+            <label class="focus-effect-for-input" aria-hidden="true">Inventory Name</label>
+        </div>
+    </div>
+    <div class="form-group col-xs-12">
+        <date-picker ng-model="inventory.date"
+                     class="'custom-form-control'" placeholder="'Fixed Date'"></date-picker>
+    </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="col-xs-4 mtb-25 sub-can">
+            <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+            <button type="submit" class="btn can  last" ng-click="add_editInventory()">Submit</button>
+        </div>
+    </div>
+</div>
