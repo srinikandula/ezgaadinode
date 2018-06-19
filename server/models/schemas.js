@@ -144,6 +144,15 @@ var groupSchema = new mongoose.Schema({
     timestamps: true
 });
 
+var inventorySchema = new mongoose.Schema({
+    id: Number,
+    name: String,
+    date: Date,
+    accountId:{type: ObjectId, ref: 'accounts'}
+},{
+    timestamps: true
+});
+
 var truckSchema = new mongoose.Schema({
     userName: String,
     registrationNo: String,
@@ -976,6 +985,7 @@ var deviceIdSchema =new mongoose.Schema({
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
+    InventoryCollection:mongoose.model('inventories',inventorySchema,'inventories'),
     RouteConfigColl:mongoose.model('configs',routeConfigSchema,'configs'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),

@@ -12,6 +12,7 @@ var config = require('./server/config/config');
 var RouteConfig = require('./server/routes/routeConfigRoutes');
 var  LoadRequest= require('./server/routes/loadRequestRoutes');
 
+var  Inventory= require('./server/routes/inventoryRoutes');
 
 var Trips = require('./server/routes/tripRoutes');
 var Expense = require('./server/routes/expensesRoutes');
@@ -106,6 +107,8 @@ app.use(function (req, res, next) {
 
 // app.use('/v1/user', Users.OpenRouter);
 app.use('/v1/events', Events.OpenRouter);
+app.use('/v1/inventories', Inventory.OpenRouter);
+
 app.use('/v1/group', Groups.OpenRouter);
 app.use('/v1/gps', Gps.OpenRouter);
 app.use('/v1/analytics', Analytics.OpenRouter);
@@ -137,6 +140,8 @@ app.use('/v1/cpanel/devices', Devices.AuthRouter);
 app.use('/v1/global/',globalApi.AuthRouter);
 app.use('/v1/routeConfigs',RouteConfig.AuthRouter);
 app.use('/v1/loadRequest',LoadRequest.AuthRouter);
+app.use('/v1/inventories', Inventory.AuthRouter);
+
 
 
 
