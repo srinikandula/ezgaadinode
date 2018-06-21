@@ -35,20 +35,29 @@ app.factory('InventoriesService',['$http', '$cookies', function ($http, $cookies
     }
 }]);
 
-app.controller('AddEditInventoryCtrl',['$scope','InventoriesService','$state','$stateParams','Notification',function($scope,InventoriesService,$state,$stateParams,Notification){
+app.controller('AddEditInventoryCtrl',['$scope','InventoriesService','$state','$stateParams','Notification','PartyService',function($scope,InventoriesService,$state,$stateParams,Notification,PartyService){
     $scope.title = 'Add Inventory';
     if($stateParams.Id){
         $scope.title = 'Update Inventory';
         InventoriesService.getInventory($stateParams.Id,function(successCallback){
             if(successCallback.data.status){
                 $scope.inventory = successCallback.data.data;
-                $scope.inventory.date = new Date($scope.inventory.date);
             }
         },function(errorCallback){});
     }
 
+    PartyService.getAllPartiesBySupplier (function (successCallback) {
+        if(successCallback.data.status){
+            $scope.partyBySupplier = successCallback.data.parties;
+        }else {
+            Notification.error(successCallback.data.message);
+        }
+    });
+
+
     $scope.add_editInventory = function(){
         var params = $scope.inventory;
+        console.log("params...",params);
         if($stateParams.Id){
             InventoriesService.updateInventory(params,function(successCallback){
                 if(successCallback.data.status){

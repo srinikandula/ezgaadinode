@@ -8,7 +8,7 @@ var AuthRouter = express.Router();
 var API = require('../apis/inventoryApi');
 
 AuthRouter.post('/addInventory',function(req,res){
-    API.addInventory(req.jwt,req.body,function(result){
+    API.addInventory(req.jwt,req.body,req,function(result){
         res.json(result);
     });
 });
