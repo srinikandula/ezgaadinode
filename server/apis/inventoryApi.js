@@ -4,7 +4,7 @@ var InventoryCollection = require('./../models/schemas').InventoryCollection;
 var Inventories = function () {
 };
 
-Inventories.prototype.addInventory = function(jwt,info,callback){
+Inventories.prototype.addInventory = function(jwt,info,req,callback){
     var retObj = {
       status:false,
       messages:[]
@@ -21,6 +21,7 @@ Inventories.prototype.addInventory = function(jwt,info,callback){
        } else{
            retObj.status=true;
            retObj.messages.push("saved successfully");
+
            callback(retObj);
        }
     });
@@ -71,7 +72,8 @@ Inventories.prototype.getInventory = function(id,callback){
         status:false,
         messages:[]
     };
-    InventoryCollection.findOne({_id:id},function(err,inventory){
+    var query = {_id:id};
+    InventoryCollection.findOne(query).populate({path:"partyId"}).exec(function(err,inventory){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while fetching record"+JSON.stringify(err));
