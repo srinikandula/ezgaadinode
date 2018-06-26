@@ -74,9 +74,16 @@
             </div>
         </div>
         <div class="form-group col-xs-12">
-            <div class="styling-input-list">
-                <input type="file" class="form-control custom-form-control" ng-model="inventory.file"/>
-                <label class="focus-effect-for-input" aria-hidden="true"></label>
+            <div class=" styling-input-list">
+                <input type="file" class="form-control custom-form-control" multiple ng-model="inventory.file"
+                       ngf-select>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div ng-repeat="attch in inventory.attachments">
+                <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
+                <button class="btn btn-danger btn-xs" ng-click="deleteImage(attch.key,$index);">x
+                </button>
             </div>
         </div>
 

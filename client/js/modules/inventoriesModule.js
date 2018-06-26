@@ -1,12 +1,5 @@
 app.factory('InventoriesService',['$http', '$cookies', function ($http, $cookies) {
     return{
-        addInventory: function (params, success, error) {
-            $http({
-                url: '/v1/inventories/addInventory',
-                method: "POST",
-                data: params
-            }).then(success, error)
-        },
         getInventories:function (success, error) {
             $http({
                 url: '/v1/inventories/get',
@@ -25,17 +18,24 @@ app.factory('InventoriesService',['$http', '$cookies', function ($http, $cookies
                 method: "GET"
             }).then(success, error)
         },
-        updateInventory:function (params,success, error) {
+        deleteImage:function (params,success, error) {
             $http({
-                url: '/v1/inventories/updateIventory',
-                method: "PUT",
-                data:params
+                url: '/v1/inventories/deleteImage',
+                method: "DELETE",
+                params:params
             }).then(success, error)
         }
     }
 }]);
 
-app.controller('AddEditInventoryCtrl',['$scope','InventoriesService','$state','$stateParams','Notification','PartyService',function($scope,InventoriesService,$state,$stateParams,Notification,PartyService){
+app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
+    $scope.path = path;
+    $scope.close = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
+}]);
+
+app.controller('AddEditInventoryCtrl',['$scope','InventoriesService','$state','$stateParams','Notification','PartyService','Upload','TripServices','$uibModal',function($scope,InventoriesService,$state,$stateParams,Notification,PartyService,Upload,TripServices,$uibModal){
     $scope.title = 'Add Inventory';
     if($stateParams.Id){
         $scope.title = 'Update Inventory';
@@ -56,40 +56,94 @@ app.controller('AddEditInventoryCtrl',['$scope','InventoriesService','$state','$
 
 
     $scope.add_editInventory = function(){
-        var params = $scope.inventory;
-        console.log("params...",params);
+        var file;
         if($stateParams.Id){
-            InventoriesService.updateInventory(params,function(successCallback){
+            file = $scope.inventory.file;
+            Upload.upload({
+                url: '/v1/inventories/updateInventory',
+                data: {
+                    files:file,
+                    content: $scope.inventory
+                }
+            }).then(function (successCallback,errorCallback) {
                 if(successCallback.data.status){
-                    $state.go('inventories');
                     Notification.success({message:"Updated Successfully"});
+                    $state.go('inventories');
                 }else{
                     successCallback.data.messages.forEach(function (message) {
                         Notification.error({ message: message });
                     });
                 }
-            },function(errorCallback){
-
             });
         }else{
-            InventoriesService.addInventory(params,function(successCallback){
-                if(successCallback.data.status){
-                    $state.go('inventories');
-                    Notification.success({message:"Added Successfully"});
-                }else{
-                    successCallback.data.errors.forEach(function (message) {
-                        Notification.error({ message: message });
-                    });
-                }
-
-            },function(errorCallback){
-
-            });
+            file = $scope.inventory.file;
+                Upload.upload({
+                    url: '/v1/inventories/addInventory',
+                    data: {
+                        files:file,
+                        content: $scope.inventory
+                    }
+                }).then(function (successCallback,errorCallback) {
+                    if(successCallback.data.status){
+                        Notification.success({message:"Added Successfully"});
+                        $state.go('inventories');
+                    }else{
+                        successCallback.data.messages.forEach(function (message) {
+                            Notification.error({ message: message });
+                        });
+                    }
+                });
         }
+    };
+    $scope.viewAttachment = function (path) {
+        TripServices.viewTripDocument({filePath: path}, function (success) {
+            if (success.data.status) {
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'viewS3Image.html',
+                    controller: 'ViewS3ImageCtrl',
+                    size: 'sm',
+                    backdrop: 'static',
+                    keyboard: false,
+                    resolve: {
+                        path: function () {
+                            return success.data.data
+                        }
+                    }
+                });
+                modalInstance.result.then(function (path) {
+                    if(path){
+                        path = path;
+                    }
+                }, function () {});
 
+
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (err) {
+
+        })
     };
     $scope.cancel = function () {
         $state.go('inventories');
+    };
+    $scope.deleteImage = function (key,index) {
+        InventoriesService.deleteImage({inventoryId:$scope.inventory._id, key: key}, function (successCallback) {
+            if(successCallback.data.status){
+                $scope.inventory.attachments.splice(index, 1);
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.success({message: message});
+                });
+            }else {
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        },function (err) {
+
+        });
     }
 }]);
 
@@ -103,8 +157,8 @@ app.controller('InventoryListCtrl',['$scope','InventoriesService','$state','Noti
 
     $scope.goToEditPage = function (id) {
         $state.go('addInventory',{Id:id});
-
     };
+
     $scope.delete = function (id) {
         InventoriesService.remove(id,function(successCallback){
             if(successCallback.data.status){
