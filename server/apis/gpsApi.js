@@ -453,15 +453,17 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
     var retObj={status: false,
         messages: []
     };
-    var overSpeedLimit;
+    var overSpeedLimit = 60;
     TrucksColl.findOne({registrationNo:truckId,deviceId:{$exists:true}},function (err,truckDetails) {
         if(err){
             retObj.status=false;
             retObj.messages.push('Error retrieving truck');
             callback(retObj);
         }else if(truckDetails){
-            Gps.prototype.getGpsSettings(truckDetails.accountId,function(callback){
-                overSpeedLimit = callback.results.overSpeedLimit;
+            Gps.prototype.getGpsSettings(truckDetails.accountId,function(settings){
+                if(settings.results){
+                    overSpeedLimit = callback.results.overSpeedLimit;
+                }
             });
             devicePostions.find({
                 uniqueId: truckDetails.deviceId,

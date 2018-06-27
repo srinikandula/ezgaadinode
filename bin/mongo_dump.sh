@@ -31,7 +31,7 @@ pushd $mongo_backup_dir
 
 output_dir=`date +%Y%m%d-%H%M`
 mkdir -p $mongo_backup_dir/$output_dir
-mongodump --host localhost --db=$database --port 27017 --out $mongo_backup_dir/$output_dir --username $username --password $password
+mongodump --host localhost --db=$database --excludeCollection archivedDevicePositions --port 27017 --out $mongo_backup_dir/$output_dir --username $username --password $password
 zip -9r $output_dir.zip $output_dir
 
 
