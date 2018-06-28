@@ -151,7 +151,11 @@ var inventorySchema = new mongoose.Schema({
     totalAmount: {type: Number, default: 0},
     amount:{type: Number, default: 0},
     mode: String,
-    file:String,
+    attachments:[{
+        fileName:String,
+        key:String,
+        path:String
+    }],
     accountId:{type: ObjectId, ref: 'accounts'}
 },{
     timestamps: true
@@ -305,6 +309,7 @@ var rolesSchema = new mongoose.Schema({
 var expenseMaster = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     expenseName: String,
+    jobName:String,
     updatedBy: String,
     createdBy: String,
     attrs: {}
@@ -986,10 +991,25 @@ var deviceIdSchema =new mongoose.Schema({
     accountId:{type: ObjectId, ref: 'accounts'},
     messages:[{title:String,message:String,date:Date}]
 });
+var jobSchema =new mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    date:Date,
+    vehicle: {type: ObjectId, ref: 'trucks'},
+    inventory:{type: ObjectId, ref: 'inventories'},
+    type:{type: ObjectId, ref: 'expenseMaster'},
+    milege:Number,
+    reminderDate:Date,
+    attachments:[{
+        fileName:String,
+        key:String,
+        path:String
+    }]
+},{timestamps: true});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     InventoryCollection:mongoose.model('inventories',inventorySchema,'inventories'),
+    JobsCollection:mongoose.model('jobs',jobSchema,'jobs'),
     RouteConfigColl:mongoose.model('configs',routeConfigSchema,'configs'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),

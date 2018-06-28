@@ -12,7 +12,6 @@ var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var PartyCollection = require('./../models/schemas').PartyCollection;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
-var InventoryCollection = require('./../models/schemas').InventoryCollection;
 
 
 var config = require('./../config/config');
@@ -1191,21 +1190,8 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
                 function (err, expense) {
                     expensCallback(err, expense)
                 })
-        },
-        inventories:function (invenCallback) {
-            InventoryCollection.aggregate(
-                {
-                    $group: {
-                        _id: null,
-                        totalAmount: {$sum: "$totalAmount"},
-                    }
-                },
-                function (err, inventories) {
-                    invenCallback(err, inventories)
-                })
         }
     },function (err,results) {
-        console.log("results...",results);
         if(err){
            retObj.status = false;
            retObj.messages.push('Error');
@@ -1215,17 +1201,12 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
            retObj.messages.push('Success');
            retObj.paybleCount = results.expenses[0].totalAmount - results.payments[0].totalPaid;
            callback(retObj);
-       }else if(results.expenses[0] && results.inventories[0]){
+       }else if(results.expenses[0]){
            retObj.status = true;
            retObj.messages.push('Success');
-           retObj.paybleCount = results.expenses[0].totalAmount + results.inventories[0].totalAmount;
+           retObj.paybleCount = results.expenses[0].totalAmount;
            callback(retObj);
-       }else if(results.expenses[0]){
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.paybleCount = results.expenses[0].totalAmount;
-            callback(retObj);
-        }else{
+       }else{
            retObj.status = true;
            retObj.messages.push('Success');
            retObj.paybleCount =0;

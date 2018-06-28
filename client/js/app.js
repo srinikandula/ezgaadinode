@@ -61,6 +61,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             access: 'open'
         }
     }).state({
+        name: 'jobs',
+        url: '/jobsList',
+        templateUrl: 'views/partials/Jobs/jobsList.html',
+        data: {
+            activeTab: 'jobs',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'addJob',
+        url: '/add-editJob/:ID',
+        templateUrl: 'views/partials/Jobs/add_editJob.html',
+        data: {
+            activeTab: 'jobs',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            ID:null
+        }
+    }).state({
         name: 'addInventory',
         url: '/add-editInventory/:Id',
         templateUrl: 'views/partials/inventories/add-editInventory.html',
