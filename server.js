@@ -13,6 +13,7 @@ var RouteConfig = require('./server/routes/routeConfigRoutes');
 var  LoadRequest= require('./server/routes/loadRequestRoutes');
 
 var  Inventory= require('./server/routes/inventoryRoutes');
+var  Job= require('./server/routes/jobRoutes');
 
 var Trips = require('./server/routes/tripRoutes');
 var Expense = require('./server/routes/expensesRoutes');
@@ -141,6 +142,8 @@ app.use('/v1/global/',globalApi.AuthRouter);
 app.use('/v1/routeConfigs',RouteConfig.AuthRouter);
 app.use('/v1/loadRequest',LoadRequest.AuthRouter);
 app.use('/v1/inventories', Inventory.AuthRouter);
+app.use('/v1/jobs', Job.AuthRouter);
+
 
 
 

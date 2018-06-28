@@ -8,42 +8,45 @@ var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 
 
-var API = require('../apis/inventoryApi');
+var API = require('../apis/jobApi');
 
-AuthRouter.post('/addInventory',multipartyMiddleware,function(req,res){
-    API.addInventory(req,function(result){
+AuthRouter.post('/addJob',multipartyMiddleware,function(req,res){
+    API.addJob(req,function(result){
+        res.json(result);
+    });
+});
+AuthRouter.post('/updateJob',multipartyMiddleware,function(req,res){
+    API.updateJob(req,function(result){
         res.json(result);
     });
 });
 
-AuthRouter.get('/get',function(req,res){
-    API.getInventories(req.jwt,function(result){
+AuthRouter.get('/getAllJobs',function(req,res){
+    API.getAllJobs(req.jwt,function(result){
         res.send(result);
     });
 });
 
-AuthRouter.delete('/delete/:id',function(req,res){
-    API.deleteInventory(req.params.id,function(result){
+AuthRouter.get('/getJob/:id',function(req,res){
+    API.getJob(req.params.id,function(result){
         res.send(result);
     });
 });
 
-AuthRouter.get('/get/:id',function(req,res){
-    API.getInventory(req.params.id,function(result){
+AuthRouter.delete('/deleteJob/:id',function(req,res){
+    API.deleteJob(req.params.id,function(result){
         res.send(result);
     });
 });
 
-AuthRouter.post('/updateInventory',multipartyMiddleware,function(req,res){
-    API.updateInventory(req,function(result){
-        res.send(result);
-    });
-});
 AuthRouter.delete('/deleteImage',function(req,res){
     API.deleteImage(req,function(result){
         res.send(result);
     });
 });
+
+
+
 
 
 

@@ -621,7 +621,7 @@ Utils.prototype.removeProfilePic = function (file, callback) {
 
 Utils.prototype.uploadCustomerDoc = function (file, callback) {
     var retObj = {
-        false: true,
+        status: false,
         messages: []
     };
     var fileName = new Date() - 0 + "_" + file.originalFilename;

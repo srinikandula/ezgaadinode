@@ -130,6 +130,7 @@ AuthRouter.get('/getCommissionAgentDetails', function (req, res) {
 });
 
 AuthRouter.post('/updateCommissionAgent', multipartyMiddleware, function (req, res) {
+    console.log()
     CustomerLeads.updateCommissionAgent(req, function (result) {
         res.json(result);
     });
