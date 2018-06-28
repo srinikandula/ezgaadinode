@@ -462,7 +462,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId,startDate,endDate,req,callb
         }else if(truckDetails){
             Gps.prototype.getGpsSettings(truckDetails.accountId,function(settings){
                 if(settings.results){
-                    overSpeedLimit = callback.results.overSpeedLimit;
+                    overSpeedLimit = settings.results.overSpeedLimit;
                 }
             });
             devicePostions.find({

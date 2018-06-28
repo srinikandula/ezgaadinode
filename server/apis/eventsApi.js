@@ -540,7 +540,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                         deviceCallback(null, "Device Exists");
                                     } else {
                                         var deviceData = {
-                                            deviceId: devicesDataResult.deviceId,
+                                            registrationNo: devicesDataResult.deviceId,
                                             simNumber: devicesDataResult.simID,
                                             imei: devicesDataResult.imeiNumber,
                                             simPhoneNumber: devicesDataResult.simPhoneNumber,
