@@ -456,7 +456,6 @@ var deviceSchema = new mongoose.Schema({
     serialNumber: String,
     isActive: {type: Boolean, default: true},
     status: String,
-
     remarks: String,
     registrationNo:String,
     attrs: {latestLocation: {}}
