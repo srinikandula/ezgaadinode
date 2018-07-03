@@ -47,7 +47,7 @@ function updateInventory(jwt,info,callback){
         status:false,
         messages:[]
     };
-    InventoryCollection.findOneAndUpdate({_id:info._id},{$set:{name:info.name,id:info.id,date:info.date,attachments:info.attachments}},function(err,inventory){
+    InventoryCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,inventory){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while updating record"+JSON.stringify(err));
