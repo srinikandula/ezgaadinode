@@ -30,6 +30,7 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
 
 app.controller('Add_EditJobController',['$scope','Upload','Notification','$state','ExpenseMasterServices','TrucksService','InventoriesService','$stateParams','JobsService','TripServices','$uibModal',function($scope,Upload,Notification,$state,ExpenseMasterServices,TrucksService,InventoriesService,$stateParams,JobsService,TripServices,$uibModal){
     $scope.title = 'Add Job';
+    $scope.reminder = {};
 
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
@@ -77,7 +78,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                 url: '/v1/jobs/updateJob',
                 data: {
                     files:file,
-                    content: $scope.job
+                    content:$scope.job
                 }
             }).then(function (successCallback,errorCallback) {
                 if(successCallback.data.status){
@@ -94,7 +95,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                 url: '/v1/jobs/addJob',
                 data: {
                     files:file,
-                    content: $scope.job
+                    content:$scope.job
                 }
             }).then(function (successCallback,errorCallback) {
                 if(successCallback.data.status){
@@ -107,7 +108,6 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                 }
             });
         }
-
     };
     $scope.viewAttachment = function (path) {
         TripServices.viewTripDocument({filePath: path}, function (success) {
