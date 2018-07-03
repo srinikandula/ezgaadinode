@@ -84,6 +84,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             ID:null
         }
     }).state({
+        name: 'reminders',
+        url: '/remindersList',
+        templateUrl: 'views/partials/reminders/remindersList.html',
+        data: {
+            activeTab: 'reminders',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'addReminder',
+        url: '/addReminder/:ID',
+        templateUrl: 'views/partials/reminders/addReminder.html',
+        data: {
+            activeTab: 'reminders',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            ID:null
+        }
+    }).state({
         name: 'addInventory',
         url: '/add-editInventory/:Id',
         templateUrl: 'views/partials/inventories/add-editInventory.html',

@@ -342,6 +342,15 @@ var notificationsSchema = mongoose.Schema({
     message: String,
 }, {timestamps: String});
 
+var remindersSchema = mongoose.Schema({
+    refId:String,
+    reminderText:String,
+    reminderDate:Date,
+    accountId:{type: ObjectId, ref: 'accounts'},
+    status: String
+}, {timestamps: String});
+
+
 var gpsSettingsSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     stopTime: {type: Number, default: 15},
@@ -994,11 +1003,12 @@ var deviceIdSchema =new mongoose.Schema({
 var jobSchema =new mongoose.Schema({
     accountId:{type: ObjectId, ref: 'accounts'},
     date:Date,
+    reminderText:String,
+    reminderDate:Date,
     vehicle: {type: ObjectId, ref: 'trucks'},
     inventory:{type: ObjectId, ref: 'inventories'},
     type:{type: ObjectId, ref: 'expenseMaster'},
     milege:Number,
-    reminderDate:Date,
     attachments:[{
         fileName:String,
         key:String,
@@ -1008,6 +1018,7 @@ var jobSchema =new mongoose.Schema({
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
+    RemindersCollection: mongoose.model('reminders', remindersSchema, 'reminders'),
     InventoryCollection:mongoose.model('inventories',inventorySchema,'inventories'),
     JobsCollection:mongoose.model('jobs',jobSchema,'jobs'),
     RouteConfigColl:mongoose.model('configs',routeConfigSchema,'configs'),
