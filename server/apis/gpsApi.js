@@ -6,6 +6,7 @@ var devicePostions = require('./../models/schemas').GpsColl;
 var SecretKeysColl = require('./../models/schemas').SecretKeysColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DevicesColl = require('./../models/schemas').DeviceColl;
+var DriversColl = require('./../models/schemas').DriversColl;
 
 var archivedDevicePositions = require('./../models/schemas').archivedDevicePositionsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
@@ -652,13 +653,21 @@ Gps.prototype.getAllVehiclesLocation = function (jwt,req,callback) {
         condition = {accountId: jwt.id, deviceId: {$ne: null}};
     }
     TrucksColl.find(condition,function (err,trucksData) {
-        console.log("trucks data...",trucksData);
         if(err){
             retObj.status=false;
             retObj.messages.push('Error retrieving trucks data');
             callback(retObj);
         }else{
             async.each(trucksData,function(truck,asyncCallback){
+                if(truck.driverId){
+                    DriversColl.findOne({_id:truck.driverId},function(err,driver){
+                        if(err){
+                           console.log(err);
+                        }else{
+                            truck.driverId = driver.fullName;
+                        }
+                    });
+                }
                 if(truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1){
                     resolveAddress({
                         latitude:truck.attrs.latestLocation.latitude,

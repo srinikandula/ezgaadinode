@@ -50,6 +50,75 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             ID:null
         }
     }).state({
+        name: 'inventories',
+        url: '/inventories',
+        templateUrl: 'views/partials/inventories/inventoriesList.html',
+        data: {
+            activeTab: 'inventories',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'jobs',
+        url: '/jobsList',
+        templateUrl: 'views/partials/Jobs/jobsList.html',
+        data: {
+            activeTab: 'jobs',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'addJob',
+        url: '/add-editJob/:ID',
+        templateUrl: 'views/partials/Jobs/add_editJob.html',
+        data: {
+            activeTab: 'jobs',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            ID:null
+        }
+    }).state({
+        name: 'reminders',
+        url: '/remindersList',
+        templateUrl: 'views/partials/reminders/remindersList.html',
+        data: {
+            activeTab: 'reminders',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'addReminder',
+        url: '/addReminder/:ID',
+        templateUrl: 'views/partials/reminders/addReminder.html',
+        data: {
+            activeTab: 'reminders',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            ID:null
+        }
+    }).state({
+        name: 'addInventory',
+        url: '/add-editInventory/:Id',
+        templateUrl: 'views/partials/inventories/add-editInventory.html',
+        data: {
+            activeTab: 'inventories',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            Id:null
+        }
+    }).state({
         name: 'myProfile',
         url: '/myProfile',
         templateUrl: 'views/partials/userProfile/myProfile.html',

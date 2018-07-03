@@ -1,0 +1,31 @@
+<div class="main-right col-xs-12" ng-controller="reminderListCtrl">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Reminders List:</h3></div>
+    </div>
+    <div class="mt-10">
+        <table class="table table-bordered table-striped table-condensed table-hover"
+               ng-table="studentParams">
+            <tr ng-repeat="reminder in reminders " style="text-align: center;">
+                <td data-title="'Reminder Date'" sortable="'reminderDate'" class="clickable-item">
+                    {{reminder.reminderDate | date:'dd-MM-y'}}
+                </td>
+                <td data-title="'Reminder Text'" sortable="'reminderText'" class="clickable-item">
+                    {{reminder.reminderText}}
+                </td>
+                <td data-title="'Action'" class="col-sm-2">
+                    <a href="#" class="btn" ng-click="goToEditPage(reminder._id)">
+                        <span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="#" class="btn" ng-click="delete(reminder._id)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div class="add-image pull-right">
+        <figure>
+            <a href="#" ng-click="goToEditPage()"><img src="images/Add_Truck.png" alt="Add reminder" title="Add reminder"></a>
+        </figure>
+    </div>
+</div>

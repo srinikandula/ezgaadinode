@@ -1,0 +1,112 @@
+<div class="main-right col-xs-12" ng-controller="AddEditInventoryCtrl" ng-init="getPartiesbySupplier">
+    <h2 class="title-name ">{{title}}</h2>
+
+    <div class="col-sm-6 col-xs-12 mt-10">
+
+    <div class="form-group col-xs-12">
+        <div class="styling-input-list">
+            <input type="text" class="form-control custom-form-control" ng-model="inventory.id"/>
+            <label class="focus-effect-for-input" aria-hidden="true">Inventory Id*</label>
+        </div>
+    </div>
+    <div class="form-group col-xs-12">
+        <div class="styling-input-list">
+            <input type="text" class="form-control custom-form-control" ng-model="inventory.name"/>
+            <label class="focus-effect-for-input" aria-hidden="true">Inventory Name</label>
+        </div>
+    </div>
+        <div class="form-group col-xs-12">
+            <div class="select-box styling-input-list">
+                <ui-select ng-model="inventory.partyId" theme="select2"
+                           style="min-width: 390px;"
+                           title="Choose a Supplier" append-to-body="true">
+                    <ui-select-match class="form-control custom-form-control">
+                        {{$select.selected.name || name}}
+                    </ui-select-match>
+                    <ui-select-choices
+                            repeat="party in partyBySupplier | propsFilter: {name: $select.search}">
+                        <div ng-bind-html="party.name | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+                <label class="focus-effect-for-input">Select a Supplier*</label>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xs-12 mt-10">
+        <div class="form-group col-xs-12">
+            <div class=" trip-share">
+                <ul class="list-inline">
+                    <li class="radio">
+                        <label>
+                            <input ng-model="inventory.mode" type="radio" id="Credit" value="Credit">
+                            <span class="cr">
+                                        <i class="rad-icon fa fa-circle"></i>
+                                    </span>
+                            Credit
+                        </label>
+                    </li>
+                    <li class="radio">
+                        <label>
+                            <input ng-model="inventory.mode" type="radio" id="Cash" value="Cash">
+                            <span class="cr">
+                                        <i class="rad-icon fa fa-circle"></i>
+                                    </span>
+                            Cash
+                        </label>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div ng-show="inventory.mode == 'Credit'">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="inventory.totalAmount"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Total Amount*</label>
+                </div>
+            </div>
+        </div>
+        <div ng-show="inventory.mode == 'Cash'">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="inventory.amount"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Amount*</label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class=" styling-input-list">
+                <input type="file" class="form-control custom-form-control" multiple ng-model="inventory.file"
+                       ngf-select>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div ng-repeat="attch in inventory.attachments">
+                <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
+                <button class="btn btn-danger btn-xs" ng-click="deleteImage(attch.key,$index);">x
+                </button>
+            </div>
+        </div>
+
+        </div>
+    <div class="col-xs-12">
+        <div class="col-xs-4 mtb-25 sub-can">
+            <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+            <button type="submit" class="btn can  last" ng-click="add_editInventory()">Submit</button>
+        </div>
+    </div>
+</div>
+<script type="text/ng-template" id="viewS3Image.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Job Image</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-10 popup-center">
+                <img src="{{path}}" width="100%">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="button" ng-click="close();">Close</button>
+    </div>
+</script>
