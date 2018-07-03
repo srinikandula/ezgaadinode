@@ -85,6 +85,7 @@ Inventories.prototype.addInventory = function(req,callback){
     }
 };
 
+
 Inventories.prototype.updateInventory = function(req,callback){
     var info = req.body.content;
     if(req.files.files){

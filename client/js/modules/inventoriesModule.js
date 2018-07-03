@@ -115,16 +115,12 @@ app.controller('AddEditInventoryCtrl',['$scope','InventoriesService','$state','$
                         path = path;
                     }
                 }, function () {});
-
-
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
                 });
             }
-        }, function (err) {
-
-        })
+        }, function (err) {})
     };
     $scope.cancel = function () {
         $state.go('inventories');
@@ -142,7 +138,7 @@ app.controller('AddEditInventoryCtrl',['$scope','InventoriesService','$state','$
                 });
             }
         },function (err) {
-
+            Notification.error({message: err});
         });
     }
 }]);

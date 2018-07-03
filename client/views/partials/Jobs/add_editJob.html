@@ -53,12 +53,9 @@
                 <div class="">
                     <input type="text" ng-model="job.jobName"
                            class="form-control custom-form-control" id="name" placeholder="Job Type">
-
                 </div>
             </div>
-
         </div>
-
     </div>
     <div class="col-sm-6 col-xs-12 mt-10">
         <div class="form-group col-xs-12">
@@ -70,6 +67,12 @@
         <div class="form-group col-xs-12">
             <date-picker  ng-model="job.reminderDate"
                              class="'custom-form-control'" placeholder="'Reminder Date'"></date-picker>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="job.reminderText"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Reminder Text</label>
+            </div>
         </div>
         <div class="form-group col-xs-12">
             <div class=" styling-input-list">
@@ -92,3 +95,20 @@
         </div>
     </div>
 </div>
+
+
+<script type="text/ng-template" id="viewS3Image.html">
+    <div class="modal-header">
+        <h3 class="modal-title">Job Image</h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-10 popup-center">
+                <img src="{{path}}" width="100%">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="button" ng-click="close();">Close</button>
+    </div>
+</script>
