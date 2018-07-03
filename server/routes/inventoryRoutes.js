@@ -39,6 +39,7 @@ AuthRouter.post('/updateInventory',multipartyMiddleware,function(req,res){
         res.send(result);
     });
 });
+
 AuthRouter.delete('/deleteImage',function(req,res){
     API.deleteImage(req,function(result){
         res.send(result);
