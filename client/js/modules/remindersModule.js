@@ -74,7 +74,7 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
 
 }]);
 
-app.controller("remindersCtrl",['$scope','ReminderService','Notification','$state','$stateParams',function($scope,ReminderService,Notification,$state,$stateParams){
+app.controller("remindersCtrl",['$scope','$rootScope','ReminderService','Notification','$state','$stateParams',function($scope,$rootScope,ReminderService,Notification,$state,$stateParams){
     $scope.reminder = {};
     if($stateParams.ID){
         $scope.title = 'update Reminder';
@@ -94,6 +94,7 @@ app.controller("remindersCtrl",['$scope','ReminderService','Notification','$stat
             ReminderService.updateReminder(params,function(successCallback){
                 if(successCallback.data.status){
                     Notification.success({message:"updated Successfully"});
+                    $rootScope.$broadcast("reminderEdited");
                     $state.go('reminders');
                 }else{
                     successCallback.data.messages.forEach(function (message) {
@@ -107,6 +108,7 @@ app.controller("remindersCtrl",['$scope','ReminderService','Notification','$stat
             ReminderService.addReminder(params,function(successCallback){
                 if(successCallback.data.status){
                     Notification.success({message:"Added Successfully"});
+                    $rootScope.$broadcast("reminderEdited");
                     $state.go('reminders');
                 }else{
                     successCallback.data.messages.forEach(function (message) {

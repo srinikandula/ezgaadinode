@@ -314,8 +314,7 @@ Jobs.prototype.sendReminder = function (callback) {
                     if(account.smsEnabled){
                         var smsParams = {
                             contact: account.contactPhone,
-                            message: "Hi " + account.firstName + "," +reminder.reminderText
-
+                            message: "Hi " + account.firstName + ", You have set reminders for upcoming jobs. Please login in to easygaadi.com and check."
                         };
                         SmsService.sendSMS(smsParams, function (smsResponse) {
                             if(smsResponse.status){

@@ -11,13 +11,17 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         $state.go('login');
     };
 
-    $scope.getCount = function(){
+    $scope.getReminderCount = function(){
         ReminderService.getReminderCount(function(successCallback){
             if(successCallback.data.status){
                 $scope.remainder = successCallback.data.data;
             }
         });
     };
+
+    $scope.$on('reminderEdited', function(){
+        $scope.getReminderCount();
+    });
 
     $scope.isLoggedIn = function () {
         $scope.displayName=$cookies.get('userName');
@@ -38,7 +42,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         }
     };
     $rootScope.loggedTrue();
-    $scope.getCount();
+    $scope.getReminderCount();
     
     $scope.isLoggedin=$cookies.get('token');
 
