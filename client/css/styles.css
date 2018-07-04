@@ -986,7 +986,7 @@ body {
 }
 
 .menu-header .navbar-nav > li {
-    padding: 0px 14px;
+    padding: 0px 5px;
 }
 
 .menu-header .navbar-nav > li > a {
@@ -3289,4 +3289,20 @@ a:hover, a:focus{
 }
  .nav-tabs{
 border-bottom: none;
+}
+.menu-header .navbar-nav > li > a .fa{
+    display: block;
+    padding-bottom: 10px;
+    text-align: center;
+    font-size: 29px;
+}
+.erp-badges{
+    position: absolute;
+    top: 0;
+    right: 20px;
+    background-color: #ff1b1b;
+    color: #fff;
+    font-weight: bold;
+    border-radius: 100%;
+    padding: 2px 5px;
 }
