@@ -25,6 +25,26 @@ Reminders.prototype.addReminder = function(jwt,reminder,callback){
     });
 
 };
+Reminders.prototype.getReminderCount = function(jwt,callback){
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    RemindersCollection.count({$and:[{accountId:jwt.id},{status:"Enable"}]},function(err,count){
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push("Success");
+            retObj.data=count;
+            callback(retObj);
+        }
+    });
+
+
+};
 Reminders.prototype.updateReminder = function(jwt,reminder,callback){
     var retObj={
         status:false,

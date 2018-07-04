@@ -17,6 +17,11 @@ AuthRouter.get('/getAllReminders',function(req,res){
         res.send(result);
     });
 });
+AuthRouter.get('/getCount',function(req,res){
+    API.getReminderCount(req.jwt,function(result){
+        res.send(result);
+    });
+});
 AuthRouter.get('/getReminder/:id',function(req,res){
     API.getReminder(req.params.id,req.jwt,function(result){
         res.send(result);

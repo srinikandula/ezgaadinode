@@ -26,6 +26,12 @@ app.factory('ReminderService',['$http', '$cookies', function ($http, $cookies) {
                 data:info
             }).then(success, error)
         },
+        getReminderCount:function (success) {
+            $http({
+                url: '/v1/reminders/getCount',
+                method: "GET",
+            }).then(success)
+        },
         deleteReminder:function (id,success, error) {
             $http({
                 url: '/v1/reminders/deleteReminder/'+id,
@@ -40,6 +46,13 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
     ReminderService.getReminders(function(successCallback){
         if(successCallback.data.status){
             $scope.reminders = successCallback.data.data;
+        }
+    });
+
+    ReminderService.getReminderCount(function(successCallback){
+        if(successCallback.data.status){
+            $scope.remainder = successCallback.data.data;
+            console.log($scope.remainder);
         }
     });
 
@@ -66,7 +79,6 @@ app.controller("remindersCtrl",['$scope','ReminderService','Notification','$stat
     if($stateParams.ID){
         $scope.title = 'update Reminder';
         ReminderService.getReminder($stateParams.ID,function(successCallback){
-            console.log("get reminder......",successCallback.data.data);
             if(successCallback.data.status){
                 $scope.reminder = successCallback.data.data;
                 $scope.reminder.reminderDate = new Date($scope.reminder.reminderDate);
