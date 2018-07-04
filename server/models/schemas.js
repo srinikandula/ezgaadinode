@@ -144,6 +144,23 @@ var groupSchema = new mongoose.Schema({
     timestamps: true
 });
 
+var inventorySchema = new mongoose.Schema({
+    id: {type: Number, default: 0},
+    name: String,
+    partyId: {type: ObjectId, ref: 'parties'},
+    totalAmount: {type: Number, default: 0},
+    amount:{type: Number, default: 0},
+    mode: String,
+    attachments:[{
+        fileName:String,
+        key:String,
+        path:String
+    }],
+    accountId:{type: ObjectId, ref: 'accounts'}
+},{
+    timestamps: true
+});
+
 var truckSchema = new mongoose.Schema({
     userName: String,
     registrationNo: String,
@@ -292,6 +309,7 @@ var rolesSchema = new mongoose.Schema({
 var expenseMaster = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     expenseName: String,
+    jobName:String,
     updatedBy: String,
     createdBy: String,
     attrs: {}
@@ -323,6 +341,15 @@ var notificationsSchema = mongoose.Schema({
     refType:String, //LR for load request , TR for trip request
     message: String,
 }, {timestamps: String});
+
+var remindersSchema = mongoose.Schema({
+    refId:String,
+    reminderText:String,
+    reminderDate:Date,
+    accountId:{type: ObjectId, ref: 'accounts'},
+    status: String
+}, {timestamps: String});
+
 
 var gpsSettingsSchema = mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -973,9 +1000,27 @@ var deviceIdSchema =new mongoose.Schema({
     accountId:{type: ObjectId, ref: 'accounts'},
     messages:[{title:String,message:String,date:Date}]
 });
+var jobSchema =new mongoose.Schema({
+    accountId:{type: ObjectId, ref: 'accounts'},
+    date:Date,
+    reminderText:String,
+    reminderDate:Date,
+    vehicle: {type: ObjectId, ref: 'trucks'},
+    inventory:{type: ObjectId, ref: 'inventories'},
+    type:{type: ObjectId, ref: 'expenseMaster'},
+    milege:Number,
+    attachments:[{
+        fileName:String,
+        key:String,
+        path:String
+    }]
+},{timestamps: true});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
+    RemindersCollection: mongoose.model('reminders', remindersSchema, 'reminders'),
+    InventoryCollection:mongoose.model('inventories',inventorySchema,'inventories'),
+    JobsCollection:mongoose.model('jobs',jobSchema,'jobs'),
     RouteConfigColl:mongoose.model('configs',routeConfigSchema,'configs'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),

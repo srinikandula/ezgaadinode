@@ -49,9 +49,9 @@
                         src="images/settings.png"><span>Settings</span></a></li>
                 <li><a href="#">  <img src="images/notifications.png"><span>Notifications</span></a></li>
                 <li class="pos-relative">
-                    <a href="#"> <i class="fa fa-bell-o" ></i>
+                    <a href="#" ui-sref="reminders"> <i class="fa fa-bell-o" ></i>
                         <span>Remainders</span> </a>
-                    <div class="erp-badges">10</div>
+                    <div class="erp-badges"><span>{{remainder}}</span></div>
                 </li>
                 <!--<li ng-class="{selected: activeTab === 'Analytics'}"><a href="#" ui-sref="analyticsReports"><img-->
                 <!--src="images/settings.png"><span>Analytics</span></a></li>-->
@@ -117,6 +117,7 @@
                                                  <left-menu label="Trucks" ui-sref="trucks"></left-menu>
                                                 <left-menu label="Drivers" ui-sref="drivers"></left-menu>
                                                 <left-menu label="Parties" ui-sref="parties"></left-menu>
+                                                <left-menu label="Inventories" ui-sref="inventories"></left-menu>
                                             </div>
                                         </div>
                                     </div>
@@ -131,12 +132,12 @@
                                         <div id="Maintanance" class="panel-collapse collapse">
                                             <div class="panel-body custom-panel-body">
                                                 <left-menu label="Expenses" ui-sref="expenses"></left-menu>
+                                                <left-menu label="Jobs" ui-sref="jobs"></left-menu>
+                                                <left-menu label="Reminders" ui-sref="reminders"></left-menu>
                                             </div>
                                         </div>
                                     </div>
-
-
-                                   <div class="panel panel-default custom-panel-default custom-panel">
+                                 <div class="panel panel-default custom-panel-default custom-panel">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                                 <a data-toggle="collapse" data-parent="#accordion" href="#Transactions"

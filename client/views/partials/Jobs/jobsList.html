@@ -1,0 +1,41 @@
+<div class="main-right col-xs-12" ng-controller="JobsListController">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Jobs List:</h3></div>
+    </div>
+
+    <div class="mt-10">
+        <table class="table table-bordered table-striped table-condensed table-hover"
+               ng-table="studentParams">
+            <tr ng-repeat="job in jobs " style="text-align: center;">
+                <td data-title="'Vehicle'" sortable="'vehicle'" class="clickable-item">
+                    {{job.vehicle.registrationNo}}
+                </td>
+                <td data-title="'Inventory'" sortable="'inventory'" class="clickable-item">
+                    {{job.inventory.name}}
+                </td>
+                <td data-title="'Date'" sortable="'date'" class="clickable-item">
+                    {{job.date | date:'dd-MM-y'}}
+                </td>
+                <td data-title="'Reminder Date'" sortable="'reminder date'" class="clickable-item">
+                    {{job.reminderDate | date:'dd-MM-y'}}
+                </td>
+                <td data-title="'Milage'" sortable="'name'" class="clickable-item">
+                    {{job.milege}}
+                </td>
+                <td data-title="'Action'" class="col-sm-2">
+                    <a href="#" class="btn" ng-click="goToEditPage(job._id)">
+                        <span class="glyphicon glyphicon-pencil"></span></a>
+                    <a href="#" class="btn" ng-click="delete(job._id)">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </a>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div class="add-image pull-right">
+        <figure>
+            <a href="#" ng-click="goToEditPage()"><img src="images/Add_Truck.png" alt="Add Job" title="Add Job"></a>
+        </figure>
+    </div>
+</div>

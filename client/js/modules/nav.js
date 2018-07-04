@@ -1,4 +1,5 @@
-app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$cookies', '$rootScope', function ($scope, $state, Utils, AccountServices, $cookies, $rootScope) {
+app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$cookies', '$rootScope','ReminderService', function ($scope, $state, Utils, AccountServices, $cookies, $rootScope,ReminderService) {
+    $scope.remainder ='';
     $scope.logout = function () {
         Utils.logout();
         $cookies.remove('token');
@@ -9,12 +10,21 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         $rootScope.loggedTrue();
         $state.go('login');
     };
+
+    $scope.getCount = function(){
+        ReminderService.getReminderCount(function(successCallback){
+            if(successCallback.data.status){
+                $scope.remainder = successCallback.data.data;
+            }
+        });
+    };
+
     $scope.isLoggedIn = function () {
         $scope.displayName=$cookies.get('userName');
         $scope.routeConfigEnabled = $cookies.get('routeConfigEnabled');
         return $cookies.get('token') != undefined;
 
-    }
+    };
 
     $scope.isLoggedInn = '';
 
@@ -28,6 +38,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         }
     };
     $rootScope.loggedTrue();
+    $scope.getCount();
     
     $scope.isLoggedin=$cookies.get('token');
 

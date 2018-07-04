@@ -17,42 +17,62 @@ ExpenseMaster.prototype.addExpenseType = function (jwt, expenseMasterdetails,req
         status: false,
         messages: []
     };
-
-    if (!expenseMasterdetails.expenseName || !_.isString(expenseMasterdetails.expenseName)) {
+    /*if (!expenseMasterdetails.expenseName || !_.isString(expenseMasterdetails.expenseName)) {
         retObj.messages.push("Please provide valid expense name");
         analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
         callback(retObj);
-    }
+    }*/
     if (!retObj.messages.length) {
-        ExpenseMasterColl.findOne({'accountId':jwt.accountId, expenseName: expenseMasterdetails.expenseName}, function (err, expense) {
-            if (err) {
-                retObj.messages.push("Error, try again!");
-                analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
-                callback(retObj);
-            } else if (expense) {
-                retObj.messages.push("Expense already exists");
-                analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
-                callback(retObj);
-            } else {
-                expenseMasterdetails.createdBy = jwt.id;
-                expenseMasterdetails.updatedBy = jwt.id;
-                expenseMasterdetails.accountId = jwt.accountId;
-                var insertDoc = new ExpenseMasterColl(expenseMasterdetails);
-                insertDoc.save(function (err, newDoc) {
-                    if (err) {
-                        retObj.messages.push("Error, try Again");
-                        analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
-                        callback(retObj);
-                    } else {
-                        retObj.status = true;
-                        retObj.messages.push("Successfully Added");
-                        retObj.newDoc = newDoc;
-                        analyticsService.create(req,serviceActions.add_expense_type,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
-                        callback(retObj);
-                    }
-                });
-            }
-        });
+       if(expenseMasterdetails.expenseName){
+           ExpenseMasterColl.findOne({'accountId':jwt.accountId, expenseName: expenseMasterdetails.expenseName}, function (err, expense) {
+               if (err) {
+                   retObj.messages.push("Error, try again!");
+                   analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                   callback(retObj);
+               } else if (expense) {
+                   retObj.messages.push("Expense already exists");
+                   analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                   callback(retObj);
+               } else {
+                   expenseMasterdetails.createdBy = jwt.id;
+                   expenseMasterdetails.updatedBy = jwt.id;
+                   expenseMasterdetails.accountId = jwt.accountId;
+                   var insertDoc = new ExpenseMasterColl(expenseMasterdetails);
+                   insertDoc.save(function (err, newDoc) {
+                       if (err) {
+                           retObj.messages.push("Error, try Again");
+                           analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                           callback(retObj);
+                       } else {
+                           retObj.status = true;
+                           retObj.messages.push("Successfully Added");
+                           retObj.newDoc = newDoc;
+                           analyticsService.create(req,serviceActions.add_expense_type,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
+                           callback(retObj);
+                       }
+                   });
+               }
+           });
+       }else{
+           expenseMasterdetails.createdBy = jwt.id;
+           expenseMasterdetails.updatedBy = jwt.id;
+           expenseMasterdetails.accountId = jwt.accountId;
+           var insertDoc = new ExpenseMasterColl(expenseMasterdetails);
+           insertDoc.save(function (err, newDoc) {
+               if (err) {
+                   retObj.messages.push("Error, try Again");
+                   analyticsService.create(req,serviceActions.add_expense_type_err,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                   callback(retObj);
+               } else {
+                   retObj.status = true;
+                   retObj.messages.push("Successfully Added");
+                   retObj.newDoc = newDoc;
+                   analyticsService.create(req,serviceActions.add_expense_type,{body:JSON.stringify(req.body),accountId:req.jwt.id,success:true},function(response){ });
+                   callback(retObj);
+               }
+           });
+       }
+
     }
 };
 
