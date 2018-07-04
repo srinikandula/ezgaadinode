@@ -99,11 +99,13 @@ app.controller('PickRouteLocationController', ['$scope','$state','RouteConfigSer
         $scope.position ={};
     }
     $scope.marker = null;
-    $scope.accountHomeLocation = [];
+    $scope.accountHomeLocation = [ 81.23952833333334, 26.266689999999997 ];
     AccountServices.getAccountHomeLocation(function(success){
         $scope.latlng = success.data.data.homeLocation.latlng;
         // console.log(" home location latlng.....",$scope.latlng);
-        $scope.accountHomeLocation = [parseFloat($scope.latlng[0]), parseFloat($scope.latlng[1])];
+        if($scope.latlng){
+            $scope.accountHomeLocation = [parseFloat($scope.latlng[0]), parseFloat($scope.latlng[1])];
+        }
     },function(error){
 
     });

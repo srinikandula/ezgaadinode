@@ -47,7 +47,7 @@ AuthRouter.delete('/deleteImage',function(req,res){
     });
 });
 
-var task = cronjob.schedule('* * * * *', function() {
+var task = cronjob.schedule('* * 01 * *', function() {
     API.sendReminder(function(result){
     });
 });

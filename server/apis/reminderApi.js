@@ -30,7 +30,9 @@ Reminders.prototype.getReminderCount = function(jwt,callback){
         status:false,
         messages:[]
     };
-    RemindersCollection.count({$and:[{accountId:jwt.id},{status:"Enable"}]},function(err,count){
+    var currentDate = new Date();
+    var sevenDate = new Date(currentDate.setDate(currentDate.getDate()+7));
+    RemindersCollection.count({$and:[{accountId:jwt.id},{status:"Enable"},{"reminderDate":{$lte:sevenDate}}]},function(err,count){
         if(err){
             retObj.status=false;
             retObj.messages.push("error"+JSON.stringify(err));
