@@ -43,7 +43,7 @@
                         </span>
                 <select class="form-control custom-form-control" ng-model="job.type">
                     <option value="" selected>Select Job Type</option>
-                    <option ng-repeat="e in expenses" value="{{e._id}}">{{e.jobName}}</option>
+                    <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
                     <option value="others">Others</option>
                 </select>
             </div>
@@ -51,7 +51,7 @@
         <div ng-show="job.type=='others'">
             <div class="form-group col-xs-12">
                 <div class="">
-                    <input type="text" ng-model="job.jobName"
+                    <input type="text" ng-model="job.expenseName"
                            class="form-control custom-form-control" id="name" placeholder="Job Type">
                 </div>
             </div>

@@ -117,7 +117,7 @@ Reminders.prototype.getReminder = function(id,jwt,callback){
         status:false,
         messages:[]
     };
-    RemindersCollection.findOne({_id:id}).populate({path:"inventory"}).populate({path:"vehicle"}).exec(function(err,reminder){
+    RemindersCollection.findOne({_id:id}).populate({path:"refId"}).populate({path:"inventory"}).populate({path:"vehicle"}).exec(function(err,reminder){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while deleting load request"+JSON.stringify(err));
