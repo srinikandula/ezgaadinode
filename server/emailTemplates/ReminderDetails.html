@@ -5,6 +5,22 @@
     <title>Easygaadi</title>
 </head>
 <body>
-<div><p>$emailData</p></div>
+<div>
+    <table border="1">
+        <tr>
+            <td>Reminder Date</td>
+            <td>Reminder Text</td>
+            <td>Status</td>
+
+        </tr>
+        #foreach($record in $emailData)
+        <tr>
+            <td>$record.reminderDate</td>
+            <td>$record.reminderText</td>
+            <td>$record.status</td>
+        </tr>
+        #end
+    </table>
+</div>
 </body>
 </html>

@@ -6,7 +6,6 @@ var SmsService = require('./smsApi');
 var emailService = require('./mailerApi');
 var NotificationColl = require('./../models/schemas').NotificationColl;
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
-var AccountsColl = require('./../models/schemas').AccountsColl;
 
 
 var expenseMasterApi = require('./expenseMasterApi');
@@ -14,39 +13,6 @@ var expenseMasterApi = require('./expenseMasterApi');
 
 var Jobs = function () {
 };
-
-function addDetailsToNotification(notificationParams,reminder, callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    NotificationColl.find({"refId":reminder._id},function(err,result){
-        if(err){
-                retObj.status = false;
-                retObj.messages.push("Please try again"+JSON.stringify(err));
-                callback(retObj);
-        }else{
-            if(result.length>0){
-                retObj.status = false;
-                retObj.messages.push("Notification already exists..");
-                callback(retObj);
-            }else{
-                var notification = new NotificationColl(notificationParams);
-                notification.save(function (err, notiData) {
-                    if (err) {
-                        retObj.status = false;
-                        retObj.messages.push("Please try again");
-                        callback(retObj);
-                    } else {
-                        retObj.status = true;
-                        retObj.messages.push(notiData.message);
-                        callback(retObj);
-                    }
-                });
-            }
-        }
-    });
-}
 
 
 function save(job,reminder,callback){
@@ -98,7 +64,10 @@ Jobs.prototype.addJob = function(req,callback){
     jobInfo.accountId = req.jwt.accountId;
     var reminder = {
         reminderDate:jobInfo.reminderDate,
+        vehicle:jobInfo.vehicle,
+        jobDate:jobInfo.date,
         reminderText:jobInfo.reminderText,
+        inventory:jobInfo.inventory,
         accountId:req.jwt.accountId,
         status:'Enable'
     };
@@ -217,8 +186,27 @@ Jobs.prototype.getAllJobs = function(jwt,callback){
     });
 
 };
+function getJobs(jwt,job,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var query = {accountId:jwt.id,vehicle:job.vehicle._id,date:{$lt:job.date}};
+    JobsCollection.find(query).populate({path:"type"}).populate({path:"inventory"}).sort({date:1}).limit(3).exec(function(err,records){
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while getting data"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push("Success..");
+            retObj.records = records
+            callback(retObj);
+        }
+    });
+};
 
-Jobs.prototype.getJob = function(id,callback){
+Jobs.prototype.getJob = function(jwt,id,callback){
     var retObj = {
         status:false,
         messages:[]
@@ -230,10 +218,21 @@ Jobs.prototype.getJob = function(id,callback){
             retObj.messages.push("error while getting data"+JSON.stringify(err));
             callback(retObj);
         } else{
-            retObj.status=true;
-            retObj.messages.push("records fetched successfully");
-            retObj.data = job;
-            callback(retObj);
+            getJobs(jwt,job,function(getCallback){
+                if(getCallback.status){
+                    retObj.status=true;
+                    retObj.messages.push("records fetched successfully");
+                    retObj.data = job;
+                    retObj.records = getCallback.records;
+                    callback(retObj);
+                }else{
+                    retObj.status=true;
+                    retObj.messages.push("records fetched successfully");
+                    retObj.data = job;
+                    retObj.records =[];
+                    callback(retObj);
+                }
+            });
         }
     });
 

@@ -1852,6 +1852,11 @@ table.dataTable thead td, table.dataTable thead th{
     color: #838993;
     padding: 25px;
 }
+.table-name {
+    font-size: 18px;
+    font-family: Gotham-Medium;
+    color: #838993;
+}
 
 .db-title {
     font-size: 16px;

@@ -28,7 +28,7 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
     }
 }]);
 
-app.controller('Add_EditJobController',['$scope','Upload','Notification','$state','ExpenseMasterServices','TrucksService','InventoriesService','$stateParams','JobsService','TripServices','$uibModal',function($scope,Upload,Notification,$state,ExpenseMasterServices,TrucksService,InventoriesService,$stateParams,JobsService,TripServices,$uibModal){
+app.controller('Add_EditJobController',['$scope','Upload','Notification','$state','ExpenseMasterServices','TrucksService','InventoriesService','$stateParams','JobsService','TripServices','$uibModal','$rootScope',function($scope,Upload,Notification,$state,ExpenseMasterServices,TrucksService,InventoriesService,$stateParams,JobsService,TripServices,$uibModal,$rootScope){
     $scope.title = 'Add Job';
     $scope.reminder = {};
 
@@ -67,10 +67,11 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                 $scope.job = successCallback.data.data;
                 $scope.job.date = new Date($scope.job.date);
                 $scope.job.reminderDate = new Date($scope.job.reminderDate);
+                $scope.records = successCallback.data.records;
             }
         },function(errorCallback){});
 
-    }
+    };
     $scope.add_editJob = function(){
         var file = $scope.job.file;
         if($stateParams.ID){
@@ -83,6 +84,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
             }).then(function (successCallback,errorCallback) {
                 if(successCallback.data.status){
                     Notification.success({message:"updated Successfully"});
+                    $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
                 }else{
                     successCallback.data.messages.forEach(function (message) {
@@ -100,6 +102,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
             }).then(function (successCallback,errorCallback) {
                 if(successCallback.data.status){
                     Notification.success({message:"Added Successfully"});
+                    $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
                 }else{
                     successCallback.data.messages.forEach(function (message) {
