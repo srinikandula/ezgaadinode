@@ -3,6 +3,7 @@ var express = require('express');
 
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
+var cronjob = require('node-cron');
 
 
 var API = require('../apis/reminderApi');
@@ -37,6 +38,11 @@ AuthRouter.delete('/deleteReminder/:id',function(req,res){
         res.json(result);
     });
 });
+var task = cronjob.schedule('* * 01 * *', function() {
+    API.sendReminder(function(result){
+    });
+});
+task.start();
 
 
 

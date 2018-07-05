@@ -41,7 +41,7 @@ app.factory('ReminderService',['$http', '$cookies', function ($http, $cookies) {
     }
 }]);
 
-app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notification',function($scope,ReminderService,$state,Notification){
+app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notification','$rootScope',function($scope,ReminderService,$state,Notification,$rootScope){
 
     ReminderService.getReminders(function(successCallback){
         if(successCallback.data.status){
@@ -52,7 +52,6 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
     ReminderService.getReminderCount(function(successCallback){
         if(successCallback.data.status){
             $scope.remainder = successCallback.data.data;
-            console.log($scope.remainder);
         }
     });
 
@@ -63,6 +62,8 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
         ReminderService.deleteReminder(id,function(successCallback){
             if(successCallback.data.status){
                 Notification.success({message:"Deleted Successfully"});
+                $rootScope.$broadcast("reminderDeleted");
+
             }else{
                 successCallback.data.messages.forEach(function (message) {
                     Notification.error({ message: message });
@@ -76,12 +77,17 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
 
 app.controller("remindersCtrl",['$scope','$rootScope','ReminderService','Notification','$state','$stateParams',function($scope,$rootScope,ReminderService,Notification,$state,$stateParams){
     $scope.reminder = {};
+    $scope.job = {};
     if($stateParams.ID){
         $scope.title = 'update Reminder';
         ReminderService.getReminder($stateParams.ID,function(successCallback){
             if(successCallback.data.status){
                 $scope.reminder = successCallback.data.data;
                 $scope.reminder.reminderDate = new Date($scope.reminder.reminderDate);
+                $scope.job.vehicle = $scope.reminder.vehicle.registrationNo;
+                $scope.job.inventory = $scope.reminder.inventory.name;
+                var dateAvailable = $scope.reminder.jobDate.getMonth()+1;
+                $scope.job.date = $scope.reminder.jobDate.getDate()+"-"+dateAvailable+"-"+$scope.reminder.jobDate.getFullYear()
             }
         },function (errorCallback) {});
     }else{
@@ -102,7 +108,6 @@ app.controller("remindersCtrl",['$scope','$rootScope','ReminderService','Notific
                     });
                 }
             },function(errorCallback){
-
             });
         }else{
             ReminderService.addReminder(params,function(successCallback){
@@ -116,6 +121,7 @@ app.controller("remindersCtrl",['$scope','$rootScope','ReminderService','Notific
                     });
                 }
             },function(errorCallback){
+                console.log(errorCallback);
 
             });
         }

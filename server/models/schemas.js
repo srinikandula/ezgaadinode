@@ -343,9 +343,12 @@ var notificationsSchema = mongoose.Schema({
 }, {timestamps: String});
 
 var remindersSchema = mongoose.Schema({
-    refId:String,
+    refId:{type: ObjectId, ref: 'jobs'},
     reminderText:String,
+    inventory:{type: ObjectId, ref: 'inventories'},
     reminderDate:Date,
+    jobDate:Date,
+    vehicle: {type: ObjectId, ref: 'trucks'},
     accountId:{type: ObjectId, ref: 'accounts'},
     status: String
 }, {timestamps: String});
