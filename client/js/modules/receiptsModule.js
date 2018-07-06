@@ -281,7 +281,7 @@ app.controller('receiptsEditController', ['$scope', 'ReceiptsService', '$statePa
     
 
     function getPartyIds() {
-        TripServices.getPartiesByTrips(function (success) {
+        TripServices.getPartiesWhoHasTrips(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.partyList;
                  var selectedParty = _.find($scope.parties, function (party) {

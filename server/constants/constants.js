@@ -79,6 +79,7 @@ const serviceActions = {
     find_expenses_by_vehs_err: 'FIND_EXPENSES_BY_VEHS_ERR',
     find_expenses_by_veh: 'FIND_EXPENSES_BY_VEH',
     find_expenses_by_veh_err: 'FIND_EXPENSES_BY_VEH_ERR',
+    share_trip_det_by_email: 'SHARE_TRIP_DET_BY_EMAIL',
     share_expense_det_by_email: 'SHARE_EXPENSE_DET_BY_EMAIL',
     share_expense_det_by_email_err: 'SHARE_EXPENSE_DET_BY_EMAIL_ERR',
     dwnld_expense_det: 'DWNLD_EXPENSE_DET',
