@@ -84,10 +84,6 @@ app.controller("remindersCtrl",['$scope','$rootScope','ReminderService','Notific
             if(successCallback.data.status){
                 $scope.reminder = successCallback.data.data;
                 $scope.reminder.reminderDate = new Date($scope.reminder.reminderDate);
-                $scope.job.vehicle = $scope.reminder.vehicle.registrationNo;
-                $scope.job.inventory = $scope.reminder.inventory.name;
-                var dateAvailable = $scope.reminder.jobDate.getMonth()+1;
-                $scope.job.date = $scope.reminder.jobDate.getDate()+"-"+dateAvailable+"-"+$scope.reminder.jobDate.getFullYear()
             }
         },function (errorCallback) {});
     }else{

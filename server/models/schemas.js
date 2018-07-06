@@ -309,11 +309,11 @@ var rolesSchema = new mongoose.Schema({
 var expenseMaster = new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     expenseName: String,
-    jobName:String,
     updatedBy: String,
     createdBy: String,
     attrs: {}
 }, {timestamps: String});
+
 
 var erpPaymentsSchema = mongoose.Schema({
     createdBy:{type: ObjectId, ref: 'accounts'},

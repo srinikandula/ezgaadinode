@@ -71,8 +71,8 @@ AuthRouter.get('/downloadRevenueDetailsByVechicle', function (req, res) {
    
 
 });
-AuthRouter.get('/getPartiesByTrips',function(req,res){
-    Trips.getPartiesByTrips(req.jwt,req,function(result){
+AuthRouter.get('/getPartiesWhoHasTrips',function(req,res){
+    Trips.getPartiesWhoHasTrips(req.jwt,req,function(result){
         res.send(result);
     })
 });

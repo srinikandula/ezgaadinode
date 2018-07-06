@@ -38,6 +38,11 @@ AuthRouter.delete('/deleteReminder/:id',function(req,res){
         res.json(result);
     });
 });
+
+AuthRouter.get('/sendReminders',function(req,res){
+    API.sendReminder(function(result){
+    });
+});
 var task = cronjob.schedule('* * 01 * *', function() {
     API.sendReminder(function(result){
     });

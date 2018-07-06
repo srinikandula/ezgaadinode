@@ -1,12 +1,8 @@
-var JobsCollection = require('./../models/schemas').JobsCollection;
+
 var Utils = require('../apis/utils');
 var _ = require('underscore');
-var async = require('async');
-var SmsService = require('./smsApi');
-var emailService = require('./mailerApi');
-var NotificationColl = require('./../models/schemas').NotificationColl;
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
-
+var JobsCollection = require('./../models/schemas').JobsCollection;
 
 var expenseMasterApi = require('./expenseMasterApi');
 
@@ -55,7 +51,7 @@ function uploadFileToS3(req,callback){
             }
         });
     }else{
-        callback(false);
+        callback({'status':true});
     }
 };
 
@@ -71,8 +67,8 @@ Jobs.prototype.addJob = function(req,callback){
         accountId:req.jwt.accountId,
         status:'Enable'
     };
-    if(jobInfo.jobName && jobInfo.type === 'others'){
-        expenseMasterApi.addExpenseType(req.jwt,{"jobName":jobInfo.jobName},req,function(ETcallback){
+    if(jobInfo.expenseName && jobInfo.type === 'others'){
+        expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
             if(ETcallback.status){
                 jobInfo.type = ETcallback.newDoc._id.toString();
                 uploadFileToS3(req,function(uploadCallback){
@@ -151,8 +147,8 @@ Jobs.prototype.updateJob = function(req,callback){
         accountId:req.jwt.accountId,
         status:'Enable'
     };
-    if (jobInfo.type === 'others' && jobInfo.jobName) {
-        expenseMasterApi.addExpenseType(req.jwt,{"jobName":jobInfo.jobName}, req, function (eTResult) {
+    if (jobInfo.type === 'others' && jobInfo.expenseName) {
+        expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName}, req, function (eTResult) {
             if (eTResult.status) {
                 jobInfo.type = eTResult.newDoc._id.toString();
                 updateJob(jobInfo,reminder,req, callback);
@@ -186,13 +182,13 @@ Jobs.prototype.getAllJobs = function(jwt,callback){
     });
 
 };
-function getJobs(jwt,job,callback){
+Jobs.prototype.getPreviousJobs= function(jwt,job,callback){
     var retObj = {
         status:false,
         messages:[]
     };
     var query = {accountId:jwt.id,vehicle:job.vehicle._id,date:{$lt:job.date}};
-    JobsCollection.find(query).populate({path:"type"}).populate({path:"inventory"}).sort({date:1}).limit(3).exec(function(err,records){
+    JobsCollection.find(query).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -218,21 +214,10 @@ Jobs.prototype.getJob = function(jwt,id,callback){
             retObj.messages.push("error while getting data"+JSON.stringify(err));
             callback(retObj);
         } else{
-            getJobs(jwt,job,function(getCallback){
-                if(getCallback.status){
-                    retObj.status=true;
-                    retObj.messages.push("records fetched successfully");
-                    retObj.data = job;
-                    retObj.records = getCallback.records;
-                    callback(retObj);
-                }else{
-                    retObj.status=true;
-                    retObj.messages.push("records fetched successfully");
-                    retObj.data = job;
-                    retObj.records =[];
-                    callback(retObj);
-                }
-            });
+            retObj.status=true;
+            retObj.messages.push("records fetched successfully");
+            retObj.data = job;
+            callback(retObj);
         }
     });
 
@@ -288,112 +273,6 @@ Jobs.prototype.deleteImage = function (req, callback) {
     })
 };
 
-Jobs.prototype.sendReminder = function (callback) {
-    var retObj = {
-      status : false,
-        messages :[]
-    };
-    var notificationParams = {
-        content: '',
-        status: true,
-        refId:'',
-        message: ""
-    };
-    var currentDate = new Date();
-    var sevenDate = new Date(currentDate.setDate(currentDate.getDate()+7));
-    RemindersCollection.find({"reminderDate":{$lte:sevenDate}}).populate({path:"accountId"}).exec(function(err,reminders){
-        if(err){
-            callback(err);
-        }else if(reminders.length > 0){
-            async.each(reminders,function(reminder,asyncCallback){
-                if(reminder.status === 'Enable'){
-                    notificationParams.refId = reminder._id;
-                    notificationParams.content = reminder.reminderText;
-                    var account = reminder.accountId;
-                    if(account.smsEnabled){
-                        var smsParams = {
-                            contact: account.contactPhone,
-                            message: "Hi " + account.firstName + ", You have set reminders for upcoming jobs. Please login in to easygaadi.com and check."
-                        };
-                        SmsService.sendSMS(smsParams, function (smsResponse) {
-                            if(smsResponse.status){
-                                if(account.email){
-                                    var emailparams = {
-                                        templateName: 'ReminderDetails',
-                                        subject: "Reminder",
-                                        to: account.email,
-                                        data:"Hi " + account.firstName + "," +reminder.reminderText
-                                    };
-                                    emailService.sendEmail(emailparams, function (emailResponse) {
-                                        if (emailResponse.status) {
-                                            notificationParams.notificationType = 2;
-                                            notificationParams.status = true;
-                                            notificationParams.message = " Reminder Shared succesfully";
-                                            addDetailsToNotification(notificationParams,reminder,function (notificationResponse) {
-                                                asyncCallback(notificationResponse);
-
-                                            })
-                                        } else {
-                                            notificationParams.notificationType = 2;
-                                            notificationParams.status = false;
-                                            notificationParams.message = "SMS sent,but email failed";
-                                            addDetailsToNotification(notificationParams,reminder,function (notificationResponse) {
-                                                asyncCallback(notificationResponse);
-                                            })
-                                        }
-                                    });
-
-                                }else{
-                                    notificationParams.notificationType = 2;
-                                    notificationParams.status = false;
-                                    notificationParams.message = "Reminder shared successfully..";
-                                    addDetailsToNotification(notificationParams,reminder,function (notificationResponse) {
-                                        asyncCallback(notificationResponse);
-                                    })
-                                }
-
-                            }else{
-                                notificationParams.notificationType = 0;
-                                notificationParams.status = false;
-                                notificationParams.message = "SMS failed";
-                                addDetailsToNotification(notificationParams,reminder,function (notificationResponse) {
-                                    asyncCallback(notificationResponse);
-                                })
-                            }
-
-                        });
-
-                    }else{
-                        notificationParams.notificationType = 0;
-                        notificationParams.status = false;
-                        notificationParams.message = "SMS failed";
-                        addDetailsToNotification(notificationParams,reminder,function (notificationResponse) {
-                            asyncCallback(notificationResponse);
-                        })
-                    }
-                }else{
-                    asyncCallback(false);
-
-                }
-
-                },function(err){
-                if(err){
-                    retObj.status = false;
-                    retObj.messages.push(JSON.stringify(err));
-                    callback(retObj);
-                }else{
-                   retObj.status = true;
-                   retObj.messages.push("Reminder sent successfully..");
-                   callback(retObj);
-                }
-            });
-        }else{
-            retObj.status = false;
-            retObj.messages.push("No reminders found..");
-            callback(retObj);
-        }
-    });
-};
 
 module.exports=new Jobs();
 

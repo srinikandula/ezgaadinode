@@ -72,9 +72,9 @@ app.factory('TripServices', ['$http', function ($http) {
                 params: params
             }).then(success, error);
         },
-        getPartiesByTrips: function (success, error) {
+        getPartiesWhoHasTrips: function (success, error) {
             $http({
-                url: '/v1/trips/getPartiesByTrips',
+                url: '/v1/trips/getPartiesWhoHasTrips',
                 method: "GET"
             }).then(success, error);
         },
