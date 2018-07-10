@@ -150,7 +150,7 @@ AuthRouter.post('/loockingForTripRequest', function (req, res) {
     });
 });
 /*
-params:file
+*params:{file:file}
 * input excel file,it contains column names (date,truck number,driver,party name,source,destination,vehicle type,tonnage,rate,fight amount,advance,remark)
 */
 AuthRouter.post('/uploadTrips',multipartyMiddleware, function (req, res) {

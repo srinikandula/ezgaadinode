@@ -1,6 +1,8 @@
 var express = require('express');
 var AuthRouter = express.Router();
 var Payments = require('../apis/erpPayments');
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 
 AuthRouter.get("/totalPayments",function (req,res) {
     Payments.totalPayments(req,function (result) {
@@ -83,6 +85,15 @@ AuthRouter.get('/downloadDetails', function (req, res) {
     });
 });
 
+/*
+*params:{file:file}
+* input excel file,it contains column names (date,party name,amount,remark)
+*/
+AuthRouter.post('/uploadPayments',multipartyMiddleware, function (req, res) {
+    Payments.uploadPayments(req,function (result) {
+        res.send(result);
+    });
+});
 module.exports = {
     AuthRouter: AuthRouter
 };

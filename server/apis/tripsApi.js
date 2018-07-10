@@ -2279,6 +2279,7 @@ Trips.prototype.uploadTrips = function (req, callback) {
                             tripCallback(err);
                         } else {
                             let obj = {};
+                            obj.tripId = "TR" + parseInt(Math.random() * 100000);
                             obj.createdBy = req.jwt.id;
                             obj.updatedBy = req.jwt.id;
                             obj.accountId = accountId;
