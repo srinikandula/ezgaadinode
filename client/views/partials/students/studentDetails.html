@@ -1,0 +1,15 @@
+
+<div ng-controller="studentDetailsController" ng-init="studentdetails()">
+<form >
+    <table>
+        <th>StudentName</th>
+        <th>Age</th>
+        <th>SchoolName</th>
+        <tr ng-repeat="i in student">
+            <td>{{i.studentName}}</td>
+            <td>{{i.age}}</td>
+            <td>{{i.schoolName}}</td>
+        </tr>
+        </table>
+        
+    </form> 

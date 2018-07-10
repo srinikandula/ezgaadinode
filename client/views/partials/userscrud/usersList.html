@@ -1,0 +1,86 @@
+<div class="main-right col-xs-12" ng-controller="UsersDetails" ng-init="getUsers()">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Users</h3></div>
+        <ul class="col-sm-9 pall-zero list-inline">
+            <li class="col-sm-6">
+                <form>
+                    <div class="input-group stylish-input-group">
+                        <input type="text" ng-model="userName1" class="form-control"
+                               placeholder="Search By Truck Number">
+                        <span class="input-group-addon">
+                        <button type="submit" ng-click="searchByUserName(userName1);">
+                           <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                    </div>
+                </form>
+            </li>
+            <!-- <li class="col-sm-4 pos-relative">
+                 <div class="select-box erp-box">
+                     <ui-select ng-model="truckName" theme="select2"
+                                title="Choose a person" append-to-body="true"
+                                ng-change="searchByTruckName(truckName.registrationNo);">
+                         <ui-select-match placeholder=" Select a Truck" class="form-control ui-select-control">
+                             {{$select.selected.registrationNo || registrationNo}}
+                         </ui-select-match>
+                         <ui-select-choices
+                                 repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
+                             <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
+                         </ui-select-choices>
+                     </ui-select>
+                 </div>
+             </li>
+             </li>-->
+            <li class="col-sm-1">
+                <button type="button" ng-click="shareDetailsViaEmail()"
+                        class="btn mailImage"><img src="images/Reports_Mail.png">
+                </button>
+            </li>
+            <li class="col-sm-1">
+                <button type="button" ng-click="downloadDetails();" class="btn mailImage">
+                    <img src="images/Reports_Download.png"></button>
+            </li>
+        </ul>
+    </div>
+
+
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="truckParams">
+        <tr ng-repeat="trucks in currentPageOfTrucks" style="text-align: center;">
+            <td data-title="'UserName'" sortable="'UserName'" class="clickable-item">
+                {{users.username | uppercase}}
+            </td>
+
+            <td data-title="'Password'" sortable="'Password'" class="clickable-item">
+                {{users.password | uppercase}}
+            </td>
+            <td data-title="'Address'" sortable="'Address'" class="clickable-item">
+                {{users.address | uppercase}}
+            </td>
+
+
+            <td data-title="'Action'">
+                <a href="#" class="btn edit-icon" ng-click="goToEditTruckPage(trucks._id)">
+                    <span class="glyphicon glyphicon-pencil"></span></a>
+
+                <a href="#" class="btn edit-icon" ng-show="userType=='account'" ng-click="deleteTruck(trucks._id)">
+
+
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+            </td>
+        </tr>
+        <tr ng-if="!currentPageOfTrucks || currentPageOfTrucks.length === 0">
+            <td colspan="10">No trucks Records exist.</td>
+        </tr>
+    </table>
+    <div class="add-image pull-right" ng-show="type=='account'">
+        <figure>
+            <a href="#" ng-click="goToEditTruckPage()">
+                <img src="images/Add_Truck.png" alt="Add Truck"
+                     title="Add Truck"></a>
+        </figure>
+    </div>
+
+</div>
+
+

@@ -228,6 +228,27 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             truckId: null
         }
     }).state({
+        name: 'usersEdit',
+        url: '/usersEdit/:userId',
+        templateUrl: 'views/partials/userscrud/usersList.html',
+        data: {
+            activeTab: 'usersEdit',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'users',
+        url: '/users',
+        templateUrl: 'views/partials/userscrud/addUser.html',
+        data: {
+            activeTab: 'users',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }.state({
         name: 'trips',
         url: '/trips',
         templateUrl: 'views/partials/trips/tripsList.html',

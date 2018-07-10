@@ -188,6 +188,14 @@ var truckSchema = new mongoose.Schema({
     vehicleType:String
 }, {timestamps: true});
 
+var userSchema=new mongoose.Schema({
+    username:String,
+    password:String,
+    confirmpassword:String,
+    address:String
+
+    });
+
 var tripSchema = new mongoose.Schema({
     date: Date,
     registrationNo: String, //this will be truck id
@@ -1028,6 +1036,7 @@ module.exports = {
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
+    UsersColl: mongoose.model('users', userSchema, 'users'),
     TripCollection: mongoose.model('trips', tripSchema, 'trips'),
     ExpenseCostColl: mongoose.model('expense', expensesSchema, 'expense'),
     PartyCollection: mongoose.model('parties', partySchema, 'parties'),
