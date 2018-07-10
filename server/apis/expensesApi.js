@@ -1805,7 +1805,6 @@ Expenses.prototype.getPartiesFromExpense = function (req, callback) {
     }
 
 };
-/*Upload expenses starting*/
 Expenses.prototype.uploadExpensesData = function (req, callback) {
     let retObj = {
         status: false,
@@ -1817,6 +1816,7 @@ Expenses.prototype.uploadExpensesData = function (req, callback) {
         retObj.messages.push("Please provide file");
         callback(retObj);
     } else {
+        /*parse data from excel sheet*/
         var workbook = XLSX.readFile(file.path);
         var sheet_name_list = workbook.SheetNames;
         var worksheet = workbook.Sheets[workbook.SheetNames[0]];
@@ -1831,8 +1831,7 @@ Expenses.prototype.uploadExpensesData = function (req, callback) {
                     tt = i;
                     break;
                 }
-            }
-            ;
+            };
             var col = z.substring(0, tt);
             var row = parseInt(z.substring(tt));
             var value = worksheet[z].v;
@@ -1852,9 +1851,11 @@ Expenses.prototype.uploadExpensesData = function (req, callback) {
         if (data.length > 0) {
             var row = 0;
             var expanseList = [];
+            /*check data is valid or not*/
             async.eachSeries(data, function (expense, expenseCallback) {
                 row++;
                 if (expense['date'] && expense['truck number'] && expense['expense type'] && expense['mode'] && expense['amount']) {
+                    /*assign ids for strings*/
                     async.parallel({
                         getTruckId: function (vehicleNumberCallback) {
                             Utils.getTruckId(accountId, expense['truck number'], function (resp) {
@@ -1900,8 +1901,8 @@ Expenses.prototype.uploadExpensesData = function (req, callback) {
                             expenseCallback(err);
                         } else {
                             let obj = {};
-                            obj.createdBy = jwt.id;
-                            obj.updatedBy = jwt.id;
+                            obj.createdBy = req.jwt.id;
+                            obj.updatedBy = req.jwt.id;
                             obj.accountId = accountId;
                             obj.vehicleNumber = result.getTruckId;
                             obj.expenseType = result.getExpenseType;
@@ -1915,7 +1916,6 @@ Expenses.prototype.uploadExpensesData = function (req, callback) {
                                 obj.cost = 0;
                                 obj.totalAmount = expense['amount'];
                             }
-                            console.log("dataaaaq",expense['date'],new Date(expense['date'].replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3")));
                             obj.date =  new Date(expense['date'].replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
                             expanseList.push(obj);
                             expenseCallback(false);
@@ -1932,13 +1932,14 @@ Expenses.prototype.uploadExpensesData = function (req, callback) {
                     callback(err);
                 } else {
                     if(expanseList.length>0){
+                        /*Insert all records*/
                         expenseColl.insertMany(expanseList,function (err,docs) {
                           if(err){
                               retObj.messages.push("Internal server error, "+JSON.stringify(err.message));
                               callback(retObj);
                           }else{
                               retObj.status=true;
-                              retObj.messages.push(docs.length+" rows  succeessfully added" );
+                              retObj.messages.push(docs.length+" rows  successfully added" );
                               callback(retObj);
                           }
                         })
