@@ -18,6 +18,8 @@ var  Job= require('./server/routes/jobRoutes');
 var Trips = require('./server/routes/tripRoutes');
 var Expense = require('./server/routes/expensesRoutes');
 var Trucks = require('./server/routes/truckRoutes');
+var Users = require('./server/routes/userCrudRoutes');
+
 var Party = require('./server/routes/partyRoutes');
 // var Users = require('./server/routes/users')
 var Drivers = require('./server/routes/driverRoutes');
@@ -122,6 +124,7 @@ app.use('/v1/events', Events.AuthRouter);
 app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
 app.use('/v1/trucks', Trucks.AuthRouter);
+app.use('/v1/usersCrud',Users.OpenRouter);
 app.use('/v1/party', Party.AuthRouter);
 app.use('/v1/drivers', Drivers.AuthRouter);
 app.use('/v1/roles', Roles.AuthRouter);

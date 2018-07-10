@@ -1,0 +1,54 @@
+<div class="main-right col-xs-12" ng-controller="studentController">
+    <div class="col-xs-12 account-edit">
+        <h2 class="title-name ">{{pageTitle}}</h2>
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-readonly="userType==='group'"
+                           ng-disabled="userType==='group'" ng-model="student.name"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Student Name *</label>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-readonly="userType==='group'"
+                           ng-disabled="userType==='group'" ng-model="student.age"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Student Age *</label>
+                </div>
+
+           
+            </div>
+           
+        </div>
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-readonly="userType==='group'"
+                           ng-disabled="userType==='group'" ng-model="student.schoolname"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">School Name *</label>
+                </div>
+            
+            
+            
+        </div>
+        <div class="clearfix"></div>
+
+        
+
+        <div class="col-xs-12">
+            <div class="col-xs-4 mtb-25 sub-can">
+                <!-- <button type="submit" class="btn can" ng-click="goToTrucksPage()">Cancel</button> -->
+                <button type="submit" class="btn can  last" ng-click="addorupdatestudent()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+<!-- <form>
+    <label>StudentName</label><input type="text" ng-model="students.name">
+    <label>StudentAge</label><input type="text" ng-model="students.age">
+    <label>SchoolName</label><input type="text" ng-model="students.schoolname">
+    <input type="button" value="submit" ng-click= >
+    </form> -->
