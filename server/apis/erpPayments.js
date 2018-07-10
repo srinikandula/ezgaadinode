@@ -10,6 +10,8 @@ var serviceActions = require('./../constants/constants');
 var analyticsService = require('./../apis/analyticsApi');
 var Utils = require('./utils');
 var _ = require("underscore");
+var XLSX = require('xlsx');
+
 var Payments = function () {
 };
 function dateToStringFormat(date) {
@@ -798,5 +800,130 @@ Payments.prototype.downloadDetails = function (jwt, params,req, callback) {
             callback(retObj);
         }
     })
+};
+
+Payments.prototype.uploadPayments=function (req,callback) {
+  var retObj={
+      status:false,
+      messages:[]
+  };
+    let file = req.files.file;
+    let accountId = req.jwt.accountId;
+    if (!file) {
+        retObj.messages.push("Please provide file");
+        callback(retObj);
+    } else {
+        /*parse data from excel sheet*/
+        var workbook = XLSX.readFile(file.path);
+        var sheet_name_list = workbook.SheetNames;
+        var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        var headers = {};
+        var data = [];
+        for (z in worksheet) {
+            if (z[0] === '!') continue;
+            //parse out the column, row, and value
+            var tt = 0;
+            for (var i = 0; i < z.length; i++) {
+                if (!isNaN(z[i])) {
+                    tt = i;
+                    break;
+                }
+            };
+            var col = z.substring(0, tt);
+            var row = parseInt(z.substring(tt));
+            var value = worksheet[z].v;
+
+            //store header names
+            if (row == 1 && value) {
+                headers[col] = value;
+                continue;
+            }
+
+            if (!data[row]) data[row] = {};
+            data[row][headers[col]] = value;
+        }
+        data.shift();
+        data.shift();
+
+        if (data.length > 0) {
+            var row = 0;
+            var paymentsList = [];
+            /*check data is valid or not*/
+            async.eachSeries(data, function (payment, paymentCallback) {
+                row++;
+                if (payment['date'] && payment['party name'] && payment['amount'] && payment['remark']) {
+                    /*assign ids from strings*/
+                    async.parallel({
+                        getSupplierId: function (supplierCallback) {
+                            Utils.getSupplierId(accountId, payment['party name'], function (resp) {
+                                if (resp.status) {
+                                    supplierCallback(false, resp.data);
+                                } else {
+                                    supplierCallback(resp, "");
+                                }
+                            })
+                        },
+                        checkNumberValues:function (numberCallback) {
+                            if(isNaN(parseInt(payment['amount']))){
+                                retObj.messages.push("Please check amount");
+                                numberCallback(retObj,"");
+                            }else{
+                                numberCallback(false,"")
+                            }
+
+                        },
+                    }, function (err, result) {
+                        if (err) {
+                            console.log("err", err);
+
+                            paymentCallback(err);
+                        } else {
+                            let obj = {};
+                            obj.createdBy = req.jwt.id;
+                            obj.updatedBy = req.jwt.id;
+                            obj.accountId = accountId;
+                            obj.partyId = result.getSupplierId;
+                            obj.amount = payment['amount'];
+                            obj.description=payment['remark'];
+
+                            obj.date =  new Date(payment['date'].replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
+                            paymentsList.push(obj);
+                            paymentCallback(false);
+                        }
+                    });
+
+                } else {
+                    retObj.messages.push("Please provide all details for row number " + row);
+                    paymentCallback(retObj)
+                }
+            }, function (err) {
+                if (err) {
+                    err.messages.unshift("Getting error at row number " + row);
+                    callback(err);
+                } else {
+                    if(paymentsList.length>0){
+                        /*Insert all records*/
+                        ErpPaymentsColl.insertMany(paymentsList,function (err,docs) {
+                            if(err){
+                                retObj.messages.push("Internal server error, "+JSON.stringify(err.message));
+                                callback(retObj);
+                            }else{
+                                retObj.status=true;
+                                retObj.messages.push(docs.length+" rows  successfully added" );
+                                callback(retObj);
+                            }
+                        })
+                    }else{
+                        retObj.messages.push("Please enter valid data");
+                        callback(retObj);
+                    }
+                }
+            })
+        } else {
+            retObj.messages.push("Please enter valid data");
+            callback(retObj);
+        }
+
+    }
 };
 module.exports = new Payments();

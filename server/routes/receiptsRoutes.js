@@ -2,6 +2,8 @@ var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var Receipts = require('../apis/receiptsApi');
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 
 AuthRouter.post('/addReceipts', function (req, res) {
     Receipts.addReceipts(req.jwt, req.body,req, function (result) {
@@ -102,6 +104,16 @@ AuthRouter.get('/downloadDetails', function (req, res) {
         }else{
             res.send(result);
         }
+    });
+});
+
+/*
+*params:{file:file}
+* input excel file,it contains column names (date,party name,amount,payment type,remark)
+*/
+AuthRouter.post('/uploadReceipts',multipartyMiddleware, function (req, res) {
+    Receipts.uploadReceipts(req,function (result) {
+        res.send(result);
     });
 });
 module.exports = {
