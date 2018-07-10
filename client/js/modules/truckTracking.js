@@ -29,6 +29,15 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     $scope.markers=[];
     $scope.trackCount = 0;
 
+    if($stateParams.startDate && $stateParams.endDate && $stateParams.regNo){
+        var params = {
+            regNo:$stateParams.regNo.registrationNo,
+            startDate:$stateParams.startDate,
+            endDate:$stateParams.endDate
+        };
+        getLocations(params);
+    };
+
     var flightPath;
     var map,markerIndex=0;
     var mapOptions = {
@@ -153,7 +162,12 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         $scope.truckTrackingParams.endDate.setHours(23);
         $scope.truckTrackingParams.endDate.setMinutes(59);
         $scope.truckTrackingParams.endDate.setSeconds(59);
-        truckTrackingService.getTruckLocations($scope.truckTrackingParams,function (success) {
+        getLocations($scope.truckTrackingParams);
+
+    };
+
+    function getLocations(params){
+        truckTrackingService.getTruckLocations(params,function (success) {
             if(success.data.status){
                 if(flightPath){
                     flightPath.setMap(null);
@@ -170,8 +184,8 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 renderPolyline();
             }else{
                 success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
-                    });
+                    Notification.error({message: message});
+                });
             }
         },function (err) {
 

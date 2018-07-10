@@ -34,6 +34,19 @@ AuthRouter.get('/getJob/:id',function(req,res){
     });
 });
 
+AuthRouter.get('/getRecords',function(req,res){
+    API.getPreviousJobs(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/searchByTruck/:truckName',function(req,res){
+    API.searchBytruckName(req.jwt,req.params.truckName,function(result){
+        res.send(result);
+    });
+});
+
+
 AuthRouter.delete('/deleteJob/:id',function(req,res){
     API.deleteJob(req.params.id,function(result){
         res.send(result);

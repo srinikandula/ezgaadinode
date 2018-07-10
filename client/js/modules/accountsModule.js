@@ -250,12 +250,11 @@ app.controller('ShowAccountsCtrl', ['$scope', '$uibModal', 'AccountServices', 'N
 
 app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServices', 'TrucksService', '$stateParams', 'Notification', '$uibModal', function ($scope, Utils, $state, AccountServices, TrucksService, $stateParams, Notification, $uibModal) {
     $scope.pagetitle = "Add Account";
+    $scope.states=['Telangana','AndhraPradesh','Kerala','TamilNadu','Karnataka'];
 
     $scope.account = {
         profile: {
-            userName: '',
             password: '',
-            contactPhone: '',
             email: '',
         },
         oldPassword: '',

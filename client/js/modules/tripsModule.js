@@ -266,7 +266,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 }]);
 
 
-app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', 'TrucksService', 'ExpenseMasterServices', '$uibModal', 'Upload', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService, ExpenseMasterServices, $uibModal, Upload) {
+app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', 'TrucksService', 'ExpenseMasterServices', '$uibModal', 'Upload','truckTrackingService','$rootScope', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService, ExpenseMasterServices, $uibModal, Upload,truckTrackingService,$rootScope) {
     $scope.pagetitle = "Add Trip";
 
     $scope.drivers = [];
@@ -302,13 +302,32 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         totalAmount: 0,
         receivableAmount:0,
         truckType:'',
-
+        startDate:new Date(new Date().setHours(0,0,0,0)),
+        endDate:new Date()
     };
 
     $scope.cancel = function () {
         $state.go('trips');
     };
+    $scope.track = function(){
+            $state.go('tripView',{startDate:$scope.trip.startDate,endDate:$scope.trip.endDate,regNo:$scope.trip.registrationNo.registrationNo});
+           /* $scope.trip.startDate.setHours(0);
+        $scope.trip.startDate.setMinutes(0);
+        $scope.trip.startDate.setSeconds(0);
+        $scope.trip.endDate.setHours(23);
+        $scope.trip.endDate.setMinutes(59);
+        $scope.trip.endDate.setSeconds(59);
+        $rootScope.params = {
+            regNo:$scope.trip.registrationNo.registrationNo,
+            startDate:$scope.trip.startDate,
+            endDate:$scope.trip.endDate
+        };*/
+        /*truckTrackingService.getTruckLocations(params,function(successCallback){
+            console.log("trip track. ....locations..",successCallback);
+        },function(errorCallback){
 
+        });*/
+    };
     function getExpenseMaster() {
         ExpenseMasterServices.getExpenses(null, function (success) {
             if (success.data.status) {
@@ -455,6 +474,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     };
 
     getParties();
+
+
 
     function getTruckIds() {
         TrucksService.getAllTrucksForFilter(function (success) {
@@ -618,6 +639,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     };
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
+        console.log("update trip...",$scope.trip);
         params.errors = [];
         if (!params.date) {
             params.errors.push('Please Select Trip Date');
@@ -688,6 +710,19 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 });
             }
         }
+    };
+    $scope.pickerStart = {
+        date: new Date()
+    };
+    $scope.pickerEnd = {
+        date: new Date()
+    };
+
+    $scope.openCalendarStartDate = function (e, picker) {
+        $scope[picker].open = true;
+    };
+    $scope.openCalendarEndDate = function (e, picker) {
+        $scope[picker].open = true;
     };
 
     $scope.selectedTruckTonnage = function () {

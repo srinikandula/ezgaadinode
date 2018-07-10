@@ -63,6 +63,7 @@ function addTripDetailsToNotification(data, callback) {
 }
 
 function shareTripDetails(tripDetails, callback) {
+    var notificationParams = {};
     TripCollection.findOne({_id:tripDetails._id}).populate({path:"partyId"}).populate({path:"driverId"}).exec(function(err,tripDetails) {
         if (tripDetails.partyId.isEmail) {
             var emailparams = {
@@ -88,7 +89,7 @@ function shareTripDetails(tripDetails, callback) {
                     notificationParams.status = true;
                     notificationParams.message = "success";
                     addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = trip;
+                        notificationResponse.trips = tripDetails;
                         callback(notificationResponse);
                     })
                 } else {
@@ -96,7 +97,7 @@ function shareTripDetails(tripDetails, callback) {
                     notificationParams.status = false;
                     notificationParams.message = "email failed";
                     addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = trip;
+                        notificationResponse.trips = tripDetails;
                         callback(notificationResponse);
                     })
                 }
@@ -120,7 +121,7 @@ function shareTripDetails(tripDetails, callback) {
                     notificationParams.status = true;
                     notificationParams.message = "success";
                     addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = trip;
+                        notificationResponse.trips = tripDetails;
                         callback(notificationResponse);
                     })
 
@@ -129,7 +130,7 @@ function shareTripDetails(tripDetails, callback) {
                     notificationParams.status = false;
                     notificationParams.message = "SMS failed";
                     addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = trip;
+                        notificationResponse.trips = tripDetails;
                         callback(notificationResponse);
                     })
                 }
@@ -143,13 +144,17 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
         status: false,
         messages: []
     };
-
     tripDetails = Utils.removeEmptyFields(tripDetails);
     if (!_.isObject(tripDetails) || _.isEmpty(tripDetails)) {
         retObj.messages.push("Please fill all the required trip details");
     }
     if (!tripDetails.date) {
         retObj.messages.push("Please add date");
+    }
+    if(tripDetails.share){
+        if(!tripDetails.driverId){
+            retObj.messages.push("Please select Driver");
+        }
     }
     if (!tripDetails.partyId) {
         retObj.messages.push("Please select a party");
@@ -401,6 +406,11 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         status: false,
         messages: []
     };
+    /*if(tripDetails.share){
+        if(!tripDetails.driverId){
+            retObj.messages.push("Please select Driver");
+        }
+    }*/
     if (!_.isNumber(parseInt(tripDetails.tonnage))) {
         tripDetails.tonnage = 0;
     }
@@ -540,6 +550,7 @@ function updateTripDetails(req, tripDetails, callback) {
 }
 
 function updateTrip(req, tripDetails, callback) {
+    console.log("trip details...",tripDetails);
     var retObj = {
         status: false,
         messages: []

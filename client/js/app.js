@@ -450,6 +450,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             paymentsId: null
         }
     }).state({
+        name: 'tripView',
+        url: '/gps/trackView/:startDate/:endDate/:regNo',
+        templateUrl: 'views/partials/gps/trackView.html',
+        data: {activeTab: 'gpsReports'},
+        params: {
+            startDate:null,
+            access: 'open',
+            endDate: null,
+            regNo:null
+        }
+    }).state({
         name: 'groupMap',
         url: '/groupMap',
         templateUrl: 'views/partials/groupMap.html',
