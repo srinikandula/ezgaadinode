@@ -1855,7 +1855,7 @@ Expenses.prototype.uploadExpensesData = function (req, callback) {
             async.eachSeries(data, function (expense, expenseCallback) {
                 row++;
                 if (expense['date'] && expense['truck number'] && expense['expense type'] && expense['mode'] && expense['amount']) {
-                    /*assign ids for strings*/
+                    /*assign ids from strings*/
                     async.parallel({
                         getTruckId: function (vehicleNumberCallback) {
                             Utils.getTruckId(accountId, expense['truck number'], function (resp) {

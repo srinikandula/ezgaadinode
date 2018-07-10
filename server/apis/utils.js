@@ -872,4 +872,44 @@ Utils.prototype.getExpenseTypeId=function (expenseType,callback) {
         }
     });
 };
+
+Utils.prototype.getPartyId=function (accountId,partyName,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    PartyColl.findOne({accountId:accountId,name:partyName.trim()},function (err,doc) {
+        if(err){
+            retObj.messages.push("finding party failed ,"+JSON.stringify(err.message));
+            callback(retObj);
+        }else if(doc){
+            retObj.status=true;
+            retObj.data=doc._id;
+            callback(retObj);
+        }else{
+            retObj.messages.push(partyName+" party not found");
+            callback(retObj);
+        }
+    });
+};
+
+Utils.prototype.getDriverId=function (accountId,driverName,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    DriversCollection.findOne({accountId:accountId,fullName:driverName.trim()},function (err,doc) {
+        if(err){
+            retObj.messages.push("finding driver failed ,"+JSON.stringify(err.message));
+            callback(retObj);
+        }else if(doc){
+            retObj.status=true;
+            retObj.data=doc._id;
+            callback(retObj);
+        }else{
+            retObj.messages.push(driverName+" driver not found");
+            callback(retObj);
+        }
+    });
+};
 module.exports = new Utils();
