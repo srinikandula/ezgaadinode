@@ -1,0 +1,27 @@
+
+var mongoose=require('mongoose');
+var studentcoll=require(../model/Schemas).studentSchema;
+var Student=function()
+{}
+Student.prototype.addStudent=function(req,params,callback)
+{
+    var retobj={status:false,message:''}
+    var insertDoc=new studentcoll(params);
+    console.log(insertDoc);
+    insertDoc.save(function(err,result)
+    
+    {
+        if(err)
+        {
+            console.log("error while inserting data")
+        }
+        else
+        {
+            console.log("data inserted successfully");
+            retobj.status=true;
+        }
+        callback(retobj);
+    });
+
+}
+module.exports=new Students;
