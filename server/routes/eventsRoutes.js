@@ -2,12 +2,15 @@ var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var url = require('url');
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 
 var Events = require('./../apis/eventsApi');
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
 
 var EventData = require('./../apis/eventDataApi');
+var S3Bucket = require('./../apis/s3-aws');
 
 OpenRouter.get('/:accountId', function (request, res) {
     var urlParams = url.parse(request.url, true);
@@ -372,6 +375,18 @@ OpenRouter.get('/get/gpsSettingFromAccount',function (req,res) {
     Events.gpsSettingFromAccount(function (result) {
         res.json(result);
     })
+});
+
+AuthRouter.post('/uploadFile',multipartyMiddleware,function (req,res) {
+    S3Bucket.UploadFile(req,function (result) {
+        res.json(result);
+    })
+});
+
+AuthRouter.delete("/deleteFile",function (req,res) {
+   S3Bucket.deleteFileFromS3Bucket(req,function (result) {
+       res.json(result);
+   })
 });
 module.exports = {
     OpenRouter: OpenRouter,
