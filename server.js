@@ -14,6 +14,8 @@ var  LoadRequest= require('./server/routes/loadRequestRoutes');
 var Reminder = require('./server/routes/reminderRoutes');
 var  Inventory= require('./server/routes/inventoryRoutes');
 var  Job= require('./server/routes/jobRoutes');
+var  subLogIn= require('./server/routes/subLoginRoutes');
+
 
 var Trips = require('./server/routes/tripRoutes');
 var Expense = require('./server/routes/expensesRoutes');
@@ -144,6 +146,8 @@ app.use('/v1/loadRequest',LoadRequest.AuthRouter);
 app.use('/v1/inventories', Inventory.AuthRouter);
 app.use('/v1/jobs', Job.AuthRouter);
 app.use('/v1/reminders', Reminder.AuthRouter);
+app.use('/v1/users', subLogIn.AuthRouter);
+
 
 
 

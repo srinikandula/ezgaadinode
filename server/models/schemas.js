@@ -1016,6 +1016,7 @@ var jobSchema =new mongoose.Schema({
     date:Date,
     reminderText:String,
     reminderDate:Date,
+    description:String,
     vehicle: {type: ObjectId, ref: 'trucks'},
     inventory:{type: ObjectId, ref: 'inventories'},
     type:{type: ObjectId, ref: 'expenseMaster'},
@@ -1027,8 +1028,21 @@ var jobSchema =new mongoose.Schema({
     }]
 },{timestamps: true});
 
+var subLoginsSchema =new mongoose.Schema({
+    fullName:String,
+    userName:String,
+    password:String,
+    lastLogin: Date,
+    contactPhone:Number,
+    updatedBy: String,
+    createdBy: String,
+    type: {type: String, default: "account"},
+    accountId: {type: ObjectId, ref: 'accounts'}
+},{timestamps: true});
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
+    subLoginsCollection: mongoose.model('subLogins', subLoginsSchema, 'subLogins'),
     RemindersCollection: mongoose.model('reminders', remindersSchema, 'reminders'),
     InventoryCollection:mongoose.model('inventories',inventorySchema,'inventories'),
     JobsCollection:mongoose.model('jobs',jobSchema,'jobs'),

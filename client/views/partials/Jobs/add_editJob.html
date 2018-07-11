@@ -5,6 +5,28 @@
             <date-picker id="fitnessExpiry" ng-model="job.date"
                          class="'custom-form-control'" placeholder="'Date'"></date-picker>
         </div>
+        <div class="form-group col-xs-12">
+            <div class="select-box styling-input-list">
+                <ui-select ng-model="job.inventory"  ng-change="getJobsForInventory(job.inventory)" theme="select2"
+                           style="min-width: 390px;"
+                           title="Choose a inventory" append-to-body="true">
+                    <ui-select-match class="form-control custom-form-control">
+                        {{$select.selected.name || name}}
+                    </ui-select-match>
+                    <ui-select-choices
+                            repeat="x in inventories | propsFilter: {name: $select.search}">
+                        <div ng-bind-html="x.name | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+                <label class="focus-effect-for-input" aria-hidden="true">Inventory</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="job.description"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Description</label>
+            </div>
+        </div>
 
         <div class="form-group col-xs-12">
             <div class="styling-input-list">
@@ -18,22 +40,6 @@
                     </ui-select-choices>
                 </ui-select>
                 <label class="focus-effect-for-input">Vehicle*</label>
-            </div>
-        </div>
-        <div class="form-group col-xs-12">
-            <div class="select-box styling-input-list">
-                <ui-select ng-model="job.inventory" theme="select2"
-                           style="min-width: 390px;"
-                           title="Choose a inventory" append-to-body="true">
-                    <ui-select-match class="form-control custom-form-control">
-                        {{$select.selected.name || name}}
-                    </ui-select-match>
-                    <ui-select-choices
-                            repeat="x in inventories | propsFilter: {name: $select.search}">
-                        <div ng-bind-html="x.name | highlight: $select.search"></div>
-                    </ui-select-choices>
-                </ui-select>
-                <label class="focus-effect-for-input" aria-hidden="true">Inventory</label>
             </div>
         </div>
         <div class="form-group col-xs-12">
@@ -56,7 +62,7 @@
                 </div>
             </div>
         </div>
-        <div>
+        <span ng-if="records.length>0">
                 <div class="col-xs-12 pall-zero mb-10">
                     <h2 class="table-name">Previous Jobs:</h2>
                 </div>
@@ -85,7 +91,7 @@
                         </tr>
                     </table>
                 </div>
-        </div>
+        </span>
     </div>
     <div class="col-sm-6 col-xs-12 mt-10">
         <div class="form-group col-xs-12">
@@ -104,15 +110,40 @@
                 <label class="focus-effect-for-input" aria-hidden="true">Reminder Text</label>
             </div>
         </div>
-
-        <!--<div class="form-group col-xs-12">
+        <div class="form-group col-xs-12">
             <div ng-repeat="attch in job.attachments">
                 <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
                 <button class="btn btn-danger btn-xs" ng-click="deleteImage(attch.key,$index);">x
                 </button>
             </div>
-        </div>-->
-        <custom-file-upload bind="file"></custom-file-upload>
+        </div>
+        <span ng-if="jobsForInventory.length>0">
+            <div class="col-xs-12 pall-zero mb-10">
+                <h2 class="table-name">Previous jobs for inventory:{{inventory}}</h2>
+            </div>
+            <div class="mt-10">
+                <table class="table table-bordered table-striped table-condensed table-hover"
+                       ng-table="inventoryParams">
+                    <tr ng-repeat="record in jobsForInventory " style="text-align: center;">
+                        <td data-title="'Vehicle'"  class="clickable-item">
+                            {{record.vehicle.registrationNo}}
+                        </td>
+                        <td data-title="'Last Job Date'" class="clickable-item">
+                            {{record.date | date:'dd-MM-y'}}
+                        </td>
+                        <td data-title="'milege'" class="clickable-item">
+                            {{record.milege}}
+                        </td>
+                        <td data-title="'Job Type'" class="clickable-item">
+                            {{record.type.jobName}}
+                        </td>
+                    </tr>
+                    <tr ng-if="!jobsForInventory.length || jobsForInventory.length === 0">
+                        <td colspan="10">No Records exist.</td>
+                    </tr>
+                </table>
+            </div>
+        </span>
     </div>
 
     <div class="col-xs-12">
