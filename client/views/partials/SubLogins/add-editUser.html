@@ -1,0 +1,41 @@
+<div class="main-right col-xs-12" ng-controller="Add_EditUserController">
+    <h2 class="title-name ">{{title}}</h2>
+    <div class="col-sm-6 col-xs-12 mt-10">
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="user.fullName"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Full Name*</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="user.userName"/>
+                <label class="focus-effect-for-input" aria-hidden="true">User Name*</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="password" class="form-control custom-form-control" ng-model="user.password"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Password</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="password" class="form-control custom-form-control" ng-model="user.confirmPassword"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Confirm Password</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="user.contactPhone"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Contact Phone</label>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="col-xs-4 mtb-25 sub-can">
+            <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+            <button type="submit" class="btn can  last" ng-click="add_editUser()">Submit</button>
+        </div>
+    </div>
+</div>
