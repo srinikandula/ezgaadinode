@@ -267,6 +267,41 @@
                         </div>
                     </div>
                     <div class="form-group col-xs-12">
+                        <div class="mt-20">
+                            <label>Load Time</label>
+                            <div class="form-group">
+                                <p class="input-group">
+                                    <input type="text" class="form-control" datetime-picker="dd-MM-yyyy HH:mm"
+                                           is-open="pickerStart.open"
+                                           ng-model="trip.startDate" datepicker-options="options"/>
+                                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="openCalendarStartDate($event, 'pickerStart')"><i
+                    class="fa fa-calendar"></i></button>
+          </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <div class="mt-20">
+                            <label>UnLoad Time</label>
+                            <div class="form-group">
+                                <p class="input-group">
+                                    <input type="text" class="form-control" datetime-picker="dd-MM-yyyy HH:mm"
+                                           is-open="pickerEnd.open"
+                                           ng-model="trip.endDate" datepicker-options="options"/>
+                                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="openCalendarEndDate($event, 'pickerEnd')"><i
+                    class="fa fa-calendar"></i></button>
+          </span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group col-xs-12">
+                        <a href="#" ng-click="track()">Track</a>
+                    </div>
+                    <div class="form-group col-xs-12">
                         <div class=" trip-share">
                             <div class="checkbox">
                                 <label>
@@ -274,7 +309,7 @@
                                     <span class="cr">
                                         <i class="cr-icon fa fa-check"></i>
                                     </span>
-                                    Share
+                                    Share Trip
                                 </label>
                             </div>
                         </div>

@@ -1,7 +1,24 @@
 <div class="main-right col-xs-12" ng-controller="JobsListController">
     <div class="col-xs-12 pall-zero mb-10">
         <div class="col-sm-3 pall-zero"><h3>Jobs List:</h3></div>
+        <ul class="col-sm-9 pall-zero list-inline">
+            <li class="col-sm-3"></li>
+            <li class="col-sm-6">
+                <form>
+                    <div class="input-group stylish-input-group">
+                        <input type="text" ng-model="truckName" class="form-control"
+                               placeholder="Search By Truck Number">
+                        <span class="input-group-addon">
+                        <button type="submit" ng-click="searchByTruckName(truckName);">
+                           <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                    </div>
+                </form>
+            </li>
+        </ul>
     </div>
+
 
     <div class="mt-10">
         <table class="table table-bordered table-striped table-condensed table-hover"

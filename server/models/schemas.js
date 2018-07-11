@@ -39,13 +39,21 @@ var routeConfigSchema = new mongoose.Schema({
 });
 
 var accountSchema = new mongoose.Schema({
-    userName: { // name of the account is called accountId
+    /*userName: { // name of the account is called accountId
         type: String,
         index: true,
         unique: true
     },
+    contactPhone: Number,*/
+    address1:String,
+    address2:String,
+    city:String,
+    state:String,
+    country:String,
+    ZipCode:Number,
+    GST:Number,
+    GSTRate:Number,
     userId: String,
-    contactPhone: Number,
     password: String,
     email: String,
     type: {type: String, default: "account"},

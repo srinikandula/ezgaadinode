@@ -280,6 +280,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         })
     };
     $scope.searchByTruckName = function (truckName) {
+        console.log("truck search..",truckName);
         $scope.truckParams = new NgTableParams({
             page: 1, // show first page
             size: 10,

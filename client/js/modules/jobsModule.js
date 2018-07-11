@@ -12,6 +12,13 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
+        getRecords:function (vehicle,success, error) {
+            $http({
+                url: '/v1/jobs/getRecords',
+                method: "GET",
+                params:vehicle
+            }).then(success, error)
+        },
         deleteJob:function(id,success,error){
             $http({
                 url: '/v1/jobs/deleteJob/'+id,
@@ -24,6 +31,12 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 method: "DELETE",
                 params:params
             }).then(success, error)
+        },
+        searchBytruckName:function (truckName,success, error) {
+            $http({
+                url: '/v1/jobs/searchByTruck/'+truckName,
+                method: "GET",
+            }).then(success, error)
         }
     }
 }]);
@@ -31,6 +44,8 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
 app.controller('Add_EditJobController',['$scope','Upload','Notification','$state','ExpenseMasterServices','TrucksService','InventoriesService','$stateParams','JobsService','TripServices','$uibModal','$rootScope',function($scope,Upload,Notification,$state,ExpenseMasterServices,TrucksService,InventoriesService,$stateParams,JobsService,TripServices,$uibModal,$rootScope){
     $scope.title = 'Add Job';
     $scope.reminder = {};
+    $scope.records = {};
+    $scope.vehicle = '';
 
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
@@ -47,6 +62,15 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
             $scope.inventories = successCallback.data.data;
         }
     },function(errorCallback){});
+
+    $scope.getRecords = function(vehicle){
+        JobsService.getRecords(vehicle,function(successCallback){
+            $scope.records = successCallback.data.records;
+            $scope.vehicle = successCallback.data.vehicle;
+        },function(errorCallback){
+
+        });
+    };
 
     function getExpenses(params){
         ExpenseMasterServices.getExpenses(params, function (success) {
@@ -67,7 +91,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                 $scope.job = successCallback.data.data;
                 $scope.job.date = new Date($scope.job.date);
                 $scope.job.reminderDate = new Date($scope.job.reminderDate);
-                $scope.records = successCallback.data.records;
+                $scope.getRecords($scope.job.vehicle);
             }
         },function(errorCallback){});
 
@@ -159,9 +183,9 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 
         });
     };
-$scope.cancel = function(){
-    $state.go('jobs');
-};
+    $scope.cancel = function(){
+        $state.go('jobs');
+    };
     getExpenses();
 
 }]);
@@ -178,6 +202,19 @@ app.controller('JobsListController',['$scope','$state','JobsService',function($s
     },function(errorCallback){
 
     });
+
+    $scope.searchByTruckName = function(truckName){
+        console.log("truck name...",truckName);
+        JobsService.searchBytruckName(truckName,function(successCallback){
+            console.log("trucks...",successCallback.data.data);
+            $scope.jobs = successCallback.data.data;
+
+
+        },function(errorCallback){
+
+        });
+
+    };
 
     $scope.delete = function(id){
         JobsService.deleteJob(id,function(successCallback){

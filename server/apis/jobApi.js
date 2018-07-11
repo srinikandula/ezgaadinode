@@ -3,6 +3,7 @@ var Utils = require('../apis/utils');
 var _ = require('underscore');
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
 var JobsCollection = require('./../models/schemas').JobsCollection;
+var TrucksColl = require('./../models/schemas').TrucksColl;
 
 var expenseMasterApi = require('./expenseMasterApi');
 
@@ -182,24 +183,32 @@ Jobs.prototype.getAllJobs = function(jwt,callback){
     });
 
 };
-Jobs.prototype.getPreviousJobs= function(jwt,job,callback){
+Jobs.prototype.getPreviousJobs = function(jwt,vehicle,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    var query = {accountId:jwt.id,vehicle:job.vehicle._id,date:{$lt:job.date}};
-    JobsCollection.find(query).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
+    JobsCollection.find({accountId:jwt.id,vehicle:vehicle._id}).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
             callback(retObj);
         }else{
-            retObj.status=true;
-            retObj.messages.push("Success..");
-            retObj.records = records
-            callback(retObj);
+            if(records.length>0){
+                retObj.status = true;
+                retObj.messages.push("records fetched successfully");
+                retObj.vehicle = vehicle.registrationNo;
+                retObj.records =records;
+                callback(retObj);
+            }else{
+                retObj.status = true;
+                retObj.messages.push("records fetched successfully");
+                retObj.records =[];
+                callback(retObj);
+            }
         }
     });
+
 };
 
 Jobs.prototype.getJob = function(jwt,id,callback){
@@ -220,6 +229,40 @@ Jobs.prototype.getJob = function(jwt,id,callback){
             callback(retObj);
         }
     });
+
+};
+Jobs.prototype.searchBytruckName = function(jwt,truckName,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    TrucksColl.findOne({registrationNo:truckName},function(err,truck){
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while getting the data"+JSON.stringify(err));
+            callback(retObj);
+        }else if(truck){
+            JobsCollection.find({accountId:jwt.id,vehicle:truck._id}).populate({path:"vehicle"}).populate({path:"inventory"}).exec(function(err,jobs){
+                if(err){
+                    retObj.status=false;
+                    retObj.messages.push("error while getting the data"+JSON.stringify(err));
+                    callback(retObj);
+                }else if(jobs.length>0){
+                    retObj.status=true;
+                    retObj.messages.push("Success");
+                    retObj.data=jobs;
+                    callback(retObj);
+                }else{
+                    retObj.status=true;
+                    retObj.messages.push("Success");
+                    retObj.data=[];
+                    callback(retObj);
+                }
+            });
+        }
+    });
+
+
 
 };
 
