@@ -13,7 +13,7 @@ Routes.prototype.addRouteConfig = function(jwt,Info,callback){
         messages:[],
         errors:[]
     };
-    Info.accountId = jwt.id;
+    Info.accountId = jwt.accountId;
     if(!Info.name || ! _.isString(Info.name)){
         retObj.errors.push("Invalid name");
     }

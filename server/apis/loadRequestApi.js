@@ -31,7 +31,7 @@ Loads.prototype.addLoadRequest = function(jwt,info,callback){
       messages:[],
       errors:[]
   };
-    info.accountId = jwt.id;
+    info.accountId = jwt.accountId;
     if(!info.source){
         retObj.errors.push("select source address...");
     }

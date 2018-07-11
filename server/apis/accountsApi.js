@@ -674,7 +674,7 @@ Accounts.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, req, ca
                 callback(retObj);
             } else {
                 accountGroupInfo.createdBy = jwtObj.id;
-                accountGroupInfo.accountId = jwtObj.id;
+                accountGroupInfo.accountId = jwtObj.accountId;;
                 (new AccountsColl(accountGroupInfo)).save(function (err, savedAcc) {
                     if (err) {
                         retObj.messages.push('Error saving account');

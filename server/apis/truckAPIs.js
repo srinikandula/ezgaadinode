@@ -65,7 +65,7 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
                     callback(retObj);
                 } else {
                     truckDetails.createdBy = jwt.id;
-                    truckDetails.accountId = jwt.id;
+                    truckDetails.accountId = jwt.accountId;
                     truckDetails = Helpers.removeEmptyFields(truckDetails);
                     var truckDoc = new TrucksColl(truckDetails);
                     truckDoc.save(function (err, truck) {
