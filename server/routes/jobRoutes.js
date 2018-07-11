@@ -40,6 +40,12 @@ AuthRouter.get('/getRecords',function(req,res){
     });
 });
 
+AuthRouter.get('/getJobsForInventory',function(req,res){
+    API.getJobsForInventory(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
+
 AuthRouter.get('/searchByTruck/:truckName',function(req,res){
     API.searchBytruckName(req.jwt,req.params.truckName,function(result){
         res.send(result);

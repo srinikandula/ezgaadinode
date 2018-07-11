@@ -210,6 +210,32 @@ Jobs.prototype.getPreviousJobs = function(jwt,vehicle,callback){
     });
 
 };
+Jobs.prototype.getJobsForInventory = function(jwt,inventory,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    JobsCollection.find({accountId:jwt.id,inventory:inventory._id}).populate({path:"vehicle"}).populate({path:"type"}).sort({createdAt:-1}).limit(5).exec(function(err,records){
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while getting data"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            if(records.length>0){
+                retObj.status = true;
+                retObj.messages.push("records fetched successfully");
+                retObj.inventory = inventory.name;
+                retObj.records =records;
+                callback(retObj);
+            }else{
+                retObj.status = true;
+                retObj.messages.push("records fetched successfully");
+                retObj.records =[];
+                callback(retObj);
+            }
+        }
+    });
+};
 
 Jobs.prototype.getJob = function(jwt,id,callback){
     var retObj = {
@@ -261,9 +287,6 @@ Jobs.prototype.searchBytruckName = function(jwt,truckName,callback){
             });
         }
     });
-
-
-
 };
 
 Jobs.prototype.deleteJob = function(id,callback){

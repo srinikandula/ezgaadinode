@@ -406,6 +406,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             paymentsId: null
         }
     }).state({
+        name: 'users',
+        url: '/users/usersList',
+        templateUrl: 'views/partials/SubLogins/usersList.html',
+        data: {
+            activeTab: 'users',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+        }
+    }).state({
+        name: 'add_editUser',
+        url: '/users/add_editUser/:id',
+        templateUrl: 'views/partials/SubLogins/add-editUser.html',
+        data: {
+            activeTab: 'users',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            id:null
+        }
+    }).state({
         name: 'gpsSettings',
         url: '/gpsSettings',
         templateUrl: 'views/partials/settings/gpsSettings.html',
