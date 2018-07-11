@@ -96,6 +96,8 @@
                         </div>
                     </div>
                     <div class="form-group col-xs-12">
+                        csdcs
+                        <multi-file-upload></multi-file-upload>
                         <div ng-repeat="attch in trip.attachments">
                             <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
                             <button class="btn btn-danger btn-xs" ng-click="deleteTripImage(attch.key,$index);">x
