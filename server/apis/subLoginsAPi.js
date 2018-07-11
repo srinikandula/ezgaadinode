@@ -1,4 +1,4 @@
-var SubLoginsCollection = require('./../models/schemas').subLoginsCollection;
+var userLoginsCollection = require('./../models/schemas').userLogins;
 var _ = require('underscore');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
@@ -26,31 +26,34 @@ Users.prototype.addUser = function(jwt,info,req,callback){
         retObj.messages.push('Invalid Mobile Number');
     }
     if (retObj.messages.length) {
-        analyticsService.create(req, serviceActions.add_account_err, {
+        analyticsService.create(req, serviceActions.add_account_user_err, {
             body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
+            accountId: req.jwt.accountId,
+            userId: req.jwt.id,
             success: false,
             messages: retObj.messages
         }, function (response) {
         });
         callback(retObj);
     }else{
-        SubLoginsCollection.findOne({'userName':info.userName},function(err,account){
+        userLoginsCollection.findOne({'userName':info.userName},function(err,account){
             if(err){
                 retObj.messages.push('Error fetching account'+JSON.stringify(err));
-                analyticsService.create(req, serviceActions.add_account_err, {
+                analyticsService.create(req, serviceActions.add_account_user_err, {
                     body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
+                    accountId: req.jwt.accountId,
+                    userId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
                 }, function (response) {
                 });
                 callback(retObj);
             }else if(account){
-                retObj.messages.push('Account with same userName already exists');
-                analyticsService.create(req, serviceActions.add_account_err, {
+                retObj.messages.push('userName already exists');
+                analyticsService.create(req, serviceActions.add_account_user_err, {
                     body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
+                    accountId: req.jwt.accountId,
+                    userId: req.jwt.id,
                     success: false,
                     messages: retObj.messages
                 }, function (response) {
@@ -58,27 +61,29 @@ Users.prototype.addUser = function(jwt,info,req,callback){
                 callback(retObj);
             }else{
                 info.createdBy = jwt.id;
+                info.accountId = jwt.accountId;
                 info.type = "account";
-                var insertDoc = new SubLoginsCollection(info);
+                var insertDoc = new userLoginsCollection(info);
                 insertDoc.save(function (err, result) {
                     if (err) {
                         retObj.messages.push('Error saving account');
-                        analyticsService.create(req, serviceActions.add_account_err, {
+                        analyticsService.create(req, serviceActions.add_account_user_err, {
                             body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
+                            accountId: req.jwt.accountId,
+                            userId: req.jwt.id,
                             success: false,
                             messages: retObj.messages
                         }, function (response) {
                         });
                         callback(retObj);
                     } else{
-                        info.accountId = result._id;
                         info.type = "account";
                         retObj.status = true;
                         retObj.messages.push('Success');
-                        analyticsService.create(req, serviceActions.add_account, {
+                        analyticsService.create(req, serviceActions.add_account_user, {
                             body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
+                            accountId: req.jwt.accountId,
+                            userId: req.jwt.id,
                             success: true
                         }, function (response) {
                         });
@@ -95,7 +100,7 @@ Users.prototype.getUsers = function(jwt,callback){
         status:false,
         messages:[]
     };
-    SubLoginsCollection.find({createdBy:jwt.id},function(err,users){
+    userLoginsCollection.find({accountId:jwt.accountId},function(err,users){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -147,7 +152,8 @@ Users.prototype.updateUser = function(jwt,info,req,callback){
     if (retObj.messages.length) {
         analyticsService.create(req, serviceActions.update_account_err, {
             body: JSON.stringify(req.body),
-            accountId: req.jwt.id,
+            accountId: req.jwt.accountId,
+            userId: req.jwt.id,
             success: false,
             messages: retObj.messages
         }, function (response) {
@@ -159,7 +165,7 @@ Users.prototype.updateUser = function(jwt,info,req,callback){
                 retObj.messages.push('Error fetching account'+JSON.stringify(err));
                 analyticsService.create(req, serviceActions.update_account_err, {
                     body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
+                    accountId: req.jwt.accountId,
                     success: false,
                     messages: retObj.messages
                 }, function (response) {
@@ -170,7 +176,8 @@ Users.prototype.updateUser = function(jwt,info,req,callback){
                 retObj.messages.push('Success');
                 analyticsService.create(req, serviceActions.update_account, {
                     body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
+                    accountId: req.jwt.accountId,
+                    userId: req.jwt.id,
                     success: true
                 }, function (response) {
                 });

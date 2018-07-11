@@ -116,7 +116,7 @@ Inventories.prototype.getInventories = function(jwt,callback){
         status:false,
         messages:[]
     };
-    var query = {accountId:jwt.id};
+    var query = {accountId:jwt.accountId};
     InventoryCollection.find(query).populate({path:"partyId",select:'name'}).exec(function(err,result){
         if(err){
             retObj.status=false;
