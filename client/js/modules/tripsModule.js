@@ -268,7 +268,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
 app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', 'TrucksService', 'ExpenseMasterServices', '$uibModal', 'Upload','truckTrackingService','$rootScope', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService, ExpenseMasterServices, $uibModal, Upload,truckTrackingService,$rootScope) {
     $scope.pagetitle = "Add Trip";
-
+  // $scope.customFiles=[{},{}]
     $scope.drivers = [];
     $scope.parties = [];
     $scope.trucks = [];

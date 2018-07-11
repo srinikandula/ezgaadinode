@@ -33,7 +33,6 @@ S3Bucket.prototype.UploadFile = function (req,callcack) {
         folder=req.body.folder;
     }
 
-
     if(!file){
         retObj.messages.push("Please provide file");
     }
