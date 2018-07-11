@@ -12,7 +12,7 @@ var analyticsService=require('./../apis/analyticsApi');
 var keysColl = require('./../models/schemas').keysColl;
 log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
-var SubLoginsCollection = require('./../models/schemas').subLoginsCollection;
+var userLoginsCollection = require('./../models/schemas').userLogins;
 
 var config_msg91 = config.msg91;
 var msg91 = require("msg91")(config_msg91.auth_Key, config_msg91.sender_id, config_msg91.route);
@@ -23,7 +23,7 @@ function create(req,action,attrs){
     analyticsService.create(req,action,attrs,function(response){ });
 }
 
-function logIn(userName,user,req,callback){
+function logInSuccess(userName,user,req,callback){
     var retObj = {
         status: false,
         messages: []
@@ -31,31 +31,30 @@ function logIn(userName,user,req,callback){
     retObj.status = true;
     retObj._id = user._id;
     retObj.userName = userName;
-    retObj.gpsEnabled = user.gpsEnabled;
-    retObj.erpEnabled = user.erpEnabled;
-    retObj.loadEnabled = user.loadEnabled;
-    retObj.editAccounts = user.editAccounts;
+    retObj.gpsEnabled = user.accountId.gpsEnabled;
+    retObj.erpEnabled = user.accountId.erpEnabled;
+    retObj.loadEnabled = user.accountId.loadEnabled;
+    retObj.editAccounts = user.accountId.editAccounts;
     retObj.profilePic = user.profilePic;
-    retObj.routeConfigEnabled = user.routeConfigEnabled;
+    retObj.routeConfigEnabled = user.accountId.routeConfigEnabled;
     retObj.type = user.type;
     retObj.role = user.role;
 
 
     var obj = {
         id: user._id,
-        accountId: user._id,
+        accountId: user.accountId._id,
         userName: user.userName,
         contactPhone: user.contactPhone,
         type: user.type,
         role: user.role
-
     };
     if(user.type === "group") {
-        obj.accountId = user.accountId;
+        obj.accountId = user.accountId._id;
     };
     user.lastLogin=new Date();
     //save user with last login time
-    user.save(function (err) {
+    userLoginsCollection.findOneAndUpdate({},{$set:{"lastLogin": new Date()}}, function (err) {
         if(err){
             retObj.messages.push('Please try again');
             callback(retObj);
@@ -66,6 +65,8 @@ function logIn(userName,user,req,callback){
                     callback(retObj);
                 } else {
                     retObj.token = token;
+                    callback(retObj);
+                    /*
                     ErpSettingsColl.findOne({accountId: user._id}, function (err, settingsData) {
                         if (err) {
                             retObj.messages.push('Please try again');
@@ -86,16 +87,15 @@ function logIn(userName,user,req,callback){
                                 }
                             })
                         }
-                    })
+                    })*/
                 }
             });
 
 
         }
     });
+    //create analytics entry for login success
     create(req,serviceActions.login_successful,{body:JSON.stringify(req.body),accountId:user._id,success:true});
-
-
 };
 
 Groups.prototype.login = function (userName, password, contactPhone,req, callback) {
@@ -127,31 +127,16 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
             password: password,
             contactPhone: parseInt(contactPhone),
         };
-        AccountsCollection
-            .findOne(query)
-            .exec(function (err, user) {
-                if (err) {
-                    retObj.messages.push('Error finding user');
-                    create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                    callback(retObj);
-                } else if (!user) {
-                    SubLoginsCollection.findOne(query,function(err,user){
-                        if(err){
-                            retObj.messages.push('Error finding user');
-                            create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                            callback(retObj);
-                        }else if(user.password === password ){
-                         logIn(userName,user,req,callback);
-                        }
-                    });
-                } else if ((user.password === password)) {
-                    logIn(userName,user,req,callback);
-                } else {
-                    retObj.messages.push("Invalid Credentials");
-                    create(req,serviceActions.invalid_login,{body:JSON.stringify(req.body),accountId:user._id,success:false});
-                    callback(retObj);
-                }
-            });
+        userLoginsCollection.findOne(query).populate("accountId").exec(function(err,user){
+            if(err || !user){
+                retObj.messages.push('Invalid login details');
+                create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
+                callback(retObj);
+            }else if(user.password === password ){
+                logInSuccess(userName,user,req,callback);
+            }
+        });
+
     }
 };
 

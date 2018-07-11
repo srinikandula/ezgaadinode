@@ -1028,7 +1028,7 @@ var jobSchema =new mongoose.Schema({
     }]
 },{timestamps: true});
 
-var subLoginsSchema =new mongoose.Schema({
+var userSchema =new mongoose.Schema({
     fullName:String,
     userName:String,
     password:String,
@@ -1042,7 +1042,7 @@ var subLoginsSchema =new mongoose.Schema({
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
-    subLoginsCollection: mongoose.model('subLogins', subLoginsSchema, 'subLogins'),
+    userLogins: mongoose.model('userLogins', userSchema, 'userLogins'),
     RemindersCollection: mongoose.model('reminders', remindersSchema, 'reminders'),
     InventoryCollection:mongoose.model('inventories',inventorySchema,'inventories'),
     JobsCollection:mongoose.model('jobs',jobSchema,'jobs'),

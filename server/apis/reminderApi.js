@@ -16,7 +16,7 @@ Reminders.prototype.addReminder = function(jwt,reminder,callback){
         status:false,
         messages:[]
     };
-    reminder.accountId = jwt.id;
+    reminder.accountId = jwt.accountId;
     var reminderDoc = new RemindersCollection(reminder);
     reminderDoc.save(function(err,result){
         if(err){

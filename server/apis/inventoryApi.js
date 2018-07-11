@@ -10,8 +10,8 @@ function saveInventory(jwt,info,callback){
         status:false,
         messages:[]
     };
-    info.accountId = jwt.id;
-
+    info.accountId = jwt.accountId;
+    info.createdBy = jwt.id;
     if (!info.name || !_.isString(info.name)) {
         retObj.messages.push('Invalid inventory name');
     }
