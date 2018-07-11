@@ -312,6 +312,8 @@ const serviceActions = {
     dropdown_role_err: 'DROPDOWN_ROLE_ERR',
     dropdown_franchise: 'DROPDOWN_FRANCHISE',
     dropdown_franchise_err: 'DROPDOWN_FRANCHISE_ERR',
+    add_account_user: 'ADD_ACCOUNT_USER',
+    add_account_user_err: 'ADD_ACCOUNT_USER_ERR',
     add_account: 'ADD_ACCOUNT',
     add_account_err: 'ADD_ACCOUNT_ERR',
     get_accounts: 'GET_ACCOUNTS',
