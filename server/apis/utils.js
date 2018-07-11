@@ -17,6 +17,7 @@ var DriversCollection = require('./../models/schemas').DriversColl;
 var TripsColl = require('./../models/schemas').TripCollection;
 var ExpenseMasterColl = require('./../models/schemas').expenseMasterColl;
 var adminRoleColl = require('./../models/schemas').adminRoleColl;
+
 var fse = require('fs-extra');
 var fs=require('fs');
 
@@ -807,6 +808,106 @@ Utils.prototype.deleteS3BucketFile=function (key,callback) {
         }else{
             console.log("data",data);
             retObj.status=true;
+            callback(retObj);
+        }
+    });
+};
+
+Utils.prototype.getTruckId=function(accountId,regNumber,callback){
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    TrucksColl.findOne({registrationNo:regNumber.trim()},function (err,doc) {
+        if(err){
+            retObj.messages.push("finding truck failed ,"+JSON.stringify(err.message));
+            callback(retObj);
+        }else if(doc){
+            retObj.status=true;
+            retObj.data=doc._id;
+            callback(retObj);
+        }else{
+            retObj.messages.push(regNumber+" truck number not found");
+            callback(retObj);
+        }
+    })
+};
+
+Utils.prototype.getSupplierId=function (accountId,supplierName,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    PartyColl.findOne({accountId:accountId,name:supplierName.trim()},function (err,doc) {
+        if(err){
+            retObj.messages.push("finding supplier failed ,"+JSON.stringify(err.message));
+            callback(retObj);
+        }else if(doc){
+            retObj.status=true;
+            retObj.data=doc._id;
+            callback(retObj);
+        }else{
+            retObj.messages.push(supplierName+" supplier not found");
+            callback(retObj);
+        }
+    });
+};
+
+Utils.prototype.getExpenseTypeId=function (expenseType,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    ExpenseMasterColl.findOne({expenseName:expenseType.trim()},function (err,doc) {
+        if(err){
+            retObj.messages.push("finding expense type failed ,"+JSON.stringify(err.message));
+            callback(retObj);
+        }else if(doc){
+            retObj.status=true;
+            retObj.data=doc._id;
+            callback(retObj);
+        }else{
+            retObj.messages.push(expenseType+" expense type not found");
+            callback(retObj);
+        }
+    });
+};
+
+Utils.prototype.getPartyId=function (accountId,partyName,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    PartyColl.findOne({accountId:accountId,name:partyName.trim()},function (err,doc) {
+        if(err){
+            retObj.messages.push("finding party failed ,"+JSON.stringify(err.message));
+            callback(retObj);
+        }else if(doc){
+            retObj.status=true;
+            retObj.data=doc._id;
+            callback(retObj);
+        }else{
+            retObj.messages.push(partyName+" party not found");
+            callback(retObj);
+        }
+    });
+};
+
+Utils.prototype.getDriverId=function (accountId,driverName,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    DriversCollection.findOne({accountId:accountId,fullName:driverName.trim()},function (err,doc) {
+        if(err){
+            retObj.messages.push("finding driver failed ,"+JSON.stringify(err.message));
+            callback(retObj);
+        }else if(doc){
+            retObj.status=true;
+            retObj.data=doc._id;
+            callback(retObj);
+        }else{
+            retObj.messages.push(driverName+" driver not found");
             callback(retObj);
         }
     });

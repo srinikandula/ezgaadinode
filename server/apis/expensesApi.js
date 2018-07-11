@@ -12,6 +12,7 @@ var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var PartyCollection = require('./../models/schemas').PartyCollection;
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
+var XLSX = require('xlsx');
 
 
 var config = require('./../config/config');
@@ -257,7 +258,7 @@ function getExpenseCosts(condition, jwt, params, callback) {
                 .sort(sort)
                 .skip(skipNumber)
                 .limit(limit)
-                .populate({path:"partyId",select:'name'})
+                .populate({path: "partyId", select: 'name'})
                 .lean()
                 .exec(function (err, mCosts) {
                     async.parallel({
@@ -1157,7 +1158,7 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
         messages: []
     };
     async.parallel({
-        payments:function (paymentsCallback) {
+        payments: function (paymentsCallback) {
             var paymentsCond = {
                 accountId: condition.accountId,
             };
@@ -1178,7 +1179,7 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
                     paymentsCallback(err, payment)
                 })
         },
-        expenses:function (expensCallback) {
+        expenses: function (expensCallback) {
             condition.mode = "Credit";
             expenseColl.aggregate({$match: condition},
                 {
@@ -1191,27 +1192,27 @@ Expenses.prototype.findPaybleAmountForAccount = function (condition, req, callba
                     expensCallback(err, expense)
                 })
         }
-    },function (err,results) {
-        if(err){
-           retObj.status = false;
-           retObj.messages.push('Error');
-           callback(retObj);
-       }else if(results.expenses[0] && results.payments[0]){
-           retObj.status = true;
-           retObj.messages.push('Success');
-           retObj.paybleCount = results.expenses[0].totalAmount - results.payments[0].totalPaid;
-           callback(retObj);
-       }else if(results.expenses[0]){
-           retObj.status = true;
-           retObj.messages.push('Success');
-           retObj.paybleCount = results.expenses[0].totalAmount;
-           callback(retObj);
-       }else{
-           retObj.status = true;
-           retObj.messages.push('Success');
-           retObj.paybleCount =0;
-           callback(retObj);
-       }
+    }, function (err, results) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push('Error');
+            callback(retObj);
+        } else if (results.expenses[0] && results.payments[0]) {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.paybleCount = results.expenses[0].totalAmount - results.payments[0].totalPaid;
+            callback(retObj);
+        } else if (results.expenses[0]) {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.paybleCount = results.expenses[0].totalAmount;
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push('Success');
+            retObj.paybleCount = 0;
+            callback(retObj);
+        }
     });
 };
 
@@ -1714,13 +1715,13 @@ Expenses.prototype.downloadDetails = function (jwt, params, req, callback) {
     })
 };
 
-Expenses.prototype.getPartiesFromExpense=function (req,callback) {
+Expenses.prototype.getPartiesFromExpense = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var condition = {};
-    var jwt=req.jwt;
+    var jwt = req.jwt;
     if (!jwt.accountId || !ObjectId.isValid(jwt.accountId)) {
         retObj.status = false;
         retObj.messages.push("Invalid Login");
@@ -1742,10 +1743,16 @@ Expenses.prototype.getPartiesFromExpense=function (req,callback) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push("Please try again");
-                analyticsService.create(req,serviceActions.get_parties_by_expense_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_parties_by_expense_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (partyIds.length > 0) {
-                PartyCollection.find({_id:{$in:partyIds}}, {name: 1, contact: 1}, function (err, partyList) {
+                PartyCollection.find({_id: {$in: partyIds}}, {name: 1, contact: 1}, function (err, partyList) {
                     if (err) {
                         retObj.status = false;
                         retObj.messages.push("Please try again");
@@ -1785,11 +1792,169 @@ Expenses.prototype.getPartiesFromExpense=function (req,callback) {
             } else {
                 retObj.status = false;
                 retObj.messages.push("No parties found");
-                analyticsService.create(req,serviceActions.get_parties_by_trips_err,{body:JSON.stringify(req.query),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_parties_by_trips_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         })
     }
 
 };
+Expenses.prototype.uploadExpensesData = function (req, callback) {
+    let retObj = {
+        status: false,
+        messages: []
+    };
+    let file = req.files.file;
+    let accountId = req.jwt.accountId;
+    if (!file) {
+        retObj.messages.push("Please provide file");
+        callback(retObj);
+    } else {
+        /*parse data from excel sheet*/
+        var workbook = XLSX.readFile(file.path);
+        var sheet_name_list = workbook.SheetNames;
+        var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        var headers = {};
+        var data = [];
+        for (z in worksheet) {
+            if (z[0] === '!') continue;
+            //parse out the column, row, and value
+            var tt = 0;
+            for (var i = 0; i < z.length; i++) {
+                if (!isNaN(z[i])) {
+                    tt = i;
+                    break;
+                }
+            };
+            var col = z.substring(0, tt);
+            var row = parseInt(z.substring(tt));
+            var value = worksheet[z].v;
+
+            //store header names
+            if (row == 1 && value) {
+                headers[col] = value;
+                continue;
+            }
+
+            if (!data[row]) data[row] = {};
+            data[row][headers[col]] = value;
+        }
+        data.shift();
+        data.shift();
+
+        if (data.length > 0) {
+            var row = 0;
+            var expanseList = [];
+            /*check data is valid or not*/
+            async.eachSeries(data, function (expense, expenseCallback) {
+                row++;
+                if (expense['date'] && expense['truck number'] && expense['expense type'] && expense['mode'] && expense['amount']) {
+                    /*assign ids from strings*/
+                    async.parallel({
+                        getTruckId: function (vehicleNumberCallback) {
+                            Utils.getTruckId(accountId, expense['truck number'], function (resp) {
+                                if (resp.status) {
+                                    vehicleNumberCallback(false, resp.data);
+                                } else {
+                                    vehicleNumberCallback(resp, "");
+                                }
+                            })
+                        },
+                        getExpenseType: function (expenseTypeCallback) {
+                            Utils.getExpenseTypeId(expense['expense type'], function (resp) {
+                                if (resp.status) {
+                                    expenseTypeCallback(false, resp.data);
+                                } else {
+                                    expenseTypeCallback(resp, "");
+                                }
+                            })
+                        },
+                        getSupplierId: function (supplierCallback) {
+                            if (expense['mode'] === 'Credit') {
+                                if (expense['supplier']) {
+                                    Utils.getSupplierId(accountId, expense['supplier'], function (resp) {
+                                        if (resp.status) {
+                                            supplierCallback(false, resp.data);
+                                        } else {
+                                            supplierCallback(resp, "");
+                                        }
+                                    })
+                                } else {
+                                    retObj.messages.push(expense['supplier'] + " please provide supplier type");
+                                    supplierCallback(retObj, "");
+                                }
+
+                            } else {
+                                supplierCallback(false, null);
+                            }
+                        }
+                    }, function (err, result) {
+                        if (err) {
+                            console.log("err", err);
+
+                            expenseCallback(err);
+                        } else {
+                            let obj = {};
+                            obj.createdBy = req.jwt.id;
+                            obj.updatedBy = req.jwt.id;
+                            obj.accountId = accountId;
+                            obj.vehicleNumber = result.getTruckId;
+                            obj.expenseType = result.getExpenseType;
+                            obj.partyId = result.getSupplierId;
+                            obj.mode = expense['mode'];
+                            obj.description=expense['remark'];
+                            if (obj.mode === 'Cash') {
+                                obj.totalAmount = 0;
+                                obj.cost = expense['amount'];
+                            } else {
+                                obj.cost = 0;
+                                obj.totalAmount = expense['amount'];
+                            }
+                            obj.date =  new Date(expense['date'].replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
+                            expanseList.push(obj);
+                            expenseCallback(false);
+                        }
+                    });
+
+                } else {
+                    retObj.messages.push("Please provide all details for row number " + row);
+                    expenseCallback(retObj)
+                }
+            }, function (err) {
+                if (err) {
+                    err.messages.unshift("Getting error at row number " + row);
+                    callback(err);
+                } else {
+                    if(expanseList.length>0){
+                        /*Insert all records*/
+                        expenseColl.insertMany(expanseList,function (err,docs) {
+                          if(err){
+                              retObj.messages.push("Internal server error, "+JSON.stringify(err.message));
+                              callback(retObj);
+                          }else{
+                              retObj.status=true;
+                              retObj.messages.push(docs.length+" rows  successfully added" );
+                              callback(retObj);
+                          }
+                        })
+                    }else{
+                        retObj.messages.push("Please enter valid data");
+                        callback(retObj);
+                    }
+                }
+            })
+        } else {
+            retObj.messages.push("Please enter valid data");
+            callback(retObj);
+        }
+
+    }
+};
+
 module.exports = new Expenses();

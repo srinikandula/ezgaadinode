@@ -2,6 +2,8 @@ var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 var ExpenseCost = require('../apis/expensesApi');
+var multiparty = require('connect-multiparty');
+var multipartyMiddleware = multiparty();
 
 AuthRouter.post('/addExpense', function (req, res) {
     ExpenseCost.addExpense(req.jwt, req.body,req, function (result) {
@@ -138,6 +140,12 @@ AuthRouter.get('/getPartiesFromExpense', function (req, res) {
     ExpenseCost.getPartiesFromExpense(req, function (result) {
         res.send(result);
     });
+});
+
+AuthRouter.post('/uploadExpensesData',multipartyMiddleware, function(req,res){
+    ExpenseCost.uploadExpensesData(req,function(result){
+        res.send(result);
+    })
 });
 
 module.exports = {

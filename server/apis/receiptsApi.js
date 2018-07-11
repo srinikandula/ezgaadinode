@@ -9,6 +9,7 @@ var PartyCollection = require('./../models/schemas').PartyCollection;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var analyticsService=require('./../apis/analyticsApi');
 var serviceActions=require('./../constants/constants');
+var XLSX = require('xlsx');
 
 
 var config = require('./../config/config');
@@ -832,4 +833,147 @@ Receipts.prototype.downloadDetails = function (jwt, params,req, callback) {
     })
 };
 
+Receipts.prototype.uploadReceipts=function (req,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    let file = req.files.file;
+    let accountId = req.jwt.accountId;
+    if (!file) {
+        retObj.messages.push("Please provide file");
+        callback(retObj);
+    } else {
+        /*parse data from excel sheet*/
+        var workbook = XLSX.readFile(file.path);
+        var sheet_name_list = workbook.SheetNames;
+        var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        var headers = {};
+        var data = [];
+        for (z in worksheet) {
+            if (z[0] === '!') continue;
+            //parse out the column, row, and value
+            var tt = 0;
+            for (var i = 0; i < z.length; i++) {
+                if (!isNaN(z[i])) {
+                    tt = i;
+                    break;
+                }
+            };
+            var col = z.substring(0, tt);
+            var row = parseInt(z.substring(tt));
+            var value = worksheet[z].v;
+
+            //store header names
+            if (row == 1 && value) {
+                headers[col] = value;
+                continue;
+            }
+
+            if (!data[row]) data[row] = {};
+            data[row][headers[col]] = value;
+        }
+        data.shift();
+        data.shift();
+
+        if (data.length > 0) {
+            var row = 0;
+            var receiptsList = [];
+            /*check data is valid or not*/
+            async.eachSeries(data, function (receipt, receiptCallback) {
+                row++;
+                if (receipt['date'] && receipt['party name'] && receipt['amount'] && receipt['remark'] && receipt['payment type']) {
+                    /*assign ids from strings*/
+                    async.parallel({
+                        getPartyId: function (partyCallback) {
+                            Utils.getPartyId(accountId, receipt['party name'], function (resp) {
+                                if (resp.status) {
+                                    partyCallback(false, resp.data);
+                                } else {
+                                    partyCallback(resp, "");
+                                }
+                            })
+                        },
+                        checkNumberValues:function (numberCallback) {
+                            if(isNaN(parseInt(receipt['amount']))){
+                                retObj.messages.push("Please check amount");
+                                numberCallback(retObj,"");
+                            }else{
+                                numberCallback(false,"")
+                            }
+
+                        },
+                        checkPaymentMethod:function (paymentCallback) {
+                            if(['NEFT','Cheque','Cash'].indexOf(receipt['payment type'])<0){
+                                retObj.messages.push("payment type must be NEFT,Checque,Cash");
+                                paymentCallback(retObj,"");
+                            }else{
+                                if(['NEFT','Cheque'].indexOf(receipt['payment type'])>-1){
+                                    if(!receipt['ref no']){
+                                        retObj.messages.push("Please enter reference number");
+                                        paymentCallback(retObj,"");
+                                    }else{
+                                        paymentCallback(false,"");
+                                    }
+                                }else{
+                                    paymentCallback(false,"");
+
+                                }
+                            }
+                        }
+                    }, function (err, result) {
+                        if (err) {
+                            console.log("err", err);
+
+                            receiptCallback(err);
+                        } else {
+                            let obj = {};
+                            obj.createdBy = req.jwt.id;
+                            obj.updatedBy = req.jwt.id;
+                            obj.accountId = accountId;
+                            obj.partyId = result.getPartyId;
+                            obj.amount = receipt['amount'];
+                            obj.description=receipt['remark'];
+                            obj.receiptRefNo=receipt['ref no'];
+                            obj.paymentType=receipt['payment type'];
+                            obj.date =  new Date(receipt['date'].replace( /(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
+                            receiptsList.push(obj);
+                            receiptCallback(false);
+                        }
+                    });
+
+                } else {
+                    retObj.messages.push("Please provide all details for row number " + row);
+                    receiptCallback(retObj)
+                }
+            }, function (err) {
+                if (err) {
+                    err.messages.unshift("Getting error at row number " + row);
+                    callback(err);
+                } else {
+                    if(receiptsList.length>0){
+                        /*Insert all records*/
+                        ReceiptsColl.insertMany(receiptsList,function (err,docs) {
+                            if(err){
+                                retObj.messages.push("Internal server error, "+JSON.stringify(err.message));
+                                callback(retObj);
+                            }else{
+                                retObj.status=true;
+                                retObj.messages.push(docs.length+" rows  successfully added" );
+                                callback(retObj);
+                            }
+                        })
+                    }else{
+                        retObj.messages.push("Please enter valid data");
+                        callback(retObj);
+                    }
+                }
+            })
+        } else {
+            retObj.messages.push("Please enter valid data");
+            callback(retObj);
+        }
+
+    }
+};
 module.exports = new Receipts();

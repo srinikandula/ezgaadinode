@@ -332,7 +332,7 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
     $scope.selectPartyId = function (party) {
         $scope.expenseDetails.partyId = party._id;
 
-    }
+    };
 
     function getAllExpenses(params) {
         ExpenseMasterServices.getExpenses(params, function (success) {

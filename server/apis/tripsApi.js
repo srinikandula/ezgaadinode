@@ -3,6 +3,7 @@ var jwt = require('jsonwebtoken');
 var _ = require('underscore');
 var async = require('async');
 var json2xls = require('json2xls');
+var XLSX = require('xlsx');
 
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -137,8 +138,9 @@ function shareTripDetails(tripDetails, callback) {
             });
         }
     });
-    callback({"status":true});
+    callback({"status": true});
 }
+
 Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
     var retObj = {
         status: false,
@@ -169,10 +171,10 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
     if (!_.isNumber(parseInt(tripDetails.rate))) {
         tripDetails.rate = 0;
     }
-    if(isNaN(parseInt(tripDetails.advanceAmount)))tripDetails.advanceAmount=0;
-    if(isNaN(parseInt(tripDetails.totalAmount)))tripDetails.totalAmount=0;
-    if(isNaN(parseInt(tripDetails.receivableAmount)))tripDetails.receivableAmount=0;
-    if(isNaN(parseInt(tripDetails.freightAmount)))tripDetails.freightAmount=0
+    if (isNaN(parseInt(tripDetails.advanceAmount))) tripDetails.advanceAmount = 0;
+    if (isNaN(parseInt(tripDetails.totalAmount))) tripDetails.totalAmount = 0;
+    if (isNaN(parseInt(tripDetails.receivableAmount))) tripDetails.receivableAmount = 0;
+    if (isNaN(parseInt(tripDetails.freightAmount))) tripDetails.freightAmount = 0
 
     Utils.removeEmptyFields(tripDetails);
 
@@ -417,10 +419,10 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
     if (!_.isNumber(parseInt(tripDetails.rate))) {
         tripDetails.rate = 0;
     }
-    if(isNaN(parseInt(tripDetails.advanceAmount)))tripDetails.advanceAmount=0;
-    if(isNaN(parseInt(tripDetails.totalAmount)))tripDetails.totalAmount=0;
-    if(isNaN(parseInt(tripDetails.receivableAmount)))tripDetails.receivableAmount=0;
-    if(isNaN(parseInt(tripDetails.freightAmount)))tripDetails.freightAmount=0
+    if (isNaN(parseInt(tripDetails.advanceAmount))) tripDetails.advanceAmount = 0;
+    if (isNaN(parseInt(tripDetails.totalAmount))) tripDetails.totalAmount = 0;
+    if (isNaN(parseInt(tripDetails.receivableAmount))) tripDetails.receivableAmount = 0;
+    if (isNaN(parseInt(tripDetails.freightAmount))) tripDetails.freightAmount = 0
 
     Utils.removeEmptyFields(tripDetails);
     var giveAccess = false;
@@ -575,7 +577,7 @@ function updateTrip(req, tripDetails, callback) {
                 callback(retObj);
             } else if (trip) {
                 if (tripDetails.share) {
-                    shareTripDetails(tripDetails,function (shareResponse) {
+                    shareTripDetails(tripDetails, function (shareResponse) {
                         if (shareResponse.status) {
                             retObj.status = true;
                             analyticsService.create(req, serviceActions.share_trip_det_by_email, {
@@ -2181,6 +2183,168 @@ Trips.prototype.deleteTripImage = function (req, callback) {
         })
 
     }
+};
+
+Trips.prototype.uploadTrips = function (req, callback) {
+    let retObj = {
+        status: false,
+        messages: []
+    };
+    let file = req.files.file;
+    let accountId = req.jwt.accountId;
+    if (!file) {
+        retObj.messages.push("Please provide file");
+        callback(retObj);
+    } else {
+        /*parse data from excel sheet*/
+        var workbook = XLSX.readFile(file.path);
+        var sheet_name_list = workbook.SheetNames;
+        var worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        var headers = {};
+        var data = [];
+        for (z in worksheet) {
+            if (z[0] === '!') continue;
+            //parse out the column, row, and value
+            var tt = 0;
+            for (var i = 0; i < z.length; i++) {
+                if (!isNaN(z[i])) {
+                    tt = i;
+                    break;
+                }
+            }
+            ;
+            var col = z.substring(0, tt);
+            var row = parseInt(z.substring(tt));
+            var value = worksheet[z].v;
+
+            //store header names
+            if (row == 1 && value) {
+                headers[col] = value;
+                continue;
+            }
+
+            if (!data[row]) data[row] = {};
+            data[row][headers[col]] = value;
+        }
+        data.shift();
+        data.shift();
+
+        if (data.length > 0) {
+            var row = 0;
+            var tripsList = [];
+            /*check data is valid or not*/
+            async.eachSeries(data, function (trip, tripCallback) {
+                row++;
+
+                if (trip['date'] && trip['truck number'] && trip['driver'] && trip['party name'] && trip['source'] && trip['destination'] && trip['vehicle type'] && trip['tonnage'] && trip['rate'] && trip['fight amount'] && trip['advance'] && trip['remark']) {
+                    /*initialilize truck,driver,party details*/
+                    async.parallel({
+                        getTruckId: function (vehicleNumberCallback) {
+                            Utils.getTruckId(accountId, trip['truck number'], function (resp) {
+                                if (resp.status) {
+                                    vehicleNumberCallback(false, resp.data);
+                                } else {
+                                    vehicleNumberCallback(resp, "");
+                                }
+                            })
+                        },
+                        getDriverId: function (driverCallback) {
+                            Utils.getDriverId(accountId, trip['driver'], function (resp) {
+                                if (resp.status) {
+                                    driverCallback(false, resp.data);
+                                } else {
+                                    driverCallback(resp, "");
+                                }
+                            })
+                        },
+                        getPartyId: function (partyCallback) {
+                            Utils.getPartyId(accountId, trip['party name'], function (resp) {
+                                if (resp.status) {
+                                    partyCallback(false, resp.data);
+                                } else {
+                                    partyCallback(resp, "");
+                                }
+                            })
+                        },
+                        checkNumberValues:function (numberCallback) {
+                            if(isNaN(parseInt(trip['tonnage'])) || isNaN(parseInt(trip['rate'])) || isNaN(parseInt(trip['advance'])) || isNaN(parseInt(trip['fight amount']))){
+                                retObj.messages.push("Please check tonnage,rate,advance and fight amount");
+                                numberCallback(retObj,"");
+                            }else{
+                                numberCallback(false,"")
+                            }
+
+                        },
+                        checkTruckType:function (truckTypeCallback) {
+                            if(['Own','Market'].indexOf(trip['vehicle type'])<0){
+                                retObj.messages.push("Vechicle type should be Own or Market");
+                                truckTypeCallback(retObj,"");
+                            }else{
+                                truckTypeCallback(false,"")
+                            }
+                        }
+                    }, function (err, result) {
+                        if (err) {
+                            console.log("err", err);
+
+                            tripCallback(err);
+                        } else {
+                            let obj = {};
+                            obj.tripId = "TR" + parseInt(Math.random() * 100000);
+                            obj.createdBy = req.jwt.id;
+                            obj.updatedBy = req.jwt.id;
+                            obj.accountId = accountId;
+                            obj.registrationNo = result.getTruckId;
+                            obj.partyId = result.getPartyId;
+                            obj.driverId = result.getDriverId;
+                            obj.source = trip['source'];
+                            obj.destination = trip['destination'];
+                            obj.truckType = trip['vehicle type'];
+                            obj.remarks = trip['remark'];
+                            obj.tonnage=parseFloat(trip['tonnage']);
+                            obj.rate=parseFloat(trip['rate']);
+                            obj.advanceAmount=parseFloat(trip['advance']);
+                            obj.freightAmount=parseFloat(trip['fight amount']);
+                            obj.date = new Date(trip['date'].replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
+                            tripsList.push(obj);
+                            tripCallback(false);
+                        }
+                    });
+
+                } else {
+                    retObj.messages.push("Please provide all details for row number " + row);
+                    tripCallback(retObj)
+                }
+            }, function (err) {
+                if (err) {
+                    err.messages.unshift("Getting error at row number " + row);
+                    callback(err);
+                } else {
+                    if (tripsList.length > 0) {
+                        /*Insert all records*/
+                        TripCollection.insertMany(tripsList, function (err, docs) {
+                            if (err) {
+                                retObj.messages.push("Internal server error, " + JSON.stringify(err.message));
+                                callback(retObj);
+                            } else {
+                                retObj.status = true;
+                                retObj.messages.push(docs.length + " trips  successfully added");
+                                callback(retObj);
+                            }
+                        })
+                    } else {
+                        retObj.messages.push("Please enter valid data");
+                        callback(retObj);
+                    }
+                }
+            })
+        } else {
+            retObj.messages.push("Please enter valid data");
+            callback(retObj);
+        }
+
+    }
+
 };
 
 module.exports = new Trips();
