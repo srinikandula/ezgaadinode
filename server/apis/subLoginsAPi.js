@@ -3,8 +3,6 @@ var _ = require('underscore');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 
-
-
 var Users = function () {
 };
 
@@ -119,7 +117,7 @@ Users.prototype.getUser = function(jwt,id,callback){
         status:false,
         messages:[]
     };
-    SubLoginsCollection.findOne({_id:id},function(err,user){
+    userLoginsCollection.findOne({_id:id},function(err,user){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -160,7 +158,7 @@ Users.prototype.updateUser = function(jwt,info,req,callback){
         });
         callback(retObj);
     }else{
-        SubLoginsCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,result){
+        userLoginsCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,result){
             if(err){
                 retObj.messages.push('Error fetching account'+JSON.stringify(err));
                 analyticsService.create(req, serviceActions.update_account_err, {
@@ -192,7 +190,7 @@ Users.prototype.deleteUser = function(id,callback){
         messages:[]
     };
     var query = {_id:id};
-    SubLoginsCollection.remove(query,function(err,result){
+    userLoginsCollection.remove(query,function(err,result){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while deleting load request"+JSON.stringify(err));
@@ -205,7 +203,6 @@ Users.prototype.deleteUser = function(id,callback){
         }
     });
 };
-
 
 module.exports=new Users();
 
