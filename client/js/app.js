@@ -1,6 +1,6 @@
-var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification', 'ngImgCrop', 'ngFileUpload', 'ngSanitize', 'ui.select','ngMap', 'ui.bootstrap.datetimepicker']);
+var app = angular.module('EasyGaadi', ['ui.router', 'ngTable', 'paginationService', 'ngCookies', 'ui.bootstrap', 'ui-notification', 'ngImgCrop', 'ngFileUpload', 'ngSanitize', 'ui.select', 'ngMap', 'ui.bootstrap.datetimepicker']);
 
-app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function ($stateProvider, $locationProvider, $urlRouterProvider) {
+app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', function ($stateProvider, $locationProvider, $urlRouterProvider) {
     $locationProvider.html5Mode(true);
 
     $stateProvider.state({
@@ -47,7 +47,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            ID:null
+            ID: null
         }
     }).state({
         name: 'inventories',
@@ -81,7 +81,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            ID:null
+            ID: null
         }
     }).state({
         name: 'reminders',
@@ -104,7 +104,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            ID:null
+            ID: null
         }
     }).state({
         name: 'addInventory',
@@ -116,7 +116,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            Id:null
+            Id: null
         }
     }).state({
         name: 'myProfile',
@@ -147,7 +147,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         name: 'accounts',
         url: '/accounts',
         templateUrl: 'views/partials/accounts/accountsList.html',
-        data: {activeTab: 'accounts',
+        data: {
+            activeTab: 'accounts',
             subTab: 'ERP'
         },
         params: {
@@ -157,7 +158,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         name: 'accountsEdit',
         url: '/accountsEdit/:accountId',
         templateUrl: 'views/partials/accounts/edit-account.html',
-        data: {activeTab: 'accounts',
+        data: {
+            activeTab: 'accounts',
             subTab: 'ERP'
         },
         params: {
@@ -251,6 +253,19 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
             tripId: null
         }
     }).state({
+        name: 'printInvoice',
+        url: '/printInvoice/:tripId/:partyId',
+        templateUrl: 'views/partials/trips/printInvoice.html',
+        data: {
+            activeTab: 'trips',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth',
+            tripId: null,
+            partyId:null
+        }
+    }).state({
         name: 'parties',
         url: '/parties',
         templateUrl: 'views/partials/party/party-list.html',
@@ -282,7 +297,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            ID:null
+            ID: null
         }
     }).state({
         name: 'sendLoadRequest',
@@ -294,7 +309,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            Id:null
+            Id: null
         }
     }).state({
         name: 'sendSMS',
@@ -426,7 +441,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         },
         params: {
             access: 'open',
-            id:null
+            id: null
         }
     }).state({
         name: 'gpsSettings',
@@ -468,7 +483,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         templateUrl: 'views/partials/gps/trackView.html',
         data: {activeTab: 'gpsReports'},
         params: {
-            truckNo:null,
+            truckNo: null,
             access: 'open',
             paymentsId: null
         }
@@ -478,10 +493,10 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         templateUrl: 'views/partials/gps/trackView.html',
         data: {activeTab: 'gpsReports'},
         params: {
-            startDate:null,
+            startDate: null,
             access: 'open',
             endDate: null,
-            regNo:null
+            regNo: null
         }
     }).state({
         name: 'groupMap',
@@ -616,8 +631,10 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         name: 'secretKeys',
         url: '/settings/secretKeys',
         templateUrl: 'views/partials/settings/SecretKeys.html',
-        data: {activeTab: 'secret',
-            subTab: 'GPS'},
+        data: {
+            activeTab: 'secret',
+            subTab: 'GPS'
+        },
         params: {
             access: 'auth'
         }
@@ -625,7 +642,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         name: 'devices',
         url: '/gps/devices',
         templateUrl: 'views/partials/gps/devices.html',
-        data: {activeTab: 'gpsReports'
+        data: {
+            activeTab: 'gpsReports'
         },
         params: {
             access: 'auth'
@@ -634,7 +652,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         name: 'analyticsReports',
         url: '/analytics/dashboard',
         templateUrl: 'views/partials/analyticsReports/reports.html',
-        data: {activeTab: 'Analytics'
+        data: {
+            activeTab: 'Analytics'
         },
         params: {
             access: 'auth'
@@ -643,7 +662,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         name: 'actionReports',
         url: '/reports/lastLogin',
         templateUrl: 'views/partials/analyticsReports/loginAnalytics.html',
-        data: {activeTab: 'Analytics'
+        data: {
+            activeTab: 'Analytics'
         },
         params: {
             access: 'auth'
@@ -652,7 +672,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
         name: 'agentReports',
         url: '/reports/agentReports',
         templateUrl: 'views/partials/analyticsReports/agentReports.html',
-        data: {activeTab: 'Analytics',
+        data: {
+            activeTab: 'Analytics',
         },
         params: {
             access: 'auth'
@@ -662,7 +683,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider',function
     $urlRouterProvider.otherwise('/login');
 }]);
 
-app.config(['NotificationProvider', '$httpProvider',function (NotificationProvider, $httpProvider) {
+app.config(['NotificationProvider', '$httpProvider', function (NotificationProvider, $httpProvider) {
     NotificationProvider.setOptions({
         delay: 3000,
         startTop: 150,
@@ -673,9 +694,10 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
         positionY: 'bottom'
     });
     // Interceptor for redirecting to login page if not logged in
-    $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies',function ($q, $location, $rootScope, $cookies) {
+    $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies', function ($q, $location, $rootScope, $cookies) {
         return {
-            'request': function (config) {``
+            'request': function (config) {
+                ``
 
                 $rootScope.reqloading = true;
                 return config;
@@ -695,16 +717,16 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
     }]);
 }]);
 
-app.run(['$transitions', '$rootScope', '$cookies','$state',function ($transitions, $rootScope, $cookies,$state) {
+app.run(['$transitions', '$rootScope', '$cookies', '$state', function ($transitions, $rootScope, $cookies, $state) {
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');
-        $rootScope.createGroup=$cookies.get('createGroup');
-        $rootScope.erpEnabled=$cookies.get('erpEnabled');
+        $rootScope.createGroup = $cookies.get('createGroup');
+        $rootScope.erpEnabled = $cookies.get('erpEnabled');
         $rootScope.activeTab = to.promise.$$state.value.data.activeTab;
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
-        if(to.$to().self.url.startsWith('/reports')){
-            if($rootScope.erpEnabled!=='true'){
+        if (to.$to().self.url.startsWith('/reports')) {
+            if ($rootScope.erpEnabled !== 'true') {
                 $state.go('gpsReports');
             }
         }

@@ -257,7 +257,8 @@ var partySchema = new mongoose.Schema({
     attrs: {},
     partyType: String,
     isEmail: {type: Boolean, default: false},
-    isSms: {type: Boolean, default: false}
+    isSms: {type: Boolean, default: false},
+    gstNo:String
 }, {timestamps: true});
 
 

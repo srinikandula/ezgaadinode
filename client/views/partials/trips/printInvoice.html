@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Easygaadi Invoice</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            text-align: center;
+            width: 100%;
+        }
+
+        table, td, th {
+            padding: 2px 0px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<div class="logo"></div>
+<div class="container print-invoice" ng-controller="ShowTripsCtrl" ng-init="printInvoicePDF()">
+    <table>
+        <tr>
+            <td colspan="2"><h2>{{print.accDetails.userName}}</h2></td>
+        </tr>
+        <tr>
+            <td colspan="2"><i class="fa fa-map-marker" aria-hidden="true"></i>
+                {{print.accDetails.address1}},{{print.accDetails.address2}},
+            </td>
+            <td>
+                <i class="fa fa-phone" aria-hidden="true"></i>{{print.accDetails.contactPhone}}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">Invoice for trip details</td>
+        </tr>
+        <tr>
+            <td>GST No:{{print.accDetails.GST}}</td>
+            <td>GST Rate:{{print.accDetails.GSTRate}}</td>
+        </tr>
+    </table>
+
+</div>
+</body>
+</html>
