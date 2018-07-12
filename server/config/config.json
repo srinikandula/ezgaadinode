@@ -12,21 +12,21 @@
   "mysql": {
     "port": 3306,
     "connectionLimit": 100,
-    "host": "13.127.20.40",
+    "host": "host",
     "user": "root",
-    "password": "098ioplkjbNm",
+    "password": "blah",
     "database": "gts"
   },
   "mysql_crm": {
     "port": 3306,
     "connectionLimit": 100,
-    "host": "13.127.20.40",
+    "host": "host",
     "user": "root",
-    "password": "098ioplkjbNm",
+    "password": "blahblac",
     "database": "easygaadi_crm"
   },
   "msg91": {
-    "auth_Key": "197166AlXFgDj45a7b0d12",
+    "auth_Key": "blah",
     "sender_id": "ezgadi",
     "route": "4"
   },
@@ -36,12 +36,12 @@
     "secure": true,
     "auth": {
       "user": "easygaadinode@gmail.com",
-      "pass": "easygaadi123"
+      "pass": "blah"
     }
   },
   "googleAuth": {
-    "clientID": "981881296801-e30gs5ebcm6k4rip9q7a0e8nehp5j07c.apps.googleusercontent.com",
-    "clientSecret": "C97qjf-_9Q6KRrUYM_s6pFha",
+    "clientID": "blah",
+    "clientSecret": "blah",
     "callbackURL": "http://localhost:2000/login/google/return"
   },
   "bodyParserLimit": "50mb",
