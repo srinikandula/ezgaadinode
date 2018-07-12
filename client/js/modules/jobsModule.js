@@ -221,9 +221,7 @@ app.controller('JobsListController',['$scope','$state','JobsService',function($s
     });
 
     $scope.searchByTruckName = function(truckName){
-        console.log("truck name...",truckName);
         JobsService.searchBytruckName(truckName,function(successCallback){
-            console.log("trucks...",successCallback.data.data);
             $scope.jobs = successCallback.data.data;
             },function(errorCallback){});
 

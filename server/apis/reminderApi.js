@@ -39,7 +39,7 @@ Reminders.prototype.getReminderCount = function(jwt,callback){
     };
     var currentDate = new Date();
     var sevenDate = new Date(currentDate.setDate(currentDate.getDate()+7));
-    RemindersCollection.count({$and:[{accountId:jwt.id},{status:"Enable"},{"reminderDate":{$lte:sevenDate}}]},function(err,count){
+    RemindersCollection.count({$and:[{accountId:jwt.accountId},{status:"Enable"},{"reminderDate":{$lte:sevenDate}}]},function(err,count){
         if(err){
             retObj.status=false;
             retObj.messages.push("error"+JSON.stringify(err));
@@ -98,7 +98,7 @@ Reminders.prototype.getAllReminders = function(jwt,callback){
         status:false,
         messages:[]
     };
-    RemindersCollection.find({accountId:jwt.id}).sort({reminderDate:1}).exec(function(err,reminders){
+    RemindersCollection.find({accountId:jwt.accountId}).sort({reminderDate:1}).exec(function(err,reminders){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while deleting load request"+JSON.stringify(err));
