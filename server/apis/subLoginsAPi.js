@@ -112,6 +112,7 @@ Users.prototype.getUsers = function(jwt,callback){
     });
 };
 
+
 Users.prototype.getUser = function(jwt,id,callback){
     var retObj = {
         status:false,

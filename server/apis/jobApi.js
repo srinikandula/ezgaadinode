@@ -168,7 +168,7 @@ Jobs.prototype.getAllJobs = function(jwt,callback){
         status:false,
         messages:[]
     };
-    var query = {accountId:jwt.id};
+    var query = {accountId:jwt.accountId};
     JobsCollection.find(query).populate({path:"vehicle",select:"registrationNo"}).populate({path:"inventory",select:"name"}).exec(function(err,jobs){
         if(err){
             retObj.status=false;
@@ -188,7 +188,7 @@ Jobs.prototype.getPreviousJobs = function(jwt,vehicle,callback){
         status:false,
         messages:[]
     };
-    JobsCollection.find({accountId:jwt.id,vehicle:vehicle._id}).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
+    JobsCollection.find({accountId:jwt.accountId,vehicle:vehicle._id}).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -215,7 +215,7 @@ Jobs.prototype.getJobsForInventory = function(jwt,inventory,callback){
         status:false,
         messages:[]
     };
-    JobsCollection.find({accountId:jwt.id,inventory:inventory._id}).populate({path:"vehicle"}).populate({path:"type"}).sort({createdAt:-1}).limit(5).exec(function(err,records){
+    JobsCollection.find({accountId:jwt.accountId,inventory:inventory._id}).populate({path:"vehicle"}).populate({path:"type"}).sort({createdAt:-1}).limit(5).exec(function(err,records){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -268,7 +268,7 @@ Jobs.prototype.searchBytruckName = function(jwt,truckName,callback){
             retObj.messages.push("error while getting the data"+JSON.stringify(err));
             callback(retObj);
         }else if(truck){
-            JobsCollection.find({accountId:jwt.id,vehicle:truck._id}).populate({path:"vehicle"}).populate({path:"inventory"}).exec(function(err,jobs){
+            JobsCollection.find({accountId:jwt.accountId,vehicle:truck._id}).populate({path:"vehicle"}).populate({path:"inventory"}).exec(function(err,jobs){
                 if(err){
                     retObj.status=false;
                     retObj.messages.push("error while getting the data"+JSON.stringify(err));
@@ -338,6 +338,7 @@ Jobs.prototype.deleteImage = function (req, callback) {
         }
     })
 };
+
 
 
 module.exports=new Jobs();

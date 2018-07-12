@@ -5,6 +5,7 @@ var _ = require('underscore');
 var Inventories = function () {
 };
 
+
 function saveInventory(jwt,info,callback){
     var retObj = {
         status:false,
