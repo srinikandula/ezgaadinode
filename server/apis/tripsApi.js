@@ -2375,7 +2375,8 @@ Trips.prototype.getTripInvoiceDetails = function (req, callback) {
                 })
             },
             tripDetails: function (tripCallback) {
-                TripCollection.findOne({_id:params.tripId},function (err,doc) {
+                TripCollection.findOne({_id:params.tripId}).populate({path:'registrationNo',model:TrucksColl}).lean().exec(function (err,doc) {
+
                     tripCallback(err,doc);
                 })
             }

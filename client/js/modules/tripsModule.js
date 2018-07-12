@@ -166,16 +166,18 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
         $state.go('printInvoice', {tripId: tripId,partyId:partyId});
     };
-    $scope.printInvoicePDF=function () {
-        var params=$stateParams;
-        TripServices.getTripInvoiceDetails({tripId:params.tripId,partyId:params.partyId},function (success) {
+    $scope.printInvoicePDF=function (tripId,partyId) {
+        TripServices.getTripInvoiceDetails({tripId:tripId,partyId:partyId},function (success) {
             if(success.data.status){
                 $scope.print=success.data.data;
                 console.log("successdata",success.data.data);
-                var w=window.open();
-                w.document.write(document.getElementsByClassName('print-invoice')[0].innerHTML);
-                w.print();
-                w.close();
+                $timeout(function () {
+                    var w=window.open();
+                    w.document.write(document.getElementsByClassName('print-invoice')[0].innerHTML);
+                    w.print();
+                    w.close();
+                },1000)
+
 
             }else{
                 success.data.messages.forEach(function (message) {
