@@ -340,5 +340,6 @@ Jobs.prototype.deleteImage = function (req, callback) {
 };
 
 
+
 module.exports=new Jobs();
 
