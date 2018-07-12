@@ -165,7 +165,8 @@ Party.prototype.updateParty = function (jwt, partyDetails,req, callback) {
                     "updatedBy": jwt.id,
                     "partyType": partyDetails.partyType,
                     "isSms": partyDetails.isSms,
-                    "isEmail": partyDetails.isEmail
+                    "isEmail": partyDetails.isEmail,
+                    "gstNo":partyDetails.gstNo
                 }
             },
             {new: true}, function (err, party) {

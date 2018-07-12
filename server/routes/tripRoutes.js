@@ -159,6 +159,12 @@ AuthRouter.post('/uploadTrips',multipartyMiddleware, function (req, res) {
     });
 });
 
+AuthRouter.get('/getTripInvoiceDetails/:tripId/:partyId',function (req,res) {
+   Trips.getTripInvoiceDetails(req,function (result) {
+       res.send(result);
+   })
+});
+
 module.exports = {
     OpenRouter: OpenRouter,
     AuthRouter: AuthRouter

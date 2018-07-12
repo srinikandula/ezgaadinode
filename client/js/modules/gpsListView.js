@@ -5,11 +5,18 @@ app.factory('gpsListService',['$http','$cookies', function ($http, $cookies) {
                 url: '/v1/gps/getAllVehiclesLocation',
                 method: "GET"
             }).then(success, error)
+        },
+        generateShareTrackingLink:function (data,success,error) {
+            $http({
+                url: '/v1/gps/generateShareTrackingLink',
+                method: "POST",
+                data:data
+            }).then(success, error)
         }
     }
 }]);
 
-app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$stateParams','Notification', function ($scope, $state,gpsListService,$stateParams,Notification) {
+app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$stateParams','Notification','$uibModal', function ($scope, $state,gpsListService,$stateParams,Notification,$uibModal) {
     function getAllVehiclesLocation() {
         gpsListService.getAllVehiclesLocation(function (success) {
             if(success.data.status){
@@ -34,5 +41,36 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
     getAllVehiclesLocation();
     $scope.trackView = function(truckNo){
         $state.go('trackView',{truckNo:truckNo});
-    }
+    };
+    $scope.shareTracking=function (truckId) {
+        gpsListService.generateShareTrackingLink({truckId:truckId},function (success) {
+            if(success.data.status){
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'shareLink.html',
+                    controller: 'shareCtrl',
+                    size: 'md',
+                    backdrop: 'static',
+                    keyboard: false,
+                    resolve: {
+                        linkData: function () {
+                            return { url: success.data.data };
+                        }
+                    }
+                });
+
+            }else{
+                success.data.messages.forEack(function (message) {
+                    Notification.error({message:message});
+                })
+            }
+        },function (error) {
+
+        })
+    };
+}]);
+app.controller('shareCtrl', ['$scope', '$state', '$uibModalInstance','linkData', function ($scope,  $state, $uibModalInstance,linkData) {
+    $scope.link=linkData.url;
+    $scope.cancel = function () {
+        $uibModalInstance.close();
+    };
 }]);

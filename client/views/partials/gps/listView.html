@@ -49,6 +49,7 @@
                             NA
                         </td>-->
                         <td data-title="'Status'"  class="clickable-item col-sm-2">{{truck.status}}
+                            | <button class="btn btn-info" ng-click="shareTracking(truck._id)"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
                         </td>
                         <!--<td data-title="'Action'" sortable="'totalPayment'" class="clickable-item col-sm-1">
                             <i class="fa fa-edit" style="font-size: 20px;"></i>
@@ -65,3 +66,19 @@
 
     </div>
 </div>
+
+<script type="text/ng-template" id="shareLink.html">
+    <!--<a href="#" class="btn btn-primary" ui-sref="services.gpsDevices"> Cancel</a>-->
+    <!--<a href="#" class="btn btn-primary" ng-click="transferDevices()"> Submit</a>-->
+    <div class="modal-header">
+        <h3 class="modal-title" id="modal-title">Transfer Devices</h3>
+    </div>
+    <div class="modal-body" id="modal-body">
+        <div class="row">
+            <h3>Please share this link <b>{{link}}</b></h3>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="button" ng-click="cancel();">Cancel</button>
+    </div>
+</script>

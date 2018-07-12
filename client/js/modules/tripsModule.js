@@ -99,10 +99,16 @@ app.factory('TripServices', ['$http', function ($http) {
                 params: params
             }).then(success, error)
         },
+        getTripInvoiceDetails:function (params,success,error) {
+            $http({
+                url: '/v1/trips/getTripInvoiceDetails/'+params.tripId+'/'+params.partyId,
+                method: "GET"
+            }).then(success,error)
+        }
     }
 }]);
 
-app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService) {
+app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService','$timeout','$stateParams', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService,$timeout,$stateParams) {
     $scope.goToEditTripPage = function (tripId) {
         $state.go('tripsEdit', {tripId: tripId});
     };
@@ -156,6 +162,30 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
         })
     }
+    $scope.printInvoice = function(tripId,partyId) {
+
+        $state.go('printInvoice', {tripId: tripId,partyId:partyId});
+    };
+    $scope.printInvoicePDF=function () {
+        var params=$stateParams;
+        TripServices.getTripInvoiceDetails({tripId:params.tripId,partyId:params.partyId},function (success) {
+            if(success.data.status){
+                $scope.print=success.data.data;
+                console.log("successdata",success.data.data);
+                var w=window.open();
+                w.document.write(document.getElementsByClassName('print-invoice')[0].innerHTML);
+                w.print();
+                w.close();
+
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        },function (error) {
+
+        });
+    };
     $scope.init = function () {
         $scope.tripParams = new NgTableParams({
             page: 1, // show first page
@@ -268,7 +298,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
 app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 'DriverService', 'PartyService', 'TripLaneServices', '$stateParams', 'Notification', 'TrucksService', 'ExpenseMasterServices', '$uibModal', 'Upload','truckTrackingService','$rootScope', function ($scope, $state, Utils, TripServices, DriverService, PartyService, TripLaneServices, $stateParams, Notification, TrucksService, ExpenseMasterServices, $uibModal, Upload,truckTrackingService,$rootScope) {
     $scope.pagetitle = "Add Trip";
-
+  // $scope.customFiles=[{},{}]
     $scope.drivers = [];
     $scope.parties = [];
     $scope.trucks = [];

@@ -137,6 +137,18 @@ OpenRouter.get('/emailDayGPSreport',function (req,res) {
     });
 });
 
+AuthRouter.post('/generateShareTrackingLink',function(req,res){
+   gps.generateShareTrackingLink(req,function (result) {
+       res.json(result);
+   });
+});
+
+OpenRouter.get('/getTruckLatestLocation/:trackingId',function (req,res) {
+    gps.getTruckLatestLocation(req,function (result) {
+        res.json(result);
+    });
+});
+
 
 
 var identifyNotWorkingDevices = cronjob.schedule('* */30 * * * *', function() {

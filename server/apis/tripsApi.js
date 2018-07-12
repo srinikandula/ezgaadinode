@@ -9,6 +9,7 @@ var XLSX = require('xlsx');
 const ObjectId = mongoose.Types.ObjectId;
 
 var TripCollection = require('./../models/schemas').TripCollection;
+var AccountsColl = require('./../models/schemas').AccountsColl;
 var ExpenseCostColl = require('./../models/schemas').ExpenseCostColl;
 var PartyCollection = require('./../models/schemas').PartyCollection;
 var NotificationColl = require('./../models/schemas').NotificationColl;
@@ -65,7 +66,7 @@ function addTripDetailsToNotification(data, callback) {
 
 function shareTripDetails(tripDetails, callback) {
     var notificationParams = {};
-    TripCollection.findOne({_id:tripDetails._id}).populate({path:"partyId"}).populate({path:"driverId"}).exec(function(err,tripDetails) {
+    TripCollection.findOne({_id: tripDetails._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripDetails) {
         if (tripDetails.partyId.isEmail) {
             var emailparams = {
                 templateName: 'addTripDetails',
@@ -153,8 +154,8 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
     if (!tripDetails.date) {
         retObj.messages.push("Please add date");
     }
-    if(tripDetails.share){
-        if(!tripDetails.driverId){
+    if (tripDetails.share) {
+        if (!tripDetails.driverId) {
             retObj.messages.push("Please select Driver");
         }
     }
@@ -552,7 +553,7 @@ function updateTripDetails(req, tripDetails, callback) {
 }
 
 function updateTrip(req, tripDetails, callback) {
-    console.log("trip details...",tripDetails);
+    console.log("trip details...", tripDetails);
     var retObj = {
         status: false,
         messages: []
@@ -2266,21 +2267,21 @@ Trips.prototype.uploadTrips = function (req, callback) {
                                 }
                             })
                         },
-                        checkNumberValues:function (numberCallback) {
-                            if(isNaN(parseInt(trip['tonnage'])) || isNaN(parseInt(trip['rate'])) || isNaN(parseInt(trip['advance'])) || isNaN(parseInt(trip['fight amount']))){
+                        checkNumberValues: function (numberCallback) {
+                            if (isNaN(parseInt(trip['tonnage'])) || isNaN(parseInt(trip['rate'])) || isNaN(parseInt(trip['advance'])) || isNaN(parseInt(trip['fight amount']))) {
                                 retObj.messages.push("Please check tonnage,rate,advance and fight amount");
-                                numberCallback(retObj,"");
-                            }else{
-                                numberCallback(false,"")
+                                numberCallback(retObj, "");
+                            } else {
+                                numberCallback(false, "")
                             }
 
                         },
-                        checkTruckType:function (truckTypeCallback) {
-                            if(['Own','Market'].indexOf(trip['vehicle type'])<0){
+                        checkTruckType: function (truckTypeCallback) {
+                            if (['Own', 'Market'].indexOf(trip['vehicle type']) < 0) {
                                 retObj.messages.push("Vechicle type should be Own or Market");
-                                truckTypeCallback(retObj,"");
-                            }else{
-                                truckTypeCallback(false,"")
+                                truckTypeCallback(retObj, "");
+                            } else {
+                                truckTypeCallback(false, "")
                             }
                         }
                     }, function (err, result) {
@@ -2301,10 +2302,10 @@ Trips.prototype.uploadTrips = function (req, callback) {
                             obj.destination = trip['destination'];
                             obj.truckType = trip['vehicle type'];
                             obj.remarks = trip['remark'];
-                            obj.tonnage=parseFloat(trip['tonnage']);
-                            obj.rate=parseFloat(trip['rate']);
-                            obj.advanceAmount=parseFloat(trip['advance']);
-                            obj.freightAmount=parseFloat(trip['fight amount']);
+                            obj.tonnage = parseFloat(trip['tonnage']);
+                            obj.rate = parseFloat(trip['rate']);
+                            obj.advanceAmount = parseFloat(trip['advance']);
+                            obj.freightAmount = parseFloat(trip['fight amount']);
                             obj.date = new Date(trip['date'].replace(/(\d{2})-(\d{2})-(\d{4})/, "$2/$1/$3"));
                             tripsList.push(obj);
                             tripCallback(false);
@@ -2343,6 +2344,52 @@ Trips.prototype.uploadTrips = function (req, callback) {
             callback(retObj);
         }
 
+    }
+
+};
+
+Trips.prototype.getTripInvoiceDetails = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.params;
+    if (!params.tripId) {
+        retObj.messages.push("provide trip details");
+    }
+    if (!params.partyId) {
+        retObj.messages.push("provide party details");
+    }
+    if (retObj.messages.length > 0) {
+        callback(retObj);
+    } else {
+        async.parallel({
+            accDetails: function (accCallback) {
+                AccountsColl.findOne({_id:req.jwt.accountId},function (err,doc) {
+                    accCallback(err,doc);
+                })
+            },
+            partyDetails: function (partyCallback) {
+                PartyCollection.findOne({_id:params.partyId},function (err,doc) {
+                    partyCallback(err,doc);
+                })
+            },
+            tripDetails: function (tripCallback) {
+                TripCollection.findOne({_id:params.tripId},function (err,doc) {
+                    tripCallback(err,doc);
+                })
+            }
+        }, function (err, result) {
+            if (err) {
+                retObj.messages.push("Internal server error,"+JSON.stringify(err.message));
+                callback(retObj);
+            } else {
+                retObj.status=true;
+                retObj.messages.push("Success");
+                retObj.data=result;
+                callback(retObj);
+            }
+        });
     }
 
 };
