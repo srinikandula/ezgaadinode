@@ -44,7 +44,7 @@
     "clientSecret": "blah",
     "callbackURL": "http://localhost:2000/login/google/return"
   },
-  "baseUrl":"http://localhost.com:3000",
+  "baseUrl":"http://localhost:3000",
   "bodyParserLimit": "50mb",
   "googleSecretKeyLimit": 3,
   "devicePositionsArchiveLimit": 14,
