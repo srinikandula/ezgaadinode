@@ -262,6 +262,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         contact: '',
         email: '',
         city: '',
+        gstNo:'',
         tripLanes: [{
             index: 0
         }],

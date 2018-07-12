@@ -440,6 +440,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         var params = $scope.account;
         params.errors = [];
         params.success = [];
+        console.log("params....",params);
 
         if (!params.profile.userName) {
             params.errors.push('Invalid User Name');
