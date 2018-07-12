@@ -1,6 +1,7 @@
 var _ = require('underscore');
 var async = require('async');
 var nodeGeocoder = require('node-geocoder');
+var GoogleUrl = require( 'google-url' );
 var config = require('./../config/config');
 var devicePostions = require('./../models/schemas').GpsColl;
 var SecretKeysColl = require('./../models/schemas').SecretKeysColl;
@@ -16,7 +17,7 @@ var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var mailerApi = require('./../apis/mailerApi');
 var SmsService = require('./smsApi');
-
+var googleUrl = new GoogleUrl( { key: config.shortUrlGoogleApi });
 var mongoose = require('mongoose');
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -1018,9 +1019,17 @@ Gps.prototype.generateShareTrackingLink = function (req, callback) {
                 retObj.messages.push("Internal server error," + JSON.stringify(err.message));
                 callback(retObj);
             } else {
-                retObj.status = true;
-                retObj.data = config.baseUrl + '/live-trcaking/' + doc._id;
-                callback(retObj);
+                googleUrl.shorten( config.baseUrl + '/live-trcaking/' + doc._id, function( err, shortUrl ) {
+                   if(err){
+                       retObj.messages.push("Internal server error," + JSON.stringify(err));
+                       callback(retObj);
+                   }else{
+                       retObj.status = true;
+                       retObj.data = shortUrl;
+                       callback(retObj);
+                   }
+                } );
+
             }
         })
     }
