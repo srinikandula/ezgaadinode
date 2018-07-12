@@ -12,6 +12,15 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             access: 'open'
         }
     }).state({
+        name: 'livetrcaking',
+        url: '/live-trcaking/:truckNo',
+        templateUrl: 'views/partials/liveTracking.html',
+        data: {activeTab: 'import-students'},
+        params: {
+            access: 'open',
+            truckNo:null
+        }
+    }).state({
         name: 'home',
         url: '/home',
         templateUrl: 'views/partials/home.html',
@@ -709,7 +718,9 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
             'responseError': function (response) {
                 if ([400, 401, 402, 403].indexOf(response.status) > -1) {
                     $cookies.remove('token');
-                    $location.path('/login');
+                    if(!$location.url().startsWith('/live-trcaking')){
+                        $location.path('/login');
+                    }
                     return $q.reject(response);
                 }
             }
