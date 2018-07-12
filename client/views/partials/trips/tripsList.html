@@ -81,7 +81,7 @@
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
                 <a href="#" ng-show="userType=='account' || userId==trips.createdBy" class="btn"
-                   ng-click="printInvoice(trips._id,trips.partyId)">
+                   ng-click="printInvoicePDF(trips._id,trips.partyId)">
 
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </a>
@@ -97,7 +97,7 @@
         </figure>
     </div>
 
-    <div class="print-invoice">
+    <div class="print-invoice" style="display: none">
         <head>
             <title>Easygaadi Invoice</title>
             <style>
@@ -105,37 +105,108 @@
                     border-collapse: collapse;
                     text-align: center;
                     width: 100%;
+
                 }
 
                 table, td, th {
-                    padding: 2px 0px;
+
                     border: 1px solid black;
                 }
+                td{
+                    padding: 5px 0px 5px 8px;
+                }
             </style>
+
         </head>
         <body>
         <div class="logo"></div>
         <div class="container">
             <table>
                 <tr>
-                    <td colspan="2"><h2>{{print.accDetails.userName}}</h2></td>
+                    <td colspan="2"><span style="font-size: 20px">{{print.accDetails.userName}}</span></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><i class="fa fa-map-marker" aria-hidden="true"></i>
-                        {{print.accDetails.address1}},{{print.accDetails.address2}},
+                    <td colspan="2">
+                       <span style="font-size: 18px">Address: {{print.accDetails.address1}},{{print.accDetails.address2}}</span>
+                        <span style="font-size: 18px">Phone:{{print.accDetails.contactPhone || 'NA'}}  Email:{{print.accDetails.email || 'NA'}}</span>
                     </td>
-                    <td>
-                        <i class="fa fa-phone" aria-hidden="true"></i>{{print.accDetails.contactPhone}}
+
+                </tr>
+                <tr >
+                    <td colspan="2"><span style="font-size: 22px"><b>Invoice for trip details</b></span></td>
+                </tr>
+                <tr>
+                    <td>GST No:{{print.accDetails.GST || 'NA'}}</td>
+                    <td>GST Rate:{{print.accDetails.GSTRate || 'NA'}}</td>
+                </tr>
+                <tr >
+                    <td colspan="2">
+                        <span><b>Customer Details</b></span>
                     </td>
                 </tr>
-                <tr>
-                    <td colspan="2">Invoice for trip details</td>
+                <tr style="text-align: left">
+                    <td colspan="2">
+                        Name:{{print.partyDetails.name}}
+                    </td>
                 </tr>
-                <tr>
-                    <td>GST No:{{print.accDetails.GST}}</td>
-                    <td>GST Rate:{{print.accDetails.GSTRate}}</td>
+                <tr style="text-align: left">
+                    <td colspan="2">
+                        Phone:{{print.partyDetails.contact || 'NA'}}
+                    </td>
+                </tr>
+                <tr style="text-align: left">
+                    <td colspan="2">
+                        Email:{{print.partyDetails.email || 'NA'}}
+                    </td>
+                </tr>
+                <tr style="text-align: left">
+                    <td colspan="2">
+                        Address:{{print.partyDetails.city || 'NA'}}
+                    </td>
+                </tr>
+                <tr style="text-align: left">
+                    <td colspan="2">
+                        GST No:{{print.partyDetails.gstNo || 'NA'}}
+                    </td>
+                </tr>
+                <tr >
+                    <td colspan="2"><b>Trip Details</b></td>
+                </tr>
+                <tr style="text-align: left">
+                    <td>Trip ID : {{print.tripDetails.tripId || 'NA'}} </td>
+                    <td>Vechicle No : {{print.tripDetails.registrationNo.registrationNo || 'NA'}}</td>
+                </tr>
+                <tr style="text-align: left">
+                    <td>Source : {{print.tripDetails.sourceAddress || 'NA'}}</td>
+                    <td>Destination : {{print.tripDetails.destinationAddress || 'NA'}}</td>
+                </tr>
+                <tr style="text-align: left">
+                    <td>Tonnes :{{print.tripDetails.tonnage || 'NA'}}</td>
+                    <td>Rate : {{print.tripDetails.rate || 'NA'}}</td>
+                </tr>
+                <tr style="text-align: left">
+                    <td><b>Amount : </b></td>
+                    <td>{{print.tripDetails.freightAmount || 'NA'}}</td>
+
+                </tr>
+                <tr style="text-align: left">
+                    <td><b>Additional Charges : </b></td>
+                    <td>{{print.tripDetails.totalExpense || 0}}</td>
+
+                </tr>
+
+                <tr style="text-align: left">
+                    <td><b>Paid Amount : </b></td>
+                    <td>{{print.tripDetails.advanceAmount || '0'}}</td>
+
+                </tr>
+                <tr style="text-align: left">
+                    <td><b>Total Amount : </b></td>
+                    <td>{{print.tripDetails.totalAmount-print.tripDetails.advanceAmount || 0}}</td>
+
                 </tr>
             </table>
+
 
         </div>
         </body>
