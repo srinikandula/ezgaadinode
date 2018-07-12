@@ -5,7 +5,7 @@ var config = require('./../config/config');
 var mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 var FCM = require('fcm-push');
-var fcm = new FCM(config.serverKey);
+var fcm = new FCM(config.fcmServerKey);
 
 var Notifications = function () {
 };

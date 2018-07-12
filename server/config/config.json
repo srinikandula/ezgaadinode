@@ -48,5 +48,5 @@
   "googleSecretKeyLimit": 3,
   "devicePositionsArchiveLimit": 14,
   "devicePositionsTopicName": "devicePositions",
-  "serverKey": "zsdg546erfsd"
+  "fcmServerKey": "zsdg546erfsd"
 }
