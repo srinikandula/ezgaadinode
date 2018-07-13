@@ -40,7 +40,7 @@ var Employees = require('./server/adminRoutes/employeeRoutes');
 var Devices = require('./server/adminRoutes/deviceRoutes');
 var globalApi = require('./server/routes/globalRoutes');
 var pushNotifications= require('./server/routes/notifications');
-var groupsApi = require('./server/apis/loginApi');
+var GroupUsers = require('./server/routes/groupsRoutes');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
@@ -107,6 +107,7 @@ app.use('/v1/inventories', Inventory.AuthRouter);
 app.use('/v1/jobs', Job.AuthRouter);
 app.use('/v1/reminders', Reminder.AuthRouter);
 app.use('/v1/users', subLogIn.AuthRouter);
+app.use('/v1/groups', GroupUsers.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {
