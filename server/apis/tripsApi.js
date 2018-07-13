@@ -75,7 +75,7 @@ function shareTripDetails(tripDetails, callback) {
                 data: {
                     "date": new Date(tripDetails.date).toLocaleDateString(),
                     "name": tripDetails.partyId.name,
-                    "vehicleNo": tripDetails.registrationNo,
+                    "vehicleNo": tripDetails.attrs.truckName,
                     "driverName": tripDetails.driverId.fullName,
                     "driverNumber": tripDetails.driverId.mobile,
                     "source": tripDetails.source,
@@ -301,6 +301,7 @@ function createTripDetails(req, tripDetails, callback) {
 }
 
 function saveTrip(req, tripDetails, callback) {
+    console.log("save trip...",tripDetails);
     var retObj = {
         status: false,
         messages: []
@@ -553,7 +554,6 @@ function updateTripDetails(req, tripDetails, callback) {
 }
 
 function updateTrip(req, tripDetails, callback) {
-    console.log("trip details...", tripDetails);
     var retObj = {
         status: false,
         messages: []

@@ -353,6 +353,7 @@ var notificationsSchema = mongoose.Schema({
 
 var remindersSchema = mongoose.Schema({
     refId: {type: ObjectId, ref: 'jobs'},
+    type:String,
     reminderText: String,
     inventory: {type: ObjectId, ref: 'inventories'},
     reminderDate: Date,

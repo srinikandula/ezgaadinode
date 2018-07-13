@@ -51,7 +51,7 @@ Routes.prototype.getRouteConfigs = function(jwt,req,callback){
         status:false,
         message:""
     };
-    var query = {accountId:jwt.id};
+    var query = {accountId:jwt.accountId};
     RoutesCollection.find(query,function(err,result){
         if(err){
             retObj.status=false;
