@@ -1043,7 +1043,7 @@ Gps.prototype.getTruckLatestLocation = function (req, callback) {
     };
     var trackingId = req.params.trackingId;
     if (!trackingId || !ObjectId.isValid(trackingId)) {
-        retObj.messages.push('Invalid tracking');
+        retObj.messages.push('Invalid tracking link');
         callback(retObj);
     } else {
         ShareLinksColl.findOne({_id:trackingId},function (err,doc) {
@@ -1068,7 +1068,7 @@ Gps.prototype.getTruckLatestLocation = function (req, callback) {
                          }
                      })
                  }else{
-                     retObj.messages.push("Tracking already expired");
+                     retObj.messages.push("Tracking link is expired");
                      callback(retObj);
                  }
             }else{

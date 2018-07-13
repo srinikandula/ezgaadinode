@@ -12,8 +12,8 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             access: 'open'
         }
     }).state({
-        name: 'livetrcaking',
-        url: '/live-trcaking/:truckNo',
+        name: 'livetracking',
+        url: '/live-tracking/:truckNo',
         templateUrl: 'views/partials/liveTracking.html',
         data: {activeTab: 'import-students'},
         params: {

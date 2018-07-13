@@ -5,11 +5,15 @@
 
             <div class="col-xs-10 col-xs-offset-1 margin-top-120">
                 <div class="text-center">
-                    <h1>Live Tracking</h1>
+                    <h1>Easygaadi Live Tracking</h1>
                 </div>
-                <div>
+                <div ng-if="!message">
                     <div id="map" style="width: 100%; height: 500px;"></div>
                 </div>
+                <div ng-if="message">
+                    <span class="bg-danger">{{message}}</span>
+                </div>
+
             </div>
         </div>
     </div>

@@ -412,13 +412,14 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
     };
 }]);
 app.controller('liveTrackingController',['$scope','$stateParams','truckTrackingService',function($scope,$stateParams,truckTrackingService){
+    $scope.message = "";
     $scope.loadLiveTracking = function(){
-        truckTrackingService.getTruckLatestLocation($stateParams.truckNo,function(successCallback){
-            if(successCallback.data.status){
-                var latestLocation = successCallback.data.data.latestLocation;
+        truckTrackingService.getTruckLatestLocation($stateParams.truckNo,function(response){
+            if(response.data.status){
+                var latestLocation = response.data.data.latestLocation;
                 var map = new google.maps.Map(document.getElementById('map'), {
                     zoom: 7,
-                    center: new google.maps.LatLng(18.2699, 78.0489),
+                    center: new google.maps.LatLng(latestLocation.location.coordinates[1], latestLocation.location.coordinates[0]),
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
                 var icon = {
@@ -431,7 +432,10 @@ app.controller('liveTrackingController',['$scope','$stateParams','truckTrackingS
                     icon: icon,
                     map: map
                 });
+            } else {
+                $scope.message = response.data.messages[0];
             }
+
         },function(errorCallback){});
     };
 }]);
