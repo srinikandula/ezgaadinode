@@ -189,19 +189,8 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
         });
         callback(retObj);
     } else {
-        if (req.files.files && req.files.files.length > 0) {
-            Utils.uploadAttachmentsToS3(req.jwt.accountId, 'trip', req.files.files, function (fileUploadResp) {
-                if (fileUploadResp.status) {
-                    tripDetails.attachments = fileUploadResp.attachments;
-                    createTripDetails(req, tripDetails, callback)
-                } else {
-                    callback(fileUploadResp);
-                }
-            })
-        } else {
-            createTripDetails(req, tripDetails, callback);
-        }
 
+        createTripDetails(req, tripDetails, callback);
     }
 };
 
@@ -435,29 +424,18 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
 
     } else {
         retObj.status = false;
-        retObj.message = "Unauthorized access";
+        retObj.messages.push("Unauthorized access");
         analyticsService.create(req, serviceActions.update_trips_err, {
             body: JSON.stringify(req.body),
             accountId: jwt.id,
             success: false,
-            messages: retObj.message
+            messages: retObj.messages
         }, function (response) {
         });
         callback(retObj);
     }
     if (giveAccess) {
-        if (req.files.files && req.files.files.length > 0) {
-            Utils.uploadAttachmentsToS3(req.jwt.accountId, 'trip', req.files.files, function (fileUploadResp) {
-                if (fileUploadResp.status) {
-                    tripDetails.attachments = tripDetails.attachments.concat(fileUploadResp.attachments);
-                    updateTripDetails(req, tripDetails, callback)
-                } else {
-                    callback(fileUploadResp);
-                }
-            })
-        } else {
-            updateTripDetails(req, tripDetails, callback);
-        }
+        updateTripDetails(req, tripDetails, callback);
     }
 
 };
