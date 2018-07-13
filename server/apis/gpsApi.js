@@ -1019,17 +1019,9 @@ Gps.prototype.generateShareTrackingLink = function (req, callback) {
                 retObj.messages.push("Internal server error," + JSON.stringify(err.message));
                 callback(retObj);
             } else {
-
-                googleUrl.shorten( config.baseUrl + '/live-trcaking/' + doc._id, function( err, shortUrl ) {
-                   if(err){
-                       retObj.messages.push("Internal server error," + JSON.stringify(err));
-                       callback(retObj);
-                   }else{
-                       retObj.status = true;
-                       retObj.data = shortUrl;
-                       callback(retObj);
-                   }
-                } );
+                retObj.status = true;
+                retObj.data = config.baseUrl + '/live-trcaking/' + doc._id;
+                callback(retObj);
 
             }
         })

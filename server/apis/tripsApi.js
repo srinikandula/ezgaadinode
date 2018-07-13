@@ -66,7 +66,7 @@ function addTripDetailsToNotification(data, callback) {
 
 function shareTripDetails(tripDetails, callback) {
     var notificationParams = {};
-    TripCollection.findOne({_id: tripDetails._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripDetails) {
+    TripCollection.findOne({_id: tripDetails._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripData) {
         if (tripDetails.partyId.isEmail) {
             var emailparams = {
                 templateName: 'addTripDetails',
@@ -290,7 +290,6 @@ function createTripDetails(req, tripDetails, callback) {
 }
 
 function saveTrip(req, tripDetails, callback) {
-    console.log("save trip...",tripDetails);
     var retObj = {
         status: false,
         messages: []
