@@ -34,7 +34,8 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
 
     $rootScope.loggedTrue = function () {
         if ($cookies.get('token')) {
-            $scope.isLoggedInn = true;            
+            $scope.isLoggedInn = true;
+            $scope.getReminderCount();
         }
         else {
             $scope.isLoggedInn = false;
@@ -42,7 +43,6 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         }
     };
     $rootScope.loggedTrue();
-    $scope.getReminderCount();
     
     $scope.isLoggedin=$cookies.get('token');
 
