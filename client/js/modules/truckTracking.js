@@ -11,7 +11,14 @@ app.factory('truckTrackingService',['$http','$cookies', function ($http, $cookie
                 url: '/v1/gps/downloadReport/'+body.regNo+'/'+body.startDate+'/'+body.endDate,
                 method: "GET"
             }).then(success, error)
+        },
+        getTruckLatestLocation:function (trackingId,success,error) {
+            $http({
+                url: '/v1/gps//getTruckLatestLocation/'+trackingId,
+                method: "GET"
+            }).then(success, error)
         }
+
     }
 }]);
 
@@ -402,5 +409,29 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
        });*/
     $scope.options = {
         showWeeks: false
+    };
+}]);
+app.controller('liveTrackingController',['$scope','$stateParams','truckTrackingService',function($scope,$stateParams,truckTrackingService){
+    $scope.loadLiveTracking = function(){
+        truckTrackingService.getTruckLatestLocation($stateParams.truckNo,function(successCallback){
+            if(successCallback.data.status){
+                var latestLocation = successCallback.data.data.latestLocation;
+                var map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 7,
+                    center: new google.maps.LatLng(18.2699, 78.0489),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                });
+                var icon = {
+                    url: '/images/red_marker.svg', // url
+                    scaledSize: new google.maps.Size(50, 50),
+                    labelOrigin: new google.maps.Point(20, -2)
+                };
+                var marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(latestLocation.location.coordinates[1], latestLocation.location.coordinates[0]),
+                    icon: icon,
+                    map: map
+                });
+            }
+        },function(errorCallback){});
     };
 }]);

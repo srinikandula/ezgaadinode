@@ -66,7 +66,8 @@ Jobs.prototype.addJob = function(req,callback){
         reminderText:jobInfo.reminderText,
         inventory:jobInfo.inventory,
         accountId:req.jwt.accountId,
-        status:'Enable'
+        status:'Enable',
+        type:'job'
     };
     if(jobInfo.expenseName && jobInfo.type === 'others'){
         expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
