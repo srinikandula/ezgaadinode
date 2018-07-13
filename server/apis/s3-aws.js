@@ -57,6 +57,7 @@ S3Bucket.prototype.UploadFile = function (req,callcack) {
                             callcack(retObj);
                         }else{
                            retObj.data={
+                               fileName:file.originalFilename,
                                key:s3data.key,
                                path:s3data.Location
                            };
