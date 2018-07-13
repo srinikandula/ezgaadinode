@@ -715,13 +715,17 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
                 $rootScope.reqloading = false;
                 return config;
             },
-            'responseError': function (response) {
-                if ([400, 401, 402, 403].indexOf(response.status) > -1) {
+            'responseError': function (error) {
+                let status = error.status;
+                console.log('status ' + error.status);
+                if ([400, 401, 402, 403].indexOf(status) > -1) {
+                    console.log('found error');
                     $cookies.remove('token');
                     if(!$location.url().startsWith('/live-trcaking')){
                         $location.path('/login');
+                        return;
                     }
-                    return $q.reject(response);
+                    return $q.reject(error);
                 }
             }
         };
