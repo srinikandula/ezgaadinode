@@ -24,7 +24,7 @@ AuthRouter.get('/getCount',function(req,res){
     });
 });
 AuthRouter.get('/getReminder/:id',function(req,res){
-    API.getReminder(req.params.id,req.jwt,function(result){
+    API.getReminder(req.params.id,req.jwt,req,function(result){
         res.send(result);
     });
 });

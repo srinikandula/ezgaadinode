@@ -307,6 +307,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.isFirstOpen = true;
     $scope.trip = {
         date: '',
+        reminderDate:'',
+        reminderText:'',
         driverId: '',
         partyId: '',
         registrationNo: '',
@@ -578,6 +580,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             if (success.data.status) {
                 $scope.trip = success.data.trip;
                 $scope.trip.date = new Date($scope.trip.date);
+                $scope.trip.reminderText = success.data.reminder.reminderText;
+                $scope.trip.reminderDate = new Date(success.data.reminder.reminderDate);
+
                 getTruckIds();
                 getParties();
                 getDriverIds();

@@ -4,6 +4,7 @@ var _ = require('underscore');
 var async = require('async');
 var json2xls = require('json2xls');
 var XLSX = require('xlsx');
+var RemindersCollection = require('./../models/schemas').RemindersCollection;
 
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -294,6 +295,14 @@ function saveTrip(req, tripDetails, callback) {
         status: false,
         messages: []
     };
+    var reminder = {
+        reminderDate:tripDetails.reminderDate,
+        reminderText:tripDetails.reminderText,
+        vehicle:tripDetails.registrationNo.registrationNo,
+        accountId:req.jwt.accountId,
+        status:'Enable',
+        type:'trip'
+    };
     tripDetails.totalAmount = parseFloat(tripDetails.freightAmount) + parseFloat(tripDetails.totalExpense) - parseFloat(tripDetails.totalTruckOwnerCharges);
 
     var tripDoc = new TripCollection(tripDetails);
@@ -309,21 +318,32 @@ function saveTrip(req, tripDetails, callback) {
             });
             callback(retObj);
         } else {
-            retObj.status = true;
-            retObj.messages.push("Trip Added Successfully");
-            retObj.trips = trip;
-            analyticsService.create(req, serviceActions.add_trip, {
-                body: JSON.stringify(req.body),
-                accountId: jwt.id,
-                success: true
-            }, function (response) {
+            reminder.refId = trip._id;
+            var reminderDoc = new RemindersCollection(reminder);
+            reminderDoc.save(function(err,result){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push("error in saving....."+JSON.stringify(err));
+                    callback(retObj);
+                }else{
+                    retObj.status = true;
+                    retObj.messages.push("Trip Added Successfully");
+                    retObj.trips = trip;
+                    analyticsService.create(req, serviceActions.add_trip, {
+                        body: JSON.stringify(req.body),
+                        accountId: jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
+                    if (tripDetails.share) {
+                        shareTripDetails(tripDetails, function (shareResponse) {
+                            //callback(shareResponse);
+                        })
+                    }
+                    callback(retObj);
+                }
             });
-            if (tripDetails.share) {
-                shareTripDetails(tripDetails, function (shareResponse) {
-                    //callback(shareResponse);
-                })
-            }
-            callback(retObj);
+
         }
     });
 }
@@ -333,6 +353,8 @@ Trips.prototype.findTrip = function (jwt, tripId, req, callback) {
         status: false,
         messages: []
     };
+    var reminder = {};
+
 
     TripCollection.findOne({_id: tripId}).populate({path: "truckOwnerCharges.type"}).populate({path: "expense.type"}).exec(function (err, trip) {
         if (err) {
@@ -346,6 +368,14 @@ Trips.prototype.findTrip = function (jwt, tripId, req, callback) {
             });
             callback(retObj);
         } else if (trip) {
+            RemindersCollection.findOne({refId:trip._id},function(err,doc){
+                if(err){
+                    retObj.messages.push("Error while finding reminder, try Again");
+                }else{
+                    reminder.reminderDate = doc.reminderDate;
+                    reminder.reminderText = doc.reminderText;
+                }
+            });
             async.parallel({
                 createdbyname: function (createdbyCallback) {
                     Utils.populateNameInUsersColl([trip], "createdBy", function (response) {
@@ -377,6 +407,7 @@ Trips.prototype.findTrip = function (jwt, tripId, req, callback) {
                 }, function (response) {
                 });
                 retObj.trip = trip;
+                retObj.reminder = reminder;
                 callback(retObj);
             });
         } else {
@@ -398,6 +429,7 @@ Trips.prototype.updateTrip = function (jwt, tripDetails, req, callback) {
         status: false,
         messages: []
     };
+
     /*if(tripDetails.share){
         if(!tripDetails.driverId){
             retObj.messages.push("Please select Driver");
@@ -527,13 +559,17 @@ function updateTripDetails(req, tripDetails, callback) {
             updateTrip(req, tripDetails, callback)
         }
     });
-
 }
 
 function updateTrip(req, tripDetails, callback) {
     var retObj = {
         status: false,
         messages: []
+    };
+    console.log("trip details...update..",tripDetails);
+    var reminder = {
+        reminderDate:tripDetails.reminderDate,
+        reminderText:tripDetails.reminderText
     };
     if (tripDetails.tonnage)
         tripDetails = Utils.removeEmptyFields(tripDetails);
@@ -571,16 +607,23 @@ function updateTrip(req, tripDetails, callback) {
                         }
                     });
                 }
-                retObj.status = true;
-                retObj.messages.push("Trip updated successfully");
-                retObj.trip = trip;
-                analyticsService.create(req, serviceActions.update_trips, {
-                    body: JSON.stringify(req.body),
-                    accountId: jwt.id,
-                    success: true
-                }, function (response) {
+                RemindersCollection.findOneAndUpdate({refId:tripDetails._id},{$set:reminder},function(err,result){
+                    if(err){
+                        retObj.messages.push("Error in updating reminder..",JSON.stringify(err));
+                    }else{
+                        retObj.status = true;
+                        retObj.messages.push("Trip updated successfully");
+                        retObj.trip = trip;
+                        analyticsService.create(req, serviceActions.update_trips, {
+                            body: JSON.stringify(req.body),
+                            accountId: jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
                 });
-                callback(retObj);
+
             } else {
                 retObj.messages.push("Error, finding trip");
                 analyticsService.create(req, serviceActions.update_trips_err, {
