@@ -706,7 +706,6 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
     $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies', function ($q, $location, $rootScope, $cookies) {
         return {
             'request': function (config) {
-                ``
 
                 $rootScope.reqloading = true;
                 return config;
@@ -716,11 +715,13 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
                 return config;
             },
             'responseError': function (error) {
+
                 let status = error.status;
                 console.log('status ' + error.status);
                 if ([400, 401, 402, 403].indexOf(status) > -1) {
                     console.log('found error');
                     $cookies.remove('token');
+                    console.log("$location.url()",$location.url());
                     if(!$location.url().startsWith('/live-trcaking')){
                         $location.path('/login');
                         return;

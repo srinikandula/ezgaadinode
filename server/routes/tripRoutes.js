@@ -6,8 +6,8 @@ var multipartyMiddleware = multiparty();
 
 var Trips = require('../apis/tripsApi');
 
-AuthRouter.post('/addTrip',multipartyMiddleware, function (req, res) {
-    Trips.addTrip(req.jwt,req.body.content,req, function (result) {
+AuthRouter.post('/addTrip', function (req, res) {
+    Trips.addTrip(req.jwt,req.body,req, function (result) {
         res.send(result);
     });
 });
@@ -22,8 +22,8 @@ AuthRouter.get('/getAllTrips', function (req, res) {
         res.json(result);
     });
 });
-AuthRouter.post('/updateTrip',multipartyMiddleware, function (req, res) {
-    Trips.updateTrip(req.jwt, req.body.content,req, function (result) {
+AuthRouter.post('/updateTrip', function (req, res) {
+    Trips.updateTrip(req.jwt, req.body,req, function (result) {
         res.send(result);
     });
 });
