@@ -54,33 +54,33 @@ app.factory('AccountServices',['$http', '$cookies', function ($http, $cookies) {
         },
         addAccountGroup: function (accountInfo, success, error) {
             $http({
-                url: '/v1/admin/addAccountGroup',
+                url: '/v1/groups/addAccountGroup',
                 method: "POST",
                 data: accountInfo
             }).then(success, error)
         },
         countAccountGroups: function (success, error) {
             $http({
-                url: '/v1/admin/countAccountGroups',
+                url: '/v1/groups/countAccountGroups',
                 method: "GET"
             }).then(success, error)
         },
         getAllAccountGroup: function (pageable, success, error) {
             $http({
-                url: '/v1/admin/getAllAccountGroup',
+                url: '/v1/groups/getAllAccountGroups',
                 method: "GET",
                 params: pageable
             }).then(success, error)
         },
         getAccountGroup: function (accountGroupId, success, error) {
             $http({
-                url: '/v1/admin/getAccountGroup/' + accountGroupId,
+                url: '/v1/groups/getAccountGroup/' + accountGroupId,
                 method: "GET"
             }).then(success, error)
         },
         updateAccountGroup: function (accountGroupInfo, success, error) {
             $http({
-                url: '/v1/admin/updateAccountGroup',
+                url: '/v1/groups/updateAccountGroup',
                 method: "PUT",
                 data: accountGroupInfo
             }).then(success, error)
@@ -494,12 +494,11 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
     };
     $scope.truckId2 = [];
 
+
     function getTruckIds() {
         TrucksService.getAllTrucks({}, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
-
-                if ($scope.group.truckIds.length > 0) {
                     for (var i = 0; i < $scope.trucks.length; i++) {
 
                         if( $scope.group.truckIds.indexOf($scope.trucks[i]._id) !=-1){
@@ -511,7 +510,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
                         }
 
                     }
-                }
+
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -523,11 +522,11 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
 
     }
 
-    $scope.truckSelected = function (status, truckId) {
-        if (status) {
+    $scope.truckSelected = function (index, truckId) {
+        if ($scope.truckId2[index]) {
             $scope.group.truckIds.push(truckId);
         } else {
-            var index = $scope.group.truckIds.indexOf(truckId);
+
             $scope.group.truckIds.splice(index, 1);
         }
     }
@@ -564,13 +563,13 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         if (!params.location) {
             params.errors.push('Please Provide Location');
         }
-
-        if (!params.truckIds.length) {
-            params.errors.push('Please Select Atleast One Vehicle');
+        console.log("params.truckIds",params.truckIds);
+        if (params.truckIds.length<=0) {
+            params.errors.push('Please Select Atleast One Vehicle1');
         }
-        if (!params.erpEnabled && !params.gpsEnabled) {
+       /* if (!params.erpEnabled && !params.gpsEnabled) {
             params.errors.push('Please Select Either ERP or GPS');
-        }
+        }*/
         if (!params.errors.length) {
             params.type = 'group';
             if (params._id) {

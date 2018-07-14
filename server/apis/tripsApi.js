@@ -65,80 +65,88 @@ function addTripDetailsToNotification(data, callback) {
     });
 }
 
-function shareTripDetails(tripDetails, callback) {
+function shareTripDetails(tripData, callback) {
     var notificationParams = {};
-    TripCollection.findOne({_id: tripDetails._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripData) {
-        if (tripDetails.partyId.isEmail) {
-            var emailparams = {
-                templateName: 'addTripDetails',
-                subject: "Easygaadi Trip Details",
-                to: tripDetails.partyId.email,
-                data: {
-                    "date": new Date(tripDetails.date).toLocaleDateString(),
-                    "name": tripDetails.partyId.name,
-                    "vehicleNo": tripDetails.attrs.truckName,
-                    "driverName": tripDetails.driverId.fullName,
-                    "driverNumber": tripDetails.driverId.mobile,
-                    "source": tripDetails.source,
-                    "destination": tripDetails.destination,
-                    "Tonnage": tripDetails.tonnage,
-                    "Rate": tripDetails.rate,
-                    "Amount": tripDetails.freightAmount
-                }//dataToEmail.tripsReport
-            };
-            emailService.sendEmail(emailparams, function (emailResponse) {
-                if (emailResponse.status) {
-                    notificationParams.notificationType = 1;
-                    notificationParams.status = true;
-                    notificationParams.message = "success";
-                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = tripDetails;
-                        callback(notificationResponse);
-                    })
-                } else {
-                    notificationParams.notificationType = 1;
-                    notificationParams.status = false;
-                    notificationParams.message = "email failed";
-                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = tripDetails;
-                        callback(notificationResponse);
-                    })
-                }
-            })
+    TripCollection.findOne({_id: tripData._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripDetails) {
+        console.log("party not fount",tripDetails);
+        if(err){
+            console.log("err==>",err);
+        }else if(tripDetails && tripDetails.partyId){
+            if (tripDetails.partyId.isEmail) {
+                var emailparams = {
+                    templateName: 'addTripDetails',
+                    subject: "Easygaadi Trip Details",
+                    to: tripDetails.partyId.email,
+                    data: {
+                        "date": new Date(tripDetails.date).toLocaleDateString(),
+                        "name": tripDetails.partyId.name,
+                        "vehicleNo": tripDetails.attrs.truckName,
+                        "driverName": tripDetails.driverId.fullName,
+                        "driverNumber": tripDetails.driverId.mobile,
+                        "source": tripDetails.source,
+                        "destination": tripDetails.destination,
+                        "Tonnage": tripDetails.tonnage,
+                        "Rate": tripDetails.rate,
+                        "Amount": tripDetails.freightAmount
+                    }//dataToEmail.tripsReport
+                };
+                emailService.sendEmail(emailparams, function (emailResponse) {
+                    if (emailResponse.status) {
+                        notificationParams.notificationType = 1;
+                        notificationParams.status = true;
+                        notificationParams.message = "success";
+                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                            notificationResponse.trips = tripDetails;
+                            callback(notificationResponse);
+                        })
+                    } else {
+                        notificationParams.notificationType = 1;
+                        notificationParams.status = false;
+                        notificationParams.message = "email failed";
+                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                            notificationResponse.trips = tripDetails;
+                            callback(notificationResponse);
+                        })
+                    }
+                })
+            }
+
+            if (tripDetails.partyId.isSms) {
+                var smsParams = {
+                    contact: tripDetails.partyId.contact,
+                    message: "Hi " + tripDetails.partyId.name + ",\n" +
+                    "Date : " + new Date(tripDetails.date).toDateString() + ",\n" +
+                    "Vehicle No:" + tripDetails.registrationNo.toUpperCase() + ",\n" +
+                    "Driver Name:" + tripDetails.driverId.fullName.toUpperCase() + ",\n" +
+                    "Driver Number:" + tripDetails.driverId.mobile + ",\n" +
+                    "Source:" + tripDetails.source + ",\n" +
+                    "Destination:" + tripDetails.destination
+                };
+                SmsService.sendSMS(smsParams, function (smsResponse) {
+                    if (smsResponse.status) {
+                        notificationParams.notificationType = 0;
+                        notificationParams.status = true;
+                        notificationParams.message = "success";
+                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                            notificationResponse.trips = tripDetails;
+                            callback(notificationResponse);
+                        })
+
+                    } else {
+                        notificationParams.notificationType = 0;
+                        notificationParams.status = false;
+                        notificationParams.message = "SMS failed";
+                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                            notificationResponse.trips = tripDetails;
+                            callback(notificationResponse);
+                        })
+                    }
+                });
+            }
+        }else{
+            console.log("trip party not found");
         }
 
-        if (tripDetails.partyId.isSms) {
-            var smsParams = {
-                contact: tripDetails.partyId.contact,
-                message: "Hi " + tripDetails.partyId.name + ",\n" +
-                "Date : " + new Date(tripDetails.date).toDateString() + ",\n" +
-                "Vehicle No:" + tripDetails.registrationNo.toUpperCase() + ",\n" +
-                "Driver Name:" + tripDetails.driverId.fullName.toUpperCase() + ",\n" +
-                "Driver Number:" + tripDetails.driverId.mobile + ",\n" +
-                "Source:" + tripDetails.source + ",\n" +
-                "Destination:" + tripDetails.destination
-            };
-            SmsService.sendSMS(smsParams, function (smsResponse) {
-                if (smsResponse.status) {
-                    notificationParams.notificationType = 0;
-                    notificationParams.status = true;
-                    notificationParams.message = "success";
-                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = tripDetails;
-                        callback(notificationResponse);
-                    })
-
-                } else {
-                    notificationParams.notificationType = 0;
-                    notificationParams.status = false;
-                    notificationParams.message = "SMS failed";
-                    addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                        notificationResponse.trips = tripDetails;
-                        callback(notificationResponse);
-                    })
-                }
-            });
-        }
     });
     callback({"status": true});
 }
@@ -343,7 +351,12 @@ function saveTrip(req, tripDetails, callback) {
                     callback(retObj);
                 }
             });
-
+            if (tripDetails.share) {
+                shareTripDetails(trip, function (shareResponse) {
+                    //callback(shareResponse);
+                })
+            }
+            callback(retObj);
         }
     });
 }

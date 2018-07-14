@@ -1040,7 +1040,12 @@ var userSchema = new mongoose.Schema({
     createdBy: String,
     role:String,
     type: {type: String, default: "account"},
-    accountId: {type: ObjectId, ref: 'accounts'}
+    accountId: {type: ObjectId, ref: 'accounts'},
+    groupName: String,
+    contactName: String,
+    location: String,
+    truckIds: []
+
 }, {timestamps: true});
 
 var shareLinksSchema = new mongoose.Schema({
