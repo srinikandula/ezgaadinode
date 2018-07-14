@@ -17,7 +17,6 @@ var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
 var mailerApi = require('./../apis/mailerApi');
 var SmsService = require('./smsApi');
-var googleUrl = new GoogleUrl( { key: config.shortUrlGoogleApi });
 var mongoose = require('mongoose');
 
 const ObjectId = mongoose.Types.ObjectId;
