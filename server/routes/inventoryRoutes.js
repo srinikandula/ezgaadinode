@@ -10,7 +10,7 @@ var AuthRouter = express.Router();
 
 var API = require('../apis/inventoryApi');
 
-AuthRouter.post('/addInventory',multipartyMiddleware,function(req,res){
+AuthRouter.post('/addInventory',function(req,res){
     API.addInventory(req,function(result){
         res.json(result);
     });
@@ -34,7 +34,7 @@ AuthRouter.get('/get/:id',function(req,res){
     });
 });
 
-AuthRouter.post('/updateInventory',multipartyMiddleware,function(req,res){
+AuthRouter.put('/updateInventory',function(req,res){
     API.updateInventory(req,function(result){
         res.send(result);
     });

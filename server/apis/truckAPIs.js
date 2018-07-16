@@ -10,7 +10,7 @@ const ObjectId = mongoose.Types.ObjectId;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
-var userLogins = require('./../models/schemas').userLogins;
+var GroupsColl = require('./../models/schemas').GroupsColl;
 var TrucksTypesColl=require('./../models/schemas').TrucksTypesColl;
 var LoadRequestColl = require("../models/schemas").adminLoadRequestColl;
 var config = require('./../config/config');
@@ -306,7 +306,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
         getTrucks(condition,jwt,params,req,callback);
     }
     else {
-        userLogins.findOne({_id: jwt.id}, function (err, accountData) {
+        GroupsColl.findOne({_id: jwt.id}, function (err, accountData) {
             if (err) {
                 retObj.messages.push('Error retrieving trucks');
                 callback(retObj);
@@ -814,7 +814,7 @@ Trucks.prototype.getAllTrucksForFilter = function (jwt,req, callback) {
         condition = {'accountId': jwt.accountId};
         getAllTrucksForFilterCondition(condition,req,callback);
     } else {
-        userLogins.findOne({'_id': jwt.id},{truckIds: 1}, function (err, groupTrucks) {
+        GroupsColl.findOne({'_id': jwt.id},{truckIds: 1}, function (err, groupTrucks) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error getting Trucks From Group');

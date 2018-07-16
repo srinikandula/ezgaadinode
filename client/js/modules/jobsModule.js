@@ -44,6 +44,20 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 url: '/v1/jobs/searchByTruck/'+truckName,
                 method: "GET",
             }).then(success, error)
+        },
+        addJob:function (params,success, error) {
+            $http({
+                url: '/v1/jobs/addJob',
+                method: "POST",
+                data:params
+            }).then(success, error)
+        },
+        updateJob:function (params,success, error) {
+            $http({
+                url: '/v1/jobs/updateJob',
+                method: "PUT",
+                data:params
+            }).then(success, error)
         }
     }
 }]);
@@ -114,43 +128,45 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 
     };
     $scope.add_editJob = function(){
-        var file = $scope.job.file;
         if($stateParams.ID){
-            Upload.upload({
-                url: '/v1/jobs/updateJob',
-                data: {
-                    files:file,
-                    content:$scope.job
-                }
-            }).then(function (successCallback,errorCallback) {
-                if(successCallback.data.status){
+            if ($scope.job.attachments.length > 0 ) {
+                $scope.files.forEach(function (file) {
+                    if(file.key){
+                        $scope.job.attachments.push(file);
+                    }
+                })
+            } else {
+                $scope.job.attachments = $scope.files;
+            }
+            JobsService.updateJob($scope.job,function (success) {
+                if(success.data.status){
                     Notification.success({message:"updated Successfully"});
                     $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
                 }else{
-                    successCallback.data.messages.forEach(function (message) {
+                    success.data.messages.forEach(function (message) {
                         Notification.error({ message: message });
                     });
                 }
+            },function (error) {
+
             });
         }else{
-            Upload.upload({
-                url: '/v1/jobs/addJob',
-                data: {
-                    files:file,
-                    content:$scope.job
-                }
-            }).then(function (successCallback,errorCallback) {
-                if(successCallback.data.status){
+            $scope.job.attachments=$scope.files;
+            JobsService.addJob($scope.job,function (success) {
+                if(success.data.status){
                     Notification.success({message:"Added Successfully"});
                     $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
                 }else{
-                    successCallback.data.messages.forEach(function (message) {
+                    success.data.messages.forEach(function (message) {
                         Notification.error({ message: message });
                     });
                 }
+            },function (error) {
+
             });
+
         }
     };
     $scope.viewAttachment = function (path) {

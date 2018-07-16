@@ -6,11 +6,19 @@ var Inventories = function () {
 };
 
 
-function saveInventory(jwt,info,callback){
+
+function updateInventory(jwt,info,callback){
+
+};
+
+Inventories.prototype.addInventory = function(req,callback){
     var retObj = {
         status:false,
         messages:[]
     };
+    var jwt=req.jwt;
+    var info = req.body;
+    console.log("info",info);
     info.accountId = jwt.accountId;
     info.createdBy = jwt.id;
     if (!info.name || !_.isString(info.name)) {
@@ -41,13 +49,15 @@ function saveInventory(jwt,info,callback){
             }
         });
     }
-}
+};
 
-function updateInventory(jwt,info,callback){
+
+Inventories.prototype.updateInventory = function(req,callback){
     var retObj = {
         status:false,
         messages:[]
     };
+    var info = req.body;
     InventoryCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,inventory){
         if(err){
             retObj.status=false;
@@ -60,56 +70,6 @@ function updateInventory(jwt,info,callback){
             callback(retObj);
         }
     });
-};
-
-Inventories.prototype.addInventory = function(req,callback){
-    var info = req.body.content;
-    if(req.files.files){
-        Utils.uploadAttachmentsToS3(req.jwt.accountId, 'Inventories', req.files.files, function (uploadResp) {
-           info.attachments = uploadResp.attachments;
-            if(uploadResp.status){
-                saveInventory(req.jwt,info,function(saveCallback){
-                if(saveCallback.status){
-                   callback(saveCallback);
-                }else{
-                    callback(saveCallback);
-                }
-                });
-            }else{
-                callback(uploadResp);
-            }
-        });
-    }else{
-        saveInventory(req.jwt,info,function(saveCallback){
-            callback(saveCallback);
-        });
-    }
-};
-
-
-Inventories.prototype.updateInventory = function(req,callback){
-    var info = req.body.content;
-    if(req.files.files){
-        Utils.uploadAttachmentsToS3(req.jwt.accountId, 'Inventories', req.files.files, function (uploadResp) {
-            info.attachments = uploadResp.attachments;
-            if(uploadResp.status){
-                updateInventory(req.jwt,info,function(saveCallback){
-                    if(saveCallback.status){
-                        callback(saveCallback);
-                    }else{
-                        callback(saveCallback);
-                    }
-                });
-            }else{
-                callback(uploadResp);
-            }
-        });
-    }else{
-        updateInventory(req.jwt,info,function(saveCallback){
-            callback(saveCallback);
-        });
-    }
-
 };
 
 Inventories.prototype.getInventories = function(jwt,callback){
