@@ -36,29 +36,68 @@
         </div>
 
     </div>
-    <span ng-if="reminder.vehicle">
+    <span ng-if="reminder.type === 'job'">
         <div class="col-sm-6 col-xs-12 mt-10">
             <div class="col-xs-12 pall-zero mb-10">
-                <h2 class="table-name">Job Details:</h2>
+                <h2 class="table-name">Job Reminders:</h2>
             </div>
             <div class="mt-10">
                 <table class="table table-bordered table-striped table-condensed table-hover">
                     <tr style="text-align: center;">
-                        <td>Date</td>
-                        <td>{{reminder.refId.date| date}}</td>
+                        <td>Job Date</td>
+                        <td>{{job.date| date}}</td>
                     </tr>
                     <tr style="text-align: center;">
                         <td>Vehicle Number</td>
-                        <td>{{reminder.vehicle.registrationNo}}</td>
+                        <td>{{job.vehicle.registrationNo}}</td>
                     </tr>
-                    <tr style="text-align: center;">
-                        <td>Milage</td>
-                        <td>{{reminder.refId.milege || '--'}}</td>
+                     <tr style="text-align: center;">
+                        <td>Inventory</td>
+                        <td>{{job.inventory.name}}</td>
                     </tr>
                 </table>
             </div>
         </div>
-    </span>>
+    </span>
+    <span ng-if="reminder.type === 'trip'">
+        <div class="col-sm-6 col-xs-12 mt-10">
+            <div class="col-xs-12 pall-zero mb-10">
+                <h2 class="table-name">Payment Reminders:</h2>
+            </div>
+            <div class="mt-10">
+                <table class="table table-bordered table-striped table-condensed table-hover">
+                    <tr style="text-align: center;">
+                        <td>Vehicle</td>
+                        <td>{{trip.attrs.truckName}}</td>
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td>Source</td>
+                        <td>{{trip.source}}</td>
+                    </tr>
+                     <tr style="text-align: center;">
+                        <td>Destination</td>
+                        <td>{{trip.destination}}</td>
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td>Total Amount</td>
+                        <td>{{trip.totalAmount}}</td>
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td>Advance Amount</td>
+                        <td>{{trip.advanceAmount}}</td>
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td>Receivable Amount</td>
+                        <td>{{trip.totalAmount-trip.advanceAmount}}</td>
+                    </tr>
+                    <tr style="text-align: center;">
+                        <td>Total Expense</td>
+                        <td>{{trip.totalExpense}}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </span>
     <div class="col-xs-12">
         <div class="col-xs-4 mtb-25 sub-can">
             <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>

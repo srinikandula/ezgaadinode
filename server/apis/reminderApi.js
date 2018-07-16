@@ -4,6 +4,9 @@ var async = require('async');
 var mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 var SmsService = require('./smsApi');
+var trips = require('./../apis/tripsApi');
+var jobs = require('./../apis/jobApi');
+
 var emailService = require('./mailerApi');
 
 
@@ -81,7 +84,7 @@ Reminders.prototype.deleteReminder = function(id,callback){
     RemindersCollection.remove({_id:id},function(err,result) {
         if(err){
             retObj.status=false;
-            retObj.messages.push("error while deleting load request"+JSON.stringify(err));
+            retObj.messages.push("error while deleting reminder"+JSON.stringify(err));
             callback(retObj);
         }else{
             retObj.status=true;
@@ -101,7 +104,7 @@ Reminders.prototype.getAllReminders = function(jwt,callback){
     RemindersCollection.find({accountId:jwt.accountId}).sort({reminderDate:1}).exec(function(err,reminders){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error while deleting load request"+JSON.stringify(err));
+            retObj.messages.push("error while fetching records"+JSON.stringify(err));
             callback(retObj);
         }else{
             retObj.status=true;
@@ -112,21 +115,57 @@ Reminders.prototype.getAllReminders = function(jwt,callback){
     });
 };
 
-Reminders.prototype.getReminder = function(id,jwt,callback){
+Reminders.prototype.getReminder = function(id,jwt,req,reminderCallback){
     var retObj={
         status:false,
         messages:[]
     };
-    RemindersCollection.findOne({_id:id}).populate({path:"refId"}).populate({path:"inventory"}).populate({path:"vehicle"}).exec(function(err,reminder){
+    RemindersCollection.findOne({_id:id},function(err,reminder){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error while deleting load request"+JSON.stringify(err));
-            callback(retObj);
+            retObj.messages.push("error while fetching data"+JSON.stringify(err));
+            reminderCallback(retObj);
         }else{
-            retObj.status=true;
-            retObj.messages.push("successful");
-            retObj.data=reminder;
-            callback(retObj);
+            if(reminder.type === 'trip'){
+                trips.findTrip(jwt,reminder.refId,req,function(callback){
+                    if(callback.status){
+                        retObj.status=true;
+                        retObj.messages.push("Success");
+                        retObj.reminder = reminder;
+                        retObj.trip = callback.trip;
+                        reminderCallback(retObj);
+                    }else{
+                        retObj.status=true;
+                        retObj.messages.push("Success");
+                        retObj.reminder = reminder;
+                        retObj.trip = {};
+                        reminderCallback(retObj);
+                    }
+
+                });
+            }else if(reminder.type === 'job'){
+                jobs.getJob(jwt,reminder.refId,function(callback){
+                    if(callback.status){
+                        retObj.status=true;
+                        retObj.messages.push("Success");
+                        retObj.reminder = reminder;
+                        retObj.job = callback.data;
+                        reminderCallback(retObj);
+                    }else{
+                        retObj.status=true;
+                        retObj.messages.push("Success");
+                        retObj.reminder = reminder;
+                        retObj.job = {};
+                        reminderCallback(retObj);
+                    }
+                });
+            }else{
+                retObj.status=true;
+                retObj.messages.push("Success");
+                retObj.reminder = reminder;
+                reminderCallback(retObj);
+            }
+
         }
     });
 };

@@ -214,6 +214,7 @@ var tripSchema = new mongoose.Schema({
     createdBy: String,
     paymentHistory: [],
     attrs: {},
+    reminder: {type: Boolean, default: false},
     share: {type: Boolean, default: false},
     commission: {type: Number, default: 0},
     source: String,
@@ -352,13 +353,13 @@ var notificationsSchema = mongoose.Schema({
 }, {timestamps: String});
 
 var remindersSchema = mongoose.Schema({
-    refId: {type: ObjectId, ref: 'jobs'},
+    refId: String,
     type:String,
     reminderText: String,
-    inventory: {type: ObjectId, ref: 'inventories'},
+    inventory: String,
     reminderDate: Date,
     jobDate: Date,
-    vehicle: {type: ObjectId, ref: 'trucks'},
+    vehicle: String,
     accountId: {type: ObjectId, ref: 'accounts'},
     status: String
 }, {timestamps: String});

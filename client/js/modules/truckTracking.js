@@ -84,7 +84,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
             mapOptions.mapTypeId = google.maps.MapTypeId.ROADMAP;
         }
         map = new google.maps.Map(document.getElementById('map'),mapOptions);
-            $scope.getTruckPositions();
+        $scope.getTruckPositions();
     };
 
     var idle_marker_icon={
@@ -201,7 +201,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
 
     function renderPolyline() {
         var flightPathCoordinates=[];
-       // map = new google.maps.Map(document.getElementById('map'),mapOptions);
+        // map = new google.maps.Map(document.getElementById('map'),mapOptions);
         var marker;
         map = new google.maps.Map(document.getElementById('map'),mapOptions);
         for (var i = 0; i< $scope.locations.length; i++) {
@@ -214,65 +214,51 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 var latlang = new google.maps.LatLng($scope.locations[i].location.coordinates[1], $scope.locations[i].location.coordinates[0]);
                 $scope.bounds.extend(latlang);
                 flightPathCoordinates.push(latlang);
-            if (i === 0) {
-                marker = new google.maps.Marker({
-                    position: latlang,
-                    icon: '/images/start.png',
-                    map: map,
-                    scaledSize: new google.maps.Size(35, 35)
-                });
-                click(marker, i, functionContent, compiledContent, map);
-            } else if (i === $scope.locations.length - 1) {
-                map.fitBounds($scope.bounds);
-                map.panToBounds($scope.bounds);
-                flightPath = new google.maps.Polyline({
-                    path: flightPathCoordinates,
-                    geodesic: true,
-                    strokeColor: '#393',
-                    strokeOpacity: 1.0,
-                    strokeWeight: 2
-                });
-                flightPath.setMap(map);
-                marker = new google.maps.Marker({
-                    position: latlang,
-                    icon: '/images/stop.png',
-                    scaledSize: new google.maps.Size(35, 35),
-                    map: map
-                });
-                click(marker, i, functionContent, compiledContent, map);
-                map.setCenter(flightPathCoordinates[0]);
-            } else {
-
-                if ($scope.locations[i].isStopped) {
-                    var icon = {
-                        url: '/images/gps_truck_stop.png', // url
-                        scaledSize: new google.maps.Size(25, 25), // scaled size
-                        origin: new google.maps.Point(0, 0), // origin
-                        anchor: new google.maps.Point(0, 0) // anchor
-                    };
-
+                if (i === 0) {
                     marker = new google.maps.Marker({
                         position: latlang,
+                        icon: '/images/start.png',
                         map: map,
-                        icon: icon
+                        scaledSize: new google.maps.Size(35, 35)
                     });
-                } else if ($scope.locations[i].isIdle) {
-                    var icon = {
-                        url: '/images/idle.png', // url
-                        scaledSize: new google.maps.Size(25, 25), // scaled size
-                        origin: new google.maps.Point(0, 0), // origin
-                        anchor: new google.maps.Point(0, 0) // anchor
-                    };
-
+                    click(marker, i, functionContent, compiledContent, map);
+                } else if (i === $scope.locations.length - 1) {
+                    map.fitBounds($scope.bounds);
+                    map.panToBounds($scope.bounds);
+                    flightPath = new google.maps.Polyline({
+                        path: flightPathCoordinates,
+                        geodesic: true,
+                        strokeColor: '#393',
+                        strokeOpacity: 1.0,
+                        strokeWeight: 2
+                    });
+                    flightPath.setMap(map);
                     marker = new google.maps.Marker({
                         position: latlang,
-                        map: map,
-                        icon: icon,
+                        icon: '/images/stop.png',
+                        scaledSize: new google.maps.Size(35, 35),
+                        map: map
                     });
+                    click(marker, i, functionContent, compiledContent, map);
+                    map.setCenter(flightPathCoordinates[0]);
                 } else {
-                    if($scope.locations[i].speed > $scope.overSpeedLimit){
+
+                    if ($scope.locations[i].isStopped) {
                         var icon = {
-                            url: '/images/overSpeed.png', // url
+                            url: '/images/gps_truck_stop.png', // url
+                            scaledSize: new google.maps.Size(25, 25), // scaled size
+                            origin: new google.maps.Point(0, 0), // origin
+                            anchor: new google.maps.Point(0, 0) // anchor
+                        };
+
+                        marker = new google.maps.Marker({
+                            position: latlang,
+                            map: map,
+                            icon: icon
+                        });
+                    } else if ($scope.locations[i].isIdle) {
+                        var icon = {
+                            url: '/images/idle.png', // url
                             scaledSize: new google.maps.Size(25, 25), // scaled size
                             origin: new google.maps.Point(0, 0), // origin
                             anchor: new google.maps.Point(0, 0) // anchor
@@ -283,46 +269,60 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                             map: map,
                             icon: icon,
                         });
-                    }else{
-                        var icon = {
-                            url: '', // url
-                            scaledSize: new google.maps.Size(25, 25)
-                        };
-                        var course = parseFloat($scope.locations[i].course);
-                        if (course >= 25 && course < 70) {
-                            icon.url = '/images/h1.png'
-                        } else if (course >= 70 && course < 110) {
-                            icon.url = '/images/h2.png'
-                        } else if (course >= 110 && course < 160) {
-                            icon.url = '/images/h3.png'
-                        } else if (course >= 160 && course < 200) {
-                            icon.url = '/images/h4.png'
-                        } else if (course >= 200 && course < 240) {
-                            icon.url = '/images/h5.png'
-                        } else if (course >= 240 && course < 290) {
-                            icon.url = '/images/h6.png'
-                        } else if (course >= 290 && course < 330) {
-                            icon.url = '/images/h7.png'
-                        } else if (course >= 330 && course < 390) {
-                            icon.url = '/images/h0.png'
-                        } else if (course >= 390 && course < 420) {
-                            icon.url = '/images/h1.png'
-                        } else if (course >= 420 && course < 450) {
-                            icon.url = '/images/h2.png'
-                        } else if (course >= 450 && course < 500) {
-                            icon.url = '/images/h3.png'
-                        }
-                        marker = new google.maps.Marker({
-                            position: latlang,
-                            icon: icon,
-                            map: map
-                        });
-                    }
-                }
+                    } else {
+                        if($scope.locations[i].speed > $scope.overSpeedLimit){
+                            var icon = {
+                                url: '/images/overSpeed.png', // url
+                                scaledSize: new google.maps.Size(25, 25), // scaled size
+                                origin: new google.maps.Point(0, 0), // origin
+                                anchor: new google.maps.Point(0, 0) // anchor
+                            };
 
-                click(marker, i, functionContent, compiledContent, map);
+                            marker = new google.maps.Marker({
+                                position: latlang,
+                                map: map,
+                                icon: icon,
+                            });
+                        }else{
+                            var icon = {
+                                url: '', // url
+                                scaledSize: new google.maps.Size(25, 25)
+                            };
+                            var course = parseFloat($scope.locations[i].course);
+                            if (course >= 25 && course < 70) {
+                                icon.url = '/images/h1.png'
+                            } else if (course >= 70 && course < 110) {
+                                icon.url = '/images/h2.png'
+                            } else if (course >= 110 && course < 160) {
+                                icon.url = '/images/h3.png'
+                            } else if (course >= 160 && course < 200) {
+                                icon.url = '/images/h4.png'
+                            } else if (course >= 200 && course < 240) {
+                                icon.url = '/images/h5.png'
+                            } else if (course >= 240 && course < 290) {
+                                icon.url = '/images/h6.png'
+                            } else if (course >= 290 && course < 330) {
+                                icon.url = '/images/h7.png'
+                            } else if (course >= 330 && course < 390) {
+                                icon.url = '/images/h0.png'
+                            } else if (course >= 390 && course < 420) {
+                                icon.url = '/images/h1.png'
+                            } else if (course >= 420 && course < 450) {
+                                icon.url = '/images/h2.png'
+                            } else if (course >= 450 && course < 500) {
+                                icon.url = '/images/h3.png'
+                            }
+                            marker = new google.maps.Marker({
+                                position: latlang,
+                                icon: icon,
+                                map: map
+                            });
+                        }
+                    }
+
+                    click(marker, i, functionContent, compiledContent, map);
+                }
             }
-        }
         }
         marker = null;
     }

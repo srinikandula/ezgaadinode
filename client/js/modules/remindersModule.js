@@ -78,12 +78,27 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
 app.controller("remindersCtrl",['$scope','$rootScope','ReminderService','Notification','$state','$stateParams',function($scope,$rootScope,ReminderService,Notification,$state,$stateParams){
     $scope.reminder = {};
     $scope.job = {};
+    $scope.trip = {};
     if($stateParams.ID){
         $scope.title = 'update Reminder';
         ReminderService.getReminder($stateParams.ID,function(successCallback){
             if(successCallback.data.status){
-                $scope.reminder = successCallback.data.data;
-                $scope.reminder.reminderDate = new Date($scope.reminder.reminderDate);
+                if(successCallback.data.reminder.type === 'job'){
+                    $scope.job = successCallback.data.job;
+                    $scope.reminder = successCallback.data.reminder;
+                    $scope.reminder.reminderDate = new Date($scope.reminder.reminderDate);
+                }else if(successCallback.data.reminder.type === 'trip'){
+                    $scope.trip = successCallback.data.trip;
+                    $scope.reminder = successCallback.data.reminder;
+                    $scope.reminder.reminderDate = new Date($scope.reminder.reminderDate);
+                }else{
+                    $scope.reminder = successCallback.data.reminder;
+                    $scope.reminder.reminderDate = new Date($scope.reminder.reminderDate);
+                }
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
             }
         },function (errorCallback) {});
     }else{

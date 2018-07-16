@@ -61,10 +61,10 @@ Jobs.prototype.addJob = function(req,callback){
     jobInfo.accountId = req.jwt.accountId;
     var reminder = {
         reminderDate:jobInfo.reminderDate,
-        vehicle:jobInfo.vehicle,
+        vehicle:jobInfo.vehicle.registrationNo,
         jobDate:jobInfo.date,
         reminderText:jobInfo.reminderText,
-        inventory:jobInfo.inventory,
+        inventory:jobInfo.inventory.name,
         accountId:req.jwt.accountId,
         status:'Enable',
         type:'job'
