@@ -912,4 +912,41 @@ Utils.prototype.getDriverId=function (accountId,driverName,callback) {
         }
     });
 };
+/*
+* get truck ids using truck type and registration number*/
+Utils.prototype.getTruckIdsByTruckTypeAndRegNo=function (accountId,truckType,regNumber,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+
+    var condition={
+        accountId:accountId
+    };
+   /* condition.$or=[];
+    if(truckType){
+        condition.$or.push({truckType:new RegExp("^" + truckType, "i")});
+    };
+    if(regNumber){
+        condition.$or.push({registrationNo:new RegExp("^" + regNumber, "i")});
+    };*/
+    if(truckType){
+        condition.truckType=new RegExp("^" + truckType, "i");
+    };
+    if(regNumber){
+        condition.registrationNo=new RegExp("^" + regNumber, "i");
+    }
+
+  TrucksColl.find(condition,{_id:1},function (err,docs) {
+      if(err){
+          console.log(err);
+          retObj.messages.push("Internal server error,"+JSON.stringify(err.message));
+          callback(retObj)
+      }else{
+          retObj.status=true;
+          retObj.data=_.pluck(docs,'_id');
+          callback(retObj);
+      }
+  })
+};
 module.exports = new Utils();

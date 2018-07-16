@@ -11,27 +11,29 @@ var TrucksColl = require('./../models/schemas').TrucksColl;
 var ErpSettingsColl = require('./../models/schemas').ErpSettingsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var GroupsColl = require('./../models/schemas').GroupsColl;
-var TrucksTypesColl=require('./../models/schemas').TrucksTypesColl;
+var TrucksTypesColl = require('./../models/schemas').TrucksTypesColl;
 var LoadRequestColl = require("../models/schemas").adminLoadRequestColl;
 var config = require('./../config/config');
 var Helpers = require('./utils');
 var pageLimits = require('./../config/pagination');
 var emailService = require('./mailerApi');
-var analyticsService=require('./../apis/analyticsApi');
-var serviceActions=require('./../constants/constants');
+var analyticsService = require('./../apis/analyticsApi');
+var serviceActions = require('./../constants/constants');
 var notificationService = require('./../apis/notifications');
 var Utils = require('./utils');
 
 var Trucks = function () {
 };
-function value(x){
-    if(x){
+
+function value(x) {
+    if (x) {
         return x;
-    }else{
+    } else {
         return '--';
     }
 }
-Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
+
+Trucks.prototype.addTruck = function (jwt, truckDetails, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -52,17 +54,35 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
 
 
         if (retObj.messages.length) {
-            analyticsService.create(req,serviceActions.add_tru_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.add_tru_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             TrucksColl.find({registrationNo: truckDetails.registrationNo}, function (err, truck) {
                 if (err) {
                     retObj.messages.push("Error, try again!");
-                    analyticsService.create(req,serviceActions.add_tru_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                    analyticsService.create(req, serviceActions.add_tru_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
                     callback(retObj);
                 } else if (truck && truck.length > 0) {
                     retObj.messages.push("Truck already exists");
-                    analyticsService.create(req,serviceActions.add_tru_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                    analyticsService.create(req, serviceActions.add_tru_err, {
+                        body: JSON.stringify(req.body),
+                        accountId: jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
                     callback(retObj);
                 } else {
                     truckDetails.createdBy = jwt.id;
@@ -72,15 +92,29 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
                     truckDoc.save(function (err, truck) {
                         if (err) {
                             retObj.messages.push("Error while adding truck, try Again");
-                            analyticsService.create(req,serviceActions.add_tru_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                            analyticsService.create(req, serviceActions.add_tru_err, {
+                                body: JSON.stringify(req.body),
+                                accountId: jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
                             callback(retObj);
                         } else {
                             retObj.status = true;
                             retObj.messages.push("Truck Added Successfully");
                             retObj.truck = truck;
-                            Helpers.assignTruckTypeToAccount({accountId:jwt.accountId,truckType:truckDetails.truckTypeId});
+                            Helpers.assignTruckTypeToAccount({
+                                accountId: jwt.accountId,
+                                truckType: truckDetails.truckTypeId
+                            });
                             Helpers.cleanUpTruckDriverAssignment(jwt, truck._id, truck.driverId);
-                            analyticsService.create(req,serviceActions.add_tru,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
+                            analyticsService.create(req, serviceActions.add_tru, {
+                                body: JSON.stringify(req.body),
+                                accountId: jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
                             callback(retObj);
                         }
                     });
@@ -90,12 +124,18 @@ Trucks.prototype.addTruck = function (jwt, truckDetails,req, callback) {
     } else {
         retObj.status = false;
         retObj.messages.push("Unauthorized access");
-        analyticsService.create(req,serviceActions.add_tru_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.add_tru_err, {
+            body: JSON.stringify(req.body),
+            accountId: jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     }
 };
 
-Trucks.prototype.findTruck = function (jwt, truckId,req, callback) {
+Trucks.prototype.findTruck = function (jwt, truckId, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -104,26 +144,43 @@ Trucks.prototype.findTruck = function (jwt, truckId,req, callback) {
     TrucksColl.findOne({_id: truckId}, function (err, truck) {
         if (err) {
             retObj.messages.push("Error while finding truck, try Again");
-            analyticsService.create(req,serviceActions.fin_tru_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.fin_tru_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else if (truck) {
             retObj.status = true;
-            retObj.userId=jwt.id;
-            retObj.userType=jwt.type;
+            retObj.userId = jwt.id;
+            retObj.userType = jwt.type;
             retObj.messages.push("Truck found successfully");
             retObj.truck = truck;
-            analyticsService.create(req,serviceActions.fin_tru,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.fin_tru, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.messages.push("Truck is not found!");
-            analyticsService.create(req,serviceActions.fin_tru_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.fin_tru_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
 
-Trucks.prototype.assignTrucks = function (jwt, groupId, truckIds,req, callback) {
+Trucks.prototype.assignTrucks = function (jwt, groupId, truckIds, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -131,24 +188,41 @@ Trucks.prototype.assignTrucks = function (jwt, groupId, truckIds,req, callback) 
     TrucksColl.update({_id: {$in: truckIds}}, {$set: {groupId: groupId}}, {multi: true}, function (err, truck) {
         if (err) {
             retObj.messages.push("Error While updating Details");
-            analyticsService.create(req,serviceActions.assign_trus_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.assign_trus_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else if (truck) {
             retObj.status = true;
             retObj.messages.push("Truck Has successfully Assigned");
             retObj.truck = truck;
-            analyticsService.create(req,serviceActions.assign_trus,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.assign_trus, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.messages.push("No Truck Found For the Given Registration ID");
-            analyticsService.create(req,serviceActions.assign_trus_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.assign_trus_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 
 };
 
-Trucks.prototype.unAssignTrucks = function (jwt, truckIds,req, callback) {
+Trucks.prototype.unAssignTrucks = function (jwt, truckIds, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -156,24 +230,41 @@ Trucks.prototype.unAssignTrucks = function (jwt, truckIds,req, callback) {
     TrucksColl.update({_id: {$in: truckIds}}, {$set: {groupId: null}}, {multi: true}, function (err, truck) {
         if (err) {
             retObj.messages.push("Error While updating Details");
-            analyticsService.create(req,serviceActions.unassign_trus_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.unassign_trus_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else if (truck) {
             retObj.status = true;
             retObj.messages.push("Truck Has successfully Assigned");
             retObj.truck = truck;
-            analyticsService.create(req,serviceActions.unassign_trus,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.unassign_trus, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.messages.push("No Truck Found For the Given Registration ID");
-            analyticsService.create(req,serviceActions.unassign_trus_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.unassign_trus_err, {
+                body: JSON.stringify(req.body),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
 
-Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
+Trucks.prototype.updateTruck = function (jwt, truckDetails, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -188,20 +279,37 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
         {new: true}, function (err, truck) {
             if (err) {
                 retObj.messages.push("Error while updating truck, try Again");
-                analyticsService.create(req,serviceActions.update_tru_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.update_tru_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else if (truck) {
                 retObj.status = true;
                 retObj.messages.push("Truck updated successfully");
                 retObj.truck = truck;
-                Helpers.assignTruckTypeToAccount({accountId:jwt.accountId,truckType:truckDetails.truckTypeId});
+                Helpers.assignTruckTypeToAccount({accountId: jwt.accountId, truckType: truckDetails.truckTypeId});
                 Helpers.cleanUpTruckDriverAssignment(jwt, truck._id.toString(), truck.driverId);
-                analyticsService.create(req,serviceActions.update_tru,{body:JSON.stringify(req.body),accountId:jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.update_tru, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.status = false;
                 retObj.messages.push("Error, finding truck");
-                analyticsService.create(req,serviceActions.update_tru_err,{body:JSON.stringify(req.body),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.update_tru_err, {
+                    body: JSON.stringify(req.body),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
@@ -229,10 +337,10 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails,req, callback) {
 //         });
 // };
 
-function getTrucks(condition,jwt,params,req,callback) {
-    var retObj={
-        status:false,
-        messages:[]
+function getTrucks(condition, jwt, params, req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
     };
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
@@ -272,38 +380,52 @@ function getTrucks(condition,jwt,params,req,callback) {
     }, function (err, results) {
         if (err) {
             retObj.messages.push('Error retrieving trucks');
-            analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.count = results.count;
-            retObj.userId=jwt.id;
-            retObj.userType=jwt.type;
+            retObj.userId = jwt.id;
+            retObj.userType = jwt.type;
             retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
-            analyticsService.create(req,serviceActions.retrieve_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.retrieve_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 }
-Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
+
+Trucks.prototype.getTrucks = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var condition = {};
+    condition = {accountId: jwt.accountId};
     if (!params.page) {
         params.page = 1;
     }
 
     if (jwt.type === "account") {
-        if (!params.truckName) {
-            condition = {accountId: jwt.accountId}
-        } else {
-            condition = {accountId: jwt.accountId, registrationNo:new RegExp("^" + params.truckName, "i")}
-        }
 
-        getTrucks(condition,jwt,params,req,callback);
+        if (params.truckName) {
+            condition.registrationNo = new RegExp("^" + params.truckName, "i");
+        }
+        if(params.truckType) {
+            condition.truckType = new RegExp("^" + params.truckType, "i");
+        }
+        getTrucks(condition, jwt, params, req, callback);
     }
     else {
         GroupsColl.findOne({_id: jwt.id}, function (err, accountData) {
@@ -312,21 +434,37 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
                 callback(retObj);
             } else if (accountData) {
                 if (accountData.truckIds.length > 0) {
-                    if (!params.truckName) {
+                    if (!params.truckName && !params.truckType) {
                         condition = {_id: {$in: accountData.truckIds}}
-                    } else {
-                        condition = {registrationNo: {$regex: '.*' + params.truckName + '.*'}}
                     }
-                    getTrucks(condition,jwt,params,req,callback);
+                    if (params.truckName) {
+                        condition.registrationNo = new RegExp("^" + params.truckName, "i");
+                    }
+                    if(params.truckType) {
+                        condition.truckType = new RegExp("^" + params.truckType, "i");
+                    }
+                    getTrucks(condition, jwt, params, req, callback);
 
                 } else {
                     retObj.messages.push('There is no assigned trucks');
-                    analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                    analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                        body: JSON.stringify(req.params),
+                        accountId: jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
             } else {
                 retObj.messages.push('Error retrieving trucks');
-                analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
@@ -336,7 +474,7 @@ Trucks.prototype.getTrucks = function (jwt, params,req, callback) {
 };
 
 
-Trucks.prototype.getUnAssignedTrucks = function (jwt, gId,req, callback) {
+Trucks.prototype.getUnAssignedTrucks = function (jwt, gId, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -350,18 +488,29 @@ Trucks.prototype.getUnAssignedTrucks = function (jwt, gId,req, callback) {
     }, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.unnassigned_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.unnassigned_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = trucks;
-            analyticsService.create(req,serviceActions.unnassigned_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.unnassigned_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
-Trucks.prototype.getAllAccountTrucks = function (jwt,req, callback) {
+Trucks.prototype.getAllAccountTrucks = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -370,7 +519,13 @@ Trucks.prototype.getAllAccountTrucks = function (jwt,req, callback) {
         .find({accountId: jwt.accountId}).sort({createdAt: -1}).exec(function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.all_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.all_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             async.parallel({
@@ -388,7 +543,12 @@ Trucks.prototype.getAllAccountTrucks = function (jwt,req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.trucks = trucks;
-                analyticsService.create(req,serviceActions.all_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.all_trus, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             });
             // Helpers.populateNameInDriversCollmultiple(trucks, 'driverId', ['fullName', 'mobile'], function (driver) {
@@ -406,22 +566,38 @@ Trucks.prototype.getAllTrucksOfAccount = function (req, callback) {
         status: false,
         messages: []
     };
-    TrucksColl.find({accountId: req.params.truckId}, {registrationNo: 1, fitnessExpiry:1, insuranceExpiry:1, 'attrs.latestLocation': 1}, function (errtrucks, trucks) {
-        if(errtrucks) {
+    TrucksColl.find({accountId: req.params.truckId}, {
+        registrationNo: 1,
+        fitnessExpiry: 1,
+        insuranceExpiry: 1,
+        'attrs.latestLocation': 1
+    }, function (errtrucks, trucks) {
+        if (errtrucks) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.all_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.all_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = trucks;
-            analyticsService.create(req,serviceActions.all_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.all_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     })
 };
 
-Trucks.prototype.deleteTruck = function (jwt, truckId,req, callback) {
+Trucks.prototype.deleteTruck = function (jwt, truckId, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -430,24 +606,41 @@ Trucks.prototype.deleteTruck = function (jwt, truckId,req, callback) {
         TrucksColl.remove({_id: truckId}, function (err) {
             if (err) {
                 retObj.messages.push('Error deleting truck');
-                analyticsService.create(req,serviceActions.del_tru_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.del_tru_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
-                analyticsService.create(req,serviceActions.del_tru,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.del_tru, {
+                    body: JSON.stringify(req.params),
+                    accountId: req.jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
     } else {
         retObj.status = false;
         retObj.messages.push("Unauthorized access");
-        analyticsService.create(req,serviceActions.del_tru_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.del_tru_err, {
+            body: JSON.stringify(req.params),
+            accountId: req.jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     }
 };
 
-Trucks.prototype.findExpiryCount = function (jwt,req, callback) {
+Trucks.prototype.findExpiryCount = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -456,7 +649,13 @@ Trucks.prototype.findExpiryCount = function (jwt,req, callback) {
         if (err) {
             retObj.status = false;
             retObj.messages.push("Please try again");
-            analyticsService.create(req,serviceActions.find_exprd_trus_err,{body:JSON.stringify(req.params),accountId:jwt.accountId,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.find_exprd_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.accountId,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else if (erpSettings) {
             var today = new Date();
@@ -503,14 +702,19 @@ Trucks.prototype.findExpiryCount = function (jwt,req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.expiryCount = populateResults;
-                analyticsService.create(req,serviceActions.find_exprd_trus,{body:JSON.stringify(req.params),accountId:jwt.accountId,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.find_exprd_trus, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.accountId,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             });
         }
     });
 };
 
-Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
+Trucks.prototype.findExpiryTrucks = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -528,7 +732,13 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
         if (err) {
             retObj.status = false;
             retObj.messages.push("Please try again");
-            analyticsService.create(req,serviceActions.find_exprd_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:true,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.find_exprd_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else if (erpSettings) {
 
@@ -573,7 +783,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
                 }, {"$sort": {createdAt: -1}},
 
             ], function (populateErr, populateResults) {
-             if (erp.type === 'custom') {
+                if (erp.type === 'custom') {
                     for (var i = 0; i < populateResults.length; i++) {
                         if (populateResults[i].fitnessExpiry <= erp.toDate && populateResults[i].fitnessExpiry >= erp.fromDate) {
                             fitnessExpiry = populateResults[i].fitnessExpiry;
@@ -650,14 +860,25 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.expiryTrucks = data;
-                analyticsService.create(req,serviceActions.find_exprd_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.find_exprd_trus, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             });
 
         } else {
             retObj.status = false;
             retObj.messages.push("Please try again");
-            analyticsService.create(req,serviceActions.find_exprd_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:true,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.find_exprd_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
@@ -666,7 +887,7 @@ Trucks.prototype.findExpiryTrucks = function (jwt, params,req, callback) {
 
 };
 
-Trucks.prototype.fitnessExpiryTrucks = function (jwt,req, callback) {
+Trucks.prototype.fitnessExpiryTrucks = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -678,19 +899,30 @@ Trucks.prototype.fitnessExpiryTrucks = function (jwt,req, callback) {
     TrucksColl.find({accountId: jwt.accountId, fitnessExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.fitness_expry_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.fitness_expry_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = trucks;
-            analyticsService.create(req,serviceActions.fitness_expry_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.fitness_expry_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
-Trucks.prototype.permitExpiryTrucks = function (jwt,req, callback) {
+Trucks.prototype.permitExpiryTrucks = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -702,19 +934,30 @@ Trucks.prototype.permitExpiryTrucks = function (jwt,req, callback) {
     TrucksColl.find({accountId: jwt.accountId, permitExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.permit_expry_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.permit_expry_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = trucks;
-            analyticsService.create(req,serviceActions.permit_expry_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.permit_expry_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
-Trucks.prototype.insuranceExpiryTrucks = function (jwt,req, callback) {
+Trucks.prototype.insuranceExpiryTrucks = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -726,19 +969,30 @@ Trucks.prototype.insuranceExpiryTrucks = function (jwt,req, callback) {
     TrucksColl.find({accountId: jwt.accountId, insuranceExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.insurance_expry_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.insurance_expry_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = trucks;
-            analyticsService.create(req,serviceActions.insurance_expry_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.insurance_expry_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
-Trucks.prototype.pollutionExpiryTrucks = function (jwt,req, callback) {
+Trucks.prototype.pollutionExpiryTrucks = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -750,19 +1004,30 @@ Trucks.prototype.pollutionExpiryTrucks = function (jwt,req, callback) {
     TrucksColl.find({accountId: jwt.accountId, pollutionExpiry: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.pollution_expry_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.pollution_expry_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = trucks;
-            analyticsService.create(req,serviceActions.pollution_expry_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.pollution_expry_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
-Trucks.prototype.taxExpiryTrucks = function (jwt,req, callback) {
+Trucks.prototype.taxExpiryTrucks = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -774,89 +1039,145 @@ Trucks.prototype.taxExpiryTrucks = function (jwt,req, callback) {
     TrucksColl.find({accountId: jwt.accountId, taxDueDate: {$lte: dateplus30}}, function (err, trucks) {
         if (err) {
             retObj.messages.push('Error getting trucks');
-            analyticsService.create(req,serviceActions.tax_expry_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.tax_expry_trus_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = trucks;
-            analyticsService.create(req,serviceActions.tax_expry_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.tax_expry_trus, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         }
     });
 };
 
-Trucks.prototype.countTrucks = function (jwt,req, callback) {
+Trucks.prototype.countTrucks = function (jwt, req, callback) {
     var result = {};
     TrucksColl.count({'accountId': jwt.accountId}, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
-            analyticsService.create(req,serviceActions.trus_count_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:result.messages},function(response){ });
+            analyticsService.create(req, serviceActions.trus_count_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false,
+                messages: result.messages
+            }, function (response) {
+            });
             callback(result);
         } else {
             result.status = true;
             result.message = 'Success';
             result.count = data;
-            analyticsService.create(req,serviceActions.trus_count,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.trus_count, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(result);
         }
     })
 };
 
-Trucks.prototype.getAllTrucksForFilter = function (jwt,req, callback) {
+Trucks.prototype.getAllTrucksForFilter = function (jwt, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     var condition = {};
-    if(jwt.type === 'account') {
+    if (jwt.type === 'account') {
         condition = {'accountId': jwt.accountId};
-        getAllTrucksForFilterCondition(condition,req,callback);
+        getAllTrucksForFilterCondition(condition, req, callback);
     } else {
-        GroupsColl.findOne({'_id': jwt.id},{truckIds: 1}, function (err, groupTrucks) {
+        GroupsColl.findOne({'_id': jwt.id}, {truckIds: 1}, function (err, groupTrucks) {
             if (err) {
                 retObj.status = false;
                 retObj.messages.push('Error getting Trucks From Group');
-                analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_all_trus_for_filter_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
-            } else if(groupTrucks){
+            } else if (groupTrucks) {
                 retObj.status = true;
                 retObj.messages.push('Success');
-                condition = {'_id':{"$in":groupTrucks.truckIds}};
-                getAllTrucksForFilterCondition(condition,req,callback);
-                analyticsService.create(req,serviceActions.get_all_trus_for_filter,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                condition = {'_id': {"$in": groupTrucks.truckIds}};
+                getAllTrucksForFilterCondition(condition, req, callback);
+                analyticsService.create(req, serviceActions.get_all_trus_for_filter, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: true
+                }, function (response) {
+                });
             } else {
                 retObj.status = false;
                 retObj.messages.push('No Trucks Found For Group');
-                analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.get_all_trus_for_filter_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
     }
 };
 
-function getAllTrucksForFilterCondition(condition,req,callback) {
+function getAllTrucksForFilterCondition(condition, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    TrucksColl.find(condition,{registrationNo:1,tonnage:1}, function (err, data) {
+    TrucksColl.find(condition, {registrationNo: 1, tonnage: 1}, function (err, data) {
         if (err) {
             retObj.status = false;
             retObj.messages.push('Error getting Trucks');
-            analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.get_all_trus_for_filter_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
-        } else if(data){
+        } else if (data) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.trucks = data;
-            analyticsService.create(req,serviceActions.get_all_trus_for_filter,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:true},function(response){ });
+            analyticsService.create(req, serviceActions.get_all_trus_for_filter, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
             callback(retObj);
         } else {
             retObj.status = false;
             retObj.messages.push('No Trucks Found');
-            analyticsService.create(req,serviceActions.get_all_trus_for_filter_err,{body:JSON.stringify(req.params),accountId:req.jwt.id,success:false,messages:retObj.messages},function(response){ });
+            analyticsService.create(req, serviceActions.get_all_trus_for_filter_err, {
+                body: JSON.stringify(req.params),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
             callback(retObj);
         }
     })
@@ -870,13 +1191,13 @@ function dateToStringFormat(date) {
     }
 }
 
-Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params,req, callback) {
+Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    Trucks.prototype.findExpiryTrucks(jwt, params,req, function (expairResponse) {
+    Trucks.prototype.findExpiryTrucks(jwt, params, req, function (expairResponse) {
         if (expairResponse.status) {
             var output = [];
             for (var i = 0; i < expairResponse.expiryTrucks.length; i++) {
@@ -891,12 +1212,22 @@ Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params,req, callb
                 if (i === expairResponse.expiryTrucks.length - 1) {
                     retObj.status = true;
                     retObj.data = output;
-                    analyticsService.create(req,serviceActions.exprd_tru_det_dwnld,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                    analyticsService.create(req, serviceActions.exprd_tru_det_dwnld, {
+                        body: JSON.stringify(req.params),
+                        accountId: jwt.id,
+                        success: true
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
             }
         } else {
-            analyticsService.create(req,serviceActions.exprd_tru_det_dwnld_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false},function(response){ });
+            analyticsService.create(req, serviceActions.exprd_tru_det_dwnld_err, {
+                body: JSON.stringify(req.params),
+                accountId: jwt.id,
+                success: false
+            }, function (response) {
+            });
             callback(expairResponse);
         }
     })
@@ -905,7 +1236,7 @@ Trucks.prototype.downloadExpiryDetailsByTruck = function (jwt, params,req, callb
 }
 
 
-Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callback) {
+Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -913,10 +1244,16 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
     if (!params.email || !Helpers.isEmail(params.email)) {
         retObj.status = false;
         retObj.messages.push('Please enter valid email');
-        analyticsService.create(req,serviceActions.exprd_tru_det_email_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+        analyticsService.create(req, serviceActions.exprd_tru_det_email_err, {
+            body: JSON.stringify(req.params),
+            accountId: jwt.id,
+            success: false,
+            messages: retObj.messages
+        }, function (response) {
+        });
         callback(retObj);
     } else {
-        Trucks.prototype.findExpiryTrucks(jwt, params,req, function (expairResponse) {
+        Trucks.prototype.findExpiryTrucks(jwt, params, req, function (expairResponse) {
             if (expairResponse.status) {
                 var output = [];
                 if (expairResponse.expiryTrucks.length) {
@@ -942,10 +1279,21 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
                                 if (emailResponse.status) {
                                     retObj.status = true;
                                     retObj.messages.push('Expiry details shared successfully');
-                                    analyticsService.create(req,serviceActions.exprd_tru_det_email,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                                    analyticsService.create(req, serviceActions.exprd_tru_det_email, {
+                                        body: JSON.stringify(req.params),
+                                        accountId: jwt.id,
+                                        success: true
+                                    }, function (response) {
+                                    });
                                     callback(retObj);
                                 } else {
-                                    analyticsService.create(req,serviceActions.exprd_tru_det_email_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                                    analyticsService.create(req, serviceActions.exprd_tru_det_email_err, {
+                                        body: JSON.stringify(req.params),
+                                        accountId: jwt.id,
+                                        success: false,
+                                        messages: retObj.messages
+                                    }, function (response) {
+                                    });
                                     callback(emailResponse);
                                 }
                             });
@@ -954,7 +1302,13 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
                 } else {
                     retObj.status = false;
                     retObj.messages.push('No records found');
-                    analyticsService.create(req,serviceActions.exprd_tru_det_email_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                    analyticsService.create(req, serviceActions.exprd_tru_det_email_err, {
+                        body: JSON.stringify(req.params),
+                        accountId: jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
 
@@ -965,7 +1319,7 @@ Trucks.prototype.shareExpiredDetailsViaEmail = function (jwt, params,req, callba
     }
 }
 
-Trucks.prototype.getTrucksByPopulate = function (jwt, params,req, callback) {
+Trucks.prototype.getTrucksByPopulate = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1020,16 +1374,27 @@ Trucks.prototype.getTrucksByPopulate = function (jwt, params,req, callback) {
             if (err) {
                 console.log("Error--->", err);
                 retObj.messages.push('Error retrieving trucks');
-                analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             } else {
                 retObj.status = true;
                 retObj.messages.push('Success');
                 retObj.count = results.count;
-                retObj.userId=jwt.id;
-                retObj.userType=jwt.type;
+                retObj.userId = jwt.id;
+                retObj.userType = jwt.type;
                 retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
-                analyticsService.create(req,serviceActions.retrieve_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                analyticsService.create(req, serviceActions.retrieve_trus, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: true
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
@@ -1080,25 +1445,48 @@ Trucks.prototype.getTrucksByPopulate = function (jwt, params,req, callback) {
                     }, function (err, results) {
                         if (err) {
                             retObj.messages.push('Error retrieving trucks');
-                            analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                            analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                                body: JSON.stringify(req.params),
+                                accountId: jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
                             callback(retObj);
                         } else {
                             retObj.status = true;
                             retObj.messages.push('Success');
                             retObj.count = results.count;
                             retObj.trucks = results.trucks.createdbyname; //trucks is callby reference
-                            analyticsService.create(req,serviceActions.retrieve_trus,{body:JSON.stringify(req.params),accountId:jwt.id,success:true},function(response){ });
+                            analyticsService.create(req, serviceActions.retrieve_trus, {
+                                body: JSON.stringify(req.params),
+                                accountId: jwt.id,
+                                success: true
+                            }, function (response) {
+                            });
                             callback(retObj);
                         }
                     });
                 } else {
                     retObj.messages.push('There is no assigned trucks');
-                    analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                    analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                        body: JSON.stringify(req.params),
+                        accountId: jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
                     callback(retObj);
                 }
             } else {
                 retObj.messages.push('Error retrieving trucks');
-                analyticsService.create(req,serviceActions.retrieve_trus_err,{body:JSON.stringify(req.params),accountId:jwt.id,success:false,messages:retObj.messages},function(response){ });
+                analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                    body: JSON.stringify(req.params),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: retObj.messages
+                }, function (response) {
+                });
                 callback(retObj);
             }
         });
@@ -1108,50 +1496,50 @@ Trucks.prototype.getTrucksByPopulate = function (jwt, params,req, callback) {
 };
 
 
-Trucks.prototype.getTruckTypes=function (req,callback) {
+Trucks.prototype.getTruckTypes = function (req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
 
-    TrucksTypesColl.find({status:true},{title:1,tonnes:1},function (err, docs) {
-            if (err) {
-                retObj.messages.push("Please try again");
-                analyticsService.create(req, serviceActions.get_truck_types_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            } else if (docs.length > 0) {
-                retObj.status = true;
-                retObj.messages.push("Success");
-                retObj.data = docs;
-                analyticsService.create(req, serviceActions.get_truck_types, {
-                    body: JSON.stringify(req.query),
-                    accountId: req.jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(retObj);
-            } else {
-                retObj.messages.push("No truck types found");
-                retObj.data = docs;
-                analyticsService.create(req, serviceActions.get_truck_types_err, {
-                    body: JSON.stringify(req.body),
-                    accountId: req.jwt.id,
-                    success: false,
-                    messages: retObj.messages
-                }, function (response) {
-                });
-                callback(retObj);
-            }
-        })
+    TrucksTypesColl.find({status: true}, {title: 1, tonnes: 1}, function (err, docs) {
+        if (err) {
+            retObj.messages.push("Please try again");
+            analyticsService.create(req, serviceActions.get_truck_types_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        } else if (docs.length > 0) {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = docs;
+            analyticsService.create(req, serviceActions.get_truck_types, {
+                body: JSON.stringify(req.query),
+                accountId: req.jwt.id,
+                success: true
+            }, function (response) {
+            });
+            callback(retObj);
+        } else {
+            retObj.messages.push("No truck types found");
+            retObj.data = docs;
+            analyticsService.create(req, serviceActions.get_truck_types_err, {
+                body: JSON.stringify(req.body),
+                accountId: req.jwt.id,
+                success: false,
+                messages: retObj.messages
+            }, function (response) {
+            });
+            callback(retObj);
+        }
+    })
 };
 
-Trucks.prototype.lookingForLoad = function (body,req,callback) {
+Trucks.prototype.lookingForLoad = function (body, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1159,16 +1547,16 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
     if (!body.sourceAddress) {
         retObj.messages.push("Please select source address");
     }
-    if(!body.destinationAddress){
+    if (!body.destinationAddress) {
         retObj.messages.push("Please select destination address");
     }
-    if(!body.truckType){
+    if (!body.truckType) {
         retObj.messages.push("Please select truck type");
     }
-    if(!body.registrationNo){
+    if (!body.registrationNo) {
         retObj.messages.push("Please enter truck registration number");
     }
-    if(!body.pricePerTon){
+    if (!body.pricePerTon) {
         retObj.messages.push("Please enter price per ton");
     }
     if (retObj.messages.length) {
@@ -1180,31 +1568,34 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
         }, function (response) {
         });
         callback(retObj);
-    }else{
+    } else {
         var params = req.body;
         // params.createdBy = req.jwt.id;
         params.sourceAddress = body.sourceAddress;
-        params.destination=[];
-        params.destination[0] ={destinationAddress: body.destinationAddress, price:body.pricePerTon};
+        params.destination = [];
+        params.destination[0] = {destinationAddress: body.destinationAddress, price: body.pricePerTon};
         params.truckType = body.truckType;
         params.registrationNo = body.registrationNo;
         params.dateAvailable = body.dateAvailable;
         var loadRequest = new LoadRequestColl(params);
         loadRequest.save(function (err, doc) {
             if (err) {
-                retObj.status=false;
+                retObj.status = false;
                 retObj.messages.push('Error while saving load request data');
                 callback(retObj);
             } else {
-                TrucksColl.update({registrationNo:body.registrationNo},{$set:{lookingForLoad:true}},function (err,truck) {
-                    if(err){
-                        retObj.status=false;
+                TrucksColl.update({registrationNo: body.registrationNo}, {$set: {lookingForLoad: true}}, function (err, truck) {
+                    if (err) {
+                        retObj.status = false;
                         retObj.messages.push('Error while updating truck');
                         callback(retObj);
-                    }else{
-                        retObj.status=true;
+                    } else {
+                        retObj.status = true;
                         retObj.messages.push('Saved load request successfully');
-                        notificationService.sendPushNotifications({title:'New Load Request',message:params.registrationNo+' is looking for load '},function (response) {
+                        notificationService.sendPushNotifications({
+                            title: 'New Load Request',
+                            message: params.registrationNo + ' is looking for load '
+                        }, function (response) {
                             retObj.messages.push(response.message);
                             callback(retObj);
                         });
@@ -1215,8 +1606,9 @@ Trucks.prototype.lookingForLoad = function (body,req,callback) {
     }
 };
 
-Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
-    var retObj={status: false,
+Trucks.prototype.getAllTrucksForAccount = function (req, callback) {
+    var retObj = {
+        status: false,
         messages: []
     };
     var params = req.query;
@@ -1224,22 +1616,22 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
     var sort = {createdAt: -1};
     var condition = {};
     if (params.name) {
-        condition = {registrationNo: {$regex: '.*' + params.name + '.*'},accountId:req.jwt.id}
+        condition = {registrationNo: {$regex: '.*' + params.name + '.*'}, accountId: req.jwt.id}
     } else {
-        condition = {accountId:req.jwt.id}
+        condition = {accountId: req.jwt.id}
     }
-    console.log(condition,skipNumber);
-    TrucksColl.find(condition,{registrationNo:1,truckType:1}).skip(skipNumber)
+    console.log(condition, skipNumber);
+    TrucksColl.find(condition, {registrationNo: 1, truckType: 1}).skip(skipNumber)
         .limit(10).exec(function (err, trucks) {
-        if(err){
+        if (err) {
             retObj.messages.push("Error while fetching trucks");
             callback(retObj);
-        }else if(trucks.length){
+        } else if (trucks.length) {
             retObj.status = true;
             retObj.messages.push("Success");
             retObj.data = trucks;
             callback(retObj);
-        }else{
+        } else {
             retObj.status = true;
             retObj.messages.push("No trucks found");
             callback(retObj);
@@ -1247,7 +1639,7 @@ Trucks.prototype.getAllTrucksForAccount = function (req,callback) {
     });
 };
 
-Trucks.prototype.unCheckLookingForLoad = function (body,req,callback) {
+Trucks.prototype.unCheckLookingForLoad = function (body, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1264,20 +1656,20 @@ Trucks.prototype.unCheckLookingForLoad = function (body,req,callback) {
         }
     });
 };
-Trucks.prototype.shareDetailsViaEmail123 = function (jwt,params, req, callback) {
+Trucks.prototype.shareDetailsViaEmail123 = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    if(!params.email || !Utils.isEmail(params.email)){
+    if (!params.email || !Utils.isEmail(params.email)) {
         retObj.messages.push("Invalid email....");
         callback(retObj);
-    }else{
-        Trucks.prototype.getTrucks(jwt,params,req,function(response){
-            if(response.status){
+    } else {
+        Trucks.prototype.getTrucks(jwt, params, req, function (response) {
+            if (response.status) {
                 var output = [];
-                if(response.trucks.length){
-                    for(var i=0;i<response.trucks.length;i++) {
+                if (response.trucks.length) {
+                    for (var i = 0; i < response.trucks.length; i++) {
                         output.push({
                             Reg_No: response.trucks[i].registrationNo,
                             Permit: dateToStringFormat(response.trucks[i].permitExpiry),
@@ -1306,20 +1698,20 @@ Trucks.prototype.shareDetailsViaEmail123 = function (jwt,params, req, callback) 
                             });
                         }
                     }
-                }else{
+                } else {
                     retObj.messages.push("No trucks found....");
                     retObj.status = false;
                     callback(retObj);
                 }
 
 
-            }else{
+            } else {
                 callback(response);
             }
         })
     }
 };
-Trucks.prototype.downloadDetails = function (jwt, params,req, callback) {
+Trucks.prototype.downloadDetails = function (jwt, params, req, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1352,5 +1744,31 @@ Trucks.prototype.downloadDetails = function (jwt, params,req, callback) {
 
 };
 
+Trucks.prototype.getAddedTruckTypes = function (req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TrucksColl.find({accountId: req.jwt.accountId}, {truckTypeId: 1}, function (err, trucks) {
+        if (err) {
+            retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+            callback(retObj);
+        } else {
+            var truckTypesIds=_.pluck(trucks, 'truckTypeId');
+            TrucksTypesColl.find({_id:{$in:truckTypesIds}},function (err,truckTypes) {
+                if(err){
+                    retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                    callback(retObj);
+                }else{
+                    retObj.status=true;
+                    retObj.messages.push("success");
+                    retObj.data=truckTypes;
+                    callback(retObj);
+                }
+            })
+        }
+
+    })
+};
 
 module.exports = new Trucks();
