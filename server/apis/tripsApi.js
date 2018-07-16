@@ -5,6 +5,7 @@ var async = require('async');
 var json2xls = require('json2xls');
 var XLSX = require('xlsx');
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
+var PdfGenerator = require('./pdfGenerator');
 
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -351,12 +352,7 @@ function saveTrip(req, tripDetails, callback) {
                     callback(retObj);
                 }
             });
-            if (tripDetails.share) {
-                shareTripDetails(trip, function (shareResponse) {
-                    //callback(shareResponse);
-                })
-            }
-            callback(retObj);
+
         }
     });
 }
@@ -2224,6 +2220,7 @@ Trips.prototype.uploadTrips = function (req, callback) {
         status: false,
         messages: []
     };
+    console.log("files", req.files);
     let file = req.files.file;
     let accountId = req.jwt.accountId;
     if (!file) {
@@ -2418,10 +2415,13 @@ Trips.prototype.getTripInvoiceDetails = function (req, callback) {
                 retObj.messages.push("Internal server error,"+JSON.stringify(err.message));
                 callback(retObj);
             } else {
-                retObj.status=true;
+                PdfGenerator.createPdf('tripInvoice.html',result,function (resp) {
+                    callback(resp);
+                });
+               /* retObj.status=true;
                 retObj.messages.push("Success");
                 retObj.data=result;
-                callback(retObj);
+                callback(retObj);*/
             }
         });
     }

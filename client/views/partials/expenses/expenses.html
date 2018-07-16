@@ -16,7 +16,7 @@
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
-            <li class="pos-relative col-sm-3 pall-zero">
+            <li class="pos-relative col-sm-2 pall-zero">
                 <div class="select-box erp-box">
                     <ui-select ng-model="truckName" theme="select2"
                                title="Choose a person" append-to-body="true"
@@ -40,6 +40,10 @@
             <li class="col-sm-1">
                 <button type="button" ng-click="downloadDetails();" class="btn mailImage">
                     <img src="images/Reports_Download.png"></button>
+            </li>
+            <li class="col-sm-1">
+                <a ui-sref="uploadExpenses" type="button"  class="btn mailImage">
+                    <i class="fa fa-upload fa-2x" aria-hidden="true"></i></a>
             </li>
         </ul>
     </div>

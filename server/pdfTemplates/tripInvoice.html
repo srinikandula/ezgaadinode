@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Easygaadi Invoice</title>
+        <style>
+            table {
+                border-collapse: collapse;
+                text-align: center;
+                width: 100%;
+
+            }
+
+            table, td, th {
+
+                border: 1px solid black;
+            }
+            td{
+                padding: 5px 0px 5px 8px;
+            }
+        </style>
+
+    </head>
+    <body>
+    <div class="logo"></div>
+    <div class="container">
+        <table>
+            <tr>
+                <td colspan="2"><span style="font-size: 20px">{{accDetails.userName}}</span></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span style="font-size: 18px">Address: {{accDetails.address1}},{{accDetails.address2}}</span>
+                    <span style="font-size: 18px">Phone:{{accDetails.contactPhone}}  Email:{{accDetails.email }}</span>
+                </td>
+
+            </tr>
+            <tr >
+                <td colspan="2"><span style="font-size: 22px"><b>Invoice for trip details</b></span></td>
+            </tr>
+            <tr>
+                <td>GST No:{{accDetails.GST}}</td>
+                <td>GST Rate:{{accDetails.GSTRate}}</td>
+            </tr>
+            <tr >
+                <td colspan="2">
+                    <span><b>Customer Details</b></span>
+                </td>
+            </tr>
+            <tr style="text-align: left">
+                <td colspan="2">
+                    Name:{{partyDetails.name}}
+                </td>
+            </tr>
+            <tr style="text-align: left">
+                <td colspan="2">
+                    Phone:{{partyDetails.contact}}
+                </td>
+            </tr>
+            <tr style="text-align: left">
+                <td colspan="2">
+                    Email:{{partyDetails.email}}
+                </td>
+            </tr>
+            <tr style="text-align: left">
+                <td colspan="2">
+                    Address:{{partyDetails.city}}
+                </td>
+            </tr>
+            <tr style="text-align: left">
+                <td colspan="2">
+                    GST No:{{partyDetails.gstNo}}
+                </td>
+            </tr>
+            <tr >
+                <td colspan="2"><b>Trip Details</b></td>
+            </tr>
+            <tr style="text-align: left">
+                <td>Trip ID : {{tripDetails.tripId}} </td>
+                <td>Vechicle No : {{tripDetails.registrationNo.registrationNo}}</td>
+            </tr>
+            <tr style="text-align: left">
+                <td>Source : {{tripDetails.sourceAddress}}</td>
+                <td>Destination : {{tripDetails.destinationAddress}}</td>
+            </tr>
+            <tr style="text-align: left">
+                <td>Tonnes :{{tripDetails.tonnage}}</td>
+                <td>Rate : {{tripDetails.rate}}</td>
+            </tr>
+            <tr style="text-align: left">
+                <td><b>Amount : </b></td>
+                <td>{{tripDetails.freightAmount}}</td>
+
+            </tr>
+            <tr style="text-align: left">
+                <td><b>Additional Charges : </b></td>
+                <td>{{tripDetails.totalExpense}}</td>
+
+            </tr>
+
+            <tr style="text-align: left">
+                <td><b>Paid Amount : </b></td>
+                <td>{{tripDetails.advanceAmount}}</td>
+
+            </tr>
+            <tr style="text-align: left">
+                <td><b>Total Amount : </b></td>
+                <td>{{tripDetails.totalAmount-tripDetails.advanceAmount}}</td>
+
+            </tr>
+        </table>
+
+
+    </div>
+    </body>
+
+</html>

@@ -161,7 +161,13 @@ AuthRouter.post('/uploadTrips',multipartyMiddleware, function (req, res) {
 
 AuthRouter.get('/getTripInvoiceDetails/:tripId/:partyId',function (req,res) {
    Trips.getTripInvoiceDetails(req,function (result) {
-       res.send(result);
+       if(result.status){
+           res.writeHead(200, {'Content-Type': 'application/pdf','Content-Disposition': 'attachment; filename=trip_'+Date.now()+'.pdf',});
+           res.end(result.data, 'binary');
+       }else{
+           res.json(result);
+       }
+
    })
 });
 
