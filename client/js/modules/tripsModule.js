@@ -132,7 +132,8 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            truckNumber: tableParams.truckNumber
+            truckNumber: tableParams.truckNumber,
+            truckType:tableParams.truckType
         };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
@@ -182,11 +183,26 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             getData: function (params) {
                 loadTableData(params);
                 $scope.getAllTrucks();
+                $scope.getAddedTruckTypes();
             }
         });
     };
 
+    $scope.getAddedTruckTypes=function () {
+        TrucksService.getAddedTruckTypes(function (success) {
+            if(success.data.status){
+                $scope.addedTruckTypes = success.data.data;
 
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+
+        },function (error) {
+
+        })
+    };
     $scope.deleteTrip = function (tripId) {
         swal({
             title: 'Are you sure?',
@@ -221,7 +237,8 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             ;
 
         });
-    }
+    };
+    $scope.params={};
     $scope.searchByVechicleNumber = function (truckNumber) {
         $scope.tripParams = new NgTableParams({
             page: 1, // show first page
@@ -234,6 +251,9 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             total: $scope.count,
             getData: function (params) {
                 params.truckNumber = truckNumber;
+                if($scope.params.truckType){
+                    params.truckType=$scope.params.truckType.title;
+                }
                 loadTableData(params);
             }
         });

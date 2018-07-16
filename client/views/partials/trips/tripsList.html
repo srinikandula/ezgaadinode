@@ -1,9 +1,24 @@
 <div class="main-right col-xs-12" ng-controller="ShowTripsCtrl">
 
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-3 pall-zero"><h3>Trips</h3></div>
-        <ul class="col-sm-9 pall-zero list-inline">
-            <li class="col-sm-5">
+        <div class="col-sm-1 pall-zero"><h3>Trips</h3></div>
+        <ul class="col-sm-11 pall-zero list-inline">
+            <li class="col-sm-3 pos-relative">
+                <div class="select-box erp-box">
+                    <ui-select ng-model="params.truckType" theme="select2"
+                               title="Choose a truck type" append-to-body="true"
+                    >
+                        <ui-select-match placeholder=" Select a Truck type" class="form-control ui-select-control">
+                            {{$select.selected.title || title}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="truckType in addedTruckTypes  | propsFilter: {title: $select.search}">
+                            <div ng-bind-html="truckType.title | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </li>
+            <li class="col-sm-3">
                 <form>
                     <div class="input-group stylish-input-group">
                         <input type="text" class="form-control" ng-model="truckNumber1"
@@ -16,7 +31,7 @@
                     </div>
                 </form>
             </li>
-            <li class="col-sm-4 pos-relative">
+            <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
                     <ui-select ng-model="truckName" theme="select2"
                                title="Choose a person" append-to-body="true"
