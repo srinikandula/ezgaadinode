@@ -132,22 +132,14 @@ var operatingRoutesSchema = new mongoose.Schema({
 });
 
 var groupSchema = new mongoose.Schema({
-    name: String,
-    type: {type: Boolean, default: "account"},
-    accountId: {
-        type: ObjectId,
-        ref: 'accounts'
-    },
-    userName: {
-        type: String,
-        index: true,
-        unique: true
-    },
 
+    accountId: {type: ObjectId, ref: 'accounts'},
+    groupName: String,
+    location: String,
+    truckIds: [],
     updatedBy: String,
     createdBy: String,
-    isActive: {type: Boolean, default: true},
-    attrs: {}
+    isActive:{type:Boolean,default:false}
 }, {
     timestamps: true
 });
@@ -353,8 +345,8 @@ var notificationsSchema = mongoose.Schema({
 }, {timestamps: String});
 
 var remindersSchema = mongoose.Schema({
-    refId: String,
-    type:String,
+    refId: {type: ObjectId, ref: 'jobs'},
+    type: String,
     reminderText: String,
     inventory: String,
     reminderDate: Date,
@@ -1038,15 +1030,13 @@ var userSchema = new mongoose.Schema({
     contactPhone: Number,
     updatedBy: String,
     createdBy: String,
-    role:String,
+    role: String,
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
-    groupName: String,
-    contactName: String,
-    location: String,
-    truckIds: []
+
 
 }, {timestamps: true});
+
 
 var shareLinksSchema = new mongoose.Schema({
     truckId: {type: ObjectId, ref: 'trucks'},

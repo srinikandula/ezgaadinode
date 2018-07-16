@@ -20,6 +20,7 @@ function save(job,reminder,callback){
     var jobDoc = new JobsCollection(job);
     jobDoc.save(function(err,result){
         if(err){
+            console.log("err",err);
             retObj.status = false;
             retObj.messages.push("error in saving....."+JSON.stringify(err));
             callback(retObj);
@@ -57,7 +58,7 @@ function uploadFileToS3(req,callback){
 };
 
 Jobs.prototype.addJob = function(req,callback){
-    var jobInfo = req.body.content;
+    var jobInfo = req.body;
     jobInfo.accountId = req.jwt.accountId;
     var reminder = {
         reminderDate:jobInfo.reminderDate,
@@ -73,18 +74,11 @@ Jobs.prototype.addJob = function(req,callback){
         expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
             if(ETcallback.status){
                 jobInfo.type = ETcallback.newDoc._id.toString();
-                uploadFileToS3(req,function(uploadCallback){
-                    if(uploadCallback.status){
-                        jobInfo.attachments = uploadCallback.attachments;
-                        save(jobInfo,reminder,function(saveCallback){
-                            if(saveCallback.status){
-                                callback(saveCallback);
-                            }else{
-                                callback(saveCallback);
-                            }
-                        });
+                save(jobInfo,reminder,function(saveCallback){
+                    if(saveCallback.status){
+                        callback(saveCallback);
                     }else{
-                        callback(uploadCallback);
+                        callback(saveCallback);
                     }
                 });
             }else{
@@ -92,19 +86,12 @@ Jobs.prototype.addJob = function(req,callback){
             }
         });
     }else{
-        uploadFileToS3(req,function(uploadCallback){
-            if(uploadCallback.status){
-                jobInfo.attachments = uploadCallback.attachments;
-                save(jobInfo,reminder,function(saveCallback){
-                    if(saveCallback.status){
-                        callback(saveCallback);
+        save(jobInfo,reminder,function(saveCallback){
+            if(saveCallback.status){
+                callback(saveCallback);
 
-                    }else{
-                        callback(saveCallback);
-                    }
-                });
             }else{
-                callback(uploadCallback);
+                callback(saveCallback);
             }
         });
     }
@@ -114,11 +101,7 @@ function updateJob(info,reminder,req,callback){
         status:false,
         messages:[]
     };
-    uploadFileToS3(req,function(uploadCallback){
-        if(uploadCallback.status){
-            info.attachments = uploadCallback.attachments;
-        }
-    });
+
     JobsCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,updateResult){
         if(err){
             retObj.status=false;
@@ -141,7 +124,7 @@ function updateJob(info,reminder,req,callback){
 }
 
 Jobs.prototype.updateJob = function(req,callback){
-    var jobInfo = req.body.content;
+    var jobInfo = req.body;
     var reminder = {
         refId:jobInfo._id,
         reminderDate:jobInfo.reminderDate,

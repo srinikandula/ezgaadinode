@@ -540,7 +540,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
             params.errors.push('Please Provide Group Name');
         }
 
-        if (!params.userName) {
+        /*if (!params.userName) {
             params.errors.push('Please Provide User Name');
         }
 
@@ -558,7 +558,7 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
 
         if (!params.contactPhone) {
             params.errors.push('Please Provide Mobile Number');
-        }
+        }*/
 
         if (!params.location) {
             params.errors.push('Please Provide Location');

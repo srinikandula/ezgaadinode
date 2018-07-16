@@ -10,13 +10,13 @@ var AuthRouter = express.Router();
 
 var API = require('../apis/jobApi');
 
-AuthRouter.post('/addJob',multipartyMiddleware,function(req,res){
+AuthRouter.post('/addJob',function(req,res){
     API.addJob(req,function(result){
         res.json(result);
     });
 });
 
-AuthRouter.post('/updateJob',multipartyMiddleware,function(req,res){
+AuthRouter.put('/updateJob',function(req,res){
     API.updateJob(req,function(result){
         res.json(result);
     });
