@@ -469,3 +469,29 @@ app.controller('expenseEditController', ['$scope', 'ExpenseService','PartyServic
         }
     }
 }]);
+app.controller('UploadExpanseCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
+    $scope.file=undefined;
+    $scope.uploadExpenses=function () {
+        if(!$scope.file){
+            Notification.error("Please select file");
+        }else{
+            Upload.upload({
+                url: '/v1/expense/uploadExpensesData',
+                data: {
+                    file: $scope.file,
+                },
+            }).then(function (success) {
+                if (success.data.status) {
+                    Notification.success(success.data.messages[0]);
+                    $state.go("expenses");
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            });
+
+        }
+    }
+
+}]);

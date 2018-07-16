@@ -262,6 +262,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             tripId: null
         }
     }).state({
+        name: 'uploadTrips',
+        url: '/uploadTrips',
+        templateUrl: 'views/partials/trips/uploadTrips.html',
+        data: {
+            activeTab: 'trips',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
+        }
+    }).state({
         name: 'printInvoice',
         url: '/printInvoice/:tripId/:partyId',
         templateUrl: 'views/partials/trips/printInvoice.html',
@@ -375,6 +386,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             expenseId: null
         }
     }).state({
+        name: 'uploadExpenses',
+        url: '/uploadExpenses',
+        templateUrl: 'views/partials/expenses/uploadExpenses.html',
+        data: {
+            activeTab: 'expenses',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
         name: 'payments',
         url: '/payments',
         templateUrl: 'views/partials/payments/paymentsReceived.html',
@@ -398,6 +420,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             paymentId: null
         }
     }).state({
+        name: 'uploadPayments',
+        url: '/uploadPayments',
+        templateUrl: 'views/partials/payments/uploadPayments.html',
+        data: {
+            activeTab: 'payments',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
+        }
+    }).state({
         name: 'receipts',
         url: '/receipts',
         templateUrl: 'views/partials/receipts/receiptReceived.html',
@@ -419,6 +452,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         params: {
             access: 'open',
             receiptId: null
+        }
+    }).state({
+        name: 'uploadReceipts',
+        url: '/uploadReceipts',
+        templateUrl: 'views/partials/receipts/uploadReceipts.html',
+        data: {
+            activeTab: 'receipts',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
         }
     }).state({
         name: 'gpsReports',
