@@ -106,6 +106,12 @@ AuthRouter.get('/shareDetailsViaEmail', function (req, res) {
         res.send(result);
     });
 });
+/*Get Own trucks types*/
+AuthRouter.get('/getAddedTruckTypes',function (req,res) {
+    Trucks.getAddedTruckTypes(req,function (result) {
+        res.json(result);
+    })
+});
 
 AuthRouter.get('/:truckId', function (req, res) {
     Trucks.findTruck(req.jwt, req.params.truckId,req, function (result) {
@@ -183,7 +189,6 @@ AuthRouter.post('/unCheckLookingForLoad',function (req,res) {
         res.json(result);
     })
 });
-
 
 
 module.exports = {

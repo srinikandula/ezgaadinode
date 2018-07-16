@@ -156,6 +156,12 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET",
                 params:params
             }).then(success, error)
+        },
+        getAddedTruckTypes:function (success,error) {
+            $http({
+                url: '/v1/trucks/getAddedTruckTypes',
+                method: "GET"
+            }).then(success, error)
         }
     }
 }]);
@@ -194,7 +200,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
     var loadTableData = function (tableParams) {
 
         var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),
-            truckName:tableParams.truckName};
+            truckName:tableParams.truckName,truckType:tableParams.truckType};
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
@@ -211,6 +217,21 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
             }
         });
+    };
+    $scope.getAddedTruckTypes=function () {
+            TrucksService.getAddedTruckTypes(function (success) {
+                if(success.data.status){
+                    $scope.addedTruckTypes = success.data.data;
+
+                }else{
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+
+            },function (error) {
+
+            })
     };
     $scope.getAllTrucks = function () {
         TrucksService.getAllTrucksForFilter(function (success) {
@@ -239,6 +260,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 getData: function (params) {
                     loadTableData(params);
                     $scope.getAllTrucks();
+                    $scope.getAddedTruckTypes();
                 }
             });
 
@@ -279,8 +301,8 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             }
         })
     };
+    $scope.params={};
     $scope.searchByTruckName = function (truckName) {
-        console.log("truck search..",truckName);
         $scope.truckParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -292,6 +314,9 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             total: $scope.count,
             getData: function (params) {
                 params.truckName = truckName;
+                if($scope.params.truckType){
+                    params.truckType=$scope.params.truckType.title;
+                }
                 loadTableData(params);
             }
         });

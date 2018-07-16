@@ -132,7 +132,8 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            truckNumber: tableParams.truckNumber
+            truckNumber: tableParams.truckNumber,
+            truckType:tableParams.truckType
         };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
@@ -167,26 +168,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         $state.go('printInvoice', {tripId: tripId, partyId: partyId});
     };
     $scope.printInvoicePDF = function (tripId, partyId) {
-        TripServices.getTripInvoiceDetails({tripId: tripId, partyId: partyId}, function (success) {
-            if (success.data.status) {
-                $scope.print = success.data.data;
-                console.log("successdata", success.data.data);
-                $timeout(function () {
-                    var w = window.open();
-                    w.document.write(document.getElementsByClassName('print-invoice')[0].innerHTML);
-                    w.print();
-                    w.close();
-                }, 1000)
-
-
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
-            }
-        }, function (error) {
-
-        });
+        window.open('/v1/trips/getTripInvoiceDetails/' + tripId + '/' + partyId);
     };
     $scope.init = function () {
         $scope.tripParams = new NgTableParams({
@@ -201,11 +183,26 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             getData: function (params) {
                 loadTableData(params);
                 $scope.getAllTrucks();
+                $scope.getAddedTruckTypes();
             }
         });
     };
 
+    $scope.getAddedTruckTypes=function () {
+        TrucksService.getAddedTruckTypes(function (success) {
+            if(success.data.status){
+                $scope.addedTruckTypes = success.data.data;
 
+            }else{
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+
+        },function (error) {
+
+        })
+    };
     $scope.deleteTrip = function (tripId) {
         swal({
             title: 'Are you sure?',
@@ -240,7 +237,8 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             ;
 
         });
-    }
+    };
+    $scope.params={};
     $scope.searchByVechicleNumber = function (truckNumber) {
         $scope.tripParams = new NgTableParams({
             page: 1, // show first page
@@ -253,6 +251,9 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             total: $scope.count,
             getData: function (params) {
                 params.truckNumber = truckNumber;
+                if($scope.params.truckType){
+                    params.truckType=$scope.params.truckType.title;
+                }
                 loadTableData(params);
             }
         });
@@ -307,8 +308,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.isFirstOpen = true;
     $scope.trip = {
         date: '',
-        reminderDate:'',
-        reminderText:'',
+        reminderDate: '',
+        reminderText: '',
         driverId: '',
         partyId: '',
         registrationNo: '',
@@ -707,9 +708,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             if (params._id) {
 
                 params.date = Number(params.date);
-                if ($scope.trip.attachments.length > 0 ) {
+                if ($scope.trip.attachments.length > 0) {
                     $scope.files.forEach(function (file) {
-                        if(file.key){
+                        if (file.key) {
                             $scope.trip.attachments.push(file);
                         }
                     })
@@ -729,7 +730,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
                 });
 
-            }else{
+            } else {
                 $scope.trip.attachments = $scope.files;
                 TripServices.addTrip($scope.trip, function (success) {
                     if (success.data.status) {
@@ -974,5 +975,32 @@ app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', functi
         $uibModalInstance.dismiss('cancel');
     };
 
+
+}]);
+app.controller('UploadTripsCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
+    $scope.file=undefined;
+    $scope.uploadTrips=function () {
+        console.log("filess");
+        if(!$scope.file){
+            Notification.error("Please select file");
+        }else{
+            Upload.upload({
+                url: '/v1/trips/uploadTrips',
+                data: {
+                    file: $scope.file,
+                },
+            }).then(function (success) {
+                if (success.data.status) {
+                  Notification.success(success.data.messages[0]);
+                  $state.go("trips");
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            });
+
+        }
+    }
 
 }]);

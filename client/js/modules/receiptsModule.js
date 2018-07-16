@@ -382,3 +382,29 @@ app.controller('receiptsEditController', ['$scope', 'ReceiptsService', '$statePa
         }
     }
 }]);
+app.controller('UploadReceiptsCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
+    $scope.file=undefined;
+    $scope.uploadReceipts=function () {
+        if(!$scope.file){
+            Notification.error("Please select file");
+        }else{
+            Upload.upload({
+                url: '/v1/receipts/uploadReceipts',
+                data: {
+                    file: $scope.file,
+                },
+            }).then(function (success) {
+                if (success.data.status) {
+                    Notification.success(success.data.messages[0]);
+                    $state.go("receipts");
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            });
+
+        }
+    }
+
+}]);

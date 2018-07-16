@@ -3317,3 +3317,9 @@ border-bottom: none;
 .date-time-height{
     height: 42px;
 }
+.export-button{
+    padding: 8px 16px;
+    font-size: 18px;
+    line-height: 1.3333333;
+    border-radius: 6px;
+}
