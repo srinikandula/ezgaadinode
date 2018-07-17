@@ -51,7 +51,7 @@
                         <td data-title="'Status'"  class="clickable-item col-sm-2">{{truck.status}}
                         </td>
                         <td data-title="'Share'"  class="clickable-item col-sm-2">
-                            <button class="btn btn-info" ng-click="shareTracking(truck._id)"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
+                            <button class="btn btn-info" ng-click="shareTracking(truck._id, truck.registrationNo)"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
                         </td>
                         <!--<td data-title="'Action'" sortable="'totalPayment'" class="clickable-item col-sm-1">
                             <i class="fa fa-edit" style="font-size: 20px;"></i>
@@ -77,7 +77,7 @@
     </div>
     <div class="modal-body" id="modal-body">
         <div class="row">
-            <h3>Please share this link <b>{{link}}</b></h3>
+            <h3>Please click on this link <b><a href="mailto:?subject=GPS Tracking link for vehicle {{registrationNumber}} &body=Hi there, please the following link for tracking vehicle {{registrationNumber}} {{link}}  Regards, www.easygaadi.com">Email Link</a></b></h3>
         </div>
     </div>
     <div class="modal-footer">

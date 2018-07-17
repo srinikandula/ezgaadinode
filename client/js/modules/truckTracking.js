@@ -418,7 +418,7 @@ app.controller('liveTrackingController',['$scope','$stateParams','truckTrackingS
             if(response.data.status){
                 var latestLocation = response.data.data.latestLocation;
                 var map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 7,
+                    zoom: 12,
                     center: new google.maps.LatLng(latestLocation.location.coordinates[1], latestLocation.location.coordinates[0]),
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
