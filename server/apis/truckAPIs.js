@@ -1655,9 +1655,8 @@ Trucks.prototype.getAllTrucksForAccount = function (req, callback) {
     if (params.name) {
         condition = {registrationNo: {$regex: '.*' + params.name + '.*'}, accountId: req.jwt.id}
     } else {
-        condition = {accountId: req.jwt.id}
+        condition = {accountId: req.jwt.accountId}
     }
-    console.log(condition, skipNumber);
     TrucksColl.find(condition, {registrationNo: 1, truckType: 1}).skip(skipNumber)
         .limit(10).exec(function (err, trucks) {
         if (err) {
