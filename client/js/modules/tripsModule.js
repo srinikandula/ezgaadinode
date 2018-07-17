@@ -162,7 +162,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         }, function (error) {
 
         })
-    }
+    };
     $scope.printInvoice = function (tripId, partyId) {
 
         $state.go('printInvoice', {tripId: tripId, partyId: partyId});

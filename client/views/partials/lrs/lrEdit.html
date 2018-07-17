@@ -1,0 +1,187 @@
+<div class="main-right col-xs-12" ng-controller="AddEditLRCtrl">
+    <div class="col-xs-12 account-edit">
+        <h2 class="title-name">{{pageTitle}}</h2>
+        <form class="mt-10">
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.consignorName" type="text" class="form-control custom-form-control"
+                               >
+                        <label class="focus-effect-for-input" aria-hidden="true">Consignor Name*</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.consignorGSTNo" type="text" class="form-control custom-form-control"
+                              >
+                        <label class="focus-effect-for-input" aria-hidden="true">Consignor GST No*</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.consigneeBanksNameAndAddress" type="text" class="form-control custom-form-control"
+                              >
+                        <label class="focus-effect-for-input" aria-hidden="true">Consignee Bank Name And Address</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.consigneeGSTNo" type="text" class="form-control custom-form-control" >
+                        <label class="focus-effect-for-input" aria-hidden="true">Consignee GST No</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <ui-select ng-model="lr.registrationNo" theme="select2" ng-change="selectedTruck()"
+                                   title="Choose a Truck" append-to-body="true">
+                            <ui-select-match class="form-control custom-form-control">
+                                {{$select.selected.registrationNo || truckRegNo}}
+                            </ui-select-match>
+                            <ui-select-choices repeat="truck in trucksList | propsFilter: {registrationNo: $select.search}">
+                                <div ng-bind-html="truck.registrationNo | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <label class="focus-effect-for-input-trucks">Select a Truck*</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.addressOfDeliveryOffice" type="text" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">Address of delivery office</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.from" type="text" class="form-control custom-form-control" id="source"
+                               ng-change="searchSource()">
+                        <label class="focus-effect-for-input" aria-hidden="true">Source</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.to" type="text" class="form-control custom-form-control"
+                               id="destination" ng-change="searchDestination()">
+                        <label class="focus-effect-for-input" aria-hidden="true">Destination</label>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <textarea class="form-control custom-form-control" rows="4" ng-model="lr.saidToContains"></textarea>
+
+                        <label class="focus-effect-for-input" aria-hidden="true">Said To Contains</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <date-picker id="permitExpiry" ng-model="lr.date" placeholder="'LR Date*'"
+                                     class="'custom-form-control'" past-present="'pastPresentDate'">
+                        </date-picker>
+                    </div>
+                </div>
+
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.freight" type="number" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">Freight Amount</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.handling" type="number" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">Handling</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.statistical" type="number" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">Statistical</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.rc" type="number" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">RC</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.caratage" type="number" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">caratage</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.others" type="number" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">Others</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <input ng-model="lr.surCharges" type="number" class="form-control custom-form-control"
+                        >
+                        <label class="focus-effect-for-input" aria-hidden="true">Sur Charges</label>
+
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class=" trip-share">
+                        <div class="checkbox">
+                            <label>
+                                <input ng-model="lr.consignor" type="checkbox" checked>
+                                <span class="cr">
+                                        <i class="cr-icon fa fa-check"></i>
+                                    </span>
+                                Consignor
+                            </label>
+                            <label>
+                                <input ng-model="lr.consignee" type="checkbox" checked>
+                                <span class="cr">
+                                        <i class="cr-icon fa fa-check"></i>
+                                    </span>
+                                Consignee
+                            </label>
+                            <label>
+                                <input ng-model="lr.transporter" type="checkbox" checked>
+                                <span class="cr">
+                                        <i class="cr-icon fa fa-check"></i>
+                                    </span>
+                                transporter
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="clearfix"></div>
+
+            <div class="col-xs-12">
+                <div class="col-xs-4 mtb-25 sub-can">
+                    <button type="submit" class="btn btn-danger can " ui-sref="lrs" >Cancel</button>
+                    <button type="submit" class="btn can last" ng-click="addOrUpdateLR()">Submit</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

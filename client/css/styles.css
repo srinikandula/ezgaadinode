@@ -3323,3 +3323,6 @@ border-bottom: none;
     line-height: 1.3333333;
     border-radius: 6px;
 }
+textarea.form-control {
+    height: auto !important;
+}

@@ -731,6 +731,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         params: {
             access: 'auth'
         }
+    }).state({
+        name: 'lrs',
+        url: '/lrs',
+        templateUrl: 'views/partials/lrs/lrsList.html',
+        data: {
+            activeTab: 'lrs',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
+        }
+    }).state({
+        name: 'lrEdit',
+        url: '/lrEdit/:lrId',
+        templateUrl: 'views/partials/lrs/lrEdit.html',
+        data: {
+            activeTab: 'lrs',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth',
+            lrId: null
+        }
     });
     // agentReports
     $urlRouterProvider.otherwise('/login');
