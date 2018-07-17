@@ -1,10 +1,6 @@
 var InventoryCollection = require('./../models/schemas').InventoryCollection;
 var Utils = require('../apis/utils');
 var _ = require('underscore');
-var JobsCollection = require('./../models/schemas').JobsCollection;
-var TrucksColl = require('./../models/schemas').TrucksColl;
-
-var async = require('async');
 
 
 var Inventories = function () {
@@ -89,37 +85,10 @@ Inventories.prototype.getInventories = function(jwt,callback){
             retObj.messages.push("error while getting data"+JSON.stringify(err));
             callback(retObj);
         } else{
-            async.each(inventories,function(inventory,asyncCallback){
-                JobsCollection.find({accountId:jwt.accountId,inventory:inventory._id},{vehicle:1}).exec(function(err,jobs){
-                    if(err){
-                        asyncCallback(true);
-                    }else{
-                        var vechicleIds=_.pluck(jobs,'vehicle');
-                        TrucksColl.find({_id:{$in:vechicleIds}},{registrationNo:1},function (err,trucks) {
-                           if(err){
-                               asyncCallback(true);
-                           }else{
-                               inventory.trucks=trucks;
-                               asyncCallback(false)
-                           }
-                        })
-                    }
-
-                });
-
-            },function(err){
-                if(err){
-                    retObj.status=false;
-                    retObj.messages.push("Error in fetching the records...");
-                    retObj.data = inventories;
-                    callback(retObj);
-                }else{
-                    retObj.status=true;
-                    retObj.messages.push("records fetched successfully");
-                    retObj.data = inventories;
-                    callback(retObj);
-                }
-            });
+            retObj.status=true;
+            retObj.messages.push("records fetched successfully");
+            retObj.data = inventories;
+            callback(retObj);
         }
     });
 };
