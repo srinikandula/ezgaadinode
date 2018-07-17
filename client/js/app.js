@@ -722,7 +722,7 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
                     console.log('found error');
                     $cookies.remove('token');
                     console.log("$location.url()",$location.url());
-                    if(!$location.url().startsWith('/live-trcaking')){
+                    if(!$location.url().startsWith('/live-tracking')){
                         $location.path('/login');
                         return;
                     }
