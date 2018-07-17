@@ -1019,7 +1019,7 @@ Gps.prototype.generateShareTrackingLink = function (req, callback) {
                 callback(retObj);
             } else {
                 retObj.status = true;
-                retObj.data = config.baseUrl + '/live-trcaking/' + doc._id;
+                retObj.data = config.baseUrl + '/live-tracking/' + doc._id;
                 callback(retObj);
 
             }
