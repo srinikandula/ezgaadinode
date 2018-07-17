@@ -149,6 +149,7 @@ var groupSchema = new mongoose.Schema({
 
 var inventorySchema = new mongoose.Schema({
     id: String,
+    vehicle:String,
     name: String,
     partyId: {type: ObjectId, ref: 'parties'},
     totalAmount: {type: Number, default: 0},
