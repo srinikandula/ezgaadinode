@@ -359,4 +359,30 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
     }
 
 }]);
+app.controller('UploadPaymentsCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
+    $scope.file=undefined;
+    $scope.uploadPayments=function () {
+        if(!$scope.file){
+            Notification.error("Please select file");
+        }else{
+            Upload.upload({
+                url: '/v1/payments/uploadPayments',
+                data: {
+                    file: $scope.file,
+                },
+            }).then(function (success) {
+                if (success.data.status) {
+                    Notification.success(success.data.messages[0]);
+                    $state.go("payments");
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            });
+
+        }
+    }
+
+}]);
 

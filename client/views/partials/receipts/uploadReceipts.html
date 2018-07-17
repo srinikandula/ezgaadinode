@@ -1,0 +1,22 @@
+<div class="main-right col-xs-12" ng-controller="UploadReceiptsCtrl" >
+    <div class="col-xs-12 account-edit">
+        <h2 class="title-name">Export Receipts</h2>
+        <div class="form-group col-xs-6">
+            <div class="styling-input-list">
+                <input type="file"   class="form-control"  ng-model="file" ngf-select   placeholder="Upload File"                />
+                <label class="focus-effect-for-input" aria-hidden="true">Export File</label>
+
+            </div>
+
+        </div>
+        <div class="form-group col-xs-6">
+
+            <div class="styling-input-list">
+                <button class="btn btn-info export-button" ng-click="uploadReceipts()">Export</button>
+                <button class="btn btn-danger export-button" ui-sref="receipts">Cancel</button>
+
+            </div>
+        </div>
+    </div>
+</div>
+<div class="clearfix"></div>

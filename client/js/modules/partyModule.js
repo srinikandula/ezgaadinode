@@ -284,8 +284,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             }
         }, function (err) {
         });
-    }
-    ;
+    };
 
     $scope.addTripLane = function () {
         $scope.party.error = [];

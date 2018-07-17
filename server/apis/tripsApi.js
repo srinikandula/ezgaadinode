@@ -5,6 +5,7 @@ var async = require('async');
 var json2xls = require('json2xls');
 var XLSX = require('xlsx');
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
+var PdfGenerator = require('./pdfGenerator');
 
 
 const ObjectId = mongoose.Types.ObjectId;
@@ -351,12 +352,7 @@ function saveTrip(req, tripDetails, callback) {
                     callback(retObj);
                 }
             });
-            if (tripDetails.share) {
-                shareTripDetails(trip, function (shareResponse) {
-                    //callback(shareResponse);
-                })
-            }
-            callback(retObj);
+
         }
     });
 }
@@ -820,9 +816,12 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, req, callback) {
         status: false,
         messages: []
     };
+    var condition={
+        'accountId': jwt.accountId
+    };
 
-    if (!params.truckNumber) {
-        getTrips({'accountId': jwt.accountId}, jwt, params, function (response) {
+    if (!params.truckNumber && !params.truckType) {
+        getTrips(condition, jwt, params, function (response) {
             if (response.status) {
                 analyticsService.create(req, serviceActions.account_trips, {
                     body: JSON.stringify(req.query),
@@ -842,56 +841,40 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, req, callback) {
             callback(response);
         })
     } else {
-        TrucksColl.find({registrationNo: new RegExp("^" + params.truckNumber, "i")}, function (err, truckData) {
-            if (err) {
-                result.status = false;
-                result.messages.push('Error retrieving expenses Costs');
-                analyticsService.create(req, serviceActions.account_trips_err, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: false,
-                    messages: result.messages
-                }, function (response) {
-                });
-                callback(result);
-            } else if (truckData) {
-                var ids = _.pluck(truckData, "_id");
-                getTrips({
-                    'accountId': jwt.accountId,
-                    'registrationNo': {$in: ids}
-                }, jwt, params, function (response) {
-                    if (response.status) {
-                        analyticsService.create(req, serviceActions.account_trips, {
-                            body: JSON.stringify(req.query),
-                            accountId: jwt.id,
-                            success: true
-                        }, function (response) {
-                        });
-                    } else {
-                        analyticsService.create(req, serviceActions.account_trips_err, {
-                            body: JSON.stringify(req.query),
-                            accountId: jwt.id,
-                            success: false,
-                            messages: response.messages
-                        }, function (response) {
-                        });
-                    }
-                    callback(response);
-                })
-            } else {
-                result.status = true;
-                result.messages.push('Success');
-                result.count = 0;
-                result.trips = [];
-                analyticsService.create(req, serviceActions.account_trips, {
-                    body: JSON.stringify(req.query),
-                    accountId: jwt.id,
-                    success: true
-                }, function (response) {
-                });
-                callback(result);
-            }
-        })
+        Utils.getTruckIdsByTruckTypeAndRegNo(jwt.accountId,params.truckType,params.truckNumber,function (resp) {
+           if(resp.status){
+               condition.registrationNo={$in:resp.data};
+
+               getTrips(condition, jwt, params, function (response) {
+                   if (response.status) {
+                       analyticsService.create(req, serviceActions.account_trips, {
+                           body: JSON.stringify(req.query),
+                           accountId: jwt.id,
+                           success: true
+                       }, function (response) {
+                       });
+                   } else {
+                       analyticsService.create(req, serviceActions.account_trips_err, {
+                           body: JSON.stringify(req.query),
+                           accountId: jwt.id,
+                           success: false,
+                           messages: response.messages
+                       }, function (response) {
+                       });
+                   }
+                   callback(response);
+               })
+
+           }else{
+               analyticsService.create(req, serviceActions.account_trips_err, {
+                   body: JSON.stringify(req.query),
+                   accountId: jwt.id,
+                   success: false,
+                   messages: resp.messages
+               }, function (response) {
+               });
+           }
+        });
     }
 };
 
@@ -917,30 +900,35 @@ function getTrips(condition, jwt, params, callback) {
                 .limit(limit)
                 .lean()
                 .exec(function (err, trips) {
-                    async.parallel({
-                        createdbyname: function (createdbyCallback) {
-                            Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
-                                createdbyCallback(response.err, response.documents);
-                            });
-                        },
-                        driversname: function (driversnameCallback) {
-                            Utils.populateNameInDriversCollmultiple(trips, 'driverId', ['fullName', 'mobile'], function (response) {
-                                driversnameCallback(response.err, response.documents);
-                            });
-                        },
-                        bookedfor: function (bookedforCallback) {
-                            Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
-                                bookedforCallback(response.err, response.documents);
-                            });
-                        },
-                        truckNo: function (truckscallback) {
-                            Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
-                                truckscallback(response.err, response.documents);
-                            })
-                        }
-                    }, function (populateErr, populateResults) {
-                        tripsCallback(populateErr, populateResults);
-                    });
+                    if(trips && trips.length>0){
+                        async.parallel({
+                            createdbyname: function (createdbyCallback) {
+                                Utils.populateNameInUsersColl(trips, "createdBy", function (response) {
+                                    createdbyCallback(response.err, response.documents);
+                                });
+                            },
+                            driversname: function (driversnameCallback) {
+                                Utils.populateNameInDriversCollmultiple(trips, 'driverId', ['fullName', 'mobile'], function (response) {
+                                    driversnameCallback(response.err, response.documents);
+                                });
+                            },
+                            bookedfor: function (bookedforCallback) {
+                                Utils.populateNameInPartyColl(trips, 'partyId', function (response) {
+                                    bookedforCallback(response.err, response.documents);
+                                });
+                            },
+                            truckNo: function (truckscallback) {
+                                Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                                    truckscallback(response.err, response.documents);
+                                })
+                            }
+                        }, function (populateErr, populateResults) {
+                            tripsCallback(populateErr, populateResults);
+                        });
+                    }else{
+                        tripsCallback(false,{createdbyname:[]});
+                    }
+
                 });
         },
         count: function (countCallback) {
@@ -2224,6 +2212,7 @@ Trips.prototype.uploadTrips = function (req, callback) {
         status: false,
         messages: []
     };
+    console.log("files", req.files);
     let file = req.files.file;
     let accountId = req.jwt.accountId;
     if (!file) {
@@ -2418,10 +2407,13 @@ Trips.prototype.getTripInvoiceDetails = function (req, callback) {
                 retObj.messages.push("Internal server error,"+JSON.stringify(err.message));
                 callback(retObj);
             } else {
-                retObj.status=true;
+                PdfGenerator.createPdf('tripInvoice.html',result,function (resp) {
+                    callback(resp);
+                });
+               /* retObj.status=true;
                 retObj.messages.push("Success");
                 retObj.data=result;
-                callback(retObj);
+                callback(retObj);*/
             }
         });
     }

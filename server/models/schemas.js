@@ -66,8 +66,6 @@ var accountSchema = new mongoose.Schema({
     contactName: String,
     displayName: String,
     contactAddress: String,
-    city: String,
-    state: String,
     location: String,
     truckIds: [],
     profilePic: String,
@@ -103,7 +101,12 @@ var accountSchema = new mongoose.Schema({
     bankAccNo: String,
     bankBranch: String,
     truckType: {type: String, default: "Trucks"}, //Trucks or Non Trucks
-    truckTypes: [{type: ObjectId}]
+    truckTypes: [{type: ObjectId}],
+    igst:{type:Number,default:0},
+    cgst:{type:Number,default:0},
+    sgst:{type:Number,default:0},
+    panNo:String
+
 }, {
     timestamps: true
 });
@@ -1042,6 +1045,36 @@ var shareLinksSchema = new mongoose.Schema({
     truckId: {type: ObjectId, ref: 'trucks'},
     expairyAt: {type: Date}
 });
+
+var lrSchema = new mongoose.Schema({
+    updatedBy: String,
+    createdBy: String,
+    accountId: {type: ObjectId, ref: 'accounts'},
+    consignorName:String,
+    consignorGSTNo:String,
+    consigneeGSTNo:String,
+    consigneeBanksNameAndAddress:String,
+    truckId:String,
+    registrationNo:String,
+    addressOfDeliveryOffice:String,
+    date:Date,
+    lrNo:String,
+    from:String,
+    to:String,
+    freight:Number,
+    handling:Number,
+    statistical:Number,
+    rc:Number,
+    caratage:Number,
+    others:Number,
+    surCharges:Number,
+    consignor:{type:Boolean,default:false},
+    consignee:{type:Boolean,default:false},
+    transporter:{type:Boolean,default:false},
+    saidToContains:String
+
+
+}, {timestamps: true});
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     userLogins: mongoose.model('userLogins', userSchema, 'userLogins'),
@@ -1101,5 +1134,6 @@ module.exports = {
     deviceIdColl: mongoose.model('deviceId', deviceIdSchema, 'deviceId'),
     ReceiptsColl: mongoose.model('receipts', receiptSchema, 'receipts'),
     ShareLinksColl: mongoose.model('shareLinks', shareLinksSchema, 'shareLinks'),
+    LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
 
 };
