@@ -425,9 +425,46 @@ Trucks.prototype.getTrucks = function (jwt, params, req, callback) {
         if(params.truckType) {
             condition.truckType = new RegExp("^" + params.truckType, "i");
         }
-        getTrucks(condition, jwt, params, req, callback);
+        if(params.groupId && ObjectId.isValid(params.groupId)){
+            GroupsColl.findOne({_id: params.groupId}, function (err, accountData) {
+                if (err) {
+                    retObj.messages.push('Error retrieving trucks');
+                    callback(retObj);
+                } else if (accountData) {
+                    if (accountData.truckIds.length > 0) {
+                        condition = {_id: {$in: accountData.truckIds}};
+                        getTrucks(condition, jwt, params, req, callback);
+
+                    } else {
+                        retObj.messages.push('There is no assigned trucks');
+                        analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                            body: JSON.stringify(req.params),
+                            accountId: jwt.id,
+                            success: false,
+                            messages: retObj.messages
+                        }, function (response) {
+                        });
+                        callback(retObj);
+                    }
+                } else {
+                    retObj.messages.push('Error retrieving trucks');
+                    analyticsService.create(req, serviceActions.retrieve_trus_err, {
+                        body: JSON.stringify(req.params),
+                        accountId: jwt.id,
+                        success: false,
+                        messages: retObj.messages
+                    }, function (response) {
+                    });
+                    callback(retObj);
+                }
+            });
+        }else{
+            getTrucks(condition, jwt, params, req, callback);
+        }
+
     }
     else {
+
         GroupsColl.findOne({_id: jwt.id}, function (err, accountData) {
             if (err) {
                 retObj.messages.push('Error retrieving trucks');

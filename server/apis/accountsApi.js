@@ -15,6 +15,7 @@ var Trips = require('./tripsApi');
 var Expenses = require('./expensesApi');
 var Receipts = require('./receiptsApi');
 var Trucks = require('./truckAPIs');
+var Groups = require('./groupsApi');
 var Payments = require('./erpPayments');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/constants');
@@ -567,7 +568,7 @@ Accounts.prototype.userProfile = function (jwt, req, callback) {
             });
         },
         accountGroupsCount: function (accountGroupCountCallback) {
-            Accounts.prototype.countAccountGroups(jwt, req, function (response) {
+            Groups.countAccountGroups(jwt, req, function (response) {
                 accountGroupCountCallback(response.error, response.count);
             });
         },

@@ -13,7 +13,7 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         }
     }).state({
         name: 'livetracking',
-        url: '/live-tracking/:truckNo',
+        url: '/live-trcaking/:truckNo',
         templateUrl: 'views/partials/liveTracking.html',
         data: {activeTab: 'import-students'},
         params: {
@@ -765,6 +765,7 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
                 if ([400, 401, 402, 403].indexOf(status) > -1) {
                     console.log('found error');
                     $cookies.remove('token');
+
                     console.log("$location.url()",$location.url());
                     if(!$location.url().startsWith('/live-tracking')){
                         $location.path('/login');

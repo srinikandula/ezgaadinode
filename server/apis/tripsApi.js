@@ -844,7 +844,6 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, req, callback) {
         Utils.getTruckIdsByTruckTypeAndRegNo(jwt.accountId,params.truckType,params.truckNumber,function (resp) {
            if(resp.status){
                condition.registrationNo={$in:resp.data};
-               console.log("condition",condition);
 
                getTrips(condition, jwt, params, function (response) {
                    if (response.status) {
