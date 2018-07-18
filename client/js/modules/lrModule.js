@@ -39,6 +39,7 @@ app.factory('LrServices', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
+
     }
 }]);
 
@@ -133,6 +134,9 @@ app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notifica
         });
 
     };
+    $scope.generatePdf=function (lrId) {
+        window.open('/v1/lrs/generatePDF/' + lrId );
+    }
 
 
 }]);

@@ -46,7 +46,7 @@ AuthRouter.get('/total/count',function (req,res) {
 AuthRouter.get('/generatePDF/:id',function (req,res) {
     LRsAPI.generatePDF(req,function (result) {
         if(result.status){
-            res.writeHead(200, {'Content-Type': 'application/pdf','Content-Disposition': 'attachment; filename=lr'+Date.now()+'.pdf',});
+            res.writeHead(200, {'Content-Type': 'application/pdf'/*,'Content-Disposition': 'attachment; filename=lr'+Date.now()+'.pdf'*/});
             res.end(result.data, 'binary');
         }else{
             res.json(result);

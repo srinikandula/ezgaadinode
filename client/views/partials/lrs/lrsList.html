@@ -43,7 +43,9 @@
 
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="lrParams">
         <tr ng-repeat="lr in lrsList" style="text-align: center;">
-
+            <td data-title="'LR No'" sortable="'lrNo'" class="clickable-item">{{
+                lr.lrNo}}
+            </td>
             <td data-title="'Truck No'" sortable="'registrationNo'" class="clickable-item">{{
                 lr.registrationNo}}
             </td>
@@ -65,6 +67,10 @@
                 <a href="#"  class="btn"
                    ng-click="deleteLR(lr._id)">
                     <span class="glyphicon glyphicon-remove"></span></a>
+                <a href="#"  class="btn"
+                   ng-click="generatePdf(lr._id)">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </a>
             </td>
         </tr>
         <tr ng-if="!lrsList || lrsList.length === 0">
