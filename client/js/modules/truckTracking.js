@@ -428,13 +428,26 @@ app.controller('liveTrackingController',['$scope','$stateParams','truckTrackingS
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
                 var icon = {
-                    url: '/images/red_marker.svg', // url
+                    url: '', // url
                     scaledSize: new google.maps.Size(50, 50),
                     labelOrigin: new google.maps.Point(20, -2)
                 };
+                if(latestLocation.isStopped){
+                    icon.url = '/images/red_marker.svg'
+                }else if(latestLocation.isIdle){
+                    icon.url = '/images/orange_marker.svg'
+                }else{
+                    icon.url = '/images/green_marker.svg'
+                }
                 var marker = new google.maps.Marker({
                     position: new google.maps.LatLng(latestLocation.location.coordinates[1], latestLocation.location.coordinates[0]),
                     icon: icon,
+                    label: {
+                        text: response.data.registrationNo,
+                        color: "black",
+                        fontSize: '15px',
+                        labelClass: "labels"
+                    },
                     map: map
                 });
             } else {

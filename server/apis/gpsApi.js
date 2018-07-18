@@ -1055,6 +1055,7 @@ Gps.prototype.getTruckLatestLocation = function (req, callback) {
                          }else if(truck){
                                 retObj.status=true;
                                 retObj.data=truck.attrs;
+                                retObj.registrationNo = truck.registrationNo;
                                 callback(retObj);
                          }else{
                              retObj.messages.push("Invalid truck tracking request");
