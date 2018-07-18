@@ -343,6 +343,28 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             access: 'open',
         }
     }).state({
+        name: 'geoFence',
+        url: '/geoFencesList',
+        templateUrl: 'views/partials/geoFences/geoFencesList.html',
+        data: {
+            activeTab: 'GeoFences',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'add_editGeoFence',
+        url: '/add_editGeoFence',
+        templateUrl: 'views/partials/geoFences/add_editgeoFence.html',
+        data: {
+            activeTab: 'GeoFences',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
         name: 'editParty',
         url: '/editParty/:partyId',
         templateUrl: 'views/partials/party/edit-party.html',

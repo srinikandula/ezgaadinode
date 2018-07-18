@@ -42,6 +42,7 @@ var globalApi = require('./server/routes/globalRoutes');
 var pushNotifications= require('./server/routes/notifications');
 var GroupUsers = require('./server/routes/groupsRoutes');
 var LRs = require('./server/routes/lrRoutes');
+var geoFence = require('./server/routes/geoFenceRoutes');
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
 
@@ -110,6 +111,7 @@ app.use('/v1/reminders', Reminder.AuthRouter);
 app.use('/v1/users', subLogIn.AuthRouter);
 app.use('/v1/groups', GroupUsers.AuthRouter);
 app.use('/v1/lrs', LRs.AuthRouter);
+app.use('/v1/geoFences',geoFence.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {

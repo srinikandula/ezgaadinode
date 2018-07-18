@@ -1,0 +1,39 @@
+<div class="main-right col-xs-12" ng-controller="AddEditCtrl">
+    <div class="col-xs-12 account-edit">
+        <h2 class="title-name">{{title}}</h2>
+        <div class="col-sm-6 col-xs-12">
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input ng-model="geoFence.name" type="text" class="form-control custom-form-control">
+                    <label class="focus-effect-for-input" aria-hidden="true">Name*</label>
+                </div>
+            </div>
+            <div class="form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input id="source" type="text" class="form-control custom-form-control" placeholder="geoLocation*"
+                           ng-model="geoFence.address">
+                    <!--<label class="focus-effect-for-input" aria-hidden="true"></label>-->
+                    <div class="mapIcon" ng-click="selectLocation()">
+                        <span class="glyphicon glyphicon-map-marker"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script type="text/ng-template" id="geoLocation.html">
+            <span class="close-btn" style="z-index:100;" ng-click="cancel()"><i class="fa fa-close pull-right" style="margin:5px"></i></span>
+            <div map-lazy-load="https://maps.google.com/maps/api/js?key=AIzaSyBcXKj1iAjyIin_j2vbiCqke1oDLGgIsAM"
+                 map-lazy-load-params="{{googleMapsUrl}}">
+                <ng-map center="{{geoLocation}}" zoom="13"></ng-map>
+            </div>
+        </script>
+        <div class="col-xs-12">
+            <div class="col-xs-4 mtb-25 sub-can">
+                <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+                <button type="submit" class="btn can  last" ng-click="addOrUpdategeoFence()">Submit</button>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+
+    </div>
+</div>
+

@@ -165,6 +165,21 @@ var inventorySchema = new mongoose.Schema({
     timestamps: true
 });
 
+var geoFenceSchema = new mongoose.Schema({
+    name : String,
+    address:String,
+    geoLocation: {
+        type: {
+            type: String,
+            default: "Point"
+        },
+        coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    },
+    accountId: {type: ObjectId, ref: 'accounts'}
+},{
+    timestamps: true
+});
+
 var truckSchema = new mongoose.Schema({
     userName: String,
     registrationNo: String,
@@ -1083,6 +1098,7 @@ module.exports = {
     InventoryCollection: mongoose.model('inventories', inventorySchema, 'inventories'),
     JobsCollection: mongoose.model('jobs', jobSchema, 'jobs'),
     RouteConfigColl: mongoose.model('configs', routeConfigSchema, 'configs'),
+    GeoFenceColl: mongoose.model('geoFences', geoFenceSchema, 'geoFences'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),
