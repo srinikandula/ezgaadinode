@@ -3,15 +3,15 @@ var fs=require('fs');
 var config = require('./../config/config');
 var pdf = require('dynamic-html-pdf');
 var options = {
-    format: "A3",
-    orientation: "portrait",
-    border: "10mm"
+    format: "A4",
+    orientation: "landscape",//portrait,landscape
+    border: "5mm"
 };
 
 var PdfGenerator = function () {
 };
 
-PdfGenerator.prototype.createPdf=function (template,data,callback) {
+PdfGenerator.prototype.createPdf=function (template,orientation,data,callback) {
   var retObj={
       status:false,
       messages:[]
@@ -29,8 +29,10 @@ PdfGenerator.prototype.createPdf=function (template,data,callback) {
       var document = {
           template: html,
           context: data,
+          //path: "./output.pdf"
           type: "buffer"
       };
+      options.orientation=orientation;
       pdf.create(document, options)
           .then(res => {
               retObj.status=true;
@@ -45,3 +47,4 @@ PdfGenerator.prototype.createPdf=function (template,data,callback) {
 };
 
 module.exports = new PdfGenerator();
+

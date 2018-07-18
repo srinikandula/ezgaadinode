@@ -1,21 +1,391 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-    <title>Easygaadi LR</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <style>
-       .container{
-           margin: 1%;
-           height: 600px;
-           border:  solid #0c0c0c;
-           border-radius:3%;
-           width: 98%;
-       }
+        body{
+            font-size: 9px;
+        }
+        h1{
+            font-size: 14px;
+        }
+        h2{
+            font-size: 13px;
+        }
+        h3{
+            font-size: 12px;
+            margin: 2px 0px 5px 0px;
+        }
+        h4{
+            font-size: 11px;
+        }
+        table tr th{
+            font-size: 10px;
+        }
+        table tr td p{
+            font-size: 9px;
+        }
+        table tr td p span{
+            font-size: 8px;
+        }
+        table  td{
+            font-size: 8px;
+        }
+
+        .note{
+            font-size: 8px;
+        }
     </style>
-
 </head>
-<body>
-<div class="container">
 
+<body>
+<div class="width:842px;">
+    <div class="container"  style="border:1px solid #333;padding-top: 5px; border-radius:6px;">
+        <div class="row">
+            <div class="col-xs-4">
+                <p style="margin:0;">H.O.:
+                    <b>{{accDetails.companyName}},</b>
+                </p>
+                <P style="margin:0;">{{accDetails.address1}},</P>
+                <p style="margin:0;">{{accDetails.address2}},{{accDetails.city}}.</p>
+                <p style="margin:0;">{{accDetails.ZipCode}},{{accDetails.state}},{{accDetails.country}}.</p>
+                <p style="margin:0;">Phones:{{accDetails.contactPhone}}</p>
+                <table style="border:1px solid #333; border-collapse:collapse; margin-bottom:10px;">
+                    <thead>
+                    <tr>
+                        <th style="padding:5px; border:1px solid #333;">SCHEDULE OF DEMURRAGE CHARGES</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="padding:2px;">
+                            <p >Demmurrage Chargeable after
+                                <span style="border-bottom:1px solid #333;">&nbsp;{{lrDetails.schOfDamageCharge.fromDays}}&nbsp;</span>
+                                days from to day @ Rs.
+                                <span style="border-bottom:1px solid #333;">&nbsp;{{lrDetails.schOfDamageCharge.perDay}}&nbsp;</span>Per day per Qtl. on weight charged.</p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <table style="border:1px solid #333; border-collapse:collapse; margin-bottom:10px;">
+                    <thead>
+                    <tr>
+                        <th class="text-center" style="padding:5px;">NOTICE</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="padding:2px;font-size:8px;">
+                            <p class="note">
+                                The consignment covered by this Lorry Reciept shall be stored at the destination under the control of the Transport Operator
+                                and shall be deliverd to or to the order of the consignee Bank whose name is mentioned
+                                in the Lorry Receipt it will under no circumstance to delivered to anyone without
+                                the written authority from the consignee Bank or its order endorsed on the consignee
+                                copy or on a separate letter of Authority
+                            </p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-4">
+                <h1 style="border-bottom:1px double #0c0c0c; margin:0;text-align: center;">{{accDetails.companyName}}</h1>
+
+                <h3 style="border-bottom:1px dashed #1a1a1a;text-align: center;">AT OWNER'S RISK</h3>
+                <h3 class="text-center">INSURANCE</h3>
+                <table class="insurance" style="border:1px solid #333;width:100%; border-collapse:collapse; margin-bottom:2px;">
+                    <thead>
+                    <tr>
+                        <th colspan="2" class="text-center" style="padding:2px;">The consignor has stated that</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr style="margin: 0px;padding: 0px">
+                        <td style="width:20px;">
+                            <input type="checkbox" class="form-control" style="box-shadow:none" checked>
+                        </td>
+                        <td >
+                            he has not Insured the Consignment
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td >
+                            <span>OR</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:20px;">
+                            <input type="checkbox" class="form-control" style="box-shadow:none">
+                        </td>
+                        <td >
+                            he has Insured the Consignment
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
+                        <td >
+                            <p>Company
+                                <span style="border-bottom:1px solid #333;">(data...)</span>
+                            </p>
+                            <p>
+                                        <span>Policy No.
+                                            <span style="border-bottom:1px solid #333;">(data...)</span>
+                                        </span>
+                                <span>Date
+                                            <span style="border-bottom:1px solid #333;">(data...)</span>
+                                        </span>
+                            </p>
+                            <p>
+                                        <span>Amount
+                                            <span style="border-bottom:1px solid #333;">(data...)</span>
+                                        </span>
+                                <span>Risk
+                                            <span style="border-bottom:1px solid #333;">(data...)</span>
+                                        </span>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border:1px solid #333; padding:10px;">
+                            <b>Code Number:HYP-1743</b>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-xs-4">
+                <p>
+                    <b>PAN No.</b>
+                    <span style="border:1px solid #333; padding:3px;margin: 1px">{{accDetails.panNo}}</span>
+                </p>
+                <p>
+                    <b>GSTIN:</b>
+                    <span style="border:1px solid #333; padding:3px;">{{accDetails.GST}}</span>
+                </p>
+                <p style="border-bottom:1px solid #333;margin: 0px 0px 2px 0px">
+                    <b>CAUTION:</b>
+                    <span class="note">This Consignment will not be diverted detained or re booked without consignee Bank's written permission
+                            will delivered at the destination</span>
+                </p>
+                <p style="margin: 0px">Address Of Delivery Office: <span style="border-bottom:1px solid #333; ">{{lrDetails.addressOfDeliveryOffice}}</span></p>
+
+                <p style="margin: 0px 0px 2px 0px">Truck No. <span style="border-bottom:1px solid #333;">{{lrDetails.registrationNo}}</span></p>
+                <table style="border-collapse:collapse;width:100%;">
+                    <thead>
+                    <tr>
+                        <th class="text-center" colspan="2" style="border:1px solid #333; padding:5px;">CONSIGNMENT NOTE</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td style="border:1px solid #333; padding: 5px 5px;">
+                            <b>NO.</b>
+                        </td>
+                        <td style="border:1px solid #333; padding: 5px 5px;">
+                            <b>{{lrDetails.lrNo}}</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid #333; padding:5px;">
+                            Date
+                        </td>
+                        <td style="border:1px solid #333; padding:5px;">
+                            {{lrDetails.dateStr}}
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <h4 style="padding: 0px;margin:2px 0px 0px 0px;">From</h4>
+                <p style="border:1px solid #333; padding:5px; margin-bottom:5px">
+                    <b>{{lrDetails.from}}</b>
+                </p>
+                <h4 style="padding: 0px;margin:0px;">To</h4>
+                <p style="border:1px solid #333; padding:5px;">
+
+                    <b>{{lrDetails.to}}</b>
+                </p>
+            </div>
+        </div>
+
+        <p><span style="padding-right:5px;margin: -15px 0px 0px 0px;padding: 0px"><b>Consignor's Name & Address</b></span><span style="border-bottom:1px solid #333; display:inline-block; width:80%;">{{lrDetails.consignorName}}</span></p>
+        <div class="row">
+            <div class="col-xs-6">
+                <p><span style="padding-right:5px; margin: 0px"><b>Consignor's GSTIN No. :</b></span><span style="border-bottom:1px solid #333; display:inline-block; width:65%;">{{lrDetails.consignorGSTNo}}</span></p>
+            </div>
+            <div class="col-xs-6">
+                <p><span style="padding-right:5px; margin: 0px"><b>Consignee GSTIN No. :</b></span><span style="border-bottom:1px solid #333; display:inline-block; width:67%;">{{lrDetails.consigneeGSTNo}}</span></p>
+            </div>
+
+        </div>
+        <p><span style="padding-right:5px;margin: 0px"><b>Consignee Bank's Name & Address</b></span><span style="border-bottom:1px solid #333; display:inline-block; width:76%;">{{lrDetails.consigneeBanksNameAndAddress}}</span></p>
+        <table style="border-collapse:collapse;width:100%;border-top:1px solid #333;border-left:1px solid #333;border-right:1px solid #333;">
+            <thead style="border-bottom:1px solid #333;">
+            <tr>
+                <th style="border-right:1px solid #333;text-align: center;">
+                    SAID TO CONTAIN
+                </th>
+                <th style="border-right:1px solid #333; width:180px;text-align: center;">
+                    <p>Actual weight</p>
+                    <table style="width:100%;">
+                        <tr>
+                            <td>
+                                <p>Qtl</p>
+                            </td>
+                            <td>
+                                <p>Kg</p>
+                            </td>
+                        </tr>
+                    </table>
+                </th>
+                <th>
+                    Freight
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td style="border-right:1px solid #333;">
+                    {{lrDetails.saidToContains}}
+                </td>
+                <td style="border-right:1px solid #333;">
+                    <table style="width:100%;">
+                        <tbody>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333; padding:6px 0;">
+                                {{lrDetails.actualWeight.qtl}}
+                            </td>
+                            <td>
+                                {{lrDetails.actualWeight.kgs}}
+                            </td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td colspan="2">
+                                <p>Sender's Weight Accepted</p>
+                                <table style="width:100%;">
+                                    <tr>
+                                        <td>
+                                            <p>Qtl</p>
+                                        </td>
+                                        <td>
+                                            <p>Kg</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:6px 0;">
+                                {{lrDetails.actualWeight.qtl}}
+                            </td>
+                            <td>
+                                {{lrDetails.actualWeight.kgs}}
+                            </td>
+                        </tr>
+
+                        <tr style="border-bottom:1px solid #333;">
+                            <td colspan="2">
+                                <p> Weight Charged</p>
+                                <table style="width:100%;">
+                                    <tr>
+                                        <td>
+                                            <p>Qtl</p>
+                                        </td>
+                                        <td>
+                                            <p>Kg</p>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border-right:1px solid #333;padding:6px 0;">
+                                (data..)
+                            </td>
+                            <td>
+                                (data..)
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </td>
+
+                <td style="border-right:1px solid #333;">
+                    <table style="width:100%;">
+
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <b>Handling</b>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <b> Statistical</b>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <B> R.C</B>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <B>  Caratage</B>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <B> Others</B>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <B> Total</B>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <b> Surcharges</b>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <b>IGST</b>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <b> CGST</b>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #333;">
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <b> SGST</b>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                        <tr>
+                            <td style="border-right:1px solid #333;padding:2px;">
+                                <b>G. Total</b>
+                            </td>
+                            <td>(data...)</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            </tbody>
+
+        </table>
+    </div>
 
 </div>
 </body>

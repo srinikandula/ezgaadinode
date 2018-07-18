@@ -51,7 +51,7 @@ var accountSchema = new mongoose.Schema({
     state: String,
     country: String,
     ZipCode: Number,
-    GST: Number,
+    GST: String,
     GSTRate: Number,
     userId: String,
     password: String,
@@ -105,7 +105,8 @@ var accountSchema = new mongoose.Schema({
     igst:{type:Number,default:0},
     cgst:{type:Number,default:0},
     sgst:{type:Number,default:0},
-    panNo:String
+    panNo:String,
+
 
 }, {
     timestamps: true
@@ -1071,9 +1072,66 @@ var lrSchema = new mongoose.Schema({
     consignor:{type:Boolean,default:false},
     consignee:{type:Boolean,default:false},
     transporter:{type:Boolean,default:false},
-    saidToContains:String
+    saidToContains:String,
+    actualWeight:{
+        qtl:Number,
+        kgs:String
+    },
+    senderWeight:{
+        qtl:Number,
+        kgs:String
+    },
+    weightCharged:{
+        qtl:Number,
+        kgs:String
+    },
+    schOfDamageCharge:{
+        fromDays:Number,
+        perDay:Number
+    }
 
 
+}, {timestamps: true});
+/*author : Naresh
+**Auto increment LR id sequence*/
+var lrCounterSchema = mongoose.Schema({
+    seq: {type: Number, default: 10000}
+});
+
+var lrCounetrColl = mongoose.model('lrCounter', lrCounterSchema);
+lrSchema.pre('save', function (next) {
+    var doc = this;
+    lrCounetrColl.count({}, function (error, count) {
+        if (error) {
+            return next(error);
+
+        } else if (count > 0) {
+            lrCounetrColl.findOneAndUpdate({}, {$inc: {seq: 1}}, function (error, counter) {
+                if (error)
+                    return next(error);
+                doc.lrNo = "lr" + counter.seq;
+                next();
+            });
+        } else {
+            var lrCount = new lrCounetrColl({seq: 10000});
+            lrCount.save(function (error, counter) {
+                if (error)
+                    return next(error);
+                doc.lrNo = "lr" + counter.seq;
+                next();
+            })
+        }
+
+    });
+
+});
+
+var gpsFencesSchema=new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    trucksId: {type: ObjectId, ref: 'trucks'},
+    depot:[Number],
+    startTime:{type:Date},
+    endTime:{type:Date}
 }, {timestamps: true});
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -1135,5 +1193,6 @@ module.exports = {
     ReceiptsColl: mongoose.model('receipts', receiptSchema, 'receipts'),
     ShareLinksColl: mongoose.model('shareLinks', shareLinksSchema, 'shareLinks'),
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
+    GpsFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesSchema, 'gpsFencesReports'),
 
 };

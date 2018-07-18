@@ -2407,7 +2407,7 @@ Trips.prototype.getTripInvoiceDetails = function (req, callback) {
                 retObj.messages.push("Internal server error,"+JSON.stringify(err.message));
                 callback(retObj);
             } else {
-                PdfGenerator.createPdf('tripInvoice.html',result,function (resp) {
+                PdfGenerator.createPdf('tripInvoice.html','portrait',result,function (resp) {
                     callback(resp);
                 });
                /* retObj.status=true;

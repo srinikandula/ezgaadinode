@@ -2,7 +2,9 @@ var mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 var _ = require('underscore');
+var async=require('async');
 var LRsColl = require('./../models/schemas').LRsColl;
+var AccountsColl = require('./../models/schemas').AccountsColl;
 var pdfGenerator=require('./../apis/pdfGenerator');
 
 var Lrs = function () {
@@ -167,21 +169,51 @@ Lrs.prototype.generatePDF=function (req,callback) {
     if(retObj.messages.length>0){
         callback(retObj);
     }else{
-        LRsColl.findOne({_id:params.id},function (err,doc) {
+        async.parallel({
+            lrDetails:function (lrCallback) {
+                LRsColl.findOne({_id:params.id}).lean().exec(function (err,doc) {
+                    if(err){
+                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                        lrCallback(retObj,'');
+                    }else if(doc){
+                        lrCallback(false,doc);
+                    }else{
+                        retObj.messages.push("Please try again");
+                        lrCallback(retObj,'');
+                    }
+                })
+            },
+            accDetails:function (accDetailsCallback) {
+                AccountsColl.findOne({_id:req.jwt.accountId},function (err,doc) {
+                    if(err){
+                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                        accDetailsCallback(retObj,'');
+                    }else if(doc){
+                        accDetailsCallback(false,doc);
+                    }else{
+                        retObj.messages.push("Please try again");
+                        accDetailsCallback(retObj,'');
+                    }
+                })
+            }
+        },function (err,result) {
             if(err){
-                retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-                callback(retObj);
-            }else if(doc){
-                pdfGenerator.createPdf('lr.html','doc',function (resp) {
+                callback(err);
+            }else{
+                console.log("result.accDetails",result.accDetails);
+                result.lrDetails.dateStr=result.lrDetails.date.toLocaleDateString();
+                console.log("result.lrDetails",result.lrDetails);
+                pdfGenerator.createPdf('lr.html','landscape',result,function (resp) {
                     callback(resp);
                 })
-            }else{
-                retObj.messages.push("Please try again");
-                callback(retObj);
             }
-        })
+        });
+
     }
 
 };
+
+
+
 module.exports = new Lrs();
 

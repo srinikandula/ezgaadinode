@@ -3326,3 +3326,8 @@ border-bottom: none;
 textarea.form-control {
     height: auto !important;
 }
+.form-heading{
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: -2px;
+}
