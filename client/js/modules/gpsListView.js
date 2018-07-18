@@ -42,7 +42,8 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
     $scope.trackView = function(truckNo){
         $state.go('trackView',{truckNo:truckNo});
     };
-    $scope.shareTracking=function (truckId) {
+    $scope.shareTracking=function (truckId, registrationNumber) {
+        console.log('registrationNumber ' + registrationNumber);
         gpsListService.generateShareTrackingLink({truckId:truckId},function (success) {
             if(success.data.status){
                 var modalInstance = $uibModal.open({
@@ -53,7 +54,10 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
                     keyboard: false,
                     resolve: {
                         linkData: function () {
-                            return { url: success.data.data };
+                            return {
+                                url: success.data.data,
+                                registrationNumber: registrationNumber
+                            };
                         }
                     }
                 });
@@ -70,6 +74,8 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
 }]);
 app.controller('shareCtrl', ['$scope', '$state', '$uibModalInstance','linkData', function ($scope,  $state, $uibModalInstance,linkData) {
     $scope.link=linkData.url;
+    $scope.registrationNumber=linkData.registrationNumber;
+
     $scope.cancel = function () {
         $uibModalInstance.close();
     };

@@ -51,7 +51,7 @@ function resolveAddress(position, callback) {
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if (errlocation) {
-                    console.error("error resolving address...err", errlocation);
+                    console.error("error resolving address...err", errlocation, position);
                 }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
@@ -74,7 +74,6 @@ function resolveAddress(position, callback) {
             });
         } else {/*assign new key for day*/
             SecretKeyCounterColl.find({date: today}, {'secret': 1}, function (error, keys) {
-
                 SecretKeysColl.findOne({"secret": {$nin: [keys]}}, function (err, secDoc) {
                     if (err) {
                         retObj.messages.push("address finding error," + JSON.stringify(err.message));
@@ -211,10 +210,10 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
     };
     var condition = {}, projections = {};
     if (jwt.type === "account") {
-        condition = {accountId: jwt.accountId, deviceId: {$ne: null}, "attrs.latestLocation": {$exists: true}};
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null}, "attrs.latestLocation": {$exists: true}, "attrs.latestLocation.location": {$exists: true}};
         projections = {"attrs.latestLocation": 1, registrationNo: 1, truckType: 1, lookingForLoad: 1, updatedAt: 1};
     } else {
-        condition = {accountId: jwt.id, deviceId: {$ne: null}};
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null}};
         projections = {"attrs.latestLocation": 1, registrationNo: 1, truckType: 1, lookingForLoad: 1, updatedAt: 1};
     }
     TrucksColl.find(condition, projections).exec(function (err, trucksData) {
@@ -668,7 +667,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
     };
     var condition = {};
     if (jwt.type === "account") {
-        condition = {accountId: jwt.accountId, deviceId: {$ne: null}, "attrs.latestLocation": {$exists: true}};
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null}, "attrs.latestLocation": {$exists: true}, "attrs.latestLocation.location": {$exists: true}};
     } else {
         condition = {accountId: jwt.id, deviceId: {$ne: null}};
     }
@@ -680,21 +679,26 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
         } else {
             async.each(trucksData, function (truck, asyncCallback) {
                 if (truck.driverId) {
-                    DriversColl.findOne({_id: truck.driverId}, function (err, driver) {
+                    //SK: refactor this to use drivers cache
+                   /* DriversColl.findOne({_id: truck.driverId}, function (err, driver) {
                         if (err) {
                             console.log(err);
                         } else {
                             truck.driverId = driver.fullName;
                         }
-                    });
+                    }); */
                 }
                 if (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
                     resolveAddress({
-                        latitude: truck.attrs.latestLocation.latitude,
-                        longitude: truck.attrs.latestLocation.longitude
+                        latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
+                        longitude: truck.attrs.latestLocation.longitude || truck.attrs.latestLocation.location.coordinates[0]
                     }, function (addressResp) {
                         if (addressResp.status) {
                             truck.attrs.latestLocation.address = addressResp.address;
+                            console.log('updating truck ' + truck._id);
+                            TrucksColl.findOneAndUpdate({_id:truck._id}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
+                                console.log('truck updated ' + updated);
+                            });
                             asyncCallback(false);
                         } else {
                             asyncCallback(addressResp);

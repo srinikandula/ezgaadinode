@@ -284,42 +284,47 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                                 icon: icon,
                             });
                         }else{
-                            var icon = {
-                                url: '', // url
-                                scaledSize: new google.maps.Size(25, 25)
-                            };
-                            var course = parseFloat($scope.locations[i].course);
-                            if (course >= 25 && course < 70) {
-                                icon.url = '/images/h1.png'
-                            } else if (course >= 70 && course < 110) {
-                                icon.url = '/images/h2.png'
-                            } else if (course >= 110 && course < 160) {
-                                icon.url = '/images/h3.png'
-                            } else if (course >= 160 && course < 200) {
-                                icon.url = '/images/h4.png'
-                            } else if (course >= 200 && course < 240) {
-                                icon.url = '/images/h5.png'
-                            } else if (course >= 240 && course < 290) {
-                                icon.url = '/images/h6.png'
-                            } else if (course >= 290 && course < 330) {
-                                icon.url = '/images/h7.png'
-                            } else if (course >= 330 && course < 390) {
-                                icon.url = '/images/h0.png'
-                            } else if (course >= 390 && course < 420) {
-                                icon.url = '/images/h1.png'
-                            } else if (course >= 420 && course < 450) {
-                                icon.url = '/images/h2.png'
-                            } else if (course >= 450 && course < 500) {
-                                icon.url = '/images/h3.png'
+                            try{
+
+                                var icon = {
+                                    url: '', // url
+                                    scaledSize: new google.maps.Size(25, 25)
+                                };
+                                var course = parseFloat($scope.locations[i].course);
+                                if (course >= 25 && course < 70) {
+                                    icon.url = '/images/h1.png'
+                                } else if (course >= 70 && course < 110) {
+                                    icon.url = '/images/h2.png'
+                                } else if (course >= 110 && course < 160) {
+                                    icon.url = '/images/h3.png'
+                                } else if (course >= 160 && course < 200) {
+                                    icon.url = '/images/h4.png'
+                                } else if (course >= 200 && course < 240) {
+                                    icon.url = '/images/h5.png'
+                                } else if (course >= 240 && course < 290) {
+                                    icon.url = '/images/h6.png'
+                                } else if (course >= 290 && course < 330) {
+                                    icon.url = '/images/h7.png'
+                                } else if (course >= 330 && course < 390) {
+                                    icon.url = '/images/h0.png'
+                                } else if (course >= 390 && course < 420) {
+                                    icon.url = '/images/h1.png'
+                                } else if (course >= 420 && course < 450) {
+                                    icon.url = '/images/h2.png'
+                                } else if (course >= 450 && course < 500) {
+                                    icon.url = '/images/h3.png'
+                                }
+                                marker = new google.maps.Marker({
+                                    position: latlang,
+                                    icon: icon,
+                                    map: map
+                                });
+                            }catch (markerError) {
+                                console.log('error creating marker');
+                                continue;
                             }
-                            marker = new google.maps.Marker({
-                                position: latlang,
-                                icon: icon,
-                                map: map
-                            });
                         }
                     }
-
                     click(marker, i, functionContent, compiledContent, map);
                 }
             }
@@ -418,7 +423,7 @@ app.controller('liveTrackingController',['$scope','$stateParams','truckTrackingS
             if(response.data.status){
                 var latestLocation = response.data.data.latestLocation;
                 var map = new google.maps.Map(document.getElementById('map'), {
-                    zoom: 7,
+                    zoom: 12,
                     center: new google.maps.LatLng(latestLocation.location.coordinates[1], latestLocation.location.coordinates[0]),
                     mapTypeId: google.maps.MapTypeId.ROADMAP
                 });
