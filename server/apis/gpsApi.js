@@ -1025,7 +1025,6 @@ Gps.prototype.generateShareTrackingLink = function (req, callback) {
                 retObj.status = true;
                 retObj.data = config.baseUrl + '/live-tracking/' + doc._id;
                 callback(retObj);
-
             }
         })
     }

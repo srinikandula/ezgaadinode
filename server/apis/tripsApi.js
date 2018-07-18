@@ -842,38 +842,38 @@ Trips.prototype.getAllAccountTrips = function (jwt, params, req, callback) {
         })
     } else {
         Utils.getTruckIdsByTruckTypeAndRegNo(jwt.accountId,params.truckType,params.truckNumber,function (resp) {
-           if(resp.status){
-               condition.registrationNo={$in:resp.data};
+            if(resp.status){
+                condition.registrationNo={$in:resp.data};
 
-               getTrips(condition, jwt, params, function (response) {
-                   if (response.status) {
-                       analyticsService.create(req, serviceActions.account_trips, {
-                           body: JSON.stringify(req.query),
-                           accountId: jwt.id,
-                           success: true
-                       }, function (response) {
-                       });
-                   } else {
-                       analyticsService.create(req, serviceActions.account_trips_err, {
-                           body: JSON.stringify(req.query),
-                           accountId: jwt.id,
-                           success: false,
-                           messages: response.messages
-                       }, function (response) {
-                       });
-                   }
-                   callback(response);
-               })
+                getTrips(condition, jwt, params, function (response) {
+                    if (response.status) {
+                        analyticsService.create(req, serviceActions.account_trips, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: true
+                        }, function (response) {
+                        });
+                    } else {
+                        analyticsService.create(req, serviceActions.account_trips_err, {
+                            body: JSON.stringify(req.query),
+                            accountId: jwt.id,
+                            success: false,
+                            messages: response.messages
+                        }, function (response) {
+                        });
+                    }
+                    callback(response);
+                })
 
-           }else{
-               analyticsService.create(req, serviceActions.account_trips_err, {
-                   body: JSON.stringify(req.query),
-                   accountId: jwt.id,
-                   success: false,
-                   messages: resp.messages
-               }, function (response) {
-               });
-           }
+            }else{
+                analyticsService.create(req, serviceActions.account_trips_err, {
+                    body: JSON.stringify(req.query),
+                    accountId: jwt.id,
+                    success: false,
+                    messages: resp.messages
+                }, function (response) {
+                });
+            }
         });
     }
 };
@@ -2410,10 +2410,10 @@ Trips.prototype.getTripInvoiceDetails = function (req, callback) {
                 PdfGenerator.createPdf('tripInvoice.html',result,function (resp) {
                     callback(resp);
                 });
-               /* retObj.status=true;
-                retObj.messages.push("Success");
-                retObj.data=result;
-                callback(retObj);*/
+                /* retObj.status=true;
+                 retObj.messages.push("Success");
+                 retObj.data=result;
+                 callback(retObj);*/
             }
         });
     }
