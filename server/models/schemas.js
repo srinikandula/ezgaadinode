@@ -149,6 +149,7 @@ var groupSchema = new mongoose.Schema({
 
 var inventorySchema = new mongoose.Schema({
     id: String,
+    vehicle: String,
     name: String,
     partyId: {type: ObjectId, ref: 'parties'},
     totalAmount: {type: Number, default: 0},
@@ -161,6 +162,21 @@ var inventorySchema = new mongoose.Schema({
     }],
     accountId: {type: ObjectId, ref: 'accounts'}
 }, {
+    timestamps: true
+});
+
+var geoFenceSchema = new mongoose.Schema({
+    name : String,
+    address:String,
+    geoLocation: {
+        type: {
+            type: String,
+            default: "Point"
+        },
+        coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
+    },
+    accountId: {type: ObjectId, ref: 'accounts'}
+},{
     timestamps: true
 });
 
@@ -1082,6 +1098,7 @@ module.exports = {
     InventoryCollection: mongoose.model('inventories', inventorySchema, 'inventories'),
     JobsCollection: mongoose.model('jobs', jobSchema, 'jobs'),
     RouteConfigColl: mongoose.model('configs', routeConfigSchema, 'configs'),
+    GeoFenceColl: mongoose.model('geoFences', geoFenceSchema, 'geoFences'),
     AccountsColl: mongoose.model('accounts', accountSchema, 'accounts'),
     OperatingRoutesColl: mongoose.model('operatingRoutes', operatingRoutesSchema, 'operatingRoutes'),
     TrucksColl: mongoose.model('trucks', truckSchema, 'trucks'),

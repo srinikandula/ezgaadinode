@@ -1,4 +1,4 @@
-
+var InventoryCollection = require('./../models/schemas').InventoryCollection;
 var Utils = require('../apis/utils');
 var _ = require('underscore');
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
@@ -17,6 +17,7 @@ function save(job,reminder,callback){
         status:false,
         messages:[]
     };
+    console.log("save job...",job);
     var jobDoc = new JobsCollection(job);
     jobDoc.save(function(err,result){
         if(err){
@@ -25,18 +26,26 @@ function save(job,reminder,callback){
             retObj.messages.push("error in saving....."+JSON.stringify(err));
             callback(retObj);
         }else{
-            reminder.refId = result._id;
-            var reminderDoc = new RemindersCollection(reminder);
-            reminderDoc.save(function(err,result){
+            InventoryCollection.findOneAndUpdate({accountId:result.accountId,_id:result.inventory},{$set:{vehicle:job.vehicle.registrationNo}},function(err,inventoryResult){
                 if(err){
                     retObj.status = false;
                     retObj.messages.push("error in saving....."+JSON.stringify(err));
                     callback(retObj);
                 }else{
-                    retObj.status = true;
-                    retObj.messages.push("saved successfully..");
-                    retObj.data = result;
-                    callback(retObj);
+                    reminder.refId = result._id;
+                    var reminderDoc = new RemindersCollection(reminder);
+                    reminderDoc.save(function(err,reminderResult){
+                        if(err){
+                            retObj.status = false;
+                            retObj.messages.push("error in saving....."+JSON.stringify(err));
+                            callback(retObj);
+                        }else{
+                            retObj.status = true;
+                            retObj.messages.push("saved successfully..");
+                            retObj.data = result;
+                            callback(retObj);
+                        }
+                    });
                 }
             });
         }
@@ -108,15 +117,23 @@ function updateJob(info,reminder,req,callback){
             retObj.messages.push("error while getting data"+JSON.stringify(err));
             callback(retObj);
         } else{
-            RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
+            InventoryCollection.findOneAndUpdate({accountId:updateResult.accountId,_id:updateResult.inventory},{$set:{vehicle:info.vehicle.registrationNo}},function(err,inventoryResult){
                 if(err){
-                    retObj.status=false;
-                    retObj.messages.push("error while getting data"+JSON.stringify(err));
+                    retObj.status = false;
+                    retObj.messages.push("error in saving....."+JSON.stringify(err));
                     callback(retObj);
                 }else{
-                    retObj.status=true;
-                    retObj.messages.push("Updated successfully");
-                    callback(retObj);
+                    RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
+                     if(err){
+                         retObj.status=false;
+                         retObj.messages.push("error while getting data"+JSON.stringify(err));
+                         callback(retObj);
+                     }else{
+                        retObj.status=true;
+                        retObj.messages.push("Updated successfully");
+                        callback(retObj);
+                     }
+                 });
                 }
             });
         }

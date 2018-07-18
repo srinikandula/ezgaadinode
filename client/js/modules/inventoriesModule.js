@@ -110,55 +110,55 @@ app.controller('AddEditInventoryCtrl', ['$scope', 'InventoriesService', '$state'
             });
         }
     };
-        $scope.viewAttachment = function (path) {
-            TripServices.viewTripDocument({filePath: path}, function (success) {
-                if (success.data.status) {
-                    var modalInstance = $uibModal.open({
-                        templateUrl: 'viewS3Image.html',
-                        controller: 'ViewS3ImageCtrl',
-                        size: 'sm',
-                        backdrop: 'static',
-                        keyboard: false,
-                        resolve: {
-                            path: function () {
-                                return success.data.data
-                            }
+    $scope.viewAttachment = function (path) {
+        TripServices.viewTripDocument({filePath: path}, function (success) {
+            if (success.data.status) {
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'viewS3Image.html',
+                    controller: 'ViewS3ImageCtrl',
+                    size: 'sm',
+                    backdrop: 'static',
+                    keyboard: false,
+                    resolve: {
+                        path: function () {
+                            return success.data.data
                         }
-                    });
-                    modalInstance.result.then(function (path) {
-                        if (path) {
-                            path = path;
-                        }
-                    }, function () {
-                    });
-                } else {
-                    success.data.messages.forEach(function (message) {
-                        Notification.error(message);
-                    });
-                }
-            }, function (err) {
-            })
-        };
-        $scope.cancel = function () {
-            $state.go('inventories');
-        };
-        $scope.deleteImage = function (key, index) {
-            InventoriesService.deleteImage({inventoryId: $scope.inventory._id, key: key}, function (successCallback) {
-                if (successCallback.data.status) {
-                    $scope.inventory.attachments.splice(index, 1);
-                    successCallback.data.messages.forEach(function (message) {
-                        Notification.success({message: message});
-                    });
-                } else {
-                    successCallback.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
-                    });
-                }
-            }, function (err) {
-                Notification.error({message: err});
-            });
-        }
+                    }
+                });
+                modalInstance.result.then(function (path) {
+                    if (path) {
+                        path = path;
+                    }
+                }, function () {
+                });
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (err) {
+        })
+    };
+    $scope.cancel = function () {
+        $state.go('inventories');
+    };
+    $scope.deleteImage = function (key, index) {
+        InventoriesService.deleteImage({inventoryId: $scope.inventory._id, key: key}, function (successCallback) {
+            if (successCallback.data.status) {
+                $scope.inventory.attachments.splice(index, 1);
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.success({message: message});
+                });
+            } else {
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (err) {
+            Notification.error({message: err});
+        });
     }
+}
 ]);
 
 app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', 'Notification', function ($scope, InventoriesService, $state, Notification) {

@@ -2,6 +2,7 @@ var InventoryCollection = require('./../models/schemas').InventoryCollection;
 var Utils = require('../apis/utils');
 var _ = require('underscore');
 
+
 var Inventories = function () {
 };
 
@@ -78,7 +79,7 @@ Inventories.prototype.getInventories = function(jwt,callback){
         messages:[]
     };
     var query = {accountId:jwt.accountId};
-    InventoryCollection.find(query).populate({path:"partyId",select:'name'}).exec(function(err,result){
+    InventoryCollection.find(query).populate({path:"partyId",select:'name'}).lean().exec(function(err,inventories){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -86,7 +87,7 @@ Inventories.prototype.getInventories = function(jwt,callback){
         } else{
             retObj.status=true;
             retObj.messages.push("records fetched successfully");
-            retObj.data = result;
+            retObj.data = inventories;
             callback(retObj);
         }
     });

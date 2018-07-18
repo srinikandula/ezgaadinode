@@ -680,13 +680,13 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
             async.each(trucksData, function (truck, asyncCallback) {
                 if (truck.driverId) {
                     //SK: refactor this to use drivers cache
-                   /* DriversColl.findOne({_id: truck.driverId}, function (err, driver) {
-                        if (err) {
-                            console.log(err);
-                        } else {
-                            truck.driverId = driver.fullName;
-                        }
-                    }); */
+                    /* DriversColl.findOne({_id: truck.driverId}, function (err, driver) {
+                         if (err) {
+                             console.log(err);
+                         } else {
+                             truck.driverId = driver.fullName;
+                         }
+                     }); */
                 }
                 if (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
                     resolveAddress({
@@ -1025,7 +1025,6 @@ Gps.prototype.generateShareTrackingLink = function (req, callback) {
                 retObj.status = true;
                 retObj.data = config.baseUrl + '/live-tracking/' + doc._id;
                 callback(retObj);
-
             }
         })
     }
@@ -1048,24 +1047,25 @@ Gps.prototype.getTruckLatestLocation = function (req, callback) {
             }else if(doc){
                 var d=new Date();
                 var d2=new Date(doc.expairyAt);
-                 if(d<d2){
-                     TrucksColl.findOne({_id:doc.truckId},function (err,truck) {
-                         if(err){
-                             retObj.messages.push("Internal server error,"+err.message);
-                             callback(retObj);
-                         }else if(truck){
-                                retObj.status=true;
-                                retObj.data=truck.attrs;
-                                callback(retObj);
-                         }else{
-                             retObj.messages.push("Invalid truck tracking request");
-                             callback(retObj);
-                         }
-                     })
-                 }else{
-                     retObj.messages.push("Tracking link is expired");
-                     callback(retObj);
-                 }
+                if(d<d2){
+                    TrucksColl.findOne({_id:doc.truckId},function (err,truck) {
+                        if(err){
+                            retObj.messages.push("Internal server error,"+err.message);
+                            callback(retObj);
+                        }else if(truck){
+                            retObj.status=true;
+                            retObj.data=truck.attrs;
+                            retObj.registrationNo = truck.registrationNo;
+                            callback(retObj);
+                        }else{
+                            retObj.messages.push("Invalid truck tracking request");
+                            callback(retObj);
+                        }
+                    })
+                }else{
+                    retObj.messages.push("Tracking link is expired");
+                    callback(retObj);
+                }
             }else{
                 retObj.messages.push("Invalid tracking request");
                 callback(retObj);

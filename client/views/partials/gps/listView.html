@@ -7,10 +7,16 @@
                     <li class="col-sm-4"><h2>All Vehicles Location</h2></li>
 
                     <li class="col-sm-4">
-                        <div class="search-box1">
-                            <input type="text" class="form-control textfiled1" placeholder="search">
-                            <input type="button" class="sea-btn">
-                        </div>
+                        <form>
+                            <div class="input-group stylish-input-group">
+                                <input type="text" ng-model="truckName" class="form-control" placeholder="Search by vehicle number">
+                                <span class="input-group-addon">
+                        <button type="submit" ng-click="getAllVehiclesLocation(truckName)">
+                           <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                            </div>
+                        </form>
                         <div class="clearfix"></div>
                     </li>
 
