@@ -1,0 +1,31 @@
+<div class="main-right col-xs-12" ng-controller="GeoFencesReportsListController">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Geo Fences Reports</h3></div>
+
+    </div>
+
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="lrParams">
+        <tr ng-repeat="gfr in geoFencesList" style="text-align: center;">
+
+            <td data-title="'Truck No'" sortable="'registrationNo'" class="clickable-item">{{
+                gfr.registrationNo}}
+            </td>
+            <td data-title="'Geo Fence Name'" sortable="'depot'" class="clickable-item">{{
+                gfr.depot }}
+            </td>
+            <td data-title="'Start time'" sortable="'startTime'" class="clickable-item">{{
+                gfr.startTime | date : 'medium' || '--'}}
+            </td>
+            <td data-title="'End Time'" sortable="'endTime'" class="clickable-item">{{
+                gfr.endTime |  date : 'medium' || '--'}}
+            </td>
+
+
+
+        </tr>
+        <tr ng-if="!geoFencesList || geoFencesList.length === 0">
+            <td colspan="8"> Geo Fences Records not found.</td>
+        </tr>
+    </table>
+
+</div>

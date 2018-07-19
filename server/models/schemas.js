@@ -1142,10 +1142,11 @@ lrSchema.pre('save', function (next) {
 
 });
 
-var gpsFencesSchema=new mongoose.Schema({
+var gpsFencesReportSchema=new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     truckId: {type: ObjectId, ref: 'trucks'},
-    depot:[Number],
+    registrationNo:String,
+    depot:String,
     startTime:{type:Date},
     endTime:{type:Date}
 }, {timestamps: true});
@@ -1210,6 +1211,6 @@ module.exports = {
     ReceiptsColl: mongoose.model('receipts', receiptSchema, 'receipts'),
     ShareLinksColl: mongoose.model('shareLinks', shareLinksSchema, 'shareLinks'),
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
-    GpsFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesSchema, 'gpsFencesReports'),
+    GpsFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
 
 };

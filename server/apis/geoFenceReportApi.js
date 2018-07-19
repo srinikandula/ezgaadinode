@@ -5,6 +5,8 @@ var AccountsColl = require('./../models/schemas').AccountsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var GpsFencesReportsColl = require('./../models/schemas').GpsFencesReportsColl;
 
+var geoFencesReports = function () {
+};
 
 /**
  * Finding GeoFence locations for devices in an account
@@ -18,18 +20,18 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, coordinates,
         console.log("deviceId=====>", truck.deviceId);
         devicePostions.find({
             deviceId: truck.deviceId,
-              deviceTime: {$gte: startTime, $lte: endTime},
-             location: {
-                 $near: {
-                     $geometry: {
-                         type: "Point",
-                         coordinates: coordinates
-                     },
-                     $centerSphere: 100000,
-                     spherical: true
+            deviceTime: {$gte: startTime, $lte: endTime},
+            location: {
+                $near: {
+                    $geometry: {
+                        type: "Point",
+                        coordinates: coordinates
+                    },
+                    $centerSphere: 100000,
+                    spherical: true
 
-                 }
-             }
+                }
+            }
         }, function (err, locations) {
             if (err) {
                 console.log("error at device postions");
@@ -41,6 +43,7 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, coordinates,
                     var geoFenceObj = {
                         truckId: truck._id,
                         accountId: accountId,
+                        registrationNo: truck.registrationNo,
                         startTime: new Date(locations[0].deviceTime),
                         endTime: new Date(locations[locations.length - 1].deviceTime)
                     };
@@ -62,10 +65,10 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, coordinates,
         })
     }, function (err) {
         if (err) {
-            console.log('errr',err);
+            console.log('errr', err);
             callback(err);
         } else {
-            callback({status:true});
+            callback({status: true});
         }
     })
 
@@ -88,14 +91,15 @@ function findingRouteConfigEnabledAccounts() {
                 /*finding device ids from each account*/
                 TrucksColl.find({accountId: account._id, deviceId: {$exists: true}}, {
                     deviceId: 1,
-                    _id: 1
+                    _id: 1,
+                    registrationNo: 1
                 }).then(trucks => {
                     console.log("trucks", trucks);
                     if (trucks.length > 0) {
-                        var coordinates = [78.4539111111111,17.4040277777778];
+                        var coordinates = [78.4539111111111, 17.4040277777778];
 
                         /*finding matched GeoFenceLocations for each account*/
-                        findingGeoFenceLocationsFromEachAccount(trucks,account._id, coordinates, startTime, endTime, function (response) {
+                        findingGeoFenceLocationsFromEachAccount(trucks, account._id, coordinates, startTime, endTime, function (response) {
                             if (response.status) {
                                 accountCallback(false);
                             } else {
@@ -125,5 +129,53 @@ function findingRouteConfigEnabledAccounts() {
 
 }
 
+geoFencesReports.prototype.startGeoFencesReportsJob = function () {
+    findingRouteConfigEnabledAccounts();
 
-findingRouteConfigEnabledAccounts()//start Job
+};
+
+geoFencesReports.prototype.getGeoFenceReportsByAcc = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var params = req.query;
+    var skipNumber = (params.page - 1) * params.size;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    GpsFencesReportsColl.find({accountId: req.jwt.accountId}).sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .lean()
+        .exec(function (err, reports) {
+            if(err){
+                retObj.messages.push("internal server error,"+JSON.stringify(err.message));
+                callback(retObj);
+            }else{
+                retObj.status=true;
+                retObj.data=reports;
+                callback(retObj);
+            }
+        });
+};
+geoFencesReports.prototype.count=function (req,callback) {
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    GpsFencesReportsColl.count({accountId:req.jwt.accountId},function (err,count) {
+        if(err){
+            retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push("Success");
+            retObj.data=count;
+            callback(retObj);
+        }
+    })
+};
+module.exports = new geoFencesReports();
+
+
+//findingRouteConfigEnabledAccounts()//start Job
