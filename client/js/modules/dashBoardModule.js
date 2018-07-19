@@ -543,6 +543,7 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
             }
         };
         $scope.selectTruckId = function (truck) {
+            console.log("truck",truck);
             $scope.regNumber = truck._id;
         };
         $scope.selectPartyId = function (party) {
