@@ -55,7 +55,7 @@ app.controller('listController',['$scope','$state','GeoFenceService','Notificati
     };
 }]);
 
-app.controller('AddEditCtrl',['$scope','$state','$uibModal','GeoFenceService','Notification','$stateParams',function($scope,$state,$uibModal,GeoFenceService,Notification,$stateParams){
+app.controller('AddEditGeoLocationCtrl',['$scope','$state','$uibModal','GeoFenceService','Notification','$stateParams',function($scope,$state,$uibModal,GeoFenceService,Notification,$stateParams){
     $scope.geoFence = {};
     $scope.title = 'Add Geofence';
     if($stateParams.id){
@@ -83,6 +83,7 @@ app.controller('AddEditCtrl',['$scope','$state','$uibModal','GeoFenceService','N
             if(data) {
                 $scope.geoFence.address = data.address;
                 $scope.geoFence.geoLocation = data.geoLocation;
+                //window.location.reload();
             }
         });
     };
@@ -95,7 +96,7 @@ app.controller('AddEditCtrl',['$scope','$state','$uibModal','GeoFenceService','N
                     Notification.success({message: "Updated Successfully"});
                     $state.go('geoFence');
                 }else {
-                    success.data.messages.forEach(function (message) {
+                    successCallback.data.messages.forEach(function (message) {
                         Notification.error({message: message});
                     });
                 }
