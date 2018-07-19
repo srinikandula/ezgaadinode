@@ -18,20 +18,18 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, coordinates,
         console.log("deviceId=====>", truck.deviceId);
         devicePostions.find({
             deviceId: truck.deviceId,
-            deviceTime: {$gte: startTime, $lte: endTime},
+              deviceTime: {$gte: startTime, $lte: endTime},
+             location: {
+                 $near: {
+                     $geometry: {
+                         type: "Point",
+                         coordinates: coordinates
+                     },
+                     $centerSphere: 100000,
+                     spherical: true
 
-            location: {
-                $near: {
-                    $geometry: {
-                        type: "Point",
-                        coordinates: coordinates
-                    },
-                    $centerSphere: 150000,
-                    spherical: true
-
-                }
-            }
-
+                 }
+             }
         }, function (err, locations) {
             if (err) {
                 console.log("error at device postions");
@@ -39,6 +37,7 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, coordinates,
                 deviceCallback(retObj);
             } else {
                 if (locations.length > 0) {
+                    console.log("laction saved");
                     var geoFenceObj = {
                         truckId: truck._id,
                         accountId: accountId,
@@ -51,23 +50,22 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, coordinates,
                             console.log("err", err);
                         }
                     });
-                    retObj.status = true;
-                    retObj.messages.push("success");
-                    deviceCallback(retObj);
+
+                    deviceCallback(false);
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push("success");
-                    deviceCallback(retObj);
+                    console.log("locationsss===>");
+
+                    deviceCallback(false);
                 }
 
             }
         })
     }, function (err) {
-        if (!err.status) {
+        if (err) {
+            console.log('errr',err);
             callback(err);
         } else {
-
-            callback(err)
+            callback({status:true});
         }
     })
 
@@ -79,8 +77,8 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, coordinates,
 function findingRouteConfigEnabledAccounts() {
     AccountsColl.find({routeConfigEnabled: true}, {_id: 1}).then(accounts => {
         if (accounts.length > 0) {
-            var start = new Date(1527425432000.0);
-            var end = new Date(1527425432000.0);
+            var start = new Date(1531248695000.0);
+            var end = new Date(1531248695000.0);
             start.setMinutes(start.getMinutes() - 32);
             start.setMinutes(start.getMinutes() + 2);
             var startTime = new Date(start) - 0;
@@ -94,12 +92,12 @@ function findingRouteConfigEnabledAccounts() {
                 }).then(trucks => {
                     console.log("trucks", trucks);
                     if (trucks.length > 0) {
-                        var coordinates = [15.221716,80.02317];
+                        var coordinates = [78.4539111111111,17.4040277777778];
 
                         /*finding matched GeoFenceLocations for each account*/
                         findingGeoFenceLocationsFromEachAccount(trucks,account._id, coordinates, startTime, endTime, function (response) {
                             if (response.status) {
-                                accountCallback(null);
+                                accountCallback(false);
                             } else {
                                 accountCallback(response);
                             }

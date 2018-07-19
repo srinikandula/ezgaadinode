@@ -1144,7 +1144,7 @@ lrSchema.pre('save', function (next) {
 
 var gpsFencesSchema=new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    trucksId: {type: ObjectId, ref: 'trucks'},
+    truckId: {type: ObjectId, ref: 'trucks'},
     depot:[Number],
     startTime:{type:Date},
     endTime:{type:Date}
