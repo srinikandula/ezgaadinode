@@ -17,7 +17,7 @@ app.factory('GEoFencesReportsServices', ['$http', function ($http) {
     }
 }]);
 
-app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFencesReportsServices', 'Notification', 'NgTableParams', 'paginationService', function ($scope, $state, GEoFencesReportsServices, Notification, NgTableParams, paginationService) {
+app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFencesReportsServices', 'Notification', 'NgTableParams', 'paginationService', 'TrucksService', function ($scope, $state, GEoFencesReportsServices, Notification, NgTableParams, paginationService, TrucksService) {
 
     $scope.count = 0;
     $scope.getCount = function () {
@@ -33,26 +33,28 @@ app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFences
         });
     };
 
-
+    $scope.filters={};
     var loadTableData = function (tableParams) {
         var pageable = {
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            partyName: tableParams.partyName
+            fromDate: $scope.filters.fromDate,
+            toDate: $scope.filters.toDate,
+            regNumber: $scope.regNumber
         };
         $scope.loading = true;
         GEoFencesReportsServices.getGeoFenceReports(pageable, function (success) {
-            if(success.data.status){
+            if (success.data.status) {
                 $scope.geoFencesList = success.data.data;
                 tableParams.data = $scope.geoFencesList;
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error({message: message});
                 });
             }
 
-        },function (error) {
+        }, function (error) {
 
         });
     };
@@ -75,9 +77,24 @@ app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFences
     };
     $scope.getCount();
 
+    $scope.getAllTrucksForFilter = function () {
 
+        TrucksService.getAllTrucksForFilter(function (success) {
+            if (success.data.status) {
+                $scope.trucksList = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (error) {
 
-
+        })
+    };
+    $scope.getAllTrucksForFilter();
+    $scope.selectTruckId = function (truck) {
+        $scope.regNumber = truck._id;
+    };
 
 }]);
 

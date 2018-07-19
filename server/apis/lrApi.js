@@ -152,6 +152,7 @@ Lrs.prototype.totalCount=function (req,callback) {
       }else{
           retObj.status=true;
           retObj.messages.push("Success");
+          retObj.data=count;
           callback(retObj);
       }
   })
