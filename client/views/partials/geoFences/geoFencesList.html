@@ -16,15 +16,12 @@
     <div class="mt-10">
         <table class="table table-bordered table-striped table-condensed table-hover"
                ng-table="studentParams">
-           <!-- <tr ng-repeat="x in routeConfigs" style="text-align: center;">
+            <tr ng-repeat="x in geoFences" style="text-align: center;">
                 <td data-title="'Name'" sortable="'name'" class="clickable-item">
                     {{x.name}}
                 </td>
                 <td data-title="'Source'" sortable="'source'" class="clickable-item">
-                    {{x.sourceAddress}}
-                </td>
-                <td data-title="'Destination'" sortable="'destination'" class="clickable-item">
-                    {{x.destinationAddress}}
+                    {{x.address}}
                 </td>
 
                 <td data-title="'Action'" class="col-sm-2">
@@ -36,7 +33,7 @@
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
                 </td>
-            </tr>-->
+            </tr>
         </table>
     </div>
     <div class="clearfix"></div>

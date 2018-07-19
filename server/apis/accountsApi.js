@@ -733,7 +733,7 @@ Accounts.prototype.getAccountHomeLocation = function (jwt, req, callback) {
         status: false,
         messages: [],
     };
-    var query = {"_id": ObjectId(jwt.id)};
+    var query = {"_id": ObjectId(jwt.accountId)};
     AccountsColl.findOne(query, {'homeLocation': 1}, function (err, data) {
         if (err) {
             retObj.messages.push('Error in finding account home location');
