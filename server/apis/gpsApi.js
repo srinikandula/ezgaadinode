@@ -482,7 +482,6 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                 uniqueId: truckDetails.deviceId,
                 createdAt: {$gte: startDate, $lte: endDate}
             }).sort({deviceTime: 1}).lean().exec(function (err, positions) {
-                console.log(positions.length + "device positions-------------------->");
                 if (err) {
                     retObj.status = false;
                     callback(retObj);

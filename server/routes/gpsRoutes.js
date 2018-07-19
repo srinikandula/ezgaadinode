@@ -115,7 +115,7 @@ OpenRouter.get('/archiveDevicePositions',function (req,res) {
 
 var job = cronjob.schedule('* */10 * * * *', function() {      //runs every hour 1st and 30th Minute
     gps.moveDevicePositions(function (result) {
-        // console.log("moved positions"+ result.messages[0]);
+        console.log("moved positions"+ result.messages[0]);
     });
 });
 job.start();
