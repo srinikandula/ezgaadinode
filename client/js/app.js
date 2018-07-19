@@ -355,14 +355,15 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         }
     }).state({
         name: 'add_editGeoFence',
-        url: '/add_editGeoFence',
+        url: '/add_editGeoFence/:id',
         templateUrl: 'views/partials/geoFences/add_editgeoFence.html',
         data: {
             activeTab: 'GeoFences',
             subTab: 'ERP'
         },
         params: {
-            access: 'open'
+            access: 'open',
+            id:null
         }
     }).state({
         name: 'editParty',

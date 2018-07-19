@@ -352,10 +352,6 @@ function saveTrip(req, tripDetails, callback) {
                     callback(retObj);
                 }
             });
-<<<<<<< 1f3f95524bf543112b6c4ccee46de1a6987c15a2
-
-=======
->>>>>>> ModificationsInLiveTrackScreen
         }
     });
 }

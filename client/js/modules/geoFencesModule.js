@@ -13,32 +13,71 @@ app.factory('GeoFenceService',['$http', function ($http) {
                 method: "GET",
             }).then(successCallback, errorCallback)
         },
-
+        deleteGeoFence: function (id,successCallback, errorCallback) {
+            $http({
+                url: '/v1/geoFences/deleteGeoFence/'+id,
+                method: "DELETE",
+            }).then(successCallback, errorCallback)
+        },
+        getGeoFence: function (id,successCallback, errorCallback) {
+            $http({
+                url: '/v1/geoFences/getGeoFence/'+id,
+                method: "GET",
+            }).then(successCallback, errorCallback)
+        },
+        updateGeoFence: function (info,successCallback, errorCallback) {
+            $http({
+                url: '/v1/geoFences/updateGeoFence',
+                method: "PUT",
+                data:info
+            }).then(successCallback, errorCallback)
+        }
     }
 }]);
 
-app.controller('listController',['$scope','$state','GeoFenceService',function($scope,$state,GeoFenceService){
+app.controller('listController',['$scope','$state','GeoFenceService','Notification',function($scope,$state,GeoFenceService,Notification){
     GeoFenceService.getGeoFences(function(successCallback){
-
+        if(successCallback.data.status){
+            $scope.geoFences = successCallback.data.data;
+        }
     },function(errorCallback){
 
     });
-    $scope.goToEditPage = function(){
-        $state.go('add_editGeoFence');
+    $scope.goToEditPage = function(id){
+        $state.go('add_editGeoFence',{id:id});
+    };
+    $scope.delete = function(id){
+        GeoFenceService.deleteGeoFence(id,function(successCallback){
+            if(successCallback.data.status){
+                Notification.success({message: "Deleted Successfully"});
+            }
+        },function(errorCallback){});
     };
 }]);
 
-app.controller('AddEditCtrl',['$scope','$state','$uibModal','GeoFenceService',function($scope,$state,$uibModal,GeoFenceService){
+app.controller('AddEditCtrl',['$scope','$state','$uibModal','GeoFenceService','Notification','$stateParams',function($scope,$state,$uibModal,GeoFenceService,Notification,$stateParams){
     $scope.geoFence = {};
     $scope.title = 'Add Geofence';
-
+    if($stateParams.id){
+        $scope.title = 'Edit Geofence';
+        GeoFenceService.getGeoFence($stateParams.id,function(successCallback){
+            if(successCallback.data.status){
+                $scope.geoFence = successCallback.data.data;
+            }
+        },function(errorCallback){});
+    };
     $scope.selectLocation = function () {
         var modalInstance = $uibModal.open({
             templateUrl: 'geoLocation.html',
             controller: 'geoLocationCtrl',
             size: 'md',
             backdrop: 'static',
-            keyboard: false
+            keyboard: false,
+            resolve: {
+                data: function () {
+                   return {address:$scope.geoFence.address,geoLocation:$scope.geoFence.geoLocation}
+                }
+            }
         });
         modalInstance.result.then(function (data) {
             if(data) {
@@ -50,36 +89,61 @@ app.controller('AddEditCtrl',['$scope','$state','$uibModal','GeoFenceService',fu
 
     $scope.addOrUpdategeoFence = function(){
         var params = $scope.geoFence;
-        GeoFenceService.addGeoFence(params,function (successCallback) {
-            if(successCallback.data.status){
-                $state.go('geoFence');
-            }
-        },function (errorCallback) {
-
-        });
-
+        if($stateParams.id){
+            GeoFenceService.updateGeoFence(params,function (successCallback) {
+                if(successCallback.data.status){
+                    Notification.success({message: "Updated Successfully"});
+                    $state.go('geoFence');
+                }else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            },function (errorCallback) {});
+        }else{
+            GeoFenceService.addGeoFence(params,function (successCallback) {
+                if(successCallback.data.status){
+                    Notification.success({message: "Added Successfully"});
+                    $state.go('geoFence');
+                }else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            },function (errorCallback) {});
+        }
     };
-
     $scope.cancel = function(){
       $state.go('geoFence');
     };
 
 }]);
 
-app.controller('geoLocationCtrl',['$scope','$uibModalInstance','NgMap',function ($scope,$uibModalInstance,NgMap) {
+app.controller('geoLocationCtrl',['$scope','$uibModalInstance','NgMap','AccountServices','data',function ($scope,$uibModalInstance,NgMap,AccountServices,data) {
     $scope.position = {};
-    $scope.position.geoLocation = {lat:26.26, lang:81.23 };
+    $scope.marker = null;
+    $scope.position.geoLocation;
     $scope.position.address;
-
+   if((data.address && data.geoLocation)!= undefined){
+       $scope.position.address = data.address;
+       $scope.position.geoLocation = {lat:data.geoLocation.coordinates[0],lang:data.geoLocation.coordinates[1]};
+   }else{
+       AccountServices.getAccountHomeLocation(function(successCallback){
+           $scope.latlng = successCallback.data.data.homeLocation.latlng;
+           if($scope.latlng){
+               $scope.position.geoLocation = {lat:parseFloat($scope.latlng[0]),lang:parseFloat($scope.latlng[1])};
+           }
+       },function(errorCallback){});
+   }
     var infowindow = new google.maps.InfoWindow;
     var geocoder = new google.maps.Geocoder;
     NgMap.getMap().then(function(map) {
         map.setCenter({lat:$scope.position.geoLocation.lat,lng:$scope.position.geoLocation.lang});
-        var marker = new google.maps.Marker({position:new google.maps.LatLng($scope.position.geoLocation.lat,$scope.position.geoLocation.lang),
+        $scope.marker = new google.maps.Marker({position:new google.maps.LatLng($scope.position.geoLocation.lat,$scope.position.geoLocation.lang),
             draggable: true});
-        marker.setMap(map);
-        google.maps.event.addListener(marker, 'dragend', function (evt) {
-            $scope.geocodeLatLng([evt.latLng.lat(),evt.latLng.lng()],geocoder, map, infowindow,marker);
+        $scope.marker.setMap(map);
+        google.maps.event.addListener($scope.marker, 'dragend', function (evt) {
+            $scope.geocodeLatLng([evt.latLng.lat(),evt.latLng.lng()],geocoder, map, infowindow,$scope.marker);
         });
     });
     $scope.geocodeLatLng =  function (latlang,geocoder, map, infowindow,marker) {
@@ -103,4 +167,5 @@ app.controller('geoLocationCtrl',['$scope','$uibModalInstance','NgMap',function 
     $scope.cancel = function () {
         $uibModalInstance.close($scope.position);
     };
+
 }]);
