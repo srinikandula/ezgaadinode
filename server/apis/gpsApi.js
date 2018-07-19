@@ -262,12 +262,14 @@ Gps.prototype.moveDevicePositions = function (callback) {
     };
     var fulldate = new Date();
     fulldate.setDate(fulldate.getDate() - config.devicePositionsArchiveLimit); //1 day
+    console.log('checking for archivable documents before '+ fulldate);
     devicePostions.find({createdAt: {$lte: fulldate}}).limit(5000).exec(function (errdata, gpsdocuments) {
         if (errdata) {
             console.log(errdata);
             retObj.messages.push('Error getting data');
             callback(retObj);
         } else {
+            console.log('found documents '+ gpsdocuments.length);
             archivedDevicePositions.insertMany(gpsdocuments, function (errsaving, saved) {
                 if (errsaving) {
                     retObj.messages.push('Error saving data');
