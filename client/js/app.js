@@ -777,6 +777,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             access: 'auth',
             lrId: null
         }
+    }).state({
+        name: 'GeoFencesReports',
+        url: '/GeoFencesReports',
+        templateUrl: 'views/partials/geoFences/GeoFencesReports.html',
+        data: {
+            activeTab: 'GeoFencesReports',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
+        }
     });
     // agentReports
     $urlRouterProvider.otherwise('/login');

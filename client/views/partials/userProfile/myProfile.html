@@ -21,7 +21,15 @@
 
                     <div class="profile-right col-sm-10">
                         <div class="col-sm-6">
-
+                            <div class="form-group form-group-custom">
+                                <div class="styling-input-list">
+                                    <input type="text" name="address1"
+                                           ng-model="account.profile.companyName"
+                                           class="form-control custom-form-control"/>
+                                    <label class="focus-effect-for-input" aria-hidden="true">Company Name</label>
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
                             <div class="form-group form-group-custom">
                                 <div class="styling-input-list">
                                     <input type="text" name="address1"
@@ -92,15 +100,7 @@
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
-                            <div class="form-group form-group-custom">
-                                <div class="styling-input-list">
-                                    <input type="text" name="totalVehicles" id="totalVehicles" readonly
-                                           ng-model="account.accountTrucksCount"
-                                           class="form-control custom-form-control"/>
-                                    <label class="focus-effect-for-input" aria-hidden="true">Total Vehicles</label>
-                                    <div class="clearfix"></div>
-                                </div>
-                            </div>
+
                         </div>
 
                         <div class="col-sm-6">
@@ -166,7 +166,15 @@
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
-
+                            <div class="form-group form-group-custom">
+                                <div class="styling-input-list">
+                                    <input type="text" name="totalVehicles" id="totalVehicles" readonly
+                                           ng-model="account.accountTrucksCount"
+                                           class="form-control custom-form-control"/>
+                                    <label class="focus-effect-for-input" aria-hidden="true">Total Vehicles</label>
+                                    <div class="clearfix"></div>
+                                </div>
+                            </div>
 
                             <div class="clearfix"></div>
                         </div>
