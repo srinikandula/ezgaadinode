@@ -266,20 +266,16 @@ Gps.prototype.moveDevicePositions = function (callback) {
     devicePostions.find({createdAt: {$lte: fulldate}}).sort({createdAt: 1}).limit(5000)
         .exec(function(errdata, gpsdocuments) {
         if (errdata) {
-            console.log(errdata);
             retObj.messages.push('Error getting data');
             callback(retObj);
         } else {
-            console.log('found documents '+ gpsdocuments.length);
             var ids = _.pluck(gpsdocuments, "_id");
             archivedDevicePositions.insertMany(gpsdocuments, function (errsaving, saved) {
                 if (errsaving) {
                     retObj.messages.push('Error saving data ' + errsaving);
                     callback(retObj);
                 } else {
-
-                    console.log('deleting ids '+ids);
-                    devicePostions.remove({_id: {$in: ids}}).exec(function (errremoved, removed) {
+                     devicePostions.remove({_id: {$in: ids}}).exec(function (errremoved, removed) {
                         if (errremoved) {
                             retObj.messages.push('Error Removing data ');
                             callback(retObj);
