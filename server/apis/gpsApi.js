@@ -273,7 +273,9 @@ Gps.prototype.moveDevicePositions = function (callback) {
                     retObj.messages.push('Error saving data');
                     callback(retObj);
                 } else {
-                    devicePostions.remove({createdAt: {$lte: fulldate}}).limit(5000).exec(function (errremoved, removed) {
+                    var ids = _.pluck(gpsdocuments, "_id");
+                    console.log('deleting ids '+ids);
+                    devicePostions.remove({_id: {$in: ids}}).exec(function (errremoved, removed) {
                         if (errremoved) {
                             retObj.messages.push('Error Removing data');
                             callback(retObj);

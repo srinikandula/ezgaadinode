@@ -151,7 +151,7 @@ OpenRouter.get('/getTruckLatestLocation/:trackingId',function (req,res) {
 
 
 
-var identifyNotWorkingDevices = cronjob.schedule('* */30 * * * *', function() {
+var identifyNotWorkingDevices = cronjob.schedule('* */59 * * * *', function() {
     console.log('identifyNotWorkingDevices');
     gps.identifyNotWorkingDevices(function (result) {
         console.log("identifyNotWorkingDevices..",result);
