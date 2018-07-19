@@ -35,9 +35,7 @@ geoFences.prototype.updategeoFence = function(jwt,geoLocation,callback){
         messages:[],
         errors:[]
     };
-    geoLocation.geoLocation= {
-        "coordinates" : [ geoLocation.geoLocation.lat,geoLocation.geoLocation.lng]
-    };
+
     GeoFenceCollection.findOneAndUpdate({_id:geoLocation._id},{$set:geoLocation},function(err,result){
         if(err){
             retObj.status=false;
