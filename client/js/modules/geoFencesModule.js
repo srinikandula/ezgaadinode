@@ -125,28 +125,34 @@ app.controller('geoLocationCtrl',['$scope','$uibModalInstance','NgMap','AccountS
     $scope.marker = null;
     $scope.position.geoLocation;
     $scope.position.address;
-   if((data.address && data.geoLocation)!= undefined){
+    if((data.address && data.geoLocation)!= undefined){
        $scope.position.address = data.address;
        $scope.position.geoLocation = {lat:data.geoLocation.coordinates[0],lang:data.geoLocation.coordinates[1]};
-   }else{
+        initiateMap();
+    }else{
        AccountServices.getAccountHomeLocation(function(successCallback){
            $scope.latlng = successCallback.data.data.homeLocation.latlng;
            if($scope.latlng){
                $scope.position.geoLocation = {lat:parseFloat($scope.latlng[0]),lang:parseFloat($scope.latlng[1])};
+               initiateMap();
            }
-       },function(errorCallback){});
-   }
-    var infowindow = new google.maps.InfoWindow;
-    var geocoder = new google.maps.Geocoder;
-    NgMap.getMap().then(function(map) {
-        map.setCenter({lat:$scope.position.geoLocation.lat,lng:$scope.position.geoLocation.lang});
-        $scope.marker = new google.maps.Marker({position:new google.maps.LatLng($scope.position.geoLocation.lat,$scope.position.geoLocation.lang),
-            draggable: true});
-        $scope.marker.setMap(map);
-        google.maps.event.addListener($scope.marker, 'dragend', function (evt) {
-            $scope.geocodeLatLng([evt.latLng.lat(),evt.latLng.lng()],geocoder, map, infowindow,$scope.marker);
+       },function(errorCallback){
+           console.log("error loading account home location in geoLocationCtrl");
+       });
+    }
+    function initiateMap() {
+        var infowindow = new google.maps.InfoWindow;
+        var geocoder = new google.maps.Geocoder;
+        NgMap.getMap().then(function(map) {
+            map.setCenter({lat:$scope.position.geoLocation.lat,lng:$scope.position.geoLocation.lang});
+            $scope.marker = new google.maps.Marker({position:new google.maps.LatLng($scope.position.geoLocation.lat,$scope.position.geoLocation.lang),
+                draggable: true});
+            $scope.marker.setMap(map);
+            google.maps.event.addListener($scope.marker, 'dragend', function (evt) {
+                $scope.geocodeLatLng([evt.latLng.lat(),evt.latLng.lng()],geocoder, map, infowindow,$scope.marker);
+            });
         });
-    });
+    }
     $scope.geocodeLatLng =  function (latlang,geocoder, map, infowindow,marker) {
         var latlng = {lat: latlang[0], lng:latlang[1]};
         geocoder.geocode({'location': latlng}, function(results, status) {

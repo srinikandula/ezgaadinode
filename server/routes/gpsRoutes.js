@@ -113,12 +113,21 @@ OpenRouter.get('/archiveDevicePositions',function (req,res) {
     });
 });
 
-var job = cronjob.schedule('* */10 * * * *', function() {      //runs every hour 1st and 30th Minute
+var job = cronjob.schedule('* */15 * * * *', function() {      //runs every hour 1st and 30th Minute
     gps.moveDevicePositions(function (result) {
         console.log("moved positions"+ result.messages[0]);
     });
 });
 job.start();
+
+/*
+var identifyNotWorkingDevices = cronjob.schedule('* 30 * * * *', function() {
+    gps.identifyNotWorkingDevices(function (result) {
+        console.log("identifyNotWorkingDevices..",result);
+    });
+});
+identifyNotWorkingDevices.start();
+*/
 /*
 
 var task = cronjob.schedule('* *!/30 * * *', function() {
@@ -149,15 +158,6 @@ OpenRouter.get('/getTruckLatestLocation/:trackingId',function (req,res) {
     });
 });
 
-
-
-var identifyNotWorkingDevices = cronjob.schedule('* */59 * * * *', function() {
-    console.log('identifyNotWorkingDevices');
-    gps.identifyNotWorkingDevices(function (result) {
-        console.log("identifyNotWorkingDevices..",result);
-    });
-});
-identifyNotWorkingDevices.start();
 
 module.exports = {
     AuthRouter: AuthRouter,
