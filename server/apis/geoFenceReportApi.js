@@ -79,7 +79,7 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, geo, startTi
 /**
  * Finding route config enabled  accounts
  * */
-function findingRouteConfigEnabledAccounts() {
+function runGeoFencingReport() {
     AccountsColl.find({routeConfigEnabled: true}, {_id: 1}).then(accounts => {
         if (accounts.length > 0) {
             var start = new Date(1531248695000.0);
@@ -145,8 +145,7 @@ function findingRouteConfigEnabledAccounts() {
 }
 
 geoFencesReports.prototype.startGeoFencesReportsJob = function () {
-    findingRouteConfigEnabledAccounts();
-
+    runGeoFencingReport();
 };
 
 geoFencesReports.prototype.getGeoFenceReportsByAcc = function (req, callback) {

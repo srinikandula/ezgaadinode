@@ -18,6 +18,13 @@ AuthRouter.get('/count',function(req,res){
     });
 });
 
+//
+//var geoFencingReport = cronjob.schedule('0 */45 * * * *', function() {      //runs every 45 minutes
+//    API.startGeoFencesReportsJob(function (result) {
+//        console.log("Ran Geo fencing job");
+//    });
+//});
+//geoFencingReport.start();
 
 module.exports = {
     OpenRouter: OpenRouter,
