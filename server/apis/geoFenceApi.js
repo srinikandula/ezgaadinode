@@ -11,7 +11,10 @@ geoFences.prototype.addgeoFence = function(jwt,geoLocation,callback){
     };
     geoLocation.accountId = jwt.accountId;
     geoLocation.geoLocation= {
-        "coordinates" : [ geoLocation.geoLocation.lat,geoLocation.geoLocation.lng]
+        "coordinates" :[
+            17.4169860328715,
+            78.4581752114258
+        ]
     };
     var insertDoc = new GeoFenceCollection(geoLocation);
         insertDoc.save(function(err,result){
