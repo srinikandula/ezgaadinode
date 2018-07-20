@@ -203,4 +203,4 @@ module.exports = new geoFencesReports();
 
 
 //findingRouteConfigEnabledAccounts()//start Job
-runGeoFencingReport()
+//runGeoFencingReport()
