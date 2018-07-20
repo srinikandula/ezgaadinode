@@ -27,6 +27,8 @@ var Utils = require('./utils');
 var pageLimits = require('./../config/pagination');
 var emailService = require('./mailerApi');
 var SmsService = require('./smsApi');
+var gps = require('./../apis/gpsApi');
+
 
 var Trips = function () {
 };
@@ -74,42 +76,47 @@ function shareTripDetails(tripData, callback) {
             console.log("err==>",err);
         }else if(tripDetails && tripDetails.partyId){
             if (tripDetails.partyId.isEmail) {
-                var emailparams = {
-                    templateName: 'addTripDetails',
-                    subject: "Easygaadi Trip Details",
-                    to: tripDetails.partyId.email,
-                    data: {
-                        "date": new Date(tripDetails.date).toLocaleDateString(),
-                        "name": tripDetails.partyId.name,
-                        "vehicleNo": tripDetails.attrs.truckName,
-                        "driverName": tripDetails.driverId.fullName,
-                        "driverNumber": tripDetails.driverId.mobile,
-                        "source": tripDetails.source,
-                        "destination": tripDetails.destination,
-                        "Tonnage": tripDetails.tonnage,
-                        "Rate": tripDetails.rate,
-                        "Amount": tripDetails.freightAmount
-                    }//dataToEmail.tripsReport
-                };
-                emailService.sendEmail(emailparams, function (emailResponse) {
-                    if (emailResponse.status) {
-                        notificationParams.notificationType = 1;
-                        notificationParams.status = true;
-                        notificationParams.message = "success";
-                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                            notificationResponse.trips = tripDetails;
-                            callback(notificationResponse);
-                        })
-                    } else {
-                        notificationParams.notificationType = 1;
-                        notificationParams.status = false;
-                        notificationParams.message = "email failed";
-                        addTripDetailsToNotification(notificationParams, function (notificationResponse) {
-                            notificationResponse.trips = tripDetails;
-                            callback(notificationResponse);
-                        })
-                    }
-                })
+                gps.generateShareTrackingLink({body:{truckId:tripData._id}},function(shareLinkCallback){
+                    var emailparams = {
+                        templateName: 'addTripDetails',
+                        subject: "Easygaadi Trip Details",
+                        to: tripDetails.partyId.email,
+                        data: {
+                            "date": new Date(tripDetails.date).toLocaleDateString(),
+                            "name": tripDetails.partyId.name,
+                            "vehicleNo": tripDetails.attrs.truckName,
+                            "driverName": tripDetails.driverId.fullName,
+                            "driverNumber": tripDetails.driverId.mobile,
+                            "source": tripDetails.source,
+                            "destination": tripDetails.destination,
+                            "Tonnage": tripDetails.tonnage,
+                            "Rate": tripDetails.rate,
+                            "Amount": tripDetails.freightAmount
+                        }//dataToEmail.tripsReport
+                    };
+                  if(shareLinkCallback.status){
+                      emailparams.data.trackLink = shareLinkCallback.data;
+                  }
+                     emailService.sendEmail(emailparams, function (emailResponse) {
+                     if (emailResponse.status) {
+                         notificationParams.notificationType = 1;
+                         notificationParams.status = true;
+                         notificationParams.message = "success";
+                         addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                             notificationResponse.trips = tripDetails;
+                             callback(notificationResponse);
+                         })
+                     } else {
+                         notificationParams.notificationType = 1;
+                         notificationParams.status = false;
+                         notificationParams.message = "email failed";
+                         addTripDetailsToNotification(notificationParams, function (notificationResponse) {
+                             notificationResponse.trips = tripDetails;
+                             callback(notificationResponse);
+                         })
+                     }
+                 })
+                });
             }
 
             if (tripDetails.partyId.isSms) {

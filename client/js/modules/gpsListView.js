@@ -1,8 +1,8 @@
 app.factory('gpsListService',['$http','$cookies', function ($http, $cookies) {
     return {
-        getAllVehiclesLocation: function (truckName,success, error) {
+        getAllVehiclesLocation: function (success, error) {
             $http({
-                url: '/v1/gps/getAllVehiclesLocation/'+truckName,
+                url: '/v1/gps/getAllVehiclesLocation',
                 method: "GET"
             }).then(success, error)
         },
@@ -17,9 +17,9 @@ app.factory('gpsListService',['$http','$cookies', function ($http, $cookies) {
 }]);
 
 app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$stateParams','Notification','$uibModal', function ($scope, $state,gpsListService,$stateParams,Notification,$uibModal) {
-
-    $scope.getAllVehiclesLocation = function(truckName) {
-        gpsListService.getAllVehiclesLocation(truckName,function (success) {
+    $scope.trucksData = [];
+    function getAllVehiclesLocation() {
+        gpsListService.getAllVehiclesLocation(function (success) {
             if(success.data.status){
                 $scope.trucksData=success.data.results;
                 for(var i=0;i<$scope.trucksData.length;i++){
@@ -39,7 +39,6 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
 
         })
     };
-    $scope.getAllVehiclesLocation();
     $scope.trackView = function(truckNo){
         $state.go('trackView',{truckNo:truckNo});
     };
@@ -72,6 +71,7 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
 
         })
     };
+    getAllVehiclesLocation();
 }]);
 app.controller('shareCtrl', ['$scope', '$state', '$uibModalInstance','linkData', function ($scope,  $state, $uibModalInstance,linkData) {
     $scope.link=linkData.url;
