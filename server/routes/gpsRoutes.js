@@ -71,8 +71,8 @@ AuthRouter.get('/downloadReport/:truckId/:startDate/:endDate',function (req,res)
     })
 });
 
-AuthRouter.get('/getAllVehiclesLocation/:truckName',function (req,res) {
-   gps.getAllVehiclesLocation(req.jwt,req,req.params,function (results) {
+AuthRouter.get('/getAllVehiclesLocation',function (req,res) {
+   gps.getAllVehiclesLocation(req.jwt,req,function (results) {
         res.send(results);
    })
 });
