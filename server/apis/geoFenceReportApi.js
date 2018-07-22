@@ -12,13 +12,12 @@ var geoFencesReports = function () {
 /**
  * Finding GeoFence locations for devices in an account
  * */
-function findingGeoFenceLocationsFromEachAccount(trucks, accountId, geo, startTime, endTime, callback) {
+function findingGeoFenceLocationsFromEachAccount(trucks, accountId, geoFence, startTime, endTime, callback) {
     var retObj = {
         status: false,
         messages: []
     };
     async.eachSeries(trucks, function (truck, deviceCallback) {
-        console.log("deviceId=====>", truck.deviceId);
         devicePostions.find({
             deviceId: truck.deviceId,
             deviceTime: {$gte: startTime, $lte: endTime},
@@ -26,10 +25,10 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, geo, startTi
                 $near: {
                     $geometry: {
                         type: "Point",
-                        coordinates: geo.geoLocation.coordinates
+                        coordinates:geoFence.geoLocation.coordinates
                     },
-                    $centerSphere: 100000,
-                    spherical: true
+                   
+                    $maxDistance: 100 //in meters
 
                 }
             }
@@ -46,7 +45,7 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, geo, startTi
                         accountId: accountId,
                         registrationNo: truck.registrationNo,
                         startTime: new Date(locations[0].deviceTime),
-                        depot:geo.name,
+                        depot:geoFence.name,
                         endTime: new Date(locations[locations.length - 1].deviceTime)
                     };
                     var geo = new GeoFencesReportsColl(geoFenceObj);
@@ -58,7 +57,7 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, geo, startTi
 
                     deviceCallback(false);
                 } else {
-                    console.log("locationsss===>");
+                    // console.log("locationsss===>");
 
                     deviceCallback(false);
                 }
@@ -82,8 +81,8 @@ function findingGeoFenceLocationsFromEachAccount(trucks, accountId, geo, startTi
 function runGeoFencingReport() {
     AccountsColl.find({routeConfigEnabled: true}, {_id: 1}).then(accounts => {
         if (accounts.length > 0) {
-            var start = new Date(1531248695000.0);
-            var end = new Date(1531248695000.0);
+            var start = new Date(1531509113000.0);
+            var end = new Date(1531509113000.0);
             start.setMinutes(start.getMinutes() - 32);
             start.setMinutes(start.getMinutes() + 2);
             var startTime = new Date(start) - 0;
@@ -204,3 +203,4 @@ module.exports = new geoFencesReports();
 
 
 //findingRouteConfigEnabledAccounts()//start Job
+//runGeoFencingReport()
