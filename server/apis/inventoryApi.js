@@ -19,7 +19,6 @@ Inventories.prototype.addInventory = function(req,callback){
     };
     var jwt=req.jwt;
     var info = req.body;
-    console.log("info",info);
     info.accountId = jwt.accountId;
     info.createdBy = jwt.id;
     if (!info.name || !_.isString(info.name)) {
@@ -72,14 +71,20 @@ Inventories.prototype.updateInventory = function(req,callback){
         }
     });
 };
-
-Inventories.prototype.getInventories = function(jwt,callback){
+Inventories.prototype.getInventories = function(jwt,query,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    var query = {accountId:jwt.accountId};
-    InventoryCollection.find(query).populate({path:"partyId",select:'name'}).lean().exec(function(err,inventories){
+    var condition = {};
+    if(query.truckName){
+        condition = {accountId:jwt.accountId,vehicle:query.truckName};
+    }else if(query.inventory){
+        condition = {accountId:jwt.accountId,name:query.inventory};
+    }else{
+        condition = {accountId:jwt.accountId};
+    }
+    InventoryCollection.find(condition).populate({path:"partyId",select:'name'}).lean().exec(function(err,inventories){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -91,6 +96,7 @@ Inventories.prototype.getInventories = function(jwt,callback){
             callback(retObj);
         }
     });
+
 };
 
 Inventories.prototype.deleteInventory = function(id,callback){
@@ -102,7 +108,7 @@ Inventories.prototype.deleteInventory = function(id,callback){
     InventoryCollection.remove(query,function(err,result){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error while deleting load request"+JSON.stringify(err));
+            retObj.messages.push("error while deleting"+JSON.stringify(err));
             callback(retObj);
         }else{
             retObj.status=true;

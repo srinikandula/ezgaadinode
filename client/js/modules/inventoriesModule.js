@@ -1,9 +1,10 @@
 app.factory('InventoriesService', ['$http', '$cookies', function ($http, $cookies) {
     return {
-        getInventories: function (success, error) {
+        getInventories: function (inventory,success, error) {
             $http({
                 url: '/v1/inventories/get',
-                method: "GET"
+                method: "GET",
+                params:inventory
             }).then(success, error)
         },
         remove: function (id, success, error) {
@@ -162,14 +163,18 @@ app.controller('AddEditInventoryCtrl', ['$scope', 'InventoriesService', '$state'
 ]);
 
 app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', 'Notification', function ($scope, InventoriesService, $state, Notification) {
-
-    InventoriesService.getInventories(function (successCallback) {
-        if (successCallback.data.status) {
-            $scope.inventories = successCallback.data.data;
-        }
-    }, function (errorCallback) {
-    });
-
+    $scope.inventory = {
+        truckName : '',
+        inventory : ''
+    };
+    $scope.getInventories = function(){
+        InventoriesService.getInventories($scope.inventory,function (successCallback) {
+            if (successCallback.data.status) {
+                $scope.inventories = successCallback.data.data;
+            }
+        }, function (errorCallback) {
+        });
+    };
     $scope.goToEditPage = function (id) {
         $state.go('addInventory', {Id: id});
     };
@@ -186,5 +191,5 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
         }, function (errorCallback) {
         });
     };
-
+    $scope.getInventories();
 }]);

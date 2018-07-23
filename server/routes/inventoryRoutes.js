@@ -17,7 +17,7 @@ AuthRouter.post('/addInventory',function(req,res){
 });
 
 AuthRouter.get('/get',function(req,res){
-    API.getInventories(req.jwt,function(result){
+    API.getInventories(req.jwt,req.query,function(result){
         res.send(result);
     });
 });
