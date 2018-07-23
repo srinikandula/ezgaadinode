@@ -162,7 +162,7 @@ app.controller('AddEditInventoryCtrl', ['$scope', 'InventoriesService', '$state'
 }
 ]);
 
-app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', 'Notification', function ($scope, InventoriesService, $state, Notification) {
+app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', 'Notification','TrucksService', function ($scope, InventoriesService, $state, Notification,TrucksService) {
     $scope.inventory = {
         truckName : '',
         inventory : ''
@@ -175,6 +175,7 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
         }, function (errorCallback) {
         });
     };
+
     $scope.goToEditPage = function (id) {
         $state.go('addInventory', {Id: id});
     };
@@ -192,4 +193,13 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
         });
     };
     $scope.getInventories();
+    TrucksService.getAllTrucksForFilter(function (successCallback) {
+        if (successCallback.data.status) {
+            $scope.trucks = successCallback.data.trucks;
+        } else {
+            successCallback.data.messages(function (message) {
+                Notification.error(message);
+            });
+        }
+    }, function (error) {});
 }]);

@@ -58,7 +58,6 @@ AuthRouter.get('/searchByTruck/:truckName',function(req,res){
     });
 });
 
-
 AuthRouter.delete('/deleteJob/:id',function(req,res){
     API.deleteJob(req.params.id,function(result){
         res.send(result);
@@ -67,6 +66,11 @@ AuthRouter.delete('/deleteJob/:id',function(req,res){
 
 AuthRouter.delete('/deleteImage',function(req,res){
     API.deleteImage(req,function(result){
+        res.send(result);
+    });
+});
+AuthRouter.get('/shareDetailsViaEmail',function(req,res){
+    API.shareDetailsViaEmail(req.jwt,req.query,function(result){
         res.send(result);
     });
 });

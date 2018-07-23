@@ -78,9 +78,11 @@ Inventories.prototype.getInventories = function(jwt,query,callback){
     };
     var condition = {};
     if(query.truckName){
-        condition = {accountId:jwt.accountId,vehicle:query.truckName};
+        query.truckName = JSON.parse(query.truckName);
+        condition = {accountId:jwt.accountId,vehicle:query.truckName.registrationNo};
     }else if(query.inventory){
-        condition = {accountId:jwt.accountId,name:query.inventory};
+        query.inventory = JSON.parse(query.inventory);
+        condition = {accountId:jwt.accountId,_id:query.inventory._id};
     }else{
         condition = {accountId:jwt.accountId};
     }
