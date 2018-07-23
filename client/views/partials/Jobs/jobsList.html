@@ -1,7 +1,7 @@
 <div class="main-right col-xs-12" ng-controller="JobsListController">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-2 pall-zero"><h3>Jobs:</h3></div>
-        <ul class="col-sm-10 pall-zero list-inline">
+        <div class="col-sm-1 pall-zero"><h3>Jobs:</h3></div>
+        <ul class="col-sm-11 pall-zero list-inline">
             <li class="col-sm-2 pall-zero">
                 <date-picker ng-model="job.fromDate" class="'paymentscontrol'"
                              past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
@@ -15,31 +15,40 @@
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
-            <li class="col-sm-3 pall-zero">
-                <form>
-                    <div class="input-group stylish-input-group">
-                        <input type="text" ng-model="job.truckName" class="form-control"
-                               placeholder="Search By Truck">
-                        <span class="input-group-addon">
-                        <button type="submit" ng-click="getAllJobs();">
-                           <i class="fa fa-search sear" aria-hidden="true"></i>
-                        </button>
-                    </span>
-                    </div>
-                </form>
+            <li class="col-sm-3 pos-relative">
+                <div class="select-box erp-box">
+                    <ui-select ng-model="job.truckName" theme="select2"
+                               title="Choose a person" append-to-body="true"
+                               ng-change="getAllJobs();">
+                        <ui-select-match placeholder="Search By Truck" class="form-control ui-select-control">
+                            {{$select.selected.registrationNo || registrationNo}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="truck in trucks  | propsFilter: {registrationNo: $select.search}">
+                            <div ng-bind-html="truck.registrationNo | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
             </li>
-            <li class="col-sm-3 pall-zero">
-                <form>
-                    <div class="input-group stylish-input-group">
-                        <input type="text" ng-model="job.inventory" class="form-control"
-                               placeholder="Search By Inventory">
-                        <span class="input-group-addon">
-                        <button type="submit" ng-click="getAllJobs();">
-                           <i class="fa fa-search sear" aria-hidden="true"></i>
-                        </button>
-                    </span>
-                    </div>
-                </form>
+            <li class="col-sm-3 pos-relative">
+                <div class="select-box erp-box">
+                    <ui-select ng-model="job.inventory" theme="select2"
+                               title="Choose a person" append-to-body="true"
+                               ng-change="getAllJobs();">
+                        <ui-select-match placeholder="Search By Inventory" class="form-control ui-select-control">
+                            {{$select.selected.name || name}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="inventory in inventories  | propsFilter: {name: $select.search}">
+                            <div ng-bind-html="inventory.name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </li>
+            <li class="col-sm-1">
+                <button type="button" ng-click="shareDetailsViaEmail()"
+                        class="btn mailImage"><img src="images/Reports_Mail.png">
+                </button>
             </li>
         </ul>
     </div>

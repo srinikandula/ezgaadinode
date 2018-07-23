@@ -3,7 +3,8 @@ var Utils = require('../apis/utils');
 var _ = require('underscore');
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
 var JobsCollection = require('./../models/schemas').JobsCollection;
-var TrucksColl = require('./../models/schemas').TrucksColl;
+var emailService = require('./mailerApi');
+
 
 var expenseMasterApi = require('./expenseMasterApi');
 
@@ -11,13 +12,19 @@ var expenseMasterApi = require('./expenseMasterApi');
 var Jobs = function () {
 };
 
+function dateToStringFormat(date) {
+    if (date instanceof Date) {
+        return date.toLocaleDateString();
+    } else {
+        return '--';
+    }
+};
 
 function save(job,reminder,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    console.log("save job...",job);
     var jobDoc = new JobsCollection(job);
     jobDoc.save(function(err,result){
         if(err){
@@ -190,18 +197,10 @@ Jobs.prototype.getAllJobs = function(jwt,query,callback){
     };
     var condition = {};
     if(query.truckName){
-        TrucksColl.findOne({registrationNo:query.truckName},function(err,truck){
-            if(err){
-                retObj.status=false;
-                retObj.messages.push("error while getting data"+JSON.stringify(err));
-                callback(retObj);
-            }else{
-                    condition.accountId = jwt.accountId,
-                    condition.vehicle = truck._id
-            }
-            getJobs(condition,function(getCallback){
-                callback(getCallback);
-            });
+        var truckName = JSON.parse(query.truckName);
+       condition = {accountId:jwt.accountId,vehicle:truckName._id};
+        getJobs(condition,function(getCallback){
+            callback(getCallback);
         });
     }else if(query.fromDate && query.toDate){
             condition.accountId = jwt.accountId,
@@ -210,18 +209,10 @@ Jobs.prototype.getAllJobs = function(jwt,query,callback){
             callback(getCallback);
         });
     }else if(query.inventory){
-        InventoryCollection.findOne({name:query.inventory},function(err,inventory){
-            if(err){
-                retObj.status=false;
-                retObj.messages.push("error while getting data"+JSON.stringify(err));
-                callback(retObj);
-            }else{
-                condition.accountId = jwt.accountId,
-                    condition.inventory = inventory._id
-            }
-            getJobs(condition,function(getCallback){
-                callback(getCallback);
-            });
+        var inventory = JSON.parse(query.inventory);
+        condition = {accountId:jwt.accountId,inventory:inventory._id};
+        getJobs(condition,function(getCallback){
+            callback(getCallback);
         });
     }else {
         getJobs(condition, function (getCallback) {
@@ -304,37 +295,6 @@ Jobs.prototype.getJob = function(jwt,id,callback){
     });
 
 };
-Jobs.prototype.searchBytruckName = function(jwt,truckName,callback){
-    var retObj = {
-        status:false,
-        messages:[]
-    };
-    TrucksColl.findOne({registrationNo:truckName},function(err,truck){
-        if(err){
-            retObj.status=false;
-            retObj.messages.push("error while getting the data"+JSON.stringify(err));
-            callback(retObj);
-        }else if(truck){
-            JobsCollection.find({accountId:jwt.accountId,vehicle:truck._id}).populate({path:"vehicle"}).populate({path:"inventory"}).exec(function(err,jobs){
-                if(err){
-                    retObj.status=false;
-                    retObj.messages.push("error while getting the data"+JSON.stringify(err));
-                    callback(retObj);
-                }else if(jobs.length>0){
-                    retObj.status=true;
-                    retObj.messages.push("Success");
-                    retObj.data=jobs;
-                    callback(retObj);
-                }else{
-                    retObj.status=true;
-                    retObj.messages.push("Success");
-                    retObj.data=[];
-                    callback(retObj);
-                }
-            });
-        }
-    });
-};
 
 Jobs.prototype.deleteJob = function(id,callback){
     var retObj={
@@ -385,7 +345,55 @@ Jobs.prototype.deleteImage = function (req, callback) {
         }
     })
 };
-
+Jobs.prototype.shareDetailsViaEmail = function (jwt,query,callback) {
+    var retObj = {
+        status : false,
+        messages : []
+    };
+    if (!query.email || !Utils.isEmail(query.email)) {
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else{
+        Jobs.prototype.getAllJobs(jwt,{},function(getCallback){
+            if(getCallback.status){
+                var output = [];
+                if(getCallback.data.length > 0){
+                    for(var i=0;i < getCallback.data.length;i++){
+                        output.push({
+                            jobDate:dateToStringFormat(getCallback.data[i].date),
+                            inventory:getCallback.data[i].inventory.name,
+                            vehicle:getCallback.data[i].vehicle.registrationNo,
+                            milege:getCallback.data[i].milege,
+                            reminderDate:getCallback.data[i].reminderDate
+                        });
+                        if(i === getCallback.data.length-1){
+                            var emailparams = {
+                                templateName: 'jobDetails',
+                                subject: "Job Details",
+                                to: query.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                console.log("email response...",emailResponse);
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
+                    }
+                }else{
+                    callback(getCallback);
+                }
+            }else{
+                callback(getCallback);
+            }
+        });
+    }
+};
 
 
 

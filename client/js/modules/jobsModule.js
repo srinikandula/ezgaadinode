@@ -40,12 +40,6 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 params:params
             }).then(success, error)
         },
-        searchBytruckName:function (truckName,success, error) {
-            $http({
-                url: '/v1/jobs/searchByTruck/'+truckName,
-                method: "GET",
-            }).then(success, error)
-        },
         addJob:function (params,success, error) {
             $http({
                 url: '/v1/jobs/addJob',
@@ -60,13 +54,13 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 data:params
             }).then(success, error)
         },
-        searchByDateRange:function (dates,success, error) {
+        shareDetailsViaEmail:function(params,success,error){
             $http({
-                url: '/v1/jobs/searchByDateRange',
+                url: '/v1/jobs/shareDetailsViaEmail',
                 method: "GET",
-                params:dates
+                params:params
             }).then(success, error)
-        }
+        },
     }
 }]);
 
@@ -86,7 +80,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
         }
     }, function (error) {});
 
-    InventoriesService.getInventories(function(successCallback){
+    InventoriesService.getInventories({},function(successCallback){
         if(successCallback.data.status){
             $scope.inventories = successCallback.data.data;
         }
@@ -231,13 +225,48 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 
 }]);
 
-app.controller('JobsListController',['$scope','$state','JobsService',function($scope,$state,JobsService){
+app.controller('JobsListController',['$scope','$state','JobsService','Notification','TrucksService','InventoriesService',function($scope,$state,JobsService,Notification,TrucksService,InventoriesService){
     $scope.job = {
         fromDate:'',
         toDate:'',
         truckName:'',
         inventory:''
     };
+    $scope.shareDetailsViaEmail = function(){
+        $scope.shareDetailsViaEmail=function(){
+            swal({
+                title: 'Share jobs data using mail',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                return new Promise((resolve) => {
+                    JobsService.shareDetailsViaEmail({
+                    email:email
+                },function(success){
+                    if (success.data.status) {
+                        resolve()
+                    } else {
+
+                    }
+                },function(error){
+
+                })
+            })
+
+        },
+            allowOutsideClick: false
+
+        }).then((result) => {
+                if (result.value) {
+                swal({
+                    type: 'success',
+                    html: ' sent successfully'
+                })
+            }
+        })
+        }    };
     $scope.getAllJobs = function(){
         var params = $scope.job;
         JobsService.getAllJobs(params,function(successCallback){
@@ -257,6 +286,20 @@ app.controller('JobsListController',['$scope','$state','JobsService',function($s
         });
     };
     $scope.getAllJobs();
+    TrucksService.getAllTrucksForFilter(function (successCallback) {
+        if (successCallback.data.status) {
+            $scope.trucks = successCallback.data.trucks;
+        } else {
+            successCallback.data.messages(function (message) {
+                Notification.error(message);
+            });
+        }
+    }, function (error) {});
+    InventoriesService.getInventories({},function(successCallback){
+        if(successCallback.data.status){
+            $scope.inventories = successCallback.data.data;
+        }
+    },function(errorCallback){});
 }]);
 
 app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
