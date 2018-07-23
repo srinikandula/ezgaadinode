@@ -81,6 +81,9 @@
                     </a>
                 </td>
             </tr>
+            <tr ng-if="!jobs || jobs.length === 0">
+                <td colspan="10">No Job Records exist.</td>
+            </tr>
         </table>
     </div>
     <div class="clearfix"></div>

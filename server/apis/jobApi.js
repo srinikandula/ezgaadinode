@@ -345,55 +345,6 @@ Jobs.prototype.deleteImage = function (req, callback) {
         }
     })
 };
-Jobs.prototype.shareDetailsViaEmail = function (jwt,query,callback) {
-    var retObj = {
-        status : false,
-        messages : []
-    };
-    if (!query.email || !Utils.isEmail(query.email)) {
-        retObj.messages.push("Invalid email....");
-        callback(retObj);
-    }else{
-        Jobs.prototype.getAllJobs(jwt,{},function(getCallback){
-            if(getCallback.status){
-                var output = [];
-                if(getCallback.data.length > 0){
-                    for(var i=0;i < getCallback.data.length;i++){
-                        output.push({
-                            jobDate:dateToStringFormat(getCallback.data[i].date),
-                            inventory:getCallback.data[i].inventory.name,
-                            vehicle:getCallback.data[i].vehicle.registrationNo,
-                            milege:getCallback.data[i].milege,
-                            reminderDate:getCallback.data[i].reminderDate
-                        });
-                        if(i === getCallback.data.length-1){
-                            var emailparams = {
-                                templateName: 'jobDetails',
-                                subject: "Job Details",
-                                to: query.email,
-                                data: output
-                            };
-                            emailService.sendEmail(emailparams, function (emailResponse) {
-                                console.log("email response...",emailResponse);
-                                if (emailResponse.status) {
-                                    retObj.status = true;
-                                    retObj.messages.push(' Details shared successfully');
-                                    callback(retObj);
-                                } else {
-                                    callback(emailResponse);
-                                }
-                            });
-                        }
-                    }
-                }else{
-                    callback(getCallback);
-                }
-            }else{
-                callback(getCallback);
-            }
-        });
-    }
-};
 
 
 
