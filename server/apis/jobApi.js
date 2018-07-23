@@ -164,13 +164,12 @@ Jobs.prototype.updateJob = function(req,callback){
 
 };
 
-Jobs.prototype.getAllJobs = function(jwt,callback){
+function getJobs(condition,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    var query = {accountId:jwt.accountId};
-    JobsCollection.find(query).populate({path:"vehicle",select:"registrationNo"}).populate({path:"inventory",select:"name"}).exec(function(err,jobs){
+    JobsCollection.find(condition).populate({path:"vehicle",select:"registrationNo"}).populate({path:"inventory",select:"name"}).exec(function(err,jobs){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -184,6 +183,53 @@ Jobs.prototype.getAllJobs = function(jwt,callback){
     });
 
 };
+Jobs.prototype.getAllJobs = function(jwt,query,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {};
+    if(query.truckName){
+        TrucksColl.findOne({registrationNo:query.truckName},function(err,truck){
+            if(err){
+                retObj.status=false;
+                retObj.messages.push("error while getting data"+JSON.stringify(err));
+                callback(retObj);
+            }else{
+                    condition.accountId = jwt.accountId,
+                    condition.vehicle = truck._id
+            }
+            getJobs(condition,function(getCallback){
+                callback(getCallback);
+            });
+        });
+    }else if(query.fromDate && query.toDate){
+            condition.accountId = jwt.accountId,
+            condition.date = {$gte:new Date(query.fromDate),$lte:new Date(query.toDate)};
+        getJobs(condition,function(getCallback){
+            callback(getCallback);
+        });
+    }else if(query.inventory){
+        InventoryCollection.findOne({name:query.inventory},function(err,inventory){
+            if(err){
+                retObj.status=false;
+                retObj.messages.push("error while getting data"+JSON.stringify(err));
+                callback(retObj);
+            }else{
+                condition.accountId = jwt.accountId,
+                    condition.inventory = inventory._id
+            }
+            getJobs(condition,function(getCallback){
+                callback(getCallback);
+            });
+        });
+    }else {
+        getJobs(condition, function (getCallback) {
+            callback(getCallback);
+        });
+    }
+};
+
 Jobs.prototype.getPreviousJobs = function(jwt,vehicle,callback){
     var retObj = {
         status:false,
@@ -299,7 +345,7 @@ Jobs.prototype.deleteJob = function(id,callback){
     JobsCollection.remove(query,function(err,result){
         if(err){
             retObj.status=false;
-            retObj.messages.push("error while deleting load request"+JSON.stringify(err));
+            retObj.messages.push("error while deleting job"+JSON.stringify(err));
             callback(retObj);
         }else{
             retObj.status=true;
@@ -339,6 +385,7 @@ Jobs.prototype.deleteImage = function (req, callback) {
         }
     })
 };
+
 
 
 

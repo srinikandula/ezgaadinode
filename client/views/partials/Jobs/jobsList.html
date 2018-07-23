@@ -1,15 +1,40 @@
 <div class="main-right col-xs-12" ng-controller="JobsListController">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-3 pall-zero"><h3>Jobs List:</h3></div>
-        <ul class="col-sm-9 pall-zero list-inline">
-            <li class="col-sm-3"></li>
-            <li class="col-sm-6">
+        <div class="col-sm-2 pall-zero"><h3>Jobs:</h3></div>
+        <ul class="col-sm-10 pall-zero list-inline">
+            <li class="col-sm-2 pall-zero">
+                <date-picker ng-model="job.fromDate" class="'paymentscontrol'"
+                             past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
+            </li>
+            <li class="col-sm-2 pall-zero">
+                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="job.toDate"
+                             placeholder="'to date'" ></date-picker>
+            </li>
+            <li class="col-sm-1 pall-zero">
+                <button type="submit" ng-click="getAllJobs();" class="btn go">
+                    <i class="fa fa-search sear" aria-hidden="true"></i>
+                </button>
+            </li>
+            <li class="col-sm-3 pall-zero">
                 <form>
                     <div class="input-group stylish-input-group">
-                        <input type="text" ng-model="truckName" class="form-control"
-                               placeholder="Search By Truck Number">
+                        <input type="text" ng-model="job.truckName" class="form-control"
+                               placeholder="Search By Truck">
                         <span class="input-group-addon">
-                        <button type="submit" ng-click="searchByTruckName(truckName);">
+                        <button type="submit" ng-click="getAllJobs();">
+                           <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </span>
+                    </div>
+                </form>
+            </li>
+            <li class="col-sm-3 pall-zero">
+                <form>
+                    <div class="input-group stylish-input-group">
+                        <input type="text" ng-model="job.inventory" class="form-control"
+                               placeholder="Search By Inventory">
+                        <span class="input-group-addon">
+                        <button type="submit" ng-click="getAllJobs();">
                            <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
                     </span>

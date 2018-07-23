@@ -1,9 +1,10 @@
 app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
     return {
-        getAllJobs: function (success, error) {
+        getAllJobs: function (params,success, error) {
             $http({
                 url: '/v1/jobs/getAllJobs',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         getJob:function (id,success, error) {
@@ -57,6 +58,13 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 url: '/v1/jobs/updateJob',
                 method: "PUT",
                 data:params
+            }).then(success, error)
+        },
+        searchByDateRange:function (dates,success, error) {
+            $http({
+                url: '/v1/jobs/searchByDateRange',
+                method: "GET",
+                params:dates
             }).then(success, error)
         }
     }
@@ -224,33 +232,31 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 }]);
 
 app.controller('JobsListController',['$scope','$state','JobsService',function($scope,$state,JobsService){
-
+    $scope.job = {
+        fromDate:'',
+        toDate:'',
+        truckName:'',
+        inventory:''
+    };
+    $scope.getAllJobs = function(){
+        var params = $scope.job;
+        JobsService.getAllJobs(params,function(successCallback){
+            if(successCallback.data.status){
+                $scope.jobs = successCallback.data.data;
+            }
+        },function(errorCallback){});
+    };
     $scope.goToEditPage = function(id){
         $state.go('addJob',{ID:id});
     };
-    JobsService.getAllJobs(function(successCallback){
-        if(successCallback.data.status){
-            $scope.jobs = successCallback.data.data;
-        }
-    },function(errorCallback){
-
-    });
-
-    $scope.searchByTruckName = function(truckName){
-        JobsService.searchBytruckName(truckName,function(successCallback){
-            $scope.jobs = successCallback.data.data;
-            },function(errorCallback){});
-
-    };
-
     $scope.delete = function(id){
         JobsService.deleteJob(id,function(successCallback){
 
         },function(errorCallback){
 
         });
-    }
-
+    };
+    $scope.getAllJobs();
 }]);
 
 app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
