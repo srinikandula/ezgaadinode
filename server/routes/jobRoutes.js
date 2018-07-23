@@ -23,7 +23,13 @@ AuthRouter.put('/updateJob',function(req,res){
 });
 
 AuthRouter.get('/getAllJobs',function(req,res){
-    API.getAllJobs(req.jwt,function(result){
+    API.getAllJobs(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
+
+AuthRouter.get('/searchByDateRange',function(req,res){
+    API.searchByDateRange(req.jwt,req.query,function(result){
         res.send(result);
     });
 });
