@@ -4,6 +4,9 @@ var _ = require('underscore');
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
 var JobsCollection = require('./../models/schemas').JobsCollection;
 var emailService = require('./mailerApi');
+var json2xls = require('json2xls');
+var fs=require('fs');
+
 
 
 var expenseMasterApi = require('./expenseMasterApi');
@@ -171,54 +174,82 @@ Jobs.prototype.updateJob = function(req,callback){
 
 };
 
-function getJobs(condition,callback){
+function getJobs(query,condition,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    JobsCollection.find(condition).populate({path:"vehicle",select:"registrationNo"}).populate({path:"inventory",select:"name"}).exec(function(err,jobs){
-        if(err){
-            retObj.status=false;
-            retObj.messages.push("error while getting data"+JSON.stringify(err));
-            callback(retObj);
-        } else{
-            retObj.status=true;
-            retObj.messages.push("records fetched successfully");
-            retObj.data = jobs;
-            callback(retObj);
-        }
-    });
-
+    var skipNumber = query.page ? (query.page - 1) * query.size : 0;
+    var limit = query.size ? parseInt(query.size) : Number.MAX_SAFE_INTEGER;
+    var sort = query.sort ? JSON.parse(query.sort) : {createdAt: -1};
+    JobsCollection.find(condition)
+        .sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .lean()
+        .populate({path:"vehicle",select:"registrationNo"}).populate({path:"inventory",select:"name"})
+        .exec(function(err,jobs){
+           if(err){
+               retObj.status=false;
+               retObj.messages.push("error while getting data"+JSON.stringify(err));
+               callback(retObj);
+           } else{
+               retObj.status=true;
+               retObj.messages.push("Success");
+               retObj.data = jobs;
+               callback(retObj);
+           }
+        });
 };
-Jobs.prototype.getAllJobs = function(jwt,query,callback){
+Jobs.prototype.getAllJobs = function(jwt,requestParams,callback){
     var retObj = {
         status:false,
         messages:[]
     };
     var condition = {};
-    if(query.truckName){
-        var truckName = JSON.parse(query.truckName);
-       condition = {accountId:jwt.accountId,vehicle:truckName._id};
-        getJobs(condition,function(getCallback){
+    if(requestParams.truckName){
+        condition = {accountId:jwt.accountId,vehicle:requestParams.truckName};
+        getJobs(requestParams,condition, function (getCallback) {
             callback(getCallback);
         });
-    }else if(query.fromDate && query.toDate){
-            condition.accountId = jwt.accountId,
-            condition.date = {$gte:new Date(query.fromDate),$lte:new Date(query.toDate)};
-        getJobs(condition,function(getCallback){
-            callback(getCallback);
-        });
-    }else if(query.inventory){
-        var inventory = JSON.parse(query.inventory);
-        condition = {accountId:jwt.accountId,inventory:inventory._id};
-        getJobs(condition,function(getCallback){
-            callback(getCallback);
-        });
-    }else {
-        getJobs(condition, function (getCallback) {
+    }else if(requestParams.inventory){
+        condition = {accountId:jwt.accountId,inventory:requestParams.inventory};
+        getJobs(requestParams,condition, function (getCallback) {
             callback(getCallback);
         });
     }
+    else if(requestParams.fromDate && requestParams.toDate){
+            condition = {
+                accountId:jwt.accountId,
+                createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
+            };
+        getJobs(requestParams,condition, function (getCallback) {
+            callback(getCallback);
+        });
+    }else{
+        getJobs(requestParams,condition, function (getCallback) {
+            callback(getCallback);
+        });
+    }
+};
+
+Jobs.prototype.getCount = function(jwt,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    JobsCollection.count({accountId:jwt.accountId},function(err,count){
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while getting data"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push("Successfull");
+            retObj.data = count;
+            callback(retObj);
+        }
+    });
 };
 
 Jobs.prototype.getPreviousJobs = function(jwt,vehicle,callback){
@@ -345,6 +376,54 @@ Jobs.prototype.deleteImage = function (req, callback) {
         }
     })
 };
+Jobs.prototype.shareDetailsViaEmail = function (jwt,query,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    Jobs.prototype.getAllJobs(jwt,{},function(getCallback){
+        if(getCallback.status){
+            var output = [];
+            if(getCallback.data.length>0){
+                 for(var i = 0;i<getCallback.data.length;i++){
+                     output.push({
+                         jobDate:dateToStringFormat(getCallback.data[i].date),
+                         inventory:getCallback.data[i].inventory.name,
+                         vehicle:getCallback.data[i].vehicle.registrationNo,
+                         milege:getCallback.data[i].milege,
+                         reminderDate:dateToStringFormat(getCallback.data[i].reminderDate)
+                     });
+                   if(i === getCallback.data.length-1){
+                       var emailparams = {
+                           templateName: 'jobDetails',
+                           subject: "Job Details",
+                           to: query.email,
+                           data: output
+                       };
+                       emailService.sendEmail(emailparams,function(emailResponse){
+                           if (emailResponse.status) {
+                               retObj.status = true;
+                               retObj.messages.push(' Details shared successfully');
+                               callback(retObj);
+                           } else {
+                               callback(emailResponse);
+                           }
+                       });
+                   }
+                 }
+            }else{
+                callback(getCallback);
+            }
+        }else{
+            callback(getCallback);
+        }
+    });
+};
+
+
+
+
+
 
 
 

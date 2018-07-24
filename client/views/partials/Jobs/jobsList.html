@@ -3,23 +3,23 @@
         <div class="col-sm-1 pall-zero"><h3>Jobs:</h3></div>
         <ul class="col-sm-11 pall-zero list-inline">
             <li class="col-sm-2 pall-zero">
-                <date-picker ng-model="job.fromDate" class="'paymentscontrol'"
+                <date-picker ng-model="fromDate" class="'paymentscontrol'"
                              past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
             </li>
             <li class="col-sm-2 pall-zero">
-                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="job.toDate"
+                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="toDate"
                              placeholder="'to date'" ></date-picker>
             </li>
             <li class="col-sm-1 pall-zero">
-                <button type="submit" ng-click="getAllJobs();" class="btn go">
+                <button type="submit" ng-click="searchJob();" class="btn go">
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
             <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
-                    <ui-select ng-model="job.truckName" theme="select2"
+                    <ui-select ng-model="query.truckName" theme="select2"
                                title="Choose a person" append-to-body="true"
-                               ng-change="getAllJobs();">
+                               ng-change="searchJob();">
                         <ui-select-match placeholder="Search By Truck" class="form-control ui-select-control">
                             {{$select.selected.registrationNo || registrationNo}}
                         </ui-select-match>
@@ -32,9 +32,9 @@
             </li>
             <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
-                    <ui-select ng-model="job.inventory" theme="select2"
+                    <ui-select ng-model="query.inventory" theme="select2"
                                title="Choose a person" append-to-body="true"
-                               ng-change="getAllJobs();">
+                               ng-change="searchJob();">
                         <ui-select-match placeholder="Search By Inventory" class="form-control ui-select-control">
                             {{$select.selected.name || name}}
                         </ui-select-match>
@@ -56,8 +56,8 @@
 
     <div class="mt-10">
         <table class="table table-bordered table-striped table-condensed table-hover"
-               ng-table="studentParams">
-            <tr ng-repeat="job in jobs " style="text-align: center;">
+               ng-table="jobParams">
+            <tr ng-repeat="job in currentPageOfJobs" style="text-align: center;">
                 <td data-title="'Vehicle'" sortable="'vehicle'" class="clickable-item">
                     {{job.vehicle.registrationNo}}
                 </td>
@@ -81,7 +81,7 @@
                     </a>
                 </td>
             </tr>
-            <tr ng-if="!jobs || jobs.length === 0">
+            <tr ng-if="!currentPageOfJobs  || currentPageOfJobs.length === 0">
                 <td colspan="10">No Job Records exist.</td>
             </tr>
         </table>
