@@ -227,6 +227,7 @@ Jobs.prototype.getAllJobs = function(jwt,requestParams,callback){
             callback(getCallback);
         });
     }else{
+        condition={accountId:jwt.accountId};
         getJobs(requestParams,condition, function (getCallback) {
             callback(getCallback);
         });
@@ -250,7 +251,7 @@ Jobs.prototype.getCount = function(jwt,requestParams,callback){
             createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
         };
     }else{
-        condition = {};
+        condition = {accountId:jwt.accountId};
     }
     JobsCollection.count(condition,function(err,count){
         if(err){

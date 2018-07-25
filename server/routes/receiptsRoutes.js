@@ -38,7 +38,7 @@ AuthRouter.delete('/:id', function (req, res) {
 });
 
 AuthRouter.get('/countReceipts', function (req, res) {
-    Receipts.countReceipts(req.jwt,req, function (result) {
+    Receipts.countReceipts(req.jwt,req.query,req,function (result) {
         res.send(result);
     });
 });

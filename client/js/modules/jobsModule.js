@@ -238,7 +238,6 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
        inventory:''
    };
     $scope.count = 0;
-    $scope.searchCount = 0;
     $scope.shareDetailsViaEmail = function(){
         $scope.shareDetailsViaEmail=function(){
             swal({
