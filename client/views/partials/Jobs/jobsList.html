@@ -11,7 +11,7 @@
                              placeholder="'to date'" ></date-picker>
             </li>
             <li class="col-sm-1 pall-zero">
-                <button type="submit" ng-click="searchJob();" class="btn go">
+                <button type="submit" ng-click="getCount();" class="btn go">
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
@@ -19,7 +19,7 @@
                 <div class="select-box erp-box">
                     <ui-select ng-model="query.truckName" theme="select2"
                                title="Choose a person" append-to-body="true"
-                               ng-change="searchJob();">
+                               ng-change="getCount();">
                         <ui-select-match placeholder="Search By Truck" class="form-control ui-select-control">
                             {{$select.selected.registrationNo || registrationNo}}
                         </ui-select-match>
@@ -34,7 +34,7 @@
                 <div class="select-box erp-box">
                     <ui-select ng-model="query.inventory" theme="select2"
                                title="Choose a person" append-to-body="true"
-                               ng-change="searchJob();">
+                               ng-change="getCount();">
                         <ui-select-match placeholder="Search By Inventory" class="form-control ui-select-control">
                             {{$select.selected.name || name}}
                         </ui-select-match>

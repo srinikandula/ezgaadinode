@@ -20,10 +20,11 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 params:vehicle
             }).then(success, error)
         },
-        getCount: function (success, error) {
+        getCount: function (params,success, error) {
             $http({
                 url: '/v1/jobs/total/count',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         getJobsForInventory:function (inventory,success, error) {
@@ -237,6 +238,7 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
        inventory:''
    };
     $scope.count = 0;
+    $scope.searchCount = 0;
     $scope.shareDetailsViaEmail = function(){
         $scope.shareDetailsViaEmail=function(){
             swal({
@@ -313,22 +315,6 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                loadTableData(params);
-            }
-        });
-
-    };
-    $scope.searchJob = function(){
-        $scope.jobParams = new NgTableParams({
-            page: 1, // show first page
-            size: 10,
-            sorting: {
-                createdAt: -1
-            }
-        }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
                 if($scope.query.truckName){
                     params.truckName = $scope.query.truckName._id;
                 }else{
@@ -337,9 +323,21 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
                 loadTableData(params);
             }
         });
+
     };
     $scope.getCount = function(){
-        JobsService.getCount(function(successCallback){
+        var params = {};
+        if($scope.query.truckName){
+            params.truckName = $scope.query.truckName._id;
+        }else if($scope.query.inventory){
+            params.inventory = $scope.query.inventory._id;
+        }else if( $scope.fromDate &&  $scope.toDate){
+            params.fromDate = $scope.fromDate;
+            params.toDate = $scope.toDate;
+        }else{
+            params = {};
+        }
+        JobsService.getCount(params,function(successCallback){
             if(successCallback.data.status){
                 $scope.count = successCallback.data.data;
                 $scope.init();

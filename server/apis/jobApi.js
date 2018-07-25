@@ -233,12 +233,26 @@ Jobs.prototype.getAllJobs = function(jwt,requestParams,callback){
     }
 };
 
-Jobs.prototype.getCount = function(jwt,callback){
+Jobs.prototype.getCount = function(jwt,requestParams,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    JobsCollection.count({accountId:jwt.accountId},function(err,count){
+    var condition = {};
+    if(requestParams.truckName){
+        condition = {accountId:jwt.accountId,vehicle:requestParams.truckName};
+    }else if(requestParams.inventory){
+        condition = {accountId:jwt.accountId,inventory:requestParams.inventory};
+    }
+    else if(requestParams.fromDate && requestParams.toDate){
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
+        };
+    }else{
+        condition = {};
+    }
+    JobsCollection.count(condition,function(err,count){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
