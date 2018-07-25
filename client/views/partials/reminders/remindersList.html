@@ -4,8 +4,8 @@
     </div>
     <div class="mt-10">
         <table class="table table-bordered table-striped table-condensed table-hover"
-               ng-table="studentParams">
-            <tr ng-repeat="reminder in reminders " style="text-align: center;">
+               ng-table="reminderParams">
+            <tr ng-repeat="reminder in currentPageOfreminders " style="text-align: center;">
                 <td data-title="'Reminder Date'" sortable="'reminderDate'" class="clickable-item">
                     {{reminder.reminderDate | date:'dd-MM-y'}}
                 </td>
@@ -22,6 +22,9 @@
                         <span class="glyphicon glyphicon-remove"></span>
                     </a>
                 </td>
+            </tr>
+            <tr ng-if="!currentPageOfreminders  || currentPageOfreminders.length === 0">
+                <td colspan="10">No  Reminders exist.</td>
             </tr>
         </table>
     </div>

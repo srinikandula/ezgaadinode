@@ -20,6 +20,12 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 params:vehicle
             }).then(success, error)
         },
+        getCount: function (success, error) {
+            $http({
+                url: '/v1/jobs/total/count',
+                method: "GET"
+            }).then(success, error)
+        },
         getJobsForInventory:function (inventory,success, error) {
             $http({
                 url: '/v1/jobs/getJobsForInventory',
@@ -225,13 +231,12 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 
 }]);
 
-app.controller('JobsListController',['$scope','$state','JobsService','Notification','TrucksService','InventoriesService',function($scope,$state,JobsService,Notification,TrucksService,InventoriesService){
-    $scope.job = {
-        fromDate:'',
-        toDate:'',
-        truckName:'',
-        inventory:''
-    };
+app.controller('JobsListController',['$scope','$state','JobsService','Notification','TrucksService','InventoriesService','NgTableParams',function($scope,$state,JobsService,Notification,TrucksService,InventoriesService,NgTableParams){
+   $scope.query = {
+       truckName:'',
+       inventory:''
+   };
+    $scope.count = 0;
     $scope.shareDetailsViaEmail = function(){
         $scope.shareDetailsViaEmail=function(){
             swal({
@@ -266,14 +271,7 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
                 })
             }
         })
-        }    };
-    $scope.getAllJobs = function(){
-        var params = $scope.job;
-        JobsService.getAllJobs(params,function(successCallback){
-            if(successCallback.data.status){
-                $scope.jobs = successCallback.data.data;
-            }
-        },function(errorCallback){});
+        }
     };
     $scope.goToEditPage = function(id){
         $state.go('addJob',{ID:id});
@@ -285,7 +283,72 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
 
         });
     };
-    $scope.getAllJobs();
+    var loadTableData = function (tableParams) {
+        var pageable = {page:tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            truckName:tableParams.truckName,
+            inventory:tableParams.inventory,
+            fromDate:$scope.fromDate,
+            toDate:$scope.toDate
+        };
+        JobsService.getAllJobs(pageable,function(successCallback){
+            if(successCallback.data.status){
+                $scope.jobs = successCallback.data.data;
+                tableParams.total(successCallback.totalElements);
+                tableParams.data = $scope.jobs;
+                $scope.currentPageOfJobs = $scope.jobs;
+            }
+        },function(errorCallback){});
+    };
+
+    $scope.init = function () {
+        $scope.jobParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
+
+    };
+    $scope.searchJob = function(){
+        $scope.jobParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                if($scope.query.truckName){
+                    params.truckName = $scope.query.truckName._id;
+                }else{
+                    params.inventory = $scope.query.inventory._id;
+                }
+                loadTableData(params);
+            }
+        });
+    };
+    $scope.getCount = function(){
+        JobsService.getCount(function(successCallback){
+            if(successCallback.data.status){
+                $scope.count = successCallback.data.data;
+                $scope.init();
+            }
+        },function(errorCallback){
+
+        });
+    };
+    $scope.getCount();
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
             $scope.trucks = successCallback.data.trucks;

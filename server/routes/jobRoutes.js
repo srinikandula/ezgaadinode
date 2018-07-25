@@ -52,8 +52,8 @@ AuthRouter.get('/getJobsForInventory',function(req,res){
     });
 });
 
-AuthRouter.get('/searchByTruck/:truckName',function(req,res){
-    API.searchBytruckName(req.jwt,req.params.truckName,function(result){
+AuthRouter.get('/total/count',function(req,res){
+    API.getCount(req.jwt,function(result){
         res.send(result);
     });
 });
@@ -71,6 +71,7 @@ AuthRouter.delete('/deleteImage',function(req,res){
 });
 AuthRouter.get('/shareDetailsViaEmail',function(req,res){
     API.shareDetailsViaEmail(req.jwt,req.query,function(result){
+        console.log("share details via email...",result);
         res.send(result);
     });
 });

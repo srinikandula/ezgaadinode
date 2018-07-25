@@ -14,12 +14,17 @@ AuthRouter.post('/addReminder',function(req,res){
     });
 });
 AuthRouter.get('/getAllReminders',function(req,res){
-    API.getAllReminders(req.jwt,function(result){
+    API.getAllReminders(req.jwt,req.query,function(result){
         res.send(result);
     });
 });
 AuthRouter.get('/getCount',function(req,res){
     API.getReminderCount(req.jwt,function(result){
+        res.send(result);
+    });
+});
+AuthRouter.get('/getAllRemindersCount',function(req,res){
+    API.getAllRemindersCount(req.jwt,function(result){
         res.send(result);
     });
 });

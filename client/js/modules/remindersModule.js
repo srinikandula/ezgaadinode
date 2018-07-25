@@ -1,9 +1,10 @@
 app.factory('ReminderService',['$http', '$cookies', function ($http, $cookies) {
     return{
-        getReminders:function (success, error) {
+        getReminders:function (pageable,success, error) {
             $http({
                 url: '/v1/reminders/getAllReminders',
-                method: "GET"
+                method: "GET",
+                params:pageable
             }).then(success, error)
         },
         addReminder:function (info,success, error) {
@@ -32,6 +33,12 @@ app.factory('ReminderService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET",
             }).then(success)
         },
+        getAllRemindersCount:function (success) {
+            $http({
+                url: '/v1/reminders/getAllRemindersCount',
+                method: "GET",
+            }).then(success)
+        },
         deleteReminder:function (id,success, error) {
             $http({
                 url: '/v1/reminders/deleteReminder/'+id,
@@ -41,19 +48,51 @@ app.factory('ReminderService',['$http', '$cookies', function ($http, $cookies) {
     }
 }]);
 
-app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notification','$rootScope',function($scope,ReminderService,$state,Notification,$rootScope){
+app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notification','$rootScope','NgTableParams',function($scope,ReminderService,$state,Notification,$rootScope,NgTableParams){
+    $scope.count = 0;
+    var loadTableData = function (tableParams) {
+        var pageable = {page:tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting()
+        };
+        ReminderService.getReminders(pageable,function(successCallback){
+            if(successCallback.data.status){
+                $scope.reminders = successCallback.data.data;
+                tableParams.total(successCallback.totalElements);
+                tableParams.data = $scope.reminders;
+                $scope.currentPageOfreminders = $scope.reminders;
+            }
+    },function(errorCallback){});
+    };
+    $scope.init = function () {
+        $scope.reminderParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+            }
+        });
 
-    ReminderService.getReminders(function(successCallback){
-        if(successCallback.data.status){
-            $scope.reminders = successCallback.data.data;
-        }
-    });
-
+    };
     ReminderService.getReminderCount(function(successCallback){
         if(successCallback.data.status){
             $scope.remainder = successCallback.data.data;
         }
     });
+    $scope.getCount = function(){
+        ReminderService.getAllRemindersCount(function (successCallback) {
+            if(successCallback.data.status){
+                $scope.count = successCallback.data.data;
+                $scope.init();
+            }
+        },function(errorCallbacck){});
+    };
 
     $scope.goToEditPage = function (id) {
         $state.go('addReminder',{ID:id});
@@ -70,7 +109,8 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
                 });
             }
         },function(errorCallback){});
-    }
+    };
+    $scope.getCount();
 
 
 }]);

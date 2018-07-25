@@ -21,6 +21,11 @@ AuthRouter.get('/get',function(req,res){
         res.send(result);
     });
 });
+AuthRouter.get('/getCount',function(req,res){
+    API.getCount(req.jwt,function(result){
+        res.send(result);
+    });
+});
 
 AuthRouter.delete('/delete/:id',function(req,res){
     API.deleteInventory(req.params.id,function(result){
@@ -45,6 +50,12 @@ AuthRouter.delete('/deleteImage',function(req,res){
         res.send(result);
     });
 });
+AuthRouter.get('/shareDetailsViaEmail',function(req,res){
+    API.shareDetailsViaEmail(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
+
 
 
 
