@@ -435,9 +435,26 @@ Receipts.prototype.deleteReceiptsRecord = function (jwt, id,req, callback) {
     }
 };
 
-Receipts.prototype.countReceipts = function (jwt,req, callback) {
+Receipts.prototype.countReceipts = function (jwt,params,req, callback) {
     var result = {};
-    ReceiptsColl.count({'accountId': jwt.accountId}, function (err, data) {
+    var condition = {};
+    if(params.partyName){
+        condition = {
+                accountId: jwt.accountId,
+                partyId:params.partyName
+        };
+    }else if(params.fromDate && params.toDate){
+        condition = {
+            accountId: jwt.accountId,
+            date: {
+                $gte: new Date(params.fromDate),
+                $lte: new Date(params.toDate)
+            }
+        };
+    }else{
+        condition = {accountId: jwt.accountId};
+    }
+    ReceiptsColl.count(condition, function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';

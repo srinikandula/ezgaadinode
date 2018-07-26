@@ -1,6 +1,8 @@
 var InventoryCollection = require('./../models/schemas').InventoryCollection;
 var Utils = require('../apis/utils');
 var _ = require('underscore');
+var emailService = require('./mailerApi');
+
 
 
 var Inventories = function () {
@@ -8,9 +10,13 @@ var Inventories = function () {
 
 
 
-function updateInventory(jwt,info,callback){
-
-};
+function value(x) {
+    if (x) {
+        return x;
+    } else {
+        return '--';
+    }
+}
 
 Inventories.prototype.addInventory = function(req,callback){
     var retObj = {
@@ -77,16 +83,28 @@ Inventories.prototype.getInventories = function(jwt,query,callback){
         messages:[]
     };
     var condition = {};
-    if(query.truckName){
-        query.truckName = JSON.parse(query.truckName);
-        condition = {accountId:jwt.accountId,vehicle:query.truckName.registrationNo};
-    }else if(query.inventory){
-        query.inventory = JSON.parse(query.inventory);
-        condition = {accountId:jwt.accountId,_id:query.inventory._id};
-    }else{
+    var skipNumber = (query.page - 1) * query.size;
+    var limit = query.size ? parseInt(query.size) : Number.MAX_SAFE_INTEGER;
+    var sort = query.sort ? JSON.parse(query.sort) : {createdAt: -1};
+    if(query.inventory){
+        condition = {accountId:jwt.accountId,_id:query.inventory};
+    }else if(query.vehicle){
+        condition = {accountId:jwt.accountId,vehicle:query.vehicle};
+    }else if(query.fromDate && query.toDate){
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(query.fromDate),$lte:new Date(query.toDate)}
+        };
+    } else{
         condition = {accountId:jwt.accountId};
     }
-    InventoryCollection.find(condition).populate({path:"partyId",select:'name'}).lean().exec(function(err,inventories){
+    InventoryCollection.find(condition)
+        .populate({path:"partyId",select:'name'})
+        .skip(skipNumber)
+        .limit(limit)
+        .sort(sort)
+        .lean()
+        .exec(function(err,inventories){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -170,6 +188,78 @@ Inventories.prototype.deleteImage = function (req, callback) {
                 callback(resp);
             }
         })
+};
+Inventories.prototype.getCount = function(jwt,params,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {};
+    if(params.inventory){
+        condition = {accountId:jwt.accountId,_id:params.inventory}
+    }else if(params.truckName){
+        condition = {accountId:jwt.accountId,vehicle:params.truckName}
+    }else if(params.fromDate && params.toDate){
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(params.fromDate),$lte:new Date(params.toDate)}
+        }
+    }else{
+        condition = {accountId:jwt.accountId}
+    }
+    InventoryCollection.count(condition,function(err,count){
+        if(err){
+            retObj.status=false;
+            retObj.messages.push("error while fetching record"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status=true;
+            retObj.messages.push("successfull");
+            retObj.data=count;
+            callback(retObj);
+        }
+    });
+};
+Inventories.prototype.shareDetailsViaEmail = function(jwt,params,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    Inventories.prototype.getInventories(jwt,params,function(getCallback){
+        if(getCallback.status){
+            var output = [];
+            for(var i = 0;i < getCallback.data.length;i++){
+                output.push({
+                    inventoryId:getCallback.data[i].id,
+                    inventoryName:getCallback.data[i].name,
+                    vehicle:value(getCallback.data[i].vehicle),
+                    supplier:getCallback.data[i].partyId.name,
+                    paymentMode:getCallback.data[i].mode,
+                    amount:getCallback.data[i].amount,
+                    totalAmount:getCallback.data[i].totalAmount
+                });
+                if(i === getCallback.data.length-1){
+                    var emailparams = {
+                        templateName: 'inventoriesDetails',
+                        subject: "Inventories Details",
+                        to: params.email,
+                        data: output
+                    };
+                    emailService.sendEmail(emailparams,function(emailResponse){
+                        if (emailResponse.status) {
+                            retObj.status = true;
+                            retObj.messages.push(' Details shared successfully');
+                            callback(retObj);
+                        } else {
+                            callback(emailResponse);
+                        }
+                    });
+                }
+            }
+        }else{
+            callback(getCallback);
+        }
+    });
 };
 
 

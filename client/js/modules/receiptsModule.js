@@ -58,10 +58,11 @@ app.factory('ReceiptsService',['$http', function ($http) {
                 method: "DELETE"
             }).then(success, error)
         },
-        countReceipts: function (success, error) {
+        countReceipts: function (params,success, error) {
             $http({
                 url: '/v1/receipts/countReceipts',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         shareReceiptsDetailsByPartyViaEmail: function (params, success, error) {
@@ -82,13 +83,21 @@ app.factory('ReceiptsService',['$http', function ($http) {
 }]);
 
 app.controller('receiptCtrl', ['$scope', '$state', 'ReceiptsService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', function ($scope, $state, ReceiptsService, Notification, NgTableParams, paginationService, PartyService) {
-
     $scope.goToEditReceiptsPage = function (receiptId) {
         $state.go('receiptEdit', { receiptId: receiptId });
     };
+    $scope.party = {party:''};
     $scope.count = 0;
     $scope.getCount = function () {
-        ReceiptsService.countReceipts(function (success) {
+        var params = {};
+        if($scope.party){
+            params.partyName = $scope.party.party._id;
+        };
+        if($scope.fromDate && $scope.toDate){
+            params.fromDate = $scope.fromDate;
+            params.toDate = $scope.toDate;
+        };
+        ReceiptsService.countReceipts(params,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
                 $scope.init();
@@ -139,7 +148,7 @@ app.controller('receiptCtrl', ['$scope', '$state', 'ReceiptsService', 'Notificat
         }, function (err) {
 
         });
-    }
+    };
 
     $scope.init = function () {
         $scope.receiptParams = new NgTableParams({
@@ -152,6 +161,9 @@ app.controller('receiptCtrl', ['$scope', '$state', 'ReceiptsService', 'Notificat
                 counts: [],
                 total: $scope.count,
                 getData: function (params) {
+                    if($scope.party.party){
+                        params.partyName = $scope.party.party.name;
+                    }
                     loadTableData(params);
                     $scope.getAllParties();
                 }
@@ -194,7 +206,7 @@ app.controller('receiptCtrl', ['$scope', '$state', 'ReceiptsService', 'Notificat
         });
     };
 
-    $scope.searchByPartyName = function (partyName) {
+   /* $scope.searchByPartyName = function (partyName) {
         $scope.receiptParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -209,7 +221,7 @@ app.controller('receiptCtrl', ['$scope', '$state', 'ReceiptsService', 'Notificat
                     loadTableData(params);
                 }
             });
-    };
+    };*/
     $scope.shareDetailsViaEmail=function(){
         swal({
             title: 'Share Receipts data through email',

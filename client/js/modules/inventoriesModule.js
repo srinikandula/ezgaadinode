@@ -1,16 +1,23 @@
 app.factory('InventoriesService', ['$http', '$cookies', function ($http, $cookies) {
     return {
-        getInventories: function (inventory,success, error) {
+        getInventories: function (pageable,success, error) {
             $http({
                 url: '/v1/inventories/get',
                 method: "GET",
-                params:inventory
+                params:pageable
             }).then(success, error)
         },
         remove: function (id, success, error) {
             $http({
                 url: '/v1/inventories/delete/' + id,
                 method: "DELETE"
+            }).then(success, error)
+        },
+        getCount:function (params,success,error) {
+            $http({
+                url: '/v1/inventories/getCount',
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         getInventory: function (id, success, error) {
@@ -39,7 +46,14 @@ app.factory('InventoriesService', ['$http', '$cookies', function ($http, $cookie
                 method: "PUT",
                 data: params
             }).then(success, error)
-        }
+        },
+        shareDetailsViaEmail:function(email,success,error){
+            $http({
+                url: '/v1/inventories/shareDetailsViaEmail',
+                method: "GET",
+                params:email
+            }).then(success, error)
+        },
     }
 }]);
 
@@ -162,19 +176,113 @@ app.controller('AddEditInventoryCtrl', ['$scope', 'InventoriesService', '$state'
 }
 ]);
 
-app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', 'Notification','TrucksService', function ($scope, InventoriesService, $state, Notification,TrucksService) {
-    $scope.inventory = {
+app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', 'Notification','TrucksService','NgTableParams', function ($scope, InventoriesService, $state, Notification,TrucksService,NgTableParams) {
+    $scope.query = {
         truckName : '',
         inventory : ''
     };
-    $scope.getInventories = function(){
-        InventoriesService.getInventories($scope.inventory,function (successCallback) {
-            if (successCallback.data.status) {
-                $scope.inventories = successCallback.data.data;
+    $scope.count = 0;
+    $scope.shareDetailsViaEmail = function(){
+        $scope.shareDetailsViaEmail=function(){
+            swal({
+                title: 'Share data using mail',
+                input: 'email',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (email) => {
+                return new Promise((resolve) => {
+                    InventoriesService.shareDetailsViaEmail({
+                    email:email,
+                    vehicle:$scope.query.truckName.registrationNo,
+                    inventory:$scope.query.inventory._id,
+                    fromDate:$scope.fromDate,
+                    toDate:$scope.toDate
+                },function(success){
+                    if (success.data.status) {
+                        resolve()
+                    } else {
+
+                    }
+                },function(error){
+
+                })
+            })
+
+        },
+            allowOutsideClick: false
+
+        }).then((result) => {
+                if (result.value) {
+                swal({
+                    type: 'success',
+                    html: ' sent successfully'
+                })
             }
-        }, function (errorCallback) {
+        })
+        }
+    };
+    var loadTableData = function (tableParams) {
+        var pageable = {page:tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            inventory:tableParams.inventory,
+            vehicle:tableParams.truckName,
+            fromDate:$scope.fromDate,
+            toDate:$scope.toDate
+        };
+        InventoriesService.getInventories(pageable,function (successCallback) {
+           if (successCallback.data.status) {
+               $scope.inventories = successCallback.data.data;
+               tableParams.total(successCallback.totalElements);
+               tableParams.data = $scope.inventories;
+               $scope.currentPageOfinventories = $scope.inventories;
+           }
+       }, function (errorCallback) {
+       });
+    };
+    $scope.init = function(){
+        $scope.inventoryParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                if($scope.query.inventory){
+                    params.inventory = $scope.query.inventory._id;
+                }else{
+                    params.truckName = $scope.query.truckName.registrationNo;
+                }
+                loadTableData(params);
+            }
         });
     };
+    $scope.getCount = function () {
+        var params = {};
+        if($scope.query.truckName){
+            params.truckName = $scope.query.truckName.registrationNo;
+        }else if($scope.query.inventory){
+            params.inventory = $scope.query.inventory._id;
+        }else if( $scope.fromDate &&  $scope.toDate){
+            params.fromDate = $scope.fromDate;
+            params.toDate = $scope.toDate;
+        }else{
+            params = {} ;
+        }
+      InventoriesService.getCount(params,function(successCallback){
+          if (successCallback.data.status) {
+              $scope.count = successCallback.data.data;
+          }
+          $scope.init();
+      },function(errorCallback){
+
+      });
+    };
+    $scope.getCount();
 
     $scope.goToEditPage = function (id) {
         $state.go('addInventory', {Id: id});
@@ -192,7 +300,6 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
         }, function (errorCallback) {
         });
     };
-    $scope.getInventories();
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
             $scope.trucks = successCallback.data.trucks;

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Easygaadi</title>
+</head>
+
+<body>
+<div>
+    <h4>Inventories Details </h4>
+    <table border="1">
+        <tr>
+            <td>Inventory Id</td>
+            <td>Inventory name</td>
+            <td>Vehicle</td>
+            <td>Supplier</td>
+            <td>Payment mode</td>
+            <td>Amount</td>
+            <td>Total Amount</td>
+        </tr>
+        #foreach($record in $emailData)
+        <tr>
+            <td>$record.inventoryId</td>
+            <td>$record.inventoryName</td>
+            <td>$record.vehicle</td>
+            <td>$record.supplier</td>
+            <td>$record.paymentMode</td>
+            <td>$record.amount</td>
+            <td>$record.totalAmount</td>
+        </tr>
+        #end
+    </table>
+</div>
+</body>
+
+</html>

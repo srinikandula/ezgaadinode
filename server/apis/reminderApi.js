@@ -93,15 +93,13 @@ Reminders.prototype.deleteReminder = function(id,callback){
             callback(retObj);
         }
     });
-
 };
-
-Reminders.prototype.getAllReminders = function(jwt,callback){
+Reminders.prototype.getAllRemindersCount = function(jwt,callback){
     var retObj={
         status:false,
         messages:[]
     };
-    RemindersCollection.find({accountId:jwt.accountId}).sort({reminderDate:1}).exec(function(err,reminders){
+    RemindersCollection.count({accountId:jwt.accountId}).exec(function(err,count){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while fetching records"+JSON.stringify(err));
@@ -109,10 +107,36 @@ Reminders.prototype.getAllReminders = function(jwt,callback){
         }else{
             retObj.status=true;
             retObj.messages.push("successful");
-            retObj.data=reminders;
+            retObj.data=count;
             callback(retObj);
         }
     });
+};
+Reminders.prototype.getAllReminders = function(jwt,query,callback){
+    var retObj={
+        status:false,
+        messages:[]
+    };
+    var skipNumber = (query.page - 1) * query.size;
+    var limit = query.size ? parseInt(query.size) : Number.MAX_SAFE_INTEGER;
+    var sort = query.sort ? JSON.parse(query.sort) : {createdAt: -1};
+    RemindersCollection.find({accountId:jwt.accountId})
+        .sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .lean()
+        .exec(function(err,reminders){
+            if(err){
+                retObj.status=false;
+                retObj.messages.push("error while getting data"+JSON.stringify(err));
+                callback(retObj);
+            } else{
+                retObj.status=true;
+                retObj.messages.push("Success");
+                retObj.data = reminders;
+                callback(retObj);
+            }
+        });
 };
 
 Reminders.prototype.getReminder = function(id,jwt,req,reminderCallback){
