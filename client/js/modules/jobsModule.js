@@ -249,7 +249,10 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
                 preConfirm: (email) => {
                 return new Promise((resolve) => {
                     JobsService.shareDetailsViaEmail({
-                    email:email
+                    email:email,truckName:$scope.query.truckName._id,
+                    inventory:$scope.query.inventory._id,
+                    fromDate:$scope.fromDate,
+                    toDate:$scope.toDate
                 },function(success){
                     if (success.data.status) {
                         resolve()

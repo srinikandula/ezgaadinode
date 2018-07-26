@@ -391,12 +391,25 @@ Jobs.prototype.deleteImage = function (req, callback) {
         }
     })
 };
-Jobs.prototype.shareDetailsViaEmail = function (jwt,query,callback) {
+Jobs.prototype.shareDetailsViaEmail = function (jwt,requestParams,callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    Jobs.prototype.getAllJobs(jwt,{},function(getCallback){
+    var condition = {};
+    if(requestParams.truckName){
+        condition = {accountId:jwt.accountId,vehicle:requestParams.truckName}
+    }else if(requestParams.inventory){
+        condition = {accountId:jwt.accountId,inventory:requestParams.inventory}
+    }else if(requestParams.fromDate && requestParams.toDate){
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
+        }
+    }else{
+        condition = {accountId:jwt.accountId}
+    }
+    getJobs({},condition,function(getCallback){
         if(getCallback.status){
             var output = [];
             if(getCallback.data.length>0){
@@ -412,7 +425,7 @@ Jobs.prototype.shareDetailsViaEmail = function (jwt,query,callback) {
                        var emailparams = {
                            templateName: 'jobDetails',
                            subject: "Job Details",
-                           to: query.email,
+                           to: requestParams.email,
                            data: output
                        };
                        emailService.sendEmail(emailparams,function(emailResponse){
