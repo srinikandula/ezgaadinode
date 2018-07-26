@@ -10,9 +10,13 @@ var Inventories = function () {
 
 
 
-function updateInventory(jwt,info,callback){
-
-};
+function value(x) {
+    if (x) {
+        return x;
+    } else {
+        return '--';
+    }
+}
 
 Inventories.prototype.addInventory = function(req,callback){
     var retObj = {
@@ -185,12 +189,25 @@ Inventories.prototype.deleteImage = function (req, callback) {
             }
         })
 };
-Inventories.prototype.getCount = function(jwt,callback){
+Inventories.prototype.getCount = function(jwt,params,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    InventoryCollection.count({accountId:jwt.accountId},function(err,count){
+    var condition = {};
+    if(params.inventory){
+        condition = {accountId:jwt.accountId,_id:params.inventory}
+    }else if(params.truckName){
+        condition = {accountId:jwt.accountId,vehicle:params.truckName}
+    }else if(params.fromDate && params.toDate){
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(params.fromDate),$lte:new Date(params.toDate)}
+        }
+    }else{
+        condition = {accountId:jwt.accountId}
+    }
+    InventoryCollection.count(condition,function(err,count){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while fetching record"+JSON.stringify(err));
@@ -208,13 +225,14 @@ Inventories.prototype.shareDetailsViaEmail = function(jwt,params,callback){
         status:false,
         messages:[]
     };
-    Inventories.prototype.getInventories(jwt,{},function(getCallback){
+    Inventories.prototype.getInventories(jwt,params,function(getCallback){
         if(getCallback.status){
             var output = [];
             for(var i = 0;i < getCallback.data.length;i++){
                 output.push({
                     inventoryId:getCallback.data[i].id,
                     inventoryName:getCallback.data[i].name,
+                    vehicle:value(getCallback.data[i].vehicle),
                     supplier:getCallback.data[i].partyId.name,
                     paymentMode:getCallback.data[i].mode,
                     amount:getCallback.data[i].amount,

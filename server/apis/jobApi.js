@@ -209,29 +209,38 @@ Jobs.prototype.getAllJobs = function(jwt,requestParams,callback){
     var condition = {};
     if(requestParams.truckName){
         condition = {accountId:jwt.accountId,vehicle:requestParams.truckName};
-        getJobs(requestParams,condition, function (getCallback) {
-            callback(getCallback);
-        });
     }else if(requestParams.inventory){
         condition = {accountId:jwt.accountId,inventory:requestParams.inventory};
-        getJobs(requestParams,condition, function (getCallback) {
-            callback(getCallback);
-        });
     }
     else if(requestParams.fromDate && requestParams.toDate){
             condition = {
                 accountId:jwt.accountId,
                 createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
             };
-        getJobs(requestParams,condition, function (getCallback) {
-            callback(getCallback);
-        });
     }else{
         condition={accountId:jwt.accountId};
-        getJobs(requestParams,condition, function (getCallback) {
-            callback(getCallback);
-        });
     }
+    var skipNumber = requestParams.page ? (requestParams.page - 1) * requestParams.size : 0;
+    var limit = requestParams.size ? parseInt(requestParams.size) : Number.MAX_SAFE_INTEGER;
+    var sort = requestParams.sort ? JSON.parse(requestParams.sort) : {createdAt: -1};
+    JobsCollection.find(condition)
+        .sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .lean()
+        .populate({path:"vehicle",select:"registrationNo"}).populate({path:"inventory",select:"name"})
+        .exec(function(err,jobs){
+            if(err){
+                retObj.status=false;
+                retObj.messages.push("error while getting data"+JSON.stringify(err));
+                callback(retObj);
+            } else{
+                retObj.status=true;
+                retObj.messages.push("Success");
+                retObj.data = jobs;
+                callback(retObj);
+            }
+        });
 };
 
 Jobs.prototype.getCount = function(jwt,requestParams,callback){
@@ -396,20 +405,7 @@ Jobs.prototype.shareDetailsViaEmail = function (jwt,requestParams,callback) {
         status: false,
         messages: []
     };
-    var condition = {};
-    if(requestParams.truckName){
-        condition = {accountId:jwt.accountId,vehicle:requestParams.truckName}
-    }else if(requestParams.inventory){
-        condition = {accountId:jwt.accountId,inventory:requestParams.inventory}
-    }else if(requestParams.fromDate && requestParams.toDate){
-        condition = {
-            accountId:jwt.accountId,
-            createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
-        }
-    }else{
-        condition = {accountId:jwt.accountId}
-    }
-    getJobs({},condition,function(getCallback){
+    Jobs.prototype.getAllJobs(jwt,requestParams,function(getCallback){
         if(getCallback.status){
             var output = [];
             if(getCallback.data.length>0){

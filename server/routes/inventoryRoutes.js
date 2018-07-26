@@ -22,7 +22,7 @@ AuthRouter.get('/get',function(req,res){
     });
 });
 AuthRouter.get('/getCount',function(req,res){
-    API.getCount(req.jwt,function(result){
+    API.getCount(req.jwt,req.query,function(result){
         res.send(result);
     });
 });

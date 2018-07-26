@@ -13,10 +13,11 @@ app.factory('InventoriesService', ['$http', '$cookies', function ($http, $cookie
                 method: "DELETE"
             }).then(success, error)
         },
-        getCount:function (success,error) {
+        getCount:function (params,success,error) {
             $http({
                 url: '/v1/inventories/getCount',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         getInventory: function (id, success, error) {
@@ -192,7 +193,11 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
                 preConfirm: (email) => {
                 return new Promise((resolve) => {
                     InventoriesService.shareDetailsViaEmail({
-                    email:email
+                    email:email,
+                    vehicle:$scope.query.truckName.registrationNo,
+                    inventory:$scope.query.inventory._id,
+                    fromDate:$scope.fromDate,
+                    toDate:$scope.toDate
                 },function(success){
                     if (success.data.status) {
                         resolve()
@@ -236,7 +241,7 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
        }, function (errorCallback) {
        });
     };
-    $scope.searchInventory = function(){
+    $scope.init = function(){
         $scope.inventoryParams = new NgTableParams({
             page: 1, // show first page
             size: 10,
@@ -256,23 +261,19 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
             }
         });
     };
-    $scope.init = function(){
-        $scope.inventoryParams = new NgTableParams({
-            page: 1, // show first page
-            size: 10,
-            sorting: {
-                createdAt: -1
-            }
-        }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
-                loadTableData(params);
-            }
-        });
-    };
     $scope.getCount = function () {
-      InventoriesService.getCount(function(successCallback){
+        var params = {};
+        if($scope.query.truckName){
+            params.truckName = $scope.query.truckName.registrationNo;
+        }else if($scope.query.inventory){
+            params.inventory = $scope.query.inventory._id;
+        }else if( $scope.fromDate &&  $scope.toDate){
+            params.fromDate = $scope.fromDate;
+            params.toDate = $scope.toDate;
+        }else{
+            params = {} ;
+        }
+      InventoriesService.getCount(params,function(successCallback){
           if (successCallback.data.status) {
               $scope.count = successCallback.data.data;
           }

@@ -1,7 +1,7 @@
 <div class="main-right col-xs-12" ng-controller="InventoryListCtrl">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-1 pall-zero"><h3>List</h3></div>
-        <ul class="col-sm-11 pall-zero list-inline">
+        <div class="col-sm-2 pall-zero"><h3>Inventories</h3></div>
+        <ul class="col-sm-10 pall-zero list-inline">
             <li class="col-sm-2 pall-zero">
                 <date-picker ng-model="fromDate" class="'paymentscontrol'"
                              past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
@@ -11,30 +11,15 @@
                              placeholder="'to date'" ></date-picker>
             </li>
             <li class="col-sm-1 pall-zero">
-                <button type="submit" ng-click="searchInventory();" class="btn go">
+                <button type="submit" ng-click="getCount();" class="btn go">
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
             <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
-                    <ui-select ng-model="query.inventory" theme="select2"
-                               title="Choose a person" append-to-body="true"
-                               ng-change="searchInventory();">
-                        <ui-select-match placeholder="Search By Inventory" class="form-control ui-select-control">
-                            {{$select.selected.name || name}}
-                        </ui-select-match>
-                        <ui-select-choices
-                                repeat="inventory in inventories  | propsFilter: {name: $select.search}">
-                            <div ng-bind-html="inventory.name | highlight: $select.search"></div>
-                        </ui-select-choices>
-                    </ui-select>
-                </div>
-            </li>
-            <li class="col-sm-3 pos-relative">
-                <div class="select-box erp-box">
                     <ui-select ng-model="query.truckName" theme="select2"
                                title="Choose a person" append-to-body="true"
-                               ng-change="searchInventory()">
+                               ng-change="getCount()">
                         <ui-select-match placeholder="Search By Truck" class="form-control ui-select-control">
                             {{$select.selected.registrationNo || registrationNo}}
                         </ui-select-match>
