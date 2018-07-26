@@ -31,7 +31,6 @@ function save(job,reminder,callback){
     var jobDoc = new JobsCollection(job);
     jobDoc.save(function(err,result){
         if(err){
-            console.log("err",err);
             retObj.status = false;
             retObj.messages.push("error in saving....."+JSON.stringify(err));
             callback(retObj);
@@ -42,38 +41,25 @@ function save(job,reminder,callback){
                     retObj.messages.push("error in saving....."+JSON.stringify(err));
                     callback(retObj);
                 }else{
-                    reminder.refId = result._id;
-                    var reminderDoc = new RemindersCollection(reminder);
-                    reminderDoc.save(function(err,reminderResult){
-                        if(err){
-                            retObj.status = false;
-                            retObj.messages.push("error in saving....."+JSON.stringify(err));
-                            callback(retObj);
-                        }else{
-                            retObj.status = true;
-                            retObj.messages.push("saved successfully..");
-                            retObj.data = result;
-                            callback(retObj);
-                        }
-                    });
+                    if((reminder.reminderDate && reminder.reminderText) !== undefined){
+                        reminder.refId = result._id;
+                        var reminderDoc = new RemindersCollection(reminder);
+                        reminderDoc.save(function(err,reminderResult){
+                            if(err){
+                                retObj.status = false;
+                                retObj.messages.push("error in saving reminder........"+JSON.stringify(err));
+                                callback(retObj);
+                            }
+                        });
+                    }
                 }
             });
+            retObj.status = true;
+            retObj.messages.push("saved successfully..");
+            retObj.data = result;
+            callback(retObj);
         }
     });
-}
-
-function uploadFileToS3(req,callback){
-    if(req.files.files){
-        Utils.uploadAttachmentsToS3(req.jwt.accountId, 'Jobs', req.files.files, function (uploadResp) {
-            if(uploadResp.status){
-                callback(uploadResp);
-            }else{
-                callback(uploadResp);
-            }
-        });
-    }else{
-        callback({'status':true});
-    }
 };
 
 Jobs.prototype.addJob = function(req,callback){
@@ -120,7 +106,6 @@ function updateJob(info,reminder,req,callback){
         status:false,
         messages:[]
     };
-
     JobsCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,updateResult){
         if(err){
             retObj.status=false;
@@ -133,19 +118,25 @@ function updateJob(info,reminder,req,callback){
                     retObj.messages.push("error in saving....."+JSON.stringify(err));
                     callback(retObj);
                 }else{
-                    RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
-                     if(err){
-                         retObj.status=false;
-                         retObj.messages.push("error while getting data"+JSON.stringify(err));
-                         callback(retObj);
-                     }else{
-                        retObj.status=true;
-                        retObj.messages.push("Updated successfully");
-                        callback(retObj);
-                     }
-                 });
+                    if(reminder.reminderDate !== null && reminder.reminderText !== undefined){
+                        var reminderDoc = new RemindersCollection(reminder);
+                        reminderDoc.save(function(err,result){
+                            if(err){
+                                retObj.messages.push("error in saving reminder...");
+                            }
+                        });
+                    }else{
+                        RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
+                            if(err){
+                                retObj.messages.push("error in updating data"+JSON.stringify(err));
+                            }
+                        });
+                    }
                 }
             });
+            retObj.status=true;
+            retObj.messages.push("Updated successfully");
+            callback(retObj);
         }
     });
 }
@@ -174,33 +165,6 @@ Jobs.prototype.updateJob = function(req,callback){
 
 };
 
-function getJobs(query,condition,callback){
-    var retObj = {
-        status:false,
-        messages:[]
-    };
-    var skipNumber = query.page ? (query.page - 1) * query.size : 0;
-    var limit = query.size ? parseInt(query.size) : Number.MAX_SAFE_INTEGER;
-    var sort = query.sort ? JSON.parse(query.sort) : {createdAt: -1};
-    JobsCollection.find(condition)
-        .sort(sort)
-        .skip(skipNumber)
-        .limit(limit)
-        .lean()
-        .populate({path:"vehicle",select:"registrationNo"}).populate({path:"inventory",select:"name"})
-        .exec(function(err,jobs){
-           if(err){
-               retObj.status=false;
-               retObj.messages.push("error while getting data"+JSON.stringify(err));
-               callback(retObj);
-           } else{
-               retObj.status=true;
-               retObj.messages.push("Success");
-               retObj.data = jobs;
-               callback(retObj);
-           }
-        });
-};
 Jobs.prototype.getAllJobs = function(jwt,requestParams,callback){
     var retObj = {
         status:false,
