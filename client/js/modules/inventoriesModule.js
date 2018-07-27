@@ -289,16 +289,38 @@ app.controller('InventoryListCtrl', ['$scope', 'InventoriesService', '$state', '
     };
 
     $scope.delete = function (id) {
-        InventoriesService.remove(id, function (successCallback) {
-            if (successCallback.data.status) {
-                Notification.success({message: "deleted Successfully"});
-            } else {
-                successCallback.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
-                });
-            }
-        }, function (errorCallback) {
-        });
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+            InventoriesService.remove(id, function (success) {
+                if (success.data.status) {
+                    swal(
+                        'Deleted!',
+                        'Job deleted successfully.',
+                        'success'
+                    );
+                    $scope.getCount();
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        swal(
+                            'Deleted!',
+                            message,
+                            'error'
+                        );
+                    });
+                }
+            }, function (err) {
+
+            });
+        }
+    })
     };
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
