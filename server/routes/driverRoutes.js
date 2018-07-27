@@ -28,7 +28,11 @@ AuthRouter.put('/', function (req, res) {
         res.json(result);
     });
 });
-
+AuthRouter.delete('/deleteImage',function(req,res){
+    Drivers.deleteImage(req,function(result){
+        res.send(result);
+    });
+});
 
 AuthRouter.get('/account/drivers', function (req, res) {
     Drivers.getDrivers(req.jwt, req.query, req, function (result) {

@@ -56,7 +56,14 @@ app.factory('DriverService',['$http', function ($http) {
                 method: "GET",
                 params:params
             }).then(success, error)
-        }
+        },
+        deleteImage:function (params,success, error) {
+            $http({
+                url: '/v1/drivers/deleteImage',
+                method: "DELETE",
+                params:params
+            }).then(success, error)
+        },
     }
 }]);
 
@@ -218,7 +225,7 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
 
 }]);
 
-app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams) {
+app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams','TripServices','$uibModal', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams,TripServices,$uibModal) {
     $scope.pagetitle = "Add Driver";
 
     $scope.mobile = /^\+?\d{10}$/;
@@ -287,7 +294,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     };
     $scope.selectTruckId = function (truck) {
         $scope.driver.truckId = truck._id;
-    }
+    };
     $scope.addOrSaveDriver = function () {
         var params = $scope.driver;
         console.log("params",params);
@@ -318,6 +325,21 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             });*/
         }else{
             if (params._id) {
+                if ($scope.driver.aadharAttachments.length > 0 || $scope.driver.licenseAttachments.length > 0) {
+                    $scope.aadharAttachments.forEach(function (file) {
+                        if(file.key){
+                            $scope.driver.aadharAttachments.push(file);
+                        }
+                    });
+                    $scope.licenseAttachments.forEach(function (file) {
+                        if(file.key){
+                            $scope.driver.licenseAttachments.push(file);
+                        }
+                    })
+                } else {
+                    $scope.driver.aadharAttachments = $scope.aadharAttachments;
+                    $scope.driver.licenseAttachments = $scope.licenseAttachments;
+                }
                 DriverService.updateDriver(params, function (success) {
                     if (success.data.status) {
                         Notification.success({message: "Driver Updated Successfully"});
@@ -331,6 +353,8 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                     console.log(err);
                 });
             } else {
+                $scope.driver.aadharAttachments = $scope.aadharAttachments;
+                $scope.driver.licenseAttachments = $scope.licenseAttachments;
                 DriverService.addDriver(params, function (success) {
                     if (success.data.status) {
                         Notification.success({message: "Driver Added Successfully"});
@@ -346,4 +370,61 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             }
         }
     }
+    $scope.viewAttachment = function (path) {
+        TripServices.viewTripDocument({filePath: path}, function (success) {
+            if (success.data.status) {
+                var modalInstance = $uibModal.open({
+                    templateUrl: 'viewS3Image.html',
+                    controller: 'ViewS3ImageCtrl',
+                    size: 'sm',
+                    backdrop: 'static',
+                    keyboard: false,
+                    resolve: {
+                        path: function () {
+                            return success.data.data
+                        }
+                    }
+                });
+                modalInstance.result.then(function (path) {
+                    if(path){
+                        path = path;
+                    }
+                }, function () {});
+
+
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (err) {
+
+        })
+    };
+    $scope.deleteImage = function (type,key,index) {
+        DriverService.deleteImage({Id:$scope.driver._id, key: key}, function (successCallback) {
+            if(successCallback.data.status){
+                if(type === 'aadhar'){
+                    $scope.driver.aadharAttachments.splice(index, 1);
+                }else{
+                    $scope.driver.licenseAttachments.splice(index, 1);
+                }
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.success({message: message});
+                });
+            }else {
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        },function (err) {
+
+        });
+    };
+}]);
+app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {
+    $scope.path = path;
+    $scope.close = function () {
+        $uibModalInstance.dismiss('cancel');
+    };
 }]);

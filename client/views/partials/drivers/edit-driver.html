@@ -47,12 +47,10 @@
 
                     </div>
                 </div>
-            </div>
-            <div class="col-xs-12 col-sm-6 mt-10">
                 <div class="form-group col-xs-12">
 
-                        <date-picker id="licenseValidity" ng-model="driver.licenseValidity"
-                                     placeholder="'License Validity'" class="'custom-form-control'"></date-picker>
+                    <date-picker id="licenseValidity" ng-model="driver.licenseValidity"
+                                 placeholder="'License Validity'" class="'custom-form-control'"></date-picker>
                 </div>
 
                 <div class="form-group col-xs-12">
@@ -63,8 +61,38 @@
 
                     </div>
                 </div>
-
-
+            </div>
+            <div class="col-xs-12 col-sm-6 mt-10">
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
+                        <p>Upload Aadhar Copy:</p>
+                        <customized-file-upload ng-model="aadharAttachments" folder="'drivers'"
+                                                class="'custom-form-control'" >
+                        </customized-file-upload>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div ng-repeat="attch in driver.aadharAttachments">
+                        <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
+                        <button class="btn btn-danger btn-xs" ng-click="deleteImage('aadhar',attch.key,$index);">x
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class=" styling-input-list">
+                        <p>Upload Driver License:</p>
+                        <customized-file-upload ng-model="licenseAttachments" folder="'drivers'"
+                                                class="'custom-form-control'" >
+                        </customized-file-upload>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div ng-repeat="attch in driver.licenseAttachments">
+                        <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
+                        <button class="btn btn-danger btn-xs" ng-click="deleteImage('license',attch.key,$index);">x
+                        </button>
+                    </div>
+                </div>
                 <div class="form-group col-xs-12">
                     <div class="erp-gps col-xs-6">
                         <div class="checkbox">
@@ -98,3 +126,18 @@
         </form>
     </div>
 </div>
+<script type="text/ng-template" id="viewS3Image.html">
+    <div class="modal-header">
+        <h3 class="modal-title"></h3>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-sm-10 popup-center">
+                <img src="{{path}}" width="100%">
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-danger" type="button" ng-click="close();">Close</button>
+    </div>
+</script>

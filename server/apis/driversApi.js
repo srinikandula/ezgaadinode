@@ -601,5 +601,36 @@ Drivers.prototype.downloadDetails = function (jwt, params,req, callback) {
         }
     })
 };
+Drivers.prototype.deleteImage = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    Utils.deleteS3BucketFile(req.query.key, function (resp) {
+        console.log("delete image in drivers..",resp);
+        if (resp.status) {
+            DriversColl.update(
+                {"_id": req.query.Id},
+                {"$pull": {"attachments": {"_id": req.query.Id}}},
+                {safe: true},
+                function (err, numAffected) {
+                    if (err) {
+                        retObj.messages.push("Please try again, " + err.message);
+                        callback(retObj);
+                    } else if (numAffected) {
+                        retObj.status = true;
+                        retObj.messages.push(" image deleted successfully");
+                        callback(retObj);
+                    } else {
+                        retObj.messages.push("image not deleted");
+                        callback(retObj);
+                    }
+                }
+            );
+        } else {
+            callback(resp);
+        }
+    })
+};
 
 module.exports = new Drivers();
