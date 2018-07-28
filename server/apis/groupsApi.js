@@ -64,7 +64,8 @@ Groups.prototype.addAccountGroup = function (jwtObj, accountGroupInfo, req, call
                 accountGroupInfo.accountId = jwtObj.accountId;
                 (new GroupsColl(accountGroupInfo)).save(function (err, savedAcc) {
                     if (err) {
-                        retObj.messages.push('Error saving account');
+                        console.log("log err",err)
+                        retObj.messages.push('Error saving account'+JSON.stringify(err.message));
                         analyticsService.create(req, serviceActions.add_acc_grp_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
