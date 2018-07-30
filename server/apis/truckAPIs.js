@@ -576,7 +576,7 @@ Trucks.prototype.getAllTrucksOfAccount = function (req, callback) {
         status: false,
         messages: []
     };
-    TrucksColl.find({accountId: req.params.truckId}, {
+    TrucksColl.find({accountId: req.params.accountId}, {
         registrationNo: 1,
         fitnessExpiry: 1,
         insuranceExpiry: 1,

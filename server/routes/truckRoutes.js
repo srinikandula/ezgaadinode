@@ -137,7 +137,7 @@ AuthRouter.get('/get/accountTrucks/:pageNumber', function (req, res) {  //trucks
     });
 });
 
-AuthRouter.get('/getAllTrucksOfAccount/:truckId', function (req, res) { //trucks of mentioned account id
+AuthRouter.get('/getAllTrucksOfAccount/:accountId', function (req, res) { //trucks of mentioned account id
     Trucks.getAllTrucksOfAccount(req, function (result) {
         res.json(result);
     })
