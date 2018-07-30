@@ -369,43 +369,48 @@ Jobs.prototype.shareDetailsViaEmail = function (jwt,requestParams,callback) {
         status: false,
         messages: []
     };
-    Jobs.prototype.getAllJobs(jwt,requestParams,function(getCallback){
-        if(getCallback.status){
-            var output = [];
-            if(getCallback.data.length>0){
-                 for(var i = 0;i<getCallback.data.length;i++){
-                     output.push({
-                         jobDate:dateToStringFormat(getCallback.data[i].date),
-                         inventory:getCallback.data[i].inventory.name,
-                         vehicle:getCallback.data[i].vehicle.registrationNo,
-                         milege:getCallback.data[i].milege,
-                         reminderDate:dateToStringFormat(getCallback.data[i].reminderDate)
-                     });
-                   if(i === getCallback.data.length-1){
-                       var emailparams = {
-                           templateName: 'jobDetails',
-                           subject: "Job Details",
-                           to: requestParams.email,
-                           data: output
-                       };
-                       emailService.sendEmail(emailparams,function(emailResponse){
-                           if (emailResponse.status) {
-                               retObj.status = true;
-                               retObj.messages.push(' Details shared successfully');
-                               callback(retObj);
-                           } else {
-                               callback(emailResponse);
-                           }
-                       });
-                   }
-                 }
-            }else{
+    if(!requestParams.email || !Utils.isEmail(requestParams.email)){
+        retObj.messages.push("Invalid email....");
+        callback(retObj);
+    }else {
+        Jobs.prototype.getAllJobs(jwt, requestParams, function (getCallback) {
+            if (getCallback.status) {
+                var output = [];
+                if (getCallback.data.length > 0) {
+                    for (var i = 0; i < getCallback.data.length; i++) {
+                        output.push({
+                            jobDate: dateToStringFormat(getCallback.data[i].date),
+                            inventory: getCallback.data[i].inventory.name,
+                            vehicle: getCallback.data[i].vehicle.registrationNo,
+                            milege: getCallback.data[i].milege,
+                            reminderDate: dateToStringFormat(getCallback.data[i].reminderDate)
+                        });
+                        if (i === getCallback.data.length - 1) {
+                            var emailparams = {
+                                templateName: 'jobDetails',
+                                subject: "Job Details",
+                                to: requestParams.email,
+                                data: output
+                            };
+                            emailService.sendEmail(emailparams, function (emailResponse) {
+                                if (emailResponse.status) {
+                                    retObj.status = true;
+                                    retObj.messages.push(' Details shared successfully');
+                                    callback(retObj);
+                                } else {
+                                    callback(emailResponse);
+                                }
+                            });
+                        }
+                    }
+                } else {
+                    callback(getCallback);
+                }
+            } else {
                 callback(getCallback);
             }
-        }else{
-            callback(getCallback);
-        }
-    });
+        });
+    }
 };
 
 
