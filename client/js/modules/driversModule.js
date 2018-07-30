@@ -252,8 +252,6 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                 $scope.driver = success.data.driver;
                 $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
                 getTruckIds();
-                //console.log('driver',$scope.driver);
-
             }else{
                 success.data.messages.forEach(function (message) {
                     Notification.error(message)
@@ -266,8 +264,8 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     }
 
     function getTruckIds() {
-     // TrucksService.getAllAccountTrucks(1, function (success) {
-        TrucksService.getAllTrucks(1, function (success) {
+     TrucksService.getAllTrucksForFilter(function (success) {
+        //TrucksService.getAllTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find( $scope.trucks, function (truck) {
