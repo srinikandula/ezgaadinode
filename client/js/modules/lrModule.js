@@ -141,7 +141,35 @@ app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notifica
 
 }]);
 
-app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification', 'NgTableParams', 'paginationService','TrucksService','$stateParams', function ($scope, $state, LrServices, Notification, NgTableParams, paginationService, TrucksService,$stateParams) {
+app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification', 'NgTableParams', 'paginationService','TrucksService','$stateParams','PartyService','AccountServices', function ($scope, $state, LrServices, Notification, NgTableParams, paginationService, TrucksService,$stateParams,PartyService,AccountServices) {
+
+    AccountServices.userProfile(function (success) {
+        if (success.data.status) {
+            $scope.account = success.data.result.profile;
+            $scope.lr.consigneeGSTNo = $scope.account.GST;
+        } else {
+            success.data.messages.forEach(function (message) {
+                Notification.error({message: message});
+            });
+        }
+    }, function (err) {});
+
+    $scope.getParties = function(){
+        PartyService.getAllPartiesForFilter(function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (error) {
+
+        });
+    };
+    $scope.getGSTNo = function(){
+        $scope.lr.consignorGSTNo = $scope.lr.consignorName.gstNo;
+    };
     function getTrucks() {
         TrucksService.getAllTrucksForFilter(function (success) {
             if(success.data.status){
@@ -157,6 +185,7 @@ app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification
         })
     }
     getTrucks();
+    $scope.getParties();
     $scope.pageTitle = "Add LR Details";
 
     if ($stateParams.lrId) {

@@ -1,20 +1,34 @@
-<div class="main-right col-xs-12" ng-controller="AddEditLRCtrl">
+<div class="main-right col-xs-12" ng-controller="AddEditLRCtrl" >
     <div class="col-xs-12 account-edit">
         <h2 class="title-name">{{pageTitle}}</h2>
         <form class="mt-10">
             <div class="col-xs-12 col-sm-4">
-                <div class="form-group col-xs-12">
+                <!--<div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <input ng-model="lr.consignorName" type="text" class="form-control custom-form-control"
                                >
                         <label class="focus-effect-for-input" aria-hidden="true">Consignor Name*</label>
 
                     </div>
+                </div>-->
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <ui-select ng-model="lr.consignorName"  theme="select2"
+                                   title="Choose a party" append-to-body="true" ng-change="getGSTNo();">
+                            <ui-select-match class="form-control custom-form-control">
+                                {{$select.selected.name || name}}
+                            </ui-select-match>
+                            <ui-select-choices repeat="party in partiesList | propsFilter: {name: $select.search}">
+                                <div ng-bind-html="party.name | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                        <label class="focus-effect-for-input">Consignor Name*</label>
+                    </div>
                 </div>
                 <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <input ng-model="lr.consignorGSTNo" type="text" class="form-control custom-form-control"
-                              >
+                              readonly>
                         <label class="focus-effect-for-input" aria-hidden="true">Consignor GST No*</label>
 
                     </div>
@@ -29,23 +43,9 @@
                 </div>
                 <div class="form-group col-xs-12">
                     <div class="styling-input-list">
-                        <input ng-model="lr.consigneeGSTNo" type="text" class="form-control custom-form-control" >
+                        <input ng-model="lr.consigneeGSTNo" type="text" class="form-control custom-form-control" readonly>
                         <label class="focus-effect-for-input" aria-hidden="true">Consignee GST No</label>
 
-                    </div>
-                </div>
-                <div class="form-group col-xs-12">
-                    <div class="styling-input-list">
-                        <ui-select ng-model="lr.registrationNo" theme="select2" ng-change="selectedTruck()"
-                                   title="Choose a Truck" append-to-body="true">
-                            <ui-select-match class="form-control custom-form-control">
-                                {{$select.selected.registrationNo || truckRegNo}}
-                            </ui-select-match>
-                            <ui-select-choices repeat="truck in trucksList | propsFilter: {registrationNo: $select.search}">
-                                <div ng-bind-html="truck.registrationNo | highlight: $select.search"></div>
-                            </ui-select-choices>
-                        </ui-select>
-                        <label class="focus-effect-for-input-trucks">Select a Truck*</label>
                     </div>
                 </div>
                 <div class="form-group col-xs-12">
