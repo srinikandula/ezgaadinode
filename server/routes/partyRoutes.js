@@ -76,7 +76,7 @@ AuthRouter.delete('/:partyId', function (req, res) {
 });
 
 AuthRouter.get('/total/count', function (req, res) {
-    Party.countParty(req.jwt,req, function (result) {
+    Party.countParty(req.jwt,req.query,req,function (result) {
         res.send(result);
     });
 });

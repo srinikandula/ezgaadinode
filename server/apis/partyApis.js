@@ -201,7 +201,6 @@ Party.prototype.getAccountParties = function (jwt, params,req, callback) {
         params.page = 1;
 
     }
-
     var skipNumber = (params.page - 1) * params.size;
     var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
@@ -209,7 +208,7 @@ Party.prototype.getAccountParties = function (jwt, params,req, callback) {
     if (!params.partyName) {
         condition = {accountId: jwt.accountId}
     } else {
-        condition = {accountId: jwt.accountId, name:new RegExp("^" + params.partyName, "i")}
+        condition = {accountId: jwt.accountId, name:params.partyName}
     }
 
     async.parallel({
@@ -373,9 +372,15 @@ Party.prototype.deleteParty = function (jwt, partyId,req, callback) {
     });
 
 };
-Party.prototype.countParty = function (jwt,req, callback) {
+Party.prototype.countParty = function (jwt,params,req, callback) {
     var result = {};
-    PartyCollection.count({'accountId': jwt.accountId}, function (err, data) {
+    var condition = {};
+    if(params.partyName){
+        condition = {'accountId': jwt.accountId,name:params.partyName};
+    }else{
+        condition = {accountId:jwt.accountId};
+    }
+    PartyCollection.count(condition,function (err, data) {
         if (err) {
             result.status = false;
             result.message = 'Error getting count';
@@ -551,7 +556,6 @@ Party.prototype.shareDetailsViaEmail = function (jwt,params, req, callback) {
         callback(retObj);
     }else{
         Party.prototype.getAccountParties(jwt,params,req,function(response){
-            // console.log("response...",response);
             if(response.status){
                 var output = [];
                 if(response.parties.length){

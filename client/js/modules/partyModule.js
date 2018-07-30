@@ -63,10 +63,11 @@ app.factory('PartyService', ['$http', '$cookies', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        count: function (success, error) {
+        count: function (params,success, error) {
             $http({
                 url: '/v1/party/total/count',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         }, getAllPartiesForFilter: function (success, error) {
             $http({
@@ -86,13 +87,18 @@ app.factory('PartyService', ['$http', '$cookies', function ($http, $cookies) {
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
 
+   $scope.partyName = {party:''};
     $scope.goToEditPartyPage = function (partyId) {
         $state.go('editParty', {partyId: partyId});
     };
 
     $scope.count = 0;
     $scope.getCount = function () {
-        PartyService.count(function (success) {
+        var params = {};
+        if($scope.partyName.party){
+            params.partyName = $scope.partyName.party.name;
+        }
+        PartyService.count(params,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
                 $scope.init();
@@ -126,7 +132,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
     };
     $scope.getAllParties = function () {
         PartyService.getAllPartiesForFilter(function (success) {
-            console.log("get all parties for filter...",success.data.parties);
             if (success.data.status) {
                 $scope.partiesList = success.data.parties;
             } else {
@@ -149,6 +154,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             counts: [],
             total: $scope.count,
             getData: function (params) {
+                if($scope.partyName.party){
+                    params.partyName = $scope.partyName.party.name;
+                }
                 loadTableData(params);
                 $scope.getAllParties();
             }
@@ -187,22 +195,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         });
 
     };
-    $scope.searchByPartyName = function (partyName) {
-        $scope.partyParams = new NgTableParams({
-            page: 1, // show first page
-            size: 10,
-            sorting: {
-                createdAt: -1
-            }
-        }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
-                params.partyName = partyName;
-                loadTableData(params);
-            }
-        });
-    };
     $scope.shareDetailsViaEmail=function(){
         swal({
             title: 'Share parties data using mail',
@@ -213,7 +205,8 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             preConfirm: (email) => {
             return new Promise((resolve) => {
                 PartyService.shareDetailsViaEmail({
-                email:email
+                email:email,
+                partyName:$scope.partyName.party.name
             },function(success){
                 if (success.data.status) {
                     resolve()
