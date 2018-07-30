@@ -13,11 +13,11 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        getRecords:function (vehicle,success, error) {
+        getRecords:function (jobId,vehicle,success, error) {
             $http({
-                url: '/v1/jobs/getRecords',
+                url: '/v1/jobs/getPreviousJobsForVehicle',
                 method: "GET",
-                params:vehicle
+                params:{vehicleId:vehicle._id,jobId:jobId}
             }).then(success, error)
         },
         getCount: function (params,success, error) {
@@ -93,8 +93,9 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
         }
     },function(errorCallback){});
 
-    $scope.getRecords = function(vehicle){
-        JobsService.getRecords(vehicle,function(successCallback){
+    $scope.getRecords = function(jobId,vehicleId){
+        console.log('jobId ' + jobId +'  vehicleId '+ vehicleId);
+        JobsService.getRecords($stateParams.ID,vehicleId,function(successCallback){
             $scope.records = successCallback.data.records;
             $scope.vehicle = successCallback.data.vehicle;
         },function(errorCallback){
@@ -130,7 +131,8 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                 $scope.job = successCallback.data.data;
                 $scope.job.date = new Date($scope.job.date);
                 $scope.job.reminderDate = new Date($scope.job.reminderDate);
-                $scope.getRecords($scope.job.vehicle);
+
+                $scope.getRecords($stateParams.ID, $scope.job.vehicle._id);
                 $scope.getJobsForInventory($scope.job.inventory);
             }
         },function(errorCallback){});
