@@ -255,40 +255,6 @@ Gps.prototype.gpsTrackingByMapView = function (jwt, callback) {
 
 };
 
-Gps.prototype.moveDevicePositions = function (callback) {
-    var retObj = {
-        status: false,
-        messages: []
-    };
-    var fulldate = new Date();
-    fulldate.setDate(fulldate.getDate() - config.devicePositionsArchiveLimit); //1 day
-    console.log('checking for archivable documents before '+ fulldate);
-    devicePostions.find({createdAt: {$lte: fulldate}}).sort({createdAt: 1}).limit(5000)
-        .exec(function(errdata, gpsdocuments) {
-        if (errdata) {
-            retObj.messages.push('Error getting data');
-            callback(retObj);
-        } else {
-            var ids = _.pluck(gpsdocuments, "_id");
-            archivedDevicePositions.insertMany(gpsdocuments, function (errsaving, saved) {
-                if (errsaving) {
-                    retObj.messages.push('Error saving data ' + errsaving);
-                    callback(retObj);
-                } else {
-                     devicePostions.remove({_id: {$in: ids}}).exec(function (errremoved, removed) {
-                        if (errremoved) {
-                            retObj.messages.push('Error Removing data ');
-                            callback(retObj);
-                        } else {
-                            retObj.messages.push('Succesfully Moved ' + removed.result.n + ' Documents');
-                            callback(retObj);
-                        }
-                    });
-                }
-            });
-        }
-    });
-};
 
 Gps.prototype.getDeviceTrucks = function (access, req, callback) {
     var retObj = {
@@ -529,44 +495,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                                     averageSpeed: averageSpeed,
                                     overSpeedLimit: overSpeedLimit
                                 };
-                                callback(retObj);
-
-
-                                /*async.eachSeries(positions, function(position, asyncCallback) {
-                                    if(position.address === '{address}'){
-                                        resolveAddress({
-                                            latitude: position.location.coordinates[1],
-                                            longitude: position.location.coordinates[0]
-                                        }, function (addressResp) {
-                                            if(addressResp.status){
-                                                position.address = addressResp.address;
-                                                asyncCallback(false);
-                                            }else{
-                                                asyncCallback(addressResp);
-                                            }
-                                        });
-                                    }else{
-                                        asyncCallback(false);
-                                    }
-                                }, function(err) {
-                                    if( err ) {
-                                        callback(err);
-                                    } else {
-                                        retObj.status = true;
-                                        retObj.messages.push('Success');
-                                        retObj.results = {
-                                            positions: positions,
-                                            distanceTravelled: distance,
-                                            timeTravelled: (diffDays * 24),
-                                            topSpeed:topSpeed,
-                                            averageSpeed: averageSpeed
-                                        };
-                                        callback(retObj);
-                                    }
-                                    // console.log("callback ret object..",retObj.results.positions);
-                                });*/
-
-                                //distance=positions[positions.length-1].totalDistance-positions[0].totalDistance;*/
+                                callback(retObj)
                             } else {
                                 retObj.status = false;
                                 retObj.messages.push('No records found for that period');

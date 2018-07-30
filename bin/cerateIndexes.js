@@ -16,3 +16,6 @@ for(var d=0;d<devices.length;d++){
         db.devices.updateMany({"imei":devices[d].imei},{$set:{"registrationNo":trucks[t].registrationNo,"truckId":trucks[t]._id}});
     }
 }
+
+
+db.devicePositions.createIndex({ "location.coordinates": "2d" })

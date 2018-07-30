@@ -107,27 +107,14 @@ AuthRouter.post('/shareTripDetailsByVechicleViaEmail',function (req,res) {
     })
 });
 
-OpenRouter.get('/archiveDevicePositions',function (req,res) {
-    gps.moveDevicePositions(function (result) {
-        res.send(result.messages[0]);
-    });
-});
 
-var job = cronjob.schedule('* */15 * * * *', function() {      //runs every hour 1st and 30th Minute
-    gps.moveDevicePositions(function (result) {
-        console.log("moved positions"+ result.messages[0]);
-    });
-});
-job.start();
-
-/*
 var identifyNotWorkingDevices = cronjob.schedule('* 30 * * * *', function() {
     gps.identifyNotWorkingDevices(function (result) {
         console.log("identifyNotWorkingDevices..",result);
     });
 });
 identifyNotWorkingDevices.start();
-*/
+
 /*
 
 var task = cronjob.schedule('* *!/30 * * *', function() {

@@ -202,7 +202,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),
             truckName:tableParams.truckName,truckType:tableParams.truckType};
         $scope.loading = true;
-        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+        var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
         TrucksService.getAllTrucks(pageable, function (response) {
             $scope.invalidCount = 0;
@@ -310,7 +310,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 createdAt: -1
             }
         }, {
-            counts: [],
+            counts: [10],
             total: $scope.count,
             getData: function (params) {
                 params.truckName = truckName;

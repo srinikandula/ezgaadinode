@@ -1144,7 +1144,7 @@ lrSchema.pre('save', function (next) {
 
 var gpsFencesReportSchema=new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
-    truckId: {type: ObjectId, ref: 'trucks'},
+    deviceId: {type: ObjectId, ref: 'devices'},
     registrationNo:String,
     depot:String,
     startTime:{type:Date},
