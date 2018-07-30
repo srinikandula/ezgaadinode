@@ -30,7 +30,7 @@
 
         <div class="form-group col-xs-12">
             <div class="styling-input-list">
-                <ui-select ng-model="job.vehicle"  ng-change="getRecords(job.vehicle)" theme="select2"
+                <ui-select ng-model="job.vehicle"  ng-change="getRecords(job._id,selected.vehicle)" theme="select2"
                            title="Choose a Truck" append-to-body="true">
                     <ui-select-match class="form-control custom-form-control">
                         {{$select.selected.registrationNo || truckRegNo}}

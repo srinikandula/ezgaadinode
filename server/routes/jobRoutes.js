@@ -40,7 +40,7 @@ AuthRouter.get('/getJob/:id',function(req,res){
     });
 });
 
-AuthRouter.get('/getRecords',function(req,res){
+AuthRouter.get('/getPreviousJobsForVehicle',function(req,res){
     API.getPreviousJobs(req.jwt,req.query,function(result){
         res.send(result);
     });

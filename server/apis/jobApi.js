@@ -240,12 +240,12 @@ Jobs.prototype.getCount = function(jwt,requestParams,callback){
     });
 };
 
-Jobs.prototype.getPreviousJobs = function(jwt,vehicle,callback){
+Jobs.prototype.getPreviousJobs = function(jwt,query,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    JobsCollection.find({accountId:jwt.accountId,vehicle:vehicle._id}).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
+    JobsCollection.find({accountId:jwt.accountId,vehicle:query.vehicleId, _id:{ $nin: [] }}).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
