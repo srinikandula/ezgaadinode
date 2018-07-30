@@ -223,16 +223,6 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                     });
                     click(marker, i, functionContent, compiledContent, map);
                 } else if (i === $scope.locations.length - 1) {
-                    map.fitBounds($scope.bounds);
-                    map.panToBounds($scope.bounds);
-                    flightPath = new google.maps.Polyline({
-                        path: flightPathCoordinates,
-                        geodesic: true,
-                        strokeColor: '#393',
-                        strokeOpacity: 1.0,
-                        strokeWeight: 2
-                    });
-                    flightPath.setMap(map);
                     marker = new google.maps.Marker({
                         position: latlang,
                         icon: '/images/stop.png',
@@ -240,7 +230,6 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                         map: map
                     });
                     click(marker, i, functionContent, compiledContent, map);
-                    map.setCenter(flightPathCoordinates[0]);
                 } else {
 
                     if ($scope.locations[i].isStopped) {
@@ -272,7 +261,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                     } else {
                         if($scope.locations[i].speed > $scope.overSpeedLimit){
                             var icon = {
-                                url: '/images/overSpeed.png', // url
+                                url: '/images/overSpeedIcon.png', // url
                                 scaledSize: new google.maps.Size(25, 25), // scaled size
                                 origin: new google.maps.Point(0, 0), // origin
                                 anchor: new google.maps.Point(0, 0) // anchor
@@ -329,6 +318,17 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 }
             }
         }
+        map.fitBounds($scope.bounds);
+        map.panToBounds($scope.bounds);
+        flightPath = new google.maps.Polyline({
+            path: flightPathCoordinates,
+            geodesic: true,
+            strokeColor: '#393',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+        });
+        flightPath.setMap(map);
+        map.setCenter(flightPathCoordinates[0]);
         marker = null;
     }
     function click(marker,i,content,compiledContent,map){
