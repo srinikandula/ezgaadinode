@@ -47,16 +47,52 @@ app.controller('listController',['$scope','$state','GeoFenceService','Notificati
         $state.go('add_editGeoFence',{id:id});
     };
     $scope.delete = function(id){
-        GeoFenceService.deleteGeoFence(id,function(successCallback){
-            if(successCallback.data.status){
-                Notification.success({message: "Deleted Successfully"});
-            }
-        },function(errorCallback){});
-    };
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+            GeoFenceService.deleteGeoFence(id, function (success) {
+                if (success.data.status) {
+                    swal(
+                        'Deleted!',
+                        'Deleted successfully.',
+                        'success'
+                    );
+                    $scope.getCount();
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        swal(
+                            'Deleted!',
+                            message,
+                            'error'
+                        );
+                    });
+                }
+            }, function (err) {
+
+            });
+        }
+    })
 }]);
 
 app.controller('AddEditGeoLocationCtrl',['$scope','$state','$uibModal','GeoFenceService','Notification','$stateParams',function($scope,$state,$uibModal,GeoFenceService,Notification,$stateParams){
     $scope.geoFence = {};
+    $scope.searchSource = function () {
+        var input = document.getElementById('source');
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.geoFence.address = place.formatted_address;
+        });
+    };
     $scope.title = 'Add Geofence';
     if($stateParams.id){
         $scope.title = 'Edit Geofence';

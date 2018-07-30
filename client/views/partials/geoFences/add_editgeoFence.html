@@ -10,8 +10,8 @@
             </div>
             <div class="form-group col-xs-12">
                 <div class="styling-input-list">
-                    <input id="source" type="text" class="form-control custom-form-control" placeholder="geoLocation*"
-                           ng-model="geoFence.address">
+                    <input  type="text" class="form-control custom-form-control" placeholder="geoLocation*"
+                         id="source"  ng-model="geoFence.address" ng-change="searchSource()">
                     <!--<label class="focus-effect-for-input" aria-hidden="true"></label>-->
                     <div class="mapIcon" ng-click="selectLocation()">
                         <span class="glyphicon glyphicon-map-marker"></span>
