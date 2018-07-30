@@ -168,6 +168,7 @@ var inventorySchema = new mongoose.Schema({
 
 var geoFenceSchema = new mongoose.Schema({
     name : String,
+    geoRadius:Number,
     address:String,
     geoLocation: {
         type: {
@@ -1081,8 +1082,6 @@ var lrSchema = new mongoose.Schema({
     consignorGSTNo:String,
     consigneeGSTNo:String,
     consigneeBanksNameAndAddress:String,
-    truckId:String,
-    registrationNo:String,
     addressOfDeliveryOffice:String,
     date:Date,
     lrNo:String,
