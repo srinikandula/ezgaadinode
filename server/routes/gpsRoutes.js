@@ -90,7 +90,7 @@ AuthRouter.post('/updateGpsSettings',function (req,res) {
 });
 
 AuthRouter.get('/getGpsSettings',function (req,res) {
-    gps.getGpsSettings(req.jwt.id,function (result) {
+    gps.getGpsSettings(req.jwt.accountId,function (result) {
         res.send(result);
     })
 });

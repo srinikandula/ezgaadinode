@@ -98,17 +98,38 @@ app.controller("reminderListCtrl",['$scope','ReminderService','$state','Notifica
         $state.go('addReminder',{ID:id});
     };
     $scope.delete = function(id){
-        ReminderService.deleteReminder(id,function(successCallback){
-            if(successCallback.data.status){
-                Notification.success({message:"Deleted Successfully"});
-                $rootScope.$broadcast("reminderDeleted");
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+            ReminderService.deleteReminder(id, function (success) {
+                if (success.data.status) {
+                    swal(
+                        'Deleted!',
+                        'Job deleted successfully.',
+                        'success'
+                    );
+                    $scope.getCount();
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        swal(
+                            'Deleted!',
+                            message,
+                            'error'
+                        );
+                    });
+                }
+            }, function (err) {
 
-            }else{
-                successCallback.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
-                });
-            }
-        },function(errorCallback){});
+            });
+        }
+    })
     };
     $scope.getCount();
 
@@ -176,7 +197,6 @@ app.controller("remindersCtrl",['$scope','$rootScope','ReminderService','Notific
 
             });
         }
-
     };
     $scope.cancel = function () {
         $state.go('reminders');

@@ -281,11 +281,38 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
         $state.go('addJob',{ID:id});
     };
     $scope.delete = function(id){
-        JobsService.deleteJob(id,function(successCallback){
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+            JobsService.deleteJob(id, function (success) {
+                if (success.data.status) {
+                    swal(
+                        'Deleted!',
+                        'Job deleted successfully.',
+                        'success'
+                    );
+                    $scope.getCount();
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        swal(
+                            'Deleted!',
+                            message,
+                            'error'
+                        );
+                    });
+                }
+            }, function (err) {
 
-        },function(errorCallback){
-
-        });
+            });
+        }
+    })
     };
     var loadTableData = function (tableParams) {
         var pageable = {page:tableParams.page(),

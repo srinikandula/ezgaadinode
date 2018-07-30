@@ -298,6 +298,16 @@ var driverSchema = new mongoose.Schema({
     createdBy: String,
     updatedBy: String,
     driverId: String,
+    aadharAttachments: [{
+        fileName: String,
+        key: String,
+        path: String
+    }],
+    licenseAttachments: [{
+        fileName: String,
+        key: String,
+        path: String
+    }],
     isActive: {type: Boolean, default: true},
     attrs: {}
 }, {
