@@ -87,7 +87,7 @@ app.factory('PartyService', ['$http', '$cookies', function ($http, $cookies) {
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
 
-   $scope.partyName = {party:''};
+   $scope.partyName = {party:'',name:''};
     $scope.goToEditPartyPage = function (partyId) {
         $state.go('editParty', {partyId: partyId});
     };
@@ -98,6 +98,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         if($scope.partyName.party){
             params.partyName = $scope.partyName.party.name;
         }
+        if($scope.partyName.name){
+            params.partyName = $scope.partyName.name;
+        }
         PartyService.count(params,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
@@ -107,8 +110,6 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             }
         });
     };
-
-
     var loadTableData = function (tableParams) {
         var pageable = {
             page: tableParams.page(),
@@ -156,6 +157,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             getData: function (params) {
                 if($scope.partyName.party){
                     params.partyName = $scope.partyName.party.name;
+                }
+                if($scope.partyName.name){
+                    params.partyName = $scope.partyName.name;
                 }
                 loadTableData(params);
                 $scope.getAllParties();
