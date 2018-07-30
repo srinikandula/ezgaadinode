@@ -315,27 +315,6 @@ Trucks.prototype.updateTruck = function (jwt, truckDetails, req, callback) {
         });
 };
 
-// Trucks.prototype.updateTruckGroupId = function (truckId, groupId, callback) {
-//     var retObj = {
-//         status: false,
-//         messages: []
-//     };
-//     TrucksColl.findOneAndUpdate({_id: truckId},{$set: {"groupId": groupId}},{new: true}, function (err, truck) {
-//             if (err) {
-//                 retObj.messages.push("Error while updating truck, try Again");
-//                 callback(retObj);
-//             } else if (truck) {
-//                 retObj.status = true;
-//                 retObj.messages.push("Truck updated successfully");
-//                 retObj.truck = truck;
-//                 callback(retObj);
-//             } else {
-//                 retObj.status = false;
-//                 retObj.message.push("Error, finding truck");
-//                 callback(retObj);
-//             }
-//         });
-// };
 
 function getTrucks(condition, jwt, params, req, callback) {
     var retObj = {
@@ -349,10 +328,9 @@ function getTrucks(condition, jwt, params, req, callback) {
         trucks: function (trucksCallback) {
             TrucksColl
                 .find(condition)
-                //.populate('latestLocation')
                 .sort(sort)
                 .skip(skipNumber)
-                .limit(pageLimits.trucksPaginationLimit)
+                .limit(limit)
                 .lean()
                 .exec(function (err, trucks) {
                     async.parallel({
@@ -425,6 +403,7 @@ Trucks.prototype.getTrucks = function (jwt, params, req, callback) {
         if(params.truckType) {
             condition.truckType = new RegExp("^" + params.truckType, "i");
         }
+        //if account admin is searching for group trucks
         if(params.groupId && ObjectId.isValid(params.groupId)){
             GroupsColl.findOne({_id: params.groupId}, function (err, accountData) {
                 if (err) {
@@ -434,7 +413,6 @@ Trucks.prototype.getTrucks = function (jwt, params, req, callback) {
                     if (accountData.truckIds.length > 0) {
                         condition = {_id: {$in: accountData.truckIds}};
                         getTrucks(condition, jwt, params, req, callback);
-
                     } else {
                         retObj.messages.push('There is no assigned trucks');
                         analyticsService.create(req, serviceActions.retrieve_trus_err, {
@@ -461,10 +439,7 @@ Trucks.prototype.getTrucks = function (jwt, params, req, callback) {
         }else{
             getTrucks(condition, jwt, params, req, callback);
         }
-
-    }
-    else {
-
+    } else {
         GroupsColl.findOne({_id: jwt.id}, function (err, accountData) {
             if (err) {
                 retObj.messages.push('Error retrieving trucks');
@@ -505,8 +480,6 @@ Trucks.prototype.getTrucks = function (jwt, params, req, callback) {
                 callback(retObj);
             }
         });
-
-
     }
 };
 
