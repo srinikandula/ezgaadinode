@@ -57,42 +57,27 @@ app.controller('listController',['$scope','$state','GeoFenceService','Notificati
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-            GeoFenceService.deleteGeoFence(id, function (success) {
-                if (success.data.status) {
-                    swal(
-                        'Deleted!',
-                        'Deleted successfully.',
-                        'success'
-                    );
-                    $scope.getCount();
-                } else {
-                    success.data.messages.forEach(function (message) {
+                GeoFenceService.deleteGeoFence(id, function (success) {
+                    if (success.data.status) {
                         swal(
                             'Deleted!',
-                            message,
-                            'error'
+                            'Deleted successfully.',
+                            'success'
                         );
-                    });
-                }
-            }, function (err) {
-
-            });
-        }
-    })
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal('Deleted!', message, 'error');
+                        });
+                    }
+                }, function (err) { });
+            }
+        });
+    };
 }]);
 
 app.controller('AddEditGeoLocationCtrl',['$scope','$state','$uibModal','GeoFenceService','Notification','$stateParams',function($scope,$state,$uibModal,GeoFenceService,Notification,$stateParams){
     $scope.geoFence = {};
-    $scope.searchSource = function () {
-        var input = document.getElementById('source');
-        var options = {};
-        var autocomplete = new google.maps.places.Autocomplete(input, options);
-        google.maps.event.addListener(autocomplete, 'place_changed',
-            function () {
-                var place = autocomplete.getPlace();
-                $scope.geoFence.address = place.formatted_address;
-        });
-    };
     $scope.title = 'Add Geofence';
     if($stateParams.id){
         $scope.title = 'Edit Geofence';
@@ -119,7 +104,16 @@ app.controller('AddEditGeoLocationCtrl',['$scope','$state','$uibModal','GeoFence
             if(data) {
                 $scope.geoFence.address = data.address;
                 $scope.geoFence.geoLocation = data.geoLocation;
-                //window.location.reload();
+                $scope.searchSource = function () {
+                    var input = document.getElementById('source');
+                    var options = {};
+                    var autocomplete = new google.maps.places.Autocomplete(input, options);
+                    google.maps.event.addListener(autocomplete, 'place_changed',
+                        function () {
+                            var place = autocomplete.getPlace();
+                            $scope.geoFence.address = place.formatted_address;
+                        });
+                };
             }
         });
     };
