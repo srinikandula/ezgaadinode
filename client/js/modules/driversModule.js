@@ -264,7 +264,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     }
 
     function getTruckIds() {
-     TrucksService.getAllTrucksForFilter(function (success) {
+        TrucksService.getAllTrucksForFilter(function (success) {
         //TrucksService.getAllTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
