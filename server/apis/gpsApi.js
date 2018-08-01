@@ -607,47 +607,46 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
             retObj.messages.push('Error retrieving trucks data');
             callback(retObj);
         } else {
-            async.each(trucksData, function (truck, asyncCallback) {
-                if (truck.driverId) {
-                    //SK: refactor this to use drivers cache
-                    /* DriversColl.findOne({_id: truck.driverId}, function (err, driver) {
-                         if (err) {
-                             console.log(err);
-                         } else {
-                             truck.driverId = driver.fullName;
-                         }
-                     }); */
-                }
-                if (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
-                    resolveAddress({
-                        latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
-                        longitude: truck.attrs.latestLocation.longitude || truck.attrs.latestLocation.location.coordinates[0]
-                    }, function (addressResp) {
-                        if (addressResp.status) {
-                            truck.attrs.latestLocation.address = addressResp.address;
-                            console.log('updating truck ' + truck._id);
-                            TrucksColl.findOneAndUpdate({_id:truck._id}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
-                                console.log('truck updated ' + updated);
+            var driverIds = _.pluck(trucksData,'driverId');
+            DriversColl.find({_id: {$in:driverIds}},{fullName: 1}, function (err, driverNames) {
+                async.each(trucksData, function (truck, asyncCallback) {
+                        if (truck.driverId) {
+                            var driver = _.find(driverNames, function (driver) {
+                                return driver._id.toString() === truck.driverId;
                             });
-                            asyncCallback(false);
-                        } else {
-                            asyncCallback(addressResp);
+                            truck.attrs.latestLocation.driverName = driver.fullName;
                         }
-                    });
+                    if (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
+                        resolveAddress({
+                            latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
+                            longitude: truck.attrs.latestLocation.longitude || truck.attrs.latestLocation.location.coordinates[0]
+                        }, function (addressResp) {
+                            if (addressResp.status) {
+                                truck.attrs.latestLocation.address = addressResp.address;
+                                console.log('updating truck ' + truck._id);
+                                TrucksColl.findOneAndUpdate({_id:truck._id}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
+                                    console.log('truck updated ' + updated);
+                                });
+                                asyncCallback(false);
+                            } else {
+                                asyncCallback(addressResp);
+                            }
+                        });
 
-                } else {
-                    asyncCallback(false);
-                }
-            }, function (err) {
-                if (err) {
-                    callback(err);
-                } else {
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    retObj.results = trucksData;
-                    callback(retObj);
-                }
+                    } else {
+                        asyncCallback(false);
+                    }
+                }, function (err) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        retObj.status = true;
+                        retObj.messages.push('Success');
+                        retObj.results = trucksData;
+                        callback(retObj);
+                    }
 
+                });
             });
 
         }
