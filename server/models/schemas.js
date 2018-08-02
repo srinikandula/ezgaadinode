@@ -44,6 +44,8 @@ var accountSchema = new mongoose.Schema({
         index: true,
         unique: true
     },
+    contactPhone: Number,
+    password: String,
     address1: String,
     address2: String,
     city: String,
