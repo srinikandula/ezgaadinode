@@ -39,12 +39,11 @@ var routeConfigSchema = new mongoose.Schema({
 });
 
 var accountSchema = new mongoose.Schema({
-    /*userName: { // name of the account is called accountId
+    userName: { // name of the account is called accountId
         type: String,
         index: true,
         unique: true
     },
-    contactPhone: Number,*/
     address1: String,
     address2: String,
     city: String,
@@ -54,7 +53,6 @@ var accountSchema = new mongoose.Schema({
     GST: String,
     GSTRate: Number,
     userId: String,
-    password: String,
     email: String,
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -177,7 +175,7 @@ var geoFenceSchema = new mongoose.Schema({
         },
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
-    accountId: {type: ObjectId, ref: 'accounts'}
+    accountId: String
 },{
     timestamps: true
 });
@@ -1221,5 +1219,4 @@ module.exports = {
     ShareLinksColl: mongoose.model('shareLinks', shareLinksSchema, 'shareLinks'),
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
     GeoFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
-
 };

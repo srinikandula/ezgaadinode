@@ -296,14 +296,15 @@ Events.prototype.getAccountData = function (request, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.results = results;
+            console.log('found accounts ' + results.length);
             for (var i = 0; i < retObj.results.length; i++) {
-                var AccountData = retObj.results[i];
+                var accountData = retObj.results[i];
                 //AccountData.gpsEnabled = true;
-                if (!AccountData.contactPhone || AccountData.contactPhone.trim().length == 0 || isNaN(AccountData.contactPhone)) {
-                    delete AccountData.contactPhone;
-                    AccountData.gpsEnabled = true;
+                if (!accountData.contactPhone || accountData.contactPhone.trim().length == 0 || isNaN(accountData.contactPhone)) {
+                    delete accountData.contactPhone;
+                    accountData.gpsEnabled = true;
                 }
-                EventData.createAccountData(AccountData)
+                EventData.createAccountData(accountData)
             }
             retObj.count = retObj.results.length;
             analyticsService.create(request, serviceActions.get_account_data, {success: true}, function (response) {
@@ -364,7 +365,7 @@ Events.prototype.getAccountGroupData = function (request, callback) {
             }, function (accountGroupErr, accountGroupSaved) {
                 if (accountGroupErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 368');
                     retObj.messages.push(JSON.stringify(planerr));
                     callback(retObj);
                 } else {
@@ -429,7 +430,7 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
             }, function (truckErr, truckSaved) {
                 if (truckErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 433');
                     retObj.messages.push(JSON.stringify(planerr));
                     callback(retObj);
                 } else {
@@ -591,10 +592,14 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                                     if (err) console.log("Err", err);
                                                 });
                                             }
-
-                                            deviceDataDoc.save(function (err, doc) {
-                                                deviceDocCallBack(err, 'saved');
+                                            DeviceColl.findOne({"imei":data.device.imei}, function(error, deviceFound){
+                                                if(!error && !deviceFound){
+                                                    deviceDataDoc.save(function (err, doc) {
+                                                        deviceDocCallBack(err, 'saved');
+                                                    });
+                                                }
                                             });
+
                                         } else {
                                             deviceDocCallBack(null, 'saved');
                                         }
@@ -611,7 +616,7 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     }, function (deviceErr, deviceSaved) {
                         if (deviceErr) {
                             retObj.status = false;
-                            retObj.messages.push('Error saving data');
+                            retObj.messages.push('Error saving data 619');
                             retObj.messages.push(JSON.stringify(deviceErr));
                             callback(retObj);
                         } else {
@@ -671,7 +676,7 @@ Events.prototype.getDevicePlans = function (request, callback) {
             }, function (planerr, plansaved) {
                 if (planerr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 679');
                     retObj.messages.push(JSON.stringify(planerr));
                     callback(retObj);
                 } else {
@@ -776,7 +781,7 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                         }, function (planerr, plansaved) {
                             if (planerr) {
                                 retObj.status = false;
-                                retObj.messages.push('Error saving data');
+                                retObj.messages.push('Error saving data 784');
                                 retObj.messages.push(JSON.stringify(planerr));
                                 callback(retObj);
                             } else {
@@ -837,7 +842,7 @@ Events.prototype.getFranchise = function (request, callback) {
             }, function (franchiseErr, franchiseSaved) {
                 if (franchiseErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 845');
                     retObj.messages.push(JSON.stringify(franchiseErr));
                     callback(retObj);
                 } else {
@@ -884,7 +889,7 @@ Events.prototype.getAdminRoles = function (request, callback) {
             }, function (roleErr, roleSaved) {
                 if (roleErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 892');
                     retObj.messages.push(JSON.stringify(roleErr));
                     callback(retObj);
                 } else {
@@ -948,7 +953,7 @@ Events.prototype.getAdminPermissions = function (request, callback) {
             }, function (permissionErr, permissionSaved) {
                 if (permissionErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 956');
                     retObj.messages.push(JSON.stringify(permissionErr));
                     callback(retObj);
                 } else {
@@ -1015,7 +1020,7 @@ Events.prototype.getEmployeeData = function (request, callback) {
             }, function (employeeErr, employeeSaved) {
                 if (employeeErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 1023');
                     retObj.messages.push(JSON.stringify(employeeErr));
                     callback(retObj);
                 } else {
@@ -1082,7 +1087,7 @@ Events.prototype.getAccountOperatingRoutes = function (request, callback) {
             }, function (AccountOperatingRoutesErr, AccountOperatingRoutesSaved) {
                 if (AccountOperatingRoutesErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 1090');
                     retObj.messages.push(JSON.stringify(AccountOperatingRoutesErr));
                     callback(retObj);
                 } else {
@@ -1398,7 +1403,7 @@ Events.prototype.getTrucksTypeData = function (request, callback) {
             }, function (trucksTypeErr, trucksTypeSaved) {
                 if (trucksTypeErr) {
                     retObj.status = false;
-                    retObj.messages.push('Error saving data');
+                    retObj.messages.push('Error saving data 1406');
                     retObj.messages.push(JSON.stringify(trucksTypeErr));
                     callback(retObj);
                 } else {
