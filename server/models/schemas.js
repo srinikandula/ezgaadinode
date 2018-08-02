@@ -1152,7 +1152,7 @@ lrSchema.pre('save', function (next) {
 });
 
 var gpsFencesReportSchema=new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: String,
     deviceId: {type: ObjectId, ref: 'devices'},
     registrationNo:String,
     depot:String,
