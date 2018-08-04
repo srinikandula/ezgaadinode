@@ -1,0 +1,43 @@
+<div class="main-right col-xs-12" ng-controller="invoicesListController">
+    <div class="col-xs-12 pall-zero mb-10">
+        <div class="col-sm-3 pall-zero"><h3>Invoice List:</h3></div>
+    </div>
+    <table class="table table-bordered table-striped table-condensed table-hover"
+           ng-table="inventoryParams">
+        <tr ng-repeat="invoice in invoices " style="text-align: center;">
+            <td data-title="'Party Name'" sortable="'partyId'" class="clickable-item">{{
+                invoice.partyId}}
+            </td>
+            <td data-title="'Truck No'" sortable="'vehicleNo'" class="clickable-item">{{
+                invoice.vehicleNo}}
+            </td>
+            <td data-title="'Rate/Trip'" sortable="'rate'" class="clickable-item">{{
+                invoice.rate}}
+            </td>
+            <td data-title="'No of Trips'" sortable="'quantity'" class="clickable-item">{{
+                invoice.quantity}}
+            </td>
+            <td data-title="'Action'" class="col-sm-2">
+                <a href="#" class="btn" ng-click="goToEditPage(invoice._id)">
+                    <span class="glyphicon glyphicon-pencil"></span></a>
+                <a href="#" class="btn" ng-click="delete(invoice._id)">
+                    <span class="glyphicon glyphicon-remove"></span>
+                </a>
+                <a href="#"  class="btn"
+                   ng-click="generatePdf(invoice._id)">
+                    <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
+                </a>
+            </td>
+        </tr>
+        <tr ng-if="!invoices || invoices.length === 0">
+            <td colspan="8"> No Invoices Exist.</td>
+        </tr>
+    </table>
+    <div class="add-image pull-right">
+        <figure>
+            <a href="#" ui-sref="invoiceEdit"><img src="images/Add_Payments.png" alt="Add Invoice"
+                                              title="Add Invoice"></a>
+        </figure>
+    </div>
+
+</div>

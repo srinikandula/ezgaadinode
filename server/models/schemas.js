@@ -106,6 +106,7 @@ var accountSchema = new mongoose.Schema({
     cgst:{type:Number,default:0},
     sgst:{type:Number,default:0},
     panNo:String,
+    templatePath:String
 
 
 }, {
@@ -1159,9 +1160,23 @@ var gpsFencesReportSchema=new mongoose.Schema({
     startTime:{type:Date},
     endTime:{type:Date}
 }, {timestamps: true});
+
+var invoicesSchema=new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    partyId:String,
+    vehicleNo:String,
+    rate:String,
+    quantity:Number,
+    totalAmount:Number,
+    trip:[]
+},{timestamps: true});
+
+
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     userLogins: mongoose.model('userLogins', userSchema, 'userLogins'),
+    invoicesCollection: mongoose.model('invoices',invoicesSchema,'invoices'),
     RemindersCollection: mongoose.model('reminders', remindersSchema, 'reminders'),
     InventoryCollection: mongoose.model('inventories', inventorySchema, 'inventories'),
     JobsCollection: mongoose.model('jobs', jobSchema, 'jobs'),

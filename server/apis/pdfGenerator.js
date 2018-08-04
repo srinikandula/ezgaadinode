@@ -11,11 +11,12 @@ var options = {
 var PdfGenerator = function () {
 };
 
-PdfGenerator.prototype.createPdf=function (template,orientation,data,callback) {
+PdfGenerator.prototype.createPdf=function (path,template,orientation,data,callback) {
   var retObj={
       status:false,
       messages:[]
   };
+  console.log("path...in pdf...",path);
   if(!template){
       retObj.messages.push("Provide template");
   }
@@ -25,7 +26,7 @@ PdfGenerator.prototype.createPdf=function (template,orientation,data,callback) {
   if(retObj.messages.length>0){
       callback(retObj);
   }else{
-      var html = fs.readFileSync(__dirname+'/../pdfTemplates/'+template, 'utf8');
+      var html = fs.readFileSync(__dirname+'/../pdfTemplates/'+path+'/'+template, 'utf8');
       var document = {
           template: html,
           context: data,

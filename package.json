@@ -33,6 +33,7 @@
     "json2xls": "^0.1.2",
     "jsonwebtoken": "^8.2.1",
     "log4js": "^2.5.3",
+    "mathjs": "^5.0.4",
     "merge-stream": "^1.0.1",
     "moment": "^2.22.0",
     "mongoose": "^4.13.12",
