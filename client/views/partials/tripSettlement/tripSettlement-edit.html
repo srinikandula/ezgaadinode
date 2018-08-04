@@ -1,0 +1,340 @@
+<div class="main-right col-xs-12" ng-controller="addEditTripSettlement">
+    <div class="col-xs-12 account-edit">
+        <h2 class="title-name ">{{pageTitle}}</h2>
+        <div class="col-sm-12 col-xs-12 mt-10">
+            <div class="form-group col-xs-12">
+
+            </div>
+            <div class=" col-sm-4 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <ui-select ng-model="tripSettlement.truckNumber" theme="select2"
+                               style="min-width: 200px;"
+                               title="Choose a Truck Type" append-to-body="true">
+                        <ui-select-match class="form-control custom-form-control">
+                            {{$select.selected.registrationNo || truckRegNo}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="truck in trucks | propsFilter: {registrationNo: $select.search}">
+                            <b>
+                                <div ng-bind-html="truck.registrationNo | highlight: $select.search"></div>
+                            </b>
+
+                        </ui-select-choices>
+                    </ui-select>
+                    <label class="focus-effect-for-input">Select Truck Number*</label>
+                </div>
+            </div>
+            <div class=" col-sm-4 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <ui-select ng-model="tripSettlement.driverName" theme="select2"
+                               style="min-width: 200px;"
+                               title="Choose a Truck Type" append-to-body="true">
+                        <ui-select-match class="form-control custom-form-control">
+                            {{$select.selected.fullName}}
+                        </ui-select-match>
+                        <ui-select-choices
+                                repeat="driver in driversList | propsFilter: {fullName: $select.search}">
+                            <b>
+                                <div ng-bind-html="driver.fullName | highlight: $select.search"></div>
+                            </b>
+
+                        </ui-select-choices>
+                    </ui-select>
+                    <label class="focus-effect-for-input">Select Driver Name*</label>
+                </div>
+            </div>
+            <div class=" col-sm-4 form-group col-xs-12">
+                <date-picker id="fromDate" ng-model="tripSettlement.date"
+                             class="'custom-form-control'" placeholder="'Date'"></date-picker>
+            </div>
+
+        </div>
+
+       <!-- <div class="col-sm-12 col-xs-12 mt-10">
+            <div class=" col-sm-2 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">From</label>
+                </div>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <date-picker id="fromDate1" ng-model="tripSettlement.fromDate1"
+                             class="'custom-form-control'" placeholder="'Date'"></date-picker>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">To</label>
+                </div>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <date-picker id="toDate1" ng-model="tripSettlement.toDate1"
+                             class="'custom-form-control'" placeholder="'Date'"></date-picker>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.km2"/>
+                    <label class="focus-effect-for-input" aria-hidden="true"> Start Km</label>
+                </div>
+            </div>
+
+
+
+        </div>
+-->
+       <!-- <div class="col-sm-12 col-xs-12 mt-10">
+
+            <div class=" col-sm-2 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">From</label>
+                </div>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <date-picker id="fromDate2" ng-model="tripSettlement.fromDate2"
+                             class="'custom-form-control'" placeholder="'Date'"></date-picker>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">To</label>
+                </div>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <date-picker id="toDate2" ng-model="tripSettlement.toDate2"
+                             class="'custom-form-control'" placeholder="'Date'"></date-picker>
+            </div>
+            <div class=" col-sm-2 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.km2"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">End KM</label></div>
+            </div>
+            <div class="col-sm-2"> <a href="#" class="addingMaster" ng-click="addFromAndTo()" ng-show="$index==0">
+                <i class="fa fa-plus-square"></i>
+                 </a></div>
+             </div>-->
+
+            <div ng-repeat="exp in tripSettlement.trip track by $index">
+                 <div class="col-sm-12 col-xs-12 mt-10">
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <input type="text" class="form-control custom-form-control"  ng-model="tripSettlement.startFrom"/>
+                             <label class="focus-effect-for-input" aria-hidden="true">From</label>
+                         </div>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <date-picker id="startfromDate{{$index}}" ng-model="tripSettlement.startFromDate"
+                                      class="'custom-form-control'" placeholder="'Date'"></date-picker>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.startTo"/>
+                             <label class="focus-effect-for-input" aria-hidden="true">To</label>
+                         </div>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <date-picker id="starttoDate{{$index}}" ng-model="tripSettlement.startToDate"
+                                      class="'custom-form-control'" placeholder="'Date'"></date-picker>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.startKm"/>
+                             <label class="focus-effect-for-input" aria-hidden="true"> Start Km</label>
+                         </div>
+                     </div>
+                     <div class="col-sm-12 col-xs-12 mt-10">
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.from"/>
+                             <label class="focus-effect-for-input" aria-hidden="true">From</label>
+                         </div>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <date-picker id="fromDate{{$index}}" ng-model="tripSettlement.fromDate"
+                                      class="'custom-form-control'" placeholder="'Date'"></date-picker>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.to"/>
+                             <label class="focus-effect-for-input" aria-hidden="true">To</label>
+                         </div>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <date-picker id="toDate{{$index}}" ng-model="tripSettlement.toDate"
+                                      class="'custom-form-control'" placeholder="'Date'"></date-picker>
+                     </div>
+                     <div class=" col-sm-2 form-group col-xs-12">
+                         <div class="styling-input-list">
+                             <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.km"/>
+                             <label class="focus-effect-for-input" aria-hidden="true">End KM</label></div>
+                     </div>
+                     <div class="col-sm-2"> <a href="#" class="addingMaster" ng-click="addFromAndTo()" ng-show="$index==0">
+                         <i class="fa fa-plus-square"></i>
+                     </a></div>
+                     </div>
+             </div>
+
+
+
+
+        </div>
+        <div class="col-sm-12 col-xs-12 mt-10">
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.totalKm"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Total KM</label>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+        <div class="col-sm-12 col-xs-12 mt-10">
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceFirstPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Cash Advance First Point</label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Cash Advance Second Point</label>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-12 col-xs-12 mt-10">
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Disel First Point Liters</label>
+                </div>
+            </div>
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Disel First Point Amount:RS</label>
+                </div>
+            </div>
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Pump</label>
+                </div>
+            </div>
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Bill No</label>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-12 col-xs-12 mt-10">
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Disel second Point Liters </label>
+                </div>
+            </div>
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Disel second Point Amount:RS</label>
+                </div>
+            </div>
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Pump</label>
+                </div>
+            </div>
+            <div class=" col-sm-3 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Bill No</label>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-sm-12 col-xs-12 mt-10">
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Additional Amount Given:RS</label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Additional Amount Given:RS</label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Total Advance To Driver</label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Expensses As Per Km</label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Gross Recivable/Payble-Driver</label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Other Expenses </label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Net Amount Recivable/Payble </label>
+                </div>
+            </div>
+            <div class=" col-sm-12 form-group col-xs-12">
+                <div class="styling-input-list">
+                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
+                    <label class="focus-effect-for-input" aria-hidden="true">Trip Sheet No and Date </label>
+                </div>
+            </div>
+
+        </div>
+        <div class="clearfix"></div>
+
+        <div class="col-xs-6 col-xs-push-3 margin-top-20">
+            <div class="alert alert-danger" role="alert" ng-show="truck.errors.length">
+                <!--<strong>{{truck.error}}</strong>-->
+                <ul>
+                    <li ng-repeat="error in truck.errors">{{error}}</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-xs-12">
+            <div class="col-xs-4 mtb-25 sub-can">
+                <button type="submit" class="btn can" ng-click="goToTrucksPage()">Cancel</button>
+                <button type="submit" class="btn can  last" ng-click="addOrUpdateTruck()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+
+</div>
