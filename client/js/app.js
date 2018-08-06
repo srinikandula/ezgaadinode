@@ -285,6 +285,18 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             tripId: null
         }
     }).state({
+        name: 'tripSettlement',
+        url: '/tripSettlement',
+        templateUrl: 'views/partials/tripSettlement/tripSettlement-edit.html',
+        data: {
+            activeTab: 'tripSettlement',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth',
+
+        }
+    }).state({
         name: 'uploadTrips',
         url: '/uploadTrips',
         templateUrl: 'views/partials/trips/uploadTrips.html',

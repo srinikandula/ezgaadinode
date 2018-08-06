@@ -238,8 +238,17 @@
                         </tr>
                     </table>
                 </th>
-                <th>
-                    Freight
+                <th >
+                    <table style="width:100%;">
+                        <tr style="width:100%;">
+                            <td >
+                                <th>Freight<th>
+                            </td>
+                            <td >
+                                <th class="text-left">{{lrDetails.freight}}</th>
+                            </td>
+                        </tr>
+                    </table>
                 </th>
             </tr>
             </thead>
@@ -329,7 +338,7 @@
                             <td style="border-right:1px solid #333;padding:2px;">
                                 <B> R.C</B>
                             </td>
-                            <td>{{lrDetails.rc}}</td>
+                            <td>(data..)</td>
                         </tr>
                         <tr style="border-bottom:1px solid #333;">
                             <td style="border-right:1px solid #333;padding:2px;">
@@ -347,7 +356,7 @@
                             <td style="border-right:1px solid #333;padding:2px;">
                                 <B> Total</B>
                             </td>
-                            <td>(data...)</td>
+                            <td>{{lrDetails.total}}</td>
                         </tr>
                         <tr style="border-bottom:1px solid #333;">
                             <td style="border-right:1px solid #333;padding:2px;">
@@ -359,25 +368,25 @@
                             <td style="border-right:1px solid #333;padding:2px;">
                                 <b>IGST</b>
                             </td>
-                            <td>{{accDetails.igst}}</td>
+                            <td>{{accDetails.igstprice}}</td>
                         </tr>
                         <tr style="border-bottom:1px solid #333;">
                             <td style="border-right:1px solid #333;padding:2px;">
                                 <b> CGST</b>
                             </td>
-                            <td>{{accDetails.cgst}}</td>
+                            <td>{{accDetails.cgstprice}}</td>
                         </tr>
                         <tr style="border-bottom:1px solid #333;">
                             <td style="border-right:1px solid #333;padding:2px;">
                                 <b> SGST</b>
                             </td>
-                            <td>{{accDetails.sgst}}</td>
+                            <td>{{accDetails.sgstprice}}</td>
                         </tr>
                         <tr>
                             <td style="border-right:1px solid #333;padding:2px;">
                                 <b>G. Total</b>
                             </td>
-                            <td>(data...)</td>
+                            <td>{{accDetails.grandtotal}}</td>
                         </tr>
                     </table>
                 </td>

@@ -170,6 +170,7 @@ Lrs.prototype.generatePDF=function (req,callback) {
     if(retObj.messages.length>0){
         callback(retObj);
     }else{
+        console.log("paramsID:",params.id)
         async.parallel({
             lrDetails:function (lrCallback) {
                 LRsColl.findOne({_id:params.id}).lean().exec(function (err,doc) {
@@ -177,6 +178,9 @@ Lrs.prototype.generatePDF=function (req,callback) {
                         retObj.messages.push("Internal server error," + JSON.stringify(err.message));
                         lrCallback(retObj,'');
                     }else if(doc){
+                        doc.total=doc.handling+doc.statistical+doc.caratage+doc.others+doc.freight;
+                      /*  console.log(doc);*/
+
                         lrCallback(false,doc);
                     }else{
                         retObj.messages.push("Please try again");
@@ -198,12 +202,18 @@ Lrs.prototype.generatePDF=function (req,callback) {
                 })
             }
         },function (err,result) {
+
             if(err){
                 callback(err);
             }else{
-                console.log("result.accDetails",result.accDetails);
+            /*    console.log("result.accDetails",result.accDetails);*/
                 result.lrDetails.dateStr=result.lrDetails.date.toLocaleDateString();
-                console.log("result.lrDetails",result.lrDetails);
+                result.accDetails.igstprice=(result.lrDetails.freight/100)*result.accDetails.igst;
+                result.accDetails.cgstprice=(result.lrDetails.freight/100)*result.accDetails.cgst;
+                result.accDetails.sgstprice=(result.lrDetails.freight/100)*result.accDetails.sgst;
+
+               result.accDetails.grandtotal= result.accDetails.igstprice+ result.accDetails.igstprice+ result.accDetails.igstprice+ result.lrDetails.total+result.lrDetails.surCharges;
+               /* console.log("result.lrDetails",result.lrDetails);*/
                 pdfGenerator.createPdf('lr.html','landscape',result,function (resp) {
                     callback(resp);
                 })
