@@ -232,49 +232,11 @@ Events.prototype.getLatestLocation = function (jwt, deviceId, req, callback) {
     }
 };
 
-/*Events.prototype.getUserData = function (callback) {
- var retObj = {
- status: false,
- messages: []
- };
- var accountDataQuery = "select accountId as userName,contactPhone,password from Account";
- var groupDataQuery = "select accountId as userName,contactPhone,password from DeviceGroup";
-
- async.parallel({
- accountData: function(accountDataCallback) {
- pool.query(accountDataQuery, function(err, accountDataResults) {
- accountDataCallback(err, accountDataResults)
- });
- },
- groupData: function(groupDataCallback) {
- pool.query(groupDataQuery, function(err, groupDataResults) {
- groupDataCallback(err, groupDataResults)
- });
- }
- }, function(err, results) {
- if(err) {
- retObj.status = false;
- retObj.messages.push('Error fetching data');
- retObj.messages.push(JSON.stringify(err));
-
- callback(retObj);
- } else {
- retObj.status = true;
- retObj.messages.push('Success');
- retObj.results = results.accountData.concat(results.groupData);
- for(var i = 0; i < retObj.results.length; i++) {
- var userData = retObj.results[i];
- if(!userData.contactPhone || userData.contactPhone.trim().length == 0 || isNaN(userData.contactPhone)){
- delete userData.contactPhone;
- }
- EventData.createUserData(userData)
- }
- retObj.count = retObj.results.length;
- callback(retObj);
- }
- });
- }*/
-
+/**
+ * Load accounts data from Account table
+ * @param request
+ * @param callback
+ */
 Events.prototype.getAccountData = function (request, callback) {
     var retObj = {
         status: false,
@@ -296,7 +258,6 @@ Events.prototype.getAccountData = function (request, callback) {
             retObj.status = true;
             retObj.messages.push('Success');
             retObj.results = results;
-            console.log('found accounts ' + results.length);
             for (var i = 0; i < retObj.results.length; i++) {
                 var accountData = retObj.results[i];
                 //AccountData.gpsEnabled = true;
@@ -377,9 +338,15 @@ Events.prototype.getAccountGroupData = function (request, callback) {
         }
     });
 }
-
-Events.prototype.createTruckFromEGTruck = function (request, callback) {
-    var retObj = {
+/**
+ * Create trucks data and set accountId on them
+ * @param request
+ * @param accountsData1
+ * @param callback
+ */
+Events.prototype.createTruckFromEGTruck = function (request, accountsData1, callback) {
+    var retObj =
+        {
         status: false,
         messages: [],
     };
@@ -387,7 +354,10 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
     var pollutionExpiry = "0000-00-00";// getting error using default value as null
     var taxDueDate = "0000-00-00";// getting error using default value as null
 
-    var trucksDataQuery = "select c.gps_account_id as userName, t.truck_reg_no as registrationNo,c.type as truckType,tt.title as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type ";
+    var trucksDataQuery = "select c.gps_account_id as userName, t.truck_reg_no as registrationNo,c.type as truckType,tt.title" +
+        " as modelAndYear,tt.tonnes as tonnage,t.fitness_certificate_expiry_date as fitnessExpiry,t.national_permit_expiry_date as " +
+        "permitExpiry,t.vehicle_insurance_expiry_date as insuranceExpiry,t.tracking_available,t.status from eg_truck t left join " +
+        "eg_customer c on c.id_customer=t.id_customer left join eg_truck_type tt on t.id_truck_type=tt.id_truck_type ";
     var trucks = [];
     pool_crm.query(trucksDataQuery, function (err, truckDataResults) {
         if (err) {
@@ -398,8 +368,7 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
         } else {
             async.map(truckDataResults, function (truckDataResult, truckDataCallBack) {
                 TrucksColl.findOne({
-                    registrationNo: truckDataResult.registrationNo,
-                    userName: truckDataResult.userName
+                    registrationNo: truckDataResult.registrationNo
                 }, function (findTruckErr, truckFound) {
                     if (findTruckErr) {
                         truckDataCallBack(findTruckErr);
@@ -415,15 +384,17 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
                             registrationNo: truckDataResult.registrationNo,
                             userName: truckDataResult.userName,
                         };
-                        AccountsColl.findOne({"userName": truckDataResult.userName}, function (err, account) {
-                            if (account) {
-                                truckData.accountId = account._id;
-                            }
+                        var thisAccount = _.find(accountsData1, function (account) {
+                            return account.userName === truckDataResult.userName;
+                        });
+                        console.log("looking for account "+ truckDataResult.userName +"  " + thisAccount);
 
-                            var truckDataDoc = new TrucksColl(truckData);
-                            truckDataDoc.save(function (err, doc) {
-                                truckDataCallBack(err, 'saved');
-                            });
+                        if(thisAccount) {
+                            truckData.accountId = thisAccount._id;
+                        }
+                        var truckDataDoc = new TrucksColl(truckData);
+                        truckDataDoc.save(function (err, doc) {
+                            truckDataCallBack(err, 'saved');
                         });
                     }
                 });
@@ -443,7 +414,7 @@ Events.prototype.createTruckFromEGTruck = function (request, callback) {
     });
 }
 
-Events.prototype.createTruckFromDevices = function (request, callback) {
+Events.prototype.createTruckFromDevices = function (request, accountsData1, callback) {
     var retObj = {
         status: false,
         messages: [],
@@ -469,18 +440,11 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                     callback(retObj);
                 } else {
                     async.map(devicesDataResults, function (devicesDataResult, deviceDataCallBack) {
+                        var thisAccount = _.find(accountsData1, function (account) {
+                            return account.userName === devicesDataResult.accountId;
+                        });
+
                         async.parallel({
-                            accountId: function (accountCallback) {
-                                AccountsColl.findOne({
-                                    "userName": devicesDataResult.accountId
-                                }, function (accountErr, account) {
-                                    if (account) {
-                                        accountCallback(accountErr, account._id);
-                                    } else {
-                                        accountCallback(accountErr, account);//null);
-                                    }
-                                });
-                            },
                             employeeId: function (employeeCallback) {
                                 var resultObject = _.find(employeeDataResult, function (employee) {
                                     return employee.id_admin === devicesDataResult.installedById;
@@ -503,7 +467,6 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                             },
                             truck: function (truckCallback) {
                                 TrucksColl.findOne({
-                                    userName: devicesDataResult.accountId,
                                     registrationNo: devicesDataResult.vehicleId
                                 }, function (truckErr, truck) {
                                     if (truckErr) {
@@ -523,17 +486,16 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                             truckType: devicesDataResult.vehicleModel,
                                             tracking_available: 1
                                         };
+                                        if(thisAccount) {
+                                            truckData.accountId = thisAccount._id;
+                                        }
                                         truckCallback(null, truckData);
                                     }
                                 })
                             },
                             device: function (deviceCallback) {
                                 DeviceColl.findOne({
-                                    userName: devicesDataResult.accountId,
-                                    deviceId: devicesDataResult.deviceId,
-                                    simNumber: devicesDataResult.simID,
-                                    imei: devicesDataResult.imeiNumber,
-                                    simPhoneNumber: devicesDataResult.simPhoneNumber
+                                    imei: devicesDataResult.imeiNumber
                                 }, function (deviceErr, device) {
                                     if (deviceErr) {
                                         deviceCallback(deviceErr, device);
@@ -556,8 +518,10 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                             fuelCapacity: devicesDataResult.fuelCapacity,
                                             installTime: devicesDataResult.installTime,
                                         };
+                                        if(thisAccount) {
+                                            deviceData.accountId = thisAccount._id;
+                                        }
                                         deviceCallback(null, deviceData);
-
                                     }
                                 })
                             }
@@ -568,7 +532,6 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                 async.parallel({
                                     truckDoc: function (truckDocCallBack) {
                                         if (data.truck !== 'Truck Exists') {
-                                            data.truck.accountId = data.accountId;
                                             var truckDataDoc = new TrucksColl(data.truck);
                                             truckDataDoc.save(function (err, doc) {
                                                 truckDocCallBack(err, 'saved');
@@ -579,13 +542,11 @@ Events.prototype.createTruckFromDevices = function (request, callback) {
                                     },
                                     deviceDoc: function (deviceDocCallBack) {
                                         if (data.device !== 'Device Exists') {
-                                            data.device.accountId = data.accountId;
                                             console.log('data.device.devicePaymentStatus', data.device.devicePaymentStatus);
                                             if (data.device.devicePaymentStatus.length > 0) {
                                                 data.device.installedBy = data.employeeId;
                                             }
                                             data.device.assignedTo = data.employeeId;
-
                                             var deviceDataDoc = new DeviceColl(data.device);
                                             if (data.device.imei && data.device.deviceId) {
                                                 traccar_mysql.query("INSERT INTO devices (name, uniqueid) VALUES ('" + data.device.deviceId.toString() + "','" + data.device.imei.toString() + "')", function (err, result) {
@@ -689,7 +650,7 @@ Events.prototype.getDevicePlans = function (request, callback) {
     });
 };
 
-Events.prototype.devicePlansHistory = function (request, callback) {
+Events.prototype.devicePlansHistory = function (request, accountsData1, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -710,23 +671,16 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                         callback(retObj);
                     } else {
                         async.map(plansHistory, function (plan, planCallBack) {
+                            var thisAccount = _.find(accountsData1, function (account) {
+                                return account.userName === plan.accountId;
+                            });
                             async.parallel({
-                                accountId: function (accountCallback) {
-                                    AccountsColl.findOne({userName: plan.accountID}, function (erracountid, accountid) {
-                                        if (!accountid) {
-                                            accountCallback(erracountid, {name: plan.accountID});//null);
-                                        } else {
-                                            accountCallback(erracountid, {id: accountid._id});
-                                        }
-                                    });
-                                },
                                 deviceId: function (deviceCallback) {
                                     DeviceColl.findOne({deviceId: plan.deviceID}, function (errdeviceid, deviceid) {
                                         if (deviceid) {
                                             deviceCallback(errdeviceid, deviceid._id);
                                         } else {
                                             var planDoc = new FaultyPlanhistoryColl({
-                                                accountId: plan.accountID,
                                                 deviceId: plan.deviceID,
                                                 planId: plan.planID,
                                                 amount: plan.amount,
@@ -736,6 +690,9 @@ Events.prototype.devicePlansHistory = function (request, callback) {
                                                 expiryTime: plan.expiryTime,
                                                 received: plan.received
                                             });
+                                            if(thisAccount) {
+                                                planDoc.accountId= thisAccount._id;
+                                            }
                                             planDoc.save(function (errsavingfaultplan) {
                                                 deviceCallback(errsavingfaultplan, null);
                                             });
@@ -1112,27 +1069,19 @@ function convertDate(olddate) {
 
 Events.prototype.getCompleteData = function (req, callback) {
     var events = new Events();
-    async.series({
-        one: function (callBackOne) {
-            events.getAccountData(req, function (result1) {
-                console.log('1 Completed', result1);
-                if (result1.status) {
-                    callBackOne(null, result1);
+    events.getAccountData(req, function (result1) {
+            events.restoreAccountsFromCustomerTable(req, function (result) {
+                console.log('2 getCustomerData completed ', result);
+                if (result.status) {
+                    callBackEleven(null, result);
                 } else {
-                    callBackOne(result1, null);
+                    loadNonAccountData(req, callback);
                 }
-            })
-        },
-        two: function (callBackTwo) {
-            events.getMappingGpsStatusToAccount(req, function (result2) {
-                console.log('2 Completed', result2);
-                if (result2.status) {
-                    callBackTwo(null, result2);
-                } else {
-                    callBackTwo(result2, null);
-                }
-            })
-        },
+            });
+    });
+
+       /*,
+
         three: function (callBackThree) {
             events.createTruckFromEGTruck(req, function (result) {
                 console.log('3 Completed', result);
@@ -1210,16 +1159,6 @@ Events.prototype.getCompleteData = function (req, callback) {
                     callBackTen(null, result);
                 } else {
                     callBackTen(result, null);
-                }
-            })
-        },
-        eleven: function (callBackEleven) {
-            events.getCustomerData(req, function (result) {
-                console.log('11 Completed', result);
-                if (result.status) {
-                    callBackEleven(null, result);
-                } else {
-                    callBackEleven(result, null);
                 }
             })
         },
@@ -1312,16 +1251,193 @@ Events.prototype.getCompleteData = function (req, callback) {
                     callBackTwenty(result, null);
                 }
             })
-        }
-    }, function (err, results) {
-        if (err) {
-            callback({});
-        } else {
-            callback(results);
-        }
-    });
+        } */
 };
 
+function loadNonAccountData(req, callback){
+    AccountsColl.find({},{"userName": 1}, function(error1, accountsData1){
+        console.log('loaded accountData1 ' + accountsData1.length);
+        var events = new Events();
+        async.series({
+            two:function (callBackTwo) {
+                events.updateAccountGPSStatus(req, function (result2) {
+                    console.log('Done updating account GPS status');
+                    if (result2.status) {
+                        callBackTwo(null, result2);
+                    } else {
+                        callBackTwo(result2, null);
+                    }
+                })
+            },
+            three: function (callBackThree) {
+                events.createTruckFromEGTruck(req,accountsData1, function (result) {
+                    console.log('3 Completed', result);
+                    if (result.status) {
+                        callBackThree(null, result);
+                    } else {
+                        callBackThree(result, null);
+                    }
+                })
+            },four: function (callBackFour) {
+                events.getFranchise(req, function (result) {
+                    console.log('4 Completed', result);
+                    if (result.status) {
+                        callBackFour(null, result);
+                    } else {
+                        callBackFour(result, null);
+                    }
+                })
+            },five: function (callBackFive) {
+                events.getAdminRoles(req, function (result) {
+                    console.log('5 Completed', result);
+                    if (result.status) {
+                        callBackFive(null, result);
+                    } else {
+                        callBackFive(result, null);
+                    }
+                })
+            },six: function (callBackSix) {
+                events.getAdminPermissions(req, function (result) {
+                    console.log('6 Completed', result);
+                    if (result.status) {
+                        callBackSix(null, result);
+                    } else {
+                        callBackSix(result, null);
+                    }
+                })
+            },
+            seven: function (callBackSeven) {
+                events.getEmployeeData(req, function (result) {
+                    console.log('7 Completed', result);
+                    if (result.status) {
+                        callBackSeven(null, result);
+                    } else {
+                        callBackSeven(result, null);
+                    }
+                })
+            },
+            eight: function (callBackEight) {
+                events.getDevicePlans(req, function (result) {
+                    console.log('8 Completed', result);
+                    if (result.status) {
+                        callBackEight(null, result);
+                    } else {
+                        callBackEight(result, null);
+                    }
+                })
+            },nine: function (callBackNine) {
+                events.createTruckFromDevices(req, accountsData1, function (result) {
+                    console.log('9 Completed', result);
+                    if (result.status) {
+                        callBackNine(null, result);
+                    } else {
+                        callBackNine(result, null);
+                    }
+                })
+            },ten: function (callBackTen) {
+                events.devicePlansHistory(req,accountsData1, function (result) {
+                    console.log('10 Completed', result);
+                    if (result.status) {
+                        callBackTen(null, result);
+                    } else {
+                        callBackTen(result, null);
+                    }
+                })
+            },
+            twelve: function (callBackTwelve) {
+                events.getAlternateContact(req, function (result) {
+                    console.log('12 Completed', result);
+                    if (result.status) {
+                        callBackTwelve(null, result);
+                    } else {
+                        callBackTwelve(result, null);
+                    }
+                })
+            },
+            thirteen: function (callBackThirteen) {
+                events.getAccountOperatingRoutes(req, function (result) {
+                    console.log('13 Completed', result);
+                    if (result.status) {
+                        callBackThirteen(null, result);
+                    } else {
+                        callBackThirteen(result, null);
+                    }
+                })
+            },
+            fourteen: function (callBackFourteen) {
+                events.getTrucksTypeData(req, function (result) {
+                    console.log('14 Completed', result);
+                    if (result.status) {
+                        callBackFourteen(null, result);
+                    } else {
+                        callBackFourteen(result, null);
+                    }
+                })
+            },
+            fifteen: function (callBackFifteen) {
+                events.getGoodsTypeData(req, function (result) {
+                    console.log('15 Completed', result);
+                    if (result.status) {
+                        callBackFifteen(null, result);
+                    } else {
+                        callBackFifteen(result, null);
+                    }
+                })
+            },
+            sixteen: function (callBackSixteen) {
+                events.getLoadsTypeData(req, function (result) {
+                    console.log('16 Completed', result);
+                    if (result.status) {
+                        callBackSixteen(null, result);
+                    } else {
+                        callBackSixteen(result, null);
+                    }
+                })
+            },
+            seventeen: function (callBackSeventeen) {
+                events.getOrderStatusData(req, function (result) {
+                    console.log('17 Completed', result);
+                    if (result.status) {
+                        callBackSeventeen(null, result);
+                    } else {
+                        callBackSeventeen(result, null);
+                    }
+                })
+            },eighteen: function (callBackEighteen) {
+                events.getCustomerLeadsData(req, function (result) {
+                    console.log('18 Completed', result);
+                    if (result.status) {
+                        callBackEighteen(null, result);
+                    } else {
+                        callBackEighteen(result, null);
+                    }
+                })
+            },
+            nineteen: function (callBackNineteen) {
+                events.getCustomerOperatingRoutes(req, function (result) {
+                    console.log('19 Completed', result);
+                    if (result.status) {
+                        callBackNineteen(null, result);
+                    } else {
+                        callBackNineteen(result, null);
+                    }
+                })
+            },
+            twenty: function (callBackTwenty) {
+                events.getJunkLeadsData(req, function (result) {
+                    console.log('20 Completed', result);
+                    if (result.status) {
+                        callBackTwenty(null, result);
+                    } else {
+                        callBackTwenty(result, null);
+                    }
+                })
+            }
+        },function(error2, results2){
+            callback(results2);
+        });
+    });
+}
 Events.prototype.getAlternateContact = function (req, callback) {
     var retObj = {
         status: false,
@@ -1727,7 +1843,12 @@ Events.prototype.getCustomerOperatingRoutes = function (request, callback) {
     });
 };
 
-Events.prototype.getCustomerData = function (request, callback) {
+/**
+ * create account from data from eg_customer
+ * @param request
+ * @param callback
+ */
+Events.prototype.restoreAccountsFromCustomerTable = function (request, callback) {
     var retObj = {
         status: false,
         messages: []
@@ -1745,8 +1866,7 @@ Events.prototype.getCustomerData = function (request, callback) {
                 // if(customer.email) {
                 var condition = {
                     $or: [
-                        {"userName": customer.email},
-                        {"userName": customer.mobile},
+                        {"userName": customer.email}
                     ], userId: customer.idprefix,
                     leadType: customer.type,
                 };
@@ -1973,7 +2093,12 @@ Events.prototype.getJunkLeadsData = function (request, callback) {
     });
 }
 
-Events.prototype.getMappingGpsStatusToAccount = function (req, callback) {
+/**
+ * Get the accounts data from Device table
+ * @param req
+ * @param callback
+ */
+Events.prototype.updateAccountGPSStatus = function (req, callback) {
     var retObj = {
         status: false,
         messages: []

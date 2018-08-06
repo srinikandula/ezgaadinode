@@ -4,9 +4,7 @@
         <ul class="col-sm-9 pall-zero list-inline">
             <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
-                    <ui-select ng-model="params.truckType" theme="select2"
-                               title="Choose a truck type" append-to-body="true"
-                             >
+                    <ui-select ng-model="params.truckType" theme="select2" title="Choose a truck type" append-to-body="true">
                         <ui-select-match placeholder=" Select Truck type" class="form-control ui-select-control">
                             {{$select.selected.title || title}}
                         </ui-select-match>
