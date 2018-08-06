@@ -1,5 +1,7 @@
 var EventDataCollection = require('./../models/schemas').EventDataCollection;
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var UserLogins = require('./../models/schemas').userLogins;
+
 var GroupsColl = require('./../models/schemas').GroupsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
@@ -155,18 +157,25 @@ EventData.prototype.createAccountData = function (accountData, callback) {
                         callback(retObj);
                     }
                 } else {
-                    retObj.status = true;
-                    retObj.messages.push('Success');
-                    retObj.userData = newDoc;
-                    if (callback) {
-                        callback(retObj);
-                    }
+                    var userLoginEntry = new UserLogins(accountData);
+                    userLoginEntry.accountId = newDoc._id;
+                    UserLogins.find({"userName":accountData.userName}, function(error, userLoginFound){
+                        if (!userLoginFound || userLoginFound.length === 0) {
+                            userLoginEntry.save(accountData, function(err, savedDoc){
+                                retObj.status = true;
+                                retObj.messages.push('Success');
+                                retObj.userData = newDoc;
+                                if (callback) {
+                                    callback(retObj);
+                                }
+                            });
+                        }
+                    });
                 }
             });
         } else {
             logger.info("ignoring to save account data" + accountData);
         }
-
     });
 }
 

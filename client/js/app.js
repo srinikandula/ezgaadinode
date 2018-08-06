@@ -93,6 +93,29 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
             ID: null
         }
     }).state({
+        name: 'invoice',
+        url: '/invoicesList',
+        templateUrl: 'views/partials/Invoice/invoiceList.html',
+        data: {
+            activeTab: 'invoice',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+        }
+    }).state({
+        name: 'invoiceEdit',
+        url: '/add_editInvoice/:id',
+        templateUrl: 'views/partials/Invoice/add_editInvoice.html',
+        data: {
+            activeTab: 'invoice',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open',
+            id:null
+        }
+    }).state({
         name: 'reminders',
         url: '/remindersList',
         templateUrl: 'views/partials/reminders/remindersList.html',

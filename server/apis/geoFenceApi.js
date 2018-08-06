@@ -11,10 +11,7 @@ geoFences.prototype.addgeoFence = function(jwt,geoLocation,callback){
     };
     geoLocation.accountId = jwt.accountId;
     geoLocation.geoLocation= {
-        "coordinates" :[
-            17.4169860328715,
-            78.4581752114258
-        ]
+        "coordinates":[geoLocation.geoLocation.coordinates[0],geoLocation.geoLocation.coordinates[1]]
     };
     var insertDoc = new GeoFenceCollection(geoLocation);
         insertDoc.save(function(err,result){
@@ -29,7 +26,6 @@ geoFences.prototype.addgeoFence = function(jwt,geoLocation,callback){
                 callback(retObj);
             }
         });
-
 };
 
 geoFences.prototype.updategeoFence = function(jwt,geoLocation,callback){
@@ -38,6 +34,10 @@ geoFences.prototype.updategeoFence = function(jwt,geoLocation,callback){
         messages:[],
         errors:[]
     };
+    /*
+    geoLocation.geoLocation= {
+        "coordinates":[geoLocation.geoLocation.lat,geoLocation.geoLocation.lng]
+    };*/
 
     GeoFenceCollection.findOneAndUpdate({_id:geoLocation._id},{$set:geoLocation},function(err,result){
         if(err){

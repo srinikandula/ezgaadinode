@@ -39,12 +39,13 @@ var routeConfigSchema = new mongoose.Schema({
 });
 
 var accountSchema = new mongoose.Schema({
-    /*userName: { // name of the account is called accountId
+    userName: { // name of the account is called accountId
         type: String,
         index: true,
         unique: true
     },
-    contactPhone: Number,*/
+    contactPhone: Number,
+    password: String,
     address1: String,
     address2: String,
     city: String,
@@ -54,7 +55,6 @@ var accountSchema = new mongoose.Schema({
     GST: String,
     GSTRate: Number,
     userId: String,
-    password: String,
     email: String,
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -106,6 +106,7 @@ var accountSchema = new mongoose.Schema({
     cgst:{type:Number,default:0},
     sgst:{type:Number,default:0},
     panNo:String,
+    templatePath:String
 
 
 }, {
@@ -177,7 +178,7 @@ var geoFenceSchema = new mongoose.Schema({
         },
         coordinates: [Number] //[longitude(varies b/w -180 and 180 W/E), latitude(varies b/w -90 and 90 N/S)]
     },
-    accountId: {type: ObjectId, ref: 'accounts'}
+    accountId: String
 },{
     timestamps: true
 });
@@ -1152,16 +1153,30 @@ lrSchema.pre('save', function (next) {
 });
 
 var gpsFencesReportSchema=new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
+    accountId: String,
     deviceId: {type: ObjectId, ref: 'devices'},
     registrationNo:String,
     depot:String,
     startTime:{type:Date},
     endTime:{type:Date}
 }, {timestamps: true});
+
+var invoicesSchema=new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    partyId:String,
+    vehicleNo:String,
+    rate:String,
+    quantity:Number,
+    totalAmount:Number,
+    trip:[]
+},{timestamps: true});
+
+
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     userLogins: mongoose.model('userLogins', userSchema, 'userLogins'),
+    invoicesCollection: mongoose.model('invoices',invoicesSchema,'invoices'),
     RemindersCollection: mongoose.model('reminders', remindersSchema, 'reminders'),
     InventoryCollection: mongoose.model('inventories', inventorySchema, 'inventories'),
     JobsCollection: mongoose.model('jobs', jobSchema, 'jobs'),
@@ -1221,5 +1236,4 @@ module.exports = {
     ShareLinksColl: mongoose.model('shareLinks', shareLinksSchema, 'shareLinks'),
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
     GeoFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
-
 };

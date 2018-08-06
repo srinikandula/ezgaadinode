@@ -202,9 +202,10 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
         var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),
             truckName:tableParams.truckName,truckType:tableParams.truckType};
         $scope.loading = true;
-        var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
+        // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
         TrucksService.getAllTrucks(pageable, function (response) {
+            console.log(response);
             $scope.invalidCount = 0;
             if (angular.isArray(response.data.trucks)) {
                 $scope.loading = false;
