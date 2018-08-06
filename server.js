@@ -15,7 +15,7 @@ var Reminder = require('./server/routes/reminderRoutes');
 var  Inventory= require('./server/routes/inventoryRoutes');
 var  Job= require('./server/routes/jobRoutes');
 var  subLogIn= require('./server/routes/subLoginRoutes');
-
+var invoices = require('./server/routes/invoiceRoutes');
 
 var Trips = require('./server/routes/tripRoutes');
 var Expense = require('./server/routes/expensesRoutes');
@@ -114,6 +114,7 @@ app.use('/v1/groups', GroupUsers.AuthRouter);
 app.use('/v1/lrs', LRs.AuthRouter);
 app.use('/v1/geoFences',geoFence.AuthRouter);
 app.use('/v1/geoFenceReports',geoFenceReports.AuthRouter);
+app.use('/v1/invoices',invoices.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {

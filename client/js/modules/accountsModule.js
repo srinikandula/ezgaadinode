@@ -315,11 +315,9 @@ app.controller('AddEditAccountCtrl', ['$scope', 'Utils', '$state', 'AccountServi
         var params = $scope.addNewAccount;
         params.errors = [];
         params.success = [];
-
         if (!params._id && !params.userName) {
             params.errors.push('Invalid User Name');
         }
-
         if (!params._id && !params.password) {
             params.errors.push('Invalid Password');
         }
