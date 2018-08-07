@@ -386,7 +386,7 @@ Trips.prototype.findTrip = function (jwt, tripId, req, callback) {
             RemindersCollection.findOne({refId:trip._id},function(err,doc){
                 if(err){
                     retObj.messages.push("Error while finding reminder, try Again");
-                }else{
+                }else if(doc){
                     reminder.reminderDate = doc.reminderDate;
                     reminder.reminderText = doc.reminderText;
                 }
