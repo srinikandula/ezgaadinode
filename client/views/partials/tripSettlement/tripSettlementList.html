@@ -1,6 +1,6 @@
-<div class="main-right col-xs-12" ng-controller="invoicesListController">
+<div class="main-right col-xs-12" ng-controller="tripSettlementsController">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-3 pall-zero"><h3>Invoice List:</h3></div>
+        <div class="col-sm-3 pall-zero"><h3>TripSettlements:</h3></div>
         <ul class="col-sm-9 pall-zero list-inline">
             <li class="col-sm-3 pall-zero">
                 <date-picker ng-model="fromDate" class="'paymentscontrol'"
@@ -11,7 +11,7 @@
                              placeholder="'to date'" ></date-picker>
             </li>
             <li class="col-sm-2 pall-zero">
-                <button type="submit" ng-click="getAllInvoices();" class="btn go">
+                <button type="submit" ng-click="getAllTripSettlements();" class="btn go">
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
@@ -19,39 +19,37 @@
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover"
            ng-table="inventoryParams">
-        <tr ng-repeat="invoice in invoices " style="text-align: center;">
-            <td data-title="'Party Name'" sortable="'partyId'" class="clickable-item">{{
-                invoice.partyId}}
+        <tr ng-repeat="tripSettlement in tripSettlements " style="text-align: center;">
+            <td data-title="'Truck No'" sortable="'truckNo'" class="clickable-item">{{
+                tripSettlement.truckNo}}
             </td>
-            <td data-title="'Truck No'" sortable="'vehicleNo'" class="clickable-item">{{
-                invoice.vehicleNo}}
+            <td data-title="'Driver Name'" sortable="'driverName'" class="clickable-item">{{
+                tripSettlement.driverName.fullName}}
             </td>
-            <td data-title="'Rate/Trip'" sortable="'rate'" class="clickable-item">{{
-                invoice.rate}}
+            <td data-title="'Date'" sortable="'date'" class="clickable-item">{{
+                tripSettlement.date | date:'dd-MM-y'}}
             </td>
-            <td data-title="'No of Trips'" sortable="'quantity'" class="clickable-item">{{
-                invoice.quantity}}
-            </td>
+
             <td data-title="'Action'" class="col-sm-2">
-                <a href="#" class="btn" ng-click="goToEditPage(invoice._id)">
+                <a href="#" class="btn" ng-click="goToEditPage(tripSettlement._id)">
                     <span class="glyphicon glyphicon-pencil"></span></a>
-                <a href="#" class="btn" ng-click="delete(invoice._id)">
+                <a href="#" class="btn" ng-click="delete(tripSettlement._id)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
                 <a href="#"  class="btn"
-                   ng-click="generatePdf(invoice._id)">
+                   ng-click="generatePdf(tripSettlement._id)">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </a>
             </td>
         </tr>
-        <tr ng-if="!invoices || invoices.length === 0">
-            <td colspan="8"> No Invoices Exist.</td>
+        <tr ng-if="!tripSettlements || tripSettlements.length === 0">
+            <td colspan="8"> No Trip Settlements Exist.</td>
         </tr>
     </table>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ui-sref="invoiceEdit"><img src="images/Add_Payments.png" alt="Add Invoice"
-                                              title="Add Invoice"></a>
+            <a href="#" ui-sref="addTripSettlement"><img src="images/Add_Vehicle.png" alt="Add Trip Settlement"
+                                                   title="Add trip settlement"></a>
         </figure>
     </div>
 

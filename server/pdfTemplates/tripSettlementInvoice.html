@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">-->
+    <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <style>
+        input {
+            border: none;
+            background: transparent;
+            border-bottom: 1px solid #fff;
+            outline: none;
+            font-size: 15px;
+        }
+        p1{
+            font-size: 15px;
+            display: inline-block;
+            padding-top: 50px;
+        }
+        p2{
+            font-size: 15px;
+            display: inline-block;
+        }
+        p3{
+            font-size: 15px;
+            display: inline-block;
+        }
+        p6{
+            font-size: 15px;
+            display: inline-block;
+        }
+        p7{
+            font-size: 15px;
+        }
+    </style>
+
+</head>
+<body>
+<table cellspacing="20" style="margin-left:50px">
+    <tr>
+        <td><b>Veichle No:</b>{{truckNo}}</td>
+        <td><b>Driver Name:</b>{{driverName.fullName}}</td>
+        <td style="text-decoration-style:dashed;"><b>Date:</b>{{date}}</td>
+    </tr>
+</table>
+<table>
+    <tr>
+        <td>From:{{trip.startFrom}}</td>
+        <td>Date:{{trip.startFromDate}}</td>
+        <td>To:{{trip.startTo}}</td>
+        <td>Date:{{trip.startToDate}}</td>
+        <td>Start Km:{{trip.startKm}}</td>
+    </tr>
+</table>
+<!--<p3 style="padding-left: 20px">From:{{trip.endFrom}}</p3> <p3 style="padding-left: 150px">Date:{{trip.endFromDate}}</p3> <p3 style="padding-left: 240px">To:{{trip.endTo}}</p3><p3 style="padding-left: 150px">Date:{{trip.endToDate}}</p3>-->
+<p3 style="padding-left: 200px"> End Km :{{trip.endKm}}</p3> <br>
+<p4 style="padding-left: 20px;font-size: 20px">Total Kms:{{totalKm}}</p4><br>
+<p5 style="padding-left: 20px;font-size: 20px"> Cash Advance 1<sup>st</sup> Point..........:{{cashAdvanceFirstPoint}} Rs</p5><br>
+<p5 style="padding-left: 20px;font-size: 20px"> Cash Advance 2<sup>nd</sup> Point..........:{{cashAdvanceSecondPoint}}  Rs</p5><br>
+<p6 style="padding-left: 20px;"> Disel 1<sup>st</sup> Point:{{dieselFirstPointLiters}}Ltrs,{{dieselFirstPointAmount}}  Rs</p6>   <p6 style="padding-left: 200px;"> Pump:....{{pumpFirstPoint}}...........</p6><p6 style="padding-left: 50px;"> Bill No:.....{{billNoFirstPoint}}..........</p6><br>
+<p6 style="padding-left: 20px;"> Disel 2<sup>nd</sup> Point..{{dieselSecondPointLiters}}...Ltrs.......{{dieselsecondpointAmount}}.......:  Rs</p6>   <p6 style="padding-left: 200px;"> Pump:........{{pumpSecondPoint}}.......</p6><p6 style="padding-left: 50px;"> Bill No:......{{dieselsecondpointAmount}}.........</p6><br>
+<p7 style="padding-left: 20px;">Aditional Amount Given : {{additionalAmountGiven}}Rs</p7><br>
+<p7 style="padding-left: 20px;">Aditional Amount Given : {{additionalAmountGiven}}Rs</p7><br>
+<p7 style="padding-left: 20px;">Total Advance to Driver :{{totalAdvanceToDriver}} Rs </p7><br>
+<p7 style="padding-left: 20px;">Expense as per Km      :{{expensesAsPerKm}} </p7><br>
+<p7 style="padding-left: 20px;">Gross Recivable/payable-Driver :{{grossReceivablePaybleDriver}} </p7><br>
+<p7 style="padding-left: 20px;">Other Expenses :{{otherExpenses}} </p7><br>
+<p7 style="padding-left: 20px;">Other Expenses:{{otherExpenses}}</p7><br><br>
+<p7 style="padding-left: 20px;">Net Amount Recievable/Payable :{{netAmountReceivableOrPayble}} </p7><br><br>
+<p7 style="padding-left: 20px;">Trip Sheet No and Date :{{tripSheetNo}} </p7><br><br>
+
+</body>
+</html>

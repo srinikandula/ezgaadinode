@@ -14,7 +14,7 @@ AuthRouter.post('/updateInvoice',function(req,res){
     });
 });
 AuthRouter.get('/getAllInvoices',function(req,res){
-    invoiceApi.getAllInvoices(req.jwt,function(result){
+    invoiceApi.getAllInvoices(req.jwt,req.query,function(result){
         res.send(result);
     });
 });

@@ -47,7 +47,9 @@ Invoices.prototype.updateInvoice = function(jwt,invoiceDetails,callback){
         status:false,
         messages:[]
     };
-    invoiceDetails.vehicleNo = invoiceDetails.vehicleNo.registrationNo;
+    if(invoiceDetails.vehicleNo.registrationNo){
+        invoiceDetails.vehicleNo = invoiceDetails.vehicleNo.registrationNo;
+    }
     InvoicesColl.findOneAndUpdate({_id:invoiceDetails._id},{$set:invoiceDetails},function(err,result){
         if(err){
             retObj.status = false;
@@ -61,12 +63,21 @@ Invoices.prototype.updateInvoice = function(jwt,invoiceDetails,callback){
         }
     });
 };
-Invoices.prototype.getAllInvoices = function(jwt,callback){
+Invoices.prototype.getAllInvoices = function(jwt,params,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    InvoicesColl.find({accountId:jwt.accountId},function(err,invoices){
+    var condition = {};
+    if(params.fromDate && params.toDate){
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(params.fromDate),$lte:new Date(params.toDate)}
+        }
+    }else{
+        condition = {accountId:jwt.accountId}
+    }
+    InvoicesColl.find(condition,function(err,invoices){
         if(err){
             retObj.status = false;
             retObj.messages.push("error in fetching records"+JSON.stringify(err));
@@ -138,7 +149,6 @@ Invoices.prototype.generatePDF = function(req,callback){
         status:false,
         messages:[]
     };
-    var total = 0;
     if(!req.params.invoiceId || !ObjectId.isValid(req.params.invoiceId)){
         retObj.messages.push("Provide Invoice Details");
     }

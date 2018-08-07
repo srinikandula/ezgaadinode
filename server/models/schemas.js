@@ -1171,10 +1171,38 @@ var invoicesSchema=new mongoose.Schema({
     trip:[]
 },{timestamps: true});
 
+var tripSettlementsSchema=new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    truckNo:String,
+    // driverName:String,
+    driverName: {type: ObjectId, ref: 'drivers'},
+    date:Date,
+    totalKm:String,
+    cashAdvanceFirstPoint:Number,
+    cashAdvanceSecondPoint:Number,
+    dieselFirstPointLiters:String,
+    dieselFirstPointAmount:Number,
+    pumpFirstPoint:String,
+    billNoFirstPoint:String,
+    dieselSecondPointLiters:String,
+    dieselsecondpointAmount:Number,
+    pumpSecondPoint:String,
+    billNoSecondPoint:String,
+    additionalAmountGiven:Number,
+    totalAdvanceToDriver:Number,
+    expensesAsPerKm:Number,
+    grossReceivablePaybleDriver:Number,
+    otherExpenses:Number,
+    netAmountReceivableOrPayble:Number,
+    tripSheetNo:String,
+    trip:[]
+},{timestamps: true});
+
 
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
+    tripSettlementsColl:mongoose.model('tripSettlements', tripSettlementsSchema, 'tripSettlements'),
     userLogins: mongoose.model('userLogins', userSchema, 'userLogins'),
     invoicesCollection: mongoose.model('invoices',invoicesSchema,'invoices'),
     RemindersCollection: mongoose.model('reminders', remindersSchema, 'reminders'),
