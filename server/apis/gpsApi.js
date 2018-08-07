@@ -597,7 +597,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
     };
     var condition = {};
     if (jwt.type === "account") {
-        condition = {accountId: jwt.accountId, deviceId: {$ne: null}, "attrs.latestLocation": {$exists: true}, "attrs.latestLocation.location": {$exists: true}};
+        condition = {accountId: jwt.accountId, deviceId: {$ne: null}};
     } else {
         condition = {accountId: jwt.id, deviceId: {$ne: null}};
     }
@@ -616,7 +616,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                             });
                             truck.attrs.latestLocation.driverName = driver.fullName;
                         }
-                    if (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) {
+                    if (truck.attrs.latestLocation && (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1)) {
                         resolveAddress({
                             latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
                             longitude: truck.attrs.latestLocation.longitude || truck.attrs.latestLocation.location.coordinates[0]
