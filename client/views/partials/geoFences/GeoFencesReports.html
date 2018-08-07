@@ -1,41 +1,36 @@
 <div class="main-right col-xs-12" ng-controller="GeoFencesReportsListController">
     <div class="col-xs-12 pall-zero mb-10">
         <div class="col-sm-3 pall-zero"><h3>Geo Fences Reports</h3></div>
-        <div class="col-xs-9 pall-zero">
-            <ul class="list-inline report-expense">
-                <li class="filterFromDate">
-                    <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
-                                 class="'textfield'" placeholder="'from date'">
-                    </date-picker>
+            <ul class="col-sm-9 pall-zero list-inline">
+                <li class="col-sm-3 pall-zero">
+                    <date-picker ng-model="fromDate" class="'paymentscontrol'"
+                                 past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
                 </li>
-                <li class="filterToDate">
-                    <date-picker ng-model="filters.toDate"  past-present="'pastPresentDate'"
-                                 class="'textfield'" placeholder="'to date'"></date-picker>
+                <li class="col-sm-3 pall-zero">
+                    <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="toDate"
+                                 placeholder="'to date'" ></date-picker>
                 </li>
-                <li class="filterToDate pall-zero pos-relative">
-                    <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
-                    <input type="text" ng-model="filters.regNumber"
-                           uib-typeahead="truck.registrationNo for truck in trucksList | filter:$viewValue"
-                           class="form-control textfield" typeahead-min-length="1"
-                           typeahead-on-select="selectTruckId($item)"
-
-                           typeahead-select-on-exact="true" placeholder="Type Reg No"
-                           typeahead-no-results="noTruck" autocomplete="false">
-
-                    <div ng-show="noTrucks">
-                        <i class="glyphicon glyphicon-remove red"></i>
-                        <span class="red"> No Results Found </span>
-                    </div>
-
-                </li>
-                <li class="col-sm-1 pall-zero">
+                <li class="col-sm-2 pall-zero">
                     <button type="submit" ng-click="getCount();" class="btn go">
                         <i class="fa fa-search sear" aria-hidden="true"></i>
                     </button>
                 </li>
+                <li class="col-sm-3 pos-relative">
+                    <div class="select-box erp-box">
+                        <ui-select ng-model="query.truckName" theme="select2"
+                                   title="Choose a person" append-to-body="true"
+                                   ng-change="getCount();">
+                            <ui-select-match placeholder="Search By Truck" class="form-control ui-select-control">
+                                {{$select.selected.registrationNo || registrationNo}}
+                            </ui-select-match>
+                            <ui-select-choices
+                                    repeat="truck in trucksList  | propsFilter: {registrationNo: $select.search}">
+                                <div ng-bind-html="truck.registrationNo | highlight: $select.search"></div>
+                            </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </li>
             </ul>
-        </div>
-
     </div>
 
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="lrParams">

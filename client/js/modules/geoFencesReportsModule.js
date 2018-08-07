@@ -4,13 +4,14 @@ app.factory('GEoFencesReportsServices', ['$http', function ($http) {
             $http({
                 url: '/v1/geoFenceReports/getGroFenceReports',
                 method: "get",
-                params: params,
+                params: params
             }).then(success, error)
         },
-        count: function (success, error) {
+        count: function (params,success, error) {
             $http({
                 url: '/v1/geoFenceReports/count',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
 
@@ -20,8 +21,10 @@ app.factory('GEoFencesReportsServices', ['$http', function ($http) {
 app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFencesReportsServices', 'Notification', 'NgTableParams', 'paginationService', 'TrucksService', function ($scope, $state, GEoFencesReportsServices, Notification, NgTableParams, paginationService, TrucksService) {
 
     $scope.count = 0;
+    $scope.query = {truckName:''};
     $scope.getCount = function () {
-        GEoFencesReportsServices.count(function (success) {
+        var params = {fromDate:$scope.fromDate,toDate:$scope.toDate,registrationNo:$scope.query.truckName.registrationNo};
+        GEoFencesReportsServices.count(params,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.data;
                 $scope.init();
@@ -39,9 +42,9 @@ app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFences
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            fromDate: $scope.filters.fromDate,
-            toDate: $scope.filters.toDate,
-            regNumber: $scope.regNumber
+            fromDate: tableParams.fromDate,
+            toDate: tableParams.toDate,
+            registrationNo:$scope.query.truckName.registrationNo
         };
         $scope.loading = true;
         GEoFencesReportsServices.getGeoFenceReports(pageable, function (success) {
@@ -70,6 +73,13 @@ app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFences
             counts: [],
             total: $scope.count,
             getData: function (params) {
+                if($scope.fromDate && $scope.toDate){
+                    params.fromDate = $scope.fromDate;
+                    params.toDate  = $scope.toDate;
+                }
+                if($scope.query.truckName.registrationNo){
+                    params.registrationNo = $scope.query.truckName.registrationNo;
+                }
                 loadTableData(params);
                 // $scope.getAllParties();
             }
