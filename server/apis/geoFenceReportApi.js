@@ -20,14 +20,17 @@ geoFencesReports.prototype.getGeoFenceReportsByAcc = function (req, callback) {
     var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
 
     var condition={accountId:req.jwt.accountId};
-    if (params.fromDate && params.toDate) {
+    if (params.fromDate) {
         condition.start={$gte:new Date(params.fromDate)};
-        condition.end={$lte:new Date(params.toDate)};
+    };
+    if (params.toDate) {
+        var endDate = new Date(params.toDate);
+        endDate.setDate(endDate.getDate()+1);
+        condition.end={$lte:endDate};
     };
     if(params.registrationNo){
         condition.registrationNo = params.registrationNo;
     };
-    console.log("get all geo fence reports...",condition);
     GeoFencesReportsColl.find(condition).sort(sort)
         .skip(skipNumber)
         .limit(limit)
