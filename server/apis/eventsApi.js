@@ -1072,8 +1072,8 @@ Events.prototype.getCompleteData = function (req, callback) {
     events.getAccountData(req, function (result1) {
             events.restoreAccountsFromCustomerTable(req, function (result) {
                 console.log('2 getCustomerData completed ', result);
-                if (result.status) {
-                    callBackEleven(null, result);
+                if (!result.status) {
+                    callback(null, result);
                 } else {
                     loadNonAccountData(req, callback);
                 }

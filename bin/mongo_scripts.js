@@ -13,3 +13,17 @@ var accounts = db.accounts.find({},{"userName":1,"contactPhone":1,"password" :1,
 for(a in accounts) {
     db.userLogins.insert({"userName" : accounts[a].userName, "contactPhone" : accounts[a].contactPhone, "password" : accounts[a].password, "accountId" : accounts[a]._id, "role":accounts[a].role})
 }
+
+
+var geoFenceReports = db.gpsFencesReports.find({"accountId":"5b33727677e71e20a5d8503b"}).toArray()
+for(var i=0; i<geoFenceReports.length;i++){
+    db.gpsFencesReports.remove({"_id":geoFenceReports[i]._id});
+    geoFenceReports[i].registrationNo = geoFenceReports[i].registrationNo.toUpperCase();
+    db.gpsFencesReports.save(geoFenceReports[i]);
+}
+
+
+var geoFenceReports = db.gpsFencesReports.find({"accountId":"5b33727677e71e20a5d8503b"}).toArray()
+for(var i=0; i<geoFenceReports.length;i++){
+    geoFenceReports[i].registrationNo.toUpperCase();
+}

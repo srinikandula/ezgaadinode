@@ -71,7 +71,7 @@ function addTripDetailsToNotification(data, callback) {
 function shareTripDetails(tripData, callback) {
     var notificationParams = {};
     TripCollection.findOne({_id: tripData._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripDetails) {
-        console.log("party not fount",tripDetails);
+        console.log("party found",tripDetails);
         if(err){
             console.log("err==>",err);
         }else if(tripDetails && tripDetails.partyId){
@@ -386,7 +386,7 @@ Trips.prototype.findTrip = function (jwt, tripId, req, callback) {
             RemindersCollection.findOne({refId:trip._id},function(err,doc){
                 if(err){
                     retObj.messages.push("Error while finding reminder, try Again");
-                }else{
+                }else if(doc){
                     reminder.reminderDate = doc.reminderDate;
                     reminder.reminderText = doc.reminderText;
                 }

@@ -350,22 +350,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             endDate: $scope.trip.endDate,
             regNo: $scope.trip.registrationNo.registrationNo
         });
-        /* $scope.trip.startDate.setHours(0);
-     $scope.trip.startDate.setMinutes(0);
-     $scope.trip.startDate.setSeconds(0);
-     $scope.trip.endDate.setHours(23);
-     $scope.trip.endDate.setMinutes(59);
-     $scope.trip.endDate.setSeconds(59);
-     $rootScope.params = {
-         regNo:$scope.trip.registrationNo.registrationNo,
-         startDate:$scope.trip.startDate,
-         endDate:$scope.trip.endDate
-     };*/
-        /*truckTrackingService.getTruckLocations(params,function(successCallback){
-            console.log("trip track. ....locations..",successCallback);
-        },function(errorCallback){
-
-        });*/
     };
 
     function getExpenseMaster() {
@@ -427,7 +411,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     getExpenseMaster();
     $scope.viewAttachment = function (keyPath) {
         TripServices.viewTripDocument({filePath: keyPath}, function (success) {
-
             if (success.data.status) {
                 var modalInstance = $uibModal.open({
                     templateUrl: 'viewS3Image.html',
@@ -683,7 +666,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     };
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
-        // console.log("update trip...",$scope.trip);
         params.errors = [];
         if (!params.date) {
             params.errors.push('Please Select Trip Date');
@@ -704,7 +686,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                params.errors.push('Please Select a Trip Lane');
            }*/
         if (!params.errors.length) {
-            params.partyId = params.partyId._id;
             if (params._id) {
 
                 params.date = Number(params.date);
@@ -745,7 +726,6 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
                 });
             }
-
         }
     };
 
