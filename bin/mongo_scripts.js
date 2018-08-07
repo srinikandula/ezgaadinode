@@ -23,7 +23,3 @@ for(var i=0; i<geoFenceReports.length;i++){
 }
 
 
-var geoFenceReports = db.gpsFencesReports.find({"accountId":"5b33727677e71e20a5d8503b"}).toArray()
-for(var i=0; i<geoFenceReports.length;i++){
-    geoFenceReports[i].registrationNo.toUpperCase();
-}

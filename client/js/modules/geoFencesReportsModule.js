@@ -68,7 +68,7 @@ app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFences
             page: 1, // show first page
             size: 10,
             sorting: {
-                createdAt: -1
+                start: -1
             }
         }, {
             counts: [],
