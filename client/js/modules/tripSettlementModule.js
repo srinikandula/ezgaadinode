@@ -1,82 +1,58 @@
-app.factory('TripSettlement',['$http', '$cookies', function ($http, $cookies) {
+app.factory('TripSettlementService',['$http', '$cookies', function ($http, $cookies) {
     return {
-        addTripSettlement: function (tripSettlement, success, error) {
+        addTripSettlement: function (tripSettlementDetails, success, error) {
             $http({
-                url: '/v1/tripSettlement/',
+                url: '/v1/tripSettlements/addTripSettlement',
                 method: "POST",
-                data: tripSettlement
+                data: tripSettlementDetails
+            }).then(success, error)
+        },
+        getAllTripSettlements:function(params,success,error){
+            $http({
+                url: '/v1/tripSettlements/getTripSettlements',
+                method: "GET",
+                params:params
+            }).then(success, error)
+        },
+        deleteTripSettlement:function(id,success,error){
+            $http({
+                url: '/v1/tripSettlements/deleteTripSettlement/'+id,
+                method: "DELETE"
+            }).then(success, error)
+        },
+        getTripSettlement:function(id,success,error){
+            $http({
+                url: '/v1/tripSettlements/getTripSettlement/'+id,
+                method: "GET"
+            }).then(success, error)
+        },
+        updateTripSettlement:function (tripSettlementDetails, success, error) {
+            $http({
+                url: '/v1/tripSettlements/updateTripSettlement',
+                method: "POST",
+                data: tripSettlementDetails
             }).then(success, error)
         }
     }
-    }]);
-app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverService','Notification', function ($scope,TrucksService,DriverService,Notification) {
-
+}]);
+app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverService','Notification','$state','TripSettlementService','$stateParams',function ($scope,TrucksService,DriverService,Notification,$state,TripSettlementService,$stateParams) {
     $scope.pageTitle = "Add TripSettlement";
+    $scope.truckRegNo = '';
+    $scope.driver = '';
     $scope.tripSettlement = {
-        truckNo:'',
-        driverName:'',
-        date:'',
-      trip:[{
-          index: 0,
-          startFrom:"",
-          startTo:"",
-          startFromDate:'',
-          startEndDate:'',
-          startKm:'',
-          from:'',
-          to:'',
-          fromDate:'',
-          toDate:'',
-          km:''
-
-      }],
-        totalKm:'',
-        cashAdvanceFirstPoint:'',
-        cashAdvanceSecondPoint:'',
-        diselFirstPointLiters:'',
-        diselFirstPointAmount:'',
-        pump:'',
-        billNo:'',
-        diselSecondPointLiters:'',
-        diselsecondpointAmount:'',
-        pump:'',
-        billNo:'',
-        additionalAmountGiven:'',
-        totalAdvnceToDriver:'',
-        expensesAsPerKm:'',
-        grossRecivablePaybledriver:'',
-        otherExpenses:'',
-        netAmountRecivablePayble:'',
-        tripSheetNo:'',
-
-
+        trip:[{
+          startFrom:undefined,
+          startTo:undefined,
+          startFromDate:undefined,
+          startToDate:undefined,
+          startKm:undefined,
+          endFrom:undefined,
+          endTo:undefined,
+          endFromDate:undefined,
+          endToDate:undefined,
+          endKm:undefined
+        }]
     };
-
-    $scope.addFromAndTo = function () {
-        var length = $scope.party.tripLanes.length;
-        console.log()
-        if ($scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1].startFrom ) {
-            Notification.error("Please enter details");
-
-        } else {
-            console.log("hiii")
-            $scope.tripSettlement.trip.push({
-                startFrom:"",
-                startTo:"",
-                startFromDate:'',
-                startEndDate:'',
-                startKm:'',
-                from:'',
-                to:'',
-                fromDate:'',
-                toDate:'',
-                km:'',
-                index:length
-            });
-
-        }
-    };
-
     TrucksService.getAllTrucksForFilter(function (success) {
         if (success.data.status) {
             $scope.trucks = success.data.trucks;
@@ -97,13 +73,153 @@ app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverServic
                 Notification.error({ message: message });
             });
         }
-    },function(error)
-    {
+    },function(error){
         Notification.error(error);
     });
-    $scope.addorUpdateTripSettlement=function(){
-            var params=$scope.trip;
+    if($stateParams.id){
+        $scope.pageTitle = 'Edit Trip Settlement';
+        TripSettlementService.getTripSettlement($stateParams.id,function(successCallback){
+            if(successCallback.data.status){
+                $scope.tripSettlement = successCallback.data.data;
+                $scope.tripSettlement.date = new Date($scope.tripSettlement.date);
+                $scope.driver = $scope.tripSettlement.driverName.fullName;
+                var truck = _.find($scope.trucks, function (truck) {
+                    return truck._id.toString() === $scope.tripSettlement.truckNo;
+                });
+                if (truck) {
+                    $scope.truckRegNo = truck.registrationNo;
+                }
 
+                for(var i = 0;i < $scope.tripSettlement.trip.length ; i++){
+                    $scope.tripSettlement.trip[i].startFromDate = new Date($scope.tripSettlement.trip[i].startFromDate);
+                    $scope.tripSettlement.trip[i].startToDate = new Date($scope.tripSettlement.trip[i].startToDate);
+                    $scope.tripSettlement.trip[i].endFromDate = new Date($scope.tripSettlement.trip[i].endFromDate);
+                    $scope.tripSettlement.trip[i].endToDate = new Date($scope.tripSettlement.trip[i].endToDate);
+                }
+            }
+        },function(errorCallback){
 
+        });
     }
+
+    $scope.addFromAndTo = function () {
+        if (!$scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1]) {
+            Notification.error("Please enter details");
+        }else {
+            $scope.tripSettlement.trip.push({
+                startFrom:undefined,
+                startTo:undefined,
+                startFromDate:undefined,
+                startToDate:undefined,
+                startKm:undefined,
+                endFrom:undefined,
+                endTo:undefined,
+                endFromDate:undefined,
+                endToDate:undefined,
+                endKm:undefined
+            });
+        }
+    };
+    $scope.delete = function (index) {
+        if ($scope.tripSettlement.trip.length > 1) {
+            $scope.tripSettlement.trip.splice(index, 1);
+        } else {
+            $scope.tripSettlement.error.push("Please add at least one trip lane");
+        }
+
+    };
+    $scope.cancel = function(){
+        $state.go('tripSettlement');
+    };
+    $scope.addOrUpdateTripSettlement = function(){
+        if($stateParams.id){
+            TripSettlementService.updateTripSettlement($scope.tripSettlement,function(successCallback){
+                if(successCallback.data.status){
+                    Notification.success({message:"Updated Successfully"});
+                    $state.go('tripSettlement');
+                }else{
+                    successCallback.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            },function(errorCallback){
+
+            });
+        }else{
+            TripSettlementService.addTripSettlement($scope.tripSettlement,function(successCallback){
+                if(successCallback.data.status){
+                    Notification.success({message:"Added Successfully"});
+                    $state.go('tripSettlement');
+                }else{
+                    successCallback.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            },function(errorCallback){
+
+            });
+        }
+    };
+
+
+}]);
+app.controller("tripSettlementsController",['$scope','TripSettlementService','Notification','$state',function($scope,TripSettlementService,Notification,$state){
+
+    $scope.getAllTripSettlements = function(){
+        var params = {};
+        params.fromDate = $scope.fromDate;
+        params.toDate = $scope.toDate;
+        TripSettlementService.getAllTripSettlements(params,function(successCallback){
+            if(successCallback.data.status){
+                $scope.tripSettlements = successCallback.data.data;
+            }else{
+                successCallback.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        },function(errorCallback){});
+    };
+
+    $scope.delete = function(id){
+        swal({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#E83B13',
+            cancelButtonColor: '#9d9d9d',
+            confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+            if (result.value) {
+            TripSettlementService.deleteTripSettlement(id, function (success) {
+                if (success.data.status) {
+                    swal(
+                        'Deleted!',
+                        'Trip settlement deleted successfully.',
+                        'success'
+                    );
+                    $scope.getAllTripSettlements();
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        swal(
+                            'Deleted!',
+                            message,
+                            'error'
+                        );
+                    });
+                }
+            }, function (err) {
+
+            });
+        }
+    });
+    };
+    $scope.getAllTripSettlements();
+    $scope.goToEditPage = function(id){
+        $state.go('addTripSettlement',{id:id});
+    };
+    $scope.generatePdf = function(tripSettlementId){
+        console.log("generate pdf...");
+        window.open('/v1/tripSettlements/generatePDF/' + tripSettlementId );
+    };
 }]);

@@ -7,10 +7,11 @@ app.factory('InvoiceService',['$http', '$cookies', function ($http, $cookies) {
                 data: invoiceDetails
             }).then(success, error)
         },
-        getAllInvoices:function (success, error) {
+        getAllInvoices:function (params,success, error) {
             $http({
                 url: '/v1/invoices/getAllInvoices',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
         deleteInvoice:function (id,success, error) {
@@ -136,7 +137,11 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
 
 app.controller('invoicesListController',['$scope','InvoiceService','$state',function($scope,InvoiceService,$state){
    $scope.getAllInvoices = function(){
-       InvoiceService.getAllInvoices(function(successCallback){
+       var params = {};
+       params.fromDate = $scope.fromDate;
+       params.toDate = $scope.toDate;
+       console.log("get all invoices...",$scope.fromDate,$scope.toDate);
+       InvoiceService.getAllInvoices(params,function(successCallback){
            if(successCallback.data.status){
                $scope.invoices = successCallback.data.data;
            }

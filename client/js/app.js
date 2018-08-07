@@ -286,15 +286,27 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         }
     }).state({
         name: 'tripSettlement',
-        url: '/tripSettlement',
+        url: '/tripSettlements',
+        templateUrl: 'views/partials/tripSettlement/tripSettlementList.html',
+        data: {
+            activeTab: 'tripSettlement',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'open'
+
+        }
+    }).state({
+        name: 'addTripSettlement',
+        url: '/add-editTripSettlement/:id',
         templateUrl: 'views/partials/tripSettlement/tripSettlement-edit.html',
         data: {
             activeTab: 'tripSettlement',
             subTab: 'ERP'
         },
         params: {
-            access: 'auth',
-
+            access: 'open',
+            id:null
         }
     }).state({
         name: 'uploadTrips',
