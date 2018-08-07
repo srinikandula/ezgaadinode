@@ -208,7 +208,7 @@ OpenRouter.get('/get/accountGroups', function (request, res) {
 });
 
 OpenRouter.get('/get/mappingGpsStatusToAccount', function (request, res) {
-    Events.getMappingGpsStatusToAccount(request,function(results){
+    Events.updateAccountGPSStatus(request,function(results){
         //console.log(results);
         res.json(results);
     });
