@@ -292,13 +292,12 @@ Devices.prototype.transferDevices = function (req, callback) {
 
     }
 };
-
-Devices.prototype.count = function (req, callback) {
+function findCount(req,condition,callback){
     var retObj = {
         status: false,
         messages: []
     };
-    DevicesColl.count({}, function (errcount, count) {
+    DevicesColl.count(condition, function (errcount, count) {
         if (errcount) {
             retObj.messages.push("Unable to get devices count");
             analyticsService.create(req, serviceActions.device_count_err, {
@@ -320,6 +319,44 @@ Devices.prototype.count = function (req, callback) {
             callback(retObj);
         }
     });
+}
+
+Devices.prototype.count = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {};
+    var accounts = [];
+    if(req.query.searchAccount) {
+        AccountsColl.find({userName: new RegExp(req.query.searchAccount, "gi")}, {"_id": 1}, function (err, result) {
+            if (err) {
+                retObj.status = false;
+                retObj.messages.push("error in finding account.." + JSON.stringify(err));
+                callback(retObj);
+            } else {
+                if (result) {
+                    accounts = _.pluck(result, '_id');
+                    condition.accountId = {$in: accounts};
+                    findCount(req,condition,function(countCallback){
+                        if(countCallback.status){
+                            callback(countCallback);
+                        }else{
+                            callback(countCallback);
+                        }
+                    });
+                }
+            }
+        });
+    }else{
+        findCount(req,condition,function(countCallback){
+            if(countCallback.status){
+                callback(countCallback);
+            }else{
+                callback(countCallback);
+            }
+        });
+    }
 };
 
 function findDevices(req, params, accounts, callback) {

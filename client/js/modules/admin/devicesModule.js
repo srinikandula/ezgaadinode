@@ -13,10 +13,11 @@ app.factory('DeviceService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        count: function (success, error) {
+        count: function (accountName,success, error) {
             $http({
                 url: '/v1/cpanel/devices/count',
-                method: "GET"
+                method: "GET",
+                params:accountName
             }).then(success, error)
         },
         getDevices: function (pageable, success, error) {
@@ -140,11 +141,11 @@ app.factory('DeviceService', function ($http) {
 
 app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', '$stateParams', function ($scope, DeviceService, Notification, NgTableParams, $uibModal, $stateParams) {
     $scope.searchString = '';
-    $scope.searchAccount = '';
+    $scope.query = {searchAccount:''};
     $scope.sortableString = '';
     $scope.count = 0;
     $scope.getCount = function () {
-        DeviceService.count(function (success) {
+        DeviceService.count($scope.query,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
                 $scope.init();
@@ -161,7 +162,7 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             size: tableParams.count(),
             sort: tableParams.sorting(),
             searchString: $scope.searchString,
-            searchAccount: $scope.searchAccount,
+            searchAccount: tableParams.searchAccount,
             sortableString: $scope.sortableString
         };
         DeviceService.getDevices(pageable, function (response) {
@@ -187,6 +188,9 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             counts: [10, 50, 100, 200],
             total: $scope.count,
             getData: function (params) {
+                if($scope.query.searchAccount){
+                    params.searchAccount = $scope.query.searchAccount;
+                }
                 loadTableData(params);
                 // $scope.getDevices();
             }
