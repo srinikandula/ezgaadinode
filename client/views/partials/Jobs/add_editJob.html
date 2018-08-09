@@ -49,7 +49,7 @@
                         </span>
                 <select class="form-control custom-form-control" ng-model="job.type">
                     <option value="" selected>Select Job Type</option>
-                    <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
+                    <option ng-repeat="e in expenses | orderBy" value="{{e._id}}">{{e.expenseName}}</option>
                     <option value="others">Others</option>
                 </select>
             </div>
