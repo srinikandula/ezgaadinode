@@ -245,7 +245,11 @@ Jobs.prototype.getPreviousJobs = function(jwt,query,callback){
         status:false,
         messages:[]
     };
-    JobsCollection.find({accountId:jwt.accountId,vehicle:query.vehicleId, _id:{ $nin: [] }}).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
+    var condition = {accountId:jwt.accountId,vehicle:query.vehicleId};
+    if(query.jobId){
+        condition._id = { $nin : query.jobId };
+    }
+    JobsCollection.find(condition).populate({path:"type"}).populate({path:"inventory"}).sort({date:-1}).limit(3).exec(function(err,records){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -254,7 +258,6 @@ Jobs.prototype.getPreviousJobs = function(jwt,query,callback){
             if(records.length>0){
                 retObj.status = true;
                 retObj.messages.push("records fetched successfully");
-                retObj.vehicle = vehicle.registrationNo;
                 retObj.records =records;
                 callback(retObj);
             }else{
@@ -267,12 +270,16 @@ Jobs.prototype.getPreviousJobs = function(jwt,query,callback){
     });
 
 };
-Jobs.prototype.getJobsForInventory = function(jwt,inventory,callback){
+Jobs.prototype.getJobsForInventory = function(jwt,params,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    JobsCollection.find({accountId:jwt.accountId,inventory:inventory._id}).populate({path:"vehicle"}).populate({path:"type"}).sort({createdAt:-1}).limit(5).exec(function(err,records){
+    var condition = {accountId:jwt.accountId,inventory:params.inventoryId};
+    if(params.jobId){
+        condition._id = {$nin:params.jobId}
+    }
+    JobsCollection.find(condition).populate({path:"vehicle"}).populate({path:"type"}).sort({createdAt:-1}).limit(5).exec(function(err,records){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
@@ -281,7 +288,6 @@ Jobs.prototype.getJobsForInventory = function(jwt,inventory,callback){
             if(records.length>0){
                 retObj.status = true;
                 retObj.messages.push("records fetched successfully");
-                retObj.inventory = inventory.name;
                 retObj.records =records;
                 callback(retObj);
             }else{
@@ -412,13 +418,5 @@ Jobs.prototype.shareDetailsViaEmail = function (jwt,requestParams,callback) {
         });
     }
 };
-
-
-
-
-
-
-
-
 module.exports=new Jobs();
 

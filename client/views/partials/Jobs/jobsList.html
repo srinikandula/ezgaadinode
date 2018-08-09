@@ -68,7 +68,7 @@
                     {{job.date | date:'dd-MM-y'}}
                 </td>
                 <td data-title="'Reminder Date'" sortable="'reminder date'" class="clickable-item">
-                    {{job.reminderDate | date:'dd-MM-y'}}
+                    {{(job.reminderDate | date:'dd-MM-y') || '--'}}
                 </td>
                 <td data-title="'Milage'" sortable="'name'" class="clickable-item">
                     {{job.milege}}
