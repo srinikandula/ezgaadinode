@@ -202,7 +202,6 @@ Lrs.prototype.generatePDF=function (req,callback) {
                 })
             }
         },function (err,result) {
-
             if(err){
                 callback(err);
             }else{
@@ -210,8 +209,7 @@ Lrs.prototype.generatePDF=function (req,callback) {
                 result.accDetails.igstprice=(result.lrDetails.freight/100)*result.accDetails.igst;
                 result.accDetails.cgstprice=(result.lrDetails.freight/100)*result.accDetails.cgst;
                 result.accDetails.sgstprice=(result.lrDetails.freight/100)*result.accDetails.sgst;
-
-               result.accDetails.grandtotal= result.accDetails.igstprice+ result.accDetails.igstprice+ result.accDetails.igstprice+ result.lrDetails.total+result.lrDetails.surCharges;
+                result.accDetails.grandtotal= result.accDetails.igstprice+ result.accDetails.igstprice+ result.accDetails.igstprice+ result.lrDetails.total+result.lrDetails.surCharges;
 
                 pdfGenerator.createPdf(result.accDetails.templatePath,'lr.html','landscape',result,function (resp) {
                     callback(resp);
