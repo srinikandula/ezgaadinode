@@ -29,7 +29,7 @@ PdfGenerator.prototype.createPdf=function (folderPath,templateName,orientation,d
       var filepath = filepath = __dirname+'/../pdfTemplates/'+templateName;
       //If account settings has a template path use that
       if(folderPath) {
-          __dirname+'/../pdfTemplates/'+folderPath+'/'+templateName;
+          filepath = __dirname+'/../pdfTemplates/'+folderPath+'/'+templateName;
       }
       var html = fs.readFileSync(filepath, 'utf8');
       var document = {
