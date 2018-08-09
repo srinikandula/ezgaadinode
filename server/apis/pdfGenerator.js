@@ -11,13 +11,13 @@ var options = {
 var PdfGenerator = function () {
 };
 
-PdfGenerator.prototype.createPdf=function (path,template,orientation,data,callback) {
+PdfGenerator.prototype.createPdf=function (folderPath,templateName,orientation,data,callback) {
   var retObj={
       status:false,
       messages:[]
   };
-  console.log("pdf....generates...",data);
-  if(!template){
+
+  if(!templateName){
       retObj.messages.push("Provide template");
   }
   if(!data){
@@ -26,11 +26,15 @@ PdfGenerator.prototype.createPdf=function (path,template,orientation,data,callba
   if(retObj.messages.length>0){
       callback(retObj);
   }else{
-      var html = fs.readFileSync(__dirname+'/../pdfTemplates/'+path+'/'+template, 'utf8');
+      var filepath = filepath = __dirname+'/../pdfTemplates/'+templateName;
+      //If account settings has a template path use that
+      if(folderPath) {
+          __dirname+'/../pdfTemplates/'+folderPath+'/'+templateName;
+      }
+      var html = fs.readFileSync(filepath, 'utf8');
       var document = {
           template: html,
           context: data,
-          //path: "./output.pdf"
           type: "buffer"
       };
       options.orientation=orientation;
