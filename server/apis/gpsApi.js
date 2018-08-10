@@ -616,7 +616,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                             });
                             truck.attrs.latestLocation.driverName = driver.fullName;
                         }
-                    if (truck.attrs.latestLocation && (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1)) {
+                    if (truck.attrs.latestLocation && (!truck.attrs.latestLocation.address || truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1)) {
                         resolveAddress({
                             latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
                             longitude: truck.attrs.latestLocation.longitude || truck.attrs.latestLocation.location.coordinates[0]

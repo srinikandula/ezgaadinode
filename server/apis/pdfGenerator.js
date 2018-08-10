@@ -11,6 +11,15 @@ var options = {
 var PdfGenerator = function () {
 };
 
+/**
+ *
+ * @param folderPath - folder in which the template files are in the source code. For every account the folder path
+ * can be different which is configured in the profile page.
+ * @param templateName --
+ * @param orientation
+ * @param data
+ * @param callback
+ */
 PdfGenerator.prototype.createPdf=function (folderPath,templateName,orientation,data,callback) {
   var retObj={
       status:false,
