@@ -19,7 +19,33 @@ function dateToStringFormat(date) {
         return '--';
     }
 };
-
+Invoices.prototype.getCount = function(jwt,params,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {};
+    if(params.fromDate && params.toDate){
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(params.fromDate),$lte:new Date(params.toDate)}
+        }
+    }else{
+        condition = {accountId:jwt.accountId}
+    };
+    InvoicesColl.count(condition,function(err,count){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("error in getting count"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push("success");
+            retObj.data = count;
+            callback(retObj);
+        }
+    });
+};
 Invoices.prototype.addInvoice = function(jwt,invoiceDetails,callback){
     var retObj = {
       status:false,
@@ -77,7 +103,14 @@ Invoices.prototype.getAllInvoices = function(jwt,params,callback){
     }else{
         condition = {accountId:jwt.accountId}
     }
-    InvoicesColl.find(condition,function(err,invoices){
+    var skipNumber = params.page ? (params.page - 1) * params.size : 0;
+    var limit = params.size ? parseInt(params.size) : Number.MAX_SAFE_INTEGER;
+    var sort = params.sort ? JSON.parse(params.sort) : {createdAt: -1};
+    InvoicesColl.find(condition).sort(sort)
+        .skip(skipNumber)
+        .limit(limit)
+        .lean()
+        .exec(function(err,invoices){
         if(err){
             retObj.status = false;
             retObj.messages.push("error in fetching records"+JSON.stringify(err));

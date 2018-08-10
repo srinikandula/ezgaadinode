@@ -11,14 +11,14 @@
                              placeholder="'to date'" ></date-picker>
             </li>
             <li class="col-sm-2 pall-zero">
-                <button type="submit" ng-click="getAllInvoices();" class="btn go">
+                <button type="submit" ng-click="getCount();" class="btn go">
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
         </ul>
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover"
-           ng-table="inventoryParams">
+           ng-table="invoiceParams">
         <tr ng-repeat="invoice in invoices " style="text-align: center;">
             <td data-title="'Party Name'" sortable="'partyId'" class="clickable-item">{{
                 invoice.partyId}}

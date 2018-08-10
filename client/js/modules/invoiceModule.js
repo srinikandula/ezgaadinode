@@ -7,6 +7,13 @@ app.factory('InvoiceService',['$http', '$cookies', function ($http, $cookies) {
                 data: invoiceDetails
             }).then(success, error)
         },
+        getCount: function (params,success, error) {
+            $http({
+                url: '/v1/invoices/count',
+                method: "GET",
+                params:params
+            }).then(success, error)
+        },
         getAllInvoices:function (params,success, error) {
             $http({
                 url: '/v1/invoices/getAllInvoices',
@@ -135,19 +142,9 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
     };
 }]);
 
-app.controller('invoicesListController',['$scope','InvoiceService','$state',function($scope,InvoiceService,$state){
-   $scope.getAllInvoices = function(){
-       var params = {};
-       params.fromDate = $scope.fromDate;
-       params.toDate = $scope.toDate;
-       console.log("get all invoices...",$scope.fromDate,$scope.toDate);
-       InvoiceService.getAllInvoices(params,function(successCallback){
-           if(successCallback.data.status){
-               $scope.invoices = successCallback.data.data;
-           }
-       },function(errorCallback){});
-   };
-   $scope.delete = function(id){
+app.controller('invoicesListController',['$scope','InvoiceService','$state','NgTableParams',function($scope,InvoiceService,$state,NgTableParams){
+
+    $scope.delete = function(id){
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -181,10 +178,57 @@ app.controller('invoicesListController',['$scope','InvoiceService','$state',func
         }
     });
     };
+    var loadTableData = function (tableParams) {
+        var pageable = {page:tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            fromDate:tableParams.fromDate,
+            toDate:tableParams.toDate
+        };
+        InvoiceService.getAllInvoices(pageable,function(successCallback){
+            if(successCallback.data.status){
+                $scope.invoices = successCallback.data.data;
+                tableParams.total(successCallback.totalElements);
+                tableParams.data = $scope.invoices;
+            }
+        },function(errorCallback){});
+    };
+    $scope.init = function () {
+        $scope.invoiceParams = new NgTableParams({
+            page: 1, // show first page
+            size: 10,
+            sorting: {
+                createdAt: -1
+            }
+        }, {
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                if($scope.fromDate && $scope.toDate){
+                    params.fromDate = $scope.fromDate;
+                    params.toDate = $scope.toDate;
+                }
+                loadTableData(params);
+            }
+        });
+
+    };
+   $scope.getCount = function () {
+       var params = {};
+       params.fromDate = $scope.fromDate;
+       params.toDate = $scope.toDate;
+       InvoiceService.getCount(params,function(successCallback){
+           if(successCallback.data.status){
+               $scope.count = successCallback.data.data;
+               $scope.init();
+           }
+       },function(errorCallback){});
+   };
    $scope.goToEditPage = function(id){
        $state.go('invoiceEdit',{id:id});
    };
-   $scope.getAllInvoices();
+   $scope.getCount();
+   // $scope.getAllInvoices();
     $scope.generatePdf=function (invoiceId) {
         window.open('/v1/invoices/generatePDF/' + invoiceId );
     }

@@ -1,0 +1,55 @@
+.container {
+    border: 2px solid black;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.bill-label {
+    margin-top: 10px;
+}
+.table-style {
+    width: 100%;
+    border: 1px solid black;
+    margin-bottom: 45px;
+}
+th,
+td {
+    border: 1px solid black;
+}
+.second-td {
+    height: 400px;
+    width: 68px;
+}
+.td-style {
+    height: 100px;
+}
+.head-tabel-td-th {
+    width: 100%;
+    border: none !important;
+    text-align: center;
+}
+
+.head-th {
+    border-right: 1px solid black !important;
+    text-align: center;
+    width: 80px;
+}
+
+.body-table1,
+.bot-table1 {
+    width: 100px;
+    border: none !important;
+    border-right: 1px solid black !important;
+}
+.body-table2,
+.bot-table2 {
+    border: none !important;
+}
+
+.total-th-td-top {
+    border-top: none !important;
+}
+
+.total-th-td-bottom {
+    border-bottom: none !important;
+}
