@@ -626,8 +626,8 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                         }, function (addressResp) {
                             if (addressResp.status) {
                                 truck.attrs.latestLocation.address = addressResp.address;
-                                console.log('updating truck ' + truck._id + '   address '+addressResp.address );
-                                TrucksColl.findOneAndUpdate({_id:truck._id}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
+                                console.log('updating truck ' + truck.registrationNo + '   address '+addressResp.address );
+                                TrucksColl.findOneAndUpdate({"registrationNo":truck.registrationNo}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
                                   //  console.log('truck updated ' + updated);
                                 });
                                 asyncCallback(false);
