@@ -142,7 +142,6 @@ app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notifica
 }]);
 
 app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification', 'NgTableParams', 'paginationService','TrucksService','$stateParams','PartyService','AccountServices', function ($scope, $state, LrServices, Notification, NgTableParams, paginationService, TrucksService,$stateParams,PartyService,AccountServices) {
-
     AccountServices.userProfile(function (success) {
         if (success.data.status) {
             $scope.account = success.data.result.profile;
