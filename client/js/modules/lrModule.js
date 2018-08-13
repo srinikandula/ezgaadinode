@@ -213,9 +213,6 @@ app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification
         if(!params.consigneeBanksNameAndAddress){
             params.error.push("Enter consignee name");
         }
-        if(!params.truckId){
-            params.error.push("Select truck");
-        }
         if(!params.addressOfDeliveryOffice){
             params.error.push("Enter delivery office");
         }
