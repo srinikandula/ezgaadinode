@@ -13,6 +13,11 @@ AuthRouter.post('/updateInvoice',function(req,res){
         res.json(result);
     });
 });
+AuthRouter.get('/count',function(req,res){
+    invoiceApi.getCount(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
 AuthRouter.get('/getAllInvoices',function(req,res){
     invoiceApi.getAllInvoices(req.jwt,req.query,function(result){
         res.send(result);

@@ -13,11 +13,11 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        getRecords:function (jobId,vehicle,success, error) {
+        getRecords:function (params,success, error) {
             $http({
                 url: '/v1/jobs/getPreviousJobsForVehicle',
                 method: "GET",
-                params:{vehicleId:vehicle._id,jobId:jobId}
+                params:params
             }).then(success, error)
         },
         getCount: function (params,success, error) {
@@ -27,11 +27,11 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 params:params
             }).then(success, error)
         },
-        getJobsForInventory:function (inventory,success, error) {
+        getJobsForInventory:function (params,success, error) {
             $http({
                 url: '/v1/jobs/getJobsForInventory',
                 method: "GET",
-                params:inventory
+                params:params
             }).then(success, error)
         },
         deleteJob:function(id,success,error){
@@ -93,23 +93,27 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
         }
     },function(errorCallback){});
 
-    $scope.getRecords = function(jobId,vehicleId){
-        console.log('jobId ' + jobId +'  vehicleId '+ vehicleId);
-        JobsService.getRecords($stateParams.ID,vehicleId,function(successCallback){
+    $scope.getRecords = function(vehicle){
+        var params = {};
+        if($stateParams.ID){
+            params.vehicleId = $scope.job.vehicle._id;
+            params.jobId = $stateParams.ID;
+            $scope.vehicle = $scope.job.vehicle.registrationNo ;
+        }else{
+            params.vehicleId = vehicle._id;
+            $scope.vehicle = vehicle.registrationNo ;
+        }
+        JobsService.getRecords(params,function(successCallback){
             $scope.records = successCallback.data.records;
-            $scope.vehicle = successCallback.data.vehicle;
-        },function(errorCallback){
-
-        });
+        },function(errorCallback){});
     };
 
     $scope.getJobsForInventory = function(inventory){
-        JobsService.getJobsForInventory(inventory,function(successCallback){
+        var params = {inventoryId:inventory._id,jobId:$stateParams.ID};
+        JobsService.getJobsForInventory(params,function(successCallback){
             $scope.jobsForInventory = successCallback.data.records;
-            $scope.inventory = successCallback.data.inventory;
-        },function(errorCallback){
-
-        });
+            $scope.inventory = $scope.job.inventory.name ;
+        },function(errorCallback){});
     };
 
     function getExpenses(params){

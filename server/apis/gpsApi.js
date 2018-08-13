@@ -48,6 +48,7 @@ function resolveAddress(position, callback) {
             callback(retObj);
         } else if (counterEntry) {/*if key is available search address*/
             options.apiKey = counterEntry.secret;
+            console.log('counterEntry.secret   '+ counterEntry.secret);
             var geocoder = nodeGeocoder(options);
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if (errlocation) {
@@ -72,7 +73,7 @@ function resolveAddress(position, callback) {
                     callback(retObj);
                 }
             });
-        } else {/*assign new key for day*/
+        } else {
             SecretKeyCounterColl.find({date: today}, {'secret': 1}, function (error, keys) {
                 SecretKeysColl.findOne({"secret": {$nin: [keys]}}, function (err, secDoc) {
                     if (err) {
@@ -101,6 +102,8 @@ function resolveAddress(position, callback) {
         }
     });
 }
+
+
 
 Gps.prototype.addSecret = function (secret, email, callback) {
     var retObj = {
@@ -616,16 +619,16 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                             });
                             truck.attrs.latestLocation.driverName = driver.fullName;
                         }
-                    if (truck.attrs.latestLocation && (truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1)) {
+                    if (truck.attrs.latestLocation && (!truck.attrs.latestLocation.address || truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1)) {
                         resolveAddress({
                             latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
                             longitude: truck.attrs.latestLocation.longitude || truck.attrs.latestLocation.location.coordinates[0]
                         }, function (addressResp) {
                             if (addressResp.status) {
                                 truck.attrs.latestLocation.address = addressResp.address;
-                                console.log('updating truck ' + truck._id);
+                                console.log('updating truck ' + truck._id + '   address '+addressResp.address );
                                 TrucksColl.findOneAndUpdate({_id:truck._id}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
-                                    console.log('truck updated ' + updated);
+                                  //  console.log('truck updated ' + updated);
                                 });
                                 asyncCallback(false);
                             } else {
@@ -749,7 +752,6 @@ Gps.prototype.emailDayGPSReport = function (req, callback) {
     var gps = new Gps();
 
     AccountsColl.find({dailyReportEnabled: true}, function (err, accounts) {
-        console.log("accounts.......", accounts.length);
         if (err) {
             retObj.messages.push('Error retrieving accounts for sending daily reports');
             callback(retObj);
@@ -762,7 +764,6 @@ Gps.prototype.emailDayGPSReport = function (req, callback) {
                     } else if (trucks.length) {
                         async.map(trucks, function (truck, asyncCallback) {
                             gps.gpsTrackingByTruck(truck.registrationNo, startDate, endDate, req, function (result) {
-                                console.log("gps tracking by truck....result.....", result);
                                 if (result.status) {
                                     var positions = result.results.positions;
                                     var distance = positions[positions.length - 1].totalDistance - positions[0].totalDistance;

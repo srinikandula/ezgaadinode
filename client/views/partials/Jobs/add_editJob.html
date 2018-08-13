@@ -30,7 +30,7 @@
 
         <div class="form-group col-xs-12">
             <div class="styling-input-list">
-                <ui-select ng-model="job.vehicle"  ng-change="getRecords(job._id,selected.vehicle)" theme="select2"
+                <ui-select ng-model="job.vehicle"  ng-change="getRecords(job.vehicle)" theme="select2"
                            title="Choose a Truck" append-to-body="true">
                     <ui-select-match class="form-control custom-form-control">
                         {{$select.selected.registrationNo || truckRegNo}}
@@ -49,7 +49,7 @@
                         </span>
                 <select class="form-control custom-form-control" ng-model="job.type">
                     <option value="" selected>Select Job Type</option>
-                    <option ng-repeat="e in expenses" value="{{e._id}}">{{e.expenseName}}</option>
+                    <option ng-repeat="e in expenses | orderBy" value="{{e._id}}">{{e.expenseName}}</option>
                     <option value="others">Others</option>
                 </select>
             </div>
