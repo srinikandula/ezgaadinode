@@ -45,14 +45,21 @@ app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverServic
           startTo:undefined,
           startFromDate:undefined,
           startToDate:undefined,
-          startKm:undefined,
-          endFrom:undefined,
-          endTo:undefined,
-          endFromDate:undefined,
-          endToDate:undefined,
-          endKm:undefined
-        }]
+          startKm:undefined
+          
+        }],
+        cashAdvances:[{
+            cashAdvanceFirstPoint:undefined,
+        }],
+        diselLiters:[{
+            dieselFirstPointLiters:undefined,
+            dieselFirstPointAmount:undefined,
+            pumpFirstPoint:undefined,
+            billNoFirstPoint:undefined
+        }],
     };
+   
+
     TrucksService.getAllTrucksForFilter(function (success) {
         if (success.data.status) {
             $scope.trucks = success.data.trucks;
@@ -103,7 +110,12 @@ app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverServic
     }
 
     $scope.addFromAndTo = function () {
-        if (!$scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1]) {
+     
+        if (!$scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1].startFrom||
+            !$scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1].startTo||
+            !$scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1].startFromDate||
+            !$scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1].startToDate||
+            !$scope.tripSettlement.trip[$scope.tripSettlement.trip.length - 1].startKm) {
             Notification.error("Please enter details");
         }else {
             $scope.tripSettlement.trip.push({
@@ -112,17 +124,57 @@ app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverServic
                 startFromDate:undefined,
                 startToDate:undefined,
                 startKm:undefined,
-                endFrom:undefined,
-                endTo:undefined,
-                endFromDate:undefined,
-                endToDate:undefined,
-                endKm:undefined
+               
             });
         }
     };
+    $scope.addCashAdvances = function () {
+        if (!$scope.tripSettlement.cashAdvances[$scope.tripSettlement.cashAdvances.length - 1].cashAdvanceFirstPoint) {
+            Notification.error("Please enter details");
+        }else {
+            $scope.tripSettlement.cashAdvances.push({
+               
+                cashAdvanceFirstPoint:undefined
+            });
+        }
+    };
+    $scope.addDiselLiters = function () {
+        if (!$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].dieselFirstPointLiters||
+            !$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].dieselFirstPointAmount||
+            !$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].pumpFirstPoint||
+            !$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].billNoFirstPoint) {
+            Notification.error("Please enter details");
+        }else {
+            $scope.tripSettlement.diselLiters.push({
+                dieselFirstPointLiters:undefined,
+                dieselFirstPointAmount:undefined,
+                pumpFirstPoint:undefined,
+                billNoFirstPoint:undefined
+               
+            });
+        }
+    };
+    
     $scope.delete = function (index) {
         if ($scope.tripSettlement.trip.length > 1) {
             $scope.tripSettlement.trip.splice(index, 1);
+        } else {
+            $scope.tripSettlement.error.push("Please add at least one trip lane");
+        }
+
+    };
+
+    $scope.cashDelete = function (index) {
+        if ($scope.tripSettlement.cashAdvances.length > 1) {
+            $scope.tripSettlement.cashAdvances.splice(index, 1);
+        } else {
+            $scope.tripSettlement.error.push("Please add at least one trip lane");
+        }
+
+    };
+    $scope.diselDelete = function (index) {
+        if ($scope.tripSettlement.diselLiters.length > 1) {
+            $scope.tripSettlement.diselLiters.splice(index, 1);
         } else {
             $scope.tripSettlement.error.push("Please add at least one trip lane");
         }

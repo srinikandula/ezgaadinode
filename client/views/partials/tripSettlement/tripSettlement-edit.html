@@ -76,42 +76,15 @@
                              <label class="focus-effect-for-input" aria-hidden="true"> Start Km</label>
                          </div>
                      </div>
-                     <div class="col-sm-12 col-xs-12 mt-10">
-                     <div class=" col-sm-2 form-group col-xs-12">
-                         <div class="styling-input-list">
-                             <input type="text" class="form-control custom-form-control" ng-model="exp.endFrom"/>
-                             <label class="focus-effect-for-input" aria-hidden="true">From</label>
-                         </div>
-                     </div>
-                     <div class=" col-sm-2 form-group col-xs-12">
-                         <date-picker  ng-model="exp.endFromDate"
-                                      class="'custom-form-control'" placeholder="'Date'"></date-picker>
-                     </div>
-                     <div class=" col-sm-2 form-group col-xs-12">
-                         <div class="styling-input-list">
-                             <input type="text" class="form-control custom-form-control" ng-model="exp.endTo"/>
-                             <label class="focus-effect-for-input" aria-hidden="true">To</label>
-                         </div>
-                     </div>
-                     <div class=" col-sm-2 form-group col-xs-12">
-                         <date-picker id="toDate" ng-model="exp.endToDate"
-                                      class="'custom-form-control'" placeholder="'Date'"></date-picker>
-                     </div>
-                     <div class=" col-sm-2 form-group col-xs-12">
-                         <div class="styling-input-list">
-                             <input type="text" class="form-control custom-form-control" ng-model="exp.endKm"/>
-                             <label class="focus-effect-for-input" aria-hidden="true">End KM</label></div>
-                     </div>
-                     <div class="col-sm-2"> <a href="#" class="addingMaster" ng-click="addFromAndTo()" ng-show="$index==0">
-                         <i class="fa fa-plus-square"></i>
-                     </a></div>
-                         <a href="#" class="addingMaster" ng-click="delete($index)"
+                         <div class="col-sm-1 form-group col-xs-12"> <a href="#" class="addingMaster" ng-click="addFromAndTo()" >
+                             <i class="fa fa-plus-square"></i>
+                         </a></div>
+                         <a href="#" class="addingMaster col-sm-1 col-xs-12" ng-click="delete($index)"
                             ng-show="$index>0">
                              <i class="fa fa-minus-square"></i>
                          </a>
                      </div>
-             </div>
-            </div>
+         </div>
         <div class="col-sm-12 col-xs-12 mt-10">
             <div class=" col-sm-12 form-group col-xs-12">
                 <div class="styling-input-list">
@@ -120,74 +93,61 @@
                 </div>
             </div>
         </div>
+        <div ng-repeat="cashAdvance in tripSettlement.cashAdvances">
         <div class="col-sm-12 col-xs-12 mt-10">
-            <div class=" col-sm-12 form-group col-xs-12">
+            <div class=" col-sm-10 form-group col-xs-12">
                 <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceFirstPoint"/>
+                    <input type="text" class="form-control custom-form-control" ng-model="cashAdvance.cashAdvanceFirstPoint"/>
                     <label class="focus-effect-for-input" aria-hidden="true">Cash Advance First Point</label>
                 </div>
             </div>
-            <div class=" col-sm-12 form-group col-xs-12">
-                <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.cashAdvanceSecondPoint"/>
-                    <label class="focus-effect-for-input" aria-hidden="true">Cash Advance Second Point</label>
-                </div>
-            </div>
+            <div class="col-sm-1 form-group col-xs-12"> <a href="#" class="addingMaster" ng-click="addCashAdvances()" >
+                <i class="fa fa-plus-square"></i>
+            </a></div>
+            <a href="#" class="addingMaster col-sm-1" ng-click="cashDelete($index)"
+               ng-show="$index>0">
+                <i class="fa fa-minus-square"></i>
+            </a>
+
 
         </div>
+    </div>
+    <div ng-repeat="diselLiter in tripSettlement.diselLiters">
         <div class="col-sm-12 col-xs-12 mt-10">
             <div class=" col-sm-3 form-group col-xs-12">
                 <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.dieselFirstPointLiters"/>
+                    <input type="text" class="form-control custom-form-control" ng-model="diselLiter.dieselFirstPointLiters"/>
                     <label class="focus-effect-for-input" aria-hidden="true">Diesel First Point Liters</label>
                 </div>
             </div>
             <div class=" col-sm-3 form-group col-xs-12">
                 <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.dieselFirstPointAmount"/>
+                    <input type="text" class="form-control custom-form-control" ng-model="diselLiter.dieselFirstPointAmount"/>
                     <label class="focus-effect-for-input" aria-hidden="true">Diesel First Point Amount:RS</label>
                 </div>
             </div>
-            <div class=" col-sm-3 form-group col-xs-12">
+            <div class=" col-sm-2 form-group col-xs-12">
                 <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.pumpFirstPoint"/>
+                    <input type="text" class="form-control custom-form-control" ng-model="diselLiter.pumpFirstPoint"/>
                     <label class="focus-effect-for-input" aria-hidden="true">Pump</label>
                 </div>
             </div>
-            <div class=" col-sm-3 form-group col-xs-12">
+            <div class=" col-sm-2 form-group col-xs-12">
                 <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.billNoFirstPoint"/>
+                    <input type="text" class="form-control custom-form-control" ng-model="diselLiter.billNoFirstPoint"/>
                     <label class="focus-effect-for-input" aria-hidden="true">Bill No</label>
                 </div>
             </div>
+            <div class="col-sm-1 form-group col-xs-12"> <a href="#" class="addingMaster" ng-click="addDiselLiters()" >
+                <i class="fa fa-plus-square"></i>
+            </a></div>
+            <a href="#" class="addingMaster col-sm-1" ng-click="diselDelete($index)"
+               ng-show="$index>0">
+                <i class="fa fa-minus-square"></i>
+            </a>
         </div>
-        <div class="col-sm-12 col-xs-12 mt-10">
-            <div class=" col-sm-3 form-group col-xs-12">
-                <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.dieselSecondPointLiters"/>
-                    <label class="focus-effect-for-input" aria-hidden="true">Disel second Point Liters </label>
-                </div>
-            </div>
-            <div class=" col-sm-3 form-group col-xs-12">
-                <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.dieselsecondpointAmount"/>
-                    <label class="focus-effect-for-input" aria-hidden="true">Disel second Point Amount:RS</label>
-                </div>
-            </div>
-            <div class=" col-sm-3 form-group col-xs-12">
-                <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.pumpSecondPoint"/>
-                    <label class="focus-effect-for-input" aria-hidden="true">Pump</label>
-                </div>
-            </div>
-            <div class=" col-sm-3 form-group col-xs-12">
-                <div class="styling-input-list">
-                    <input type="text" class="form-control custom-form-control" ng-model="tripSettlement.billNoSecondPoint"/>
-                    <label class="focus-effect-for-input" aria-hidden="true">Bill No</label>
-                </div>
-            </div>
-
-        </div>
+    </div>
+       
 
         <div class="col-sm-12 col-xs-12 mt-10">
             <div class=" col-sm-12 form-group col-xs-12">
