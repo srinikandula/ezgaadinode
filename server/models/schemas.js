@@ -1195,7 +1195,9 @@ var tripSettlementsSchema=new mongoose.Schema({
     otherExpenses:Number,
     netAmountReceivableOrPayble:Number,
     tripSheetNo:String,
-    trip:[]
+    trip:[],
+    cashAdvances:[],
+    dieselLiters:[]
 },{timestamps: true});
 
 
