@@ -16,7 +16,7 @@
                         <ui-select ng-model="lr.consignorName"  theme="select2"
                                    title="Choose a party" append-to-body="true" ng-change="getGSTNo();">
                             <ui-select-match class="form-control custom-form-control">
-                                {{$select.selected.name || name}}
+                                {{$select.selected.name || consignorName}}
                             </ui-select-match>
                             <ui-select-choices repeat="party in partiesList | propsFilter: {name: $select.search}">
                                 <div ng-bind-html="party.name | highlight: $select.search"></div>
