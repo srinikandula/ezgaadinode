@@ -6,6 +6,7 @@ var async=require('async');
 var LRsColl = require('./../models/schemas').LRsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var pdfGenerator=require('./../apis/pdfGenerator');
+var PartiesColl = require('./../models/schemas').PartyCollection;
 
 var Lrs = function () {
 };
@@ -78,18 +79,21 @@ Lrs.prototype.get=function (req,callback) {
       callback(retObj);
   }else{
       LRsColl.findOne({_id:params.id},function (err,doc) {
-          if(err){
-              retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-              callback(retObj);
-          }else if(doc){
-              retObj.status=true;
-              retObj.data=doc;
-              retObj.messages.push("Success");
-              callback(retObj);
-          }else{
-              retObj.messages.push("Please try again");
-              callback(retObj);
-          }
+          PartiesColl.findOne({_id: doc.consignorName},{name: 1}, function (err, partyName) {
+              if(err){
+                  retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                  callback(retObj);
+              }else if(doc){
+                  doc.consignorName = partyName.name;
+                  retObj.status=true;
+                  retObj.data=doc;
+                  retObj.messages.push("Success");
+                  callback(retObj);
+              }else{
+                  retObj.messages.push("Please try again");
+                  callback(retObj);
+              }
+          });
       })
   }
 
@@ -100,15 +104,31 @@ Lrs.prototype.getAll=function (req,callback) {
         messages:[]
     };
     LRsColl.find({accountId:req.jwt.accountId},function (err,docs) {
-        if(err){
-            retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-            callback(retObj);
-        }else{
-            retObj.status=true;
-            retObj.messages.push("Success");
-            retObj.data=docs;
-            callback(retObj);
-        }
+        var partyIds = _.pluck(docs,'consignorName');
+        PartiesColl.find({_id:{$in:partyIds}},function(err,parties){
+            if(err){
+                retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                callback(retObj);
+            }else{
+               async.each(docs,function(doc,asyncCallback){
+                   var party = _.find(parties, function (party) {
+                       return party._id.toString() === doc.consignorName;
+                   });
+                   doc.consignorName = party.name;
+                   asyncCallback(false);
+               },function(err){
+                   if(err){
+                       retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                       callback(retObj);
+                   }else{
+                       retObj.status=true;
+                       retObj.messages.push("Success");
+                       retObj.data=docs;
+                       callback(retObj);
+                   }
+               });
+            }
+        });
     })
 };
 
@@ -170,22 +190,22 @@ Lrs.prototype.generatePDF=function (req,callback) {
     if(retObj.messages.length>0){
         callback(retObj);
     }else{
-        console.log("paramsID:",params.id)
         async.parallel({
             lrDetails:function (lrCallback) {
                 LRsColl.findOne({_id:params.id}).lean().exec(function (err,doc) {
-                    if(err){
-                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-                        lrCallback(retObj,'');
-                    }else if(doc){
-                        doc.total=doc.handling+doc.statistical+doc.caratage+doc.others+doc.freight;
-                      /*  console.log(doc);*/
-
-                        lrCallback(false,doc);
-                    }else{
-                        retObj.messages.push("Please try again");
-                        lrCallback(retObj,'');
-                    }
+                        PartiesColl.findOne({_id: doc.consignorName},{name: 1}, function (err, partyName) {
+                            if(err){
+                                retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                                lrCallback(retObj,'');
+                            }else if(doc){
+                                doc.consignorName = partyName.name;
+                                doc.total=doc.handling+doc.statistical+doc.caratage+doc.others+doc.freight;
+                                lrCallback(false,doc);
+                            }else{
+                                retObj.messages.push("Please try again");
+                                lrCallback(retObj,'');
+                            }
+                        });
                 })
             },
             accDetails:function (accDetailsCallback) {
@@ -210,7 +230,6 @@ Lrs.prototype.generatePDF=function (req,callback) {
                 result.accDetails.cgstprice=(result.lrDetails.freight/100)*result.accDetails.cgst;
                 result.accDetails.sgstprice=(result.lrDetails.freight/100)*result.accDetails.sgst;
                 result.accDetails.grandtotal= result.accDetails.igstprice+ result.accDetails.igstprice+ result.accDetails.igstprice+ result.lrDetails.total+result.lrDetails.surCharges;
-
                 pdfGenerator.createPdf(result.accDetails.templatePath,'lr.html','landscape',result,function (resp) {
                     callback(resp);
                 })

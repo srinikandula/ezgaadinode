@@ -142,7 +142,7 @@ app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notifica
 }]);
 
 app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification', 'NgTableParams', 'paginationService','TrucksService','$stateParams','PartyService','AccountServices', function ($scope, $state, LrServices, Notification, NgTableParams, paginationService, TrucksService,$stateParams,PartyService,AccountServices) {
-
+   $scope.consignorName = '';
     AccountServices.userProfile(function (success) {
         if (success.data.status) {
             $scope.account = success.data.result.profile;
@@ -194,6 +194,7 @@ app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification
             if (success.data.status) {
                 $scope.lr = success.data.data;
                 $scope.lr.date=new Date($scope.lr.date);
+                $scope.consignorName = $scope.lr.consignorName;
                 $scope.truckRegNo=$scope.lr.registrationNo;
             } else {
                 success.data.messages.forEach(function (message) {
@@ -212,9 +213,6 @@ app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification
         }
         if(!params.consigneeBanksNameAndAddress){
             params.error.push("Enter consignee name");
-        }
-        if(!params.truckId){
-            params.error.push("Select truck");
         }
         if(!params.addressOfDeliveryOffice){
             params.error.push("Enter delivery office");

@@ -35,32 +35,27 @@
         <td>Date:{{this.startToDate}}</td>
         <td>Start Km:{{this.startKm}}</td>
     </tr>
-    <tr>
-        <td>From:{{this.endFrom}}</td>
-        <td>Date:{{this.endFromDate}}</td>
-        <td>To:{{this.endTo}}</td>
-        <td>Date:{{this.endToDate}}</td>
-        <td>End Km:{{this.endKm}}</td>
-
-    </tr>
     {{/each}}
     <tr>
         <td>Total Kms:{{totalKm}}</td>
     </tr>
 </table>
 <table>
+    {{#each cashAdvances}}
+
     <tr>
         <td> Cash Advance 1<sup>st</sup> Point:{{cashAdvanceFirstPoint}} Rs</td>
     </tr>
+    {{/each}}
+
+    {{#each dieselLiters}}
+
     <tr>
-        <td> Cash Advance 2<sup>nd</sup> Point:{{cashAdvanceSecondPoint}}  Rs</td>
+        <td> Diesel 1<sup>st</sup> Point:{{dieselFirstPointLiters}}Ltrs,{{dieselFirstPointAmount}}.Rs</td>   <td> Pump:{{pumpFirstPoint}}</td> <td> Bill No:{{billNoFirstPoint}}</td>
     </tr>
-    <tr>
-        <td> Disel 1<sup>st</sup> Point:{{dieselFirstPointLiters}}Ltrs,{{dieselFirstPointAmount}}.Rs</td>   <td> Pump:{{pumpFirstPoint}}</td> <td> Bill No:{{billNoFirstPoint}}</td>
-    </tr>
-    <tr>
-        <td> Disel 2<sup>nd</sup> Point:{{dieselSecondPointLiters}}Ltrs,{{dieselsecondpointAmount}}.Rs</td> <td> Pump:{{pumpSecondPoint}}</td> <td> Bill No:{{dieselsecondpointAmount}}</td>
-    <tr>
+    {{/each}}
+
+
 </table>
 <table>
     <td>Aditional Amount Given : {{additionalAmountGiven}}Rs</td>

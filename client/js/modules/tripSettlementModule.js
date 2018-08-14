@@ -51,12 +51,12 @@ app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverServic
         cashAdvances:[{
             cashAdvanceFirstPoint:undefined,
         }],
-        diselLiters:[{
+        dieselLiters:[{
             dieselFirstPointLiters:undefined,
             dieselFirstPointAmount:undefined,
             pumpFirstPoint:undefined,
             billNoFirstPoint:undefined
-        }],
+        }]
     };
    
 
@@ -139,13 +139,13 @@ app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverServic
         }
     };
     $scope.addDiselLiters = function () {
-        if (!$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].dieselFirstPointLiters||
-            !$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].dieselFirstPointAmount||
-            !$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].pumpFirstPoint||
-            !$scope.tripSettlement.diselLiters[$scope.tripSettlement.diselLiters.length - 1].billNoFirstPoint) {
+        if (!$scope.tripSettlement.dieselLiters[$scope.tripSettlement.dieselLiters.length - 1].dieselFirstPointLiters||
+            !$scope.tripSettlement.dieselLiters[$scope.tripSettlement.dieselLiters.length - 1].dieselFirstPointAmount||
+            !$scope.tripSettlement.dieselLiters[$scope.tripSettlement.dieselLiters.length - 1].pumpFirstPoint||
+            !$scope.tripSettlement.dieselLiters[$scope.tripSettlement.dieselLiters.length - 1].billNoFirstPoint) {
             Notification.error("Please enter details");
         }else {
-            $scope.tripSettlement.diselLiters.push({
+            $scope.tripSettlement.dieselLiters.push({
                 dieselFirstPointLiters:undefined,
                 dieselFirstPointAmount:undefined,
                 pumpFirstPoint:undefined,
@@ -173,8 +173,8 @@ app.controller('addEditTripSettlement', ['$scope' ,'TrucksService','DriverServic
 
     };
     $scope.diselDelete = function (index) {
-        if ($scope.tripSettlement.diselLiters.length > 1) {
-            $scope.tripSettlement.diselLiters.splice(index, 1);
+        if ($scope.tripSettlement.dieselLiters.length > 1) {
+            $scope.tripSettlement.dieselLiters.splice(index, 1);
         } else {
             $scope.tripSettlement.error.push("Please add at least one trip lane");
         }

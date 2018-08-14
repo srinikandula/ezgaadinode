@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"> -->
+    <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <!-- <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.4/angular.min.js"></script> -->
+</head>
+<style>
+    .logo span {
+        border: 1px solid black;
+        border-radius: 100%;
+        width: 100px;
+        display: inline-block;
+        font-size: 20px;
+        text-align: center;
+        float: left;
+
+
+    }
+
+    .logo h1 {
+        font-size: 20px;
+        display: inline;
+        text-align: center;
+        float: inherit;
+    }
+
+    p2 {
+        display: inline-block;
+    }
+
+    .gap1 {
+        border-bottom: 1px black;
+    }
+
+    .box1 {
+        width: 250px;
+        border: 1px solid black;
+
+        margin: 1px;
+        float: left;
+        font-size: 10px;
+
+    }
+
+    .box2 {
+
+        border: 1px solid black;
+        padding: 0px 0px;
+        margin: 0px;
+        float: right;
+    }
+
+    .box3 {
+
+
+
+        display: inline-block;
+    }
+
+    .insurance {
+        margin-left: 100px;
+        padding-right: 50px;
+        font-size: 10px;
+        width: 250 px;
+        border: 1px solid black;
+
+    }
+
+    .address {
+        font-size: 10px;
+        float: left;
+    }
+
+    h3 {
+        text-align: center;
+
+    }
+
+    .t1 {
+        border: 1px solid black;
+        border-collapse: collapse;
+        width: 100%;
+        margin: 0px;
+
+    }
+
+    .t1 th {
+        border: 1px solid black;
+        font-size: 12px;
+        text-align: left;
+        border-collapse: collapse;
+
+    }
+
+    .t1 td {
+        font-size: 10px;
+        border: 1px solid black;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        border-bottom: 0px;
+        border-top: 0px;
+        border-collapse: collapse;
+    }
+</style>
+
+<body>
+<div>
+    <p style="text-align: center;font-size: 12px">ALL DISPUTES SUBJECT TO HYDERABAD jURIDICTION ONLY</p>
+    <table>
+        <tr>
+            <td>
+                <div class="logo">
+                    <span>VRL</span>
+            </td>
+</div>
+</td>
+<td>
+
+
+    <h1 style="text-align: center;font-size: 20px;padding-left: 150px">VAISHNAVI ROAD LINES</h1>
+
+
+    </div>
+    <H3 style="font-size: 10px;padding-left: 150px">TRANSPORTERS & CONTRACTORS</H3>
+</td>
+<td style="padding-left: 60px;text-align: right">Cell:9848020343,
+    <br>9666695159</td>
+</tr>
+</table>
+</div>
+<table>
+    <tr>
+        <p2 style="font-size: 12px">SUB CONTRACTOR:</p2>
+        <p class="gap1"></p>
+    </tr>
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td>
+                        <p3 style="font-size: 10px">Address of delivery:<b>{{lrDetails.addressOfDeliveryOffice}}</b></p3>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="box1">
+                            <p style="text-align: left">Consignment Note No:{{lrDetails.lrNo}}</p>
+                            <p style="text-align: left">Date:{{lrDetails.dateStr}}</p>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+
+
+
+
+        </td>
+        <td class="insurance">
+            INSURANCE:
+            <br> The customer has stated that
+            <br> They have insured the consignment
+            <br> They have not insured the consignment
+            <br> Ins.Co:
+            <br> Policy No:
+            <br>Date:
+            <br> Amount:
+        <td style="background-color: black; color: white; font-size: 15px; text-align: center; ">
+            <p> AT</p>
+            <p> OWNERS</p>
+            <p>RISK</p>
+        </td>
+
+        </td>
+        <td>
+
+            <div class="address">
+                Office Address:
+                <br> Plot No. 1/B-1 & 2,
+                <br> Opp.I.D.P.L Fire Station,
+                <br> Behind HP Petrol Pump,
+                <br> S.V. Co-op. Indi.Estate,
+                <br> Balanagar,
+                <br> HYDERABAD-500037
+                <br> Vechile No:
+                <br>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="line"></div>
+            <div class="line"></div>
+            <div style="font-size: 10px">Consignor's Name & Address:<u>{{lrDetails.consignorName}}</u></div>
+        </td>
+        <td>
+            <div class="gap5"></div>
+            <div class="gap6"></div>
+            <div style="font-size: 10px">From:<u>{{lrDetails.from}}</u></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div style="font-size: 10px">Consignee Name & Address:<u>{{lrDetails.consigneeBanksNameAndAddress}}</u></div>
+            <div></div>
+            <div></div>
+        </td>
+        <td>
+            <div style="font-size: 10px">To:<u>{{lrDetails.to}}</u></div>
+        </td>
+    </tr>
+    <table class="t1">
+
+        <tr>
+            <th>No.of Packages</th>
+            <th>Method of Packing</th>
+            <th>Description(Said to cotain)</th>
+            <th>Party's Invoice/Challan No.</th>
+
+            <th colspan="2">
+                <table style="border-collapse: collapse">
+                    <tr>
+                        <th style="text-align: center; border: none; border-bottom: 1px solid black;" colspan="2">Weight</th>
+                    </tr>
+                    <tr>
+                        <td style="border: none;">Actual...</td>
+                        <td style="border: none; border-left: 1px solid black;">Changed</td>
+                    </tr>
+                </table>
+            </th>
+
+
+
+            <th></th>
+            <th colspan="2">
+                <table style="border-collapse: collapse;border-color: white">
+                    <tr>
+                        <th style="text-align: center;border: none; border-bottom: 1px solid black;" colspan="2">Amount</th>
+                    </tr>
+                    <tr>
+                        <td style="border: none;">.Rs</td>
+                        <td style="border: none;border-left: 1px solid black;">.Ps</td>
+                    </tr>
+                </table>
+            </th>
+        </tr>
+
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="border: 1px solid black">Freight</td>
+            <td style="border: 1px solid black">{{lrDetails.freight}}</td>
+            <td style="border: 1px solid black">00</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="border: 1px solid black">Hamali</td>
+            <td style="border: 1px solid black"></td>
+            <td style="border: 1px solid black"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="border: 1px solid black">Risk Charges</td>
+            <td style="border: 1px solid black">{{lrDetails.rc}}</td>
+            <td style="border: 1px solid black">00</td>
+
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="border: 1px solid black">Misc Charges</td>
+            <td style="border: 1px solid black"></td>
+            <td style="border: 1px solid black"></td>
+
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="border: 1px solid black"></td>
+            <td style="border: 1px solid black"></td>
+            <td style="border: 1px solid black"></td>
+
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="border: 1px solid black"></td>
+            <td style="border: 1px solid black"></td>
+            <td style="border: 1px solid black"></td>
+
+        </tr>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td style="border: 1px solid black">Total</td>
+            <td style="border: 1px solid black">{{accDetails.grandtotal}}</td>
+            <td style="border: 1px solid black"></td>
+
+        </tr>
+
+
+    </table>
+</table>
+<div>
+    <p style="display: inline-block;float: left;font-size: 10px ">Value Rs.</p>
+    <p style="display: inline-block;padding-left: 200px;font-size: 10px  ">Consigners Sigature:</p>
+    <p style="display: inline-block;float: right;font-size: 10px ">For VAISHNAVI ROAD LINES</p>
+</div>
+
+
+
+
+
+</div>
+
+</body>
+
+</html>
