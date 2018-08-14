@@ -213,6 +213,18 @@ Invoices.prototype.generatePDF = function(req,callback){
                         accCallback(retObj,'');
                     }
                 })
+            },invoicesCount:function(countCallback){
+                InvoicesColl.count({accountId:req.jwt.accountId},function(err,count){
+                    if(err){
+                        retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                        countCallback(retObj,'');
+                    }else if(count){
+                        countCallback(false,count);
+                    }else{
+                        retObj.messages.push("Please try again");
+                        countCallback(retObj,'');
+                    }
+                });
             }
         },function(err,result){
             if(err){
@@ -226,6 +238,8 @@ Invoices.prototype.generatePDF = function(req,callback){
                             result.invoiceDetails.trip[i].unloadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].unloadedOn));
                             result.invoiceDetails.trip[i].loadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
                         }
+                        result.invoicesCount = 500+result.invoicesCount;
+                        result.invoiceDate = dateToStringFormat(new Date());
                         result.partyName = party.name;
                         result.partyAddress = party.city;
                         result.gstNo = party.gstNo;

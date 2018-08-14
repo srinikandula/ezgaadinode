@@ -163,8 +163,8 @@ TripSettlements.prototype.generatePDF = function(req,callback){
                         for(var i = 0;i<tripSettlementDetails.trip.length;i++){
                             tripSettlementDetails.trip[i].startFromDate = dateToStringFormat(new Date(tripSettlementDetails.trip[i].startFromDate));
                             tripSettlementDetails.trip[i].startToDate = dateToStringFormat(new Date(tripSettlementDetails.trip[i].startToDate));
-                            tripSettlementDetails.trip[i].endFromDate = dateToStringFormat(new Date(tripSettlementDetails.trip[i].endFromDate));
-                            tripSettlementDetails.trip[i].endToDate = dateToStringFormat(new Date(tripSettlementDetails.trip[i].endToDate));
+                            // tripSettlementDetails.trip[i].endFromDate = dateToStringFormat(new Date(tripSettlementDetails.trip[i].endFromDate));
+                            // tripSettlementDetails.trip[i].endToDate = dateToStringFormat(new Date(tripSettlementDetails.trip[i].endToDate));
                         }
                         pdfGenerator.createPdf('','tripSettlementInvoice.html','landscape',tripSettlementDetails,function (resp) {
                             callback(resp);

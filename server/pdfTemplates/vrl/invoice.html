@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -6,139 +6,171 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <style>
+        .container-main {
+            border: 1px solid black;
+            border-radius: 10px;
+        }
 
-    <!-- Bootstrap CSS -->
-    <!--<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/css/bootstrap.min.css" integrity="sha384-Smlep5jCw/wG7hdkwQ/Z5nLIefveQRIY9nfy6xoR1uRYBtpZgI6339F5dgvm/e9B"-->
-          <!--crossorigin="anonymous">-->
-    <link rel="stylesheet" href="css/vrl.css">
+        body {
+            font-size: 10px;
+        }
+
+        p {
+            padding-bottom: 0px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: px;
+        }
+
+        th,
+        td {
+            text-align: center;
+            border: 1px solid black;
+
+        }
+    </style>
 </head>
 
 <body>
-<div class="container">
-    <div class="row bill-label">
-        <div class="col-2"></div>
-        <div class="col">
-            <h3 style="text-align: center;">
-                <b>
-                    <u>BILL</u>
-                </b>
-            </h3>
-        </div>
-        <div class="col-2">
-            <h6 style="text-align: right">Cell: 96666 95159</h6>
-            <h6 style="text-align: right">98480 20343</h6>
-        </div>
-    </div>
+<div class="container-main">
+    <table>
+        <tr>
+            <th style=" border: none;">&nbsp;</th>
+            <th style="padding-left: 150px; border: none;">
+                <h4 style="font-size: 10px">BILL</h4>
+            </th>
+            <th style="width: 180PX;text-align: right; border: none;">
+                <span style="text-align: right">Cell:96666 95159</span>
+                <br>
+                <span style="text-align: right">98480 20343</span>
+            </th>
+        </tr>
+    </table>
     <div class="row">
-        <div class="col"></div>
-        <div class="col-6" style="text-align: center;">
-            <h1>Vaishnavi Road Lines</h1>
-            <p>1st Floor, F-4, Srushty Residency, Nizampet, Hyderabad.</p>
-            <p>
-                <b>PAN NO. AALFV1077F</b>
+        <div>
+            <h1 style="text-align: center;font-size: 22px">Vaishnavi Road Lines</h1>
+            <p style="text-align: center;">1st Floor, F-4, Srushty Residency, Nizampet, Hyderabad.</p>
+            <p style="text-align: center;">
+                PAN NO. AALFV1077F
             </p>
-            <p>
-                <b>GST No. 36AALFV1077F2ZZ</b>
+            <p style="text-align: center;">
+                GST No. 36AALFV1077F2ZZ
             </p>
         </div>
-        <div class="col"></div>
     </div>
     <div class="row">
-        <div class="col-6">
-            <p>No.</p>
-        </div>
-        <div class="col-6">
-            <p style="text-align: right">Date____________</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <p>M/s._________________________________________________________________________________________________________________________</p>
-            <p>____________________________________________________________________________________________________________________________</p>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-12">
-            <table class="table-style">
-                <thead>
-                <tr style=" border: 1px solid black">
-                    <th scope="col" style="text-align: center; width: 10px">S.No.</th>
-                    <th scope="col" style="text-align: center; width: 500px">Vehicle Number</th>
-                    <th scope="col" style="text-align: center; width: 200px">Quantity</th>
-                    <th scope="col" style="text-align: center; width: 200px">Rate per Tonne</th>
-                    <th scope="col">
-                        <table style="width: 100%;">
+        <table>
+            <tr>
+                <td style="text-align: left; border: none;">
+                    <span style="padding-left: 5px">No.{{invoicesCount}}</span>
+                </td>
+                <td style="text-align: right; border: none;">
+                        <span>Date:
+                            <u>{{invoiceDate}}</u>
+                        </span>
+                </td>
+            </tr>
+        </table>
+        <p style="padding-left: 5px;">M/s.
+            <u>{{partyName}},{{partyAddress}}</u>
+        </p>
+        <div>
+            <table>
+                <tr>
+                    <th style="width: 10px;">S.No</th>
+                    <th style="width: 60px;">Date</th>
+                    <th style="width: 100px;">Vehicle Number</th>
+                    <th>From</th>
+                    <th>To</th>
+                    <th style="width: 80px;">Quantity</th>
+                    <th style="width: 90px;">Rate per Tonne</th>
+                    <th style="width: 100px">
+                        <table style="width: 100%; border: none;">
                             <tr>
-                                <th colspan="2" class="head-tabel-td-th">Amount</th>
+                                <th colspan="2" style="border: none;">Amount</th>
                             </tr>
-                            <th class="head-tabel-td-th">Rs.</th>
-                            <th style="text-align: center; width: 50px;" class="head-tabel-td-th">Ps.</th>
+                            <tr>
+                                <th style="border: none;">Rs.</th>
+                                <th style="border: none;">Ps.</th>
+                            </tr>
                         </table>
                     </th>
                 </tr>
-                </thead>
-                <tbody>
+
                 <tr>
-                    <th scope="row" class="total-th-td-bottom"></th>
-                    <td class="td-style total-th-td-bottom"></td>
-                    <td class="second-td"></td>
+                    <td style="height: 0px; border-bottom: none; border-top: none;">1.</td>
+                    <td style=" border-bottom: none; border-top: none;"></td>
+                    <td style=" border-bottom: none; border-top: none;">{{invoiceDetails.vehicleNo}}</td>
+                    <td colspan=2>
+                        <table>
+                            {{#each invoiceDetails.trip}}
+
+                            <tr style="height: 0px; ">
+                                <td style="border: none">{{this.from}}</td>
+                                <td style="border: none">{{this.to}}</td>
+                            </tr>
+
+                            {{/each}}
+
+                        </table>
+                    </td>
+                    <!--<td style="border-bottom: none; border-top: none;">{{this.from}}</td>-->
+                    <!--<td style="border-bottom: none; border-top: none;">{{this.to}}</td>-->
+                    <td style="border-bottom: none; border-top: none;"></td>
+                    <td style="border-bottom: none; border-top: none;">{{invoiceDetails.rate}}</td>
+                    <td>
+                        <table style="height: 0px; width: 100%;">
+                            <tr>
+                                <td style="width: 35px;border:none">{{invoiceDetails.totalAmount}}</td>
+                                <td style="border: none">00</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="border-top: none;"></td>
+                    <td style="border-top: none;"></td>
+                    <td style="border-top: none;"></td>
+                    <td style="border: none;"></td>
+                    <td style=" text-align: right; border: none;">
+                        <b>TOTAL</b>
+                    </td>
+                    <td></td>
                     <td></td>
                     <td>
-                        <table style="width: 100%; height: 400px;">
+                        <table rules="cols" style="height: 20px; width: 100%;">
                             <tr>
-                                <td class="body-table1"></td>
-                                <td class="body-table2"></td>
+                                <td style="width: 35px;border:none">{{invoiceDetails.totalAmount}}</td>
+                                <td style="border:none">00</td>
                             </tr>
                         </table>
                     </td>
                 </tr>
                 <tr>
-                    <th scope=" row " class="total-th-td-top"></th>
-                    <th style="text-align: right;" class="total-th-td-top">TOTAL</th>
-                    <td></td>
-                    <td></td>
-                    <td>
-                        <table style="width: 100%; height: 30px; ">
-                            <tr>
-                                <td class="bot-table1"></td>
-                                <td class="bot-table2"></td>
-                            </tr>
-                        </table>
+                    <td colspan="8">
+                        <p style="text-align: left;">Rupees</p>
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="6 ">
-                        <p>Rupees</p>
+                    <td colspan="4" style="text-align: left; border-right: none; border-bottom: none; border-left: none;">
+                        <p>E. & O.E.</p>
+                    </td>
+                    <!-- <td></td> -->
+                    <td colspan="4" style="text-align: right; border-left: none; border-bottom: none; border-right: none">
+                        <P>For
+                            <B>VAISHNAVI ROAD LINES</B>
+                        </P>
                     </td>
                 </tr>
-                </tbody>
             </table>
         </div>
     </div>
-    <div class="row ">
-        <div class="col-6 ">
-            <p>
-                E.& O.E.
-            </p>
-        </div>
-        <div class="col-6 ">
-            <h6 style="text-align: right ">For
-                <b>VAISHNAVI ROAD LINES</b>
-            </h6>
-        </div>
-    </div>
 </div>
-
-<!-- Optional JavaScript -->
-<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-<!--
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js " integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo "
-        crossorigin="anonymous "></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js " integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49 "
-        crossorigin="anonymous "></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.2/js/bootstrap.min.js " integrity="sha384-o+RDsa0aLu++PJvFqy8fFScvbHFLtbvScb8AjopnFD+iEQ7wo/CG0xlczd+2O/em "
-        crossorigin="anonymous "></script>
--->
 </body>
 
 </html>
