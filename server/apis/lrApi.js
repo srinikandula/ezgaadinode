@@ -42,25 +42,25 @@ Lrs.prototype.update = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    params.consignorName = params.consignorName.name;
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Provide lr id");
     }
     if(retObj.messages.length>0){
         callback(retObj);
     }else{
+        if(params.consignorName.name){
+            params.consignorName = params.consignorName.name;
+        };
         params.updatedBy = req.jwt.id;
         LRsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
             if (err) {
                 retObj.messages.push("Internal server error," + JSON.stringify(err.message));
                 callback(retObj);
-            } else if (doc) {
+            } else {
                 retObj.status = true;
                 retObj.messages.push("LR Details successfully updated");
                 retObj.data = doc;
                 callback(retObj);
-            } else {
-                retObj.messages
             }
         })
     }
