@@ -103,8 +103,19 @@
 
                 <tr>
                     <td style="height: 0px; border-bottom: none; border-top: none;">1.</td>
-                    <td style=" border-bottom: none; border-top: none;"></td>
-                    <td style=" border-bottom: none; border-top: none;">{{invoiceDetails.vehicleNo}}</td>
+                    <td>
+                        <table>
+                            {{#each invoiceDetails.trip}}
+
+                            <tr style="height: 0px; ">
+                                <td style="border: none">{{this.loadedOn}}</td>
+                            </tr>
+
+                            {{/each}}
+
+                        </table>
+                    </td>
+                    <td style="border-top: none;">{{invoiceDetails.vehicleNo}}</td>
                     <td colspan=2>
                         <table>
                             {{#each invoiceDetails.trip}}
@@ -120,12 +131,12 @@
                     </td>
                     <!--<td style="border-bottom: none; border-top: none;">{{this.from}}</td>-->
                     <!--<td style="border-bottom: none; border-top: none;">{{this.to}}</td>-->
-                    <td style="border-bottom: none; border-top: none;"></td>
-                    <td style="border-bottom: none; border-top: none;">{{invoiceDetails.rate}}</td>
+                    <td style="border-bottom: none; border-top: none;">{{invoiceDetails.tonnage}}</td>
+                    <td style="border-bottom: none; border-top: none;">{{invoiceDetails.ratePerTonne}}</td>
                     <td>
                         <table style="height: 0px; width: 100%;">
                             <tr>
-                                <td style="width: 35px;border:none">{{invoiceDetails.totalAmount}}</td>
+                                <td style="width: 35px;border:none">{{totalAmountByTonne}}</td>
                                 <td style="border: none">00</td>
                             </tr>
                         </table>
@@ -134,8 +145,8 @@
 
                 <tr>
                     <td style="border-top: none;"></td>
-                    <td style="border-top: none;"></td>
-                    <td style="border-top: none;"></td>
+                    <td style="border: none;"></td>
+                    <td style="border: none;"></td>
                     <td style="border: none;"></td>
                     <td style=" text-align: right; border: none;">
                         <b>TOTAL</b>
@@ -145,7 +156,7 @@
                     <td>
                         <table rules="cols" style="height: 20px; width: 100%;">
                             <tr>
-                                <td style="width: 35px;border:none">{{invoiceDetails.totalAmount}}</td>
+                                <td style="width: 35px;border:none">{{totalAmountByTonne}}</td>
                                 <td style="border:none">00</td>
                             </tr>
                         </table>
