@@ -1168,6 +1168,8 @@ var invoicesSchema=new mongoose.Schema({
     rate:String,
     quantity:Number,
     totalAmount:Number,
+    tonnage:String,
+    ratePerTonne:String,
     trip:[]
 },{timestamps: true});
 

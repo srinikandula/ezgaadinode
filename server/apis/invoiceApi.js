@@ -227,6 +227,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                 });
             }
         },function(err,result){
+            console.log("pdf result....",result);
             if(err){
                 callback(err);
             }else{
@@ -239,6 +240,7 @@ Invoices.prototype.generatePDF = function(req,callback){
                             result.invoiceDetails.trip[i].loadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
                         }
                         result.invoicesCount = 500+result.invoicesCount;
+                        result.totalAmountByTonne = math.multiply(result.invoiceDetails.ratePerTonne,result.invoiceDetails.tonnage);
                         result.invoiceDate = dateToStringFormat(new Date());
                         result.partyName = party.name;
                         result.partyAddress = party.city;

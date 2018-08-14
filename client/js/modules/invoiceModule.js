@@ -140,6 +140,26 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
     $scope.cancel = function(){
         $state.go('invoice');
     };
+    $scope.searchSource = function (index) {
+        var input = document.getElementById('source' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.invoice.trip[index].from = place.formatted_address;
+        });
+    };
+    $scope.searchDestination = function (index) {
+        var input = document.getElementById('destination' + index);
+        var options = {};
+        var autocomplete = new google.maps.places.Autocomplete(input, options);
+        google.maps.event.addListener(autocomplete, 'place_changed',
+            function () {
+                var place = autocomplete.getPlace();
+                $scope.invoice.trip[index].to = place.formatted_address;
+            });
+    };
 }]);
 
 app.controller('invoicesListController',['$scope','InvoiceService','$state','NgTableParams',function($scope,InvoiceService,$state,NgTableParams){
@@ -162,7 +182,7 @@ app.controller('invoicesListController',['$scope','InvoiceService','$state','NgT
                         'Invoice deleted successfully.',
                         'success'
                     );
-                    $scope.getAllInvoices();
+                    $scope.getCount();
                 } else {
                     success.data.messages.forEach(function (message) {
                         swal(
