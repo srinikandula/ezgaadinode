@@ -33,21 +33,42 @@ app.factory('LrServices', ['$http', function ($http) {
                 method: "DELETE"
             }).then(success, error)
         },
-        count: function (success, error) {
+        count: function (params,success, error) {
             $http({
                 url: '/v1/lrs/total/count',
-                method: "GET"
+                method: "GET",
+                params:params
             }).then(success, error)
         },
 
     }
 }]);
 
-app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notification', 'NgTableParams', 'paginationService','TrucksService', function ($scope, $state, LrServices, Notification, NgTableParams, paginationService, TrucksService) {
-
+app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notification', 'NgTableParams', 'paginationService','TrucksService','PartyService', function ($scope, $state, LrServices, Notification, NgTableParams, paginationService, TrucksService,PartyService) {
+    $scope.query = {partyName:''};
     $scope.count = 0;
+    $scope.getParties = function(){
+        PartyService.getAllPartiesForFilter(function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({message: message});
+                });
+            }
+        }, function (error) {
+
+        });
+    };
     $scope.getCount = function () {
-        LrServices.count(function (success) {
+        var params = {};
+        if($scope.query.partyName){
+            params.partyId = $scope.query.partyName._id;
+        };
+        if($scope.query.party){
+            params.party = $scope.query.party;
+        };
+        LrServices.count(params,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.data;
                 $scope.init();
@@ -65,7 +86,8 @@ app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notifica
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            partyName: tableParams.partyName
+            consignorName: tableParams.partyId,
+            party:tableParams.party
         };
         $scope.loading = true;
         LrServices.getAllLrs(pageable, function (success) {
@@ -78,9 +100,7 @@ app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notifica
                 });
             }
 
-        },function (error) {
-
-        });
+        },function (error) {});
     };
 
     $scope.init = function () {
@@ -94,12 +114,19 @@ app.controller('LrsListController', ['$scope', '$state', 'LrServices', 'Notifica
             counts: [],
             total: $scope.count,
             getData: function (params) {
+                if($scope.query.partyName){
+                    params.partyId = $scope.query.partyName._id;
+                };
+                if($scope.query.party){
+                    params.party = $scope.query.party;
+                };
                 loadTableData(params);
                // $scope.getAllParties();
             }
         });
     };
     $scope.getCount();
+    $scope.getParties();
     $scope.goToEditLrPage = function (lrId) {
         $state.go('lrEdit', {lrId: lrId});
     };
@@ -194,7 +221,12 @@ app.controller('AddEditLRCtrl', ['$scope', '$state', 'LrServices', 'Notification
             if (success.data.status) {
                 $scope.lr = success.data.data;
                 $scope.lr.date=new Date($scope.lr.date);
-                $scope.consignorName = $scope.lr.consignorName;
+                var party = _.find($scope.partiesList, function (party) {
+                    return party._id.toString() === $scope.lr.consignorName;
+                });
+                if (party) {
+                    $scope.consignorName = party.name;
+                }
                 $scope.truckRegNo=$scope.lr.registrationNo;
             } else {
                 success.data.messages.forEach(function (message) {
