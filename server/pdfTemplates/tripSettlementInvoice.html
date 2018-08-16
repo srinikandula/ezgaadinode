@@ -9,24 +9,28 @@
     <!--<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
     <style>
         table{
-            font-size: 15px;
+            font-size: 10px;
             margin-left: 20px;
             padding-left: 50px;
-            padding-top: 30px;
+            padding-top: 0px;
+        }
+        u{
+            border-bottom: 2px dotted black;
+            text-decoration: none;
         }
 
     </style>
 </head>
 
 <body>
-<table cellspacing="15" style="margin-left:20px">
+<table cellspacing="15"  >
     <tr>
-        <td><b>Veichle No:</b>{{truckNo}}</td>
-        <td><b>Driver Name:</b>{{driverName.fullName}}</td>
-        <td style="text-decoration-style:dashed;"><b>Date:</b>{{date}}</td>
+        <td><b>Veichle No:</b><u>{{truckNo}}</u></td>
+        <td><b>Driver Name:</b><u>{{driverName.fullName}}</u></td>
+        <td style="text-decoration-style:dashed;"><b>Date:</b><u>{{date}}</u></td>
     </tr>
 </table>
-<table style="margin-left: 20px">
+<table  cellspacing="10">
     {{#each trip}}
     <tr>
         <td>From:{{this.startFrom}}</td>
@@ -40,7 +44,7 @@
         <td>Total Kms:{{totalKm}}</td>
     </tr>
 </table>
-<table>
+<table cellspacing="10">
     {{#each cashAdvances}}
 
     <tr>
@@ -51,13 +55,13 @@
     {{#each dieselLiters}}
 
     <tr>
-        <td> Diesel 1<sup>st</sup> Point:{{dieselFirstPointLiters}}Ltrs,{{dieselFirstPointAmount}}.Rs</td>   <td> Pump:{{pumpFirstPoint}}</td> <td> Bill No:{{billNoFirstPoint}}</td>
+        <td> Diesel 1<sup>st</sup> Point:<u>{{dieselFirstPointLiters}}</u>Ltrs,<u>{{dieselFirstPointAmount}}</u>.Rs</td>   <td> Pump:<u>{{pumpFirstPoint}}</u></td> <td> Bill No:<u>{{billNoFirstPoint}}</u></td>
     </tr>
     {{/each}}
 
 
 </table>
-<table>
+<table cellspacing="10">
     <td>Aditional Amount Given : {{additionalAmountGiven}}Rs</td>
     </tr>
     </tr>
