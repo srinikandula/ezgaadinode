@@ -1080,6 +1080,7 @@ var lrSchema = new mongoose.Schema({
     createdBy: String,
     accountId: {type: ObjectId, ref: 'accounts'},
     consignorName:String,
+    partyName:String,
     consignorGSTNo:String,
     consigneeGSTNo:String,
     consigneeBanksNameAndAddress:String,
