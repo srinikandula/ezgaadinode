@@ -227,7 +227,6 @@ Invoices.prototype.generatePDF = function(req,callback){
                 });
             }
         },function(err,result){
-            console.log("pdf result....",result);
             if(err){
                 callback(err);
             }else{

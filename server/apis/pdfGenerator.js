@@ -25,7 +25,7 @@ PdfGenerator.prototype.createPdf=function (folderPath,templateName,orientation,d
       status:false,
       messages:[]
   };
-
+  console.log("pdf ....",data);
   if(!templateName){
       retObj.messages.push("Provide template");
   }

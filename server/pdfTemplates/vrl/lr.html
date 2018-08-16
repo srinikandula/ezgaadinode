@@ -116,7 +116,8 @@
 
 <body>
 <div>
-    <p style="text-align: center;font-size: 12px">ALL DISPUTES SUBJECT TO HYDERABAD JURIDICTION ONLY</p>
+
+    <p style="text-align: center;font-size: 12px">ALL DISPUTES SUBJECT TO HYDERABAD jURISDICTION ONLY</p>
     <table>
         <tr>
             <td>
@@ -200,7 +201,7 @@
         <td>
             <div class="line"></div>
             <div class="line"></div>
-            <div style="font-size: 10px">Consigner's Name & Address:<u>{{lrDetails.consignorName}}</u></div>
+            <div style="font-size: 10px">Consigner's Name & Address:<u>{{lrDetails.partyName}}</u></div>
         </td>
         <td>
             <div class="gap5"></div>
@@ -210,7 +211,7 @@
     </tr>
     <tr>
         <td>
-            <div style="font-size: 10px">Consigner's Name & Address:<u>{{lrDetails.consigneeBanksNameAndAddress}}</u></div>
+            <div style="font-size: 10px">Consignee's Name & Address:<u>{{lrDetails.consigneeBanksNameAndAddress}}</u></div>
             <div></div>
             <div></div>
         </td>
@@ -244,11 +245,11 @@
             <th colspan="2">
                 <table style="border-collapse: collapse;border-color: white">
                     <tr>
-                        <th style="text-align: center;border: none; border-bottom: 1px solid black;" colspan="2">Amount</th>
+                        <th style="text-align: center;border: none;" colspan="2">Amount</th>
                     </tr>
                     <tr>
                         <td style="border: none;">.Rs</td>
-                        <td style="border: none;border-left: 1px solid black;">.Ps</td>
+                        <td style="border: none;">.Ps</td>
                     </tr>
                 </table>
             </th>
@@ -263,7 +264,7 @@
             <td></td>
             <td style="border: 1px solid black">Freight</td>
             <td style="border: 1px solid black">{{lrDetails.freight}}</td>
-            <td style="border: 1px solid black">00</td>
+            <td style="border: 1px solid black"></td>
         </tr>
         <tr>
             <td></td>
@@ -285,7 +286,7 @@
             <td></td>
             <td style="border: 1px solid black">Risk Charges</td>
             <td style="border: 1px solid black">{{lrDetails.rc}}</td>
-            <td style="border: 1px solid black">00</td>
+            <td style="border: 1px solid black"></td>
 
         </tr>
         <tr>

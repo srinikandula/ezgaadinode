@@ -2413,6 +2413,7 @@ Trips.prototype.getTripInvoiceDetails = function (req, callback) {
                 retObj.messages.push("Internal server error,"+JSON.stringify(err.message));
                 callback(retObj);
             } else {
+                result.totalAmountReceivable = result.tripDetails.totalAmount-result.tripDetails.advanceAmount;
                 PdfGenerator.createPdf(result.accDetails.templatePath, 'tripInvoice.html','portrait',result,function (resp) {
                     callback(resp);
                 });

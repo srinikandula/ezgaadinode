@@ -6,6 +6,8 @@ var async=require('async');
 var LRsColl = require('./../models/schemas').LRsColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var pdfGenerator=require('./../apis/pdfGenerator');
+const math = require('mathjs');
+
 var PartiesColl = require('./../models/schemas').PartyCollection;
 
 var Lrs = function () {
@@ -17,11 +19,10 @@ Lrs.prototype.add = function (req, callback) {
         messages: []
     };
     var params = req.body;
-
     params.updatedBy = req.jwt.id;
     params.createdBy = req.jwt.id;
     params.accountId = req.jwt.accountId;
-    params.consignorName = params.consignorName.name;
+    params.partyName = params.consignorName.name;
     var lr = new LRsColl(params);
     lr.save(function (err, doc) {
         if (err) {
@@ -48,9 +49,6 @@ Lrs.prototype.update = function (req, callback) {
     if(retObj.messages.length>0){
         callback(retObj);
     }else{
-        if(params.consignorName.name){
-            params.consignorName = params.consignorName.name;
-        };
         params.updatedBy = req.jwt.id;
         LRsColl.findOneAndUpdate({_id: params._id}, params, function (err, doc) {
             if (err) {
@@ -99,41 +97,50 @@ Lrs.prototype.getAll=function (req,callback) {
         status:false,
         messages:[]
     };
-    LRsColl.find({accountId:req.jwt.accountId},function (err,docs) {
+    var requestParams = req.query;
+    var condition = {accountId:req.jwt.accountId};
+    var skipNumber = requestParams.page ? (requestParams.page - 1) * requestParams.size : 0;
+    var limit = requestParams.size ? parseInt(requestParams.size) : Number.MAX_SAFE_INTEGER;
+    var sort = requestParams.sort ? JSON.parse(requestParams.sort) : {createdAt: -1};
+    if(requestParams.consignorName){
+        condition.consignorName = requestParams.consignorName;
+    }
+    if (requestParams.party) {
+        condition.partyName = new RegExp("^" + requestParams.party, "i");
+    }
+    LRsColl.find(condition)
+        .sort(sort).limit(limit).skip(skipNumber).lean()
+        .exec(function (err,docs) {
         if(err){
             retObj.messages.push("Internal server error," + JSON.stringify(err.message));
             callback(retObj);
-        }else{
-            retObj.status=true;
-            retObj.messages.push("Success");
-            retObj.data=docs;
-            callback(retObj);
+        }else {
+            var partyIds = _.pluck(docs, 'consignorName');
+            PartiesColl.find({_id: {$in: partyIds}}, function (err, parties) {
+                 if (err) {
+                     retObj.messages.push("Internal server error........," + JSON.stringify(err.message));
+                     callback(retObj);
+                 } else {
+                     async.each(docs, function (doc, asyncCallback) {
+                         var party = _.find(parties, function (party) {
+                             return party._id.toString() === doc.consignorName;
+                         });
+                         doc.consignorName = party.name;
+                         asyncCallback(false);
+                     }, function (err) {
+                         if (err) {
+                             retObj.messages.push("Internal server error," + JSON.stringify(err.message));
+                             callback(retObj);
+                         } else {
+                             retObj.status = true;
+                             retObj.messages.push("Success");
+                             retObj.data = docs;
+                             callback(retObj);
+                         }
+                     });
+                 }
+             });
         }
-        // var partyIds = _.pluck(docs,'consignorName');
-       /* PartiesColl.find({_id:{$in:partyIds}},function(err,parties){
-            if(err){
-                retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-                callback(retObj);
-            }else{
-               async.each(docs,function(doc,asyncCallback){
-                   var party = _.find(parties, function (party) {
-                       return party._id.toString() === doc.consignorName;
-                   });
-                   doc.consignorName = party.name;
-                   asyncCallback(false);
-               },function(err){
-                   if(err){
-                       retObj.messages.push("Internal server error," + JSON.stringify(err.message));
-                       callback(retObj);
-                   }else{
-                       retObj.status=true;
-                       retObj.messages.push("Success");
-                       retObj.data=docs;
-                       callback(retObj);
-                   }
-               });
-            }
-        });*/
     })
 };
 
@@ -170,7 +177,14 @@ Lrs.prototype.totalCount=function (req,callback) {
       status:false,
       messages:[]
   };
-  LRsColl.count({accountId:req.jwt.accountId},function (err,count) {
+  var condition = {accountId:req.jwt.accountId};
+  if(req.query.partyId){
+      condition.consignorName = req.query.partyId;
+  }
+  if (req.query.party) {
+      condition.partyName = new RegExp("^" + req.query.party, "i");
+  }
+  LRsColl.count(condition,function (err,count) {
       if(err){
           retObj.messages.push("Internal server error," + JSON.stringify(err.message));
           callback(retObj);
@@ -182,6 +196,13 @@ Lrs.prototype.totalCount=function (req,callback) {
       }
   })
 };
+function nanToZero(value){
+    if(isNaN(value)){
+        return 0;
+    }else{
+        return value;
+    }
+}
 
 Lrs.prototype.generatePDF=function (req,callback) {
   var retObj={
@@ -228,12 +249,11 @@ Lrs.prototype.generatePDF=function (req,callback) {
                 callback(err);
             }else{
                 result.lrDetails.dateStr=result.lrDetails.date.toLocaleDateString();
-                result.accDetails.igstprice=(result.lrDetails.freight/100)*result.accDetails.igst;
-                result.accDetails.cgstprice=(result.lrDetails.freight/100)*result.accDetails.cgst;
-                result.accDetails.sgstprice=(result.lrDetails.freight/100)*result.accDetails.sgst;
-                result.accDetails.grandtotal= result.accDetails.igstprice+ result.accDetails.cgstprice+ result.accDetails.sgstprice+ result.lrDetails.total+result.lrDetails.surCharges;
+                result.accDetails.igstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.igst);
+                result.accDetails.cgstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.cgst);
+                result.accDetails.sgstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.sgst);
+                result.accDetails.grandtotal=nanToZero((result.accDetails.igstprice+ result.accDetails.cgstprice+ result.accDetails.sgstprice+ result.lrDetails.total+result.lrDetails.surCharges));
 
-                // result.accDetails.grandtotal= result.accDetails.igstprice+ result.accDetails.igstprice+ result.accDetails.igstprice+ result.lrDetails.total+result.lrDetails.surCharges;
                 pdfGenerator.createPdf(result.accDetails.templatePath,'lr.html','landscape',result,function (resp) {
                     callback(resp);
                 })
