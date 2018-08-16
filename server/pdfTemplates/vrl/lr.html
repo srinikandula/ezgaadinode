@@ -75,7 +75,7 @@
     }
 
     .address {
-        font-size: 10px;
+        font-size: 12px;
         float: left;
     }
 
@@ -108,6 +108,9 @@
         border-bottom: 0px;
         border-top: 0px;
         border-collapse: collapse;
+    }
+    .tc{
+        font-size: 10px;
     }
 </style>
 
@@ -146,7 +149,7 @@
             <table>
                 <tr>
                     <td>
-                        <p3 style="font-size: 10px">Address of delivery:<b>{{lrDetails.addressOfDeliveryOffice}}</b></p3>
+                        <p3 style="font-size: 10px">Address of delivery:{{lrDetails.addressOfDeliveryOffice}}</p3>
                     </td>
                 </tr>
                 <tr>
@@ -166,12 +169,11 @@
         </td>
         <td class="insurance">
             INSURANCE:
-            <br> The customer has stated that
+            <br> The customer ha stated that
             <br> They have insured the consignment
-            <br> They have not insured the consignment
+            <br> They have not inured the consignment
             <br> Ins.Co:
-            <br> Policy No:
-            <br>Date:
+            <br> Policy No:Date:
             <br> Amount:
         <td style="background-color: black; color: white; font-size: 15px; text-align: center; ">
             <p> AT</p>
@@ -184,12 +186,11 @@
 
             <div class="address">
                 Office Address:
-                <br> Plot No. 1/B-1 & 2,
-                <br> Opp.I.D.P.L Fire Station,
-                <br> Behind HP Petrol Pump,
-                <br> S.V. Co-op. Indi.Estate,
-                <br> Balanagar,
-                <br> HYDERABAD-500037
+                <br> 1st Floor,
+                <br> F-4,
+                <br> Srusty Residency,
+                <br> Nizampet,
+                <br> HYDERABAD
                 <br> Vechile No:
                 <br>
             </div>
@@ -199,7 +200,7 @@
         <td>
             <div class="line"></div>
             <div class="line"></div>
-            <div style="font-size: 10px">Consignor's Name & Address:<u>{{lrDetails.consignorName}}</u></div>
+            <div style="font-size: 10px">Consigner's Name & Address:<u>{{lrDetails.consignorName}}</u></div>
         </td>
         <td>
             <div class="gap5"></div>
@@ -209,7 +210,7 @@
     </tr>
     <tr>
         <td>
-            <div style="font-size: 10px">Consignee Name & Address:<u>{{lrDetails.consigneeBanksNameAndAddress}}</u></div>
+            <div style="font-size: 10px">Consigner's Name & Address:<u>{{lrDetails.consigneeBanksNameAndAddress}}</u></div>
             <div></div>
             <div></div>
         </td>
@@ -231,7 +232,7 @@
                         <th style="text-align: center; border: none; border-bottom: 1px solid black;" colspan="2">Weight</th>
                     </tr>
                     <tr>
-                        <td style="border: none;">Actual...</td>
+                        <td style="border: none;">..Actual.</td>
                         <td style="border: none; border-left: 1px solid black;">Changed</td>
                     </tr>
                 </table>
@@ -332,11 +333,8 @@
             <td></td>
             <td style="border: 1px solid black">Total</td>
             <td style="border: 1px solid black">{{accDetails.grandtotal}}</td>
-            <td style="border: 1px solid black"></td>
-
+            <td style="border: 1px solid black">00</td>
         </tr>
-
-
     </table>
 </table>
 <div>
@@ -345,12 +343,123 @@
     <p style="display: inline-block;float: right;font-size: 10px ">For VAISHNAVI ROAD LINES</p>
 </div>
 
-
-
-
-
 </div>
-
-</body>
-
-</html>
+<div style="margin-top:80px">
+    <table class="tc">
+        <tr>
+            <th style="font-size: 15px">TERMS & CONDITIONS</th>
+        </tr>
+        <tr>
+            <td>
+                1. Nature of contents, conditions and value of the consignment are
+                unknown to Ms. VAISHNAVI ROAD LINES herein after called the
+                company. The company carries the goods at owner's risk. The
+                consignor is the responsible for all consequences of any conector
+                false declaration.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                2. The company does not guarantee delivery and specified time and
+                the company shall not be responsible or liable for any delay in
+                transportation or delay.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                3. The company has the light to re-weight, re-measure, re-classity and
+                recalculate the rates at the destination for reasons assigned in writing
+                and only in the presence of the holder of the receipt of his duty
+                authorised agent before delivery and to collect any difference charges
+                if any.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                4. The company reserves, the right to refuse the goods for Transport
+                without assigned any reason.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                5. The Company shall not be responsible if the goods are detained,
+                seized or confiscated by the Govt authorities.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                6. In the event of any interruption of through communication on the
+                booked or customary route due to causes beyond the control of the
+                company it will be with in the discretion of the company to cause the
+                traffic to be carried by the next open route but only on the conditions
+                applying to the booked or customary route in respect of the companies
+                liability and of freight the forwarding note and other documents held
+                in respect of the consignment being equally operative over the route
+                by which the consignments are carried not withstanding charge of
+                route of carrier for the transport for reasons of the company.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                7. The company undertake to and shall deliver the goods in the like
+                order and conditions as receive the subject to any deterioration in
+                temperature, weather conditions etc., to the consignee or to his order
+                this condition of the goods resulting from natural causes like effect of
+                or assign on the relative receipt being surrendered to the company
+                duly discharged by the Bank through which the receipt has been
+                negotiated or on the holder of the receipt entitled to delivery as
+                claims rising thereon aforesaid shall have right to recourse against the company for all
+                company or at the agreed place.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                8. The consignor shall be primarily liable to pay the transport charges
+                and all other incidental charges if any at the Head Office of the company or the agreed place
+            </td>
+        </tr>
+        <tr>
+            <td>
+                9. No suit shall be against the Company to the receipt of the
+                consignment without a claim made in writing in that behalf and
+                prepared within 6 months from the date of booking.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                10. The company will not be responsible for loss or damage or
+                destruction of any goods arising out of our resulting from the act.
+                of God, an act of war hostilitis take operation strike, lockouts,
+                Roits or civil commission, any unexcepted and unaviodable
+                emergencies the act of thieves, robbers and decoits, fire, rain,
+                breakages and leakages due to insufficient packing, inadequacy
+                of marks or any accident howsoever arising.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                11. The company shall have the right to dispose off perishable goods
+                lying undelivered after 48 hours of arrival without any notice and
+                other goods after 7 days of arrival after due notice in writing to the
+                consignor or consignee of holder interested and claimant shall
+                be entitled to the proceed less freight, demmurage and other
+                charges.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                12. The company shall have the right to entrust the goods to other
+                vehicles or services to transport and all the conditions herein shall
+                apply also in such case.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                13. The company will not be responsible for any loss, damage, during
+                transit due to improper packings, and during long storages.
+            </td>
+        </tr>
+        <tr>
+            <td>
+                14. The consignor and consignee are liable for any damage or loss
+                occured during loading or unloading respectively for men, materials
