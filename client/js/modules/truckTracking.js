@@ -117,7 +117,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 markerIndex = 0;
             }
             for (var i = 0; i < $scope.locations.length; i++) {
-                var d = new Date($scope.locations[i].createdAt);
+                var d = new Date($scope.locations[i].deviceTime);
                 var date = d.getDate()+'/'+(d.getMonth()+1)+'/'+d.getFullYear();
                 var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
                 var functionContent = '<div>'+'<span> <b>Address:</b></span>'+$scope.locations[i].address+'<span><br></span>'+'<span><b>Speed:</b></span>'+parseInt($scope.locations[i].speed)+'<span><br></span>'+'<span><b>Date:</b></span>'+date+'<span><br></span>'+'<span><b>Time:</b></span>'+time+'</div>';
@@ -205,7 +205,7 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         var marker;
         map = new google.maps.Map(document.getElementById('map'),mapOptions);
         for (var i = 0; i< $scope.locations.length; i++) {
-            var d = new Date($scope.locations[i].createdAt);
+            var d = new Date($scope.locations[i].deviceTime);
             var date = d.getDate() + '/' + (d.getMonth() + 1) + '/' + d.getFullYear();
             var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
             var functionContent = '<div>' + '<span> <b>Speed:</b></span>' + parseInt($scope.locations[i].speed) + '<span><br></span>' + '<span><b>Date:</b></span>' + date + '<span><br></span>' + '<span> <b>Time:</b></span>' + time + '</div>';
