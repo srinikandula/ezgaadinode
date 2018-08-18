@@ -377,7 +377,8 @@ function findDevices(req, params, accounts, callback) {
             [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
                 {"imei": new RegExp(params.searchString, "gi")},
                 {"simNumber": new RegExp(params.searchString, "gi")},
-                {"deviceId": new RegExp(params.searchString, "gi")}];
+                {"deviceId": new RegExp(params.searchString, "gi")},
+                {"registrationNo": new RegExp(params.searchString, "gi")}];
     }
     if (params.searchAccount) {
         query.accountId = {$in: accounts}
