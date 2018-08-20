@@ -43,6 +43,7 @@ Lrs.prototype.update = function (req, callback) {
         messages: []
     };
     var params = req.body;
+    params.partyName = params.consignorName.name;
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Provide lr id");
     }
