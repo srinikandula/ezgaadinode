@@ -65,16 +65,15 @@ function logInSuccess(userName,user,req,callback){
                     callback(retObj);
                 } else {
                     retObj.token = token;
-                    callback(retObj);
-                    /*
-                    ErpSettingsColl.findOne({accountId: user._id}, function (err, settingsData) {
+                    // callback(retObj);
+                    ErpSettingsColl.findOne({accountId: user.accountId._id}, function (err, settingsData) {
                         if (err) {
                             retObj.messages.push('Please try again');
                             callback(retObj);
                         } else if (settingsData) {
                             callback(retObj);
                         } else {
-                            var erpSettings = new ErpSettingsColl({accountId: user._id});
+                            var erpSettings = new ErpSettingsColl({accountId: user.accountId._id});
                             erpSettings.save(function (err, saveSettings) {
                                 if (err) {
                                     retObj.messages.push('Please try again');
@@ -87,7 +86,7 @@ function logInSuccess(userName,user,req,callback){
                                 }
                             })
                         }
-                    })*/
+                    })
                 }
             });
 
