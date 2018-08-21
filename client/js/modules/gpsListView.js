@@ -23,14 +23,17 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
             if(success.data.status){
                 $scope.trucksData=success.data.results;
                 for(var i=0;i<$scope.trucksData.length;i++){
-                    if($scope.trucksData[i].attrs.latestLocation.isStopped){
-                       $scope.trucksData[i].status = 'Stopped';
-                    }else if(($scope.trucksData[i].attrs.latestLocation.isIdle)){
-                        $scope.trucksData[i].status = 'Idle';
+                    if($scope.trucksData[i].attrs){
+                        if($scope.trucksData[i].attrs.latestLocation.isStopped){
+                            $scope.trucksData[i].status = 'Stopped';
+                        }else if(($scope.trucksData[i].attrs.latestLocation.isIdle)){
+                            $scope.trucksData[i].status = 'Idle';
+                        }else{
+                            $scope.trucksData[i].status = 'Running';
+                        }
                     }else{
-                        $scope.trucksData[i].status = 'Running';
+                        $scope.trucksData[i].status = '--';
                     }
-
                 }
             }else{
                 Notification.error({message:success.data.message});

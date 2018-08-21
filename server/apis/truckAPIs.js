@@ -1626,12 +1626,12 @@ Trucks.prototype.getAllTrucksForAccount = function (req, callback) {
     var sort = {createdAt: -1};
     var condition = {};
     if (params.name) {
-        condition = {registrationNo: {$regex: '.*' + params.name + '.*'}, accountId: req.jwt.id}
+        condition = {registrationNo: {$regex: '.*' + params.name + '.*'}, accountId: req.jwt.accountId}
     } else {
         condition = {accountId: req.jwt.accountId}
     }
     TrucksColl.find(condition, {registrationNo: 1, truckType: 1}).skip(skipNumber)
-        .limit(10).exec(function (err, trucks) {
+        .exec(function (err, trucks) {
         if (err) {
             retObj.messages.push("Error while fetching trucks");
             callback(retObj);
