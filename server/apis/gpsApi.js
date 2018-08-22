@@ -614,12 +614,12 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
             var driverIds = _.pluck(trucksData,'driverId');
             DriversColl.find({_id: {$in:driverIds}},{fullName: 1}, function (err, driverNames) {
                 async.each(trucksData, function (truck, asyncCallback) {
-                        if (truck.driverId) {
-                            var driver = _.find(driverNames, function (driver) {
-                                return driver._id.toString() === truck.driverId;
-                            });
-                            truck.attrs.latestLocation.driverName = driver.fullName;
-                        }
+                    if (truck.driverId) {
+                        var driver = _.find(driverNames, function (driver) {
+                            return driver._id.toString() === truck.driverId;
+                        });
+                        truck.attrs.latestLocation.driverName = driver.fullName;
+                    }
                     if (truck.attrs.latestLocation && (!truck.attrs.latestLocation.address || truck.attrs.latestLocation.address === '{address}' || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 || truck.attrs.latestLocation.address.indexOf('Svalbard') != -1)) {
                         resolveAddress({
                             latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
@@ -629,7 +629,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                                 truck.attrs.latestLocation.address = addressResp.address;
                                 console.log('updating truck ' + truck.registrationNo + '   address '+addressResp.address );
                                 TrucksColl.findOneAndUpdate({"registrationNo":truck.registrationNo}, {$set: {"attrs.latestLocation.address": addressResp.address}}, function(err, updated) {
-                                  //  console.log('truck updated ' + updated);
+                                    //  console.log('truck updated ' + updated);
                                 });
                                 asyncCallback(false);
                             } else {
