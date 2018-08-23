@@ -100,55 +100,24 @@
                         </table>
                     </th>
                 </tr>
-
+                {{#each invoiceDetails.trip}}
                 <tr>
                     <td style="height: 0px; border-bottom: none; border-top: none;">1.</td>
-                    <td>
-                        <table>
-                            {{#each invoiceDetails.trip}}
-
-                            <tr style="height: 0px; ">
-                                <td style="border: none">{{this.loadedOn}}</td>
-                            </tr>
-
-                            {{/each}}
-
-                        </table>
-                    </td>
-                    <td style="border-top: none;">{{invoiceDetails.vehicleNo}}</td>
-                    <td colspan=2>
-                        <table>
-                            {{#each invoiceDetails.trip}}
-
-                            <tr style="height: 0px; ">
-                                <td style="border: none">{{this.from}}</td>
-                                <td style="border: none">{{this.to}}</td>
-                            </tr>
-
-                            {{/each}}
-
-                        </table>
-                    </td>
-                    <!--<td style="border-bottom: none; border-top: none;">{{this.from}}</td>-->
-                    <!--<td style="border-bottom: none; border-top: none;">{{this.to}}</td>-->
-                    <td style="border-bottom: none; border-top: none;">{{invoiceDetails.tonnage}}</td>
-                    <td style="border-bottom: none; border-top: none;">{{invoiceDetails.ratePerTonne}}</td>
-                    <td>
-                        <table style="height: 0px; width: 100%;">
-                            <tr>
-                                <td style="width: 35px;border:none">{{totalAmountByTonne}}</td>
-                                <td style="border: none">00</td>
-                            </tr>
-                        </table>
-                    </td>
+                    <td style="border-bottom: none;border-top:none">{{this.date}}</td>
+                    <td style="border-bottom: none;border-top:none">{{this.vehicleNo}}</td>
+                    <td style="border-bottom: none;border-top:none">{{this.from}}</td>
+                    <td style="border-bottom: none;border-top:none">{{this.to}}</td>
+                    <td style="border-bottom: none;border-top:none">{{this.tonnage}}</td>
+                    <td style="border-bottom: none;border-top:none">{{this.ratePerTonne}}</td>
+                    <td style="border-bottom: none;border-top:none; text-align:left">{{this.amountPerTonne}}</td>
                 </tr>
-
+                {{/each}}
                 <tr>
-                    <td style="border-top: none;"></td>
-                    <td style="border: none;"></td>
-                    <td style="border: none;"></td>
-                    <td style="border: none;"></td>
-                    <td style=" text-align: right; border: none;">
+                    <td style="border-right:none"></td>
+                    <td style="border-right:none;border-left:none"></td>
+                    <td style="border-right:none;border-left:none"></td>
+                    <td style="border-right:none;border-left:none"></td>
+                    <td style=" text-align: right;border-left:none">
                         <b>TOTAL</b>
                     </td>
                     <td></td>
@@ -157,7 +126,7 @@
                         <table rules="cols" style="height: 20px; width: 100%;">
                             <tr>
                                 <td style="width: 35px;border:none">{{totalAmountByTonne}}</td>
-                                <td style="border:none">00</td>
+                                <td style="border:none"></td>
                             </tr>
                         </table>
                     </td>
@@ -183,5 +152,4 @@
     </div>
 </div>
 </body>
-
 </html>
