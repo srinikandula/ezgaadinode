@@ -671,12 +671,12 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
                 if(position.address === '{address}'){
                     getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
                         position.address = addResp.address;
+                        asyncCallback(false);
                     });
                 }else{
                     asyncCallback(false);
                 }
             },function(err){
-                console.log('done getting addresses.....');
                 if(err){
                     retObj.status = false;
                     retObj.messages.push('error in finding address'+JSON.stringify(err));
