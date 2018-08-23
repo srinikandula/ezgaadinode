@@ -39,24 +39,43 @@ app.factory('InvoiceService',['$http', '$cookies', function ($http, $cookies) {
                 method: "POST",
                 data: invoiceDetails
             }).then(success, error)
+        },
+        getTrip: function (params,success, error) {
+            $http({
+                url: '/v1/invoices/getTrip',
+                method: "GET",
+                params:params
+            }).then(success, error)
         }
     }
 }]);
-app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','InvoiceService','$state','$stateParams','TrucksService',function($scope,PartyService,Notification,InvoiceService,$state,$stateParams,TrucksService){
+app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','InvoiceService','$state','$stateParams','TrucksService','TripServices',function($scope,PartyService,Notification,InvoiceService,$state,$stateParams,TrucksService,TripServices){
     $scope.pageTitle = "Add Invoice";
     $scope.partyName = '';
+    $scope.getTrip={};
+    $scope.temp=false;
     $scope.truckRegNo = '';
     $scope.invoice = {
+        addTrip:false,
         trip:[{
+            vehicleNo:undefined,
             from: undefined,
             to: undefined,
             loadedOn:undefined,
             unloadedOn:undefined
         }]
+
     };
+
     PartyService.getAllPartiesForFilter(function(successCallback){
         $scope.parties = successCallback.data.parties;
     },function(errorCallback){});
+
+   $scope.getTrips = function(){
+       TripServices.getAllAccountTrips([],function(successCallback){
+           $scope.trips = successCallback.data.trips;
+       },function(errorCallback){});
+   };
 
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
@@ -67,12 +86,23 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
             });
         }
     }, function (error) {});
-
     if($stateParams.id){
         $scope.pageTitle = "Edit Invoice";
         InvoiceService.getInvoice($stateParams.id,function (successCallback) {
             if(successCallback.data.status){
                 $scope.invoice =  successCallback.data.data;
+                if($scope.invoice.addTrip){
+                    var trip = _.find($scope.trips,function(trip){
+                        return trip._id.toString() === $scope.invoice.tripId;
+                    });
+                    if (trip) {
+                        $scope.tripId = trip.tripId;
+                    }
+                    for (var i = 0; i < $scope.invoice.trip.length; i++) {
+                        $scope.temp=true;
+                        $scope.invoice.trip[i].date = new Date($scope.invoice.trip[i].date);
+                    }
+                };
                 $scope.truckRegNo = $scope.invoice.vehicleNo;
                 var party = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.invoice.partyId;
@@ -96,10 +126,47 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
             Notification.error("Please enter details");
         } else {
             $scope.invoice.trip.push({
+                vehicleNo:undefined,
                 from: undefined,
                 to: undefined,
                 loadedOn:undefined,
                 unloadedOn:undefined
+            });
+        }
+    };
+    $scope.addFromAndToTrip = function () {
+        if (!$scope.invoice.tripId) {
+            Notification.error("Please enter details");
+        }else{
+            $scope.temp=true;
+            var query = {tripId:$scope.invoice.tripId.tripId};
+            InvoiceService.getTrip(query,function(success){
+                console.log("get trip....",success);
+                if(success.data.status){
+                    $scope.getTrip=success.data.data;
+                    $scope.getTrip.vehicleNo = success.data.truckName;
+                    if(!$scope.invoice.trip[0].from){
+                        $scope.invoice.trip[0].vehicleNo = $scope.getTrip.vehicleNo;
+                        $scope.invoice.trip[0].from=$scope.getTrip.source;
+                        $scope.invoice.trip[0].to=$scope.getTrip.destination;
+                        $scope.invoice.trip[0].date=new Date($scope.getTrip.date);
+                        $scope.invoice.trip[0].tonnage=$scope.getTrip.tonnage;
+                        $scope.invoice.trip[0].ratePerTonne=$scope.getTrip.rate;
+                    }else{
+                        $scope.invoice.trip.push({
+                            vehicleNo:$scope.getTrip.vehicleNo,
+                            from:$scope.getTrip.source,
+                            to:$scope.getTrip.destination,
+                            date:new Date($scope.getTrip.date),
+                            tonnage:$scope.getTrip.tonnage,
+                            ratePerTonne:$scope.getTrip.rate
+                        });
+                    }
+                }
+                },function(error){
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                })
             });
         }
     };
@@ -124,6 +191,18 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
                 }
             },function(errorCallback){});
         }else{
+            if($scope.invoice.tripId) {
+                $scope.invoice.partyId = $scope.invoice.tripId.partyId;
+                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
+                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne*$scope.invoice.trip[i].tonnage);
+                }
+            }else{
+                $scope.invoice.partyId = $scope.invoice.partyId._id;
+                $scope.invoice.totalAmount = $scope.invoice.rate*$scope.invoice.quantity;
+                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
+                    $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
+                }
+            }
             InvoiceService.addInvoice($scope.invoice,function(successCallback){
                 if(successCallback.data.status){
                     Notification.success({message:"Added Successfully"});
@@ -148,7 +227,7 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
             function () {
                 var place = autocomplete.getPlace();
                 $scope.invoice.trip[index].from = place.formatted_address;
-        });
+            });
     };
     $scope.searchDestination = function (index) {
         var input = document.getElementById('destination' + index);
@@ -160,8 +239,8 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
                 $scope.invoice.trip[index].to = place.formatted_address;
             });
     };
+    $scope.getTrips();
 }]);
-
 app.controller('invoicesListController',['$scope','InvoiceService','$state','NgTableParams',function($scope,InvoiceService,$state,NgTableParams){
 
     $scope.delete = function(id){

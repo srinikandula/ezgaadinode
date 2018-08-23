@@ -43,6 +43,11 @@ AuthRouter.get('/generatePDF/:invoiceId',function (req,res) {
         }
     });
 });
+AuthRouter.get('/getTrip',function(req,res){
+    invoiceApi.getTrip(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
 
 
 module.exports = {

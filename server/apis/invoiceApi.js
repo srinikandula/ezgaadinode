@@ -7,6 +7,9 @@ var async = require('async');
 const math = require('mathjs');
 var pdfGenerator=require('./../apis/pdfGenerator');
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var TripCollection = require('./../models/schemas').TripCollection;
+var TrucksColl = require('./../models/schemas').TrucksColl;
+
 
 
 var Invoices = function(){
@@ -51,10 +54,7 @@ Invoices.prototype.addInvoice = function(jwt,invoiceDetails,callback){
       status:false,
       messages:[]
     };
-    invoiceDetails.partyId = invoiceDetails.partyId._id;
     invoiceDetails.accountId = jwt.accountId;
-    invoiceDetails.vehicleNo = invoiceDetails.vehicleNo.registrationNo;
-    invoiceDetails.totalAmount = math.multiply(invoiceDetails.rate,invoiceDetails.quantity);
     var invoiceDoc = new InvoicesColl(invoiceDetails);
     invoiceDoc.save(function(err,result){
         if(err){
@@ -73,9 +73,6 @@ Invoices.prototype.updateInvoice = function(jwt,invoiceDetails,callback){
         status:false,
         messages:[]
     };
-    if(invoiceDetails.vehicleNo.registrationNo){
-        invoiceDetails.vehicleNo = invoiceDetails.vehicleNo.registrationNo;
-    }
     InvoicesColl.findOneAndUpdate({_id:invoiceDetails._id},{$set:invoiceDetails},function(err,result){
         if(err){
             retObj.status = false;
@@ -177,6 +174,33 @@ Invoices.prototype.getInvoice = function(jwt,params,callback){
         }
     });
 };
+Invoices.prototype.getTrip=function(jwt,params,callback) {
+    var retObj={
+        status:false,
+        message:[]
+    };
+    TripCollection.findOne({tripId:params.tripId},function(err,trip) {
+        if(err) {
+            retObj.status=false;
+            retObj.message.push("error"+JSON.stringify(err));
+            callback(retObj);
+        }else{
+            TrucksColl.findOne({_id:trip.registrationNo},function(err,truck){
+                if(err){
+                    retObj.status=false;
+                    retObj.message.push("error"+JSON.stringify(err));
+                    callback(retObj);
+                }else{
+                    retObj.truckName = truck.registrationNo;
+                    retObj.message.push("success");
+                    retObj.status=true;
+                    retObj.data=trip;
+                    callback(retObj);
+                }
+            });
+        }
+    })
+};
 Invoices.prototype.generatePDF = function(req,callback){
     var retObj={
         status:false,
@@ -227,26 +251,43 @@ Invoices.prototype.generatePDF = function(req,callback){
                 });
             }
         },function(err,result){
+            var totalAmountByTonne = 0;
+            console.log("result....",result.invoiceDetails.trip);
             if(err){
                 callback(err);
             }else{
+                if(result.invoiceDetails.addTrip){
+                    for(var i=0;i<result.invoiceDetails.trip.length;i++){
+                        result.invoiceDetails.trip[i].date = dateToStringFormat(new Date(result.invoiceDetails.trip[i].date));
+                        totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne;
+                    }
+                    result.totalAmountByTonne = totalAmountByTonne;
+                }else{
+                    for(var i = 0;i < result.invoiceDetails.trip.length;i++){
+                        result.invoiceDetails.trip[i].ratePerTonne = result.invoiceDetails.ratePerTonne;
+                        result.invoiceDetails.trip[i].tonnage = result.invoiceDetails.tonnage;
+                        result.invoiceDetails.trip[i].amountPerTonne = (result.invoiceDetails.trip[i].ratePerTonne*result.invoiceDetails.trip[i].tonnage);
+                        totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne ;
+                        result.invoiceDetails.trip[i].loadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
+                        result.invoiceDetails.trip[i].unloadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].unloadedOn));
+                        result.invoiceDetails.trip[i].date = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
+                    }
+                    result.totalAmountByTonne = totalAmountByTonne;
+                }
                 PartiesColl.findOne({_id:result.invoiceDetails.partyId},function(err,party){
                     if(err){
                         retObj.messages.push("error in finding party details"+JSON.stringify(err));
                     }else{
-                        for(var i = 0;i < result.invoiceDetails.trip.length;i++){
-                            result.invoiceDetails.trip[i].unloadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].unloadedOn));
-                            result.invoiceDetails.trip[i].loadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
-                        }
                         result.invoicesCount = 500+result.invoicesCount;
-                        result.totalAmountByTonne = math.multiply(result.invoiceDetails.ratePerTonne,result.invoiceDetails.tonnage);
                         result.invoiceDate = dateToStringFormat(new Date());
                         result.partyName = party.name;
                         result.partyAddress = party.city;
                         result.gstNo = party.gstNo;
-                        result.cgstAmount = math.multiply((result.accountDetails.cgst/100),result.invoiceDetails.totalAmount);
-                        result.sgstAmount = math.multiply((result.accountDetails.sgst/100),result.invoiceDetails.totalAmount);
-                        result.totalAmount = result.cgstAmount + result.sgstAmount + result.invoiceDetails.totalAmount;
+                        if(result.accountDetails.cgst && result.accountDetails.sgst && result.accountDetails.igst){
+                            result.cgstAmount = (result.accountDetails.cgst/100)*result.invoiceDetails.totalAmount;
+                            result.sgstAmount = (result.accountDetails.sgst/100)*result.invoiceDetails.totalAmount;
+                            result.totalAmount = result.cgstAmount + result.sgstAmount + result.invoiceDetails.totalAmount;
+                        }
                         pdfGenerator.createPdf(result.accountDetails.templatePath,'invoice.html','landscape',result,function (resp) {
                             callback(resp);
                         })

@@ -19,12 +19,12 @@
     </div>
     <table class="table table-bordered table-striped table-condensed table-hover"
            ng-table="invoiceParams">
-        <tr ng-repeat="invoice in invoices " style="text-align: center;">
+        <tr ng-repeat="invoice in invoices track by $index " style="text-align: center;">
             <td data-title="'Party Name'" sortable="'partyId'" class="clickable-item">{{
                 invoice.partyId}}
             </td>
             <td data-title="'Truck No'" sortable="'vehicleNo'" class="clickable-item">{{
-                invoice.vehicleNo}}
+                invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo || invoice.trip[invoice.trip.length-1].vehicleNo}}
             </td>
             <td data-title="'Rate/Trip'" sortable="'rate'" class="clickable-item">{{
                 invoice.rate}}

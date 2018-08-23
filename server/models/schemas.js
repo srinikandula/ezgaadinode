@@ -1165,6 +1165,8 @@ var gpsFencesReportSchema=new mongoose.Schema({
 var invoicesSchema=new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     partyId:String,
+    tripId:String,
+    addTrip: {type: Boolean, default: false},
     vehicleNo:String,
     rate:String,
     quantity:Number,
