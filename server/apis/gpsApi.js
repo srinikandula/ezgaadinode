@@ -18,6 +18,7 @@ var serviceActions = require('./../constants/constants');
 var mailerApi = require('./../apis/mailerApi');
 var SmsService = require('./smsApi');
 var mongoose = require('mongoose');
+var request = require('request');
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -665,15 +666,68 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
     gps.gpsTrackingByTruck(params.truckNo, params.startDate, params.endDate, req, function (result) {
         if (result.status) {
             var positions = result.results.positions;
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.results = positions;
-            callback(retObj);
+
+            async.eachSeries(positions,function(position,asyncCallback){
+                if(position.address === '{address}'){
+                    getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
+                        position.address = addResp.address;
+                    });
+                }else{
+                    asyncCallback(false);
+                }
+            },function(err){
+                console.log('done getting addresses.....');
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push('error in finding address'+JSON.stringify(err));
+                    retObj.results = positions;
+                    callback(retObj);
+                }else{
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.results = positions;
+                    callback(retObj);
+                }
+            });
         } else {
             callback(result);
         }
     })
 };
+
+function getOSMAddress(position, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    request({
+        method: 'GET',
+        url: 'http://35.154.13.0/reverse.php?format=json&lat=' + position.latitude + '&lon=' + position.longitude
+    }, function (errAddress, address) {  //{"error":"Unable to geocode"}
+        if (errAddress) {
+            //console.error('Error resolving OSM address');
+            callback(retObj);
+        } else {
+            if (address) {
+                try {
+                    address = JSON.parse(address.body);
+                    position.address = address.display_name;
+
+                    retObj.status = true;
+                    retObj.address = position.address;
+                    retObj.messages.push('Success');
+                    callback(retObj);
+                } catch (error) {
+                    retObj.messages.push(JSON.stringify(error));
+                    console.error("OSM error{$position.latitude " + JSON.stringify(error));
+                    callback(retObj);
+
+                }
+            }
+
+        }
+    });
+}
 
 Gps.prototype.editGpsSettings = function (body, req, callback) {
     var retObj = {
