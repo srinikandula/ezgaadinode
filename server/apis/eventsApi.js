@@ -1976,7 +1976,7 @@ function getOSMAddress(position, callback) {
     };
     request({
         method: 'GET',
-        url: 'http://13.127.89.224/reverse.php?format=json&lat=' + position.latitude + '&lon=' + position.longitude
+        url: 'http://35.154.13.0/reverse.php?format=json&lat=' + position.latitude + '&lon=' + position.longitude
     }, function (errAddress, address) {  //{"error":"Unable to geocode"}
         if (errAddress) {
             console.error('Error resolving OSM address');

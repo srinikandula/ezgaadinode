@@ -665,15 +665,35 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
     gps.gpsTrackingByTruck(params.truckNo, params.startDate, params.endDate, req, function (result) {
         if (result.status) {
             var positions = result.results.positions;
-            retObj.status = true;
-            retObj.messages.push('Success');
-            retObj.results = positions;
-            callback(retObj);
+            async.each(positions,function(position,asyncCallback){
+                if(position.address === '{address}'){
+                    getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
+                        console.log("get osm address...",addResp);
+                    });
+
+                }else{
+                    asyncCallback(false);
+                }
+            },function(err){
+                if(err){
+                    retObj.status = false;
+                    retObj.messages.push('error in finding address'+JSON.stringify(err));
+                    retObj.results = positions;
+                    callback(retObj);
+                }else{
+                    retObj.status = true;
+                    retObj.messages.push('Success');
+                    retObj.results = positions;
+                    callback(retObj);
+                }
+            });
         } else {
             callback(result);
         }
     })
 };
+
+
 
 Gps.prototype.editGpsSettings = function (body, req, callback) {
     var retObj = {
