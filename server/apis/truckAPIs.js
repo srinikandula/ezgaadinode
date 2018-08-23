@@ -1632,6 +1632,7 @@ Trucks.prototype.getAllTrucksForAccount = function (req, callback) {
     }
     TrucksColl.find(condition, {registrationNo: 1, truckType: 1}).skip(skipNumber)
         .exec(function (err, trucks) {
+            console.log(" trucks count " + trucks.length);
         if (err) {
             retObj.messages.push("Error while fetching trucks");
             callback(retObj);
