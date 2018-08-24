@@ -54,7 +54,7 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
     $scope.partyName = '';
     $scope.getTrip={};
     $scope.temp=false;
-    $scope.truckRegNo = '';
+    $scope.truckRegNo = [];
     $scope.invoice = {
         addTrip:false,
         trip:[{
@@ -91,6 +91,12 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
         InvoiceService.getInvoice($stateParams.id,function (successCallback) {
             if(successCallback.data.status){
                 $scope.invoice =  successCallback.data.data;
+                var party = _.find($scope.parties, function (party) {
+                    return party._id.toString() === $scope.invoice.partyId;
+                });
+                if (party) {
+                    $scope.partyName = party.name;
+                }
                 if($scope.invoice.addTrip){
                     var trip = _.find($scope.trips,function(trip){
                         return trip._id.toString() === $scope.invoice.tripId;
@@ -103,15 +109,8 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
                         $scope.invoice.trip[i].date = new Date($scope.invoice.trip[i].date);
                     }
                 };
-                $scope.truckRegNo = $scope.invoice.vehicleNo;
-                var party = _.find($scope.parties, function (party) {
-                    return party._id.toString() === $scope.invoice.partyId;
-                });
-                if (party) {
-                    $scope.partyName = party.name;
-                }
                 for (var i = 0; i < $scope.invoice.trip.length; i++) {
-                    $scope.invoice.trip[i].type = $scope.invoice.trip[i].from;
+                    $scope.truckRegNo[i] = $scope.invoice.trip[i].vehicleNo;
                     $scope.invoice.trip[i].loadedOn = new Date($scope.invoice.trip[i].loadedOn);
                     $scope.invoice.trip[i].unloadedOn = new Date($scope.invoice.trip[i].unloadedOn);
                 }
@@ -139,9 +138,9 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
             Notification.error("Please enter details");
         }else{
             $scope.temp=true;
+            $scope.status='diable';
             var query = {tripId:$scope.invoice.tripId.tripId};
             InvoiceService.getTrip(query,function(success){
-                console.log("get trip....",success);
                 if(success.data.status){
                     $scope.getTrip=success.data.data;
                     $scope.getTrip.vehicleNo = success.data.truckName;
@@ -180,6 +179,20 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
     };
     $scope.add_editInvoice = function(){
         if($stateParams.id){
+            if($scope.invoice.tripId) {
+                $scope.invoice.partyId = $scope.invoice.tripId.partyId;
+                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
+                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne*$scope.invoice.trip[i].tonnage);
+                }
+            }else{
+                $scope.invoice.partyId = $scope.invoice.partyId._id;
+                $scope.invoice.totalAmount = $scope.invoice.rate*$scope.invoice.quantity;
+                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
+                    if($scope.invoice.trip[i].vehicleNo.registrationNo){
+                        $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
+                    }
+                }
+            }
             InvoiceService.updateInvoice($scope.invoice,function(successCallback){
                 if(successCallback.data.status){
                     Notification.success({message:"Updated Successfully"});

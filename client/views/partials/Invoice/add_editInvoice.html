@@ -5,7 +5,7 @@
             <div class="col-sm-12 col-xs-12 mt-10">
                 <div class="checkbox">
                     <label>
-                        <input ng-model="invoice.addTrip" type="checkbox" checked>
+                        <input ng-model="invoice.addTrip" type="checkbox" ng-disabled="status" checked>
                         <span class="cr">
                             <i class="cr-icon fa fa-check"></i>
                         </span>
@@ -85,7 +85,7 @@
                                     <ui-select ng-model="exp.vehicleNo" theme="select2"
                                                title="Choose a Truck" append-to-body="true">
                                         <ui-select-match class="form-control custom-form-control">
-                                            {{$select.selected.registrationNo || truckRegNo}}
+                                            {{$select.selected.registrationNo || truckRegNo[$index]}}
                                         </ui-select-match>
                                         <ui-select-choices repeat="truck in trucks| propsFilter: {registrationNo: $select.search}">
                                             <div ng-bind-html="truck.registrationNo| highlight: $select.search"></div>
