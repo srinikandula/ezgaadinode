@@ -453,9 +453,9 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                     overSpeedLimit = settings.results.overSpeedLimit;
                 }
             });
-            devicePostions.find({
+             devicePostions.find({
+                accountId:truckDetails.accountId.toString(),
                 uniqueId: truckDetails.deviceId,
-                accountId: truckDetails.accountId,
                 createdAt: {$gte: startDate, $lte: endDate}
             }).sort({deviceTime: 1}).lean().exec(function (err, positions) {
                 if (err) {
@@ -464,7 +464,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                 } else {
                     archivedDevicePositions.find({
                         uniqueId: truckDetails.deviceId,
-                        accountId: truckDetails.accountId,
+                        accountId:truckDetails.accountId.toString(),
                         createdAt: {$gte: startDate, $lte: endDate}
                     }).sort({deviceTime: 1}).lean().exec(function (err, archivedPositions) {
                         if (err) {
