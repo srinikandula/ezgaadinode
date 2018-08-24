@@ -87,6 +87,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
                 if (success.data.status) {
                     $scope.truckReports = success.data.results;
                 } else {
+                    $scope.truckReports = [];
                     success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
                     });
