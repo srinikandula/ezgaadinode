@@ -532,29 +532,47 @@ Gps.prototype.downloadReport = function (truckId, startDate, endDate, req, callb
         if (result.status) {
             var output = [];
             var positions = result.results.positions;
-            for (var i = 0; i < positions.length; i++) {
-                var status;
-                if (positions[i].isStopped) {
-                    status = 'Stopped'
-                } else if (positions[i].isIdle) {
-                    status = 'Idle'
-                } else {
-                    status = 'Moving'
+            async.eachSeries(positions,function(position,asyncCallback){
+                if(position.address === '{address}'){
+                    getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
+                        position.address = addResp.address;
+                        asyncCallback(false);
+                    });
+                }else{
+                    asyncCallback(false);
                 }
-                output.push({
-                    Date: positions[i].createdAt.toLocaleString(),
-                    Status: status,
-                    Address: positions[i].address,
-                    Speed: Math.round(positions[i].speed) + " Kmph",
-                    Odo: Math.round(positions[i].totalDistance) + " KM"
-                });
-                if (i === positions.length - 1) {
-                    retObj.status = true;
-
-                    retObj.data = output;
+            },function(err) {
+                if (err) {
+                    retObj.status = false;
+                    retObj.messages.push('error in finding address' + JSON.stringify(err));
+                    retObj.results = positions;
                     callback(retObj);
+                } else {
+                    for (var i = 0; i < positions.length; i++) {
+                        var status;
+                        if (positions[i].isStopped) {
+                            status = 'Stopped'
+                        } else if (positions[i].isIdle) {
+                            status = 'Idle'
+                        } else {
+                            status = 'Moving'
+                        }
+                        output.push({
+                            Date: positions[i].createdAt.toLocaleString(),
+                            Status: status,
+                            Address: positions[i].address,
+                            Speed: Math.round(positions[i].speed) + " Kmph",
+                            Odo: Math.round(positions[i].totalDistance) + " KM"
+                        });
+                        if (i === positions.length - 1) {
+                            retObj.status = true;
+
+                            retObj.data = output;
+                            callback(retObj);
+                        }
+                    }
                 }
-            }
+            });
         } else {
             callback(result);
         }

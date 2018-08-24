@@ -65,7 +65,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         }else if(!$scope.reportParams.endDate){
             Notification.error({ message: "Please select a end date" });
             return false;
-        }else if(!$scope.reportParams.truckNo.registrationNo){
+        }else if(!$scope.reportParams.truckNo.registrationNo && !$scope.reportParams.truckNo){
             Notification.error({ message: "Please select a truck" });
             return false;
         }else{
@@ -76,7 +76,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
     $scope.downloadReport = function () {
         if(reportParamsValidation()){
             var body=$scope.reportParams;
-            window.open('/v1/gps/downloadReport/'+body.truckNo.registrationNo+'/'+body.startDate+'/'+body.endDate);
+            window.open('/v1/gps/downloadReport/'+body.truckNo+'/'+body.startDate+'/'+body.endDate);
         }
     };
 
