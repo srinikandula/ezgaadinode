@@ -58,11 +58,9 @@
             </div>
             <div class="col-xs-12 mt-25">
        <!--             <a ui-sref="devices" class="btn btn-info pull-right mb-10">Devices</a>-->
+                Vehicle Number : {{reportParams.truckNo.registrationNo || reportParams.truckNo}}
                 <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
                     <tr style="text-align: center;" ng-repeat="report in truckReports">
-                        <td data-title="'Vehicle Num'" class="clickable-item">
-                            {{reportParams.truckNo}}
-                        </td>
                         <td data-title="'Date & Time'" class="clickable-item">
                             <a href="#"></a>
                             {{report.createdAt |date : "dd/MM/y HH:mm"}}
@@ -82,9 +80,9 @@
                             {{report.totalDistance | number:0}}
                         </td>
                     </tr>
-                    <!-- <tr ng-if="!parties || parties.length === 0">
+                     <tr ng-if="!truckReports || truckReports.length === 0">
                          <td colspan="8">No Records exist.</td>
-                     </tr>-->
+                     </tr>
 
                 </table>
             </div>

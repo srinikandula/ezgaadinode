@@ -201,6 +201,13 @@ Invoices.prototype.getTrip=function(jwt,params,callback) {
         }
     })
 };
+function nanToZero(value){
+    if(isNaN(value)){
+        return 0;
+    }else{
+        return value;
+    }
+}
 Invoices.prototype.generatePDF = function(req,callback){
     var retObj={
         status:false,
@@ -252,27 +259,28 @@ Invoices.prototype.generatePDF = function(req,callback){
             }
         },function(err,result){
             var totalAmountByTonne = 0;
-            console.log("result....",result.invoiceDetails.trip);
             if(err){
                 callback(err);
             }else{
                 if(result.invoiceDetails.addTrip){
                     for(var i=0;i<result.invoiceDetails.trip.length;i++){
+                        result.invoiceDetails.trip[i].index = i+1;
                         result.invoiceDetails.trip[i].date = dateToStringFormat(new Date(result.invoiceDetails.trip[i].date));
                         totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne;
                     }
-                    result.totalAmountByTonne = totalAmountByTonne;
+                    result.totalAmountByTonne = nanToZero(totalAmountByTonne);
                 }else{
                     for(var i = 0;i < result.invoiceDetails.trip.length;i++){
+                        result.invoiceDetails.trip[i].index = i+1;
                         result.invoiceDetails.trip[i].ratePerTonne = result.invoiceDetails.ratePerTonne;
                         result.invoiceDetails.trip[i].tonnage = result.invoiceDetails.tonnage;
-                        result.invoiceDetails.trip[i].amountPerTonne = (result.invoiceDetails.trip[i].ratePerTonne*result.invoiceDetails.trip[i].tonnage);
+                        result.invoiceDetails.trip[i].amountPerTonne = nanToZero(result.invoiceDetails.trip[i].ratePerTonne*result.invoiceDetails.trip[i].tonnage);
                         totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne ;
                         result.invoiceDetails.trip[i].loadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
                         result.invoiceDetails.trip[i].unloadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].unloadedOn));
                         result.invoiceDetails.trip[i].date = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
                     }
-                    result.totalAmountByTonne = totalAmountByTonne;
+                    result.totalAmountByTonne = nanToZero(totalAmountByTonne);
                 }
                 PartiesColl.findOne({_id:result.invoiceDetails.partyId},function(err,party){
                     if(err){
