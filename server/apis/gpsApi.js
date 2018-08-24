@@ -54,6 +54,9 @@ function resolveAddress(position, callback) {
             geocoder.reverse({lat: position.latitude, lon: position.longitude}, function (errlocation, location) {
                 if (errlocation) {
                     console.error("error resolving address...err", errlocation, position);
+                    SecretKeyCounterColl.findOneAndUpdate({_id: counterEntry._id}, {$set: {counter: parseInt(config.googleSecretKeyLimit+1)}}, function (incerr, increased) {
+                        resolveAddress(position, callback);
+                    });
                 }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
@@ -452,6 +455,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
             });
             devicePostions.find({
                 uniqueId: truckDetails.deviceId,
+                accountId: truckDetails.accountId,
                 createdAt: {$gte: startDate, $lte: endDate}
             }).sort({deviceTime: 1}).lean().exec(function (err, positions) {
                 if (err) {
@@ -460,6 +464,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                 } else {
                     archivedDevicePositions.find({
                         uniqueId: truckDetails.deviceId,
+                        accountId: truckDetails.accountId,
                         createdAt: {$gte: startDate, $lte: endDate}
                     }).sort({deviceTime: 1}).lean().exec(function (err, archivedPositions) {
                         if (err) {
