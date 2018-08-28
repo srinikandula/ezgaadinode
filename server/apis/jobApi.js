@@ -4,9 +4,10 @@ var _ = require('underscore');
 var RemindersCollection = require('./../models/schemas').RemindersCollection;
 var JobsCollection = require('./../models/schemas').JobsCollection;
 var emailService = require('./mailerApi');
-var json2xls = require('json2xls');
-var fs=require('fs');
+var PartsLocationColl = require('./../models/schemas').partsLocationColl;
+var mongoose = require('mongoose');
 
+const ObjectId = mongoose.Types.ObjectId;
 
 
 var expenseMasterApi = require('./expenseMasterApi');
@@ -75,6 +76,11 @@ Jobs.prototype.addJob = function(req,callback){
         status:'Enable',
         type:'job'
     };
+    if(jobInfo.partLocation === 'others'){
+        var partsLocation = {partLocationName:jobInfo.partLocationName};
+        var doc = new PartsLocationColl(partsLocation);
+        doc.save(function(err,result){});
+    }
     if(jobInfo.expenseName && jobInfo.type === 'others'){
         expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
             if(ETcallback.status){
@@ -150,6 +156,14 @@ Jobs.prototype.updateJob = function(req,callback){
         accountId:req.jwt.accountId,
         status:'Enable'
     };
+    console.log("update job...",jobInfo);
+    if(jobInfo.partLocation === 'others'){
+        var partsLocation = {partLocationName:jobInfo.partLocationName};
+        var doc = new PartsLocationColl(partsLocation);
+        doc.save(function(err,result){});
+    }else{
+        jobInfo.partLocationName = '';
+    }
     if (jobInfo.type === 'others' && jobInfo.expenseName) {
         expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName}, req, function (eTResult) {
             if (eTResult.status) {
@@ -417,6 +431,56 @@ Jobs.prototype.shareDetailsViaEmail = function (jwt,requestParams,callback) {
             }
         });
     }
+};
+Jobs.prototype.getAllPartsLocations = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    PartsLocationColl.find({},function(err,data){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("Error in fetching the data...",JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = data;
+            callback(retObj);
+        }
+    });
+};
+Jobs.prototype.getJobsForSelectedPartLocation = function(jwt,params,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {
+        accountId:jwt.accountId,
+        vehicle:params.vehicle,
+        partLocation:params.partLocation
+    };
+    if(params.jobId){
+       condition._id = {$nin:params.jobId};
+       condition.vehicle = params.vehicle;
+       condition.partLocation = params.partLocation;
+    }else{
+        condition.vehicle = params.vehicle;
+        condition.partLocation = params.partLocation;
+    }
+    JobsCollection.find(condition,function(err,jobs){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("Error in fetching the data...",JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = jobs;
+            callback(retObj);
+        }
+    });
+
 };
 module.exports=new Jobs();
 
