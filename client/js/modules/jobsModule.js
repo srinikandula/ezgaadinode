@@ -68,6 +68,19 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 params:params
             }).then(success, error)
         },
+        getAllPartsLocation:function(success,error){
+            $http({
+                url: '/v1/jobs/getAllPartsLocations',
+                method: "GET"
+            }).then(success, error)
+        },
+        getJobsForSelectedPartLocation:function(params,success,error){
+            $http({
+                url: '/v1/jobs/getAllJobsForPartsLocations',
+                method: "GET",
+                params:params
+            }).then(success, error)
+        }
     }
 }]);
 
@@ -76,6 +89,8 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
     $scope.reminder = {};
     $scope.records = {};
     $scope.vehicle = '';
+    $scope.parts = [];
+    $scope.jobsForSelectedPart = [];
 
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
@@ -93,6 +108,12 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
         }
     },function(errorCallback){});
 
+    JobsService.getAllPartsLocation(function(successCallback){
+        if(successCallback.data.status){
+           $scope.parts =  successCallback.data.data;
+        }
+    },function(errorCallback){});
+
     $scope.getRecords = function(vehicle){
         var params = {};
         if($stateParams.ID){
@@ -106,6 +127,17 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
         JobsService.getRecords(params,function(successCallback){
             $scope.records = successCallback.data.records;
         },function(errorCallback){});
+    };
+    $scope.getJobsForSelectedPartLocation = function (partLocation) {
+        console.log("get parts...",partLocation,$scope.job);
+        var params = {};
+        params.partLocation = partLocation;
+        params.vehicle = $scope.job.vehicle._id;
+        if(partLocation !== 'others'){
+                JobsService.getJobsForSelectedPartLocation(params,function(successCallback){
+                    $scope.jobsForSelectedPart = successCallback.data.data;
+                },function(errorCallback){});
+        }
     };
 
     $scope.getJobsForInventory = function(inventory){
@@ -138,6 +170,15 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 
                 $scope.getRecords($stateParams.ID, $scope.job.vehicle._id);
                 $scope.getJobsForInventory($scope.job.inventory);
+                if($scope.job.partLocation !== 'others'){
+                    var params = {};
+                    params.partLocation = $scope.job.partLocation;
+                    params.vehicle = $scope.job.vehicle._id;
+                    params.jobId = $stateParams.ID;
+                    JobsService.getJobsForSelectedPartLocation(params,function(successCallback){
+                        $scope.jobsForSelectedPart = successCallback.data.data;
+                    },function(errorCallback){});
+                }
             }
         },function(errorCallback){});
 

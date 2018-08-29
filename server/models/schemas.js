@@ -1042,6 +1042,8 @@ var jobSchema = new mongoose.Schema({
     date: Date,
     reminderText: String,
     reminderDate: Date,
+    partLocation:String,
+    partLocationName:String,
     description: String,
     vehicle: {type: ObjectId, ref: 'trucks'},
     inventory: {type: ObjectId, ref: 'inventories'},
@@ -1205,6 +1207,11 @@ var tripSettlementsSchema=new mongoose.Schema({
     dieselLiters:[]
 },{timestamps: true});
 
+var partsLocationSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    partLocationName:String
+}, {timestamps: true});
+
 
 
 module.exports = {
@@ -1271,4 +1278,5 @@ module.exports = {
     ShareLinksColl: mongoose.model('shareLinks', shareLinksSchema, 'shareLinks'),
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
     GeoFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
+    partsLocationColl: mongoose.model('partsLocation', partsLocationSchema, 'partsLocation')
 };

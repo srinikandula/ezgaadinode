@@ -28,12 +28,6 @@ AuthRouter.get('/getAllJobs',function(req,res){
     });
 });
 
-AuthRouter.get('/searchByDateRange',function(req,res){
-    API.searchByDateRange(req.jwt,req.query,function(result){
-        res.send(result);
-    });
-});
-
 AuthRouter.get('/getJob/:id',function(req,res){
     API.getJob(req.jwt,req.params.id,function(result){
         res.send(result);
@@ -75,6 +69,17 @@ AuthRouter.get('/shareDetailsViaEmail',function(req,res){
         res.send(result);
     });
 });
+AuthRouter.get('/getAllPartsLocations',function(req,res){
+    API.getAllPartsLocations(req,function(result){
+        res.send(result);
+    });
+});
+AuthRouter.get('/getAllJobsForPartsLocations',function(req,res){
+    API.getJobsForSelectedPartLocation(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
+
 
 
 

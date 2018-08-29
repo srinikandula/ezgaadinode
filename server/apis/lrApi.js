@@ -43,7 +43,9 @@ Lrs.prototype.update = function (req, callback) {
         messages: []
     };
     var params = req.body;
-    params.partyName = params.consignorName.name;
+    if(params.consignorName.name){
+        params.partyName = params.consignorName.name;
+    }
     if (!params._id || !ObjectId.isValid(params._id)) {
         retObj.messages.push("Provide lr id");
     }
@@ -126,7 +128,7 @@ Lrs.prototype.getAll=function (req,callback) {
                          var party = _.find(parties, function (party) {
                              return party._id.toString() === doc.consignorName;
                          });
-                         doc.consignorName = party.name;
+                         doc.partyName = party.name;
                          asyncCallback(false);
                      }, function (err) {
                          if (err) {
