@@ -2023,7 +2023,7 @@ Events.prototype.generateReportsByAccount = function (params, callback) {
 
                             }
 
-                        })
+                        });
                     } else {
                         console.log('no lan lat-------------------------------------------------->')
                         docCallback(doc);

@@ -57,6 +57,15 @@ function resolveAddress(position, callback) {
                     SecretKeyCounterColl.findOneAndUpdate({_id: counterEntry._id}, {$set: {counter: parseInt(config.googleSecretKeyLimit+1)}}, function (incerr, increased) {
                         resolveAddress(position, callback);
                     });
+
+                    getOSMAddress({latitude:  position.latitude, longitude: position.longitude}, function (resp) {
+                        if (resp.status) {
+                            console.log('OSM resolved address ' + resp.address);
+                            retObj.status = true;
+                            retObj.address = resp.address;
+                            callback(retObj);
+                        }
+                    });
                 }
                 if (location) {
                     // console.log('google response '+ JSON.stringify(location));
