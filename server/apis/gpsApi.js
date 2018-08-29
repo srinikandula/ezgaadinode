@@ -723,7 +723,7 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
     })
 };
 
-function getOSMAddress(position, callback) {
+function getOSMAddress(position, osmCallback) {
     var retObj = {
         status: false,
         messages: []
@@ -734,22 +734,20 @@ function getOSMAddress(position, callback) {
     }, function (errAddress, address) {  //{"error":"Unable to geocode"}
         if (errAddress) {
             //console.error('Error resolving OSM address');
-            callback(retObj);
+            osmCallback(retObj);
         } else {
             if (address) {
                 try {
                     address = JSON.parse(address.body);
                     position.address = address.display_name;
-
                     retObj.status = true;
                     retObj.address = position.address;
                     retObj.messages.push('Success');
-                    callback(retObj);
+                    osmCallback(retObj);
                 } catch (error) {
                     retObj.messages.push(JSON.stringify(error));
                     console.error("OSM error{$position.latitude " + JSON.stringify(error));
-                    callback(retObj);
-
+                    osmCallback(retObj);
                 }
             }
 
