@@ -747,7 +747,7 @@ function getOSMAddress(position, osmCallback) {
                 } catch (error) {
                     retObj.messages.push(JSON.stringify(error));
                     console.error("OSM error{$position.latitude " + JSON.stringify(error));
-                    osmCallback(retObj);
+                    //osmCallback(retObj);
                 }
             }
 
