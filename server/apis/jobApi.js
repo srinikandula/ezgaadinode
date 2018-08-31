@@ -30,35 +30,49 @@ function save(job,reminder,callback){
         messages:[]
     };
     var jobDoc = new JobsCollection(job);
-    jobDoc.save(function(err,result){
+    var condition = {
+        accountId:job.accountId,
+        vehicle:job.vehicle._id,
+        partLocation:job.partLocation
+    };
+    JobsCollection.findOneAndUpdate(condition,{$set:{unInstallMilege:job.milege}}).sort({createdAt:-1}).exec(function(err,job){
         if(err){
             retObj.status = false;
             retObj.messages.push("error in saving....."+JSON.stringify(err));
             callback(retObj);
         }else{
-            InventoryCollection.findOneAndUpdate({accountId:result.accountId,_id:result.inventory},{$set:{vehicle:job.vehicle.registrationNo}},function(err,inventoryResult){
+            jobDoc.save(function(err,result){
                 if(err){
                     retObj.status = false;
                     retObj.messages.push("error in saving....."+JSON.stringify(err));
                     callback(retObj);
                 }else{
-                    if((reminder.reminderDate && reminder.reminderText) !== undefined){
-                        reminder.refId = result._id;
-                        var reminderDoc = new RemindersCollection(reminder);
-                        reminderDoc.save(function(err,reminderResult){
-                            if(err){
-                                retObj.status = false;
-                                retObj.messages.push("error in saving reminder........"+JSON.stringify(err));
-                                callback(retObj);
+                    console.log("add job....",result);
+                    InventoryCollection.findOneAndUpdate({accountId:result.accountId,_id:result.inventory},{$set:{vehicle:job.vehicle.registrationNo}},function(err,inventoryResult){
+                        if(err){
+                            retObj.status = false;
+                            retObj.messages.push("error in saving....."+JSON.stringify(err));
+                            callback(retObj);
+                        }else{
+                            if((reminder.reminderDate && reminder.reminderText) !== undefined){
+                                reminder.refId = result._id;
+                                var reminderDoc = new RemindersCollection(reminder);
+                                reminderDoc.save(function(err,reminderResult){
+                                    if(err){
+                                        retObj.status = false;
+                                        retObj.messages.push("error in saving reminder........"+JSON.stringify(err));
+                                        callback(retObj);
+                                    }
+                                });
                             }
-                        });
-                    }
+                        }
+                    });
+                    retObj.status = true;
+                    retObj.messages.push("saved successfully..");
+                    retObj.data = result;
+                    callback(retObj);
                 }
             });
-            retObj.status = true;
-            retObj.messages.push("saved successfully..");
-            retObj.data = result;
-            callback(retObj);
         }
     });
 };
