@@ -6,8 +6,7 @@
             <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
                     <ui-select ng-model="params.truckType" theme="select2"
-                               title="Choose a truck type" append-to-body="true"
-                    >
+                               title="Choose a truck type" append-to-body="true">
                         <ui-select-match placeholder=" Select a Truck type" class="form-control ui-select-control">
                             {{$select.selected.title || title}}
                         </ui-select-match>
@@ -69,6 +68,9 @@
         <tr ng-repeat="trips in currentPageOfTrips" style="text-align: center;">
             <td data-title="'Trip Date'" sortable="'date'" class="clickable-item">
                 {{trips.date | date:'dd-MM-yy'}}
+            </td>
+            <td data-title="'Trip ID'" sortable="'date'" class="clickable-item">
+                {{trips.tripId}}
             </td>
             <td data-title="'Reg No'" sortable="'truckName'" class="clickable-item">{{
                 trips.attrs.truckName | uppercase}}

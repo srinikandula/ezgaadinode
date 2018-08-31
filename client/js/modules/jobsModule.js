@@ -74,9 +74,9 @@ app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        getJobsForSelectedPartLocation:function(params,success,error){
+        getJobForSelectedPartLocation:function(params,success,error){
             $http({
-                url: '/v1/jobs/getAllJobsForPartsLocations',
+                url: '/v1/jobs/getJobForPartLocation',
                 method: "GET",
                 params:params
             }).then(success, error)
@@ -128,13 +128,15 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
             $scope.records = successCallback.data.records;
         },function(errorCallback){});
     };
-    $scope.getJobsForSelectedPartLocation = function (partLocation) {
-        console.log("get parts...",partLocation,$scope.job);
+    $scope.getJobForSelectedPartLocation = function (partLocation,vehicle) {
         var params = {};
         params.partLocation = partLocation;
-        params.vehicle = $scope.job.vehicle._id;
+        params.vehicle = vehicle._id;
         if(partLocation !== 'others'){
-                JobsService.getJobsForSelectedPartLocation(params,function(successCallback){
+            if(!vehicle){
+                Notification.error("Please select Vehicle");
+            }
+                JobsService.getJobForSelectedPartLocation(params,function(successCallback){
                     $scope.jobsForSelectedPart = successCallback.data.data;
                 },function(errorCallback){});
         }
@@ -175,7 +177,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                     params.partLocation = $scope.job.partLocation;
                     params.vehicle = $scope.job.vehicle._id;
                     params.jobId = $stateParams.ID;
-                    JobsService.getJobsForSelectedPartLocation(params,function(successCallback){
+                    JobsService.getJobForSelectedPartLocation(params,function(successCallback){
                         $scope.jobsForSelectedPart = successCallback.data.data;
                     },function(errorCallback){});
                 }
