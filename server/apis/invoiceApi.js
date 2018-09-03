@@ -265,7 +265,8 @@ Invoices.prototype.generatePDF = function(req,callback){
                 if(result.invoiceDetails.addTrip){
                     for(var i=0;i<result.invoiceDetails.trip.length;i++){
                         result.invoiceDetails.trip[i].index = i+1;
-                        result.invoiceDetails.trip[i].date = dateToStringFormat(new Date(result.invoiceDetails.trip[i].date));
+                        var tripDate = new Date(result.invoiceDetails.trip[i].date);
+                        result.invoiceDetails.trip[i].date = tripDate.getDate()+"-"+(tripDate.getMonth()+1)+"-"+tripDate.getFullYear();
                         totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne;
                     }
                     result.totalAmountByTonne = nanToZero(totalAmountByTonne);
@@ -276,9 +277,11 @@ Invoices.prototype.generatePDF = function(req,callback){
                         result.invoiceDetails.trip[i].tonnage = result.invoiceDetails.tonnage;
                         result.invoiceDetails.trip[i].amountPerTonne = nanToZero(result.invoiceDetails.trip[i].ratePerTonne*result.invoiceDetails.trip[i].tonnage);
                         totalAmountByTonne += result.invoiceDetails.trip[i].amountPerTonne ;
-                        result.invoiceDetails.trip[i].loadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
-                        result.invoiceDetails.trip[i].unloadedOn = dateToStringFormat(new Date(result.invoiceDetails.trip[i].unloadedOn));
-                        result.invoiceDetails.trip[i].date = dateToStringFormat(new Date(result.invoiceDetails.trip[i].loadedOn));
+                        var loadedOn = new Date(result.invoiceDetails.trip[i].loadedOn);
+                        result.invoiceDetails.trip[i].loadedOn = loadedOn.getDate()+"-"+(loadedOn.getMonth()+1)+"-"+loadedOn.getFullYear();
+                        var unloadedOn = new Date(result.invoiceDetails.trip[i].unloadedOn);
+                        result.invoiceDetails.trip[i].unloadedOn = unloadedOn.getDate()+"-"+(unloadedOn.getMonth()+1)+"-"+unloadedOn.getFullYear();
+                        result.invoiceDetails.trip[i].date = loadedOn.getDate()+"-"+(loadedOn.getMonth()+1)+"-"+loadedOn.getFullYear();
                     }
                     result.totalAmountByTonne = nanToZero(totalAmountByTonne);
                 }

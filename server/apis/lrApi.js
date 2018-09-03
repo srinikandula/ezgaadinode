@@ -226,7 +226,7 @@ Lrs.prototype.generatePDF=function (req,callback) {
                         retObj.messages.push("Internal server error," + JSON.stringify(err.message));
                         lrCallback(retObj,'');
                     }else if(doc){
-                        doc.total=doc.handling+doc.statistical+doc.caratage+doc.others+doc.freight;
+                        doc.total=nanToZero(doc.handling)+nanToZero(doc.statistical)+nanToZero(doc.caratage)+nanToZero(doc.others)+nanToZero(doc.freight);
                         lrCallback(false,doc);
                     }else {
                         retObj.messages.push("Please try again");
@@ -255,8 +255,7 @@ Lrs.prototype.generatePDF=function (req,callback) {
                 result.accDetails.igstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.igst);
                 result.accDetails.cgstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.cgst);
                 result.accDetails.sgstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.sgst);
-                result.accDetails.grandtotal=nanToZero((result.accDetails.igstprice+ result.accDetails.cgstprice+ result.accDetails.sgstprice+ result.lrDetails.total+result.lrDetails.surCharges));
-
+                result.accDetails.grandtotal=result.accDetails.igstprice+ result.accDetails.cgstprice+ result.accDetails.sgstprice+nanToZero(result.lrDetails.total)+nanToZero(result.lrDetails.surCharges);
                 pdfGenerator.createPdf(result.accDetails.templatePath,'lr.html','landscape',result,function (resp) {
                     callback(resp);
                 })
