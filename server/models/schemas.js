@@ -1049,6 +1049,7 @@ var jobSchema = new mongoose.Schema({
     inventory: {type: ObjectId, ref: 'inventories'},
     type: {type: ObjectId, ref: 'expenseMaster'},
     milege: Number,
+    unInstallMilege:Number,
     attachments: [{
         fileName: String,
         key: String,

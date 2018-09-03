@@ -74,8 +74,8 @@ AuthRouter.get('/getAllPartsLocations',function(req,res){
         res.send(result);
     });
 });
-AuthRouter.get('/getAllJobsForPartsLocations',function(req,res){
-    API.getJobsForSelectedPartLocation(req.jwt,req.query,function(result){
+AuthRouter.get('/getJobForPartLocation',function(req,res){
+    API.getJobForSelectedPartLocation(req.jwt,req.query,function(result){
         res.send(result);
     });
 });
