@@ -512,7 +512,7 @@ Jobs.prototype.getJobForSelectedPartLocation = function(jwt,params,callback){
         partLocation:params.partLocation
     };
     if(params.jobId){
-        condition._id = {$nin:params.jobId}
+       condition._id = {$nin:params.jobId};
     }
     JobsCollection.find(condition).sort({createdAt:-1}).limit(1).populate({path:"inventory"}).exec(function(err,job){
         if(err){
