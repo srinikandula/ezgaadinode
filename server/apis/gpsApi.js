@@ -975,6 +975,9 @@ Gps.prototype.identifyNotWorkingDevices = function (callback) {
             async.each(devices, function (device, asyncCallback) {
                 DevicesColl.updateOne({"_id": device._id}, {$set: {"status": 'Not Working'}}, function (err, result) {
                 });
+                TrucksColl.updateOne({"deviceId": device.imei}, {$set: {"status": 'Not Working'}}, function (err, result) {
+                });
+                
                 AccountsColl.findOne({_id: ObjectId(device.accountId)}, function (err, account) {
                     if (err) {
                         asyncCallback(true);

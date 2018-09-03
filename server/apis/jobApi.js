@@ -462,13 +462,8 @@ Jobs.prototype.getJobsForSelectedPartLocation = function(jwt,params,callback){
     };
     if(params.jobId){
        condition._id = {$nin:params.jobId};
-       condition.vehicle = params.vehicle;
-       condition.partLocation = params.partLocation;
-    }else{
-        condition.vehicle = params.vehicle;
-        condition.partLocation = params.partLocation;
     }
-    JobsCollection.find(condition,function(err,jobs){
+    JobsCollection.find(condition).limit(1).exec(function(err,jobs){
         if(err){
             retObj.status = false;
             retObj.messages.push("Error in fetching the data...",JSON.stringify(err));
