@@ -1408,7 +1408,22 @@ height: 42px !important;
 .dis-inline{
     display: inline-block;
 }
-
+.permission {
+    padding: 20px 0;
+    display: block;
+    clear: both;
+}
+.permission li{
+    list-style-type: none;
+    padding-top: 20px;
+}
+.roleTable{
+    max-width: 1000px;
+    overflow-y: hidden;
+}
+.roleTable table{
+    width: 2500px;
+}
 /* Responsive Design */
 
 @media only screen and (max-width: 767px) {

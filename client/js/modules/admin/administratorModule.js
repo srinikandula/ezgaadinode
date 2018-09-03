@@ -720,4 +720,6 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         });
     };
     /*FRANCHISE END*/
+
+    $scope.getAllStates = angular.toJson($state.get());
 }]);

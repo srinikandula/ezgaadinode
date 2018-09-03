@@ -1,0 +1,20 @@
+<div class="permission" ng-controller="administratorsCtrl" ng-init="adminRolesDropDown();">
+    <div class="col-sm-12 roleTable">
+        <table class="table table-res table-bordered">
+            <thead>
+            <tr>
+                <td style="width: 170px;"></td>
+                <td ng-repeat="roleNames in adminRoles">
+                    {{roleNames.role}}
+                </td>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

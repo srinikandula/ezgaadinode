@@ -3331,3 +3331,16 @@ textarea.form-control {
     font-weight: bold;
     margin-bottom: -2px;
 }
+.search-control{
+    line-height: 44px;
+    height: 44px;
+}
+.th-demo ul li a {
+    line-height: 14px !important;
+    text-align: left;
+    font-size: 13px !important;
+    border: 0 !important;
+    width: 100% !important;
+    font-weight: 500;
+    padding: 7px;
+}

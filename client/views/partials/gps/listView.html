@@ -1,4 +1,5 @@
 <div class="col-xs-12 gpsListView" ng-controller="gpsListViewController">
+
     <div class="col-xs-12">
         <div class="lisk-block col-xs-12">
             <div class="col-xs-12">
@@ -6,10 +7,11 @@
 
                     <li class="col-sm-4"><h2>All Vehicles Location</h2></li>
 
-                    <li class="col-sm-4">
+                   <!-- <li class="col-sm-4">
                         <form>
                             <div class="input-group stylish-input-group">
-                                <input type="text" ng-model="truckName" class="form-control" placeholder="Search by vehicle number">
+                                <input type="text" ng-model="truckName" class="form-control"
+                                       placeholder="Search by vehicle number" ng-change="">
                                 <span class="input-group-addon">
                         <button type="submit">
                            <i class="fa fa-search sear" aria-hidden="true"></i>
@@ -18,13 +20,29 @@
                             </div>
                         </form>
                         <div class="clearfix"></div>
+                    </li>-->
+                    <li class="pos-relative col-sm-4 th-demo">
+                        <span class="bot-arrow"><i class="fa fa-angle-down" aria-hidden="true"></i></span>
+                        <input type="text" ng-model="filters.registrationNo"
+                               uib-typeahead="truck.registrationNo for truck in trucksData | filter:$viewValue"
+                               class="form-control search-control" typeahead-min-length="1"
+                               typeahead-on-select="selectTruckId($item)"
+                               typeahead-select-on-exact="true" placeholder="Type Reg No"
+                               typeahead-no-results="noTruck" autocomplete="false">
+
+                        <div ng-show="noTrucks">
+                            <i class="glyphicon glyphicon-remove red"></i>
+                            <span class="red"> No Results Found </span>
+                        </div>
+
                     </li>
 
                     <li><a href="#" class="map" ui-sref="mapView">Map view</a></li>
 
                     <li><a href="#" class="map activeView" ui-sref="listView">List view</a></li>
 
-                    <li  class="mar-rgt-space pull-right map-wid"><a href="#" class="map" ui-sref="gpsReports">Reports</a></li>
+                    <li class="mar-rgt-space pull-right map-wid"><a href="#" class="map"
+                                                                    ui-sref="gpsReports">Reports</a></li>
 
                 </ul>
             </div>
@@ -39,7 +57,8 @@
                             {{truck.attrs.latestLocation.createdAt |date : "dd/MM/y HH:mm" }}
                         </td>
                         <td data-title="'Vehicle Num'" sortable="'registrationNo'" class="clickable-item col-sm-1">
-                            <a href="#" ng-if="truck.attrs.latestLocation" ng-click="trackView(truck.registrationNo)">{{truck.registrationNo | uppercase}}</a>
+                            <a href="#" ng-if="truck.attrs.latestLocation" ng-click="trackView(truck.registrationNo)">{{truck.registrationNo
+                                | uppercase}}</a>
                             <span ng-if="!truck.attrs.latestLocation">{{truck.registrationNo | uppercase}}</span>
                         </td>
                         <td data-title="'Location'" sortable="'address'" class="clickable-item col-sm-2">
@@ -57,10 +76,11 @@
                         <!--<td data-title="'Fuel'" sortable="'totalPayment'" class="clickable-item col-sm-1">
                             NA
                         </td>-->
-                        <td data-title="'Status'"  class="clickable-item col-sm-2">{{truck.status}}
+                        <td data-title="'Status'" class="clickable-item col-sm-2">{{truck.status}}
                         </td>
-                        <td data-title="'Share'"  class="clickable-item col-sm-2">
-                            <button class="btn btn-info" ng-click="shareTracking(truck._id, truck.registrationNo)"><i class="fa fa-share-alt" aria-hidden="true"></i></button>
+                        <td data-title="'Share'" class="clickable-item col-sm-2">
+                            <button class="btn btn-info" ng-click="shareTracking(truck._id, truck.registrationNo)"><i
+                                    class="fa fa-share-alt" aria-hidden="true"></i></button>
                         </td>
                         <!--<td data-title="'Action'" sortable="'totalPayment'" class="clickable-item col-sm-1">
                             <i class="fa fa-edit" style="font-size: 20px;"></i>
@@ -86,7 +106,9 @@
     </div>
     <div class="modal-body" id="modal-body">
         <div class="row">
-            <h3>Please click on this link <b><a href="mailto:?subject=GPS Tracking link for vehicle {{registrationNumber}} &body=Hi there, please the following link for tracking vehicle {{registrationNumber}} {{link}}  Regards, www.easygaadi.com">Email Link</a></b></h3>
+            <h3>Please click on this link <b>
+                <a href="mailto:?subject=GPS Tracking link for vehicle {{registrationNumber}} &body=Hi there, please the following link for tracking vehicle {{registrationNumber}} {{link}}  Regards, www.easygaadi.com">Email
+                Link</a></b></h3>
         </div>
     </div>
     <div class="modal-footer">

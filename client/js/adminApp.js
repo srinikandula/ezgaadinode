@@ -327,6 +327,11 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/administrators/adminRoles.html',
         data: {activeTab: 'Admin'}
     }).state({
+        name: 'admin.accessPermissions',
+        url: '/accessPermissions',
+        templateUrl: 'views/partials/admin/administrators/accessPermission.html',
+        data: {activeTab: 'Admin'}
+    }).state({
         name: 'admin.addUpdateAdminRole',
         url: '/addUpdateAdminRole/:roleId',
         templateUrl: 'views/partials/admin/administrators/addUpdateAdminRole.html',
