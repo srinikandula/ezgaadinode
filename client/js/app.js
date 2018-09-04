@@ -892,7 +892,7 @@ app.run(['$transitions', '$rootScope', '$cookies', '$state', function ($transiti
         $rootScope.subTab = to.promise.$$state.value.data.subTab;
         if (to.$to().self.url.startsWith('/reports')) {
             if ($rootScope.erpEnabled !== 'true') {
-                $state.go('listView');
+                $state.go('gpsReports');
             }
         }
     });
