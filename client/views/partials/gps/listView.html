@@ -98,10 +98,16 @@
         <h3 class="modal-title" id="modal-title">Share truck tracking</h3>
     </div>
     <div class="modal-body" id="modal-body">
-        <div class="row">
-            <h3>Please click on this link <b><a
-                    href="mailto:?subject=GPS Tracking link for vehicle {{registrationNumber}} &body=Hi there, please the following link for tracking vehicle {{registrationNumber}} {{link}}  Regards, www.easygaadi.com">Email
-                Link</a></b></h3>
+        <div class="row" style="padding: 20px;">
+            <h3>Please click on this link <b><br>
+                <a href="mailto:?subject=GPS Tracking link for vehicle Number {{registrationNumber}}
+                &body=Hi there please the following link for tracking vehicle {{registrationNumber}}
+                {{link}}
+                Regards
+                www.easygaadi.com" style="font-size: 15px;">Email Link</a>
+                <!--<a href="{{link}}" style="font-size: 14px;" target="_blank">{{link}}</a>-->
+            </b>
+            </h3>
         </div>
     </div>
     <div class="modal-footer">
