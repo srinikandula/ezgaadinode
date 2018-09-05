@@ -35,7 +35,7 @@ function save(job,reminder,callback){
         vehicle:job.vehicle._id,
         partLocation:job.partLocation
     };
-    JobsCollection.findOneAndUpdate(condition,{$set:{unInstallMilege:job.milege}}).sort({createdAt:-1}).exec(function(err,job){
+    JobsCollection.findOneAndUpdate(condition,{$set:{unInstallMilege:job.milege}}).sort({createdAt:-1}).exec(function(err,data){
         if(err){
             retObj.status = false;
             retObj.messages.push("error in saving....."+JSON.stringify(err));
@@ -47,7 +47,6 @@ function save(job,reminder,callback){
                     retObj.messages.push("error in saving....."+JSON.stringify(err));
                     callback(retObj);
                 }else{
-                    console.log("add job....",result);
                     InventoryCollection.findOneAndUpdate({accountId:result.accountId,_id:result.inventory},{$set:{vehicle:job.vehicle.registrationNo}},function(err,inventoryResult){
                         if(err){
                             retObj.status = false;
@@ -161,37 +160,50 @@ function updateJob(info,reminder,req,callback){
         status:false,
         messages:[]
     };
-    JobsCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,updateResult){
+    var condition = {
+        accountId:info.accountId,
+        vehicle:info.vehicle._id,
+        partLocation:info.partLocation
+    };
+    JobsCollection.findOneAndUpdate(condition,{$set:{unInstallMilege:info.milege}},function(err,result){
         if(err){
             retObj.status=false;
             retObj.messages.push("error while getting data"+JSON.stringify(err));
             callback(retObj);
-        } else{
-            InventoryCollection.findOneAndUpdate({accountId:updateResult.accountId,_id:updateResult.inventory},{$set:{vehicle:info.vehicle.registrationNo}},function(err,inventoryResult){
+        }else{
+            JobsCollection.findOneAndUpdate({_id:info._id},{$set:info},function(err,updateResult){
                 if(err){
-                    retObj.status = false;
-                    retObj.messages.push("error in saving....."+JSON.stringify(err));
+                    retObj.status=false;
+                    retObj.messages.push("error while getting data"+JSON.stringify(err));
                     callback(retObj);
-                }else{
-                    if(reminder.reminderDate !== null && reminder.reminderText !== undefined){
-                        var reminderDoc = new RemindersCollection(reminder);
-                        reminderDoc.save(function(err,result){
-                            if(err){
-                                retObj.messages.push("error in saving reminder...");
+                } else{
+                    InventoryCollection.findOneAndUpdate({accountId:updateResult.accountId,_id:updateResult.inventory},{$set:{vehicle:info.vehicle.registrationNo}},function(err,inventoryResult){
+                        if(err){
+                            retObj.status = false;
+                            retObj.messages.push("error in saving....."+JSON.stringify(err));
+                            callback(retObj);
+                        }else{
+                            if(reminder.reminderDate !== null && reminder.reminderText !== undefined){
+                                var reminderDoc = new RemindersCollection(reminder);
+                                reminderDoc.save(function(err,result){
+                                    if(err){
+                                        retObj.messages.push("error in saving reminder...");
+                                    }
+                                });
+                            }else{
+                                RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
+                                    if(err){
+                                        retObj.messages.push("error in updating data"+JSON.stringify(err));
+                                    }
+                                });
                             }
-                        });
-                    }else{
-                        RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
-                            if(err){
-                                retObj.messages.push("error in updating data"+JSON.stringify(err));
-                            }
-                        });
-                    }
+                        }
+                    });
+                    retObj.status=true;
+                    retObj.messages.push("Updated successfully");
+                    callback(retObj);
                 }
             });
-            retObj.status=true;
-            retObj.messages.push("Updated successfully");
-            callback(retObj);
         }
     });
 }
@@ -242,10 +254,10 @@ Jobs.prototype.getAllJobs = function(jwt,requestParams,callback){
         condition = {accountId:jwt.accountId,inventory:requestParams.inventory};
     }
     else if(requestParams.fromDate && requestParams.toDate){
-            condition = {
-                accountId:jwt.accountId,
-                createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
-            };
+        condition = {
+            accountId:jwt.accountId,
+            createdAt:{$gte:new Date(requestParams.fromDate),$lte:new Date(requestParams.toDate)}
+        };
     }else{
         condition={accountId:jwt.accountId};
     }

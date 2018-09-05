@@ -226,7 +226,7 @@ Lrs.prototype.generatePDF=function (req,callback) {
                         retObj.messages.push("Internal server error," + JSON.stringify(err.message));
                         lrCallback(retObj,'');
                     }else if(doc){
-                        doc.total=nanToZero(doc.handling)+nanToZero(doc.statistical)+nanToZero(doc.caratage)+nanToZero(doc.others)+nanToZero(doc.freight);
+                        doc.total=nanToZero(doc.handling)+nanToZero(doc.statistical)+nanToZero(doc.caratage)+nanToZero(doc.others)+nanToZero(doc.freight)+nanToZero(doc.surCharges)+nanToZero(doc.rc);
                         lrCallback(false,doc);
                     }else {
                         retObj.messages.push("Please try again");
@@ -251,11 +251,13 @@ Lrs.prototype.generatePDF=function (req,callback) {
             if(err){
                 callback(err);
             }else{
-                result.lrDetails.dateStr=result.lrDetails.date.toLocaleDateString();
+                var lrDate = new Date(result.lrDetails.date);
+                result.lrDetails.dateStr = lrDate.getDate()+"-"+(lrDate.getMonth()+1)+"-"+lrDate.getFullYear();
                 result.accDetails.igstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.igst);
                 result.accDetails.cgstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.cgst);
                 result.accDetails.sgstprice=nanToZero((result.lrDetails.freight/100)*result.accDetails.sgst);
-                result.accDetails.grandtotal=result.accDetails.igstprice+ result.accDetails.cgstprice+ result.accDetails.sgstprice+nanToZero(result.lrDetails.total)+nanToZero(result.lrDetails.surCharges);
+                result.accDetails.grandtotal=result.accDetails.igstprice+ result.accDetails.cgstprice+ result.accDetails.sgstprice+nanToZero(result.lrDetails.total);
+                result.miscCharges = result.accDetails.grandtotal - (nanToZero(result.lrDetails.freight)+nanToZero(result.lrDetails.rc));
                 pdfGenerator.createPdf(result.accDetails.templatePath,'lr.html','landscape',result,function (resp) {
                     callback(resp);
                 })
