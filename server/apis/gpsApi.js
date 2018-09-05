@@ -628,9 +628,14 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
         messages: []
     };
     var condition = {};
+    var params = req.query;
     if (jwt.type === "account") {
-        condition = {accountId: jwt.accountId, deviceId: {$ne: null}};
-    } else {
+        if(params.registrationNo !== '{}'){
+            condition = {accountId: jwt.accountId,deviceId: {$ne: null},registrationNo:params.registrationNo};
+        }else{
+            condition = {accountId: jwt.accountId, deviceId: {$ne: null}};
+        }
+    }else {
         condition = {accountId: jwt.id, deviceId: {$ne: null}};
     }
     TrucksColl.find(condition, function (err, trucksData) {

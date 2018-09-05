@@ -348,6 +348,12 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         templateUrl: 'views/partials/admin/administrators/addUpdateFranchise.html',
         data: {activeTab: 'Admin'},
         params: {franchiseId: null}
+    }).state({
+        name: 'admin.accessPermission',
+        url: '/accessPermission',
+        templateUrl: 'views/partials/admin/administrators/accessPermission.html',
+        data: {activeTab: 'Admin'},
+        params: {franchiseId: null}
     });
 
     $urlRouterProvider.otherwise('/login');
@@ -368,8 +374,7 @@ app.config(['NotificationProvider', '$httpProvider',function (NotificationProvid
 
     $httpProvider.interceptors.push(['$q', '$location', '$rootScope', '$cookies',function ($q, $location, $rootScope, $cookies) {
         return {
-            'request': function (config) {``
-
+            'request': function (config) {
                 $rootScope.reqloading = true;
                 return config;
             },

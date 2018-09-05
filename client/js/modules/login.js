@@ -44,7 +44,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     if(success.data.erpEnabled){
                         $state.go('reports');
                     }else{
-                        $state.go('gpsReports');
+                        $state.go('listView');
                     }
 
                 } else {

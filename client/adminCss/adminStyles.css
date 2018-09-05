@@ -1408,6 +1408,15 @@ height: 42px !important;
 .dis-inline{
     display: inline-block;
 }
+.rolesTable{
+    width: 1350px !important;
+}
+.rolesTable th{
+    text-align: center;
+}
+.rolesTable p{
+    margin: 0 !important;
+}
 
 /* Responsive Design */
 

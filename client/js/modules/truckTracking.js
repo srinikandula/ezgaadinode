@@ -166,9 +166,9 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
         $scope.truckTrackingParams.startDate.setHours(0);
         $scope.truckTrackingParams.startDate.setMinutes(0);
         $scope.truckTrackingParams.startDate.setSeconds(0);
-        $scope.truckTrackingParams.endDate.setHours(23);
-        $scope.truckTrackingParams.endDate.setMinutes(59);
-        $scope.truckTrackingParams.endDate.setSeconds(59);
+        $scope.truckTrackingParams.endDate.toLocaleString();
+        // $scope.truckTrackingParams.endDate.setMinutes(0);
+        // $scope.truckTrackingParams.endDate.setSeconds(0);
         getLocations($scope.truckTrackingParams);
 
     };

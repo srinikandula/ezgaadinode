@@ -112,7 +112,7 @@ app.factory('AdministratorService', ["$http", function ($http) {
 
 app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'AdministratorService', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, AdministratorService, Notification, NgTableParams, Upload) {
 
-    $scope.employeeTitle ="Add Employee";
+    $scope.employeeTitle = "Add Employee";
     $scope.status = {
         isOpen: true,
         isOpenOne: true,
@@ -126,7 +126,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
 
     /*EMPLOYEE START*/
     if ($stateParams.employeeId) {
-        $scope.employeeTitle ="Edit Employee";
+        $scope.employeeTitle = "Edit Employee";
         AdministratorService.getEmployeeDetails($stateParams.employeeId, function (success) {
             if (success.data.status) {
                 $scope.employee = success.data.data;
@@ -143,7 +143,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
     $scope.employee = {
         firstName: '',
         lastName: '',
-        userName:'',
+        userName: '',
         password: '',
         confirmPassword: '',
         contactAddress: '',
@@ -281,7 +281,7 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         if (params.password !== params.confirmPassword) {
             Notification.error('Password not match');
         }
-        if(!params.contactAddress){
+        if (!params.contactAddress) {
             Notification.error('Please enter Address')
         }
         if (!params.email) {
@@ -379,9 +379,9 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
     /*EMPLOYEE END*/
 
     /*ROLE START*/
-    $scope.roleTitle ="Add Role";
+    $scope.roleTitle = "Add Role";
     if ($stateParams.roleId) {
-        $scope.roleTitle ="Edit Role"
+        $scope.roleTitle = "Edit Role"
         AdministratorService.getRoleDetails($stateParams.roleId, function (success) {
             if (success.data.status) {
                 $scope.role = success.data.data;
@@ -720,4 +720,98 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
         });
     };
     /*FRANCHISE END*/
+}]);
+
+// Access and Permission Controller
+
+app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'AdministratorService', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, AdministratorService, Notification, NgTableParams, Upload) {
+
+
+    $scope.modules = [
+        {
+            name: 'Reports',
+            subModules: [{name: 'Reports'}]
+        },
+        {
+            name: "Master",
+            subModules: [{name: "Trucks"},{name: "Drivers"},{name: "Parties"},{name: "Inventories"},{name: "Users"}]
+        },
+        {
+            name: "Maintanance",
+            subModules: [{name: "Expenses"},{name: "Jobs"},{name: "Remainders"}]
+        },
+        {
+            name: "Transactions",
+            subModules: [{name: "Trips"},{name: "Receipts"},{name: "Payments"},{name: "LR"},{name: "TripSettlement"},{name: "Invoice"}
+            ]
+        },
+        {
+            name: "Load Request",
+            subModules: [{name: "LoadRequest"},{name: "Send SMS"}]
+        },
+        {
+            name: "Route Config",
+            subModules: [{name: "routeConfig"},{name: "GeoFences"},{name: "GeoFencesReports"}]
+        }
+
+    ];
+
+    $scope.modulesFormatted = [];
+    $scope.modulesAccessArray = [];
+
+
+    $scope.modules.forEach(function (module) {
+        var index = 0;
+        module.subModules.forEach(function (subModule) {
+            var data = {
+                span: module.subModules.length,
+                showMainModule: false,
+                subModule: subModule.name,
+                parentModule: module.name,
+                value: subModule.name,
+            };
+            if (index === 0) {
+                data.showMainModule = true;
+            }
+            $scope.modulesFormatted.push(data);
+            index++;
+        });
+    });
+        // console.log(" $scope.modulesFormatted",  $scope.modulesFormatted);
+
+    $scope.getAllRoles = function () {
+        AdministratorService.adminRolesDropDown(function (success) {
+            if (success.data.status) {
+                $scope.roles = success.data.data;
+                $scope.modulesFormatted.forEach(function (module) {
+                    $scope.roles.forEach(function (role) {
+                        $scope.modulesAccessArray.push({
+                            module: module.parentModule,
+                            subModule: module.subModule,
+                            role: role.role,
+                            v: false,
+                            e: false
+                            // u: false,
+                            // d: false
+                        });
+                    });
+                });
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    };
+    $scope.getAllRoles();
+
+    $scope.permissionsSave = function () {
+        var data = {permissions: $scope.modulesAccessArray};
+        console.log("Welomce", data);
+    }
+
+
+
 }]);
