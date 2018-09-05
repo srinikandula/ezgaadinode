@@ -187,9 +187,9 @@
             <br> The customer has stated that
             <br> They have insured the consignment
             <br> They have not insured the consignment
-            <br> Ins.Co:
-            <br> Policy No:Date:
-            <br> Amount:
+            <br> Ins.Co:..............
+            <br> Policy No:...........Date:.........
+            <br> Amount:..............
         <td style="background-color: black; color: white; font-size: 15px; text-align: center; ">
             <p> AT</p>
             <p> OWNERS</p>
@@ -206,7 +206,7 @@
                 <br> Srusty Residency,
                 <br> Nizampet,
                 <br> HYDERABAD
-                <br> Vechile No:
+                <br> Vechile No:............
                 <br>
             </div>
 
@@ -275,7 +275,7 @@
         <tr>
             <td></td>
             <td></td>
-            <td></td>
+            <td>{{lrDetails.saidToContains}}</td>
             <td></td>
             <td></td>
             <td></td>
@@ -304,7 +304,6 @@
             <td style="border: 1px solid black">Risk Charges</td>
             <td style="border: 1px solid black">{{lrDetails.rc}}</td>
             <td style="border: 1px solid black"></td>
-
         </tr>
         <tr>
             <td></td>
@@ -314,7 +313,7 @@
             <td></td>
             <td></td>
             <td style="border: 1px solid black">Misc Charges</td>
-            <td style="border: 1px solid black"></td>
+            <td style="border: 1px solid black">{{miscCharges}}</td>
             <td style="border: 1px solid black"></td>
 
         </tr>
@@ -346,9 +345,9 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            <td  colspan="3"  style="padding-left:5px ">To Pay/Paid/TBB At...........................................</td>
+            <!--<td style="border:none"></td>-->
+            <!--<td style="border:none"></td>-->
             <td style="border: 1px solid black">Total</td>
             <td style="border: 1px solid black">{{accDetails.grandtotal}}</td>
             <td style="border: 1px solid black">00</td>

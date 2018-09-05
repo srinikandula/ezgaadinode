@@ -1066,6 +1066,7 @@ var userSchema = new mongoose.Schema({
     updatedBy: String,
     createdBy: String,
     role: String,
+    userPermissions:[],
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
 
@@ -1213,7 +1214,13 @@ var partsLocationSchema = new mongoose.Schema({
     partLocationName:String
 }, {timestamps: true});
 
-
+var accessPermissionsSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    permissions:[{}],
+    roleName:String,
+    userId:String,
+    userName:String
+}, {timestamps: true});
 
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
@@ -1279,5 +1286,6 @@ module.exports = {
     ShareLinksColl: mongoose.model('shareLinks', shareLinksSchema, 'shareLinks'),
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
     GeoFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
-    partsLocationColl: mongoose.model('partsLocation', partsLocationSchema, 'partsLocation')
+    partsLocationColl: mongoose.model('partsLocation', partsLocationSchema, 'partsLocation'),
+    accessPermissionsColl: mongoose.model('accessPermissions', accessPermissionsSchema, 'accessPermissions')
 };
