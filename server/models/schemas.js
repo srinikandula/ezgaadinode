@@ -1215,11 +1215,9 @@ var partsLocationSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 var accessPermissionsSchema = new mongoose.Schema({
-    accountId: {type: ObjectId, ref: 'accounts'},
     permissions:[{}],
     roleName:String,
-    userId:String,
-    userName:String
+    roleId:String
 }, {timestamps: true});
 
 module.exports = {

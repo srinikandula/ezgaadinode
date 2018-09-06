@@ -45,7 +45,7 @@ var GroupUsers = require('./server/routes/groupsRoutes');
 var LRs = require('./server/routes/lrRoutes');
 var geoFence = require('./server/routes/geoFenceRoutes');
 var geoFenceReports = require('./server/routes/geoFenceReportsRoutes');
-var accessPermission = require('./server/routes/accessPermissionsRoutes');
+var accessPermission = require('./server/adminRoutes/accessPermissionsRoutes');
 
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');

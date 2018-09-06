@@ -112,6 +112,11 @@ AuthRouter.post('/updateFranchise', multipartyMiddleware, function (req, res) {
         res.json(result);
     });
 });
+AuthRouter.post('/saveAccessPermission', function (req, res) {
+    Employees.saveAccessPermission(req, function (result) {
+        res.json(result);
+    });
+});
 
 AuthRouter.delete('/deleteFranchise', function (req, res) {
     Employees.deleteFranchise(req, function (result) {

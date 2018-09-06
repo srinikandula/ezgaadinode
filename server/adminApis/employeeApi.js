@@ -8,6 +8,10 @@ var serviceActions = require('./../constants/constants');
 var AccountsColl = require("../models/schemas").AccountsColl;
 var franchiseColl = require("../models/schemas").franchiseColl;
 var adminRoleColl = require("../models/schemas").adminRoleColl;
+var async = require('async');
+var AccessPermissionsColl = require('../models/schemas').accessPermissionsColl;
+
+
 
 var Employees = function () {
 };
@@ -1489,6 +1493,48 @@ Employees.prototype.franchiseDropDown = function (req, callback) {
             callback(retObj);
         }
     })
+};
+Employees.prototype.saveAccessPermission = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+   var accessPermissions = req.body.permissions;
+    async.each(accessPermissions,function(accessPermission,asyncCallback){
+        var accessPermissionDoc = {
+            roleName:'',
+            roleId:'',
+            permissions:[]
+        };
+        accessPermissionDoc.roleName = accessPermission.roleName;
+        accessPermissionDoc.roleId = accessPermission.roleId;
+        accessPermissionDoc.permissions.push({
+            "module":accessPermission.module,
+            "subModule":accessPermission.subModule,
+            "access":{
+                'v':accessPermission.v,
+                'e':accessPermission.e
+            }
+        });
+        var doc = new AccessPermissionsColl(accessPermissionDoc);
+        doc.save(function(err,result){
+            if(err){
+                asyncCallback(err,null);
+            }else{
+                asyncCallback(null,result);
+            }
+        });
+        },function(err){
+            if(err){
+                retObj.status = false;
+                retObj.messages.push("Error in saving the data"+JSON.stringify(err));
+                callback(retObj);
+            }else{
+                retObj.status = true;
+                retObj.messages.push("Success");
+                callback(retObj);
+            }
+    });
 };
 /*Drop Down API Stop*/
 
