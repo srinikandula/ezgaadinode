@@ -36,6 +36,9 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
                     }else{
                         $scope.trucksData[i].status = '--';
                     }
+                    if(!$scope.trucksData[i].attrs){
+                        $scope.trucksData[i].deviceStatus = 'false';
+                    }
                 }
             }else{
                 Notification.error({message:success.data.message});

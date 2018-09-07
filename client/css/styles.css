@@ -2595,7 +2595,10 @@ select {
     color: #fff;
     font-weight: bold;
 }
+.bgRed {
+    background: red !important;
 
+}
 label > input { /* HIDE RADIO */
     visibility: hidden; /* Makes input not-clickable */
     position: absolute; /* Remove input from document flow */
