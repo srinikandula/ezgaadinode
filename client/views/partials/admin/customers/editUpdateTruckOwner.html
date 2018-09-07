@@ -320,7 +320,7 @@
                             <tr ng-repeat="trucks in currentPageOfTrucks">
                                 <td data-title="'S No'">{{$index+1}}</td>
                                 <td data-title="'Registration No'" sortable="''" class="clickable-item">
-                                    {{trucks.registrationNo}}
+                                    {{trucks.registrationNo | uppercase}}
                                 </td>
                                 <td data-title="'Vehicle Type'" sortable="'vehicleType'" class="clickable-item">
                                     {{trucks.vehicleType}}
