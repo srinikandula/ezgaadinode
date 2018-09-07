@@ -106,6 +106,13 @@ app.factory('AdministratorService', ["$http", function ($http) {
                 url: '/v1/cpanel/employees/countFranchise',
                 method: "GET",
             }).then(success, error)
+        },
+        saveAccessPermission:function (accessPermissions,success, error) {
+            $http({
+                url: '/v1/cpanel/employees/saveAccessPermission',
+                method: "POST",
+                data:accessPermissions
+            }).then(success, error)
         }
     }
 }]);
@@ -788,7 +795,8 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
                         $scope.modulesAccessArray.push({
                             module: module.parentModule,
                             subModule: module.subModule,
-                            role: role.role,
+                            roleName: role.role,
+                            roleId:role._id,
                             v: false,
                             e: false
                             // u: false,
@@ -810,6 +818,9 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
     $scope.permissionsSave = function () {
         var data = {permissions: $scope.modulesAccessArray};
         console.log("Welomce", data);
+        AdministratorService.saveAccessPermission(data,function(successCallback){},function (errorCallback) {
+
+        });
     }
 
 

@@ -45,7 +45,6 @@ var GroupUsers = require('./server/routes/groupsRoutes');
 var LRs = require('./server/routes/lrRoutes');
 var geoFence = require('./server/routes/geoFenceRoutes');
 var geoFenceReports = require('./server/routes/geoFenceReportsRoutes');
-var accessPermission = require('./server/routes/accessPermissionsRoutes');
 
 var json2xls = require('json2xls');
 var authMiddleware = require('./server/middleware/auth');
@@ -83,7 +82,6 @@ app.use('/v1/gps', Gps.OpenRouter);
 app.use('/v1/analytics', Analytics.OpenRouter);
 app.use('/v1/notifications',pushNotifications.OpenRouter);
 app.use('/v1/trucks', Trucks.OpenRouter);
-app.use('/v1/accessPermissions',accessPermission.OpenRouter);
 
 app.use(authMiddleware);
 app.use(json2xls.middleware);

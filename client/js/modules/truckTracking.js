@@ -124,11 +124,31 @@ app.controller('TruckTrackingController', ['$scope', '$state','truckTrackingServ
                 var compiledContent = $compile(functionContent)($scope);
                 var latlang = new google.maps.LatLng($scope.locations[i].location.coordinates[1],$scope.locations[i].location.coordinates[0]);
                 flightPathCoordinates.push(latlang);
+                if (i === 0) {
+                    marker = new google.maps.Marker({
+                        position: latlang,
+                        icon: '/images/start.png',
+                        map: map,
+                        scaledSize: new google.maps.Size(35, 35)
+                    });
+                    click(marker,i,functionContent,compiledContent,map);
+
+                }
+                if (i === $scope.locations.length - 1) {
+                    marker = new google.maps.Marker({
+                        position: latlang,
+                        icon: '/images/stop.png',
+                        scaledSize: new google.maps.Size(35, 35),
+                        map: map
+                    });
+                    click(marker,i,functionContent,compiledContent,map);
+
+                }
                 if ($scope.locations[i].isStopped) {
 
                     var icon = {
                         url:'/images/gps_truck_stop.png', // url
-                        scaledSize: new google.maps.Size(35, 35), // scaled size
+                        scaledSize: new google.maps.Size(30, 30), // scaled size
                         origin: new google.maps.Point(0,0), // origin
                         anchor: new google.maps.Point(0, 0) // anchor
                     };

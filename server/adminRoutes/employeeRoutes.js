@@ -112,6 +112,11 @@ AuthRouter.post('/updateFranchise', multipartyMiddleware, function (req, res) {
         res.json(result);
     });
 });
+AuthRouter.post('/saveAccessPermission', function (req, res) {
+    Employees.saveAccessPermission(req, function (result) {
+        res.json(result);
+    });
+});
 
 AuthRouter.delete('/deleteFranchise', function (req, res) {
     Employees.deleteFranchise(req, function (result) {
@@ -130,6 +135,11 @@ AuthRouter.get('/adminRolesDropDown', function (req, res) {
 AuthRouter.get('/franchiseDropDown', function (req, res) {
     Employees.franchiseDropDown(req, function (result) {
         res.json(result)
+    });
+});
+AuthRouter.get('/getAllAccessPermissions', function (req, res) {
+    Employees.getAllAccessPermissions(req, function (result) {
+        res.send(result)
     });
 });
 /*Drop Down Stop*/

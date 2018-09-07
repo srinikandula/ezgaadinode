@@ -43,6 +43,8 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
         var marker;
 
         for (var i = 0; i< trucksData.length; i++) {
+            var d = new Date(trucksData[i].attrs.latestLocation.deviceTime);
+            var time = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds();
             if (Object.keys(trucksData[i]).indexOf('attrs')!==-1) {
                 if (trucksData[i].attrs.latestLocation.location != undefined) {
                     var image = '/images/';
@@ -69,7 +71,8 @@ app.controller('GroupMapController', ['$scope', '$state','groupMapService','GpsS
                     map: map
                 });
 
-                var functionContent = '<div>' + '<center><span> <b>Truck Reg No:</b> ' + trucksData[i].registrationNo + '</span><br><span><b> Truck Type: </b> ' + trucksData[i].truckType + '</span><br>' + '<a ng-click="track(' + i + ')" class="btn btn-danger">Track</a></center></div>';
+                var functionContent = '<div>' + '<center><span> <b>Truck Reg No:</b> ' + trucksData[i].registrationNo + '</span><br><span><b> Truck Type: </b> ' + trucksData[i].truckType +
+                    '</span><br><span><b>Time:</b>'+time+'</span><br><span></span>' +'<a ng-click="track(' + i + ')" class="btn btn-danger">Track</a></center></div>';
                 var compiledContent = $compile(functionContent)($scope);
                 google.maps.event.addListener(marker, 'click', (function (marker, i, content) {
                     return function () {

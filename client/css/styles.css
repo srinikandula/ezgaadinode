@@ -1904,8 +1904,8 @@ table.dataTable thead td, table.dataTable thead th{
     display: inline-block;
     border: 1px solid #a9a9a9;
     border-radius: 8px;
-    width: 35px;
-    height: 30px;
+    width: 30px;
+    height: 25px;
     float: left;
     margin-right: .5em;
 }
