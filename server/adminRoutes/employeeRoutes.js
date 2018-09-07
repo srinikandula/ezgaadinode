@@ -137,6 +137,11 @@ AuthRouter.get('/franchiseDropDown', function (req, res) {
         res.json(result)
     });
 });
+AuthRouter.get('/getAllAccessPermissions', function (req, res) {
+    Employees.getAllAccessPermissions(req, function (result) {
+        res.send(result)
+    });
+});
 /*Drop Down Stop*/
 
 module.exports = {

@@ -1536,6 +1536,24 @@ Employees.prototype.saveAccessPermission = function(req,callback){
             }
     });
 };
+Employees.prototype.getAllAccessPermissions = function(req,callback){
+  var retObj = {
+      status:false,
+      messages:[]
+  };
+  AccessPermissionsColl.find({},function(err,accessPermissions){
+      if(err){
+          retObj.status = false;
+          retObj.messages.push("Error in saving the data"+JSON.stringify(err));
+          callback(retObj);
+      }else{
+          retObj.status = true;
+          retObj.messages.push("Success");
+          retObj.data = accessPermissions;
+          callback(retObj);
+      }
+  });
+};
 /*Drop Down API Stop*/
 
 module.exports = new Employees();
