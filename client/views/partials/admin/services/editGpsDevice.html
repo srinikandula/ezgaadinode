@@ -40,7 +40,7 @@
                         <div class="form-group styling-input-list">
                             <select class="form-control custom-form-control" ng-model="deviceDetails.truckId"
                                     ng-change="getSelectedTruckDetails()">
-                                <option ng-repeat="truck in trucks" value="{{truck._id}}">{{truck.registrationNo}}
+                                <option ng-repeat="truck in trucks" value="{{truck._id}}">{{truck.registrationNo | uppercase}}
                                 </option>
                             </select>
                             <label class="focus-effect-for-input">Account Trucks*</label>

@@ -32,7 +32,7 @@
         <table class="table table-bordered table-striped table-condensed table-hover text-center"
                ng-table="restOfAllParams">
             <tr ng-repeat="customer in currentPageOfrestOfAll">
-                <td>{{$index+1}}</td>
+                <td data-title="S.No">{{$index+1}}</td>
                 <td data-title="'Customer Name'" sortable="'firstName'" class="clickable-item">{{customer.firstName}}
                 </td>
                 <td data-title="'Mobile'" sortable="'contactPhone'" class="clickable-item">{{customer.contactPhone}}

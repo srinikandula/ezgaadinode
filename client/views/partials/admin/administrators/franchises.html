@@ -22,6 +22,9 @@
     </ul>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="franchiseParams">
         <tr ng-repeat="franchise in currentPageOfFranchises" style="text-align: center;">
+            <td data-title="'S.No'">
+                {{$index+1}}
+            </td>
             <td data-title="'Full Name'" sortable="'fullName'" class="clickable-item">
                 {{franchise.fullName}}
             </td>

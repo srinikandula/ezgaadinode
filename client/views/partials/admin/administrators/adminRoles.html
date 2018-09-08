@@ -21,6 +21,9 @@
     </ul>
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="roleParams">
         <tr ng-repeat="role in currentPageOfRoles" style="text-align: center;">
+            <td data-title="'S.No'">
+                {{$index+1}}
+            </td>
             <td data-title="'Role'" sortable="'role'" class="clickable-item">
                 {{role.role}}
             </td>

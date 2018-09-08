@@ -22,6 +22,9 @@
     <div class="table-res">
     <table class="table table-bordered table-striped table-condensed table-hover" ng-table="employeeParams">
         <tr ng-repeat="employee in currentPageOfEmployees" style="text-align: center;">
+            <td data-title="'S.No'">
+                {{$index+1}}
+            </td>
             <td data-title="'Name'" sortable="'firstName'" class="clickable-item">
                 {{employee.contactName}}
             </td>

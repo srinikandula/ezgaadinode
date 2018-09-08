@@ -46,6 +46,9 @@
         <table class="table table-bordered table-striped table-condensed table-hover"
                ng-table="deviceParams">
             <tr ng-repeat="device in currentPageOfDevices" style="text-align: center;">
+                <td data-title="'S.No'">
+                    {{$index+1}}
+                </td>
                 <td data-title="'Account ID'" sortable="'accountId'" class="clickable-item">
                     {{device.accountId.userName}}
                 </td>

@@ -201,7 +201,8 @@ Reminders.prototype.sendReminder = function (callback) {
     };
     var currentDate = new Date();
     var sevenDate = new Date(currentDate.setDate(currentDate.getDate()+7));
-    AccountsColl.find({},{"contactPhone":1,"email":1,"smsEnabled":1},function(err,accounts){
+    AccountsColl.find({},{"contactPhone":1,"email":1,"smsEnabled":1,"firstName":1},function(err,accounts){
+        console.log("accounts........",accounts.length);
         if(err){
             retObj.status=false;
             retObj.messages.push("error while fetching records..."+JSON.stringify(err));
@@ -212,8 +213,10 @@ Reminders.prototype.sendReminder = function (callback) {
                     if(reminders.length>0){
                         var output = [];
                         for(var i=0;i<reminders.length;i++){
+                            var date = new Date(reminders[i].reminderDate);
+                            var reminderDate = date.getDate()+"-"+(date.getMonth()+1)+"-"+date.getFullYear();
                             output.push({
-                                "reminderDate":reminders[i].reminderDate,
+                                "reminderDate":reminderDate,
                                 "reminderText":reminders[i].reminderText,
                                 "status":reminders[i].status
                             });
@@ -224,13 +227,13 @@ Reminders.prototype.sendReminder = function (callback) {
                             to: account.email,
                             data:output
                         };
+                        var smsParams = {
+                            contact: account.contactPhone,
+                            message: "Hi "+account.firstName+",You have set reminders for upcoming jobs.Please login in to easygaadi.com and check."
+                        };
                         emailService.sendEmail(emailparams, function (emailResponse) {
                             if(emailResponse.status){
                                 if(account.smsEnabled){
-                                    var smsParams = {
-                                        contact: account.contactPhone,
-                                        message: "Hi "+account.firstName+"You have set reminders for upcoming jobs.Please login in to easygaadi.com and check."
-                                    };
                                     SmsService.sendSMS(smsParams, function (smsResponse) {
                                         if(smsResponse.status){
                                             asyncCallback(false);
