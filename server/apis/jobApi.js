@@ -183,20 +183,11 @@ function updateJob(info,reminder,req,callback){
                             retObj.messages.push("error in saving....."+JSON.stringify(err));
                             callback(retObj);
                         }else{
-                            if(reminder.reminderDate !== null && reminder.reminderText !== undefined){
-                                var reminderDoc = new RemindersCollection(reminder);
-                                reminderDoc.save(function(err,result){
-                                    if(err){
-                                        retObj.messages.push("error in saving reminder...");
-                                    }
-                                });
-                            }else{
-                                RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
-                                    if(err){
-                                        retObj.messages.push("error in updating data"+JSON.stringify(err));
-                                    }
-                                });
-                            }
+                            RemindersCollection.findOneAndUpdate({refId:reminder.refId},{$set:reminder},function (err,result) {
+                                if(err){
+                                    retObj.messages.push("error in updating data"+JSON.stringify(err));
+                                }
+                            });
                         }
                     });
                     retObj.status=true;
@@ -213,9 +204,7 @@ Jobs.prototype.updateJob = function(req,callback){
     var reminder = {
         refId:jobInfo._id,
         reminderDate:jobInfo.reminderDate,
-        reminderText:jobInfo.reminderText,
-        accountId:req.jwt.accountId,
-        status:'Enable'
+        reminderText:jobInfo.reminderText
     };
     if(jobInfo.partLocation === 'others'){
         addPartLocation(jobInfo.partLocationName,function(addCallback){
