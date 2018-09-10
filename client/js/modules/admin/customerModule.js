@@ -412,6 +412,7 @@ app.controller('customerCtrl', ['$scope', '$state', 'Notification', 'Upload', '$
 
     $scope.createLeads = function () {
         var params = $scope.customerLead;
+        console.log("asdadasdas", params);
         params.errorMessage = [];
 
         if (!params.firstName) {

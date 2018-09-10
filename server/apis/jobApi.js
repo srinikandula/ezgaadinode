@@ -110,6 +110,7 @@ function addPartLocation(partLocationName,callback){
 
 Jobs.prototype.addJob = function(req,callback){
     var jobInfo = req.body;
+    console.log("jobionfo", jobInfo);
     jobInfo.accountId = req.jwt.accountId;
     var reminder = {
         reminderDate:jobInfo.reminderDate,
@@ -124,6 +125,8 @@ Jobs.prototype.addJob = function(req,callback){
     if(jobInfo.partLocation === 'others'){
         addPartLocation(jobInfo.partLocationName,function(addCallback){
             if(!addCallback.status){
+                callback(addCallback);
+            }else{
                 callback(addCallback);
             }
         });
