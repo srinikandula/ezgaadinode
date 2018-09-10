@@ -91,6 +91,8 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
     $scope.vehicle = '';
     $scope.parts = [];
     $scope.jobsForSelectedPart = [];
+    $scope.job = {};
+    $scope.selectedInventoryName = null;
 
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
@@ -143,6 +145,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
     };
 
     $scope.getJobsForInventory = function(inventory){
+        $scope.selectedInventoryName = inventory.name;
         var params = {inventoryId:inventory._id,jobId:$stateParams.ID};
         JobsService.getJobsForInventory(params,function(successCallback){
             $scope.jobsForInventory = successCallback.data.records;
