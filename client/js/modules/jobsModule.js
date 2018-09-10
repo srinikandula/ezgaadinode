@@ -220,7 +220,7 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                     $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
                 }else{
-                    success.data.messages.forEach(function (message) {
+                    success.data.errors.forEach(function (message) {
                         Notification.error({ message: message });
                     });
                 }
