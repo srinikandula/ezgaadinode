@@ -107,11 +107,17 @@ app.factory('AdministratorService', ["$http", function ($http) {
                 method: "GET",
             }).then(success, error)
         },
-        saveAccessPermission:function (accessPermissions,success, error) {
+        saveAccessPermission: function (accessPermissions, success, error) {
             $http({
                 url: '/v1/cpanel/employees/saveAccessPermission',
                 method: "POST",
-                data:accessPermissions
+                data: accessPermissions
+            }).then(success, error)
+        },
+        getAllAccessPermission: function (success, error) {
+            $http({
+                url: '/v1/cpanel/employees/getAllAccessPermissions',
+                method: "GET",
             }).then(success, error)
         }
     }
@@ -741,24 +747,24 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
         },
         {
             name: "Master",
-            subModules: [{name: "Trucks"},{name: "Drivers"},{name: "Parties"},{name: "Inventories"},{name: "Users"}]
+            subModules: [{name: "Trucks"}, {name: "Drivers"}, {name: "Parties"}, {name: "Inventories"}, {name: "Users"}]
         },
         {
             name: "Maintanance",
-            subModules: [{name: "Expenses"},{name: "Jobs"},{name: "Remainders"}]
+            subModules: [{name: "Expenses"}, {name: "Jobs"}, {name: "Remainders"}]
         },
         {
             name: "Transactions",
-            subModules: [{name: "Trips"},{name: "Receipts"},{name: "Payments"},{name: "LR"},{name: "TripSettlement"},{name: "Invoice"}
+            subModules: [{name: "Trips"}, {name: "Receipts"}, {name: "Payments"}, {name: "LR"}, {name: "TripSettlement"}, {name: "Invoice"}
             ]
         },
         {
             name: "Load Request",
-            subModules: [{name: "LoadRequest"},{name: "Send SMS"}]
+            subModules: [{name: "LoadRequest"}, {name: "Send SMS"}]
         },
         {
             name: "Route Config",
-            subModules: [{name: "routeConfig"},{name: "GeoFences"},{name: "GeoFencesReports"}]
+            subModules: [{name: "routeConfig"}, {name: "GeoFences"}, {name: "GeoFencesReports"}]
         }
 
     ];
@@ -784,7 +790,7 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
             index++;
         });
     });
-        // console.log(" $scope.modulesFormatted",  $scope.modulesFormatted);
+    // console.log(" $scope.modulesFormatted",  $scope.modulesFormatted);
 
     $scope.getAllRoles = function () {
         AdministratorService.adminRolesDropDown(function (success) {
@@ -796,7 +802,7 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
                             module: module.parentModule,
                             subModule: module.subModule,
                             roleName: role.role,
-                            roleId:role._id,
+                            roleId: role._id,
                             v: false,
                             e: false
                             // u: false,
@@ -818,11 +824,30 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
     $scope.permissionsSave = function () {
         var data = {permissions: $scope.modulesAccessArray};
         console.log("Welomce", data);
-        AdministratorService.saveAccessPermission(data,function(successCallback){},function (errorCallback) {
+        AdministratorService.saveAccessPermission(data, function (successCallback) {
+
+        }, function (errorCallback) {
 
         });
     }
 
+    $scope.getAllPermission = function () {
+        AdministratorService.getAllAccessPermission(function (success) {
+            if (success.data.status) {
+                $scope.allAccessPermission = success.data.data;
+                // console.log("Welomce", $scope.allAccessPermission);
+
+                // console.log("Welomce", $scope.allAccessPermission);
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (errorCallback) {
+
+        });
+    }
+    $scope.getAllPermission();
 
 
 }]);
