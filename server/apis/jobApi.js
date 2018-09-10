@@ -246,27 +246,39 @@ Jobs.prototype.updateJob = function(req,callback){
     };
     if(jobInfo.partLocation === 'others'){
         addPartLocation(jobInfo.partLocationName,function(addCallback){
-            if(addCallback.status){
+            if(!addCallback.status){
                 callback(addCallback);
             }else{
-                callback(addCallback);
+                if (jobInfo.type === 'others' && jobInfo.expenseName) {
+                    expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName}, req, function (eTResult) {
+                        if (eTResult.status) {
+                            jobInfo.type = eTResult.newDoc._id.toString();
+                            updateJob(jobInfo,reminder,req, callback);
+                        } else {
+                            callback(eTResult);
+                        }
+                    });
+                } else {
+                    updateJob(jobInfo,reminder,req, callback);
+                }
             }
         });
     }else{
         jobInfo.partLocationName = '';
+        if (jobInfo.type === 'others' && jobInfo.expenseName) {
+            expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName}, req, function (eTResult) {
+                if (eTResult.status) {
+                    jobInfo.type = eTResult.newDoc._id.toString();
+                    updateJob(jobInfo,reminder,req, callback);
+                } else {
+                    callback(eTResult);
+                }
+            });
+        } else {
+            updateJob(jobInfo,reminder,req, callback);
+        }
     }
-    if (jobInfo.type === 'others' && jobInfo.expenseName) {
-        expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName}, req, function (eTResult) {
-            if (eTResult.status) {
-                jobInfo.type = eTResult.newDoc._id.toString();
-                updateJob(jobInfo,reminder,req, callback);
-            } else {
-                callback(eTResult);
-            }
-        });
-    } else {
-        updateJob(jobInfo,reminder,req, callback);
-    }
+
 };
 
 Jobs.prototype.getAllJobs = function(jwt,requestParams,callback){
