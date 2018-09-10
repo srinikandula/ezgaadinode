@@ -125,6 +125,32 @@ Jobs.prototype.addJob = function(req,callback){
         addPartLocation(jobInfo.partLocationName,function(addCallback){
             if(!addCallback.status){
                 callback(addCallback);
+            }else{
+                if(jobInfo.expenseName && jobInfo.type === 'others'){
+                    expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
+                        if(ETcallback.status){
+                            jobInfo.type = ETcallback.newDoc._id.toString();
+                            save(jobInfo,reminder,function(saveCallback){
+                                if(saveCallback.status){
+                                    callback(saveCallback);
+                                }else{
+                                    callback(saveCallback);
+                                }
+                            });
+                        }else{
+                            callback(ETcallback);
+                        }
+                    });
+                }else{
+                    save(jobInfo,reminder,function(saveCallback){
+                        if(saveCallback.status){
+                            callback(saveCallback);
+
+                        }else{
+                            callback(saveCallback);
+                        }
+                    });
+                }
             }
         });
     }else{
