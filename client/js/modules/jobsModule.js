@@ -244,24 +244,38 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
                 });
             } else {
                 $scope.job.attachments = $scope.files;
-                JobsService.addJob($scope.job, function (success) {
-                    if (success.data.status) {
-                        Notification.success({message: "Added Successfully"});
-                        $rootScope.$broadcast("reminderEdited");
-                        $state.go('jobs');
-                    } else {
-                        success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
-                        });
-                    }
-                }, function (error) {
+            }
+            JobsService.updateJob($scope.job,function (success) {
+                if(success.data.status){
+                    Notification.success({message:"updated Successfully"});
+                    $rootScope.$broadcast("reminderEdited");
+                    $state.go('jobs');
+                }else{
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            },function (error) {
 
-                });
+            });
+        }else{
+            $scope.job.attachments=$scope.files;
+            JobsService.addJob($scope.job,function (success) {
+                if(success.data.status){
+                    Notification.success({message:"Added Successfully"});
+                    $rootScope.$broadcast("reminderEdited");
+                    $state.go('jobs');
+                }else{
+                    success.data.errors.forEach(function (message) {
+                        Notification.error({ message: message });
+                    });
+                }
+            },function (error) {
+              });
 
             }
         }
-    }
-    ;
+    };
     $scope.viewAttachment = function (path) {
         TripServices.viewTripDocument({filePath: path}, function (success) {
             if (success.data.status) {
