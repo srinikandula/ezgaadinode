@@ -425,8 +425,7 @@ Utils.prototype.getErpSettings = function (erp, accountId) {
         condition = {
             "accountId": accountId,
             date: {
-                $gte: today.setHours(0, 0, 0, 0)
-
+                $lte: new Date(today.setHours(0, 0, 0, 0))
             }
         }
     } else if (erp.filterType === "week") {
