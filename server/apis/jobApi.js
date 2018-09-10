@@ -109,51 +109,89 @@ function addPartLocation(partLocationName,callback){
 };
 
 Jobs.prototype.addJob = function(req,callback){
-    var jobInfo = req.body;
-    jobInfo.accountId = req.jwt.accountId;
-    var reminder = {
-        reminderDate:jobInfo.reminderDate,
-        vehicle:jobInfo.vehicle.registrationNo,
-        jobDate:jobInfo.date,
-        reminderText:jobInfo.reminderText,
-        inventory:jobInfo.inventory.name,
-        accountId:req.jwt.accountId,
-        status:'Enable',
-        type:'job'
+    var retObj = {
+      status:false,
+      errors:[]
     };
-    if(jobInfo.partLocation === 'others'){
-        addPartLocation(jobInfo.partLocationName,function(addCallback){
-            if(!addCallback.status){
-                callback(addCallback);
-            }
-        });
+    var jobInfo = req.body;
+    if(!jobInfo.inventory){
+        retObj.errors.push("Please select Inventory");
+    }
+    if(retObj.errors.length > 0){
+        callback(retObj)
     }else{
-        if(jobInfo.expenseName && jobInfo.type === 'others'){
-            expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
-                if(ETcallback.status){
-                    jobInfo.type = ETcallback.newDoc._id.toString();
-                    save(jobInfo,reminder,function(saveCallback){
-                        if(saveCallback.status){
-                            callback(saveCallback);
-                        }else{
-                            callback(saveCallback);
-                        }
-                    });
+        jobInfo.accountId = req.jwt.accountId;
+        var reminder = {
+            reminderDate:jobInfo.reminderDate,
+            vehicle:jobInfo.vehicle.registrationNo,
+            jobDate:jobInfo.date,
+            reminderText:jobInfo.reminderText,
+            inventory:jobInfo.inventory.name,
+            accountId:req.jwt.accountId,
+            status:'Enable',
+            type:'job'
+        };
+        if(jobInfo.partLocation === 'others'){
+            addPartLocation(jobInfo.partLocationName,function(addCallback){
+                if(!addCallback.status){
+                    callback(addCallback);
                 }else{
-                    callback(ETcallback);
+                    if(jobInfo.expenseName && jobInfo.type === 'others'){
+                        expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
+                            if(ETcallback.status){
+                                jobInfo.type = ETcallback.newDoc._id.toString();
+                                save(jobInfo,reminder,function(saveCallback){
+                                    if(saveCallback.status){
+                                        callback(saveCallback);
+                                    }else{
+                                        callback(saveCallback);
+                                    }
+                                });
+                            }else{
+                                callback(ETcallback);
+                            }
+                        });
+                    }else{
+                        save(jobInfo,reminder,function(saveCallback){
+                            if(saveCallback.status){
+                                callback(saveCallback);
+
+                            }else{
+                                callback(saveCallback);
+                            }
+                        });
+                    }
                 }
             });
         }else{
-            save(jobInfo,reminder,function(saveCallback){
-                if(saveCallback.status){
-                    callback(saveCallback);
+            if(jobInfo.expenseName && jobInfo.type === 'others'){
+                expenseMasterApi.addExpenseType(req.jwt,{"expenseName":jobInfo.expenseName},req,function(ETcallback){
+                    if(ETcallback.status){
+                        jobInfo.type = ETcallback.newDoc._id.toString();
+                        save(jobInfo,reminder,function(saveCallback){
+                            if(saveCallback.status){
+                                callback(saveCallback);
+                            }else{
+                                callback(saveCallback);
+                            }
+                        });
+                    }else{
+                        callback(ETcallback);
+                    }
+                });
+            }else{
+                save(jobInfo,reminder,function(saveCallback){
+                    if(saveCallback.status){
+                        callback(saveCallback);
 
-                }else{
-                    callback(saveCallback);
-                }
-            });
+                    }else{
+                        callback(saveCallback);
+                    }
+                });
+            }
         }
     }
+
 };
 function updateJob(info,reminder,req,callback){
     var retObj = {
@@ -512,6 +550,9 @@ Jobs.prototype.getJobForSelectedPartLocation = function(jwt,params,callback){
         vehicle:params.vehicle,
         partLocation:params.partLocation
     };
+    if(!params.vehicle){
+        retObj.messages.push();
+    }
     if(params.jobId){
        condition._id = {$nin:params.jobId};
     }
