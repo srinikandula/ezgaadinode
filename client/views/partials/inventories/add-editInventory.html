@@ -84,7 +84,7 @@
         <div class="form-group col-xs-12">
             <div ng-repeat="attch in inventory.attachments">
                 <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
-                <button class="btn btn-danger btn-xs" ng-click="deleteImage(attch.key,$index);">x
+                <button class="btn btn-danger btn-xs" ng-click="deleteImage(attch,$index);">x
                 </button>
             </div>
         </div>

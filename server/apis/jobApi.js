@@ -119,6 +119,27 @@ Jobs.prototype.addJob = function(req,callback){
     }
     if(retObj.errors.length > 0){
         callback(retObj)
+    }
+    jobInfo.accountId = req.jwt.accountId;
+    var reminder = {
+        reminderDate:jobInfo.reminderDate,
+        vehicle:jobInfo.vehicle.registrationNo,
+        jobDate:jobInfo.date,
+        reminderText:jobInfo.reminderText,
+        inventory:jobInfo.inventory.name,
+        accountId:req.jwt.accountId,
+        status:'Enable',
+        type:'job'
+    };
+    if(jobInfo.partLocation === 'others'){
+        addPartLocation(jobInfo.partLocationName,function(addCallback){
+            if(!addCallback.status){
+                callback(addCallback);
+            }else{
+                callback(addCallback);
+            }
+        });
+
     }else{
         jobInfo.accountId = req.jwt.accountId;
         var reminder = {

@@ -1,90 +1,90 @@
-app.factory('JobsService',['$http', '$cookies', function ($http, $cookies) {
+app.factory('JobsService', ['$http', '$cookies', function ($http, $cookies) {
     return {
-        getAllJobs: function (params,success, error) {
+        getAllJobs: function (params, success, error) {
             $http({
                 url: '/v1/jobs/getAllJobs',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        getJob:function (id,success, error) {
+        getJob: function (id, success, error) {
             $http({
-                url: '/v1/jobs/getJob/'+id,
+                url: '/v1/jobs/getJob/' + id,
                 method: "GET"
             }).then(success, error)
         },
-        getRecords:function (params,success, error) {
+        getRecords: function (params, success, error) {
             $http({
                 url: '/v1/jobs/getPreviousJobsForVehicle',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        getCount: function (params,success, error) {
+        getCount: function (params, success, error) {
             $http({
                 url: '/v1/jobs/total/count',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        getJobsForInventory:function (params,success, error) {
+        getJobsForInventory: function (params, success, error) {
             $http({
                 url: '/v1/jobs/getJobsForInventory',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        deleteJob:function(id,success,error){
+        deleteJob: function (id, success, error) {
             $http({
-                url: '/v1/jobs/deleteJob/'+id,
+                url: '/v1/jobs/deleteJob/' + id,
                 method: "DELETE"
             }).then(success, error)
         },
-        deleteImage:function (params,success, error) {
+        deleteImage: function (params, success, error) {
             $http({
                 url: '/v1/jobs/deleteImage',
                 method: "DELETE",
-                params:params
+                params: params
             }).then(success, error)
         },
-        addJob:function (params,success, error) {
+        addJob: function (params, success, error) {
             $http({
                 url: '/v1/jobs/addJob',
                 method: "POST",
-                data:params
+                data: params
             }).then(success, error)
         },
-        updateJob:function (params,success, error) {
+        updateJob: function (params, success, error) {
             $http({
                 url: '/v1/jobs/updateJob',
                 method: "PUT",
-                data:params
+                data: params
             }).then(success, error)
         },
-        shareDetailsViaEmail:function(params,success,error){
+        shareDetailsViaEmail: function (params, success, error) {
             $http({
                 url: '/v1/jobs/shareDetailsViaEmail',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        getAllPartsLocation:function(success,error){
+        getAllPartsLocation: function (success, error) {
             $http({
                 url: '/v1/jobs/getAllPartsLocations',
                 method: "GET"
             }).then(success, error)
         },
-        getJobForSelectedPartLocation:function(params,success,error){
+        getJobForSelectedPartLocation: function (params, success, error) {
             $http({
                 url: '/v1/jobs/getJobForPartLocation',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         }
     }
 }]);
 
-app.controller('Add_EditJobController',['$scope','Upload','Notification','$state','ExpenseMasterServices','TrucksService','InventoriesService','$stateParams','JobsService','TripServices','$uibModal','$rootScope',function($scope,Upload,Notification,$state,ExpenseMasterServices,TrucksService,InventoriesService,$stateParams,JobsService,TripServices,$uibModal,$rootScope){
+app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$state', 'ExpenseMasterServices', 'TrucksService', 'InventoriesService', '$stateParams', 'JobsService', 'TripServices', '$uibModal', '$rootScope', function ($scope, Upload, Notification, $state, ExpenseMasterServices, TrucksService, InventoriesService, $stateParams, JobsService, TripServices, $uibModal, $rootScope) {
     $scope.title = 'Add Job';
     $scope.reminder = {};
     $scope.records = {};
@@ -102,58 +102,64 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                 Notification.error(message);
             });
         }
-    }, function (error) {});
+    }, function (error) {
+    });
 
-    InventoriesService.getInventories({},function(successCallback){
-        if(successCallback.data.status){
+    InventoriesService.getInventories({}, function (successCallback) {
+        if (successCallback.data.status) {
             $scope.inventories = successCallback.data.data;
         }
-    },function(errorCallback){});
+    }, function (errorCallback) {
+    });
 
-    JobsService.getAllPartsLocation(function(successCallback){
-        if(successCallback.data.status){
-           $scope.parts =  successCallback.data.data;
+    JobsService.getAllPartsLocation(function (successCallback) {
+        if (successCallback.data.status) {
+            $scope.parts = successCallback.data.data;
         }
-    },function(errorCallback){});
+    }, function (errorCallback) {
+    });
 
-    $scope.getRecords = function(vehicle){
+    $scope.getRecords = function (vehicle) {
         var params = {};
-        if($stateParams.ID){
+        if ($stateParams.ID) {
             params.vehicleId = $scope.job.vehicle._id;
             params.jobId = $stateParams.ID;
-            $scope.vehicle = $scope.job.vehicle.registrationNo ;
-        }else{
+            $scope.vehicle = $scope.job.vehicle.registrationNo;
+        } else {
             params.vehicleId = vehicle._id;
-            $scope.vehicle = vehicle.registrationNo ;
+            $scope.vehicle = vehicle.registrationNo;
         }
-        JobsService.getRecords(params,function(successCallback){
+        JobsService.getRecords(params, function (successCallback) {
             $scope.records = successCallback.data.records;
-        },function(errorCallback){});
+        }, function (errorCallback) {
+        });
     };
-    $scope.getJobForSelectedPartLocation = function (partLocation,vehicle) {
+    $scope.getJobForSelectedPartLocation = function (partLocation, vehicle) {
         var params = {};
         params.partLocation = partLocation;
         params.vehicle = vehicle._id;
-        if(partLocation !== 'others'){
-            if(!vehicle){
+        if (partLocation !== 'others') {
+            if (!params.vehicle) {
                 Notification.error("Please select Vehicle");
             }
-                JobsService.getJobForSelectedPartLocation(params,function(successCallback){
-                    $scope.jobsForSelectedPart = successCallback.data.data;
-                },function(errorCallback){});
+            JobsService.getJobForSelectedPartLocation(params, function (successCallback) {
+                $scope.jobsForSelectedPart = successCallback.data.data;
+            }, function (errorCallback) {
+            });
         }
     };
 
-    $scope.getJobsForInventory = function(inventory){
+    $scope.getJobsForInventory = function (inventory) {
         $scope.selectedInventoryName = inventory.name;
-        var params = {inventoryId:inventory._id,jobId:$stateParams.ID};
-        JobsService.getJobsForInventory(params,function(successCallback){
+        var params = {inventoryId: inventory._id, jobId: $stateParams.ID};
+        JobsService.getJobsForInventory(params, function (successCallback) {
             $scope.jobsForInventory = successCallback.data.records;
-            $scope.inventory = $scope.job.inventory.name ;
-        },function(errorCallback){});
+            $scope.inventory = $scope.job.inventory.name;
+        }, function (errorCallback) {
+        });
     };
 
-    function getExpenses(params){
+    function getExpenses(params) {
         ExpenseMasterServices.getExpenses(params, function (success) {
             if (success.data.status) {
                 $scope.expenses = success.data.expenses;
@@ -165,37 +171,77 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 
         });
     }
-    if($stateParams.ID){
+
+    if ($stateParams.ID) {
         $scope.title = 'Update Job';
-        JobsService.getJob($stateParams.ID,function(successCallback){
-            if(successCallback.data.status){
+        JobsService.getJob($stateParams.ID, function (successCallback) {
+            if (successCallback.data.status) {
                 $scope.job = successCallback.data.data;
+                $scope.job.partLocation = successCallback.data.data.partLocation;
                 $scope.job.date = new Date($scope.job.date);
                 $scope.job.reminderDate = new Date($scope.job.reminderDate);
 
                 $scope.getRecords($stateParams.ID, $scope.job.vehicle._id);
                 $scope.getJobsForInventory($scope.job.inventory);
-                if($scope.job.partLocation !== 'others'){
+                if ($scope.job.partLocation !== 'others') {
                     var params = {};
                     params.partLocation = $scope.job.partLocation;
                     params.vehicle = $scope.job.vehicle._id;
                     params.jobId = $stateParams.ID;
-                    JobsService.getJobForSelectedPartLocation(params,function(successCallback){
+                    JobsService.getJobForSelectedPartLocation(params, function (successCallback) {
                         $scope.jobsForSelectedPart = successCallback.data.data;
-                    },function(errorCallback){});
+                    }, function (errorCallback) {
+                    });
                 }
             }
-        },function(errorCallback){});
+        }, function (errorCallback) {
+        });
 
-    };
-    $scope.add_editJob = function(){
-        if($stateParams.ID){
-            if ($scope.job.attachments.length > 0 ) {
-                $scope.files.forEach(function (file) {
-                    if(file.key){
-                        $scope.job.attachments.push(file);
+    }
+    ;
+    $scope.add_editJob = function () {
+        var params = $scope.job;
+        console.log("params", params);
+        params.errors = [];
+        if (!params.date) {
+            params.errors.push('Please provide Date');
+        }if (!params.inventory) {
+            params.errors.push('Please Select Inventory');
+        }if (!params.vehicle) {
+            params.errors.push('Please Select Vehicle');
+        }if (!params.partLocation) {
+            params.errors.push('Please Select Part Location');
+        }if(params.partLocation === 'others' && !params.partLocationName){
+            params.errors.push('Please Add Part Location');
+        }
+        if(!params.milege){
+            params.errors.push('Please enter milege');
+        }
+        if (params.errors.length > 0) {
+        } else {
+            if ($stateParams.ID) {
+                if ($scope.job.attachments.length < 0) {
+                    $scope.files.forEach(function (file) {
+                        if (file.key) {
+                            $scope.job.attachments.push(file);
+                        }
+                    })
+                } else {
+                    $scope.job.attachments = $scope.files;
+                }
+                JobsService.updateJob($scope.job, function (success) {
+                    if (success.data.status) {
+                        Notification.success({message: "updated Successfully"});
+                        $rootScope.$broadcast("reminderEdited");
+                        $state.go('jobs');
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            Notification.error({message: message});
+                        });
                     }
-                })
+                }, function (error) {
+
+                });
             } else {
                 $scope.job.attachments = $scope.files;
             }
@@ -225,9 +271,9 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                     });
                 }
             },function (error) {
+              });
 
-            });
-
+            }
         }
     };
     $scope.viewAttachment = function (path) {
@@ -246,10 +292,11 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
                     }
                 });
                 modalInstance.result.then(function (path) {
-                    if(path){
+                    if (path) {
                         path = path;
                     }
-                }, function () {});
+                }, function () {
+                });
 
 
             } else {
@@ -261,37 +308,38 @@ app.controller('Add_EditJobController',['$scope','Upload','Notification','$state
 
         })
     };
-    $scope.deleteImage = function (key,index) {
-        JobsService.deleteImage({jobId:$scope.job._id, key: key}, function (successCallback) {
-            if(successCallback.data.status){
+    $scope.deleteImage = function (key, index) {
+        JobsService.deleteImage({jobId: $scope.job._id, key: key}, function (successCallback) {
+            if (successCallback.data.status) {
                 $scope.job.attachments.splice(index, 1);
                 successCallback.data.messages.forEach(function (message) {
                     Notification.success({message: message});
                 });
-            }else {
+            } else {
                 successCallback.data.messages.forEach(function (message) {
                     Notification.error({message: message});
                 });
             }
-        },function (err) {
+        }, function (err) {
 
         });
     };
-    $scope.cancel = function(){
+    $scope.cancel = function () {
         $state.go('jobs');
     };
     getExpenses();
 
-}]);
+}
+]);
 
-app.controller('JobsListController',['$scope','$state','JobsService','Notification','TrucksService','InventoriesService','NgTableParams',function($scope,$state,JobsService,Notification,TrucksService,InventoriesService,NgTableParams){
-   $scope.query = {
-       truckName:'',
-       inventory:''
-   };
+app.controller('JobsListController', ['$scope', '$state', 'JobsService', 'Notification', 'TrucksService', 'InventoriesService', 'NgTableParams', function ($scope, $state, JobsService, Notification, TrucksService, InventoriesService, NgTableParams) {
+    $scope.query = {
+        truckName: '',
+        inventory: ''
+    };
     $scope.count = 0;
-    $scope.shareDetailsViaEmail = function(){
-        $scope.shareDetailsViaEmail=function(){
+    $scope.shareDetailsViaEmail = function () {
+        $scope.shareDetailsViaEmail = function () {
             swal({
                 title: 'Share jobs data using mail',
                 input: 'email',
@@ -299,40 +347,40 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
                 confirmButtonText: 'Submit',
                 showLoaderOnConfirm: true,
                 preConfirm: (email) => {
-                return new Promise((resolve) => {
-                    JobsService.shareDetailsViaEmail({
-                    email:email,truckName:$scope.query.truckName._id,
-                    inventory:$scope.query.inventory._id,
-                    fromDate:$scope.fromDate,
-                    toDate:$scope.toDate
-                },function(success){
-                    if (success.data.status) {
-                        resolve()
-                    } else {
+                    return new Promise((resolve) => {
+                        JobsService.shareDetailsViaEmail({
+                            email: email, truckName: $scope.query.truckName._id,
+                            inventory: $scope.query.inventory._id,
+                            fromDate: $scope.fromDate,
+                            toDate: $scope.toDate
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
 
-                    }
-                },function(error){
+                            }
+                        }, function (error) {
 
-                })
-            })
+                        })
+                    })
 
-        },
-            allowOutsideClick: false
+                },
+                allowOutsideClick: false
 
-        }).then((result) => {
+            }).then((result) => {
                 if (result.value) {
-                swal({
-                    type: 'success',
-                    html: ' sent successfully'
-                })
-            }
-        })
+                    swal({
+                        type: 'success',
+                        html: ' sent successfully'
+                    })
+                }
+            })
         }
     };
-    $scope.goToEditPage = function(id){
-        $state.go('addJob',{ID:id});
+    $scope.goToEditPage = function (id) {
+        $state.go('addJob', {ID: id});
     };
-    $scope.delete = function(id){
+    $scope.delete = function (id) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -343,46 +391,48 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-            JobsService.deleteJob(id, function (success) {
-                if (success.data.status) {
-                    swal(
-                        'Deleted!',
-                        'Job deleted successfully.',
-                        'success'
-                    );
-                    $scope.getCount();
-                } else {
-                    success.data.messages.forEach(function (message) {
+                JobsService.deleteJob(id, function (success) {
+                    if (success.data.status) {
                         swal(
                             'Deleted!',
-                            message,
-                            'error'
+                            'Job deleted successfully.',
+                            'success'
                         );
-                    });
-                }
-            }, function (err) {
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal(
+                                'Deleted!',
+                                message,
+                                'error'
+                            );
+                        });
+                    }
+                }, function (err) {
 
-            });
-        }
-    })
+                });
+            }
+        })
     };
     var loadTableData = function (tableParams) {
-        var pageable = {page:tableParams.page(),
+        var pageable = {
+            page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            truckName:tableParams.truckName,
-            inventory:tableParams.inventory,
-            fromDate:$scope.fromDate,
-            toDate:$scope.toDate
+            truckName: tableParams.truckName,
+            inventory: tableParams.inventory,
+            fromDate: $scope.fromDate,
+            toDate: $scope.toDate
         };
-        JobsService.getAllJobs(pageable,function(successCallback){
-            if(successCallback.data.status){
+        JobsService.getAllJobs(pageable, function (successCallback) {
+            if (successCallback.data.status) {
                 $scope.jobs = successCallback.data.data;
                 tableParams.total(successCallback.totalElements);
                 tableParams.data = $scope.jobs;
                 $scope.currentPageOfJobs = $scope.jobs;
             }
-        },function(errorCallback){});
+        }, function (errorCallback) {
+        });
     };
 
     $scope.init = function () {
@@ -396,9 +446,9 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                if($scope.query.truckName){
+                if ($scope.query.truckName) {
                     params.truckName = $scope.query.truckName._id;
-                }else{
+                } else {
                     params.inventory = $scope.query.inventory._id;
                 }
                 loadTableData(params);
@@ -406,24 +456,24 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
         });
 
     };
-    $scope.getCount = function(){
+    $scope.getCount = function () {
         var params = {};
-        if($scope.query.truckName){
+        if ($scope.query.truckName) {
             params.truckName = $scope.query.truckName._id;
-        }else if($scope.query.inventory){
+        } else if ($scope.query.inventory) {
             params.inventory = $scope.query.inventory._id;
-        }else if( $scope.fromDate &&  $scope.toDate){
+        } else if ($scope.fromDate && $scope.toDate) {
             params.fromDate = $scope.fromDate;
             params.toDate = $scope.toDate;
-        }else{
+        } else {
             params = {};
         }
-        JobsService.getCount(params,function(successCallback){
-            if(successCallback.data.status){
+        JobsService.getCount(params, function (successCallback) {
+            if (successCallback.data.status) {
                 $scope.count = successCallback.data.data;
                 $scope.init();
             }
-        },function(errorCallback){
+        }, function (errorCallback) {
 
         });
     };
@@ -436,12 +486,14 @@ app.controller('JobsListController',['$scope','$state','JobsService','Notificati
                 Notification.error(message);
             });
         }
-    }, function (error) {});
-    InventoriesService.getInventories({},function(successCallback){
-        if(successCallback.data.status){
+    }, function (error) {
+    });
+    InventoriesService.getInventories({}, function (successCallback) {
+        if (successCallback.data.status) {
             $scope.inventories = successCallback.data.data;
         }
-    },function(errorCallback){});
+    }, function (errorCallback) {
+    });
 }]);
 
 app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', function ($scope, $uibModalInstance, path) {

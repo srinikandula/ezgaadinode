@@ -3,13 +3,13 @@
     <div class="col-sm-6 col-xs-12 mt-10">
         <div class="form-group col-xs-12">
             <date-picker id="fitnessExpiry" ng-model="job.date"
-                         class="'custom-form-control'" placeholder="'Date'"></date-picker>
+                         class="'custom-form-control'" placeholder="'Date*'"></date-picker>
         </div>
         <div class="form-group col-xs-12">
             <div class="select-box styling-input-list">
-                <ui-select ng-model="job.inventory"  ng-change="getJobsForInventory(job.inventory)" theme="select2"
+                <ui-select ng-model="job.inventory" ng-change="getJobsForInventory(job.inventory)" theme="select2"
                            style="min-width: 390px;"
-                           title="Choose a inventory" append-to-body="true">
+                           title="Choose a inventory*" append-to-body="true">
                     <ui-select-match class="form-control custom-form-control">
                         {{$select.selected.name || name}}
                     </ui-select-match>
@@ -18,7 +18,7 @@
                         <div ng-bind-html="x.name | highlight: $select.search"></div>
                     </ui-select-choices>
                 </ui-select>
-                <label class="focus-effect-for-input" aria-hidden="true">Inventory</label>
+                <label class="focus-effect-for-input" aria-hidden="true">Inventory*</label>
             </div>
         </div>
         <div class="form-group col-xs-12">
@@ -30,8 +30,8 @@
 
         <div class="form-group col-xs-12">
             <div class="styling-input-list">
-                <ui-select ng-model="job.vehicle"  ng-change="getRecords(job.vehicle)" theme="select2"
-                           title="Choose a Truck" append-to-body="true">
+                <ui-select ng-model="job.vehicle" ng-change="getRecords(job.vehicle)" theme="select2"
+                           title="Choose a Truck*" append-to-body="true">
                     <ui-select-match class="form-control custom-form-control">
                         {{$select.selected.registrationNo || truckRegNo}}
                     </ui-select-match>
@@ -47,9 +47,12 @@
                         <span class="bot-arrow">
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
-                <select class="form-control custom-form-control" ng-model="job.partLocation" ng-change="getJobForSelectedPartLocation(job.partLocation,job.vehicle)">
+                <select class="form-control custom-form-control" ng-model="job.partLocation"
+                        ng-change="getJobForSelectedPartLocation(job.partLocation,job.vehicle)">
                     <option value="" selected>Select Part Location</option>
-                    <option ng-repeat="part in parts | orderBy" value="{{part.partLocationName}}">{{part.partLocationName}}</option>
+                    <option ng-repeat="part in parts | orderBy" value="{{part.partLocationName}}">
+                        {{part.partLocationName}}
+                    </option>
                     <option value="others">Others</option>
                 </select>
             </div>
@@ -58,7 +61,7 @@
             <div class="form-group col-xs-12">
                 <div class="">
                     <input type="text" ng-model="job.partLocationName"
-                           class="form-control custom-form-control"  placeholder="Part Location">
+                           class="form-control custom-form-control" placeholder="Part Location">
                 </div>
             </div>
         </div>
@@ -82,7 +85,57 @@
                 </div>
             </div>
         </div>
-        <span ng-if="records.length>0">
+    </div>
+    <div class="col-sm-6 col-xs-12 mt-10">
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="job.milege"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Milege*</label>
+            </div>
+        </div>
+        <div class="form-group col-xs-12">
+            <date-picker ng-model="job.reminderDate"
+                         class="'custom-form-control'" placeholder="'Reminder Date'"></date-picker>
+        </div>
+        <div class="form-group col-xs-12">
+            <div class="styling-input-list">
+                <input type="text" class="form-control custom-form-control" ng-model="job.reminderText"/>
+                <label class="focus-effect-for-input" aria-hidden="true">Reminder Text</label>
+            </div>
+        </div>
+        <div class="col-xs-12">
+            <div class=" styling-input-list">
+                <customized-file-upload ng-model="files" folder="'jobs'"
+                                        class="'custom-form-control'">
+                </customized-file-upload>
+            </div>
+        </div>
+        <div class="form-group col-xs-12" >
+            <div ng-repeat="attch in job.attachments">
+                <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
+                <button class="btn btn-danger btn-xs" ng-click="deleteImage(attch,$index);" >x
+                </button>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-xs-12">
+        <div class="col-xs-6 col-xs-push-3">
+            <div class="alert alert-danger" role="alert" ng-show="job.errors.length">
+                <ul>
+                    <li ng-repeat="error in job.errors">{{error}}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-xs-12">
+        <div class="col-xs-4 mtb-25 sub-can">
+            <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
+            <button type="submit" class="btn can  last" ng-click="add_editJob()">Submit</button>
+        </div>
+    </div>
+    <div class="col-xs-12">
+     <span ng-if="records.length>0">
                 <div class="col-xs-12 pall-zero mb-10">
                     <h2 class="table-name">Previous Jobs for:{{vehicle}}</h2>
                 </div>
@@ -114,7 +167,8 @@
                     <h2 class="table-name">Previous Job for selected part location:{{job.partLocation}}</h2>
                 </div>
                 <div class="mt-10">
-                    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="studentParams">
+                    <table class="table table-bordered table-striped table-condensed table-hover"
+                           ng-table="studentParams">
                         <tr ng-repeat="record in jobsForSelectedPart " style="text-align: center;">
                             <td data-title="'Last Job Date'" class="clickable-item">
                                 {{record.date | date:'dd-MM-y'}}
@@ -132,38 +186,6 @@
                     </table>
                 </div>
         </span>
-    </div>
-    <div class="col-sm-6 col-xs-12 mt-10">
-        <div class="form-group col-xs-12">
-            <div class="styling-input-list">
-                <input type="text" class="form-control custom-form-control" ng-model="job.milege"/>
-                <label class="focus-effect-for-input" aria-hidden="true">Milege*</label>
-            </div>
-        </div>
-        <div class="form-group col-xs-12">
-            <date-picker  ng-model="job.reminderDate"
-                          class="'custom-form-control'" placeholder="'Reminder Date'"></date-picker>
-        </div>
-        <div class="form-group col-xs-12">
-            <div class="styling-input-list">
-                <input type="text" class="form-control custom-form-control" ng-model="job.reminderText"/>
-                <label class="focus-effect-for-input" aria-hidden="true">Reminder Text</label>
-            </div>
-        </div>
-        <div class="form-group col-xs-12">
-            <div class=" styling-input-list">
-                <customized-file-upload ng-model="files" folder="'jobs'"
-                                        class="'custom-form-control'" >
-                </customized-file-upload>
-            </div>
-        </div>
-        <div class="form-group col-xs-12">
-            <div ng-repeat="attch in job.attachments">
-                <span class="cursor-pointer" ng-click="viewAttachment(attch.key)">{{attch.fileName}}</span>
-                <button class="btn btn-danger btn-xs" ng-click="deleteImage(attch.key,$index);">x
-                </button>
-            </div>
-        </div>
         <span ng-if="jobsForInventory.length>0">
             <div class="col-xs-12 pall-zero mb-10">
                 <h2 class="table-name">Previous jobs for inventory:{{selectedInventoryName}}</h2>
@@ -172,7 +194,7 @@
                 <table class="table table-bordered table-striped table-condensed table-hover"
                        ng-table="inventoryParams">
                     <tr ng-repeat="record in jobsForInventory " style="text-align: center;">
-                        <td data-title="'Vehicle'"  class="clickable-item">
+                        <td data-title="'Vehicle'" class="clickable-item">
                             {{record.vehicle.registrationNo}}
                         </td>
                         <td data-title="'Last Job Date'" class="clickable-item">
@@ -192,14 +214,9 @@
             </div>
         </span>
     </div>
-
-    <div class="col-xs-12">
-        <div class="col-xs-4 mtb-25 sub-can">
-            <button type="submit" class="btn can" ng-click="cancel()">Cancel</button>
-            <button type="submit" class="btn can  last" ng-click="add_editJob()">Submit</button>
-        </div>
-    </div>
 </div>
+
+
 
 
 <script type="text/ng-template" id="viewS3Image.html">
