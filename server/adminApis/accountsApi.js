@@ -14,8 +14,6 @@ var ErpPlanHistoryColl = require('./../models/schemas').ErpPlanHistoryColl;
 var PaymentsColl = require('./../models/schemas').PaymentsColl;
 var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
-var AccessPermissionsColl = require('./../models/schemas').accessPermissionsColl;
-
 
 const uuidv1 = require('uuid/v1');
 
@@ -228,7 +226,6 @@ Accounts.prototype.checkAvailablity = function (req, callback) {
             });
             callback(retObj);
         } else if (user) {
-            retObj.status = false;
             retObj.messages.push('Username already exists');
             analyticsService.create(req, serviceActions.add_account_err, {
                 body: JSON.stringify(req.params),
@@ -240,7 +237,7 @@ Accounts.prototype.checkAvailablity = function (req, callback) {
             callback(retObj);
         } else {
             retObj.status = true;
-            retObj.messages.push('Username not available');
+            retObj.messages.push('Username available');
             analyticsService.create(req, serviceActions.add_account_err, {
                 body: JSON.stringify(req.params),
                 accountId: req.jwt.id,
@@ -290,7 +287,6 @@ Accounts.prototype.addAccount = function (req, callback) {
         messages: []
     };
     var accountInfo = req.body.account;
-
     var routes = req.body.routes;
     var query = {};
     if (!accountInfo._id) {
@@ -340,25 +336,42 @@ Accounts.prototype.addAccount = function (req, callback) {
                 });
                 callback(retObj);
             } else {
-                AccessPermissionsColl.find({roleName:accountInfo.roleName},function(err,permissions){
-                    if(err){
-                        retObj.messages.push('Error',+JSON.stringify(err));
-                        analyticsService.create(req, serviceActions.add_account_err, {
-                            body: JSON.stringify(req.body),
-                            accountId: req.jwt.id,
-                            success: false,
-                            messages: retObj.messages
-                        }, function (response) {
-                        });
-                        callback(retObj);
-                    }else{
-                        accountInfo.userPermissions = _.pluck(permissions,'_id');
-                        accountInfo.userId = newId.userId;
-                        delete accountInfo.__v;
-                        AccountsColl.update(query, accountInfo, {upsert: true},
-                            function (errSaved, saved) {
-                                if (errSaved) {
-                                    retObj.messages.push('Error saving account');
+                accountInfo.userId = newId.userId;
+                delete accountInfo.__v;
+                AccountsColl.update(query, accountInfo, {upsert: true},
+                    function (errSaved, saved) {
+                        if (errSaved) {
+                            retObj.messages.push('Error saving account');
+                            analyticsService.create(req, serviceActions.add_account_err, {
+                                body: JSON.stringify(req.body),
+                                accountId: req.jwt.id,
+                                success: false,
+                                messages: retObj.messages
+                            }, function (response) {
+                            });
+                            callback(retObj);
+                        } else {
+                            async.map(routes, function (route, asynCallback) {
+                                var routeQuery = {accountId: query._id};
+                                if (route._id) {
+                                    routeQuery._id = route._id;
+                                } else {
+                                    routeQuery = {_id: mongoose.Types.ObjectId()};
+                                    route.createdBy = req.jwt.id;
+                                }
+                                route.updatedBy = req.jwt.id;
+                                delete route.__v;
+                                OperatingRoutesColl.update(routeQuery, route, {upsert: true}, function (errroute, routeSaved) {
+                                    if (errroute) {
+                                        retObj.messages.push('Error adding/updating route');
+                                        asynCallback(errroute);
+                                    } else {
+                                        asynCallback(null, 'saved');
+                                    }
+                                });
+                            }, function (errasync, async) {
+                                if (errasync) {
+                                    retObj.messages.push('Error adding/updating routes');
                                     analyticsService.create(req, serviceActions.add_account_err, {
                                         body: JSON.stringify(req.body),
                                         accountId: req.jwt.id,
@@ -368,27 +381,9 @@ Accounts.prototype.addAccount = function (req, callback) {
                                     });
                                     callback(retObj);
                                 } else {
-                                    async.map(routes, function (route, asynCallback) {
-                                        var routeQuery = {accountId: query._id};
-                                        if (route._id) {
-                                            routeQuery._id = route._id;
-                                        } else {
-                                            routeQuery = {_id: mongoose.Types.ObjectId()};
-                                            route.createdBy = req.jwt.id;
-                                        }
-                                        route.updatedBy = req.jwt.id;
-                                        delete route.__v;
-                                        OperatingRoutesColl.update(routeQuery, route, {upsert: true}, function (errroute, routeSaved) {
-                                            if (errroute) {
-                                                retObj.messages.push('Error adding/updating route');
-                                                asynCallback(errroute);
-                                            } else {
-                                                asynCallback(null, 'saved');
-                                            }
-                                        });
-                                    }, function (errasync, async) {
-                                        if (errasync) {
-                                            retObj.messages.push('Error adding/updating routes');
+                                    addGpsSettings(accountInfo.gpsEnabled, accountInfo._id, function (gpsAdded) {
+                                        if (!gpsAdded.status) {
+                                            retObj.messages.push(gpsAdded.message);
                                             analyticsService.create(req, serviceActions.add_account_err, {
                                                 body: JSON.stringify(req.body),
                                                 accountId: req.jwt.id,
@@ -398,36 +393,21 @@ Accounts.prototype.addAccount = function (req, callback) {
                                             });
                                             callback(retObj);
                                         } else {
-                                            addGpsSettings(accountInfo.gpsEnabled, accountInfo._id, function (gpsAdded) {
-                                                if (!gpsAdded.status) {
-                                                    retObj.messages.push(gpsAdded.message);
-                                                    analyticsService.create(req, serviceActions.add_account_err, {
-                                                        body: JSON.stringify(req.body),
-                                                        accountId: req.jwt.id,
-                                                        success: false,
-                                                        messages: retObj.messages
-                                                    }, function (response) {
-                                                    });
-                                                    callback(retObj);
-                                                } else {
-                                                    retObj.status = true;
-                                                    retObj.messages.push('Success');
-                                                    analyticsService.create(req, serviceActions.add_account, {
-                                                        body: JSON.stringify(req.body),
-                                                        accountId: req.jwt.id,
-                                                        success: true
-                                                    }, function (response) {
-                                                    });
-                                                    callback(retObj);
-                                                }
+                                            retObj.status = true;
+                                            retObj.messages.push('Success');
+                                            analyticsService.create(req, serviceActions.add_account, {
+                                                body: JSON.stringify(req.body),
+                                                accountId: req.jwt.id,
+                                                success: true
+                                            }, function (response) {
                                             });
+                                            callback(retObj);
                                         }
                                     });
                                 }
                             });
-                    }
-                });
-
+                        }
+                    });
             }
         });
     }
