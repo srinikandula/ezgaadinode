@@ -71,7 +71,6 @@ var accountSchema = new mongoose.Schema({
     profilePic: String,
     updatedBy: String,
     createdBy: String,
-    userPermissions:[],
     addressPreference: {type: String, default: 'osm'}, //for reverse GEO Coding
     smsEnabled: {type: Boolean, default: true},
     isActive: {type: Boolean, default: true},
