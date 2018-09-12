@@ -4,7 +4,7 @@ var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
 
-
+var Employees = require('../adminApis/employeeApi');
 var API = require('../apis/subLoginsAPi');
 
 AuthRouter.post('/addUser', function (req, res) {
@@ -32,6 +32,12 @@ AuthRouter.delete('/deleteUser/:id',function(req,res){
 AuthRouter.get('/getUser/:id', function (req, res) {
     API.getUser(req.jwt,req.params.id,function (result) {
         res.send(result);
+    });
+});
+
+AuthRouter.get('/adminRolesDropDown', function (req, res) {
+    Employees.adminRolesDropDown(req, function (result) {
+        res.json(result)
     });
 });
 

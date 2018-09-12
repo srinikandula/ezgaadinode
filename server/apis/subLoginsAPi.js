@@ -132,6 +132,7 @@ Users.prototype.getUser = function(jwt,id,callback){
     });
 };
 Users.prototype.updateUser = function(jwt,info,req,callback){
+    console.log("INfooooooooooooo", info);
     var retObj = {
         status:false,
         messages:[]

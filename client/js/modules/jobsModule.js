@@ -295,6 +295,7 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
                         path: function () {
                             return success.data.data
                         }
+
                     }
                 });
                 modalInstance.result.then(function (path) {
