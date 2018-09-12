@@ -54,6 +54,7 @@ app.controller('RolesCtrl', ['$scope', '$state', 'RoleServices', 'Notification',
         RoleServices.getRoles($scope.pageNumber, function (success) {
             if (success.data.status) {
                 $scope.roleGridOptions.data = success.data.roles;
+                console.log("Roles.........", $scope.roleGridOptions);
                 $scope.totalItems = success.data.count;
             } else {
                 success.data.messages.forEach(function (message) {

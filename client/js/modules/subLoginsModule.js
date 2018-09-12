@@ -32,12 +32,20 @@ app.factory('UsersService',['$http', '$cookies', function ($http, $cookies) {
                 method: "DELETE"
             }).then(success, error)
         },
+        adminRoles: function (success, error) {
+            $http({
+                url: '/v1/users/adminRolesDropDown',
+                method: "GET",
+            }).then(success, error)
+        },
     }
 }]);
 
-app.controller('Add_EditUserController',['$scope','$state','UsersService','$stateParams','Notification',function($scope,$state,UsersService,$stateParams,Notification){
-    $scope.title = 'Add User';
+app.controller('Add_EditUserController',['$scope','$state','UsersService','$stateParams','Notification',
+    function($scope,$state,UsersService,$stateParams,Notification){
+
     $scope.user = {};
+
     if($stateParams.id){
         $scope.title = 'Update User';
         UsersService.getUser($stateParams.id,function(successCallback){
@@ -47,10 +55,12 @@ app.controller('Add_EditUserController',['$scope','$state','UsersService','$stat
         },function(errorCallback){});
     };
     $scope.add_editUser = function(){
+
         if($scope.user.password !== $scope.user.confirmPassword){
             Notification.error({ message: "Password is incorrect"});
         }else{
             if($stateParams.id){
+                console.log("Welocme", $scope.user);
                 UsersService.updateUser($scope.user,function(successCallback){
                     if(successCallback.data.status){
                         Notification.success({message:"updated Successfully"});
@@ -80,7 +90,18 @@ app.controller('Add_EditUserController',['$scope','$state','UsersService','$stat
         $state.go('users');
     };
 
-}]);
+
+    $scope.getAllRoles = function () {
+        UsersService.adminRoles(function (success) {
+            if (success.data.status) {
+                $scope.roles = success.data.data;
+                // console.log("Roles", $scope.roles);
+            }
+        })
+    };
+         $scope.getAllRoles();
+
+    }]);
 
 app.controller('UserController',['$scope','$state','UsersService','Notification',function($scope,$state,UsersService,Notification){
     $scope.getUsers = function(){
