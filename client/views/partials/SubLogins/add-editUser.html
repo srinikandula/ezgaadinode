@@ -40,7 +40,7 @@
                 <!--<label class="focus-effect-for-input" aria-hidden="true">Assign Role(s)</label>-->
                 <!--Blue select-->
                 <label>Roles and Permission</label><br>
-                <select id="multi-select-demo" multiple="multiple" ng-model="user.roles">
+                <select id="multi-select-demo" multiple="multiple" ng-model="user.userPermissions">
                     <option value="{{role._id}}" ng-repeat="role in roles">{{role.role}}</option>
                 </select>
 
