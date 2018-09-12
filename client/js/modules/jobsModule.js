@@ -205,20 +205,25 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
         params.errors = [];
         if (!params.date) {
             params.errors.push('Please provide Date');
-        }if (!params.inventory) {
+        }
+        if (!params.inventory) {
             params.errors.push('Please Select Inventory');
-        }if (!params.vehicle) {
+        }
+        if (!params.vehicle) {
             params.errors.push('Please Select Vehicle');
-        }if (!params.partLocation) {
+        }
+        if (!params.partLocation) {
             params.errors.push('Please Select Part Location');
-        }if(params.partLocation === 'others' && !params.partLocationName){
+        }
+        if (params.partLocation === 'others' && !params.partLocationName) {
             params.errors.push('Please Add Part Location');
         }
-        if(!params.milege){
+        if (!params.milege) {
             params.errors.push('Please enter milege');
         }
         if (params.errors.length > 0) {
-        } else {
+        }
+        if ($stateParams.ID) {
             if ($stateParams.ID) {
                 if ($scope.job.attachments.length < 0) {
                     $scope.files.forEach(function (file) {
@@ -242,40 +247,41 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
                 }, function (error) {
 
                 });
-            } else {
+            }
+            else {
                 $scope.job.attachments = $scope.files;
             }
-            JobsService.updateJob($scope.job,function (success) {
-                if(success.data.status){
-                    Notification.success({message:"updated Successfully"});
+            JobsService.updateJob($scope.job, function (success) {
+                if (success.data.status) {
+                    Notification.success({message: "updated Successfully"});
                     $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
-                }else{
+                } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
-            },function (error) {
+            }, function (error) {
 
             });
-        }else{
-            $scope.job.attachments=$scope.files;
-            JobsService.addJob($scope.job,function (success) {
-                if(success.data.status){
-                    Notification.success({message:"Added Successfully"});
+        } else {
+            $scope.job.attachments = $scope.files;
+            JobsService.addJob($scope.job, function (success) {
+                if (success.data.status) {
+                    Notification.success({message: "Added Successfully"});
                     $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
-                }else{
+                } else {
                     success.data.errors.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({message: message});
                     });
                 }
-            },function (error) {
-              });
+            }, function (error) {
+            });
 
-            }
         }
     };
+
     $scope.viewAttachment = function (path) {
         TripServices.viewTripDocument({filePath: path}, function (success) {
             if (success.data.status) {
@@ -327,10 +333,10 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
     $scope.cancel = function () {
         $state.go('jobs');
     };
-    getExpenses();
-
+    // $scope.getExpenses();
 }
-]);
+])
+;
 
 app.controller('JobsListController', ['$scope', '$state', 'JobsService', 'Notification', 'TrucksService', 'InventoriesService', 'NgTableParams', function ($scope, $state, JobsService, Notification, TrucksService, InventoriesService, NgTableParams) {
     $scope.query = {
