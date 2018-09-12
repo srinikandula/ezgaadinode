@@ -790,7 +790,6 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
             index++;
         });
     });
-    // console.log(" $scope.modulesFormatted",  $scope.modulesFormatted);
 
     $scope.getAllRoles = function () {
         AdministratorService.adminRolesDropDown(function (success) {
@@ -823,21 +822,30 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
 
     $scope.permissionsSave = function () {
         var data = {permissions: $scope.modulesAccessArray};
-        console.log("Welomce", data);
         AdministratorService.saveAccessPermission(data, function (successCallback) {
 
         }, function (errorCallback) {
 
         });
-    }
+    };
 
     $scope.getAllPermission = function () {
         AdministratorService.getAllAccessPermission(function (success) {
             if (success.data.status) {
                 $scope.allAccessPermission = success.data.data;
-                // console.log("Welomce", $scope.allAccessPermission);
-
-                // console.log("Welomce", $scope.allAccessPermission);
+                console.log("module", $scope.allAccessPermission);
+                $scope.modulesAccessArray.forEach(module => {
+                    // console.log("module", module);
+                    $scope.allAccessPermission.forEach(moduleAccess => {
+                         // console.log("moduleAccess.module", moduleAccess);
+                        if (module.module === moduleAccess.permissions[0].module &&
+                            module.roleName === moduleAccess.roleName &&
+                            module.subModule === moduleAccess.permissions[0].subModule ) {
+                                     module.v = moduleAccess.permissions[0].access.v;
+                                     module.e = moduleAccess.permissions[0].access.e;
+                        }
+                    });
+                });
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
@@ -846,7 +854,7 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
         }, function (errorCallback) {
 
         });
-    }
+    };
     $scope.getAllPermission();
 
 
