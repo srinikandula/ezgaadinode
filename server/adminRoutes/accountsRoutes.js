@@ -1,5 +1,6 @@
 var express = require('express');
 var AuthRouter = express.Router();
+var OpenRouter = express.Router();
 var Accounts = require('../adminApis/accountsApi');
 var logger = require('./../winston/logger')(module);
 
@@ -33,6 +34,11 @@ AuthRouter.post('/addAccount', function (req, res) {
     });
 });
 
+OpenRouter.post('/syncAccountWithUserLogins', function (req, res) {
+    Accounts.syncAccountWithUserLogins(req, function (result) {
+        res.json(result);
+    });
+});
 AuthRouter.get('/getAccountDetails/:accountId', function (req, res) {
     Accounts.getAccountDetails(req, function (result) {
         res.json(result);
@@ -76,5 +82,6 @@ AuthRouter.delete('/deleteKeyPair/:id/:accountId',function (req,res) {
 })
 
 module.exports = {
-    AuthRouter: AuthRouter
+    AuthRouter: AuthRouter,
+    OpenRouter:OpenRouter
 };
