@@ -60,7 +60,7 @@ app.controller('Add_EditUserController',['$scope','$state','UsersService','$stat
             Notification.error({ message: "Password is incorrect"});
         }else{
             if($stateParams.id){
-                console.log("Welocme", $scope.user);
+                // console.log("Welocme", $scope.user);
                 UsersService.updateUser($scope.user,function(successCallback){
                     if(successCallback.data.status){
                         Notification.success({message:"updated Successfully"});
