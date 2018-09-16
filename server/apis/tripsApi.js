@@ -71,12 +71,11 @@ function addTripDetailsToNotification(data, callback) {
 function shareTripDetails(tripData, callback) {
     var notificationParams = {};
     TripCollection.findOne({_id: tripData._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripDetails) {
-        console.log("party found",tripDetails);
         if(err){
             console.log("err==>",err);
         }else if(tripDetails && tripDetails.partyId){
             if (tripDetails.partyId.isEmail) {
-                gps.generateShareTrackingLink({body:{truckId:tripData._id}},function(shareLinkCallback){
+                gps.generateShareTrackingLink({body:{truckId:tripData.registrationNo}},function(shareLinkCallback){
                     var emailparams = {
                         templateName: 'addTripDetails',
                         subject: "Easygaadi Trip Details",
@@ -91,7 +90,8 @@ function shareTripDetails(tripData, callback) {
                             "destination": tripDetails.destination,
                             "Tonnage": tripDetails.tonnage,
                             "Rate": tripDetails.rate,
-                            "Amount": tripDetails.freightAmount
+                            "Amount": tripDetails.freightAmount,
+                            "remarks":tripDetails.remarks
                         }//dataToEmail.tripsReport
                     };
                   if(shareLinkCallback.status){
@@ -353,8 +353,16 @@ function saveTrip(req, tripDetails, callback) {
                     });
                     if (tripDetails.share) {
                         shareTripDetails(tripDetails, function (shareResponse) {
-                            //callback(shareResponse);
-                        })
+                            if (shareResponse.status) {
+                                retObj.status = true;
+                                analyticsService.create(req, serviceActions.share_trip_det_by_email, {
+                                    body: JSON.stringify(req.body),
+                                    accountId: jwt.id,
+                                    success: true
+                                }, function (response) {
+                                });
+                            }
+                        });
                     }
                     callback(retObj);
                 }
@@ -581,7 +589,6 @@ function updateTrip(req, tripDetails, callback) {
         status: false,
         messages: []
     };
-    console.log("trip details...update..",tripDetails);
     var reminder = {
         reminderDate:tripDetails.reminderDate,
         reminderText:tripDetails.reminderText
