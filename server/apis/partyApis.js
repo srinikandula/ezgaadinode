@@ -395,6 +395,7 @@ Party.prototype.countParty = function (jwt,params,req, callback) {
         }
     })
 };
+
 /**
  * Find trips and parties combined for a party
  * @param jwt

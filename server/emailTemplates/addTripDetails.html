@@ -31,14 +31,18 @@
                 <td>Driver Number</td>
                 <td>$emailData.driverNumber</td>
             </tr>
+            #if($emailData.source)
             <tr>
                 <td>Source</td>
                 <td>$emailData.source</td>
             </tr>
+            #end
+            #if($emailData.destination)
             <tr>
                 <td>Destination</td>
                 <td>$emailData.destination</td>
             </tr>
+            #end
             <tr>
                 <td>Tonnage</td>
                 <td>$emailData.Tonnage</td>
@@ -56,6 +60,12 @@
                 <td>$emailData.trackLink</td>
             </tr>
 
+            #if($emailData.remarks)
+            <tr>
+                <td>Remarks</td>
+                <td>$emailData.remarks</td>
+            </tr>
+            #end
         </table>
 
     </div>
