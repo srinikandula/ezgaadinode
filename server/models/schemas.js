@@ -1065,7 +1065,8 @@ var userSchema = new mongoose.Schema({
     contactPhone: Number,
     updatedBy: String,
     createdBy: String,
-    roles: [],
+    role: String,
+    userPermissions:[],
     type: {type: String, default: "account"},
     accountId: {type: ObjectId, ref: 'accounts'},
 

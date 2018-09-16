@@ -3351,3 +3351,7 @@ textarea.form-control {
     font-weight: 500;
     padding: 7px;
 }
+.role-scroll{
+    height: 250px;
+    overflow-y: auto;
+}

@@ -1,6 +1,6 @@
 <div class="main-right col-xs-12" ng-controller="Add_EditUserController">
     <h2 class="title-name ">{{title}}</h2>
-    <div class="col-sm-6 col-xs-12 mt-10">
+    <div class="col-sm-5 col-xs-12 mt-10">
         <div class="form-group col-xs-12">
             <div class="styling-input-list">
                 <input type="text" class="form-control custom-form-control" ng-model="user.fullName"/>
@@ -13,13 +13,13 @@
                 <label class="focus-effect-for-input" aria-hidden="true">User Name*</label>
             </div>
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12" ng-hide="userId">
             <div class="styling-input-list">
                 <input type="password" class="form-control custom-form-control" ng-model="user.password"/>
                 <label class="focus-effect-for-input" aria-hidden="true">Password</label>
             </div>
         </div>
-        <div class="form-group col-xs-12">
+        <div class="form-group col-xs-12"  ng-hide="userId">
             <div class="styling-input-list">
                 <input type="password" class="form-control custom-form-control" ng-model="user.confirmPassword"/>
                 <label class="focus-effect-for-input" aria-hidden="true">Confirm Password</label>
@@ -33,18 +33,25 @@
         </div>
 
     </div>
-    <div class="col-sm-6">
-        <div class="form-group col-xs-12">
-            <div class="">
+    <div class="col-sm-7">
+        <h4>Roles and Permission</h4><br>
+        <div class="form-group col-xs-12 role-scroll">
                 <!--<input type="text" class="form-control custom-form-control" ng-model="user.permissionRole"/>-->
                 <!--<label class="focus-effect-for-input" aria-hidden="true">Assign Role(s)</label>-->
                 <!--Blue select-->
-                <label>Roles and Permission</label><br>
-                <select id="multi-select-demo" multiple="multiple" ng-model="user.roles">
-                    <option value="{{role._id}}" ng-repeat="role in roles">{{role.role}}</option>
-                </select>
 
-            </div>
+                <!--<select id="multi-select-demo" multiple="multiple" ng-model="user.userPermissions">-->
+                    <!--<option value="{{role._id}}" ng-repeat="role in roles">{{role.role}}</option>-->
+                <!--</select>-->
+
+                <div ng-repeat="role in roles" class="col-xs-6 pall-zero">
+                    <input type="checkbox"  ng-model="userPermission2[$index]"
+                           ng-change="roleSelected($index, role._id)" id="role._id{{$index}}">
+                    <label for="role._id{{$index}}">{{role.role}}</label>
+                </div>
+
+
+
         </div>
         <div class="clearfix"></div>
     </div>
@@ -56,12 +63,12 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<!--<script type="text/javascript">-->
 
-    $(document).ready(function() {
+    <!--$(document).ready(function() {-->
 
-        $('#multi-select-demo').multiselect();
+        <!--$('#multi-select-demo').multiselect();-->
 
-    });
+    <!--});-->
 
-</script>
+<!--</script>-->
