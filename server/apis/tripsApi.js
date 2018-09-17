@@ -124,7 +124,7 @@ function shareTripDetails(tripData, callback) {
                     contact: tripDetails.partyId.contact,
                     message: "Hi " + tripDetails.partyId.name + ",\n" +
                     "Date : " + new Date(tripDetails.date).toDateString() + ",\n" +
-                    "Vehicle No:" + tripDetails.registrationNo.toUpperCase() + ",\n" +
+                    "Vehicle No:" + tripDetails.attrs.truckName.toUpperCase() + ",\n" +
                     "Driver Name:" + tripDetails.driverId.fullName.toUpperCase() + ",\n" +
                     "Driver Number:" + tripDetails.driverId.mobile + ",\n" +
                     "Source:" + tripDetails.source + ",\n" +
