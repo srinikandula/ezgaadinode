@@ -74,6 +74,27 @@ function shareTripDetails(tripData, callback) {
         if(err){
             console.log("err==>",err);
         }else if(tripDetails && tripDetails.partyId){
+
+            /*
+               accountId: String,
+               deviceId: {type: ObjectId, ref: 'devices'},
+               registrationNo:String,
+               depot:String,
+               tripId: string,
+               startTime:{type:Date},
+               endTime:{type:Date}
+            */
+            var geoReportInfo = {
+                accountId : tripDetails.accountId.toString(),
+                tripId: tripDetails._id,
+                depot: tripDetails.partyId.name,
+                registrationNo: tripDetails.truckId.registrationNo,
+                startTime:tripDetails.startDate || tripDetails.date
+            };
+            geoFenceReportsApi.addGeoFenceReport(geoReportInfo, function(response) {
+                console.log('geoFenceReport has been added');
+            });
+
             if (tripDetails.partyId.isEmail) {
                 console.log('tripDetails.truckId.registrationNo ' + tripDetails.truckId.registrationNo);
                 gps.generateShareTrackingLink({body:{truckId:tripDetails.truckId._id}},function(shareLinkCallback){
@@ -335,25 +356,6 @@ function saveTrip(req, tripDetails, callback) {
             });
             callback(retObj);
         } else {
-            /*
-                accountId: String,
-                deviceId: {type: ObjectId, ref: 'devices'},
-                registrationNo:String,
-                depot:String,
-                tripId: string,
-                startTime:{type:Date},
-                endTime:{type:Date}
-             */
-            var geoReportInfo = {
-                accountId : trip.accountId,
-                tripId: trip._id,
-                partyId: trip.partyId,
-                truckId: trip.registrationNo,
-                startTime:trip.startDate || trip.date
-            };
-            geoFenceReportsApi.addGeoFenceReport(geoReportInfo, function(response) {
-                console.log('geoFenceReport has been added');
-            });
             reminder.refId = trip._id;
             var reminderDoc = new RemindersCollection(reminder);
             reminderDoc.save(function(err,result){
