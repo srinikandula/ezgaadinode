@@ -212,7 +212,7 @@ var truckSchema = new mongoose.Schema({
 
 var tripSchema = new mongoose.Schema({
     date: Date,
-    registrationNo: String, //this will be truck id
+    truckId: {type: ObjectId, ref: 'trucks'},
     partyId: {type: ObjectId, ref: 'parties'},
     freightAmount: {type: Number, default: 0}, //5000
     tonnage: {type: Number, default: 0}, //new
@@ -1161,10 +1161,15 @@ var gpsFencesReportSchema=new mongoose.Schema({
     accountId: String,
     deviceId: {type: ObjectId, ref: 'devices'},
     registrationNo:String,
-    depot:String,
+    depot:String, // name of the party
+    partyId:{type: ObjectId, ref: 'parties'}, // set partyId incase of adding it from the trip
+    tripId: String,
     startTime:{type:Date},
     endTime:{type:Date}
 }, {timestamps: true});
+
+
+
 
 var invoicesSchema=new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},

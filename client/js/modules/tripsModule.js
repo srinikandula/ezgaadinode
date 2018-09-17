@@ -670,7 +670,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!params.date) {
             params.errors.push('Please Select Trip Date');
         }
-        if (!params.registrationNo) {
+        params.truckId = params.registrationNo;
+        console.log('truck selected now '+ params.truckId);
+        if (!params.truckId) {
             params.errors.push('Please Select a Vehicle');
         }
         /*if (!params.driverId) {

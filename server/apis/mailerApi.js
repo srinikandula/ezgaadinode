@@ -62,6 +62,7 @@ EmailService.prototype.sendEmail = function (data, callback) {
             } else {
                 retObj.status = true;
                 retObj.messages.push("Email sent successfully");
+                console.log('email has been sent '+ JSON.stringify(msg));
                 callback(retObj);
             }
         });
