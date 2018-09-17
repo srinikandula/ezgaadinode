@@ -204,7 +204,7 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
     if (!tripDetails.partyId) {
         retObj.messages.push("Please select a party");
     }
-    if (!tripDetails.registrationNo) {
+    if (!tripDetails.truckId) {
         retObj.messages.push("Please select a vechile");
     }
 
@@ -336,7 +336,7 @@ function saveTrip(req, tripDetails, callback) {
     var reminder = {
         reminderDate:tripDetails.reminderDate,
         reminderText:tripDetails.reminderText,
-        vehicle:tripDetails.registrationNo.registrationNo,
+        vehicle:tripDetails.truckId.registrationNo,
         accountId:req.jwt.accountId,
         status:'Enable',
         type:'trip'
@@ -953,7 +953,7 @@ function getTrips(condition, jwt, params, callback) {
                                 });
                             },
                             truckNo: function (truckscallback) {
-                                Utils.populateNameInTrucksColl(trips, 'registrationNo', function (response) {
+                                Utils.populateNameInTrucksColl(trips, 'truckId', function (response) {
                                     truckscallback(response.err, response.documents);
                                 })
                             }

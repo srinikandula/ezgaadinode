@@ -13,7 +13,7 @@
 
                 <div class="form-group col-xs-12 styling-input-list">
                     <div class="trip-select-box search-box">
-                        <ui-select ng-model="trip.registrationNo" theme="select2" ng-change="selectedTruckTonnage()"
+                        <ui-select ng-model="trip.truckId" theme="select2" ng-change="selectedTruckTonnage()"
                                    title="Choose a Truck" append-to-body="true">
                             <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.registrationNo || truckRegNo}}
@@ -41,7 +41,7 @@
                                 <div ng-bind-html="driver.fullName | highlight: $select.search"></div>
                             </ui-select-choices>
                         </ui-select>
-                        <label class="focus-effect-for-input-trucks">Driver Name</label>
+                        <label class="focus-effect-for-input-trucks">Driver Name*</label>
                     </div>
                     <div class="addingData">
                         <a href="#" ng-click="addDriverFromTrip();">+ Add Driver </a>

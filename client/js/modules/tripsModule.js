@@ -312,7 +312,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         reminderText: '',
         driverId: '',
         partyId: '',
-        registrationNo: '',
+        truckId: '',
         freightAmount: 0,
         deductAmount: 0,
         advanceAmount: 0,
@@ -474,7 +474,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         PartyService.getAllPartiesByTransporter(function (success) {
             if (success.data.status) {
                 $scope.parties = success.data.parties;
-                console.log("Parties", success.data.parties);
+                // console.log("Parties", success.data.parties);
                 var selectedParty = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.trip.partyId;
                 });
@@ -505,7 +505,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
                 var selectedTruck = _.find($scope.trucks, function (truck) {
-                    return truck._id.toString() === $scope.trip.registrationNo;
+                    return truck._id.toString() === $scope.trip.truckId;
                 });
                 if (selectedTruck) {
                     $scope.truckRegNo = selectedTruck.registrationNo;
@@ -520,10 +520,10 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         });
     }
 
-    $scope.selectTruckId = function (truck) {
-        $scope.trip.registrationNo = truck._id;
-        $scope.trip.vechicleNo = truck.registrationNo;
-    }
+    // $scope.selectTruckId = function (truck) {
+    //     $scope.trip.registrationNo = truck._id;
+    //     $scope.trip.vechicleNo = truck.registrationNo;
+    // }
 
     function getDriverIds() {
         DriverService.getAllDriversForFilter(function (success) {
@@ -563,6 +563,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         TripServices.getTrip($stateParams.tripId, function (success) {
             if (success.data.status) {
                 $scope.trip = success.data.trip;
+                // console.log("$scope.trip", $scope.trip);
                 $scope.trip.date = new Date($scope.trip.date);
                 $scope.trip.reminderText = success.data.reminder.reminderText;
                 $scope.trip.reminderDate = new Date(success.data.reminder.reminderDate);
@@ -670,8 +671,8 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
         if (!params.date) {
             params.errors.push('Please Select Trip Date');
         }
-        params.truckId = params.registrationNo;
-        console.log('truck selected now '+ params.truckId);
+        // params.truckId = params.registrationNo;
+        // console.log('truck selected now '+ params.truckId);
         if (!params.truckId) {
             params.errors.push('Please Select a Vehicle');
         }
