@@ -184,10 +184,9 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
     }
 }]);
 
-app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', 'SettingServices', 'Utils','AdministratorService', function ($scope, $stateParams, AccountService, Notification, $state, SettingServices, Utils,AdministratorService) {
+app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', '$state', 'SettingServices', 'Utils', function ($scope, $stateParams, AccountService, Notification, $state, SettingServices, Utils) {
 
     $scope.enableForm = true;
-    $scope.roles = [];
     function getAccountDetails() {
         AccountService.getAccountDetails($stateParams.accountId, function (success) {
             if (success.data.status) {
@@ -199,17 +198,6 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             }
         });
     }
-    AdministratorService.adminRolesDropDown(function (success) {
-        if (success.data.status) {
-            $scope.roles = success.data.data;
-        } else {
-            success.data.messages.forEach(function (message) {
-                Notification.error(message);
-            });
-        }
-    }, function (error) {
-
-    });
     $scope.pageTitle = "Add New GPS / ERP Account";
     if ($stateParams.accountId) {
         $scope.pageTitle = "Edit GPS / ERP Account";
@@ -348,10 +336,10 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             AccountService.checkAvailablity(params, function (success) {
                 if (success.data.status) {
                     $scope.availableStatus = true;
-                    $scope.availableStatusError = 'username not available';
+                    $scope.availableStatusError = 'username  available';
                 } else {
                     $scope.availableStatus = false;
-                    $scope.availableStatusError = 'username available';
+                    $scope.availableStatusError = 'username not available';
                 }
             });
         }
