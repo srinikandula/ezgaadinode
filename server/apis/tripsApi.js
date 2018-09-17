@@ -129,12 +129,11 @@ function shareTripDetails(tripData, callback) {
                     "Date : " + new Date(tripDetails.date).toDateString() + ",\n" +
                     "Driver Name:" + tripDetails.driverId.fullName.toUpperCase() + ",\n" +
                     "VehicleNo:"+ tripDetails.truckId.registrationNo+ ",\n" +
-                    "Driver Number:" + tripDetails.driverId.mobile + ",\n" +
-                    "Source:" + tripDetails.source + ",\n" +
-                    "Destination:" + tripDetails.destination
+                    "Driver Number:" + tripDetails.driverId.mobile
                 };
                 SmsService.sendSMS(smsParams, function (smsResponse) {
                     if (smsResponse.status) {
+                        console.log('SMS has been sent '+ JSON.stringify(smsParams));
                         notificationParams.notificationType = 0;
                         notificationParams.status = true;
                         notificationParams.message = "success";
