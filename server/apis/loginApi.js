@@ -135,24 +135,7 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                 create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
                 callback(retObj);
             }else if(user.password === password ){
-                AccountsCollection.findOne({"_id":user.accountId._id},function(err,account){
-                    if(err){
-                        retObj.messages.push('Invalid login details');
-                        create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                        callback(retObj);
-                    }else{
-                        AccessPermissionsColl.find({"roleName":account.roleName},function(err,permissions){
-                            if(err){
-                                retObj.messages.push('Invalid login details');
-                                create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                                callback(retObj);
-                            }else{
-                                user.userPermissions = _.pluck(permissions,"_id");
-                                logInSuccess(userName,user,req,callback);
-                            }
-                        });
-                    }
-                });
+                logInSuccess(userName,user,req,callback);
             }
         });
 
