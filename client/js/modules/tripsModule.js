@@ -580,7 +580,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 }
                 for (var i = 0; i < $scope.trip.truckOwnerCharges.length; i++) {
                     if($scope.trip.truckOwnerCharges[i].type !== undefined){
-                        $scope.trip.truckOwnerCharges[i].type = $scope.trip.truckOwnerCharges[i].type;
+                        $scope.trip.truckOwnerCharges[i].type = $scope.trip.truckOwnerCharges[i].type._id;
                     }
                 }
                 if ($scope.trip.truckOwnerCharges.length == 0) {
