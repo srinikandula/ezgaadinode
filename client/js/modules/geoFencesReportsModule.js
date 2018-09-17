@@ -23,7 +23,6 @@ app.controller('GeoFencesReportsListController', ['$scope', '$state', 'GEoFences
     $scope.count = 0;
     $scope.query = {truckName:''};
     $scope.getCount = function () {
-        console.log('registrationNo ' + $scope.query.truckName.registrationNo);
         var params = {fromDate:$scope.fromDate,toDate:$scope.toDate,registrationNo:$scope.query.truckName.registrationNo};
         GEoFencesReportsServices.count(params,function (success) {
             if (success.data.status) {

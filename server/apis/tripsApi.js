@@ -29,7 +29,7 @@ var emailService = require('./mailerApi');
 var SmsService = require('./smsApi');
 var gps = require('./../apis/gpsApi');
 
-
+var geoFenceReportsApi = require('../apis/geoFenceReportApi');
 var Trips = function () {
 };
 
@@ -70,12 +70,13 @@ function addTripDetailsToNotification(data, callback) {
 
 function shareTripDetails(tripData, callback) {
     var notificationParams = {};
-    TripCollection.findOne({_id: tripData._id}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripDetails) {
+    TripCollection.findOne({_id: tripData._id}).populate({path: "truckId"}).populate({path: "partyId"}).populate({path: "driverId"}).exec(function (err, tripDetails) {
         if(err){
             console.log("err==>",err);
         }else if(tripDetails && tripDetails.partyId){
             if (tripDetails.partyId.isEmail) {
-                gps.generateShareTrackingLink({body:{truckId:tripData.registrationNo}},function(shareLinkCallback){
+                console.log('tripDetails.truckId.registrationNo ' + tripDetails.truckId.registrationNo);
+                gps.generateShareTrackingLink({body:{truckId:tripDetails.truckId._id}},function(shareLinkCallback){
                     var emailparams = {
                         templateName: 'addTripDetails',
                         subject: "Easygaadi Trip Details",
@@ -83,7 +84,7 @@ function shareTripDetails(tripData, callback) {
                         data: {
                             "date": new Date(tripDetails.date).toLocaleDateString(),
                             "name": tripDetails.partyId.name,
-                            "vehicleNo": tripDetails.attrs.truckName,
+                            "vehicleNo": tripDetails.truckId.registrationNo,
                             "driverName": tripDetails.driverId.fullName,
                             "driverNumber": tripDetails.driverId.mobile,
                             "source": tripDetails.source,
@@ -117,6 +118,8 @@ function shareTripDetails(tripData, callback) {
                      }
                  })
                 });
+            } else {
+                console.log('email is disabled for the party');
             }
 
             if (tripDetails.partyId.isSms) {
@@ -124,8 +127,8 @@ function shareTripDetails(tripData, callback) {
                     contact: tripDetails.partyId.contact,
                     message: "Hi " + tripDetails.partyId.name + ",\n" +
                     "Date : " + new Date(tripDetails.date).toDateString() + ",\n" +
-                    "Vehicle No:" + tripDetails.attrs.truckName.toUpperCase() + ",\n" +
                     "Driver Name:" + tripDetails.driverId.fullName.toUpperCase() + ",\n" +
+                    "VehicleNo:"+ tripDetails.truckId.registrationNo+ ",\n" +
                     "Driver Number:" + tripDetails.driverId.mobile + ",\n" +
                     "Source:" + tripDetails.source + ",\n" +
                     "Destination:" + tripDetails.destination
@@ -150,6 +153,8 @@ function shareTripDetails(tripData, callback) {
                         })
                     }
                 });
+            }else {
+                console.log('SMS is disabled for the party');
             }
         }else{
             console.log("trip party not found");
@@ -206,7 +211,6 @@ Trips.prototype.addTrip = function (jwt, tripDetails, req, callback) {
         });
         callback(retObj);
     } else {
-
         createTripDetails(req, tripDetails, callback);
     }
 };
@@ -281,8 +285,6 @@ function createTripDetails(req, tripDetails, callback) {
 
                     }
                 });
-
-
             } else {
                 truckOwnerChargesCallback(false);
             }
@@ -334,6 +336,25 @@ function saveTrip(req, tripDetails, callback) {
             });
             callback(retObj);
         } else {
+            /*
+                accountId: String,
+                deviceId: {type: ObjectId, ref: 'devices'},
+                registrationNo:String,
+                depot:String,
+                tripId: string,
+                startTime:{type:Date},
+                endTime:{type:Date}
+             */
+            var geoReportInfo = {
+                accountId : trip.accountId,
+                tripId: trip._id,
+                partyId: trip.partyId,
+                truckId: trip.registrationNo,
+                startTime:trip.startDate || trip.date
+            };
+            geoFenceReportsApi.addGeoFenceReport(geoReportInfo, function(response) {
+                console.log('geoFenceReport has been added');
+            });
             reminder.refId = trip._id;
             var reminderDoc = new RemindersCollection(reminder);
             reminderDoc.save(function(err,result){
@@ -352,7 +373,7 @@ function saveTrip(req, tripDetails, callback) {
                     }, function (response) {
                     });
                     if (tripDetails.share) {
-                        shareTripDetails(tripDetails, function (shareResponse) {
+                        shareTripDetails(trip, function (shareResponse) {
                             if (shareResponse.status) {
                                 retObj.status = true;
                                 analyticsService.create(req, serviceActions.share_trip_det_by_email, {

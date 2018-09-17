@@ -46,6 +46,25 @@ geoFencesReports.prototype.getGeoFenceReportsByAcc = function (req, callback) {
             }
         });
 };
+
+
+geoFencesReports.prototype.addGeoFenceReport = function (reportInfo, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    var geoReportDoc = new GeoFencesReportsColl(reportInfo);
+    geoReportDoc.save(function (err, geoReport) {
+        if (err) {
+
+        }else {
+            retObj.status = true;
+            callback(retObj);
+        }
+    });
+};
+
 geoFencesReports.prototype.count=function (req,callback) {
     var retObj={
         status:false,
