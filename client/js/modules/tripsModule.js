@@ -561,6 +561,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
     $scope.getTrip = function () {
         TripServices.getTrip($stateParams.tripId, function (success) {
+            console.log("get trip...",success.data.trip);
             if (success.data.status) {
                 $scope.trip = success.data.trip;
                 $scope.trip.date = new Date($scope.trip.date);
@@ -571,11 +572,16 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 getParties();
                 getDriverIds();
                 $scope.calculateReceivleAmount();
+
                 for (var i = 0; i < $scope.trip.expense.length; i++) {
-                    $scope.trip.expense[i].type = $scope.trip.expense[i].type._id;
+                    if($scope.trip.expense[i].type !== undefined){
+                        $scope.trip.expense[i].type = $scope.trip.expense[i].type._id;
+                    }
                 }
                 for (var i = 0; i < $scope.trip.truckOwnerCharges.length; i++) {
-                    $scope.trip.truckOwnerCharges[i].type = $scope.trip.truckOwnerCharges[i].type._id;
+                    if($scope.trip.truckOwnerCharges[i].type !== undefined){
+                        $scope.trip.truckOwnerCharges[i].type = $scope.trip.truckOwnerCharges[i].type._id;
+                    }
                 }
                 if ($scope.trip.truckOwnerCharges.length == 0) {
                     $scope.trip.truckOwnerCharges = [{

@@ -336,7 +336,7 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
             AccountService.checkAvailablity(params, function (success) {
                 if (success.data.status) {
                     $scope.availableStatus = true;
-                    $scope.availableStatusError = 'username available';
+                    $scope.availableStatusError = 'username  available';
                 } else {
                     $scope.availableStatus = false;
                     $scope.availableStatusError = 'username not available';

@@ -272,7 +272,7 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
                     $rootScope.$broadcast("reminderEdited");
                     $state.go('jobs');
                 } else {
-                    success.data.errors.forEach(function (message) {
+                    success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
                     });
                 }
@@ -334,7 +334,7 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
     $scope.cancel = function () {
         $state.go('jobs');
     };
-    // $scope.getExpenses();
+    getExpenses('');
 }
 ])
 ;

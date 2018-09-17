@@ -13,6 +13,7 @@ var keysColl = require('./../models/schemas').keysColl;
 log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
 var userLoginsCollection = require('./../models/schemas').userLogins;
+var AccessPermissionsColl = require('./../models/schemas').accessPermissionsColl;
 
 var config_msg91 = config.msg91;
 var msg91 = require("msg91")(config_msg91.auth_Key, config_msg91.sender_id, config_msg91.route);
@@ -39,6 +40,8 @@ function logInSuccess(userName,user,req,callback){
     retObj.routeConfigEnabled = user.accountId.routeConfigEnabled;
     retObj.type = user.type;
     retObj.role = user.role;
+    retObj.permissions = user.userPermissions;
+
 
 
     var obj = {
@@ -47,7 +50,7 @@ function logInSuccess(userName,user,req,callback){
         userName: user.userName,
         contactPhone: user.contactPhone,
         type: user.type,
-        role: user.role
+        role: user.role,
     };
     if(user.type === "group") {
         obj.accountId = user.accountId._id;
