@@ -13,6 +13,7 @@ var keysColl = require('./../models/schemas').keysColl;
 log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
 var userLoginsCollection = require('./../models/schemas').userLogins;
+var AccessPermissionsColl = require('./../models/schemas').accessPermissionsColl;
 
 var config_msg91 = config.msg91;
 var msg91 = require("msg91")(config_msg91.auth_Key, config_msg91.sender_id, config_msg91.route);
@@ -39,6 +40,8 @@ function logInSuccess(userName,user,req,callback){
     retObj.routeConfigEnabled = user.accountId.routeConfigEnabled;
     retObj.type = user.type;
     retObj.role = user.role;
+    retObj.permissions = user.userPermissions;
+
 
 
     var obj = {
@@ -47,7 +50,7 @@ function logInSuccess(userName,user,req,callback){
         userName: user.userName,
         contactPhone: user.contactPhone,
         type: user.type,
-        role: user.role
+        role: user.role,
     };
     if(user.type === "group") {
         obj.accountId = user.accountId._id;
@@ -132,7 +135,24 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                 create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
                 callback(retObj);
             }else if(user.password === password ){
-                logInSuccess(userName,user,req,callback);
+                AccountsCollection.findOne({"_id":user.accountId._id},function(err,account){
+                    if(err){
+                        retObj.messages.push('Invalid login details');
+                        create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
+                        callback(retObj);
+                    }else{
+                        AccessPermissionsColl.find({"roleName":account.roleName},function(err,permissions){
+                            if(err){
+                                retObj.messages.push('Invalid login details');
+                                create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
+                                callback(retObj);
+                            }else{
+                                user.userPermissions = _.pluck(permissions,"_id");
+                                logInSuccess(userName,user,req,callback);
+                            }
+                        });
+                    }
+                });
             }
         });
 
