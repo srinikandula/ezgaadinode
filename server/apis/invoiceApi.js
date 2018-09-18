@@ -185,7 +185,7 @@ Invoices.prototype.getTrip=function(jwt,params,callback) {
             retObj.message.push("error"+JSON.stringify(err));
             callback(retObj);
         }else{
-            TrucksColl.findOne({_id:trip.registrationNo},function(err,truck){
+            TrucksColl.findOne({_id:trip.truckId},function(err,truck){
                 if(err){
                     retObj.status=false;
                     retObj.message.push("error"+JSON.stringify(err));
