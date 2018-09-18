@@ -345,9 +345,11 @@ app.controller('dashboardController', ['$scope', '$uibModal', 'TrucksService', '
                                 "title": "Registration No",
                                 "data": "attrs.truckName",
                                 "render": function (data, type, row) {
-
+                                    if (data) {
                                     return '<a href="#" class="ui-sref" style="text-transform: uppercase">' + data + '</a>';
-
+                                    } else {
+                                        return '--';
+                                    }
                                 }
                             },
                             {
