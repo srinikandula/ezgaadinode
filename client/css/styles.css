@@ -3355,3 +3355,16 @@ textarea.form-control {
     height: 250px;
     overflow-y: auto;
 }
+.inventoryHistory .modal-dialog{
+    width: 700px;
+}
+.inventoryHistory .modal-footer{
+    border-top: 0;
+    padding: 10px;
+}
+.inventoryHistory .modal-content{
+    padding: 5px 15px;
+}
+.inventoryHistory .modal-body{
+    padding: 0 15px;
+}
