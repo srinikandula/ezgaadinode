@@ -405,11 +405,21 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
             TrucksService.getTruck($stateParams.truckId, function (success) {
                 if (success.data.status) {
                     $scope.truck = success.data.truck;
-                    $scope.truck.fitnessExpiry = new Date($scope.truck.fitnessExpiry);
-                    $scope.truck.insuranceExpiry = new Date($scope.truck.insuranceExpiry);
-                    $scope.truck.permitExpiry = new Date($scope.truck.permitExpiry);
-                    $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
-                    $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
+                    if($scope.truck.fitnessExpiry !== undefined){
+                        $scope.truck.fitnessExpiry = new Date($scope.truck.fitnessExpiry);
+                    }
+                    if($scope.truck.insuranceExpiry !== undefined){
+                        $scope.truck.insuranceExpiry = new Date($scope.truck.insuranceExpiry);
+                    }
+                    if($scope.truck.permitExpiry !== undefined){
+                        $scope.truck.permitExpiry = new Date($scope.truck.permitExpiry);
+                    }
+                    if($scope.truck.pollutionExpiry !== undefined){
+                        $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
+                    }
+                    if($scope.truck.taxDueDate !== undefined){
+                        $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
+                    }
                     $scope.userId=success.data.userId;
                     $scope.userType=success.data.userType;
                     $scope.title=$scope.truck.truckType;
