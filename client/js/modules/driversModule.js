@@ -250,7 +250,9 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         DriverService.getDriver($stateParams.driverId, function (success) {
             if (success.data.status) {
                 $scope.driver = success.data.driver;
-                $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
+                if($scope.driver.licenseValidity !== undefined){
+                    $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
+                }
                 getTruckIds();
             }else{
                 success.data.messages.forEach(function (message) {

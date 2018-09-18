@@ -179,7 +179,9 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
                 $scope.job = successCallback.data.data;
                 $scope.job.partLocation = successCallback.data.data.partLocation;
                 $scope.job.date = new Date($scope.job.date);
-                $scope.job.reminderDate = new Date($scope.job.reminderDate);
+                if($scope.job.reminderDate !== undefined){
+                    $scope.job.reminderDate = new Date($scope.job.reminderDate);
+                }
 
                 $scope.getRecords($stateParams.ID, $scope.job.vehicle._id);
                 $scope.getJobsForInventory($scope.job.inventory);
