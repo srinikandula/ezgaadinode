@@ -672,6 +672,9 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
         params.errors = [];
+        if(_.isEmpty($scope.files[0])){
+            $scope.files = [];
+        }
         if (!params.date) {
             params.errors.push('Please Select Trip Date');
         }

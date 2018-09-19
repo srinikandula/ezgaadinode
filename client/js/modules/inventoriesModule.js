@@ -86,6 +86,9 @@ app.controller('AddEditInventoryCtrl', ['$scope', 'InventoriesService', '$state'
 
 
     $scope.add_editInventory = function () {
+        if(_.isEmpty($scope.files[0])){
+            $scope.files = [];
+        }
         if ($stateParams.Id) {
             if ($scope.inventory.attachments.length > 0) {
                 $scope.files.forEach(function (file) {
