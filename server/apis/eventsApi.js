@@ -38,42 +38,41 @@ var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 
 
 Events.prototype.syncAccountWithUserLogins=function(req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
 
     userLogins.find({}, {"userName": 1, _id: 0}, function (err, allUserLogins) {
         if (err) {
-            console.log("error while getting the data " + err);
+            retObj.messages.push("error while getting the data");
+            callback(retObj);
 
         } else {
             var userNames = _.pluck(allUserLogins, 'userName');
-            console.log('userLogins found now', userNames);
+
             AccountsColl.find({"userName": {$nin: userNames}}, function (err, accountsFound) {
                 if (err) {
-                    console.log("error while comparing login details with accounts details");
+
+                    retObj.messages.push("error while comparing login details with accounts details");
+                    callback(retObj);
                 } else {
-                    console.log("accountsFound", accountsFound);
-                    console.log(accountsFound.length);
                     for (var i = 0; i < accountsFound.length; i++) {
                         var userLoginObj = {
                             userName: accountsFound[i].userName,
                             contactPhone: accountsFound[i].contactPhone,
                             password: accountsFound[i].password,
                             accountId: ObjectId(accountsFound[i]._id),
-                            role: accountsFound[i].role,
-
+                            role: accountsFound[i].role
                         };
-                        console.log('userLoginObj', userLoginObj)
-                        var userLoginDoc = new userLogins(userLoginObj);
-                        console.log("doc",userLoginDoc);
-                        userLoginDoc.save(userLoginDoc, function (err) {
-                            if (err) {
-                                console.log("error while adding account to the userLogins ");
-                            } else {
-                                console.log("doc",userLoginDoc);
-                                console.log("account added successfully");
-                            }
-                        });
 
+                        var userLoginDoc = new userLogins(userLoginObj);
+                        userLoginDoc.save(userLoginDoc, function (err) {
+                        });
                     }
+                    retObj.status=true;
+                    retObj.messages.push("accounts added successfully");
+                    callback(retObj);
                 }
             });
         }
