@@ -7,6 +7,7 @@ var pageLimits = require('./../config/pagination');
 var analyticsService = require('./../apis/analyticsApi');
 var serviceActions = require('./../constants/adminConstants');
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var userLogins=require('./../models/schemas').userLogins;
 var keysColl = require('./../models/schemas').keysColl;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 var AccountDevicePlanHistoryColl = require('./../models/schemas').AccountDevicePlanHistoryColl;
@@ -412,6 +413,7 @@ Accounts.prototype.addAccount = function (req, callback) {
         });
     }
 };
+
 
 function generateUniqueUserId(userType, callback) {
     var retObj = {
