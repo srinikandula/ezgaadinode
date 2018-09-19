@@ -159,9 +159,10 @@ app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'Admin
     };
 
     $scope.syncDatabase=function(){
-        alert("hii");
+
         AdministratorService.syncCompleteData(function(success){
-            if(success.data.status){
+            // console.log('successData',typeof(success.status));
+            if(success.status === 200){
                 swal(
                     '',
                     'Successfully Added',
