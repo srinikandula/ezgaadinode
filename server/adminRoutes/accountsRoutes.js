@@ -34,11 +34,6 @@ AuthRouter.post('/addAccount', function (req, res) {
     });
 });
 
-OpenRouter.post('/syncAccountWithUserLogins', function (req, res) {
-    Accounts.syncAccountWithUserLogins(req, function (result) {
-        res.json(result);
-    });
-});
 AuthRouter.get('/getAccountDetails/:accountId', function (req, res) {
     Accounts.getAccountDetails(req, function (result) {
         res.json(result);
