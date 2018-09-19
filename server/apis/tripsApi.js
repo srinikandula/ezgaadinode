@@ -1529,7 +1529,7 @@ function getRevenueByVehicle(jwt, condition, params, callback) {
     async.parallel({
         tripFreightTotal: function (callback) {
             TripCollection.aggregate(condition,
-                {$group: {_id: "$registrationNo", totalFreight: {$sum: "$freightAmount"}}},
+                {$group: {_id: "$truckId", totalFreight: {$sum: "$freightAmount"}}},
 
                 function (err, totalFreight) {
                     // console.log('error1', err);
