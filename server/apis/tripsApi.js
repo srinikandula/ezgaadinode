@@ -146,7 +146,7 @@ function shareTripDetails(tripData, callback) {
             if (tripDetails.partyId.isSms) {
                 var smsParams = {
                     contact: tripDetails.partyId.contact,
-                    message: "Hi " + tripDetails.partyId.name + ",\n" +
+                    message: "Hi " + escape(tripDetails.partyId.name) + ",\n" +
                     "Date : " + new Date(tripDetails.date).toDateString() + ",\n" +
                     "Driver Name:" + tripDetails.driverId.fullName.toUpperCase() + ",\n" +
                     "VehicleNo:"+ tripDetails.truckId.registrationNo+ ",\n" +
