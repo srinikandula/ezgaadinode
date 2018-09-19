@@ -7,6 +7,18 @@ app.factory('AdministratorService', ["$http", function ($http) {
                 params: params
             }).then(success, error)
         },
+        syncAccounts: function ( success, error) {
+            $http({
+                url: '/v1/events/syncAccountWithUserLogins',
+                method: "POST"
+            }).then(success, error)
+        },
+        syncCompleteData: function ( success, error) {
+            $http({
+                url: '/v1/events/get/completeData',
+                method: "GET"
+            }).then(success, error)
+        },
         getEmployeeDetails: function (params, success, error) {
             $http({
                 url: '/v1/cpanel/employees/getEmployeeDetails',
@@ -124,6 +136,50 @@ app.factory('AdministratorService', ["$http", function ($http) {
 }]);
 
 app.controller('administratorsCtrl', ['$scope', '$state', '$stateParams', 'AdministratorService', 'Notification', 'NgTableParams', 'Upload', function ($scope, $state, $stateParams, AdministratorService, Notification, NgTableParams, Upload) {
+
+    $scope.syncAccountsToUserLogins=function(){
+        AdministratorService.syncAccounts(function(success){
+            if(success.data.status){
+                swal(
+                    '',
+                    'Successfully Added',
+                    'success'
+                );
+            }
+        },function(err){
+            if(err){
+                swal(
+                    '',
+                    'error while synchToUserLogins',
+                    'success'
+                );
+            }
+        })
+
+    };
+
+    $scope.syncDatabase=function(){
+
+        AdministratorService.syncCompleteData(function(success){
+            // console.log('successData',typeof(success.status));
+            if(success.status === 200){
+                swal(
+                    '',
+                    'Successfully Added',
+                    'success'
+                );
+            }
+        },function(err){
+            if(err){
+                swal(
+                    '',
+                    'error while synchToUserLogins',
+                    'success'
+                );
+            }
+        })
+
+    };
 
     $scope.employeeTitle = "Add Employee";
     $scope.status = {
