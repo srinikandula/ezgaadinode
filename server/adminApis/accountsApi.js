@@ -414,48 +414,6 @@ Accounts.prototype.addAccount = function (req, callback) {
     }
 };
 
-Accounts.prototype.syncAccountWithUserLogins=function(req,callback) {
-
-    userLogins.find({}, {"userName": 1, _id: 0}, function (err, allUserLogins) {
-        if (err) {
-            console.log("error while getting the data " + err);
-
-        } else {
-            var userNames = _.pluck(allUserLogins, 'userName');
-            console.log('userLogins found now', userNames);
-            AccountsColl.find({"userName": {$nin: userNames}}, function (err, accountsFound) {
-                if (err) {
-                    console.log("error while comparing login details with accounts details");
-                } else {
-                    console.log("accountsFound", accountsFound);
-                    console.log(accountsFound.length);
-                    for (var i = 0; i < accountsFound.length; i++) {
-                        var userLoginObj = {
-                            userName: accountsFound[i].userName,
-                            contactPhone: accountsFound[i].contactPhone,
-                            password: accountsFound[i].password,
-                            accountId: ObjectId(accountsFound[i]._id),
-                            role: accountsFound[i].role,
-
-                        };
-                        console.log('userLoginObj', userLoginObj)
-                        var userLoginDoc = new userLogins(userLoginObj);
-                        console.log("doc",userLoginDoc);
-                        userLoginDoc.save(userLoginDoc, function (err) {
-                            if (err) {
-                                console.log("error while adding account to the userLogins ");
-                            } else {
-                                console.log("doc",userLoginDoc);
-                                console.log("account added successfully");
-                            }
-                        });
-
-                    }
-                }
-            });
-        }
-    });
-};
 
 function generateUniqueUserId(userType, callback) {
     var retObj = {

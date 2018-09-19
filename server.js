@@ -82,7 +82,7 @@ app.use('/v1/gps', Gps.OpenRouter);
 app.use('/v1/analytics', Analytics.OpenRouter);
 app.use('/v1/notifications',pushNotifications.OpenRouter);
 app.use('/v1/trucks', Trucks.OpenRouter);
-app.use('/v1/cpanel/accounts', Accounts.OpenRouter);
+
 
 app.use(authMiddleware);
 app.use(json2xls.middleware);
