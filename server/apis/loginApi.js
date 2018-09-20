@@ -14,6 +14,9 @@ log4js.configure(__dirname + '/../config/log4js_config.json', {reloadSecs: 60});
 var config = require('./../config/config');
 var userLoginsCollection = require('./../models/schemas').userLogins;
 var AccessPermissionsColl = require('./../models/schemas').accessPermissionsColl;
+var async = require('async');
+
+
 
 var config_msg91 = config.msg91;
 var msg91 = require("msg91")(config_msg91.auth_Key, config_msg91.sender_id, config_msg91.route);
@@ -36,12 +39,12 @@ function logInSuccess(userName,user,accessPermissions,req,callback){
     retObj.erpEnabled = user.accountId.erpEnabled;
     retObj.loadEnabled = user.accountId.loadEnabled;
     retObj.editAccounts = user.accountId.editAccounts;
-    retObj.accessPermissions = user.accessPermissions;
     retObj.profilePic = user.profilePic;
     retObj.routeConfigEnabled = user.accountId.routeConfigEnabled;
+    retObj.permissions = accessPermissions;
     retObj.type = user.type;
     retObj.role = user.role;
-    retObj.accessPermissions = accessPermissions;
+
 
     var obj = {
         id: user._id,
@@ -123,31 +126,41 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
         create(req,serviceActions.invalid_login_params,{body:JSON.stringify(req.body),success:false,messages:retObj.messages});
         return callback(retObj);
     } else {
+        var permissions = [];
         var query = {
             userName: userName,
             password: password,
-            contactPhone: parseInt(contactPhone),
+            contactPhone: parseInt(contactPhone)
         };
         userLoginsCollection.findOne(query).populate("accountId").exec(function(err,user){
-            var userPermissions = user.userPermissions;
             if(err || !user){
                 retObj.messages.push('Invalid login details');
                 create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
                 callback(retObj);
             }else if(user.password === password ){
-                for(var i=0;i<userPermissions.length;i++){
-                    AccessPermissionsColl.find({"roleId":userPermissions[i]},function(err,accessPermissions){
-                        if(err){
-                            retObj.messages.push('Invalid login details');
-                            create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                            callback(retObj);
-                        }else{
-                            logInSuccess(userName,user,accessPermissions,req,callback);
-                        }
+                async.each(user.userPermissions,function(userPermission,asyncCallback){
+                    AccessPermissionsColl.find({"roleId":userPermission},{"permissions":1},function(err,accessPermissions){
+                       if(err){
+                           asyncCallback(true);
+                       }else{
+                           for(var i=0;i<accessPermissions.length;i++){
+                               permissions.push(accessPermissions[i]);
+                           }
+                           asyncCallback(false);
+                       }
                     });
-                }
+                },function(err){
+                    if(err){
+                        retObj.messages.push('Invalid login details');
+                        create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
+                        callback(retObj);
+                    }else{
+                        logInSuccess(userName,user,permissions,req,callback);
+                    }
+                });
             }
         });
+
     }
 };
 
