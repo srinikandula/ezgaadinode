@@ -203,8 +203,11 @@ app.controller('Add_EditJobController', ['$scope', 'Upload', 'Notification', '$s
     ;
     $scope.add_editJob = function () {
         var params = $scope.job;
-        console.log("params", params);
+        // console.log("params", params);
         params.errors = [];
+        if(_.isEmpty($scope.files[0])){
+            $scope.files = [];
+        }
         if (!params.date) {
             params.errors.push('Please provide Date');
         }
