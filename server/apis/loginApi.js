@@ -139,13 +139,11 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                 callback(retObj);
             }else if(user.password === password ){
                 async.each(user.userPermissions,function(userPermission,asyncCallback){
-                    AccessPermissionsColl.find({"roleId":userPermission},{"permissions":1},function(err,accessPermissions){
+                    AccessPermissionsColl.find({"roleId":userPermission},function(err,accessPermissions){
                        if(err){
                            asyncCallback(true);
                        }else{
-                           for(var i=0;i<accessPermissions.length;i++){
-                               permissions.push(accessPermissions[i]);
-                           }
+                           permissions = accessPermissions;
                            asyncCallback(false);
                        }
                     });
@@ -160,7 +158,6 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                 });
             }
         });
-
     }
 };
 
