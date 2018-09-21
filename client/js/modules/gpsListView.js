@@ -20,12 +20,19 @@ app.factory('gpsListService',['$http','$cookies', function ($http, $cookies) {
 
 app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$stateParams','Notification','$uibModal', function ($scope, $state,gpsListService,$stateParams,Notification,$uibModal) {
     $scope.trucksData = [];
+    $scope.today = new Date();
+    $scope.today.setMinutes($scope.today.getMinutes() - 30);
     function getAllVehiclesLocation() {
         gpsListService.getAllVehiclesLocation({},function (success) {
             if(success.data.status){
                 $scope.trucksData=success.data.results;
                 for(var i=0;i<$scope.trucksData.length;i++){
+                    var deviceUpdate;
                     if($scope.trucksData[i].attrs){
+                        deviceUpdate = new Date($scope.trucksData[i].attrs.latestLocation.createdAt);
+                        if(deviceUpdate <= $scope.today){
+                            $scope.trucksData[i].deviceUpdate = 'false';
+                        }
                         if($scope.trucksData[i].attrs.latestLocation.isStopped){
                             $scope.trucksData[i].status = 'Stopped';
                         }else if(($scope.trucksData[i].attrs.latestLocation.isIdle)){
