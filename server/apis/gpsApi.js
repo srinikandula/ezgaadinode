@@ -882,7 +882,7 @@ Gps.prototype.emailDayGPSReport = function (req, callback) {
                                     totalString = totalString.replace(/[^\x00-\xFF]/g, " ");
                                     retObj.data = totalString;
                                     mailerApi.sendEmailWithAttachment2({
-                                        to: 'kalyanikandula0@gmail.com',//account.email,
+                                        to: account.email,
                                         subject: 'Daily-Report',
                                         data: totalString
                                     }, function (result) {
