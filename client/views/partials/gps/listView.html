@@ -41,7 +41,7 @@
             </div>
             <div class="col-xs-12 mt-25">
                 <table class="table table-bordered table-striped table-condensed table-hover" ng-table="partyParams">
-                    <tr style="text-align: center;" ng-repeat="truck in trucksData" ng-class="{'bgRed': truck.deviceStatus === 'false'}">
+                    <tr style="text-align: center;" ng-repeat="truck in trucksData" ng-class="{'bgRed': truck.deviceStatus === 'false' || truck.deviceUpdate === 'false'}">
                         <td data-title="'S.No'">
                             {{$index+1}}
                         </td>

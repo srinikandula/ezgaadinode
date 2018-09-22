@@ -138,29 +138,30 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                 create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
                 callback(retObj);
             }else if(user.password === password ){
-                async.each(user.userPermissions,function(userPermission,asyncCallback){
-                    AccessPermissionsColl.find({"roleId":userPermission},{"permissions":1},function(err,accessPermissions){
-                       if(err){
-                           asyncCallback(true);
-                       }else{
-                           for(var i=0;i<accessPermissions.length;i++){
-                               permissions.push(accessPermissions[i]);
-                           }
-                           asyncCallback(false);
-                       }
+                if(user.userPermissions.length>0){
+                    async.each(user.userPermissions,function(userPermission,asyncCallback){
+                        AccessPermissionsColl.find({"roleId":userPermission},function(err,accessPermissions){
+                            if(err){
+                                asyncCallback(true);
+                            }else{
+                                permissions = accessPermissions;
+                                asyncCallback(false);
+                            }
+                        });
+                    },function(err){
+                        if(err){
+                            retObj.messages.push('Invalid login details');
+                            create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
+                            callback(retObj);
+                        }else{
+                            logInSuccess(userName,user,permissions,req,callback);
+                        }
                     });
-                },function(err){
-                    if(err){
-                        retObj.messages.push('Invalid login details');
-                        create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                        callback(retObj);
-                    }else{
-                        logInSuccess(userName,user,permissions,req,callback);
-                    }
-                });
+                }else{
+                    logInSuccess(userName,user,permissions,req,callback);
+                }
             }
         });
-
     }
 };
 
