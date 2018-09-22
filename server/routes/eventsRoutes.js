@@ -174,6 +174,12 @@ OpenRouter.get('/get/srlogistics/reload', function (request, res) {
     }
 });
 
+OpenRouter.post('/syncAccountWithUserLogins', function (req, res) {
+    Events.syncAccountWithUserLogins(req, function (result) {
+        res.json(result);
+    });
+});
+
 OpenRouter.get('/get/groupMap', function (request, res) {
     EventData.getGroupMapEvents(request,function(results){
         res.json(results);

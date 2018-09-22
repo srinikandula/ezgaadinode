@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var async = require('async');
+var _ = require('underscore');
 var mongoose = require('mongoose');
 var _ = require('underscore');
 const ObjectId = mongoose.Types.ObjectId;
@@ -16,6 +17,7 @@ var pool_crm = mysql.createPool(config.mysql_crm);
 var traccar_mysql = mysql.createPool(config.traccar_mysql);
 var EventData = require('./../apis/eventDataApi');
 var AccountsColl = require('./../models/schemas').AccountsColl;
+var userLogins=require('./../models/schemas').userLogins;
 var OperatingRoutesColl = require('./../models/schemas').OperatingRoutesColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var DeviceColl = require('./../models/schemas').DeviceColl;
@@ -34,6 +36,48 @@ var OrderStatusColl = require('./../models/schemas').OrderStatusColl;
 var CustomerLeadsColl = require('./../models/schemas').CustomerLeadsColl;
 var GpsSettingsColl = require('./../models/schemas').GpsSettingsColl;
 
+
+Events.prototype.syncAccountWithUserLogins=function(req,callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+
+    userLogins.find({}, {"userName": 1, _id: 0}, function (err, allUserLogins) {
+        if (err) {
+            retObj.messages.push("error while getting the data");
+            callback(retObj);
+
+        } else {
+            var userNames = _.pluck(allUserLogins, 'userName');
+
+            AccountsColl.find({"userName": {$nin: userNames}}, function (err, accountsFound) {
+                if (err) {
+
+                    retObj.messages.push("error while comparing login details with accounts details");
+                    callback(retObj);
+                } else {
+                    for (var i = 0; i < accountsFound.length; i++) {
+                        var userLoginObj = {
+                            userName: accountsFound[i].userName,
+                            contactPhone: accountsFound[i].contactPhone,
+                            password: accountsFound[i].password,
+                            accountId: ObjectId(accountsFound[i]._id),
+                            role: accountsFound[i].role
+                        };
+
+                        var userLoginDoc = new userLogins(userLoginObj);
+                        userLoginDoc.save(userLoginDoc, function (err) {
+                        });
+                    }
+                    retObj.status=true;
+                    retObj.messages.push("accounts added successfully");
+                    callback(retObj);
+                }
+            });
+        }
+    });
+};
 
 Events.prototype.getEventData = function (accountId, startDate, endDate, request, callback) {
     var retObj = {};

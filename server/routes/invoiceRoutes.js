@@ -18,6 +18,11 @@ AuthRouter.get('/count',function(req,res){
         res.send(result);
     });
 });
+AuthRouter.get('/getTrip',function(req,res){
+    invoiceApi.getTrip(req.jwt,req.query,function(result){
+        res.send(result);
+    });
+});
 AuthRouter.get('/getAllInvoices',function(req,res){
     invoiceApi.getAllInvoices(req.jwt,req.query,function(result){
         res.send(result);

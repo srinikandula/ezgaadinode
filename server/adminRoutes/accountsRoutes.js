@@ -1,5 +1,6 @@
 var express = require('express');
 var AuthRouter = express.Router();
+var OpenRouter = express.Router();
 var Accounts = require('../adminApis/accountsApi');
 var logger = require('./../winston/logger')(module);
 
@@ -76,5 +77,6 @@ AuthRouter.delete('/deleteKeyPair/:id/:accountId',function (req,res) {
 })
 
 module.exports = {
-    AuthRouter: AuthRouter
+    AuthRouter: AuthRouter,
+    OpenRouter:OpenRouter
 };

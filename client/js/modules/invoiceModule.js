@@ -71,11 +71,11 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
         $scope.parties = successCallback.data.parties;
     },function(errorCallback){});
 
-   $scope.getTrips = function(){
-       TripServices.getAllAccountTrips([],function(successCallback){
-           $scope.trips = successCallback.data.trips;
-       },function(errorCallback){});
-   };
+    $scope.getTrips = function(){
+        TripServices.getAllAccountTrips([],function(successCallback){
+            $scope.trips = successCallback.data.trips;
+        },function(errorCallback){});
+    };
 
     TrucksService.getAllTrucksForFilter(function (successCallback) {
         if (successCallback.data.status) {
@@ -162,7 +162,7 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
                         });
                     }
                 }
-                },function(error){
+            },function(error){
                 success.data.messages.forEach(function (message) {
                     Notification.error({ message: message });
                 })
@@ -267,28 +267,28 @@ app.controller('invoicesListController',['$scope','InvoiceService','$state','NgT
             confirmButtonText: 'Yes, delete it!'
         }).then((result) => {
             if (result.value) {
-            InvoiceService.deleteInvoice(id, function (success) {
-                if (success.data.status) {
-                    swal(
-                        'Deleted!',
-                        'Invoice deleted successfully.',
-                        'success'
-                    );
-                    $scope.getCount();
-                } else {
-                    success.data.messages.forEach(function (message) {
+                InvoiceService.deleteInvoice(id, function (success) {
+                    if (success.data.status) {
                         swal(
                             'Deleted!',
-                            message,
-                            'error'
+                            'Invoice deleted successfully.',
+                            'success'
                         );
-                    });
-                }
-            }, function (err) {
+                        $scope.getCount();
+                    } else {
+                        success.data.messages.forEach(function (message) {
+                            swal(
+                                'Deleted!',
+                                message,
+                                'error'
+                            );
+                        });
+                    }
+                }, function (err) {
 
-            });
-        }
-    });
+                });
+            }
+        });
     };
     var loadTableData = function (tableParams) {
         var pageable = {page:tableParams.page(),
@@ -325,22 +325,22 @@ app.controller('invoicesListController',['$scope','InvoiceService','$state','NgT
         });
 
     };
-   $scope.getCount = function () {
-       var params = {};
-       params.fromDate = $scope.fromDate;
-       params.toDate = $scope.toDate;
-       InvoiceService.getCount(params,function(successCallback){
-           if(successCallback.data.status){
-               $scope.count = successCallback.data.data;
-               $scope.init();
-           }
-       },function(errorCallback){});
-   };
-   $scope.goToEditPage = function(id){
-       $state.go('invoiceEdit',{id:id});
-   };
-   $scope.getCount();
-   // $scope.getAllInvoices();
+    $scope.getCount = function () {
+        var params = {};
+        params.fromDate = $scope.fromDate;
+        params.toDate = $scope.toDate;
+        InvoiceService.getCount(params,function(successCallback){
+            if(successCallback.data.status){
+                $scope.count = successCallback.data.data;
+                $scope.init();
+            }
+        },function(errorCallback){});
+    };
+    $scope.goToEditPage = function(id){
+        $state.go('invoiceEdit',{id:id});
+    };
+    $scope.getCount();
+    // $scope.getAllInvoices();
     $scope.generatePdf=function (invoiceId) {
         window.open('/v1/invoices/generatePDF/' + invoiceId );
     }

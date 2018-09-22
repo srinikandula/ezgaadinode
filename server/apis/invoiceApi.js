@@ -51,8 +51,8 @@ Invoices.prototype.getCount = function(jwt,params,callback){
 };
 Invoices.prototype.addInvoice = function(jwt,invoiceDetails,callback){
     var retObj = {
-      status:false,
-      messages:[]
+        status:false,
+        messages:[]
     };
     invoiceDetails.accountId = jwt.accountId;
     var invoiceDoc = new InvoicesColl(invoiceDetails);
@@ -108,36 +108,36 @@ Invoices.prototype.getAllInvoices = function(jwt,params,callback){
         .limit(limit)
         .lean()
         .exec(function(err,invoices){
-        if(err){
-            retObj.status = false;
-            retObj.messages.push("error in fetching records"+JSON.stringify(err));
-            callback(retObj);
-        }else{
-            var partyIds = _.pluck(invoices,'partyId');
-            PartiesColl.find({_id: {$in:partyIds}},{name: 1}, function (err, partyNames) {
-                async.each(invoices, function (invoice, asyncCallback) {
-                    if (invoice.partyId) {
-                        var party = _.find(partyNames, function (party) {
-                            return party._id.toString() === invoice.partyId;
-                        });
-                        invoice.partyId = party.name;
-                        asyncCallback(false);
-                    }
-                },function(err){
-                    if(err){
-                        retObj.status = false;
-                        retObj.messages.push("error in fetching records"+JSON.stringify(err));
-                        callback(retObj);
-                    }else{
-                        retObj.status = true;
-                        retObj.messages.push("Success");
-                        retObj.data = invoices;
-                        callback(retObj);
-                    }
+            if(err){
+                retObj.status = false;
+                retObj.messages.push("error in fetching records"+JSON.stringify(err));
+                callback(retObj);
+            }else{
+                var partyIds = _.pluck(invoices,'partyId');
+                PartiesColl.find({_id: {$in:partyIds}},{name: 1}, function (err, partyNames) {
+                    async.each(invoices, function (invoice, asyncCallback) {
+                        if (invoice.partyId) {
+                            var party = _.find(partyNames, function (party) {
+                                return party._id.toString() === invoice.partyId;
+                            });
+                            invoice.partyId = party.name;
+                            asyncCallback(false);
+                        }
+                    },function(err){
+                        if(err){
+                            retObj.status = false;
+                            retObj.messages.push("error in fetching records"+JSON.stringify(err));
+                            callback(retObj);
+                        }else{
+                            retObj.status = true;
+                            retObj.messages.push("Success");
+                            retObj.data = invoices;
+                            callback(retObj);
+                        }
+                    });
                 });
-            });
-        }
-    });
+            }
+        });
 };
 Invoices.prototype.deleteInvoice = function(params,callback){
     var retObj = {
@@ -222,15 +222,15 @@ Invoices.prototype.generatePDF = function(req,callback){
         async.parallel({
             invoiceDetails:function(invoiceCallback){
                 InvoicesColl.findOne({_id:req.params.invoiceId}).lean().exec(function (err,doc){
-                   if(err){
-                       retObj.messages.push("error in fetching record"+JSON.stringify(err));
-                       invoiceCallback(retObj,null);
-                   } else if(doc){
-                       invoiceCallback(false,doc);
-                   }else{
-                       retObj.messages.push("Please try again");
-                       invoiceCallback(retObj,'');
-                   }
+                    if(err){
+                        retObj.messages.push("error in fetching record"+JSON.stringify(err));
+                        invoiceCallback(retObj,null);
+                    } else if(doc){
+                        invoiceCallback(false,doc);
+                    }else{
+                        retObj.messages.push("Please try again");
+                        invoiceCallback(retObj,'');
+                    }
                 });
             },accountDetails:function(accCallback){
                 AccountsColl.findOne({_id:req.jwt.accountId},function (err,doc) {
