@@ -954,12 +954,17 @@ Events.prototype.getAdminPermissions = function (request, callback) {
     });
 };
 
+/**
+ * create accounts with data from table `eg_admin`
+ * @param request
+ * @param callback
+ */
 Events.prototype.getEmployeeData = function (request, callback) {
     var retObj = {
         status: false,
         messages: []
     };
-    var employeeDataQuery = "SELECT a.*,ar.role FROM `eg_admin` a,eg_admin_role ar where a.id_admin_role=ar.id_admin_role";
+    var employeeDataQuery = "SELECT a.*, ar.role FROM `eg_admin` a,eg_admin_role ar where a.id_admin_role=ar.id_admin_role";
     pool_crm.query(employeeDataQuery, function (err, employees) {
         if (err) {
             retObj.status = false;
@@ -997,7 +1002,6 @@ Events.prototype.getEmployeeData = function (request, callback) {
                             if (role) {
                                 employeeData.adminRoleId = role._id;
                             }
-
                             var employeeDoc = new AccountsColl(employeeData);
                             employeeDoc.save(function (err) {
                                 employeeCallBack(err, 'saved');
@@ -1724,7 +1728,7 @@ Events.prototype.restoreAccountsFromCustomerTable = function (request, callback)
                 // if(customer.email) {
                 var condition = {
                     $or: [
-                        {"userName": customer.email}
+                        {"userName": customer.email}, {"userName": customer.mobile}
                     ], userId: customer.idprefix,
                     leadType: customer.type,
                 };

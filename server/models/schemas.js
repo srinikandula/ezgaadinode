@@ -1159,7 +1159,7 @@ lrSchema.pre('save', function (next) {
 
 var gpsFencesReportSchema=new mongoose.Schema({
     accountId: String,
-    deviceId: {type: ObjectId, ref: 'devices'},
+    deviceId: String, //{type: ObjectId, ref: 'devices'},
     registrationNo:String,
     depot:String, // name of the party
     partyId:{type: ObjectId, ref: 'parties'}, // set partyId incase of adding it from the trip
