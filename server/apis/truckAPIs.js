@@ -1728,10 +1728,14 @@ Trucks.prototype.downloadDetails = function (jwt, params, req, callback) {
     };
     // console.log("share details download....");
     Trucks.prototype.getTrucks(jwt, params, req, function (response) {
-        // console.log("response....", response);
         if (response.status) {
             var output = [];
             for (var i = 0; i < response.trucks.length; i++) {
+                var driver = {};
+                if(response.trucks[i].attrs !== undefined){
+                        driver.fullName = response.trucks[i].attrs.fullName
+                        driver.mobile = response.trucks[i].attrs.mobile
+                }
                 output.push({
                     Reg_No: response.trucks[i].registrationNo,
                     Permit: dateToStringFormat(response.trucks[i].permitExpiry),
@@ -1739,8 +1743,8 @@ Trucks.prototype.downloadDetails = function (jwt, params, req, callback) {
                     Insurance: dateToStringFormat(response.trucks[i].insuranceExpiry),
                     Fitness: dateToStringFormat(response.trucks[i].fitnessExpiry),
                     Tax: dateToStringFormat(response.trucks[i].taxDueDate),
-                    Driver: response.trucks[i].attrs.fullName,
-                    Mobile: response.trucks[i].attrs.mobile
+                    Driver:driver.fullName ,
+                    Mobile: driver.mobile
                 });
             }
             retObj.data = output;
