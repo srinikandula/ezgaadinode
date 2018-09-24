@@ -57,7 +57,7 @@ geoFencesReports.prototype.addGeoFenceReport = function (reportInfo, callback) {
     var geoReportDoc = new GeoFencesReportsColl(reportInfo);
     geoReportDoc.save(function (err, geoReport) {
         if (err) {
-
+            console.log("failed saving geo fence report " + err);
         }else {
             retObj.status = true;
             callback(retObj);

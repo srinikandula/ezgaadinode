@@ -6,9 +6,7 @@ var staticFilesRegex = /\.(html|css|ico|png|jpeg|jpg|js|eot|svg|ttf|woff|json)$/
 
 function authMiddleware(req, res, next) {
     var token = req.cookies.token || req.headers.token;
-  /*  if(staticFilesRegex.test(req.url)) {
-        next();
-    } else */if(req.headers.apikey && req.headers.secretkey){
+    if(req.headers.apikey && req.headers.secretkey){
         Groups.loginByKeys(req.headers.apikey,req.headers.secretkey,req,function (result) {
             if(result.status){
                 token = result.token;
@@ -42,9 +40,7 @@ function authMiddleware(req, res, next) {
                 }else{
                     req.jwt = decoded;
                     next();
-
                 }
-
             }
         });
     }

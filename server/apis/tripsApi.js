@@ -80,6 +80,7 @@ function shareTripDetails(tripData, callback) {
                 tripId: tripDetails._id,
                 depot: tripDetails.partyId.name,
                 registrationNo: tripDetails.truckId.registrationNo,
+                deviceId: tripDetails.truckId.deviceId,
                 startTime:tripDetails.startDate || tripDetails.date
             };
             geoFenceReportsApi.addGeoFenceReport(geoReportInfo, function(response) {
