@@ -3368,3 +3368,10 @@ textarea.form-control {
 .inventoryHistory .modal-body{
     padding: 0 15px;
 }
+.bg-danger{
+    text-align: center !important;
+    /*background-color: white;*/
+    color: red;
+    font-size: 40px;
+    width: 100%;
+}
