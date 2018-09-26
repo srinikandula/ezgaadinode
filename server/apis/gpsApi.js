@@ -19,8 +19,8 @@ var mailerApi = require('./../apis/mailerApi');
 var SmsService = require('./smsApi');
 var mongoose = require('mongoose');
 var request = require('request');
-
 const ObjectId = mongoose.Types.ObjectId;
+
 
 
 var SecretKeyCounterColl = require('./../models/schemas').SecretKeyCounterColl;
@@ -695,6 +695,7 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
         status: false,
         messages: []
     };
+    var numberPattern = /\d+/g;
     var gps = new Gps();
     gps.gpsTrackingByTruck(params.truckNo, params.startDate, params.endDate, req, function (result) {
         if (result.status) {
@@ -703,6 +704,12 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
             async.eachSeries(positions,function(position,asyncCallback){
                 if(position.address === '{address}'){
                     getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
+                      var zipCodeArr = addResp.address.match( numberPattern );
+                        for(var i=0;i<zipCodeArr.length;i++){
+                            if(zipCodeArr[i].length == 6){
+                                position.zipcode = zipCodeArr[i];
+                            }
+                        }
                         position.address = addResp.address;
                         asyncCallback(false);
                     });
