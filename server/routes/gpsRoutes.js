@@ -108,9 +108,8 @@ AuthRouter.post('/shareTripDetailsByVechicleViaEmail',function (req,res) {
 });
 
 
-var identifyNotWorkingDevices = cronjob.schedule('* 30 * * * *', function() {
+var identifyNotWorkingDevices = cronjob.schedule('*/30 * * * *', function() {
     gps.identifyNotWorkingDevices(function (result) {
-        console.log("identifyNotWorkingDevices..",result);
     });
 });
 identifyNotWorkingDevices.start();
