@@ -976,10 +976,10 @@ Gps.prototype.identifyNotWorkingDevices = function(callback){
             callback(retObj);
         }else if(accounts.length > 0){
              async.each(accounts,function(account,asyncCallback){
-                 GpsSettingsColl.find({accountId:ObjectId(account._id)},{"stopTime":1},function(err,gpsData){
+                 GpsSettingsColl.findOne({accountId:ObjectId(account._id)},{"stopTime":1},function(err,gpsData){
                      if(err){
                          asyncCallback(true);
-                     }else if(gpsData.length > 0){
+                     }else if(gpsData){
                          if(!gpsData.stopTime) {
                              gpsData.stopTime = 60;
                          }
@@ -999,13 +999,14 @@ Gps.prototype.identifyNotWorkingDevices = function(callback){
                                          contact: account.contactPhone,
                                          message: "Hi " + account.contactName + "," + "Device is not working."
                                      };
-                                      SmsService.sendSMS(smsParams, function (smsResponse) {
-                                          if (smsResponse.status) {
-                                              asyncCallback(false);
-                                          } else {
-                                              asyncCallback(true);
-                                          }
-                                      });
+                                     SmsService.sendSMS(smsParams, function (smsResponse) {
+                                         if (smsResponse.status) {
+                                                  asyncCallback(false);
+                                         } else {
+                                                  asyncCallback(true);
+                                         }
+                                     });
+
                                  } else{
                                      asyncCallback(false);
                                  }
