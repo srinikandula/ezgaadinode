@@ -21,7 +21,7 @@
             <tr ng-repeat="employee in currentPageOfDeviceDetails" style="text-align: center;">
 
                 <td data-title="'S No'">
-                    {{$index+1}}
+                    {{ (deviceManagementParams.page() - 1) * deviceManagementParams.count() + $index + 1 }}
                 </td>
                 <td data-title="'Field Executive'" sortable="'employeeName'" class="clickable-item">
                     {{employee._id.employeeName[0]}}

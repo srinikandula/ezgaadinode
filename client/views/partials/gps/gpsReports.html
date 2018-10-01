@@ -18,18 +18,18 @@
 
                 <div class="col-sm-3 pall-zero gpsSearchMain">
                     <div class="gpsSearch">
-                        <ui-select ng-model="reportParams.truckNo" theme="select2"
-                                   style="min-width: 95%;"
-                                   title="Search by truck no" reset-search-input="false">
+                        <ui-select ng-model="reportParams.truckId" theme="select2"
+                                   style="min-width:230px;"
+                                   title="Search by truck no"  append-to-body="true">
 
                             <ui-select-match placeholder="Search by truck no" class="form-control ui-select-control">
                                 {{$select.selected.registrationNo}}
                             </ui-select-match>
                             <ui-select-choices
-                                    repeat="truck in trucks " refresh="getAllTrucksForAccount($select.search)"
+                                    repeat="truck in trucks" refresh="getAllTrucksForAccount($select.search)"
                                     refresh-delay="0" scroll-detector="loadMore()">
 
-                                <div ng-bind-html="truck.registrationNo"></div>
+                                <div ng-bind-html="truck.registrationNo "></div>
                                 <small>
                                     Truck Type: {{truck.truckType || '---'}}
                                 </small>
@@ -38,7 +38,8 @@
                     </div>
                     <div class="clearfix"></div>
                     <div class="searchBtn" >
-                        <input type="button" ng-click="getTruckReport()" class="sea-btn">
+                        <input type="button"
+                               ng-click="getTruckReport(reportParams.truckId.registrationNo)" class="sea-btn">
                     </div>
                 </div>
 

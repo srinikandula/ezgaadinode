@@ -8,7 +8,7 @@
            ng-table="deviceParams">
         <tr ng-repeat="device in currentPageOfDeviceDetails" style="text-align: center;">
             <td data-title="'S No'">
-                {{$index+1}}
+                {{ (deviceParams.page() - 1) * deviceParams.count() + $index + 1 }}
             </td>
             <td data-title="'Accounts'" sortable="'employeeName'" class="clickable-item">
                 {{device.userName}}

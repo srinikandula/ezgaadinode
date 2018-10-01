@@ -1417,6 +1417,48 @@ height: 42px !important;
 .rolesTable p{
     margin: 0 !important;
 }
+.total-records ul li a{
+    text-decoration: none;
+}
+.nw-clr{
+    border-radius: 100%;
+    background-color: #00bfff54;
+    padding: 0 7px;
+    margin-right: 5px;
+}
+.w-clr{
+    border-radius: 100%;
+    background-color: lightgreen;
+    padding: 0 7px;
+    margin-right: 5px;
+}
+.bg-skyblue{
+    background-color: #00bfff54 !important;
+}
+.bg-red{
+    background-color: red !important;
+}
+.damaged-clr{
+    border-radius: 100%;
+    background-color: red;
+    padding: 0 7px;
+    margin-right: 5px;
+}
+.account-box{
+    width: 100%;
+}
+.account-box-control{
+    height: 34px;
+}
+.account-box-control:hover{
+    text-decoration: none;
+}
+.account-box .select2-container .select2-choice > .select2-chosen{
+    padding: 0 !important;
+}
+.account-box .select2-dropdown-open .select2-choice{
+    width: 100% !important;
+}
 
 /* Responsive Design */
 

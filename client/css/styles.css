@@ -818,6 +818,9 @@ disabled look for disabled choices in the results dropdown
 .pall-zero {
     padding: 0 !important;
 }
+.pad-6{
+    padding: 6px !important;
+}
 
 .tl {
     text-align: left !important;

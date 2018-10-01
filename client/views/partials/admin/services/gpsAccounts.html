@@ -1,6 +1,8 @@
 <div ng-controller="accountsListCrtl">
     <ul class="list-inline title-ul">
-        <li class="pull-left name-head">GPS Accounts</li>
+        <li class="pull-left name-head">GPS Accounts
+        <span style="padding-left: 20px;font-size: 14px;">Total Records - {{count}}</span>
+        </li>
         <li class="pull-right col-sm-3 mobile-mar col-xs-12">
             <select class="form-control" ng-model="sortableString" ng-change="init()">
                 <option selected value="">Select</option>
@@ -13,7 +15,7 @@
                 <option value="statusDisbled">Status Disbaled</option>
             </select>
         </li>
-        <li class="col-sm-4 pull-right col-xs-12 mobile-mar">
+        <li class="col-sm-3 pull-right col-xs-12 mobile-mar">
             <form role="search">
                 <div class="input-group add-on">
                     <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
@@ -32,7 +34,7 @@
                ng-table="accountParams">
             <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
                 <td data-title="'S.No'">
-                    {{$index+1}}
+                    {{ (accountParams.page() - 1) * accountParams.count() + $index + 1 }}
                 </td>
                 <td data-title="'Customer Name'" sortable="'contactName'" class="clickable-item">
                     {{account.contactName}}

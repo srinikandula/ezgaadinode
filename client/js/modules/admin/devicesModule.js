@@ -139,11 +139,13 @@ app.factory('DeviceService', function ($http) {
     }
 });
 
-app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', '$stateParams', function ($scope, DeviceService, Notification, NgTableParams, $uibModal, $stateParams) {
+app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', '$stateParams','AdministratorService', function ($scope, DeviceService, Notification, NgTableParams, $uibModal, $stateParams, AdministratorService) {
     $scope.searchString = '';
-    $scope.query = {searchAccount:''};
+    $scope.query = {searchAccount:'', searchUsers:''};
     $scope.sortableString = '';
+    $scope.statusString = '';
     $scope.count = 0;
+
     $scope.getCount = function () {
         DeviceService.count($scope.query,function (success) {
             if (success.data.status) {
@@ -163,9 +165,12 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             sort: tableParams.sorting(),
             searchString: $scope.searchString,
             searchAccount: tableParams.searchAccount,
-            sortableString: $scope.sortableString
+            sortableString: $scope.sortableString,
+            statusString: $scope.statusString,
+            searchUsers: $scope.query.searchUsers._id
         };
         DeviceService.getDevices(pageable, function (response) {
+            console.log("pageable", pageable);
             $scope.invalidCount = 0;
             if (response.data.status) {
                 $scope.count = response.data.data.count;
@@ -250,7 +255,30 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
         });
 
 
+    };
+
+
+    function getAccounts() {
+        $scope.searchAdminUser = function (search) {
+            $scope.currentElement = 0;
+            $scope.search = search;
+            AdministratorService.getEmployee({
+                name: $scope.search,
+                size: $scope.currentElement
+            }, function (success) {
+                if (success.data.status) {
+                    $scope.adminEmployees = success.data.data;
+                } else {
+                    $scope.accounts = [];
+                }
+
+            }, function (error) {
+
+            });
+        };
     }
+
+    getAccounts();
 }]);
 app.controller('FindDeviceLocationController', ['$scope', 'DeviceService','$state','$uibModal', 'location','$uibModalInstance','$stateParams', function ($scope, DeviceService,$state,$uibModal, location, $uibModalInstance, $stateParams) {
     /*DeviceService.getLatestLocationFromDevice({_id:deviceId._id},function (success) {
@@ -298,8 +326,6 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
             fitnessExpiry: '',
             insuranceExpiry: ''
         },
-        isDamaged: undefined,
-        isActive: undefined,
         rcNumber: '',
         insuranceAmount: '',
         npAvailable: '',
@@ -317,9 +343,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
                     $scope.deviceDetails.truck.insuranceExpiry = $filter("date")($scope.deviceDetails.truck.insuranceExpiry, 'dd-MM-yyyy');
                     $scope.deviceDetails.truckId = $scope.deviceDetails.truck._id;
                 }
-                $scope.deviceDetails.isDamaged = $scope.deviceDetails.isDamaged === '1';
-                if ($scope.deviceDetails.isDamaged) $scope.deviceDetails.isDamaged = $scope.deviceDetails.isDamaged.toString();
-                if ($scope.deviceDetails.isActive) $scope.deviceDetails.isActive = $scope.deviceDetails.isActive.toString();
+
                 // if($scope.deviceDetails.isDamaged === '1') {
                 //     $scope.deviceDetails.isDamaged = true;
                 // } else {
@@ -433,6 +457,7 @@ app.controller('DeviceEditCrtl', ['$scope', 'DeviceService', 'Notification', 'Ng
         if (!$scope.deviceDetails.accountId) {
             $scope.deviceDetails.error = 'Please select an account';
         } else {
+            console.log("deviceDetails", $scope.deviceDetails);
             $scope.deviceDetails.error = '';
             DeviceService.updateDevice($scope.deviceDetails, function (success) {
                 if (success.data.status) {
@@ -725,7 +750,7 @@ app.controller('deviceManagementCrtl', ['$scope', 'DeviceService', 'NgTableParam
             size: tableParams.count(),
             sort: tableParams.sorting(),
             searchString: $scope.searchString,
-            sortableString: $scope.sortableString
+            sortableString: $scope.sortableString,
         };
         DeviceService.getDeviceManagementDetails(pageable, function (response) {
             $scope.invalidCount = 0;

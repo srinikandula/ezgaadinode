@@ -30,6 +30,8 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
             $scope.rememberMe();
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
+                    $scope.loginRes = success.data.permissions;
+                    // console.log("$scope.loginRes", $scope.loginRes);
                     $cookies.put('token', success.data.token);
                     $cookies.put('type', success.data.type);
                     $cookies.put('role', success.data.role);
@@ -40,6 +42,13 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     $cookies.put('erpEnabled',success.data.erpEnabled);
                     $cookies.put('gpsEnabled',success.data.gpsEnabled);
                     $cookies.put('routeConfigEnabled',success.data.routeConfigEnabled);
+
+                    var permissions = [];
+                    $scope.loginRes.forEach(permission => {
+                        if (permission.v || permission.e ) permissions.push(permission);
+                    });
+
+                    localStorage.setItem("permissions", JSON.stringify(permissions));
                     $rootScope.loggedTrue();
                     if(success.data.erpEnabled){
                         $state.go('reports');

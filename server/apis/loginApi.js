@@ -138,26 +138,20 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                 create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
                 callback(retObj);
             }else if(user.password === password ){
-                if(user.userPermissions.length>0){
-                    async.each(user.userPermissions,function(userPermission,asyncCallback){
-                        AccessPermissionsColl.find({"roleId":userPermission},function(err,accessPermissions){
-                            if(err){
-                                asyncCallback(true);
-                            }else{
-                                permissions = accessPermissions;
-                                asyncCallback(false);
+
+                async.each(user.userPermissions,function(userPermission,asyncCallback) {
+                    AccessPermissionsColl.find({"roleId": userPermission}, function (err, accessPermissions) {
+                        if (err) {
+                            asyncCallback(true);
+                        } else {
+                            for (var i = 0; i < accessPermissions.length; i++) {
+                                permissions.push(accessPermissions[i]);
                             }
-                        });
-                    },function(err){
-                        if(err){
-                            retObj.messages.push('Invalid login details');
-                            create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                            callback(retObj);
-                        }else{
-                            logInSuccess(userName,user,permissions,req,callback);
+                            asyncCallback(false);
                         }
                     });
-                }else{
+                }
+                else{
                     logInSuccess(userName,user,permissions,req,callback);
                 }
             }

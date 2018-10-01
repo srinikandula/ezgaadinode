@@ -880,8 +880,32 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
     }]);
 }]);
 
-app.run(['$transitions', '$rootScope', '$cookies', '$state', function ($transitions, $rootScope, $cookies, $state) {
+app.run(['$transitions', '$rootScope', '$cookies', '$state', function ($transitions, $rootScope, $cookies, $state, $location) {
     $transitions.onSuccess({to: '*'}, function (to) {
+        $rootScope.permissions = JSON.parse(localStorage.getItem("permissions"));
+        $rootScope.$on("$locationChangeStart", function(event, $location) {
+            // if($rootScope.permissions) {
+            //     $rootScope.permissions.forEach(permission => {
+            //         $rootScope.modules.forEach(module => {
+            //             module.subModules.forEach(subModule =>{
+            //                 console.log("subModule", subModule.name === permission.subModule &&
+            //                     permission.v || permission.e);
+            //                 if ( subModule.name === permission.subModule &&
+            //                     permission.v || permission.e) {
+            //                     console.log("Welcomne")
+            //                     event.preventDefault();
+            //                     $state.go('trips');
+            //                 }
+            //             });
+            //         });
+            //     });
+            // }
+            // This will run on every location change, before the
+            // whole route is processed. Good for things like Identity
+            // management.
+
+        });
+
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');
         $rootScope.createGroup = $cookies.get('createGroup');

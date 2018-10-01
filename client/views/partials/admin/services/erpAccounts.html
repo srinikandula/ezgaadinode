@@ -32,7 +32,7 @@
                ng-table="accountParams">
             <tr ng-repeat="account in currentPageOfAccounts" style="text-align: center;">
                 <td data-title="'S.No'">
-                    {{$index+1}}
+                    {{ (accountParams.page() - 1) * accountParams.count() + $index + 1 }}
                 </td>
                 <td data-title="'Customer Name'" sortable="'contactName'" class="clickable-item">
                     {{account.contactName}}

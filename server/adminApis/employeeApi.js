@@ -1504,18 +1504,25 @@ Employees.prototype.saveAccessPermission = function(req,callback){
         var accessPermissionDoc = {
             roleName:'',
             roleId:'',
-            permissions:[]
+            module:'',
+            subModule:'',
+            e:'',
+            v:'',
+            // permissions:[]
         };
         accessPermissionDoc.roleName = accessPermission.roleName;
         accessPermissionDoc.roleId = accessPermission.roleId;
-        accessPermissionDoc.permissions.push({
-            "module":accessPermission.module,
-            "subModule":accessPermission.subModule,
-            "access":{
-                'v':accessPermission.v,
-                'e':accessPermission.e
-            }
-        });
+        accessPermissionDoc.module = accessPermission.module;
+        accessPermissionDoc.subModule = accessPermission.subModule;
+        accessPermissionDoc.v = accessPermission.v;
+        accessPermissionDoc.e = accessPermission.e;
+
+        // accessPermissionDoc.permissions.push({
+        //     "module":accessPermission.module,
+        //     "subModule":accessPermission.subModule,
+        //     'v':accessPermission.v,
+        //     'e':accessPermission.e
+        // });
         var doc = new AccessPermissionsColl(accessPermissionDoc);
         doc.save(function(err,result){
             if(err){

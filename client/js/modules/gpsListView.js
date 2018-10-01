@@ -1,7 +1,6 @@
 app.factory('gpsListService',['$http','$cookies', function ($http, $cookies) {
     return {
         getAllVehiclesLocation: function (params,success, error) {
-            console.log("params", params);
             $http({
                 url: '/v1/gps/getAllVehiclesLocation',
                 method: "GET",
@@ -105,6 +104,10 @@ app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$s
         })
     };
     getAllVehiclesLocation();
+
+    $scope.deleteShareTracking = function (truck) {
+        console.log("lkg", truck);
+    }
 }]);
 app.controller('shareCtrl', ['$scope', '$state', '$uibModalInstance','linkData', function ($scope,  $state, $uibModalInstance,linkData) {
     $scope.link=linkData.url;
