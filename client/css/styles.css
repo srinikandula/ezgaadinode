@@ -3375,3 +3375,10 @@ textarea.form-control {
     font-size: 40px;
     width: 100%;
 }
+.liveTracking{
+    text-align: center !important;
+    /*background-color: white;*/
+    color: red;
+    font-size: 45px;
+    width: 100%;
+}
