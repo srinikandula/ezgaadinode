@@ -108,12 +108,12 @@ AuthRouter.post('/shareTripDetailsByVechicleViaEmail',function (req,res) {
 });
 
 
-/*var identifyNotWorkingDevices = cronjob.schedule('*!/30 * * * *', function() {
+var identifyNotWorkingDevices = cronjob.schedule('*/30 * * * *', function() {
     console.log("identify not working devices.....");
     gps.identifyNotWorkingDevices(function (result) {
     });
 });
-identifyNotWorkingDevices.start();*/
+identifyNotWorkingDevices.start();
 
 /*
 
