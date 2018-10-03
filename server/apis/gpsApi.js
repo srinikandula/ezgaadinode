@@ -977,6 +977,7 @@ Gps.prototype.identifyNotWorkingDevices = function(callback){
         }else if(accounts.length > 0){
              async.each(accounts,function(account,asyncCallback){
                  GpsSettingsColl.findOne({accountId:ObjectId(account._id)},{"stopTime":1},function(err,gpsData){
+                     console.log("gps data....",gpsData);
                      if(err){
                          asyncCallback(true);
                      }else if(gpsData){
@@ -994,20 +995,24 @@ Gps.prototype.identifyNotWorkingDevices = function(callback){
                              if(err){
                                  asyncCallback(true);
                              }else{
-                                 if (account.contactPhone) {
-                                     var smsParams = {
-                                         contact: account.contactPhone,
-                                         message: "Hi " + account.contactName + "," + "Device is not working."
-                                     };
-                                     SmsService.sendSMS(smsParams, function (smsResponse) {
-                                         if (smsResponse.status) {
-                                                  asyncCallback(false);
-                                         } else {
-                                                  asyncCallback(true);
-                                         }
-                                     });
+                                 if(updateResult.nModified){
+                                     if (account.contactPhone) {
+                                         var smsParams = {
+                                             contact: account.contactPhone,
+                                             message: "Hi " + account.contactName + "," + "Device is not working."
+                                         };
+                                          SmsService.sendSMS(smsParams, function (smsResponse) {
+                                              if (smsResponse.status) {
+                                                       asyncCallback(false);
+                                              } else {
+                                                       asyncCallback(true);
+                                              }
+                                          });
 
-                                 } else{
+                                     } else{
+                                         asyncCallback(false);
+                                     }
+                                 }else{
                                      asyncCallback(false);
                                  }
                              }
