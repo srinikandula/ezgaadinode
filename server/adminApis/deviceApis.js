@@ -327,37 +327,56 @@ Devices.prototype.count = function (req, callback) {
         status: false,
         messages: []
     };
-    var condition = {};
-    var accounts = [];
-    if(req.query.searchAccount) {
-        AccountsColl.find({userName: new RegExp(req.query.searchAccount, "gi")}, {"_id": 1}, function (err, result) {
-            if (err) {
-                retObj.status = false;
-                retObj.messages.push("error in finding account.." + JSON.stringify(err));
-                callback(retObj);
-            } else {
-                if (result) {
-                    accounts = _.pluck(result, '_id');
-                    condition.accountId = {$in: accounts};
-                    findCount(req,condition,function(countCallback){
-                        if(countCallback.status){
-                            callback(countCallback);
-                        }else{
-                            callback(countCallback);
-                        }
-                    });
-                }
+    if(req.query.searchAccount){
+        var condition = {};
+        var accounts = [];
+        var query = {userName: new RegExp(req.query.searchAccount, "gi")};
+       AccountsColl.find(query, {"_id": 1}, function (err, result) {
+           if (err) {
+               retObj.status = false;
+               retObj.messages.push("error in finding account.." + JSON.stringify(err));
+               callback(retObj);
+           } else {
+               if (result) {
+                   accounts = _.pluck(result, '_id');
+                   condition.accountId = {$in: accounts};
+                   findCount(req,condition,function(countCallback){
+                       if(countCallback.status){
+                           callback(countCallback);
+                       }else{
+                           callback(countCallback);
+                       }
+                   });
+               }
+           }
+       });
+   }else{
+        var query = {};
+        if(req.query.searchParams){
+            query = {
+                $or: [{"simPhoneNumber": new RegExp(req.query.searchParams, "gi")},
+                    {"imei": new RegExp(req.query.searchParams, "gi")},
+                    {"simNumber": new RegExp(req.query.searchParams, "gi")},
+                    {"deviceId": new RegExp(req.query.searchParams, "gi")},
+                    {"registrationNo": new RegExp(req.query.searchParams, "gi")}]
             }
-        });
-    }else{
-        findCount(req,condition,function(countCallback){
-            if(countCallback.status){
-                callback(countCallback);
-            }else{
-                callback(countCallback);
-            }
-        });
-    }
+        }else if(req.query.sortableString){
+            if (req.query.sortableString === 'damaged') query.isDamaged = true;
+            else if (req.query.sortableString === 'notdamaged') query.isDamaged = false;
+            else if (req.query.sortableString === 'active') query.isActive = true;
+            else if (req.query.sortableString === 'inactive') query.isActive = false;
+        }
+        else{
+            query = {}
+        }
+       findCount(req,query,function(countCallback){
+           if(countCallback.status){
+               callback(countCallback);
+           }else{
+               callback(countCallback);
+           }
+       });
+   }
 };
 
 function findDevices(req, params, accounts, callback) {
