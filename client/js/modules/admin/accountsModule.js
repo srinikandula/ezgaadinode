@@ -7,10 +7,11 @@ app.factory('AccountService', ['$http', function ($http) {
                 data: account
             }).then(success, error);
         },
-        count: function (type, success, error) {
+        count: function (type,searchParams, success, error) {
             $http({
                 url: '/v1/cpanel/accounts/count/' + type,
-                method: "GET"
+                method: "GET",
+                params:{searchParams:searchParams}
             }).then(success, error)
         },
         getAccounts: function (pageable, success, error) {
@@ -110,11 +111,11 @@ app.controller('getLocationController', ['$scope','$uibModalInstance','NgMap','D
     };
 }]);
 app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 'Notification', 'NgTableParams','$uibModal', function ($scope, $stateParams, AccountService, Notification, NgTableParams,$uibModal) {
-    $scope.searchString = '';
+    $scope.searchString = {searchParams:''};
     $scope.sortableString = '';
     $scope.count = 0;
     $scope.getCount = function () {
-        AccountService.count($stateParams.type, function (success) {
+        AccountService.count($stateParams.type,$scope.searchString.searchParams,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
                 $scope.init();
@@ -132,7 +133,7 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
                 createdAt: -1
             }
         }, {
-            counts: [10, 50, 100, 200],
+            counts: [],
             total: $scope.count,
             getData: function (params) {
                 loadTableData(params);
@@ -146,7 +147,7 @@ app.controller('accountsListCrtl', ['$scope', '$stateParams', 'AccountService', 
             size: tableParams.count(),
             sort: tableParams.sorting(),
             type: $stateParams.type,
-            searchString: $scope.searchString,
+            searchString: $scope.searchString.searchParams,
             sortableString: $scope.sortableString
         };
         AccountService.getAccounts(pageable, function (response) {
