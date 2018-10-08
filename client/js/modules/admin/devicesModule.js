@@ -13,11 +13,11 @@ app.factory('DeviceService', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        count: function (accountName,success, error) {
+        count: function (accountName,searchParams,sortableString,success, error) {
             $http({
                 url: '/v1/cpanel/devices/count',
                 method: "GET",
-                params:accountName
+                params:{searchAccount:accountName,searchParams:searchParams,sortableString:sortableString}
             }).then(success, error)
         },
         getDevices: function (pageable, success, error) {
@@ -140,12 +140,12 @@ app.factory('DeviceService', function ($http) {
 });
 
 app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTableParams', '$uibModal', '$stateParams', function ($scope, DeviceService, Notification, NgTableParams, $uibModal, $stateParams) {
-    $scope.searchString = '';
+    $scope.searchString = {searchParams:''};
     $scope.query = {searchAccount:''};
-    $scope.sortableString = '';
+    $scope.sortableString = {sortableString:''};
     $scope.count = 0;
     $scope.getCount = function () {
-        DeviceService.count($scope.query,function (success) {
+        DeviceService.count($scope.query.searchAccount,$scope.searchString.searchParams,$scope.sortableString.sortableString,function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
                 $scope.init();
@@ -161,9 +161,9 @@ app.controller('DeviceCtrl', ['$scope', 'DeviceService', 'Notification', 'NgTabl
             page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            searchString: $scope.searchString,
+            searchString: $scope.searchString.searchParams,
             searchAccount: tableParams.searchAccount,
-            sortableString: $scope.sortableString
+            sortableString: $scope.sortableString.sortableString
         };
         DeviceService.getDevices(pageable, function (response) {
             $scope.invalidCount = 0;
