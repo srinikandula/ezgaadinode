@@ -367,9 +367,6 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         if (params.password.trim().length < 5) {
             params.errors.push('Invalid password. Password has to be at least 5 characters');
         }
-        if (!params.email || !Utils.isValidEmail(params.email)) {
-            params.errors.push('Invalid email');
-        }
         /*if (!params.gpsEnabled && !params.erpEnabled) {
             params.errors.push('Select atleast 1 service');
         }*/

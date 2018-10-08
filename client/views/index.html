@@ -91,18 +91,120 @@
         <div class="row">
             <div class="col-xs-12">
                         <div class="col-sm-2 col-xs-12 left-nav">
+                             <!--<div class="panel-group" id="accordion">-->
+                                 <!--<div class="panel panel-default custom-panel-default custom-panel" ng-repeat="module in modules" ng-init="i = $index">-->
+                                        <!--<div class="panel-heading">-->
+                                            <!--<h4 class="panel-title">-->
+                                                <!--<a data-toggle="collapse" data-parent="#accordion"-->
+                                                   <!--href="#{{module.id}}" class="left-menu-anchor">-->
+                                                <!--{{module.name}}</a>-->
+                                            <!--</h4>-->
+                                        <!--</div>-->
+                                        <!--<div id="{{module.id}}" class="panel-collapse collapse">-->
+                                            <!--<div class="panel-body custom-panel-body" ng-repeat="subModule in module.subModules">-->
+                                                 <!--<left-menu label="{{subModule.name}}" ui-sref="{{subModule.link}}"></left-menu>-->
+                                            <!--</div>-->
+                                        <!--</div>-->
+                                    <!--</div>-->
+
+                             <!--</div>-->
                              <div class="panel-group" id="accordion">
-                                 <div class="panel panel-default custom-panel-default custom-panel" ng-repeat="module in modules" ng-init="i = $index">
+                                 <div class="panel panel-default custom-panel-default custom-panel">
                                         <div class="panel-heading">
                                             <h4 class="panel-title">
                                                 <a data-toggle="collapse" data-parent="#accordion"
-                                                   href="#{{module.id}}" class="left-menu-anchor">
-                                                {{module.name}}</a>
+                                                   href="#reports" class="left-menu-anchor">
+                                                Reports</a>
                                             </h4>
                                         </div>
-                                        <div id="{{module.id}}" class="panel-collapse collapse">
-                                            <div class="panel-body custom-panel-body" ng-repeat="subModule in module.subModules">
-                                                 <left-menu label="{{subModule.name}}" ui-sref="{{subModule.link}}"></left-menu>
+                                        <div id="reports" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                 <left-menu label="Reports" ui-sref="reports"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#master"
+                                                   class="left-menu-anchor">
+                                                   Master</a>
+                                            </h4>
+                                        </div>
+                                        <div id="master" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                 <left-menu label="Trucks" ui-sref="trucks"></left-menu>
+                                                <left-menu label="Drivers" ui-sref="drivers"></left-menu>
+                                                <left-menu label="Parties" ui-sref="parties"></left-menu>
+                                                <left-menu label="Inventories" ui-sref="inventories"></left-menu>
+                                                <left-menu label="Users" ui-sref="users"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#Maintanance"
+                                                   class="left-menu-anchor">
+                                                   Maintanance</a>
+                                            </h4>
+                                        </div>
+                                        <div id="Maintanance" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                <left-menu label="Expenses" ui-sref="expenses"></left-menu>
+                                                <left-menu label="Jobs" ui-sref="jobs"></left-menu>
+                                                <left-menu label="Reminders" ui-sref="reminders"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                 <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#Transactions"
+                                                   class="left-menu-anchor">
+                                                   Transactions</a>
+                                            </h4>
+                                        </div>
+                                        <div id="Transactions" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                <left-menu label="Trips" ui-sref="trips"></left-menu>
+                                                 <left-menu label="Receipts" ui-sref="receipts"></left-menu>
+                                                <left-menu label="Payments" ui-sref="payments"></left-menu>
+                                            <left-menu label="LR" ui-sref="lrs"></left-menu>
+                                               <left-menu label="TripSettlement" ui-sref="tripSettlement"></left-menu>
+                                              <left-menu label="Invoice" ui-sref="invoice"></left-menu>
+                                           </div>
+                                        </div>
+                                    </div>
+
+                                 <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#Request"
+                                                   class="left-menu-anchor">
+                                                     Load Request</a>
+                                            </h4>
+                                        </div>
+                                        <div id="Request" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                <left-menu label="LoadRequest" ui-sref="loadRequests"></left-menu>
+                                                <left-menu label="Send SMS" ui-sref="sendSMS"></left-menu>
+                                            </div>
+                                        </div>
+                                    </div>
+                                  <div class="panel panel-default custom-panel-default custom-panel">
+                                        <div class="panel-heading">
+                                            <h4 class="panel-title">
+                                                <a data-toggle="collapse" data-parent="#accordion" href="#routeConfig"
+                                                   class="left-menu-anchor">
+                                                     Route Config</a>
+                                            </h4>
+                                        </div>
+                                        <div id="routeConfig" class="panel-collapse collapse">
+                                            <div class="panel-body custom-panel-body">
+                                                <left-menu label="routeConfig" ui-sref="routeConfig"></left-menu>
+                                                <left-menu label="GeoFences" ui-sref="geoFence"></left-menu>
+                                                <left-menu label="GeoFencesReports" ui-sref="GeoFencesReports"></left-menu>
                                             </div>
                                         </div>
                                     </div>

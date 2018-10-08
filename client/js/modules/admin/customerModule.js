@@ -922,6 +922,9 @@ app.controller('truckOwnerCtrl', ['$scope', '$state', '$stateParams', 'customerS
         customerServices.getTruckOwnerDetails($stateParams.truckownerId, function (success) {
             if (success.data.status) {
                 $scope.truckOwner = success.data.data.truckOwnerData;
+                console.log("$scope.truckOwner", $scope.truckOwner);
+                $scope.truckOwner.leadType = $scope.truckOwner.role;
+
                 $scope.getTotalTrucks($scope.truckOwner._id);
                 $scope.truckOwner.confirmPassword = success.data.data.truckOwnerData.password;
                 $scope.truckOwner.newDocumentFile = '';
@@ -1419,7 +1422,7 @@ app.controller('addEditTruckCntrl', ['$scope', '$state', '$uibModalInstance', 'N
         if (!params.registrationNo) {
             params.errorMessage.push('Enter your Vehicle number');
         }
-        if(!params.truckType){
+        if(!params.truckType){v
             params.errorMessage.push('Select Truck Type');
         }
         if (params.errorMessage.length > 0) {
@@ -1499,6 +1502,8 @@ app.controller('transporterCtrl', ['$scope', '$state', '$stateParams', 'customer
         customerServices.getTransporterDetails($stateParams.transporterId, function (success) {
             if (success.data.status) {
                 $scope.transporter = success.data.data.accountData;
+                $scope.transporter.leadType = $scope.transporter.role;
+                console.log("$scope.transporter", $scope.transporter);
                 $scope.transporter.confirmPassword = success.data.data.accountData.password;
                 $scope.transporter.newDocumentFile = '';
                 if ($scope.transporter.alternatePhone.length === 0) {
@@ -1890,6 +1895,7 @@ app.controller('commissionAgentCtrl', ['$scope', '$state', '$stateParams', 'cust
         customerServices.getCommissionAgentDetails($stateParams.commissionAgentId, function (success) {
             if (success.data.status) {
                 $scope.commissionAgent = success.data.data.accountData;
+                $scope.commissionAgent.leadType = $scope.commissionAgent.role;
                 $scope.commissionAgent.confirmPassword = success.data.data.accountData.password;
                 $scope.commissionAgent.newDocumentFile = '';
                 if ($scope.commissionAgent.alternatePhone.length === 0) {

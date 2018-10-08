@@ -74,7 +74,9 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         },
         {
             name: "Maintanance",
-            subModules: [{name: "Expenses", link:'expenses'}, {name: "Jobs"}, {name: "Remainders"}],
+            subModules: [{name: "Expenses", link:'expenses'},
+                         {name: "Jobs", link:'jobs'},
+                         {name: "Remainders", link:'reminders'}],
             id:'maintanance'
         },
         {
@@ -82,20 +84,23 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
             subModules: [{name: "Trips", link:'trips'},
                         {name: "Receipts", link:'receipts'},
                         {name: "Payments", link:'payments'},
-                        {name: "LR"},
-                        {name: "TripSettlement"},
-                        {name: "Invoice"}
+                        {name: "LR", link:'lrs'},
+                        {name: "TripSettlement", link:'tripSettlement'},
+                        {name: "Invoice", link:'invoice'}
             ],
             id:'transactions'
         },
         {
             name: "Load Request",
-            subModules: [{name: "LoadRequest"}, {name: "Send SMS"}],
+            subModules: [{name: "LoadRequest", link:'loadRequests'},
+                         {name: "Send SMS", link:'sendSMS'}],
             id:'load'
         },
         {
             name: "Route Config",
-            subModules: [{name: "routeConfig"}, {name: "GeoFences"}, {name: "GeoFencesReports"}],
+            subModules: [{name: "routeConfig", link:'routeConfig'},
+                         {name: "GeoFences", link:'geoFence'},
+                         {name: "GeoFencesReports", link:'GeoFencesReports'}],
             id:'route'
         }
 
@@ -107,6 +112,10 @@ app.controller('NavCtrl', ['$scope', '$state', 'Utils', 'AccountServices', '$coo
         $scope.permissions.forEach(permission => {
             $scope.modules.forEach(module => {
                 module.subModules.forEach(subModule => {
+                    // if (permission.roleName === "") {
+                    //     subModule.v = true;
+                    //     subModule.e = true;
+                    // }
                     if (subModule.name == permission.subModule) {
                         subModule.v = permission.v;
                         subModule.e = permission.e;

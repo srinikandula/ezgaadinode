@@ -30,6 +30,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
             $scope.rememberMe();
             CommonServices.login($scope.loginParams, function (success) {
                 if (success.data.status) {
+                    // window.location.reload();
                     $scope.loginRes = success.data.permissions;
                     // console.log("$scope.loginRes", $scope.loginRes);
                     $cookies.put('token', success.data.token);
@@ -55,8 +56,7 @@ app.controller('LoginCtrl', ['$scope', 'Utils', 'CommonServices', '$state', '$co
                     }else{
                         $state.go('listView');
                     }
-
-                } else {
+           } else {
                     params.errors = success.data.messages;
                 }
             }, function (error) {

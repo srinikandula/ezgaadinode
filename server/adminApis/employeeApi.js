@@ -1549,7 +1549,7 @@ Employees.prototype.getAllAccessPermissions = function(req,callback){
       messages:[]
   };
   AccessPermissionsColl.find({},function(err,accessPermissions){
-      if(err){
+      if(err){0
           retObj.status = false;
           retObj.messages.push("Error in saving the data"+JSON.stringify(err));
           callback(retObj);
