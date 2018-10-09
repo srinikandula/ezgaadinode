@@ -686,6 +686,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
     })
 };
 
+
 Gps.prototype.getTruckReports = function (params, req, callback) {
     var retObj = {
         status: false,
