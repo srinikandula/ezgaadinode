@@ -43,7 +43,7 @@ Events.prototype.syncAccountWithUserLogins=function(req,callback) {
         messages: []
     };
 
-    userLogins.find({}, {"userName": 1, _id: 0}, function (err, allUserLogins) {
+    userLogins.find({}, {"userName": 1, _id: 1}, function (err, allUserLogins) {
         if (err) {
             retObj.messages.push("error while getting the data");
             callback(retObj);
