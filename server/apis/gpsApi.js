@@ -460,7 +460,7 @@ Gps.prototype.gpsTrackingByTruck = function (truckId, startDate, endDate, req, c
                     overSpeedLimit = settings.results.overSpeedLimit;
                 }
             });
-             devicePostions.find({
+            devicePostions.find({
                 accountId:truckDetails.accountId.toString(),
                 uniqueId: truckDetails.deviceId,
                 createdAt: {$gte: startDate, $lte: endDate}
@@ -656,9 +656,9 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                         truck.attrs.latestLocation.driverName = driver.fullName;
                     }
                     if (truck.attrs.latestLocation && (!truck.attrs.latestLocation.address || truck.attrs.latestLocation.address === '{address}'
-                        || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 ||
-                        truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) && (truck.attrs.latestLocation.latitude||
-                        truck.attrs.latestLocation.longitude)) {
+                            || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 ||
+                            truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) && (truck.attrs.latestLocation.latitude||
+                            truck.attrs.latestLocation.longitude)) {
                         resolveAddress({
                             latitude: truck.attrs.latestLocation.latitude || truck.attrs.latestLocation.location.coordinates[1],
                             longitude: truck.attrs.latestLocation.longitude || truck.attrs.latestLocation.location.coordinates[0]
@@ -709,7 +709,7 @@ Gps.prototype.getTruckReports = function (params, req, callback) {
             async.eachSeries(positions,function(position,asyncCallback){
                 if(position.address === '{address}'){
                     getOSMAddress({ latitude: position.location.coordinates[1],longitude: position.location.coordinates[0]},function(addResp){
-                      var zipCodeArr = addResp.address.match( numberPattern );
+                        var zipCodeArr = addResp.address.match( numberPattern );
                         for(var i=0;i<zipCodeArr.length;i++){
                             if(zipCodeArr[i].length == 6){
                                 position.zipcode = zipCodeArr[i];
@@ -978,63 +978,63 @@ Gps.prototype.identifyNotWorkingDevices = function(callback){
             retObj.messages.push("Error in finding the accounts",JSON.stringify(err));
             callback(retObj);
         }else if(accounts.length > 0){
-             async.each(accounts,function(account,asyncCallback){
-                 GpsSettingsColl.findOne({accountId:ObjectId(account._id)},{"stopTime":1},function(err,gpsData){
-                     console.log("gps data....",gpsData);
-                     if(err){
-                         asyncCallback(true);
-                     }else if(gpsData){
-                         if(!gpsData.stopTime) {
-                             gpsData.stopTime = 60;
-                         }
-                         var currentTime = new Date();
-                         currentTime.setMinutes(currentTime.getMinutes() - gpsData.stopTime);
-                         DevicesColl.updateMany({
-                             $and: [{
-                                 $or: [{"attrs.latestLocation": {$exists: false}},
-                                     {"attrs.latestLocation.createdAt": {$exists: false}},
-                                     {"attrs.latestLocation.createdAt": {$lte: currentTime}}]
-                             }, {status: 'Working'},{accountId:account._id}]},{status:'Not Working'},function(err,updateResult){
-                             if(err){
-                                 asyncCallback(true);
-                             }else{
-                                 if(updateResult.nModified){
-                                     if (account.contactPhone) {
-                                         var smsParams = {
-                                             contact: account.contactPhone,
-                                             message: "Hi " + account.contactName + "," + "Device is not working."
-                                         };
-                                          SmsService.sendSMS(smsParams, function (smsResponse) {
-                                              if (smsResponse.status) {
-                                                       asyncCallback(false);
-                                              } else {
-                                                       asyncCallback(true);
-                                              }
-                                          });
+            async.each(accounts,function(account,asyncCallback){
+                GpsSettingsColl.findOne({accountId:ObjectId(account._id)},{"stopTime":1},function(err,gpsData){
+                    console.log("gps data....",gpsData);
+                    if(err){
+                        asyncCallback(true);
+                    }else if(gpsData){
+                        if(!gpsData.stopTime) {
+                            gpsData.stopTime = 60;
+                        }
+                        var currentTime = new Date();
+                        currentTime.setMinutes(currentTime.getMinutes() - gpsData.stopTime);
+                        DevicesColl.updateMany({
+                            $and: [{
+                                $or: [{"attrs.latestLocation": {$exists: false}},
+                                    {"attrs.latestLocation.createdAt": {$exists: false}},
+                                    {"attrs.latestLocation.createdAt": {$lte: currentTime}}]
+                            }, {status: 'Working'},{accountId:account._id}]},{status:'Not Working'},function(err,updateResult){
+                            if(err){
+                                asyncCallback(true);
+                            }else{
+                                if(updateResult.nModified){
+                                    if (account.contactPhone) {
+                                        var smsParams = {
+                                            contact: account.contactPhone,
+                                            message: "Hi " + account.contactName + "," + "Device is not working."
+                                        };
+                                        SmsService.sendSMS(smsParams, function (smsResponse) {
+                                            if (smsResponse.status) {
+                                                asyncCallback(false);
+                                            } else {
+                                                asyncCallback(true);
+                                            }
+                                        });
 
-                                     } else{
-                                         asyncCallback(false);
-                                     }
-                                 }else{
-                                     asyncCallback(false);
-                                 }
-                             }
-                         });
-                     }else{
-                         asyncCallback(false);
-                     }
-                 });
-                 },function(error){
-                 if (error) {
-                     retObj.status = false;
-                     retObj.messages.push("Error in sending SMS");
-                     callback(retObj);
-                 } else {
-                     retObj.status = true;
-                     retObj.messages.push("SMS has been sent successfully");
-                     callback(retObj);
-                 }
-             });
+                                    } else{
+                                        asyncCallback(false);
+                                    }
+                                }else{
+                                    asyncCallback(false);
+                                }
+                            }
+                        });
+                    }else{
+                        asyncCallback(false);
+                    }
+                });
+            },function(error){
+                if (error) {
+                    retObj.status = false;
+                    retObj.messages.push("Error in sending SMS");
+                    callback(retObj);
+                } else {
+                    retObj.status = true;
+                    retObj.messages.push("SMS has been sent successfully");
+                    callback(retObj);
+                }
+            });
         }else{
             retObj.status = false;
             retObj.messages.push("No accounts found");

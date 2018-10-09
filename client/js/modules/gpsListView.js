@@ -17,15 +17,30 @@ app.factory('gpsListService',['$http','$cookies', function ($http, $cookies) {
     }
 }]);
 
-app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$stateParams','Notification','$uibModal', function ($scope, $state,gpsListService,$stateParams,Notification,$uibModal) {
+app.controller('gpsListViewController', ['$scope', '$state','gpsListService','$stateParams','Notification','$uibModal','DriverService', function ($scope, $state,gpsListService,$stateParams,Notification,$uibModal,DriverService) {
     $scope.trucksData = [];
+    $scope.drivers = [];
     $scope.today = new Date();
     $scope.today.setMinutes($scope.today.getMinutes() - 30);
+
+    DriverService.getAllDriversForFilter(function(success,error){
+        if (success.data.status) {
+            $scope.drivers = success.data.drivers;
+        }
+    });
     function getAllVehiclesLocation() {
         gpsListService.getAllVehiclesLocation({},function (success) {
             if(success.data.status){
                 $scope.trucksData=success.data.results;
                 for(var i=0;i<$scope.trucksData.length;i++){
+                    if($scope.trucksData[i].driverId){
+                        var driver = _.find($scope.drivers, function (driver) {
+                            return driver._id.toString() === $scope.trucksData[i].driverId;
+                        });
+                        if (driver) {
+                            $scope.trucksData[i].driverName = driver.fullName;
+                        }
+                    }
                     var deviceUpdate;
                     if($scope.trucksData[i].attrs){
                         deviceUpdate = new Date($scope.trucksData[i].attrs.latestLocation.createdAt);
