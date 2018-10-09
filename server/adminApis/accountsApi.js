@@ -328,10 +328,12 @@ Accounts.prototype.addAccount = function (req, callback) {
         callback(retObj);
     }
     else {
-        accountInfo.type = 'account';
-        generateUniqueUserId(accountInfo.role, function (newId) {
-            if (!newId.status) {
-                retObj.messages.push('Error saving account.');
+        userLogins.findOneAndUpdate({accountId:accountInfo._id},{$set:{"userName":accountInfo.userName,
+                "password":accountInfo.password,
+                "contactPhone":accountInfo.contactPhone,
+                "role":accountInfo.role}},function(err,updateResult){
+            if(err){
+                retObj.messages.push('Error adding/updating routes');
                 analyticsService.create(req, serviceActions.add_account_err, {
                     body: JSON.stringify(req.body),
                     accountId: req.jwt.id,
@@ -340,13 +342,11 @@ Accounts.prototype.addAccount = function (req, callback) {
                 }, function (response) {
                 });
                 callback(retObj);
-            } else {
-                accountInfo.userId = newId.userId;
-                delete accountInfo.__v;
-                AccountsColl.update(query, accountInfo, {upsert: true},
-                    function (errSaved, saved) {
-                    if (errSaved) {
-                        retObj.messages.push('Error saving account');
+            }else{
+                accountInfo.type = 'account';
+                generateUniqueUserId(accountInfo.role, function (newId) {
+                    if (!newId.status) {
+                        retObj.messages.push('Error saving account.');
                         analyticsService.create(req, serviceActions.add_account_err, {
                             body: JSON.stringify(req.body),
                             accountId: req.jwt.id,
@@ -356,61 +356,78 @@ Accounts.prototype.addAccount = function (req, callback) {
                         });
                         callback(retObj);
                     } else {
-                        async.map(routes, function (route, asynCallback) {
-                            var routeQuery = {accountId: query._id};
-                            if (route._id) {
-                                routeQuery._id = route._id;
-                            } else {
-                                routeQuery = {_id: mongoose.Types.ObjectId()};
-                                route.createdBy = req.jwt.id;
-                            }
-                            route.updatedBy = req.jwt.id;
-                            delete route.__v;
-                            OperatingRoutesColl.update(routeQuery, route, {upsert: true}, function (errroute, routeSaved) {
-                                if (errroute) {
-                                    retObj.messages.push('Error adding/updating route');
-                                    asynCallback(errroute);
+                        accountInfo.userId = newId.userId;
+                        delete accountInfo.__v;
+                        AccountsColl.update(query, accountInfo, {upsert: true},
+                            function (errSaved, saved) {
+                                if (errSaved) {
+                                    retObj.messages.push('Error saving account');
+                                    analyticsService.create(req, serviceActions.add_account_err, {
+                                        body: JSON.stringify(req.body),
+                                        accountId: req.jwt.id,
+                                        success: false,
+                                        messages: retObj.messages
+                                    }, function (response) {
+                                    });
+                                    callback(retObj);
                                 } else {
-                                    asynCallback(null, 'saved');
+                                    async.map(routes, function (route, asynCallback) {
+                                        var routeQuery = {accountId: query._id};
+                                        if (route._id) {
+                                            routeQuery._id = route._id;
+                                        } else {
+                                            routeQuery = {_id: mongoose.Types.ObjectId()};
+                                            route.createdBy = req.jwt.id;
+                                        }
+                                        route.updatedBy = req.jwt.id;
+                                        delete route.__v;
+                                        OperatingRoutesColl.update(routeQuery, route, {upsert: true}, function (errroute, routeSaved) {
+                                            if (errroute) {
+                                                retObj.messages.push('Error adding/updating route');
+                                                asynCallback(errroute);
+                                            } else {
+                                                asynCallback(null, 'saved');
+                                            }
+                                        });
+                                    }, function (errasync, async) {
+                                        if (errasync) {
+                                            retObj.messages.push('Error adding/updating routes');
+                                            analyticsService.create(req, serviceActions.add_account_err, {
+                                                body: JSON.stringify(req.body),
+                                                accountId: req.jwt.id,
+                                                success: false,
+                                                messages: retObj.messages
+                                            }, function (response) {
+                                            });
+                                            callback(retObj);
+                                        } else {
+                                            addGpsSettings(accountInfo.gpsEnabled, accountInfo._id, function (gpsAdded) {
+                                                if (!gpsAdded.status) {
+                                                    retObj.messages.push(gpsAdded.message);
+                                                    analyticsService.create(req, serviceActions.add_account_err, {
+                                                        body: JSON.stringify(req.body),
+                                                        accountId: req.jwt.id,
+                                                        success: false,
+                                                        messages: retObj.messages
+                                                    }, function (response) {
+                                                    });
+                                                    callback(retObj);
+                                                } else {
+                                                    retObj.status = true;
+                                                    retObj.messages.push('Success');
+                                                    analyticsService.create(req, serviceActions.add_account, {
+                                                        body: JSON.stringify(req.body),
+                                                        accountId: req.jwt.id,
+                                                        success: true
+                                                    }, function (response) {
+                                                    });
+                                                    callback(retObj);
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             });
-                        }, function (errasync, async) {
-                            if (errasync) {
-                                retObj.messages.push('Error adding/updating routes');
-                                analyticsService.create(req, serviceActions.add_account_err, {
-                                    body: JSON.stringify(req.body),
-                                    accountId: req.jwt.id,
-                                    success: false,
-                                    messages: retObj.messages
-                                }, function (response) {
-                                });
-                                callback(retObj);
-                            } else {
-                                addGpsSettings(accountInfo.gpsEnabled, accountInfo._id, function (gpsAdded) {
-                                    if (!gpsAdded.status) {
-                                        retObj.messages.push(gpsAdded.message);
-                                        analyticsService.create(req, serviceActions.add_account_err, {
-                                            body: JSON.stringify(req.body),
-                                            accountId: req.jwt.id,
-                                            success: false,
-                                            messages: retObj.messages
-                                        }, function (response) {
-                                        });
-                                        callback(retObj);
-                                    } else {
-                                        retObj.status = true;
-                                        retObj.messages.push('Success');
-                                        analyticsService.create(req, serviceActions.add_account, {
-                                            body: JSON.stringify(req.body),
-                                            accountId: req.jwt.id,
-                                            success: true
-                                        }, function (response) {
-                                        });
-                                        callback(retObj);
-                                    }
-                                });
-                            }
-                        });
                     }
                 });
             }
