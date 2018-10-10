@@ -1220,7 +1220,10 @@ var partsLocationSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 var accessPermissionsSchema = new mongoose.Schema({
-    permissions:[{}],
+    e: {type: Boolean, default: false},
+    v: {type: Boolean, default: false},
+    module:String,
+    subModule:String,
     roleName:String,
     roleId:String
 }, {timestamps: true});

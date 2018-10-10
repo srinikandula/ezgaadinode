@@ -42,7 +42,7 @@ app.config(function ($stateProvider, $locationProvider, $urlRouterProvider) {
         data: {activeTab: 'customers'}
     }).state({
         name: 'customers.editUpdateTruckOwner',
-        url: '/editUpdateTruckOwner/:truckownerId       ',
+        url: '/editUpdateTruckOwner/:truckownerId',
         templateUrl: 'views/partials/admin/customers/editUpdateTruckOwner.html',
         data: {activeTab: 'customers'},
         params: {truckownerId: null}

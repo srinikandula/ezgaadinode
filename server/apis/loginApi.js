@@ -138,30 +138,30 @@ Groups.prototype.login = function (userName, password, contactPhone,req, callbac
                 create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
                 callback(retObj);
             }else if(user.password === password ){
-                if(user.userPermissions.length>0){
-                    async.each(user.userPermissions,function(userPermission,asyncCallback){
-                        AccessPermissionsColl.find({"roleId":userPermission},function(err,accessPermissions){
-                            if(err){
-                                asyncCallback(true);
-                            }else{
-                                permissions = accessPermissions;
-                                asyncCallback(false);
+
+                async.each(user.userPermissions,function(userPermission,asyncCallback) {
+                    AccessPermissionsColl.find({"roleId": userPermission}, function (err, accessPermissions) {
+                        if (err) {
+                            asyncCallback(true);
+                        } else {
+                            for (var i = 0; i < accessPermissions.length; i++) {
+                                permissions.push(accessPermissions[i]);
                             }
-                        });
-                    },function(err){
-                        if(err){
-                            retObj.messages.push('Invalid login details');
-                            create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
-                            callback(retObj);
-                        }else{
-                            logInSuccess(userName,user,permissions,req,callback);
+                            asyncCallback(false);
                         }
                     });
-                }else{
-                    logInSuccess(userName,user,permissions,req,callback);
-                }
+                },function(err){
+                    if(err){
+                        retObj.messages.push('Invalid login details');
+                        create(req,serviceActions.invalid_user,{body:JSON.stringify(req.body),success:false,error:err});
+                        callback(retObj);
+                    }else{
+                        logInSuccess(userName,user,permissions,req,callback);
+                    }
+                });
             }
         });
+
     }
 };
 
@@ -349,7 +349,7 @@ Groups.prototype.resetPasword = function (body,req, callback) {
 }
 
 Groups.prototype.googleLogin = function (userData, callback) {
-    console.log('email', userData['email']);
+    // console.log('email', userData['email']);
     var retObj = {
         status: false,
         messages: []
@@ -394,7 +394,7 @@ Groups.prototype.googleLogin = function (userData, callback) {
             } else {
                 var newId = mongoose.Types.ObjectId();
                 var document = {_id:newId, email:userData['email']};
-                console.log('document', document);
+                // console.log('document', document);
                 var newaccount = new AccountsCollection(document);
                 newaccount.save(function (err) {
                     console.log(err);

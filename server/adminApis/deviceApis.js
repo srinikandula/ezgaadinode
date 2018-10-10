@@ -29,6 +29,7 @@ Devices.prototype.addDevices = function (req, callback) {
         // alreadyadded: []
     };
     var params = req.body.devices;
+
     for (var i = 0; i < params.length; i++) {
         if (!params[i].imei || !params[i].simPhoneNumber || !params[i].simNumber) {
             retObj.status = false;
@@ -372,6 +373,9 @@ function findDevices(req, params, accounts, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
+    else if (params.statusString === 'Not Working') query.status = "Not Working";
+    else if (params.statusString === 'damaged') query.isDamaged = true;
+    else if (params.statusString === 'Working') query.isActive = true;
     if (params.searchString) {
         query.$or =
             [{"simPhoneNumber": new RegExp(params.searchString, "gi")},
@@ -382,6 +386,9 @@ function findDevices(req, params, accounts, callback) {
     }
     if (params.searchAccount) {
         query.accountId = {$in: accounts}
+    }
+    if(params.searchUsers){
+        query.installedBy = params.searchUsers;
     }
     async.parallel({
         devices: function (devicescallback) {
@@ -535,6 +542,9 @@ Devices.prototype.getDevices = function (req, callback) {
     else if (params.sortableString === 'notdamaged') query.isDamaged = false;
     else if (params.sortableString === 'active') query.isActive = true;
     else if (params.sortableString === 'inactive') query.isActive = false;
+    else if (params.statusString === 'Not Working') query.status = "Not Working";
+    else if (params.statusString === 'damaged') query.isDamaged = true;
+    else if (params.statusString === 'Working') query.isActive = true;
     if (params.searchAccount) {
         AccountsColl.find({userName: new RegExp(params.searchAccount, "gi")}, {"_id": 1}, function (err, result) {
             if (err) {
@@ -559,7 +569,21 @@ Devices.prototype.getDevices = function (req, callback) {
                 }
             }
         });
-    } else {
+    } else if(params.searchUsers){
+        findDevices(req, params, accounts, function (devices) {
+            // console.log("get devices....",devices);
+            if (devices) {
+                retObj.status = true;
+                retObj.messages.push("Devices fetched successfully....");
+                retObj.data = devices;
+                callback(retObj);
+            } else {
+                retObj.status = false;
+                retObj.messages.push(" No Devices found......");
+                callback(retObj);
+            }
+        });
+    }else {
         findDevices(req, params, accounts, function (devices) {
             if (devices) {
                 retObj.status = true;
@@ -734,6 +758,7 @@ Devices.prototype.updateDevice = function (req, callback) {
         messages: []
     };
     var params = req.body;
+    console.log("params", params);
     TrucksColl.findOneAndUpdate({deviceId: params.imei}, {$set: {deviceId: null}}, function (errassaindevice, assigned) {
         TrucksColl.findOneAndUpdate({_id: params.truckId}, {$set: {deviceId: params.imei}}, function (errassaindevice, assigned) {
             if (errassaindevice) {
@@ -754,7 +779,9 @@ Devices.prototype.updateDevice = function (req, callback) {
                         simNumber: params.simNumber,
                         simPhoneNumber: params.simPhoneNumber,
                         registrationNo: params.registrationNo,
-                        truckId: params.truckId
+                        truckId: params.truckId,
+                        isDamaged: params.isDamaged,
+                        isActive: params.isActive,
 
                     }
                 }, function (errAddedAccount, accountAdded) {

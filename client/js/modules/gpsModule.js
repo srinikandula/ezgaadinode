@@ -51,12 +51,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         })
     };
 
-    $scope.reportParams={
-        startDate:'',
-        endDate:'',
-        truckNo:'',
-        currentElement:0
-    };
+    $scope.reportParams={ };
 
     function reportParamsValidation() {
         if(!$scope.reportParams.startDate){
@@ -65,7 +60,7 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         }else if(!$scope.reportParams.endDate){
             Notification.error({ message: "Please select a end date" });
             return false;
-        }else if(!$scope.reportParams.truckNo.registrationNo && !$scope.reportParams.truckNo){
+        }else if(!$scope.reportParams.truckNo){
             Notification.error({ message: "Please select a truck" });
             return false;
         }else{
@@ -80,9 +75,10 @@ app.controller('GpsCtrl', ['$scope', '$state', 'GpsService', 'Notification', 'Ng
         }
     };
 
-    $scope.getTruckReport = function () {
+    $scope.getTruckReport = function (registrationNo) {
+            $scope.reportParams.truckNo=registrationNo;
         if(reportParamsValidation()) {
-            $scope.reportParams.truckNo=$scope.reportParams.truckNo.registrationNo;
+            // console.log("sldkhlasdljhfg", $scope.reportParams)
             GpsService.getTruckReport($scope.reportParams, function (success) {
                 if (success.data.status) {
                     $scope.truckReports = success.data.results;

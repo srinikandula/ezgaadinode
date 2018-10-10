@@ -1,22 +1,36 @@
-<div ng-controller="DeviceCtrl">
+<div ng-controller="DeviceCtrl" ng-init="getAdministrators()">
     <ul class="list-inline title-ul">
         <li class="pull-left name-head">GPS Device</li>
-        <li class="pull-right">
-            <button class="btn btn-success" ng-click="assignDevicesModal()">Transfer Devices</button>
+
+        <!--<li class="pull-right col-sm-2 col-xs-12 mobile-mar">-->
+            <!--<select class="form-control" ng-model="sortableString" ng-change="init()">-->
+                <!--<option selected value="">Select</option>-->
+                <!--<option value="damaged">Damaged</option>-->
+                <!--<option value="notdamaged">Not Damaged</option>-->
+                <!--<option value="active">Active</option>-->
+                <!--<option value="inactive">Inactive</option>-->
+            <!--</select>-->
+        <!--</li>-->
+
+        <li class="col-sm-3 col-xs-12 pull-right">
+            <div class="form-group account-box">
+                <ui-select ng-model="query.searchUsers" theme="select2" class="account-box"
+                           title="Select User" reset-search-input="false" ng-change="init();">
+
+                    <ui-select-match placeholder="Select User *" class="form-control account-box-control" >
+                        {{$select.selected.firstName}}
+                    </ui-select-match>
+                    <ui-select-choices
+                            repeat="user in adminEmployees" refresh="searchAdminUser($select.search)"
+                            refresh-delay="0">
+                            <div ng-bind-html="user.firstName" ><div>
+                    </ui-select-choices>
+                </ui-select>
+
+
+            </div>
         </li>
-        <li class="pull-right">
-            <button class="btn btn-primary" ui-sref="services.addDevice">Add Devices</button>
-        </li>
-        <li class="pull-right col-sm-2 col-xs-12 mobile-mar">
-            <select class="form-control" ng-model="sortableString" ng-change="init()">
-                <option selected value="">Select</option>
-                <option value="damaged">Damaged</option>
-                <option value="notdamaged">Not Damaged</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-            </select>
-        </li>
-        <li class="col-sm-2 col-xs-12 pull-right">
+        <li class="col-sm-3 col-xs-12 pull-right">
             <form role="search">
                 <div class="input-group add-on">
                     <input type="text" class="form-control" placeholder="Search" name="srch-term" id="srch-term"
@@ -28,7 +42,7 @@
                 </div>
             </form>
         </li>
-        <li class="col-sm-2 col-xs-12 pull-right">
+        <li class="col-sm-3 col-xs-12 pull-right">
             <form role="search">
                 <div class="input-group add-on">
                     <input type="text" class="form-control" placeholder="Search by accountName" name="srch-term"
@@ -42,12 +56,43 @@
         </li>
         <div class="clearfix"></div>
     </ul>
+    <div class="row total-records">
+        <div class="col-sm-4">
+            <ul class="list-inline">
+                <li>
+                    <button class="btn btn-primary" ui-sref="services.addDevice">Add Devices</button>
+                </li>
+            <li class="">
+                <button class="btn btn-success" ng-click="assignDevicesModal()">Transfer Devices</button>
+            </li>
+
+            </ul>
+        </div>
+
+        <div class="col-sm-8 text-right">
+            <ul class="list-inline">
+                <li> Total Records {{count}}</li>
+                <li class="radio"><label>
+                    <input type="radio" class="myClass" value="Working" ng-model="statusString"
+                           name="status" ng-change="init()"><span class="w-clr"></span>Working</label></li>
+
+                <li class="radio"><label>
+                    <input type="radio" class="myClass" value="Not Working" ng-model="statusString"
+                           name="status" ng-change="init()"><span class="nw-clr"></span>Not Working</label></li>
+                <li class="radio"><label>
+                    <input type="radio" class="myClass" value="damaged" ng-model="statusString"
+                           name="status" ng-change="init()"><span class="damaged-clr"></span>Damaged</label></li>
+            </ul>
+        </div>
+    </div>
+
     <div class="table-res">
         <table class="table table-bordered table-striped table-condensed table-hover"
                ng-table="deviceParams">
-            <tr ng-repeat="device in currentPageOfDevices" style="text-align: center;">
+            <tr ng-repeat="device in currentPageOfDevices" style="text-align: center;"
+                ng-class="{'bg-skyblue':device.status === 'Not Working', 'bg-red':device.isDamaged === true}">
                 <td data-title="'S.No'">
-                    {{$index+1}}
+                    {{ (deviceParams.page() - 1) * deviceParams.count() + $index + 1 }}
                 </td>
                 <td data-title="'Account ID'" sortable="'accountId'" class="clickable-item">
                     {{device.accountId.userName}}
@@ -69,7 +114,7 @@
                     {{device.simNumber}}
                 </td>
                 <td data-title="'GPS Update'" sortable="'updatedAt'" class="clickable-item">
-                    {{device.updatedAt | date:'yyyy-MM-d HH:mm'}}
+                    {{device.updatedAt ||'---'| date:'dd-MM-yyyy HH:mm'}}
                 </td>
                 <td data-title="'Plan Expiry'" sortable="'expiryTime'" class="clickable-item">
                     {{device.expiryTime | date:'dd-MM-yyyy'}}
@@ -80,9 +125,11 @@
                 <td data-title="'Installed By'" sortable="'installedBy'" class="clickable-item">
                     {{device.assignedTo.displayName}}
                 </td>
+
                 <td data-title="'Status'" sortable="'isDamaged'" class="clickable-item">
                     {{device.status}}
                 </td>
+
                 <td data-title="'Edit/Delete'" sortable="'imei'" class="clickable-item">
                     <a href="#" ui-sref="services.editGpsDevice({device: device._id})" class="edit_icon">
                         <span class="glyphicon glyphicon-pencil"></span>
@@ -93,7 +140,7 @@
                 </td>
             </tr>
             <tr ng-if="!currentPageOfDevices || currentPageOfDevices.length === 0" class="text-center">
-                <td colspan="10">No GPS Devices exist.</td>
+                <td colspan="12">No GPS Devices exist.</td>
             </tr>
         </table>
     </div>

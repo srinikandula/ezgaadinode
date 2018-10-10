@@ -880,7 +880,7 @@ app.config(['NotificationProvider', '$httpProvider', function (NotificationProvi
     }]);
 }]);
 
-app.run(['$transitions', '$rootScope', '$cookies', '$state', function ($transitions, $rootScope, $cookies, $state) {
+app.run(['$transitions', '$rootScope', '$cookies', '$state', function ($transitions, $rootScope, $cookies, $state, $location) {
     $transitions.onSuccess({to: '*'}, function (to) {
         $rootScope.profilePic = $cookies.get('profilePic');
         $rootScope.type = $cookies.get('type');

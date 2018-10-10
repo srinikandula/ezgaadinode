@@ -15,14 +15,14 @@
                         <div class="form-group styling-input-list">
                             <select class="form-control custom-form-control" ng-model="truckOwner.leadType">
                                 <option ng-value="" selected>-- Select --</option>
-                                <option ng-repeat="type in leadType" ng-value="type.value">{{type.key}}</option>
+                                <option ng-repeat="type in leadType" ng-value="type.key">{{type.key}}</option>
                             </select>
                             <label class="focus-effect-for-input">Lead Type*</label>
                         </div>
                         <div class="form-group styling-input-list">
-                            <input type="text" class="form-control custom-form-control" name="fullName"
-                                   ng-model="truckOwner.firstName"/>
-                            <label class="focus-effect-for-input">Full Name*</label>
+                            <input type="text" class="form-control custom-form-control" name="contactName"
+                                   ng-model="truckOwner.contactName"/>
+                            <label class="focus-effect-for-input">Contact Name*</label>
                         </div>
                         <div class="form-group styling-input-list">
                             <input type="text" class="form-control custom-form-control" name="userName"

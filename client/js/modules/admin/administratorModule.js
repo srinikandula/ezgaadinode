@@ -889,19 +889,17 @@ app.controller('accessPermissionCtrl', ['$scope', '$state', '$stateParams', 'Adm
         AdministratorService.getAllAccessPermission(function (success) {
             if (success.data.status) {
                 $scope.allAccessPermission = success.data.data;
-                console.log("module", $scope.allAccessPermission);
                 $scope.modulesAccessArray.forEach(module => {
-                    // console.log("module", module);
                     $scope.allAccessPermission.forEach(moduleAccess => {
-                         // console.log("moduleAccess.module", moduleAccess);
-                        if (module.module === moduleAccess.permissions[0].module &&
+                        if (module.module === moduleAccess.module &&
                             module.roleName === moduleAccess.roleName &&
-                            module.subModule === moduleAccess.permissions[0].subModule ) {
-                                     module.v = moduleAccess.permissions[0].access.v;
-                                     module.e = moduleAccess.permissions[0].access.e;
+                            module.subModule === moduleAccess.subModule ) {
+                                     module.v = moduleAccess.v;
+                                     module.e = moduleAccess.e;
                         }
                     });
                 });
+
             } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
