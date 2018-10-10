@@ -168,6 +168,39 @@
                         </div>
                     </div>
                 </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.LrNo"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">LR No</label>
+                        </div>
+                    </div>
+                </div>
+                 <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.consignorInvoiceNo"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Consignor Invoice No.</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.gatePassNo"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Gate Pass No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.departure"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Departure</label>
+                        </div>
+                    </div>
+                </div>
+
             </div>
             <div class="col-sm-6 col-xs-12 mt-10">
                 <div class="form-group col-xs-12">
@@ -182,8 +215,29 @@
                     <div class="styling-input-list">
                         <div class="styling-input-list">
                             <input type="text" class="form-control custom-form-control" ng-model="invoice.tonnage"/>
-                            <label class="focus-effect-for-input" aria-hidden="true">Tonnage</label>
+                            <label class="focus-effect-for-input" aria-hidden="true">Tonnage/No of Kgs</label>
                         </div>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <date-picker id="permitExpiry" ng-model="invoice.LrDate" placeholder="'Dated'"
+                                     class="'custom-form-control'" past-present="'pastPresentDate'">
+                        </date-picker>
+                    </div>
+                </div>
+                 <div class="form-group col-xs-12">
+                    <div class="">
+                        <date-picker id="permitExpiry1" ng-model="invoice.consignorInvoiceDate" placeholder="'Dated'"
+                                     class="'custom-form-control'" past-present="'pastPresentDate'">
+                        </date-picker>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="">
+                        <date-picker id="permitExpiry2" ng-model="invoice.gatePassDated" placeholder="'Dated'"
+                                     class="'custom-form-control'" past-present="'pastPresentDate'">
+                        </date-picker>
                     </div>
                 </div>
             </div>

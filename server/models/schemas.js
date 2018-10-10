@@ -1170,7 +1170,6 @@ var gpsFencesReportSchema=new mongoose.Schema({
 
 
 
-
 var invoicesSchema=new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     partyId:String,
@@ -1182,6 +1181,13 @@ var invoicesSchema=new mongoose.Schema({
     totalAmount:Number,
     tonnage:String,
     ratePerTonne:String,
+    LrNo:String,
+    consignorInvoiceNo:String,
+    gatePassNo:String,
+    departure:String,
+    LrDate:{type:Date},
+    consignorInvoiceDate:{type:Date},
+    gatePassDated:{type:Date},
     trip:[]
 },{timestamps: true});
 
