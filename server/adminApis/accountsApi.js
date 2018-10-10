@@ -39,10 +39,6 @@ Accounts.prototype.totalAccounts = function (req, callback) {
     } else if (params.type === 'accounts') {
         query = {type: 'account', role: {$nin: ['employee']}}
     }
-    if(req.query.searchParams){
-        query.$or = [{"contactName": new RegExp(req.query.searchParams, "gi")},
-            {"userName": new RegExp(req.query.searchParams, "gi")}]
-    }
     AccountsColl.count(query, function (err, doc) {
         if (err) {
             retObj.messages.push('Error getting count');
