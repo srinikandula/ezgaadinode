@@ -289,9 +289,8 @@ Invoices.prototype.generatePDF = function(req,callback){
                     if(err){
                         retObj.messages.push("error in finding party details"+JSON.stringify(err));
                     }else{
-                        result.partyGstNo = party.gstNo;
                         result.invoicesCount = 500+result.invoicesCount;
-                        result.invoiceDate = new Date().getDate()+"-"+(new Date().getMonth()+1)+"-"+new Date().getFullYear();
+                        result.invoiceDate = dateToStringFormat(new Date());
                         result.partyName = party.name;
                         result.partyAddress = party.city;
                         result.gstNo = party.gstNo;
