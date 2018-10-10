@@ -646,15 +646,7 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
             retObj.messages.push('Error retrieving trucks data');
             callback(retObj);
         } else {
-            var driverIds = _.pluck(trucksData,'driverId');
-            DriversColl.find({_id: {$in:driverIds}},{fullName: 1}, function (err, driverNames) {
                 async.each(trucksData, function (truck, asyncCallback) {
-                    if (truck.driverId) {
-                        var driver = _.find(driverNames, function (driver) {
-                            return driver._id.toString() === truck.driverId;
-                        });
-                        truck.attrs.latestLocation.driverName = driver.fullName;
-                    }
                     if (truck.attrs.latestLocation && (!truck.attrs.latestLocation.address || truck.attrs.latestLocation.address === '{address}'
                             || !truck.attrs.latestLocation.address || truck.attrs.latestLocation.address.trim().length == 0 ||
                             truck.attrs.latestLocation.address.indexOf('Svalbard') != -1) && (truck.attrs.latestLocation.latitude||
@@ -689,8 +681,6 @@ Gps.prototype.getAllVehiclesLocation = function (jwt, req, callback) {
                     }
 
                 });
-            });
-
         }
     })
 };
