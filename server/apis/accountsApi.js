@@ -226,7 +226,7 @@ Accounts.prototype.getAllAccountsForDropdown = function (req, callback) {
         condition = {role: "Truck Owner"}
     }
     AccountsColl.find(condition, {userName: 1})
-        .sort({userName:1})
+        .sort()
         .skip(skipNumber)
         .limit(10).exec( function (err, accounts) {
         if (err) {
