@@ -1186,6 +1186,7 @@ var invoicesSchema=new mongoose.Schema({
     gatePassNo:String,
     departure:String,
     LrDate:{type:Date},
+    tripSheetId:String,
     consignorInvoiceDate:{type:Date},
     gatePassDated:{type:Date},
     trip:[]
@@ -1232,6 +1233,12 @@ var accessPermissionsSchema = new mongoose.Schema({
     subModule:String,
     roleName:String,
     roleId:String
+}, {timestamps: true});
+
+var tripSheetsSchema =  new mongoose.Schema({
+    vehicleId:String,
+    accountId: {type: ObjectId, ref: 'accounts'},
+    date:String
 }, {timestamps: true});
 
 module.exports = {
@@ -1299,5 +1306,6 @@ module.exports = {
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
     GeoFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
     partsLocationColl: mongoose.model('partsLocation', partsLocationSchema, 'partsLocation'),
+    tripSheetsColl: mongoose.model('tripSheets', tripSheetsSchema, 'tripSheets'),
     accessPermissionsColl: mongoose.model('accessPermissions', accessPermissionsSchema, 'accessPermissions')
 };
