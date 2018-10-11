@@ -14,7 +14,7 @@ TripSheets.prototype.createTripSheet = function (req,callback) {
     };
     var today = new Date();
     today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-    TrucksColl.find({accountId:req.params.accountId},function(err,trucks){
+    TrucksColl.find({accountId:req.jwt.accountId},function(err,trucks){
         if(err){
             retObj.status = false;
             retObj.messages.push("Error in finding trucks"+JSON.stringify(err));
@@ -23,7 +23,7 @@ TripSheets.prototype.createTripSheet = function (req,callback) {
             async.each(trucks,function(truck,asyncCallback){
                 var tripSheetObj = {
                     vehicleId : truck._id,
-                    accountId:req.params.accountId,
+                    accountId:req.jwt.accountId,
                     date : today
                 };
                 TripSheetsColl.find(tripSheetObj,function(err,tripSheet){
@@ -65,7 +65,8 @@ TripSheets.prototype.updateTripSheet = function(req,callback){
         messages:[]
     };
     var tripSheet = req.body;
-    TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,result){
+    TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:{vehicleId:tripSheet.vehicleId,
+                loadingPoint:tripSheet.loadingPoint,unloadingPoint:tripSheet.unloadingPoint}},function(err,result){
         if(err){
             retObj.status = false;
             retObj.messages.push("error in updating trip sheet",JSON.stringify(err));

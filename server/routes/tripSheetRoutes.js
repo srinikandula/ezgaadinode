@@ -7,7 +7,7 @@ var AuthRouter = express.Router();
 
 var Api = require('../apis/tripSheetApi');
 
-AuthRouter.get('/createTripSheet/:accountId',function(req,res){
+AuthRouter.get('/createTripSheet',function(req,res){
     Api.createTripSheet(req,function(result){
        res.send(result);
     });

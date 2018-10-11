@@ -1238,7 +1238,10 @@ var accessPermissionsSchema = new mongoose.Schema({
 var tripSheetsSchema =  new mongoose.Schema({
     vehicleId:String,
     accountId: {type: ObjectId, ref: 'accounts'},
-    date:String
+    date:String,
+    loadingPoint:String,
+    unloadingPoint:String,
+    party:String
 }, {timestamps: true});
 
 module.exports = {
