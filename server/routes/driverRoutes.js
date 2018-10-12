@@ -1,9 +1,29 @@
 var express = require('express');
 var AuthRouter = express.Router();
 var OpenRouter = express.Router();
+var cronjob = require('node-cron');
+
 
 var Drivers = require('../apis/driversApi');
+var Api = require('../apis/driverAttendanceApi');
 
+
+AuthRouter.get('/createDriversAttendance',function(req,res){
+    Api.createDriversAttendance(req,function(result){
+        res.send(result);
+    });
+});
+AuthRouter.get('/getAllDriversAttendance/:date',function(req,res){
+    Api.getDriversAttendance(req,function(result){
+        res.send(result);
+    });
+});
+
+var DriversAttendance = cronjob.schedule('0 1 * * *', function() {
+    Api.createDriversAttendance(function (result) {
+    });
+});
+DriversAttendance.start();
 
 AuthRouter.get('/getAllDriversForFilter', function (req, res) {
     Drivers.getAllDriversForFilter(req.jwt, req, function (result) {
