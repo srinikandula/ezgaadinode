@@ -104,6 +104,19 @@ app.factory('TripServices', ['$http', function ($http) {
                 url: '/v1/trips/getTripInvoiceDetails/' + params.tripId + '/' + params.partyId,
                 method: "GET"
             }).then(success, error)
+        },
+        getAllTripSheets: function (today, success, error) {
+            $http({
+                url: '/v1/trips/getTripSheets/' + today,
+                method: "GET"
+            }).then(success, error)
+        },
+        updateTripSheet: function (params, success, error) {
+            $http({
+                url: '/v1/trips/updateTripSheet',
+                method: "PUT",
+                data:params
+            }).then(success, error)
         }
     }
 }]);
@@ -133,7 +146,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             size: tableParams.count(),
             sort: tableParams.sorting(),
             truckNumber: tableParams.truckNumber,
-            truckType:tableParams.truckType
+            truckType: tableParams.truckType
         };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
@@ -188,18 +201,18 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         });
     };
 
-    $scope.getAddedTruckTypes=function () {
+    $scope.getAddedTruckTypes = function () {
         TrucksService.getAddedTruckTypes(function (success) {
-            if(success.data.status){
+            if (success.data.status) {
                 $scope.addedTruckTypes = success.data.data;
 
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
 
-        },function (error) {
+        }, function (error) {
 
         })
     };
@@ -238,7 +251,7 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
         });
     };
-    $scope.params={};
+    $scope.params = {};
     $scope.searchByVechicleNumber = function (truckNumber) {
         $scope.tripParams = new NgTableParams({
             page: 1, // show first page
@@ -251,8 +264,8 @@ app.controller('ShowTripsCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             total: $scope.count,
             getData: function (params) {
                 params.truckNumber = truckNumber;
-                if($scope.params.truckType){
-                    params.truckType=$scope.params.truckType.title;
+                if ($scope.params.truckType) {
+                    params.truckType = $scope.params.truckType.title;
                 }
                 loadTableData(params);
             }
@@ -573,12 +586,12 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
                 getDriverIds();
                 $scope.calculateReceivleAmount();
                 for (var i = 0; i < $scope.trip.expense.length; i++) {
-                    if($scope.trip.expense[i].type !== undefined){
+                    if ($scope.trip.expense[i].type !== undefined) {
                         $scope.trip.expense[i].type = $scope.trip.expense[i].type._id;
                     }
                 }
                 for (var i = 0; i < $scope.trip.truckOwnerCharges.length; i++) {
-                    if($scope.trip.truckOwnerCharges[i].type !== undefined){
+                    if ($scope.trip.truckOwnerCharges[i].type !== undefined) {
                         $scope.trip.truckOwnerCharges[i].type = $scope.trip.truckOwnerCharges[i].type._id;
                     }
                 }
@@ -672,7 +685,7 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
     $scope.addOrUpdateTrip = function () {
         var params = $scope.trip;
         params.errors = [];
-        if(_.isEmpty($scope.files[0])){
+        if (_.isEmpty($scope.files[0])) {
             $scope.files = [];
         }
         if (!params.date) {
@@ -967,13 +980,13 @@ app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', functi
 
 
 }]);
-app.controller('UploadTripsCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
-    $scope.file=undefined;
-    $scope.uploadTrips=function () {
+app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state', function ($scope, Upload, Notification, $state) {
+    $scope.file = undefined;
+    $scope.uploadTrips = function () {
         console.log("filess");
-        if(!$scope.file){
+        if (!$scope.file) {
             Notification.error("Please select file");
-        }else{
+        } else {
             Upload.upload({
                 url: '/v1/trips/uploadTrips',
                 data: {
@@ -981,8 +994,8 @@ app.controller('UploadTripsCtrl', ['$scope','Upload','Notification','$state', fu
                 },
             }).then(function (success) {
                 if (success.data.status) {
-                  Notification.success(success.data.messages[0]);
-                  $state.go("trips");
+                    Notification.success(success.data.messages[0]);
+                    $state.go("trips");
                 } else {
                     success.data.messages.forEach(function (message) {
                         Notification.error({message: message});
@@ -996,28 +1009,23 @@ app.controller('UploadTripsCtrl', ['$scope','Upload','Notification','$state', fu
 }]);
 
 
-app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService',function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams,PartyService) {
+app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService) {
 
-    $scope.tripSheet = {};
 
-    $scope.searchByTruckName = function (regNo) {
-        $scope.truck = regNo;
-        getAllTrucks();
-    };
-
-    function getAllTrucks() {
-        TrucksService.getAllTrucks({truckName: $scope.truck}, function (success) {
+    $scope.getAllTripssheets = function () {
+        var today = new Date();
+        today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        TripServices.getAllTripSheets(today, function (success) {
             if (success.data.status) {
-                $scope.trucks = success.data.trucks;
-            } else {
-                console.log("$scope.trucks", $scope.trucks);
+                $scope.tripSheets = success.data.data;
             }
         }, function (error) {
 
-        });
-    }
+        })
+    };
+    $scope.getAllTripssheets();
 
-    getAllTrucks();
+
 
     function getParties() {
         PartyService.getAllPartiesByTransporter(function (success) {
@@ -1032,6 +1040,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
         });
     }
+
     getParties();
 
     $scope.getAllTrucks = function () {
@@ -1040,18 +1049,23 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                 $scope.trucksList = success.data.trucks;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({message: message});
                 });
             }
         }, function (error) {
 
         })
-    }
+    };
     $scope.getAllTrucks();
 
     $scope.saveAll = function () {
-        var params = $scope.tripSheet;
-        console.log("params",params);
+        var params = $scope.tripSheets;
+        console.log("params", params);
+        TripServices.updateTripSheet(params, function (success) {
+            if(success.data.status){
+                console.log("success");
+            }
+        })
     }
 
 

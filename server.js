@@ -128,7 +128,6 @@ app.use('/v1/geoFences',geoFence.AuthRouter);
 app.use('/v1/geoFenceReports',geoFenceReports.AuthRouter);
 app.use('/v1/invoices',invoices.AuthRouter);
 app.use('/v1/tripSettlements',tripSettlements.AuthRouter);
-app.use('/v1/tripSheets',tripSheets.AuthRouter);
 
 
 
