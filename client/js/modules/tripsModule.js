@@ -994,3 +994,65 @@ app.controller('UploadTripsCtrl', ['$scope','Upload','Notification','$state', fu
     }
 
 }]);
+
+
+app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService',function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams,PartyService) {
+
+    $scope.tripSheet = {};
+
+    $scope.searchByTruckName = function (regNo) {
+        $scope.truck = regNo;
+        getAllTrucks();
+    };
+
+    function getAllTrucks() {
+        TrucksService.getAllTrucks({truckName: $scope.truck}, function (success) {
+            if (success.data.status) {
+                $scope.trucks = success.data.trucks;
+            } else {
+                console.log("$scope.trucks", $scope.trucks);
+            }
+        }, function (error) {
+
+        });
+    }
+
+    getAllTrucks();
+
+    function getParties() {
+        PartyService.getAllPartiesByTransporter(function (success) {
+            if (success.data.status) {
+                $scope.parties = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error(message);
+                });
+            }
+        }, function (error) {
+
+        });
+    }
+    getParties();
+
+    $scope.getAllTrucks = function () {
+        TrucksService.getAllTrucksForFilter(function (success) {
+            if (success.data.status) {
+                $scope.trucksList = success.data.trucks;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({ message: message });
+                });
+            }
+        }, function (error) {
+
+        })
+    }
+    $scope.getAllTrucks();
+
+    $scope.saveAll = function () {
+        var params = $scope.tripSheet;
+        console.log("params",params);
+    }
+
+
+}]);
