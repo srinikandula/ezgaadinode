@@ -1238,6 +1238,15 @@ var tripSheetsSchema =  new mongoose.Schema({
     party:String
 }, {timestamps: true});
 
+var driversAttendanceSchema = new mongoose.Schema({
+    accountId: {type: ObjectId, ref: 'accounts'},
+    contactPhone:Number,
+    driverId:String,
+    driverName:String,
+    date:String,
+    isPresent:{type:Boolean,default:false}
+}, {timestamps: true});
+
 
 
 module.exports = {
@@ -1306,5 +1315,6 @@ module.exports = {
     GeoFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
     partsLocationColl: mongoose.model('partsLocation', partsLocationSchema, 'partsLocation'),
     accessPermissionsColl: mongoose.model('accessPermissions', accessPermissionsSchema, 'accessPermissions'),
-    tripSheetsColl:mongoose.model('tripSheets', tripSheetsSchema, 'tripSheets')
+    tripSheetsColl:mongoose.model('tripSheets', tripSheetsSchema, 'tripSheets'),
+    driversAttendanceColl:mongoose.model('driversAttendance', driversAttendanceSchema, 'driversAttendance')
 };
