@@ -1228,6 +1228,18 @@ var accessPermissionsSchema = new mongoose.Schema({
     roleId:String
 }, {timestamps: true});
 
+var tripSheetsSchema =  new mongoose.Schema({
+    truckId:String,
+    registrationNo:String,
+    accountId: {type: ObjectId, ref: 'accounts'},
+    date:String,
+    loadingPoint:String,
+    unloadingPoint:String,
+    party:String
+}, {timestamps: true});
+
+
+
 module.exports = {
     EventDataCollection: mongoose.model('eventData', eventDataSchema, 'eventData'),
     tripSettlementsColl:mongoose.model('tripSettlements', tripSettlementsSchema, 'tripSettlements'),
@@ -1293,5 +1305,6 @@ module.exports = {
     LRsColl: mongoose.model('lrs', lrSchema, 'lrs'),
     GeoFencesReportsColl: mongoose.model('gpsFencesReports', gpsFencesReportSchema, 'gpsFencesReports'),
     partsLocationColl: mongoose.model('partsLocation', partsLocationSchema, 'partsLocation'),
-    accessPermissionsColl: mongoose.model('accessPermissions', accessPermissionsSchema, 'accessPermissions')
+    accessPermissionsColl: mongoose.model('accessPermissions', accessPermissionsSchema, 'accessPermissions'),
+    tripSheetsColl:mongoose.model('tripSheets', tripSheetsSchema, 'tripSheets')
 };
