@@ -122,5 +122,32 @@ Drivers.prototype.getDriversAttendance = function(req,callback){
       }
   });
 };
+Drivers.prototype.updateDriverSheet = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var drivers = req.body;
+    async.each(drivers,function(driver,asyncCallback){
+        DriversAttendanceColl.findOneAndUpdate({driverId:driver.driverId,date:driver.date},{$set:{isPresent:driver.isPresent}},function(err,updateResult){
+           if(err){
+               asyncCallback(true);
+           } else{
+               asyncCallback(false);
+           }
+        });
+
+    },function (err) {
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("error in updating",JSON.stringify(err));
+            callback(retObj);
+        }else{
+            retObj.status = true;
+            retObj.messages.push("Updated successfully");
+            callback(retObj);
+        }
+    });
+};
 
 module.exports = new Drivers();

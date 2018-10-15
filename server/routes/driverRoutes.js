@@ -12,7 +12,11 @@ AuthRouter.get('/getAllDriversAttendance/:date',function(req,res){
         res.send(result);
     });
 });
-
+AuthRouter.put('/updateDriverSheet',function(req,res){
+    Api.updateDriverSheet(req,function(result){
+        res.send(result);
+    });
+});
 var DriversAttendance = cronjob.schedule('0 1 * * *', function() {
     Api.createDriversAttendance(function (result) {
     });
