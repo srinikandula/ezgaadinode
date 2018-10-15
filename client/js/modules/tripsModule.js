@@ -1053,8 +1053,10 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
             $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
         }
         TripServices.getAllTripSheets($scope.today, function (success) {
+
             if (success.data.status) {
                 $scope.tripSheets = success.data.data;
+                console.log("trip ...",$scope.tripSheets);
             }
         }, function (error) {
 

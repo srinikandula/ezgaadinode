@@ -1,6 +1,7 @@
 var express = require('express');
 var OpenRouter = express.Router();
 var AuthRouter = express.Router();
+var cronjob = require('node-cron');
 var multiparty = require('connect-multiparty');
 var multipartyMiddleware = multiparty();
 
@@ -28,11 +29,11 @@ AuthRouter.get('/createTripSheet', function (req, res) {
     });
 });
 
-/*var createTripSheet = cronjob.schedule('0 1 * * *', function() {
+var createTripSheet = cronjob.schedule('0 1 * * *', function() {
     Api.createTripSheet(function (result) {
     });
 });
-createTripSheet.start();*/
+createTripSheet.start();
 
 AuthRouter.post('/addTrip', function (req, res) {
     Trips.addTrip(req.jwt, req.body, req, function (result) {
