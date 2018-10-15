@@ -1023,6 +1023,37 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 
 app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService) {
 
+    $scope.today = function() {
+        $scope.dt = new Date();
+    };
+    $scope.today();
+
+    $scope.clear = function() {
+        $scope.dt = null;
+    };
+
+    $scope.open2 = function() {
+        $scope.popup2.opened = true;
+    };
+
+    $scope.popup2 = {
+        opened: false
+    };
+
+    $scope.nextDay = function() {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
+        $scope.dt.setTime(dt.getTime());
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllTripssheets($scope.dt);
+    };
+
+    $scope.previousDay = function() {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllTripssheets($scope.dt);
+    };
 
     $scope.getAllLoadingPoints = function(){
         TripServices.getAllLoadingPoints(function (success) {
@@ -1038,7 +1069,6 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.getAllUnloadingPoints(function (success) {
             if(success.data.status){
                 $scope.unloadingPoints = success.data.unloadingPoints;
-                console.log("$scope.unloadingPoints", $scope.unloadingPoints);
             }
         })
     };
@@ -1046,14 +1076,9 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     $scope.getAllUnloadingPoints();
 
     $scope.getAllTripssheets = function (date) {
-        if (date) {
-            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-        } else {
-            var today = new Date();
-            $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        }
-        TripServices.getAllTripSheets($scope.today, function (success) {
-
+        var date = new Date(date);
+        $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+              TripServices.getAllTripSheets($scope.today, function (success) {
             if (success.data.status) {
                 $scope.tripSheets = success.data.data;
                 console.log("trip ...",$scope.tripSheets);

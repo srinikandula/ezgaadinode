@@ -1,4 +1,4 @@
-app.factory('DriverService',['$http', function ($http) {
+app.factory('DriverService', ['$http', function ($http) {
     return {
         addDriver: function (driverInfo, success, error) {
             $http({
@@ -17,7 +17,7 @@ app.factory('DriverService',['$http', function ($http) {
             $http({
                 url: '/v1/drivers/account/drivers',
                 method: "GET",
-                params:pageable
+                params: pageable
             }).then(success, error)
         },
         getDriver: function (driverId, success, error) {
@@ -44,27 +44,27 @@ app.factory('DriverService',['$http', function ($http) {
                 url: '/v1/drivers/total/count',
                 method: "GET"
             }).then(success, error)
-        },getAllDriversForFilter: function (success, error) {
+        }, getAllDriversForFilter: function (success, error) {
             $http({
                 url: '/v1/drivers/getAllDriversForFilter',
                 method: "GET",
             }).then(success, error)
         },
-        shareDetailsViaEmail:function(params,success,error){
+        shareDetailsViaEmail: function (params, success, error) {
             $http({
                 url: '/v1/drivers/shareDetailsViaEmail',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        deleteImage:function (params,success, error) {
+        deleteImage: function (params, success, error) {
             $http({
                 url: '/v1/drivers/deleteImage',
                 method: "DELETE",
-                params:params
+                params: params
             }).then(success, error)
         },
-        getAllDriversAttendance:function (date,success, error) {
+        getAllDriversAttendance: function (date, success, error) {
             $http({
                 url: '/v1/drivers/getAllDriversAttendance/' + date,
                 method: "GET",
@@ -74,7 +74,7 @@ app.factory('DriverService',['$http', function ($http) {
     }
 }]);
 
-app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification','paginationService','NgTableParams',
+app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notification', 'paginationService', 'NgTableParams',
     function ($scope, $state, DriverService, Notification, paginationService, NgTableParams) {
 
         $scope.goToEditDriverPage = function (driverId) {
@@ -96,7 +96,12 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
 
         var loadTableData = function (tableParams) {
 
-            var pageable = {page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),driverName:tableParams.driverName};
+            var pageable = {
+                page: tableParams.page(),
+                size: tableParams.count(),
+                sort: tableParams.sorting(),
+                driverName: tableParams.driverName
+            };
             $scope.loading = true;
             // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
             DriverService.getDrivers(pageable, function (response) {
@@ -104,95 +109,96 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
                 if (angular.isArray(response.data.drivers)) {
                     $scope.loading = false;
                     $scope.drivers = response.data.drivers;
-                    $scope.userId=response.data.userId;
-                    $scope.userType=response.data.userType;
+                    $scope.userId = response.data.userId;
+                    $scope.userType = response.data.userType;
                     tableParams.total(response.totalElements);
                     tableParams.data = $scope.drivers;
                     $scope.currentPageOfDrivers = $scope.drivers;
-                   // console.log('<<>>===', $scope.drivers);
+                    // console.log('<<>>===', $scope.drivers);
                 }
             });
         };
-    $scope.getAllDrivers=function(){
-        DriverService.getAllDriversForFilter(function (success) {
-            if (success.data.status) {
-                $scope.driversList = success.data.drivers;
-            } else {
-                success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
-                });
-            }
-        }, function (error) {
+        $scope.getAllDrivers = function () {
+            DriverService.getAllDriversForFilter(function (success) {
+                if (success.data.status) {
+                    $scope.driversList = success.data.drivers;
+                } else {
+                    success.data.messages.forEach(function (message) {
+                        Notification.error({message: message});
+                    });
+                }
+            }, function (error) {
 
-        })
-    }
-    $scope.init = function () {
-        $scope.driverParams = new NgTableParams({
-            page: 1, // show first page
-            size: 10,
-            sorting: {
-                createdAt: -1
-            }
-        }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
-                loadTableData(params);
-                $scope.getAllDrivers();
-            }
-        });
-    };
+            })
+        }
+        $scope.init = function () {
+            $scope.driverParams = new NgTableParams({
+                page: 1, // show first page
+                size: 10,
+                sorting: {
+                    createdAt: -1
+                }
+            }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    loadTableData(params);
+                    $scope.getAllDrivers();
+                }
+            });
+        };
 
-    $scope.deleteDriver = function (driverId) {
-        swal({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#E83B13',
-            cancelButtonColor: '#9d9d9d',
-            confirmButtonText: 'Yes, delete it!'
-        }).then((result) => {
-            if (result.value) {
-                DriverService.deleteDriver(driverId, function (success) {
-                    if (success.data.status) {
-                        swal(
-                            'Deleted!',
-                            'Driver deleted successfully.',
-                            'success'
-                        );
-                        $scope.getCount();
-                    } else {
-                        success.data.messages.forEach(function (message) {
+        $scope.deleteDriver = function (driverId) {
+            swal({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E83B13',
+                cancelButtonColor: '#9d9d9d',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.value) {
+                    DriverService.deleteDriver(driverId, function (success) {
+                        if (success.data.status) {
                             swal(
-                                'Error!',
-                                message,
-                                'error'
+                                'Deleted!',
+                                'Driver deleted successfully.',
+                                'success'
                             );
-                        });
-                    }
-                });
-            };
-        });
-    }
+                            $scope.getCount();
+                        } else {
+                            success.data.messages.forEach(function (message) {
+                                swal(
+                                    'Error!',
+                                    message,
+                                    'error'
+                                );
+                            });
+                        }
+                    });
+                }
+                ;
+            });
+        }
 
-    $scope.searchByDriverName=function(driverName){
-        $scope.driverParams = new NgTableParams({
-            page: 1, // show first page
-            size: 10,
-            sorting: {
-                createdAt: -1
-            }
-        }, {
-            counts: [],
-            total: $scope.count,
-            getData: function (params) {
-                params.driverName=driverName;
-                loadTableData(params);
-            }
-        });
-    }
-        $scope.shareDetailsViaEmail=function(){
+        $scope.searchByDriverName = function (driverName) {
+            $scope.driverParams = new NgTableParams({
+                page: 1, // show first page
+                size: 10,
+                sorting: {
+                    createdAt: -1
+                }
+            }, {
+                counts: [],
+                total: $scope.count,
+                getData: function (params) {
+                    params.driverName = driverName;
+                    loadTableData(params);
+                }
+            });
+        }
+        $scope.shareDetailsViaEmail = function () {
             swal({
                 title: 'Share drivers data using mail',
                 input: 'email',
@@ -200,39 +206,39 @@ app.controller('DriversListCtrl', ['$scope', '$state', 'DriverService', 'Notific
                 confirmButtonText: 'Submit',
                 showLoaderOnConfirm: true,
                 preConfirm: (email) => {
-                return new Promise((resolve) => {
-                    DriverService.shareDetailsViaEmail({
-                    email:email
-                },function(success){
-                    if (success.data.status) {
-                        resolve()
-                    } else {
+                    return new Promise((resolve) => {
+                        DriverService.shareDetailsViaEmail({
+                            email: email
+                        }, function (success) {
+                            if (success.data.status) {
+                                resolve()
+                            } else {
 
-                    }
-                },function(error){
+                            }
+                        }, function (error) {
 
-                })
-                })
+                        })
+                    })
 
                 },
-            allowOutsideClick: false
+                allowOutsideClick: false
 
-        }).then((result) => {
+            }).then((result) => {
                 if (result.value) {
-                swal({
-                    type: 'success',
-                    html: ' sent successfully'
-                })
-            }
-        })
+                    swal({
+                        type: 'success',
+                        html: ' sent successfully'
+                    })
+                }
+            })
         };
         $scope.downloadDetails = function () {
             window.open('/v1/drivers/downloadDetails');
         };
 
-}]);
+    }]);
 
-app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams','TripServices','$uibModal', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams,TripServices,$uibModal) {
+app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'DriverService', 'Notification', 'Utils', '$stateParams', 'TripServices', '$uibModal', function ($scope, $state, TrucksService, DriverService, Notification, Utils, $stateParams, TripServices, $uibModal) {
     $scope.pagetitle = "Add Driver";
 
     $scope.mobile = /^\+?\d{10}$/;
@@ -257,30 +263,30 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
         DriverService.getDriver($stateParams.driverId, function (success) {
             if (success.data.status) {
                 $scope.driver = success.data.driver;
-                if($scope.driver.licenseValidity !== undefined){
+                if ($scope.driver.licenseValidity !== undefined) {
                     $scope.driver.licenseValidity = new Date($scope.driver.licenseValidity);
                 }
                 getTruckIds();
-            }else{
+            } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message)
                 });
             }
         }, function (err) {
         })
-    } else{
+    } else {
         getTruckIds();
     }
 
     function getTruckIds() {
         TrucksService.getAllTrucksForFilter(function (success) {
-        //TrucksService.getAllTrucks(1, function (success) {
+            //TrucksService.getAllTrucks(1, function (success) {
             if (success.data.status) {
                 $scope.trucks = success.data.trucks;
-                var selectedTruck = _.find( $scope.trucks, function (truck) {
+                var selectedTruck = _.find($scope.trucks, function (truck) {
                     return truck._id.toString() === $scope.driver.truckId;
                 });
-                if(selectedTruck){
+                if (selectedTruck) {
                     $scope.truckRegNo = selectedTruck.registrationNo;
                 }
 
@@ -295,7 +301,6 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     }
 
 
-
     $scope.cancel = function () {
         $state.go('drivers');
     };
@@ -304,7 +309,7 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
     };
     $scope.addOrSaveDriver = function () {
         var params = $scope.driver;
-        console.log("params",params);
+        console.log("params", params);
         params.errors = [];
 
         if (!params.fullName) {
@@ -315,31 +320,31 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
             params.errors.push('Please provide valid mobile number');
         }*/
 
-       /* if (!params.licenseValidity) {
-            params.errors.push('Please provide license validity date');
-        }
+        /* if (!params.licenseValidity) {
+             params.errors.push('Please provide license validity date');
+         }
 
-        if (!params.salary) {
-            params.errors.push('Please provide  salary');
-        }
+         if (!params.salary) {
+             params.errors.push('Please provide  salary');
+         }
 
-        if (!params.licenseNumber) {
-            params.errors.push('Please provide  licenseNumber');
-        }*/
-        if (params.errors.length>0) {
+         if (!params.licenseNumber) {
+             params.errors.push('Please provide  licenseNumber');
+         }*/
+        if (params.errors.length > 0) {
             /*params.errors.forEach(function (message) {
                 Notification.error(message)
             });*/
-        }else{
+        } else {
             if (params._id) {
                 if ($scope.driver.aadharAttachments.length > 0 || $scope.driver.licenseAttachments.length > 0) {
                     $scope.aadharAttachments.forEach(function (file) {
-                        if(file.key){
+                        if (file.key) {
                             $scope.driver.aadharAttachments.push(file);
                         }
                     });
                     $scope.licenseAttachments.forEach(function (file) {
-                        if(file.key){
+                        if (file.key) {
                             $scope.driver.licenseAttachments.push(file);
                         }
                     })
@@ -393,10 +398,11 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
                     }
                 });
                 modalInstance.result.then(function (path) {
-                    if(path){
+                    if (path) {
                         path = path;
                     }
-                }, function () {});
+                }, function () {
+                });
 
 
             } else {
@@ -408,23 +414,23 @@ app.controller('AddEditDriverCtrl', ['$scope', '$state', 'TrucksService', 'Drive
 
         })
     };
-    $scope.deleteImage = function (type,key,index) {
-        DriverService.deleteImage({Id:$scope.driver._id, key: key}, function (successCallback) {
-            if(successCallback.data.status){
-                if(type === 'aadhar'){
+    $scope.deleteImage = function (type, key, index) {
+        DriverService.deleteImage({Id: $scope.driver._id, key: key}, function (successCallback) {
+            if (successCallback.data.status) {
+                if (type === 'aadhar') {
                     $scope.driver.aadharAttachments.splice(index, 1);
-                }else{
+                } else {
                     $scope.driver.licenseAttachments.splice(index, 1);
                 }
                 successCallback.data.messages.forEach(function (message) {
                     Notification.success({message: message});
                 });
-            }else {
+            } else {
                 successCallback.data.messages.forEach(function (message) {
                     Notification.error({message: message});
                 });
             }
-        },function (err) {
+        }, function (err) {
 
         });
     };
@@ -436,8 +442,38 @@ app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', functi
     };
 }]);
 
-app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notification', function ($scope,DriverService, TripServices, $state, Notification) {
+app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notification', function ($scope, DriverService, TripServices, $state, Notification) {
+    $scope.today = function () {
+        $scope.dt = new Date();
+    };
+    $scope.today();
 
+    $scope.clear = function () {
+        $scope.dt = null;
+    };
+
+    $scope.open2 = function () {
+        $scope.popup2.opened = true;
+    };
+
+    $scope.popup2 = {
+        opened: false
+    };
+
+    $scope.nextDay = function () {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
+        $scope.dt.setTime(dt.getTime());
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllDriversAttendance($scope.dt);
+    };
+
+    $scope.previousDay = function () {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllDriversAttendance($scope.dt);
+    };
 
     $scope.getAllDriversAttendance = function (date) {
         if (date) {
@@ -448,10 +484,8 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
         }
 
         DriverService.getAllDriversAttendance($scope.today, function (success) {
-            console.log("$scope.today", $scope.today);
             if (success.data.status) {
                 $scope.driverSheets = success.data.data;
-                console.log("$scope.driverSheets", $scope.driverSheets);
             }
         }, function (error) {
 
@@ -461,7 +495,6 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
 
     $scope.saveAll = function () {
         var params = $scope.driverSheets;
-        console.log("params", params);
         DriverService.updateTripSheet(params, function (success) {
             if (success.data.status) {
                 console.log("success");
