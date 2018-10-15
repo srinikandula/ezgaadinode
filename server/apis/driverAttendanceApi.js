@@ -1,20 +1,20 @@
 var DriversAttendanceColl = require('./../models/schemas').driversAttendanceColl;
 var DriversColl = require('./../models/schemas').DriversColl;
+var AccountsColl = require('./../models/schemas').AccountsColl;
 var async = require('async');
 
 
 var Drivers = function(){
 
 };
-
-Drivers.prototype.createDriversAttendance = function(req,callback){
-  var retObj = {
+function createDriverAttendance(account,callback){
+    var retObj = {
       status:false,
       messages:[]
-  };
-  var today = new Date();
-  today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-  DriversAttendanceColl.find({accountId:req.jwt.accountId,date:today},function(err,data){
+    };
+    var today = new Date();
+    today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+    DriversAttendanceColl.find({accountId:account._id,date:today},function(err,data){
         if(err){
             retObj.status = false;
             retObj.messages.push("Error in finding data"+JSON.stringify(err));
@@ -24,7 +24,7 @@ Drivers.prototype.createDriversAttendance = function(req,callback){
             retObj.messages.push("Already created");
             callback(retObj);
         }else{
-            DriversColl.find({accountId:req.jwt.accountId},function(err,drivers){
+            DriversColl.find({accountId:account._id},function(err,drivers){
                 if(err){
                     retObj.status = false;
                     retObj.messages.push("Error in finding data"+JSON.stringify(err));
@@ -32,7 +32,7 @@ Drivers.prototype.createDriversAttendance = function(req,callback){
                 }else if(drivers.length>0){
                     async.each(drivers,function(driver,asyncCallback){
                         var driverObj = {
-                            accountId:req.jwt.accountId,
+                            accountId:account._id,
                             contactPhone:driver.mobile,
                             driverId:driver._id,
                             driverName:driver.fullName,
@@ -40,11 +40,11 @@ Drivers.prototype.createDriversAttendance = function(req,callback){
                         };
                         var driverAttendanceDoc = new DriversAttendanceColl(driverObj);
                         driverAttendanceDoc.save(function(err,result){
-                           if(err){
-                               asyncCallback(true);
-                           } else{
-                               asyncCallback(false);
-                           }
+                            if(err){
+                                asyncCallback(true);
+                            } else{
+                                asyncCallback(false);
+                            }
                         });
                     },function(err){
                         if(err){
@@ -64,7 +64,41 @@ Drivers.prototype.createDriversAttendance = function(req,callback){
                 }
             });
         }
+    });
+};
+Drivers.prototype.createDriversAttendance = function(req,callback){
+  var retObj = {
+      status:false,
+      messages:[]
+  };
+  AccountsColl.find({},function(err,accounts){
+      if(err){
+          retObj.status = false;
+          retObj.messages.push("Error in finding data"+JSON.stringify(err));
+          callback(retObj);
+      } else{
+          async.each(accounts,function (account,asyncAccCallback) {
+              createDriverAttendance(account,function(createCallback){
+                  if(createCallback.status){
+                      asyncAccCallback(false);
+                  }else{
+                      asyncAccCallback(true);
+                  }
+              });
+          },function(err){
+              if(err){
+                  retObj.status = false;
+                  retObj.messages.push("Error in saving");
+                  callback(retObj);
+              } else{
+                  retObj.status = true;
+                  retObj.messages.push("Saved successfully");
+                  callback(retObj);
+              }
+          });
+      }
   });
+
 };
 Drivers.prototype.getDriversAttendance = function(req,callback){
   var retObj = {
