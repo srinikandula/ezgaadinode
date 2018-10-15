@@ -846,6 +846,17 @@ app.config(['$stateProvider', '$locationProvider', '$urlRouterProvider', functio
         params: {
             access: 'auth'
         }
+    }).state({
+        name: 'driverSheet',
+        url: '/driverSheet',
+        templateUrl: 'views/partials/driverSheet/driver-sheet.html',
+        data: {
+            activeTab: 'driverSheet',
+            subTab: 'ERP'
+        },
+        params: {
+            access: 'auth'
+        }
     });
     // agentReports
     $urlRouterProvider.otherwise('/login');

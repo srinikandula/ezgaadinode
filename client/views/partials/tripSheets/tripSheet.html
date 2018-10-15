@@ -1,6 +1,6 @@
 <div class="main-right col-xs-12" ng-controller="TripSheetCtrl">
     <div class="row">
-        <div class="col-sm-5">
+        <div class="col-sm-4">
             <h3>Trip Sheet</h3>
         </div>
         <div class="col-sm-4">
@@ -17,11 +17,16 @@
             </ui-select>
         </div>
 
-        <div class="col-sm-3 mb-10 pull-right">
-            <date-picker id="permitExpiry" ng-model="tripSheet.date" placeholder="'Trip Date*'"
-                         class="'custom-form-control'" past-present="'pastPresentDate'">
+        <div class="col-sm-3 mb-10 pall-zero">
+            <date-picker id="permitExpiry" ng-model="tripSheets.date" placeholder="'Select Date*'"
+                         class="'textfield'" past-present="'pastPresentDate'">
             </date-picker>
         </div>
+        <span class="col-sm-1 pall-zero">
+            <button type="submit" ng-click="getAllTripssheets(tripSheets.date);" class="btn go">
+                                <i class="fa fa-search sear" aria-hidden="true"></i>
+                            </button>
+        </span>
     </div>
     <div class="col-sm-12">
         <div class="pull-right">

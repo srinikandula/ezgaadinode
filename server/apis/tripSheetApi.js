@@ -60,6 +60,26 @@ TripSheets.prototype.createTripSheet = function (req, callback) {
     });
 };
 
+TripSheets.prototype.getTripSheets = function (req, callback) {
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    TripSheetsColl.find({accountId: req.jwt.accountId, date: req.params.date}, function (err, tripSheets) {
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = tripSheets;
+            callback(retObj);
+        }
+    });
+
+};
+
 TripSheets.prototype.updateTripSheet = function (req, callback) {
     var retObj = {
         status: false,

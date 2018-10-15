@@ -1012,19 +1012,22 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService) {
 
 
-    $scope.getAllTripssheets = function () {
-        var today = new Date();
-        today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        TripServices.getAllTripSheets(today, function (success) {
-            if (success.data.status) {
-                $scope.tripSheets = success.data.data;
-            }
-        }, function (error) {
+    $scope.getAllTripssheets = function (date) {
+         if(date){
+             $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+         }else {
+             var today = new Date();
+             $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+         }
+            TripServices.getAllTripSheets($scope.today, function (success) {
+                if (success.data.status) {
+                    $scope.tripSheets = success.data.data;
+                    console.log("$scope.tripSheets",$scope.tripSheets);
+                }
+            }, function (error) {
 
-        })
+            })
     };
-    $scope.getAllTripssheets();
-
 
 
     function getParties() {
@@ -1060,13 +1063,14 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
     $scope.saveAll = function () {
         var params = $scope.tripSheets;
-        console.log("params", params);
+        console.log("params",   $scope.tripSheets);
         TripServices.updateTripSheet(params, function (success) {
             if(success.data.status){
                 console.log("success");
             }
         })
     }
+    $scope.getAllTripssheets();
 
 
 }]);
