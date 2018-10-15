@@ -115,7 +115,19 @@ app.factory('TripServices', ['$http', function ($http) {
             $http({
                 url: '/v1/trips/updateTripSheet',
                 method: "PUT",
-                data:params
+                data: params
+            }).then(success, error)
+        },
+        getAllLoadingPoints: function (success, error) {
+            $http({
+                url: '/v1/loading/getAll',
+                method: 'GET'
+            }).then(success, error)
+        },
+        getAllUnloadingPoints: function (success, error) {
+            $http({
+                url: '/v1/unloading/getAll',
+                method: 'GET'
             }).then(success, error)
         }
     }
@@ -1012,21 +1024,41 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService) {
 
 
-    $scope.getAllTripssheets = function (date) {
-         if(date){
-             $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-         }else {
-             var today = new Date();
-             $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-         }
-            TripServices.getAllTripSheets($scope.today, function (success) {
-                if (success.data.status) {
-                    $scope.tripSheets = success.data.data;
-                    console.log("$scope.tripSheets",$scope.tripSheets);
-                }
-            }, function (error) {
+    $scope.getAllLoadingPoints = function(){
+        TripServices.getAllLoadingPoints(function (success) {
+            if(success.data.status){
+                $scope.loadingPoints = success.data.data;
+            }
+        })
+    };
 
-            })
+    $scope.getAllLoadingPoints();
+
+    $scope.getAllUnloadingPoints = function(){
+        TripServices.getAllUnloadingPoints(function (success) {
+            if(success.data.status){
+                $scope.unloadingPoints = success.data.unloadingPoints;
+                console.log("$scope.unloadingPoints", $scope.unloadingPoints);
+            }
+        })
+    };
+
+    $scope.getAllUnloadingPoints();
+
+    $scope.getAllTripssheets = function (date) {
+        if (date) {
+            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        } else {
+            var today = new Date();
+            $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+        TripServices.getAllTripSheets($scope.today, function (success) {
+            if (success.data.status) {
+                $scope.tripSheets = success.data.data;
+            }
+        }, function (error) {
+
+        })
     };
 
 
@@ -1063,9 +1095,8 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
     $scope.saveAll = function () {
         var params = $scope.tripSheets;
-        console.log("params",   $scope.tripSheets);
         TripServices.updateTripSheet(params, function (success) {
-            if(success.data.status){
+            if (success.data.status) {
                 console.log("success");
             }
         })

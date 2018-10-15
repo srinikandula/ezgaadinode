@@ -64,6 +64,13 @@ app.factory('DriverService',['$http', function ($http) {
                 params:params
             }).then(success, error)
         },
+        getAllDriversAttendance:function (date,success, error) {
+            $http({
+                url: '/v1/drivers/getAllDriversAttendance/' + date,
+                method: "GET",
+            }).then(success, error)
+        },
+
     }
 }]);
 
@@ -427,4 +434,42 @@ app.controller('ViewS3ImageCtrl', ['$scope', '$uibModalInstance', 'path', functi
     $scope.close = function () {
         $uibModalInstance.dismiss('cancel');
     };
+}]);
+
+app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notification', function ($scope,DriverService, TripServices, $state, Notification) {
+
+
+    $scope.getAllDriversAttendance = function (date) {
+        if (date) {
+            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+        } else {
+            var today = new Date();
+            $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+        }
+
+        DriverService.getAllDriversAttendance($scope.today, function (success) {
+            console.log("$scope.today", $scope.today);
+            if (success.data.status) {
+                $scope.driverSheets = success.data.data;
+                console.log("$scope.driverSheets", $scope.driverSheets);
+            }
+        }, function (error) {
+
+        })
+    };
+
+
+    $scope.saveAll = function () {
+        var params = $scope.driverSheets;
+        console.log("params", params);
+        DriverService.updateTripSheet(params, function (success) {
+            if (success.data.status) {
+                console.log("success");
+            }
+        })
+    }
+
+    $scope.getAllDriversAttendance();
+
+
 }]);
