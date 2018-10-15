@@ -1236,7 +1236,9 @@ var tripSheetsSchema =  new mongoose.Schema({
     accountId: {type: ObjectId, ref: 'accounts'},
     date:String,
     loadingPoint:String,
+    loadingPointOthers:String,
     unloadingPoint:String,
+    unloadingPointOthers:String,
     party:String
 }, {timestamps: true});
 
