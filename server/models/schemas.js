@@ -1237,6 +1237,7 @@ var tripSheetsSchema =  new mongoose.Schema({
     unloadingPoint:String,
     party:String
 }, {timestamps: true});
+
 var loadingPointsSchema=new mongoose.Schema({
     loadingPoint:String,
     accountId: {type: ObjectId, ref: 'accounts'},
@@ -1328,7 +1329,7 @@ module.exports = {
     partsLocationColl: mongoose.model('partsLocation', partsLocationSchema, 'partsLocation'),
     accessPermissionsColl: mongoose.model('accessPermissions', accessPermissionsSchema, 'accessPermissions'),
     tripSheetsColl:mongoose.model('tripSheets', tripSheetsSchema, 'tripSheets'),
-    driversAttendanceColl:mongoose.model('driversAttendance', driversAttendanceSchema, 'driversAttendance')
+    driversAttendanceColl:mongoose.model('driversAttendance', driversAttendanceSchema, 'driversAttendance'),
     loadingPointsColl: mongoose.model('loadingPoints', loadingPointsSchema, 'loadingPoints'),
     unloadingPointsColl: mongoose.model('unloadingPoints', unloadingPointsSchema, 'unloadingPoints')
 };

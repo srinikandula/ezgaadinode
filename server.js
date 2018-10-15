@@ -10,11 +10,11 @@ var app = express();
 var Admin = require('./server/routes/admin');
 var config = require('./server/config/config');
 var RouteConfig = require('./server/routes/routeConfigRoutes');
-var  LoadRequest= require('./server/routes/loadRequestRoutes');
+var LoadRequest = require('./server/routes/loadRequestRoutes');
 var Reminder = require('./server/routes/reminderRoutes');
-var  Inventory= require('./server/routes/inventoryRoutes');
-var  Job= require('./server/routes/jobRoutes');
-var  subLogIn= require('./server/routes/subLoginRoutes');
+var Inventory = require('./server/routes/inventoryRoutes');
+var Job = require('./server/routes/jobRoutes');
+var subLogIn = require('./server/routes/subLoginRoutes');
 var invoices = require('./server/routes/invoiceRoutes');
 var tripSettlements = require('./server/routes/tripSettlementRoutes');
 
@@ -40,16 +40,13 @@ var Accounts = require('./server/adminRoutes/accountsRoutes');
 var Employees = require('./server/adminRoutes/employeeRoutes');
 var Devices = require('./server/adminRoutes/deviceRoutes');
 var globalApi = require('./server/routes/globalRoutes');
-var pushNotifications= require('./server/routes/notifications');
+var pushNotifications = require('./server/routes/notifications');
 var GroupUsers = require('./server/routes/groupsRoutes');
 var LRs = require('./server/routes/lrRoutes');
 var geoFence = require('./server/routes/geoFenceRoutes');
 var geoFenceReports = require('./server/routes/geoFenceReportsRoutes');
-var tripSheets = require('./server/routes/tripSheetRoutes');
 var Loading = require('./server/routes/loadingRoutes');
 var Unloading = require('./server/routes/unloadingRoutes');
-
-
 
 
 var json2xls = require('json2xls');
@@ -69,9 +66,9 @@ app.use(function (req, res, next) {
         next();
     } else {
         var hostName = req.host || req.hostname;
-        if(hostName.indexOf('cpanel') != -1 || hostName.indexOf('admin.') != -1){
+        if (hostName.indexOf('cpanel') != -1 || hostName.indexOf('admin.') != -1) {
             res.sendFile(__dirname + '/client/views/adminIndex.html');
-        } else{
+        } else {
             res.sendFile(__dirname + '/client/views/index.html');
 
         }
@@ -86,15 +83,15 @@ app.use('/v1/inventories', Inventory.OpenRouter);
 app.use('/v1/group', Groups.OpenRouter);
 app.use('/v1/gps', Gps.OpenRouter);
 app.use('/v1/analytics', Analytics.OpenRouter);
-app.use('/v1/notifications',pushNotifications.OpenRouter);
+app.use('/v1/notifications', pushNotifications.OpenRouter);
 app.use('/v1/trucks', Trucks.OpenRouter);
 
 
 app.use(authMiddleware);
 app.use(json2xls.middleware);
 app.use('/v1/events', Events.AuthRouter);
-app.use('/v1/loading',Loading.AuthRouter);
-app.use('/v1/unloading',Unloading.AuthRouter);
+app.use('/v1/loading', Loading.AuthRouter);
+app.use('/v1/unloading', Unloading.AuthRouter);
 
 app.use('/v1/admin', Admin.AuthRouter);
 app.use('/v1/trips', Trips.AuthRouter);
@@ -107,7 +104,7 @@ app.use('/v1/expenseMaster', ExpenseMaster.AuthRouter);
 app.use('/v1/payments', ErpPayments.AuthRouter);
 app.use('/v1/receipts', Receipts.AuthRouter);
 app.use('/v1/gps', Gps.AuthRouter);
-app.use('/v1/notifications',pushNotifications.AuthRouter);
+app.use('/v1/notifications', pushNotifications.AuthRouter);
 app.use('/v1/cpanel/customers', Customers.AuthRouter);
 app.use('/v1/cpanel/settings', Settings.AuthRouter);
 app.use('/v1/cpanel/notifications', Notifications.AuthRouter);
@@ -115,24 +112,19 @@ app.use('/v1/cpanel/orderProcess', OrderProcess.AuthRouter);
 app.use('/v1/cpanel/accounts', Accounts.AuthRouter);
 app.use('/v1/cpanel/employees', Employees.AuthRouter);
 app.use('/v1/cpanel/devices', Devices.AuthRouter);
-app.use('/v1/global/',globalApi.AuthRouter);
-app.use('/v1/routeConfigs',RouteConfig.AuthRouter);
-app.use('/v1/loadRequest',LoadRequest.AuthRouter);
+app.use('/v1/global/', globalApi.AuthRouter);
+app.use('/v1/routeConfigs', RouteConfig.AuthRouter);
+app.use('/v1/loadRequest', LoadRequest.AuthRouter);
 app.use('/v1/inventories', Inventory.AuthRouter);
 app.use('/v1/jobs', Job.AuthRouter);
 app.use('/v1/reminders', Reminder.AuthRouter);
 app.use('/v1/users', subLogIn.AuthRouter);
 app.use('/v1/groups', GroupUsers.AuthRouter);
 app.use('/v1/lrs', LRs.AuthRouter);
-app.use('/v1/geoFences',geoFence.AuthRouter);
-app.use('/v1/geoFenceReports',geoFenceReports.AuthRouter);
-app.use('/v1/invoices',invoices.AuthRouter);
-app.use('/v1/tripSettlements',tripSettlements.AuthRouter);
-app.use('/v1/tripSheets',tripSheets.AuthRouter);
-
-
-
-
+app.use('/v1/geoFences', geoFence.AuthRouter);
+app.use('/v1/geoFenceReports', geoFenceReports.AuthRouter);
+app.use('/v1/invoices', invoices.AuthRouter);
+app.use('/v1/tripSettlements', tripSettlements.AuthRouter);
 
 
 var server = app.listen(app.get('port'), function () {

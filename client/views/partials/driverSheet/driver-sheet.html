@@ -1,0 +1,53 @@
+<div class="main-right col-xs-12" ng-controller="TripSheetCtrl">
+    <div class="row">
+        <div class="col-sm-5">
+            <h3>Driver Sheet</h3>
+        </div>
+        <div class="col-sm-4">
+            <ui-select ng-model="truckName" theme="select2"
+                       title="Choose a person" append-to-body="true"
+                       ng-change="searchByTruckName(truckName.registrationNo);">
+                <ui-select-match placeholder=" Select a Truck" class="form-control ui-select-control">
+                    {{$select.selected.registrationNo || registrationNo}}
+                </ui-select-match>
+                <ui-select-choices
+                        repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
+                    <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+
+        <div class="col-sm-3 mb-10 pull-right">
+            <date-picker id="permitExpiry" ng-model="tripSheet.date" placeholder="'Trip Date*'"
+                         class="'custom-form-control'" past-present="'pastPresentDate'">
+            </date-picker>
+        </div>
+    </div>
+    <div class="col-sm-12">
+        <div class="pull-right">
+            <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+        </div>
+    </div>
+
+
+    <table class="table table-bordered table-striped table-condensed table-hover">
+        <tr>
+            <th>S No</th>
+            <th>Driver Name</th>
+            <th>Mobile Number</th>
+            <th>Yes</th>
+            <th>No</th>
+        </tr>
+        <tr ng-repeat="sheet in tripSheets" style="text-align: center;">
+            <td class="col-sm-1">{{$index+1}}</td>
+            <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
+            <td class="col-sm-2"></td>
+            <td class="col-sm-2">
+               <input type="radio" name="status" ng-value="Yes[$index]">
+            </td>
+            <td class="col-sm-2">
+                <input type="radio" name="status" ng-value="No[$index]">
+            </td>
+        </tr>
+    </table>
+</div>
