@@ -7,12 +7,6 @@ var cronjob = require('node-cron');
 var Drivers = require('../apis/driversApi');
 var Api = require('../apis/driverAttendanceApi');
 
-
-AuthRouter.get('/createDriversAttendance',function(req,res){
-    Api.createDriversAttendance(req,function(result){
-        res.send(result);
-    });
-});
 AuthRouter.get('/getAllDriversAttendance/:date',function(req,res){
     Api.getDriversAttendance(req,function(result){
         res.send(result);

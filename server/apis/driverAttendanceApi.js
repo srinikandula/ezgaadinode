@@ -66,7 +66,7 @@ function createDriverAttendance(account,callback){
         }
     });
 };
-Drivers.prototype.createDriversAttendance = function(req,callback){
+Drivers.prototype.createDriversAttendance = function(callback){
   var retObj = {
       status:false,
       messages:[]
