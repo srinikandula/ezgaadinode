@@ -131,45 +131,50 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         var trip = {
             vehicleNo:tripSheet.registrationNo
         };
-        if(tripSheet.loadingPoint.name === 'other'){
-            loadingPoint.addLoadingPoint(req.jwt,{loadingPoint:tripSheet.loadingPointOthers},req,function(addLoadPointCallback){});
-            trip.from = tripSheet.loadingPointOthers;
-        }else{
-            trip.from = tripSheet.loadingPoint.name;
-        }
-        if(tripSheet.unloadingPoint.name === 'other'){
-            unLoadingPoint.addUnloadingPoint(req.jwt,{unloadingPoint:tripSheet.unloadingPointOthers},req,function(addUnLoadPointCallback){});
-            trip.to = tripSheet.unloadingPointOthers;
-        }else{
-            trip.to = tripSheet.unloadingPoint.name;
-        }
-        invoiceObj.trip.push(trip);
-        if(tripSheet.partyId){
-            invoiceObj.status = 'pending';
-            invoiceObj.tripSheetId = tripSheet._id;
-            invoiceObj.accountId = req.jwt.accountId;
-            invoiceObj.partyId = tripSheet.partyId._id;
-            invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
-                if(err){
-                    retObj.messages.push("error in finding invoices", JSON.stringify(err));
-                }else if(!invoices.length){
-                    var invoiceDoc = new invoiceColl(invoiceObj);
-                    invoiceDoc.save(function(err,result){});
-                }
-            });
-        }
-        TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:{
-                loadingPoint:tripSheet.loadingPoint,
-                loadingPointOthers:tripSheet.loadingPointOthers,
-                unloadingPoint:tripSheet.unloadingPoint,
-                unloadingPointOthers:tripSheet.unloadingPointOthers
-            }},function(err,result){
-            if(err){
-                asyncCallback(true);
+        if(tripSheet.loadingPoint !== undefined){
+            if(tripSheet.loadingPoint.loadingPoint === 'other'){
+                loadingPoint.addLoadingPoint(req.jwt,{loadingPoint:tripSheet.loadingPointOthers},req,function(addLoadPointCallback){});
+                trip.from = tripSheet.loadingPointOthers;
             }else{
-                asyncCallback(false);
+                trip.from = tripSheet.loadingPoint.loadingPoint;
             }
-        });
+            if(tripSheet.unloadingPoint.unloadingPoint === 'other'){
+                unLoadingPoint.addUnloadingPoint(req.jwt,{unloadingPoint:tripSheet.unloadingPointOthers},req,function(addUnLoadPointCallback){});
+                trip.to = tripSheet.unloadingPointOthers;
+            }else{
+                trip.to = tripSheet.unloadingPoint.unloadingPoint;
+            }
+            invoiceObj.trip.push(trip);
+            if(tripSheet.partyId){
+                invoiceObj.status = 'pending';
+                invoiceObj.tripSheetId = tripSheet._id;
+                invoiceObj.accountId = req.jwt.accountId;
+                invoiceObj.partyId = tripSheet.partyId._id;
+                invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
+                    if(err){
+                        retObj.messages.push("error in finding invoices", JSON.stringify(err));
+                    }else if(!invoices.length){
+                        var invoiceDoc = new invoiceColl(invoiceObj);
+                        invoiceDoc.save(function(err,result){});
+                    }
+                });
+            }
+             TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:{
+                     loadingPoint:tripSheet.loadingPoint.loadingPoint,
+                     loadingPointOthers:tripSheet.loadingPointOthers,
+                     unloadingPoint:tripSheet.unloadingPoint.unloadingPoint,
+                     unloadingPointOthers:tripSheet.unloadingPointOthers
+                 }},function(err,result){
+                 if(err){
+                     asyncCallback(true);
+                 }else{
+                     asyncCallback(false);
+                 }
+             });
+        }else{
+            asyncCallback(false);
+        }
+
     },function(err){
         if (err) {
             retObj.status = false;

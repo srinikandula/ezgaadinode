@@ -71,7 +71,7 @@
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
                     <select  class="form-control"  ng-model="sheet.unloadingPoint"
-                             ng-options="q.unloadingPoint for q in unloadingPoints track by q._id"  ng-disabled="sheet.loadingPoint.loadingPoint != 'other'"">
+                             ng-options="q.unloadingPoint for q in unloadingPoints track by q._id">
                         <option value="">--Select--</option>
                     </select>
                 </div>
@@ -83,7 +83,7 @@
             </td>
             <td class="col-sm-2">
                 <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"
-                           append-to-body="true" style="width: 250px;" ng-disabled = "sheet.loadingPoint.loadingPoint != 'other'">
+                           append-to-body="true" style="width: 250px;">
                     <ui-select-match placeholder=" Select a Party" class="form-control" style="height: 42px;text-align: left;">
                         {{$select.selected.name || partyName}}
                     </ui-select-match>
