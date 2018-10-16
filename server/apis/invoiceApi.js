@@ -73,6 +73,9 @@ Invoices.prototype.updateInvoice = function(jwt,invoiceDetails,callback){
         status:false,
         messages:[]
     };
+    if(invoiceDetails.tripSheetId){
+        invoiceDetails.status = '';
+    }
     InvoicesColl.findOneAndUpdate({_id:invoiceDetails._id},{$set:invoiceDetails},function(err,result){
         if(err){
             retObj.status = false;

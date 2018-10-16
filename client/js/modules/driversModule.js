@@ -70,6 +70,13 @@ app.factory('DriverService', ['$http', function ($http) {
                 method: "GET",
             }).then(success, error)
         },
+        updateDriverSheet:function (params,success, error) {
+            $http({
+                url: '/v1/drivers/updateDriverSheet',
+                method: "PUT",
+                data:params
+            }).then(success, error)
+        }
 
     }
 }]);
@@ -495,7 +502,8 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
 
     $scope.saveAll = function () {
         var params = $scope.driverSheets;
-        DriverService.updateTripSheet(params, function (success) {
+        console.log("params", params);
+        DriverService.updateDriverSheet(params, function (success) {
             if (success.data.status) {
                 console.log("success");
             }
