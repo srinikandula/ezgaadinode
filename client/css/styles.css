@@ -1244,7 +1244,7 @@ body {
     color: #d9534f;
 }
 
-.main-right {
+.main-right, .mainRight {
     padding: 10px;
     background-color: #fff;
     border-radius: 5px;
@@ -2670,7 +2670,7 @@ label > input:checked + img { /* (RADIO CHECKED) IMAGE STYLES */
 .focus-effect-for-input-trucks {
     position: absolute;
     top:11px;
-    /*left:10px;*/
+    left:10px;
     color: #989898;
     font-size: 15px;
     font-weight: lighter;
@@ -3384,4 +3384,30 @@ textarea.form-control {
     color: red;
     font-size: 45px;
     width: 100%;
+}
+.add-load{
+    margin-top: 8px;
+    float: right;
+}
+.add-load li a{
+    font-weight: bold;
+}
+.add-load li a:hover{
+    color: #1E4495;
+    text-decoration: underline;
+    font-weight: bold;
+}
+.addingLoad .modal-content{
+ border-radius: 10px;
+}
+.tripSheet-report{
+    display: inline-block;
+}
+.tripSheet-report li{
+    width: 40%;
+    display: inline-block;
+}
+.tripSheet-report li:last-child{
+    width: 12%;
+    display: inline-block;
 }
