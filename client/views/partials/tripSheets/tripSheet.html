@@ -1,38 +1,74 @@
-<div class="main-right col-xs-12" ng-controller="TripSheetCtrl">
+<div class="mainRight col-xs-12" ng-controller="TripSheetCtrl">
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-2">
             <h3>Trip Sheet</h3>
         </div>
-        <div class="col-sm-4">
-            <ui-select ng-model="tripSheets.registrationNo" theme="select2"
-                       title="Choose a person" append-to-body="true">
-                <ui-select-match placeholder=" Select a Truck" class="form-control ui-select-control">
-                    {{$select.selected.registrationNo || registrationNo}}
-                </ui-select-match>
-                <ui-select-choices
-                        repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
-                    <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
-                </ui-select-choices>
-            </ui-select>
+        <div class="col-sm-10">
+            <div class="col-sm-4">
+                <ui-select ng-model="tripSheets.registrationNo" theme="select2"
+                           title="Choose a person" append-to-body="true">
+                    <ui-select-match placeholder=" Select a Truck" class="form-control">
+                        {{$select.selected.registrationNo || registrationNo}}
+                    </ui-select-match>
+                    <ui-select-choices
+                            repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
+                        <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div>
+                <ul class="list-inline report-expense">
+                    <li class="filterFromDate">
+                        <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                                     class="'textfield'" placeholder="'from date'">
+                        </date-picker>
+                    </li>
+                    <li class="filterToDate">
+                        <date-picker ng-model="filters.toDate" past-present="'pastPresentDate'"
+                                     class="'textfield'" placeholder="'to date'"></date-picker>
+                    </li>
+                    <li class="col-sm-1 pall-zero">
+                        <button type="submit" ng-click="validateFilters('revenue');" class="btn go">
+                            <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-12 mt-20">
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default" ng-click="previousDay()"><i
+                    class="glyphicon glyphicon-chevron-left"></i></button>
         </div>
 
         <div class="col-sm-3 mb-10 pall-zero">
-            <date-picker id="permitExpiry" ng-model="tripSheets.date" placeholder="'Select Date*'"
-                         class="'textfield'" past-present="'pastPresentDate'">
-            </date-picker>
+            <p class="input-group">
+                <input type="text" class="form-control" uib-datepicker-popup ng-model="dt" is-open="popup2.opened"
+                       datepicker-options="dateOptions" ng-required="true" close-text="Close"
+                       style="height: 34px !important;" ng-change="getAllTripssheets(dt)"/>
+                <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open2()"><i
+                    class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+            </p>
         </div>
-        <span class="col-sm-1 pall-zero">
-            <button type="submit" ng-click="getAllTripssheets(tripSheets.date);" class="btn go">
-                                <i class="fa fa-search sear" aria-hidden="true"></i>
-                            </button>
-        </span>
-    </div>
-    <div class="col-sm-12">
+
+
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default" ng-click="nextDay()"><i
+                    class="glyphicon glyphicon-chevron-right"></i></button>
+        </div>
+        <div class="col-sm-6">
+            <ul class="list-inline add-load">
+                <li><a href="#" ng-click="saveLoadingPoint()">Add Loading Point</a></li>
+                <li><a href="#" ng-click="saveUnloadingPoint()">Add Unloading Point</a></li>
+            </ul>
+        </div>
         <div class="pull-right">
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
     </div>
-
 
     <table class="table table-bordered table-striped table-condensed table-hover">
         <tr>
@@ -42,7 +78,8 @@
             <th>Unloading Point</th>
             <th>Party Name</th>
         </tr>
-        <tr ng-repeat="sheet in tripSheets | filter:{registrationNo: tripSheets.registrationNo}" style="text-align: center;">
+        <tr ng-repeat="sheet in tripSheets | filter:{registrationNo: tripSheets.registrationNo.registrationNo}"
+            style="text-align: center;">
             <td class="col-sm-1">{{$index+1}}</td>
             <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
             <td class="col-sm-2">
@@ -50,19 +87,12 @@
                         <span class="bot-arrow">
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
-                    <!--<select class="form-control" ng-model="sheet.loadingPoint">-->
-                        <!--<option ng-repeat="points in loadingPoints" value="{{points.loadingPoint}}">{{points.loadingPoint}}</option>-->
-                    <!--</select>-->
-
-                    <select  class="form-control"  ng-model="sheet.loadingPoint"
-                            ng-options="p.loadingPoint for p in loadingPoints track by p._id"  >
-                        <option value="">--Select--</option>
+                    <select class="form-control" ng-model="sheet.loadingPoint">
+                        <option ng-repeat="loadingPoint in loadingPoints" value="{{loadingPoint.loadingPoint}}">
+                            {{loadingPoint.loadingPoint}}
+                        </option>
                     </select>
-                </div>
-                <div class="mt-5" ng-show="sheet.loadingPoint.loadingPoint === 'other'" >
-                    <input type="text" class="form-control" name="others"
-                           ng-model="sheet.loadingPointOthers"
-                           placeholder="Loading Point">
+
                 </div>
             </td>
             <td class="col-sm-2">
@@ -70,21 +100,18 @@
                         <span class="bot-arrow">
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
-                    <select  class="form-control"  ng-model="sheet.unloadingPoint"
-                             ng-options="q.unloadingPoint for q in unloadingPoints track by q._id">
-                        <option value="">--Select--</option>
+                    <select class="form-control" ng-model="sheet.unloadingPoint">
+                        <option ng-repeat="unloadingPoint in unloadingPoints" value="{{unloadingPoint.unloadingPoint}}">
+                            {{unloadingPoint.unloadingPoint}}
+                        </option>
                     </select>
-                </div>
-                <div class="mt-5"  ng-show="sheet.unloadingPoint.unloadingPoint === 'other'">
-                    <input type="text" class="form-control" name="others"
-                           ng-model="sheet.unloadingPointOthers"
-                          placeholder="Unloading Point">
                 </div>
             </td>
             <td class="col-sm-2">
                 <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"
                            append-to-body="true" style="width: 250px;">
-                    <ui-select-match placeholder=" Select a Party" class="form-control" style="height: 42px;text-align: left;">
+                    <ui-select-match placeholder=" Select a Party" class="form-control"
+                                     style="height: 42px;text-align: left;">
                         {{$select.selected.name || partyName}}
                     </ui-select-match>
                     <ui-select-choices repeat="party in parties | propsFilter: {name: $select.search}">
@@ -95,7 +122,11 @@
             </td>
         </tr>
     </table>
-
+    <div class="col-sm-12">
+        <div class="pull-right">
+            <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+        </div>
+    </div>
 
     <div class="print-invoice" style="display: none">
         <head>
@@ -213,4 +244,49 @@
         </body>
 
     </div>
+
+
+    <script type="text/ng-template" id="addLoadingPoint.html">
+        <div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="close()">&times;</button>
+                    <h4 class="modal-title">Add Loading Point</h4>
+                </div>
+                <div class="modal-body col-sm-10 center-block" style="float: none;">
+                    <input type="text" ng-model="loadingPoint" class="form-control" placeholder="Loading Point">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="close()">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveLpoint(loadingPoint)">Save</button>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="clearfix"></div>
+        </div>
+
+
+    </script>
+    <script type="text/ng-template" id="addUnloadingPoint.html">
+        <div>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" ng-click="close()">&times;</button>
+                    <h4 class="modal-title">Add Unloading Point</h4>
+                </div>
+                <div class="modal-body col-sm-10 center-block" style="float: none;">
+                    <input type="text" ng-model="unloadingPoint" class="form-control" placeholder="Unloading Point">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" ng-click="close()">Close</button>
+                    <button type="button" class="btn btn-primary" ng-click="saveUnlpoint(unloadingPoint)">Save</button>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+            <div class="clearfix"></div>
+        </div>
+
+
+    </script>
+
 </div>

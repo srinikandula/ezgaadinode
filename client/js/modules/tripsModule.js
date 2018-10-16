@@ -129,6 +129,20 @@ app.factory('TripServices', ['$http', function ($http) {
                 url: '/v1/unloading/getAll',
                 method: 'GET'
             }).then(success, error)
+        },
+        saveLoadingPoint: function (loadingPoint, success, error) {
+            $http({
+                url: '/v1/loading/addLoadingPoint',
+                method: 'POST',
+                data:loadingPoint
+            }).then(success, error)
+        },
+        saveUnloadingPoint: function (unloadingPoint, success, error) {
+            $http({
+                url: '/v1/unloading/addUnloadingPoint',
+                method: 'POST',
+                data:unloadingPoint
+            }).then(success, error)
         }
     }
 }]);
@@ -866,6 +880,26 @@ app.controller('AddEditTripCtrl', ['$scope', '$state', 'Utils', 'TripServices', 
 
 app.controller('truckDriverPartyCtrl', ['$scope', '$uibModalInstance', 'TripServices', '$state', 'Notification', 'TrucksService', 'DriverService', 'PartyService', 'Utils', function ($scope, $uibModalInstance, TripServices, $state, Notification, TrucksService, DriverService, PartyService, Utils) {
 
+    $scope.saveLpoint = function (loadingPoint) {
+        // console.log("sdasdad", loadingPoint);
+        TripServices.saveLoadingPoint({loadingPoint:loadingPoint}, function (success) {
+            if(success.data.status){
+                $uibModalInstance.close({status: true, message: success.data.message});
+            }
+        })
+    };
+
+    $scope.saveUnlpoint = function (unloadingPoint) {
+        // console.log("sdasdad", loadingPoint);
+        TripServices.saveUnloadingPoint({unloadingPoint:unloadingPoint}, function (success) {
+            if(success.data.status){
+                $uibModalInstance.close({status: true, message: success.data.message});
+            }
+        })
+    };
+
+
+    
     $scope.close = function () {
         $uibModalInstance.dismiss('cancel');
     };
@@ -1023,11 +1057,43 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 
 app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService) {
 
+    $scope.today = function() {
+        $scope.dt = new Date();
+    };
+    $scope.today();
+
+    $scope.clear = function() {
+        $scope.dt = null;
+    };
+
+    $scope.open2 = function() {
+        $scope.popup2.opened = true;
+    };
+
+    $scope.popup2 = {
+        opened: false
+    };
+
+    $scope.nextDay = function() {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() + 24 * 60 * 60 * 1000);
+        $scope.dt.setTime(dt.getTime());
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllTripssheets($scope.dt);
+    };
+
+    $scope.previousDay = function() {
+        var dt = $scope.dt;
+        dt.setTime(dt.getTime() - 24 * 60 * 60 * 1000);
+        $scope.dt = new Date($scope.dt);
+        $scope.getAllTripssheets($scope.dt);
+    };
 
     $scope.getAllLoadingPoints = function(){
         TripServices.getAllLoadingPoints(function (success) {
             if(success.data.status){
                 $scope.loadingPoints = success.data.data;
+                console.log("loadingPoints ...",$scope.loadingPoints);
             }
         })
     };
@@ -1038,7 +1104,6 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.getAllUnloadingPoints(function (success) {
             if(success.data.status){
                 $scope.unloadingPoints = success.data.unloadingPoints;
-                console.log("$scope.unloadingPoints", $scope.unloadingPoints);
             }
         })
     };
@@ -1046,14 +1111,9 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     $scope.getAllUnloadingPoints();
 
     $scope.getAllTripssheets = function (date) {
-        if (date) {
-            $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
-        } else {
-            var today = new Date();
-            $scope.today = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
-        }
-        TripServices.getAllTripSheets($scope.today, function (success) {
-
+        var date = new Date(date);
+        $scope.today = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+              TripServices.getAllTripSheets($scope.today, function (success) {
             if (success.data.status) {
                 $scope.tripSheets = success.data.data;
                 console.log("trip ...",$scope.tripSheets);
@@ -1104,6 +1164,37 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         })
     }
     $scope.getAllTripssheets();
+
+    $scope.saveLoadingPoint = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addLoadingPoint.html',
+            controller: 'truckDriverPartyCtrl',
+            windowClass:'addingLoad',
+            size: 'md',
+            backdrop: 'static',
+            keyboard: false,
+        });
+        modalInstance.result.then(function () {
+            $scope.getAllLoadingPoints();
+        }, function () {
+        });
+    };
+    $scope.saveUnloadingPoint = function () {
+        var modalInstance = $uibModal.open({
+            templateUrl: 'addUnloadingPoint.html',
+            controller: 'truckDriverPartyCtrl',
+            size: 'md',
+            windowClass:'addingLoad',
+            backdrop: 'static',
+            keyboard: false,
+        });
+        modalInstance.result.then(function () {
+            $scope.getAllUnloadingPoints();
+        }, function () {
+        });
+    };
+
+
 
 
 }]);

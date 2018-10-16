@@ -3,25 +3,33 @@
         <div class="col-sm-4">
             <h3>Driver Attendance Sheet</h3>
         </div>
-        <div class="col-sm-3">
-
-        </div>
-
-        <div class="col-sm-3 mb-10 pall-zero">
-            <date-picker id="permitExpiry" ng-model="driver.date" placeholder="'Date*'"
-                         class="'custom-form-control'" past-present="'pastPresentDate'">
-            </date-picker>
-        </div>
-        <span class="col-sm-1 pall-zero">
-            <button type="submit" ng-click="getAllDriversAttendance(driver.date);" class="btn go">
-                                <i class="fa fa-search sear" aria-hidden="true"></i>
-                            </button>
-        </span>
     </div>
     <div class="col-sm-12 pall-zero mb-10">
-        <div class="pull-right">
-            <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+        <div class=" mt-20">
+            <div class="col-sm-1">
+                <button type="button" class="btn btn-default" ng-click="previousDay()"><i class="glyphicon glyphicon-chevron-left"></i></button>
+            </div>
+
+            <div class="col-sm-3 mb-10 pall-zero">
+                <p class="input-group">
+                    <input type="text" class="form-control" uib-datepicker-popup ng-model="dt" is-open="popup2.opened"
+                           datepicker-options="dateOptions" ng-required="true" close-text="Close"
+                           style="height: 34px !important;" ng-change="getAllDriversAttendance(dt)"/>
+                    <span class="input-group-btn">
+            <button type="button" class="btn btn-default" ng-click="open2()"><i class="glyphicon glyphicon-calendar"></i></button>
+          </span>
+                </p>
+            </div>
+
+            <div class="col-sm-1">
+                <button type="button" class="btn btn-default" ng-click="nextDay()"><i class="glyphicon glyphicon-chevron-right"></i></button>
+            </div>
+
+            <div class="pull-right">
+                <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
+            </div>
         </div>
+
     </div>
 
 
