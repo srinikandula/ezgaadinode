@@ -129,7 +129,7 @@ Drivers.prototype.updateDriverSheet = function(req,callback){
     };
     var drivers = req.body;
     async.each(drivers,function(driver,asyncCallback){
-        DriversAttendanceColl.findOneAndUpdate({driverId:driver.driverId,date:driver.date},{$set:{isPresent:driver.isPresent}},function(err,updateResult){
+        DriversAttendanceColl.findOneAndUpdate({_id:driver._id},{$set:{isPresent:driver.isPresent}},function(err,updateResult){
            if(err){
                asyncCallback(true);
            } else{
