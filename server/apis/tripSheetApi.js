@@ -2,9 +2,9 @@ var TripSheetsColl = require('./../models/schemas').tripSheetsColl;
 var TrucksColl = require('./../models/schemas').TrucksColl;
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var async = require('async');
-var loadingPoint = require('../apis/loadingApi');
-var unLoadingPoint = require('../apis/unloadingApi');
 var invoiceColl = require('./../models/schemas').invoicesCollection;
+var partyColl = require('./../models/schemas').PartyCollection;
+
 
 
 var TripSheets = function () {
@@ -30,7 +30,7 @@ function createTripSheet(account,callback){
                         asyncCallback(true);
                     }else{
                         var tripSheetObj = {
-                            vehicleId : truck._id,
+                            truckId : truck._id,
                             registrationNo : truck.registrationNo,
                             accountId:account._id,
                             date : today
@@ -121,68 +121,58 @@ TripSheets.prototype.getTripSheets = function (req, callback) {
 TripSheets.prototype.updateTripSheet = function (req, callback) {
     var retObj = {
         status: false,
-        messages: []
+        messages: [],
+        errors:[]
     };
     var tripSheets = req.body;
+    var invoiceObj = {trip:[],partyId:''};
     async.each(tripSheets,function(tripSheet,asyncCallback){
-        var invoiceObj = {
-            trip:[]
-        };
-        var trip = {
-            vehicleNo:tripSheet.registrationNo
-        };
-        if(tripSheet.loadingPoint !== undefined){
-            if(tripSheet.loadingPoint.loadingPoint === 'other'){
-                loadingPoint.addLoadingPoint(req.jwt,{loadingPoint:tripSheet.loadingPointOthers},req,function(addLoadPointCallback){});
-                trip.from = tripSheet.loadingPointOthers;
-            }else{
-                trip.from = tripSheet.loadingPoint.loadingPoint;
-            }
-            if(tripSheet.unloadingPoint.unloadingPoint === 'other'){
-                unLoadingPoint.addUnloadingPoint(req.jwt,{unloadingPoint:tripSheet.unloadingPointOthers},req,function(addUnLoadPointCallback){});
-                trip.to = tripSheet.unloadingPointOthers;
-            }else{
-                trip.to = tripSheet.unloadingPoint.unloadingPoint;
-            }
-            invoiceObj.trip.push(trip);
+        console.log("trip sheet..",tripSheet);
+        if((tripSheet.unloadingPoint && tripSheet.loadingPoint) !== undefined){
             if(tripSheet.partyId){
-                invoiceObj.status = 'pending';
-                invoiceObj.tripSheetId = tripSheet._id;
-                invoiceObj.accountId = req.jwt.accountId;
-                invoiceObj.partyId = tripSheet.partyId._id;
+                retObj.errors.push("Select party");
+            }
+        }
+        if(tripSheet.partyId){
+                if(tripSheet.partyId._id !== undefined){
+                    tripSheet.partyId = tripSheet.partyId._id;
+                    invoiceObj.partyId = tripSheet.partyId;
+                }
                 invoiceColl.find({tripSheetId:tripSheet._id},function(err,invoices){
                     if(err){
-                        retObj.messages.push("error in finding invoices", JSON.stringify(err));
+                        asyncCallback(true);
                     }else if(!invoices.length){
+                        invoiceObj.status = 'pending';
+                        invoiceObj.tripSheetId = tripSheet._id;
+                        invoiceObj.accountId = req.jwt.accountId;
+                        invoiceObj.trip.push({
+                            vehicleNo:tripSheet.registrationNo,
+                            from:tripSheet.loadingPoint,
+                            to:tripSheet.unloadingPoint
+                        });
                         var invoiceDoc = new invoiceColl(invoiceObj);
                         invoiceDoc.save(function(err,result){});
                     }
                 });
             }
-             TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:{
-                     loadingPoint:tripSheet.loadingPoint.loadingPoint,
-                     loadingPointOthers:tripSheet.loadingPointOthers,
-                     unloadingPoint:tripSheet.unloadingPoint.unloadingPoint,
-                     unloadingPointOthers:tripSheet.unloadingPointOthers
-                 }},function(err,result){
-                 if(err){
-                     asyncCallback(true);
-                 }else{
-                     asyncCallback(false);
-                 }
-             });
-        }else{
-            asyncCallback(false);
-        }
-
-    },function(err){
-        if (err) {
+            TripSheetsColl.findOneAndUpdate({_id:tripSheet._id},{$set:tripSheet},function(err,updateResult){
+                if(err){
+                    asyncCallback(true);
+                }else{
+                    asyncCallback(false);
+                }
+            });
+        },function(err){
+        if(retObj.errors.length>0){
+            retObj.status = false;
+            callback(retObj);
+        }else if (err) {
             retObj.status = false;
             retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
             callback(retObj);
         } else {
             retObj.status = true;
-            retObj.messages.push("Successfully updated");
+            retObj.messages.push("Success");
             callback(retObj);
         }
     });
