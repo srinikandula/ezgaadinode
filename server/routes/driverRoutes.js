@@ -12,6 +12,20 @@ AuthRouter.get('/getAllDriversAttendance/:date',function(req,res){
         res.send(result);
     });
 });
+AuthRouter.get('/getDriversDataByDateRange/:driverId/:fromDate/:toDate',function(req,res){
+    Api.getDriversDataByDateRange(req,function(result){
+        res.send(result);
+    });
+});
+AuthRouter.get('/downloadDriversData/:driverId/:fromDate/:toDate',function(req,res){
+    Api.downloadDriversData(req,function(result){
+        if(result.status){
+            res.xls('Driver details'+new Date().toLocaleDateString()+'.xlsx', result.data);
+        }else{
+            res.send(result);
+        }
+    });
+});
 AuthRouter.put('/updateDriverSheet',function(req,res){
     Api.updateDriverSheet(req,function(result){
         res.send(result);

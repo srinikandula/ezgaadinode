@@ -149,5 +149,59 @@ Drivers.prototype.updateDriverSheet = function(req,callback){
         }
     });
 };
+Drivers.prototype.getDriversDataByDateRange = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    var condition = {
+        accountId:req.jwt.accountId,
+        driverId:req.params.driverId,
+        createdAt:{$gte:new Date(req.params.fromDate),$lte:new Date(req.params.toDate)}
+    };
+    DriversAttendanceColl.find(condition,function(err,data){
+        if(err){
+            retObj.status = false;
+            retObj.messages.push("error in finding data",JSON.stringify(err));
+            callback(retObj);
+        }else if(data.length>0){
+            retObj.status = true;
+            retObj.messages.push("success");
+            retObj.data = data;
+            callback(retObj);
+        }else{
+            retObj.status = false;
+            retObj.messages.push("No data found");
+            callback(retObj);
+        }
+    });
+};
+Drivers.prototype.downloadDriversData = function(req,callback){
+    var retObj = {
+        status:false,
+        messages:[]
+    };
+    Drivers.prototype.getDriversDataByDateRange(req,function(getDataCallback){
+      if(getDataCallback.data.length>0){
+          var drivers = getDataCallback.data;
+          var output = [];
+          for(var i=0;i<drivers.length;i++){
+             var driverObj = {
+                     contactPhone: drivers[i].contactPhone,
+                     driverName: drivers[i].driverName,
+                     date:drivers[i].date ,
+                     isPresent: drivers[i].isPresent
+                 };
+                 output.push(driverObj);
+          }
+          retObj.data = output;
+          retObj.status = true;
+          retObj.messages.push("successful..");
+          callback(retObj);
+      }else{
+          callback(getDataCallback);
+      }
+    });
+};
 
 module.exports = new Drivers();
