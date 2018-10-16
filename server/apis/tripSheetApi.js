@@ -127,7 +127,6 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
     var tripSheets = req.body;
     var invoiceObj = {trip:[],partyId:''};
     async.each(tripSheets,function(tripSheet,asyncCallback){
-        console.log("trip sheet..",tripSheet);
         if((tripSheet.unloadingPoint && tripSheet.loadingPoint) !== undefined){
             if(tripSheet.partyId){
                 retObj.errors.push("Select party");
@@ -177,5 +176,27 @@ TripSheets.prototype.updateTripSheet = function (req, callback) {
         }
     });
 };
-
+TripSheets.prototype.getTripSheetsByParams = function(req,callback){
+    var retObj = {
+        status: false,
+        messages: []
+    };
+    var condition = {accountId: req.jwt.accountId};
+    if(req.query.truckId && req.query.toDate && req.query.fromDate){
+        condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+        condition.truckId = req.query.truckId;
+    }
+    TripSheetsColl.find(condition,function(err,tripSheets){
+        if (err) {
+            retObj.status = false;
+            retObj.messages.push("error in updating trip sheet", JSON.stringify(err));
+            callback(retObj);
+        } else {
+            retObj.status = true;
+            retObj.messages.push("Success");
+            retObj.data = tripSheets;
+            callback(retObj);
+        }
+    });
+};
 module.exports = new TripSheets();
