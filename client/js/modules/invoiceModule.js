@@ -111,8 +111,11 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
                 };
                 for (var i = 0; i < $scope.invoice.trip.length; i++) {
                     $scope.truckRegNo[i] = $scope.invoice.trip[i].vehicleNo;
-                    $scope.invoice.trip[i].loadedOn = new Date($scope.invoice.trip[i].loadedOn);
-                    $scope.invoice.trip[i].unloadedOn = new Date($scope.invoice.trip[i].unloadedOn);
+                    if($scope.invoice.trip[i].loadedOn !== undefined){
+                        $scope.invoice.trip[i].loadedOn = new Date($scope.invoice.trip[i].loadedOn);
+                    }if($scope.invoice.trip[i].unloadedOn !== undefined) {
+                        $scope.invoice.trip[i].unloadedOn = new Date($scope.invoice.trip[i].unloadedOn);
+                    }
                 }
             }
         },function (errorCallback) {});

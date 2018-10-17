@@ -1056,7 +1056,7 @@ app.controller('UploadTripsCtrl', ['$scope', 'Upload', 'Notification', '$state',
 
 
 app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state', 'Notification', 'paginationService', 'NgTableParams', 'TrucksService', '$timeout', '$stateParams', 'PartyService', function ($scope, $uibModal, TripServices, $state, Notification, paginationService, NgTableParams, TrucksService, $timeout, $stateParams, PartyService) {
-
+    $scope.queryParams = {truckId:'',fromDate:'',toDate:''};
     $scope.today = function() {
         $scope.dt = new Date();
     };
@@ -1116,13 +1116,20 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
               TripServices.getAllTripSheets($scope.today, function (success) {
             if (success.data.status) {
                 $scope.tripSheets = success.data.data;
-                console.log("trip ...",$scope.tripSheets);
+                for(var i=0;i<$scope.tripSheets.length;i++){
+                   if($scope.tripSheets[i].partyId){
+                       var party = _.find($scope.parties,function(party){
+                           return party._id.toString() === $scope.tripSheets[i].partyId;
+                       });
+                       if(party){
+                           $scope.tripSheets[i].partyName = party.name;
+                       }
+                   }
+                }
+
             }
-        }, function (error) {
-
-        })
+        }, function (error) {})
     };
-
 
     function getParties() {
         PartyService.getAllPartiesByTransporter(function (success) {
