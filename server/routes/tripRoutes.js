@@ -35,6 +35,13 @@ var createTripSheet = cronjob.schedule('0 1 * * *', function() {
 });
 createTripSheet.start();
 
+AuthRouter.get('/tripSheetReport', function (req, res) {
+    Api.getTripSheetsByParams(req, function (result) {
+        res.send(result);
+    });
+});
+
+
 AuthRouter.post('/addTrip', function (req, res) {
     Trips.addTrip(req.jwt, req.body, req, function (result) {
         res.send(result);
