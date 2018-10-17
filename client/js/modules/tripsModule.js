@@ -1151,7 +1151,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                    }
                 }
             }
-        }, function (error) {})
+        })
     };
 
     function getParties() {

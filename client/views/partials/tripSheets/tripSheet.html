@@ -129,6 +129,13 @@
             </td>
         </tr>
     </table>
+    <div class="center-block" style="width: 60%;">
+        <div class="alert alert-danger" role="alert" ng-show="errors.length">
+            <ul>
+                <li ng-repeat="error in errors">{{error}}</li>
+            </ul>
+        </div>
+    </div>
 
     <div class="col-sm-12" ng-show="!validateTable">
         <div class="pull-right">

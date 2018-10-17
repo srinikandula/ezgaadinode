@@ -3,8 +3,48 @@
         <div class="col-sm-4">
             <h3>Driver Attendance Sheet</h3>
         </div>
+        <div class="col-sm-8">
+            <div class="col-sm-4">
+                <ui-select ng-model="driversList.driver" theme="select2"
+                           title="Choose a Driver" append-to-body="true">
+                    <ui-select-match class="form-control" placeholder="Select a Driver">
+                        {{$select.selected.fullName || driverName}}
+                    </ui-select-match>
+                    <ui-select-choices
+                            repeat="driver in driversList | propsFilter: {fullName: $select.search}">
+                        <div ng-bind-html="driver.fullName | highlight: $select.search">
+                        </div>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div>
+                <ul class="list-inline report-expense">
+                    <li class="filterFromDate">
+                        <date-picker ng-model="fromDate" past-present="'pastPresentDate'"
+                                     class="'textfield'" placeholder="'from date'">
+                        </date-picker>
+                    </li>
+                    <li class="filterToDate">
+                        <date-picker ng-model="toDate" past-present="'pastPresentDate'"
+                                     class="'textfield'" placeholder="'to date'"></date-picker>
+                    </li>
+                    <li class="pall-zero">
+                        <button type="submit" ng-click="showDriverReport(driversList.driver._id, fromDate, toDate );"
+                                class="btn go">
+                            <i class="fa fa-search sear" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                    <li class="pall-zero">
+                        <button type="submit" ng-click="downloadDriverReport(driversList.driver._id, fromDate, toDate );"
+                                class="btn go">
+                            <i class="fa fa-download" aria-hidden="true"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="col-sm-12 pall-zero mb-10">
+    <div class="col-sm-12 pall-zero mb-10" ng-show="!validateTable">
         <div class=" mt-20">
             <div class="col-sm-1">
                 <button type="button" class="btn btn-default" ng-click="previousDay()"><i class="glyphicon glyphicon-chevron-left"></i></button>
@@ -33,7 +73,7 @@
     </div>
 
 
-    <table class="table table-bordered table-striped table-condensed table-hover">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-show="!validateTable">
         <tr>
             <th>S No</th>
             <th>Driver Name</th>
@@ -51,9 +91,35 @@
 
         </tr>
     </table>
-    <div class="col-sm-12 pall-zero">
+    <div class="col-sm-12 pall-zero" ng-show="!validateTable">
         <div class="pull-right">
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
     </div>
+<div class="center-block" style="width: 60%;">
+    <div class="alert alert-danger" role="alert" ng-show="errors.length">
+        <ul>
+            <li ng-repeat="error in errors">{{error}}</li>
+        </ul>
+    </div>
+</div>
+
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-show="validateTable">
+        <tr>
+            <th>S No</th>
+            <th>Driver Name</th>
+            <th>Mobile Number</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+        <tr ng-repeat="driver in showDriverReport" style="text-align: center;">
+            <td class="col-sm-1">{{$index+1}}</td>
+            <td class="col-sm-1">{{driver.driverName | uppercase}}</td>
+            <td class="col-sm-2">{{driver.contactPhone}}</td>
+            <td class="col-sm-1">{{driver.isPresent}}</td>
+            <td class="col-sm-1">{{driver.date}}</td>
+
+        </tr>
+    </table>
+
 </div>
