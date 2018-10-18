@@ -154,11 +154,13 @@ Drivers.prototype.getDriversDataByDateRange = function(req,callback){
         status:false,
         messages:[]
     };
-    var condition = {
-        accountId:req.jwt.accountId,
-        driverId:req.params.driverId,
-        createdAt:{$gte:new Date(req.params.fromDate),$lte:new Date(req.params.toDate)}
-    };
+    var condition = {accountId:req.jwt.accountId};
+    if(req.query.driverId !== 'undefined'){
+        condition.driverId = req.query.driverId;
+    }
+    if(!isNaN(new Date(req.query.fromDate)) && !isNaN(new Date(req.query.toDate))){
+        condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)}
+    }
     DriversAttendanceColl.find(condition,function(err,data){
         if(err){
             retObj.status = false;
