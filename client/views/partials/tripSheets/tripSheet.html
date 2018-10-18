@@ -19,16 +19,17 @@
             <div>
                 <ul class="list-inline report-expense">
                     <li class="filterFromDate">
-                        <date-picker ng-model="filters.fromDate" past-present="'pastPresentDate'"
+                        <date-picker ng-model="fromDate" past-present="'pastPresentDate'"
                                      class="'textfield'" placeholder="'from date'">
                         </date-picker>
                     </li>
                     <li class="filterToDate">
-                        <date-picker ng-model="filters.toDate" past-present="'pastPresentDate'"
+                        <date-picker ng-model="toDate" past-present="'pastPresentDate'"
                                      class="'textfield'" placeholder="'to date'"></date-picker>
                     </li>
                     <li class="col-sm-1 pall-zero">
-                        <button type="submit" ng-click="validateFilters('revenue');" class="btn go">
+                        <button type="submit" ng-click="validateFilters(tripSheets.registrationNo._id, fromDate, toDate );"
+                                class="btn go">
                             <i class="fa fa-search sear" aria-hidden="true"></i>
                         </button>
                     </li>
@@ -36,7 +37,7 @@
             </div>
         </div>
     </div>
-    <div class="col-sm-12 mt-20">
+    <div class="col-sm-12 mt-20" ng-show="!validateTable">
         <div class="col-sm-1">
             <button type="button" class="btn btn-default" ng-click="previousDay()"><i
                     class="glyphicon glyphicon-chevron-left"></i></button>
@@ -70,7 +71,7 @@
         </div>
     </div>
 
-    <table class="table table-bordered table-striped table-condensed table-hover">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-show="!validateTable">
         <tr>
             <th>S No</th>
             <th>Registration No</th>
@@ -88,10 +89,13 @@
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
                     <select class="form-control" ng-model="sheet.loadingPoint">
+                        <option value="" selected>No Trips</option>
+                        <option value="In Transit">In Transit</option>
                         <option ng-repeat="loadingPoint in loadingPoints" value="{{loadingPoint.loadingPoint}}">
                             {{loadingPoint.loadingPoint}}
                         </option>
                     </select>
+
 
                 </div>
             </td>
@@ -101,6 +105,8 @@
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
                     <select class="form-control" ng-model="sheet.unloadingPoint">
+                        <option value="" selected>No Trips</option>
+                        <option value="In Transit">In Transit</option>
                         <option ng-repeat="unloadingPoint in unloadingPoints" value="{{unloadingPoint.unloadingPoint}}">
                             {{unloadingPoint.unloadingPoint}}
                         </option>
@@ -123,11 +129,45 @@
             </td>
         </tr>
     </table>
-    <div class="col-sm-12">
+    <div class="center-block" style="width: 60%;">
+        <div class="alert alert-danger" role="alert" ng-show="errors.length">
+            <ul>
+                <li ng-repeat="error in errors">{{error}}</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="col-sm-12" ng-show="!validateTable">
         <div class="pull-right">
             <button class="btn btn-primary" ng-click="saveAll()"> Save</button>
         </div>
     </div>
+
+
+    <table class="table table-bordered table-striped table-condensed table-hover mt-20" ng-show="validateTable">
+        <tr>
+            <th>S No</th>
+            <th>Registration No</th>
+            <th>loading Point</th>
+            <th>Unloading Point</th>
+            <th>Party Name</th>
+        </tr>
+        <tr ng-repeat="report in tripSheetReports"
+            style="text-align: center;">
+            <td class="col-sm-1">{{$index+1}}</td>
+            <td class="col-sm-1">{{report.registrationNo | uppercase}}</td>
+            <td class="col-sm-2">
+               {{report.loadingPoint || '---'}}
+            </td>
+            <td class="col-sm-2">
+                {{report.unloadingPoint || '---'}}
+            </td>
+            <td class="col-sm-2">
+                {{report.partyId || '---'}}
+            </td>
+        </tr>
+    </table>
+
 
     <div class="print-invoice" style="display: none">
         <head>

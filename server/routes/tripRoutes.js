@@ -29,11 +29,18 @@ AuthRouter.get('/createTripSheet', function (req, res) {
     });
 });
 
-var createTripSheet = cronjob.schedule('0 1 * * *', function() {
+var createTripSheet = cronjob.schedule('* * * * *', function() {
     Api.createTripSheet(function (result) {
     });
 });
 createTripSheet.start();
+
+AuthRouter.get('/tripSheetReport', function (req, res) {
+    Api.getTripSheetsByParams(req, function (result) {
+        res.send(result);
+    });
+});
+
 
 AuthRouter.post('/addTrip', function (req, res) {
     Trips.addTrip(req.jwt, req.body, req, function (result) {
