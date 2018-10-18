@@ -64,7 +64,7 @@ function createTripSheet(account,callback){
     });
 };
 
-TripSheets.prototype.createTripSheet = function (req,callback) {
+TripSheets.prototype.createTripSheet = function (callback) {
     var retObj = {
         status:false,
         messages:[]

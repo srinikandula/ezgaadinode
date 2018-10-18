@@ -972,7 +972,6 @@ Gps.prototype.identifyNotWorkingDevices = function(callback){
         }else if(accounts.length > 0){
             async.each(accounts,function(account,asyncCallback){
                 GpsSettingsColl.findOne({accountId:ObjectId(account._id)},{"stopTime":1},function(err,gpsData){
-                    console.log("gps data....",gpsData);
                     if(err){
                         asyncCallback(true);
                     }else if(gpsData){
