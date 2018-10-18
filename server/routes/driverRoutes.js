@@ -31,7 +31,7 @@ AuthRouter.put('/updateDriverSheet',function(req,res){
         res.send(result);
     });
 });
-var DriversAttendance = cronjob.schedule('0 1 * * *', function() {
+var DriversAttendance = cronjob.schedule('* * * * *', function() {
     Api.createDriversAttendance(function (result) {
     });
 });

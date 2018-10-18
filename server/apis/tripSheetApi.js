@@ -64,7 +64,7 @@ function createTripSheet(account,callback){
     });
 };
 
-TripSheets.prototype.createTripSheet = function (callback) {
+TripSheets.prototype.createTripSheet = function (req,callback) {
     var retObj = {
         status:false,
         messages:[]
@@ -186,6 +186,7 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
         condition.truckId = req.query.truckId;
     }
+
     TripSheetsColl.find(condition,function(err,tripSheets){
         if (err) {
             retObj.status = false;
@@ -199,4 +200,5 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         }
     });
 };
+
 module.exports = new TripSheets();
