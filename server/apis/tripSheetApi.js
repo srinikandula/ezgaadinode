@@ -76,14 +76,18 @@ TripSheets.prototype.createTripSheet = function (callback) {
             callback(retObj);
         } else{
             async.each(accounts,function (account,asyncAccCallback) {
-                createTripSheet(account,function(tripSheetCallback){
-                    if(tripSheetCallback.status){
-                        asyncAccCallback(false);
-                    }else{
-                        asyncAccCallback(true);
-                    }
-                });
-            },function(err){
+                if(account.tripSheetEnabled === true){
+                    createTripSheet(account,function(tripSheetCallback){
+                        if(tripSheetCallback.status){
+                            asyncAccCallback(false);
+                        }else{
+                            asyncAccCallback(true);
+                        }
+                    });
+                }else{
+                    asyncAccCallback(false);
+                }
+                },function(err){
                 if(err){
                     retObj.status = false;
                     retObj.messages.push("Error in saving trip sheet");
@@ -221,11 +225,12 @@ TripSheets.prototype.getTripSheetsByParams = function(req,callback){
         messages: []
     };
     var condition = {accountId: req.jwt.accountId};
-    if(req.query.truckId && req.query.toDate && req.query.fromDate){
+    if(req.query.toDate && req.query.fromDate){
         condition.createdAt = {$gte:new Date(req.query.fromDate),$lte:new Date(req.query.toDate)};
+    }
+    if(req.query.truckId !== undefined){
         condition.truckId = req.query.truckId;
     }
-
     TripSheetsColl.find(condition,function(err,tripSheets){
         if (err) {
             retObj.status = false;
