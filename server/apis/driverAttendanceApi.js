@@ -78,14 +78,18 @@ Drivers.prototype.createDriversAttendance = function(callback){
           callback(retObj);
       } else{
           async.each(accounts,function (account,asyncAccCallback) {
-              createDriverAttendance(account,function(createCallback){
-                  if(createCallback.status){
-                      asyncAccCallback(false);
-                  }else{
-                      asyncAccCallback(true);
-                  }
-              });
-          },function(err){
+              if(account.driverSheetEnabled === true){
+                  createDriverAttendance(account,function(createCallback){
+                      if(createCallback.status){
+                          asyncAccCallback(false);
+                      }else{
+                          asyncAccCallback(true);
+                      }
+                  });
+              }else{
+                  asyncAccCallback(false);
+              }
+              },function(err){
               if(err){
                   retObj.status = false;
                   retObj.messages.push("Error in saving");
@@ -154,6 +158,7 @@ Drivers.prototype.getDriversDataByDateRange = function(req,callback){
         status:false,
         messages:[]
     };
+
     var condition = {accountId:req.jwt.accountId};
     if(req.query.driverId !== 'undefined'){
         condition.driverId = req.query.driverId;
@@ -174,6 +179,7 @@ Drivers.prototype.getDriversDataByDateRange = function(req,callback){
         }else{
             retObj.status = false;
             retObj.messages.push("No data found");
+            retObj.data = [];
             callback(retObj);
         }
     });

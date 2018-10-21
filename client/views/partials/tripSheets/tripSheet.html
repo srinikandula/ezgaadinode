@@ -11,7 +11,7 @@
                         {{$select.selected.registrationNo || registrationNo}}
                     </ui-select-match>
                     <ui-select-choices
-                            repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
+                            repeat="trucks in trucksList">
                         <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
                     </ui-select-choices>
                 </ui-select>

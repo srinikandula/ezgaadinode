@@ -29,7 +29,7 @@ AuthRouter.get('/createTripSheet', function (req, res) {
     });
 });
 
-var createTripSheet = cronjob.schedule('* * * * *', function() {
+var createTripSheet = cronjob.schedule('0 1 * * *', function() {
     Api.createTripSheet(function (result) {
     });
 });

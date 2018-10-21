@@ -106,9 +106,9 @@ var accountSchema = new mongoose.Schema({
     cgst:{type:Number,default:0},
     sgst:{type:Number,default:0},
     panNo:String,
-    templatePath:String
-
-
+    templatePath:String,
+    tripSheetEnabled: {type: Boolean, default: false},
+    driverSheetEnabled: {type: Boolean, default: false},
 }, {
     timestamps: true
 });
