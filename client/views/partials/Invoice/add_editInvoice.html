@@ -1,4 +1,4 @@
-<div class="main-right col-xs-12" ng-controller="AddEditInvoiceCtrl" >
+<div class="main-right col-xs-12" ng-controller="AddEditInvoiceCtrl">
     <div class="col-xs-12 account-edit">
         <h2 class="title-name">{{pageTitle}}</h2>
         <form class="mt-10">
@@ -30,7 +30,7 @@
                             </div>
                         </div>
 
-                        <div class="col-sm-2"> <a href="#" class="addingMaster" ng-click="addFromAndToTrip()" >
+                        <div class="col-sm-2"> <a href="#" class="addingMaster" ng-click="addFromAndToTrip()">
                                 <i class="fa fa-plus-square"></i>
                             </a></div>
                 </div>
@@ -41,31 +41,36 @@
                         <div class="col-sm-12 col-xs-12 mt-10">
                             <div class=" col-sm-2 form-group col-xs-12">
                                 <div class="styling-input-list">
-                                    <input type="text" class="form-control custom-form-control" ng-model="exp.date" readonly/>
+                                    <input type="text" class="form-control custom-form-control" ng-model="exp.date"
+                                           readonly/>
                                     <label class="focus-effect-for-input" aria-hidden="true">Date</label>
                                 </div>
                             </div>
                             <div class=" col-sm-2 form-group col-xs-12">
                                 <div class="styling-input-list">
-                                    <input type="text" class="form-control custom-form-control" ng-model="exp.from" readonly/>
+                                    <input type="text" class="form-control custom-form-control" ng-model="exp.from"
+                                           readonly/>
                                     <label class="focus-effect-for-input" aria-hidden="true">From</label>
                                 </div>
                             </div>
                             <div class=" col-sm-2 form-group col-xs-12">
                                 <div class="styling-input-list">
-                                    <input type="text" class="form-control custom-form-control" ng-model="exp.to" readonly/>
+                                    <input type="text" class="form-control custom-form-control" ng-model="exp.to"
+                                           readonly/>
                                     <label class="focus-effect-for-input" aria-hidden="true">To</label>
                                 </div>
                             </div>
                             <div class=" col-sm-2 form-group col-xs-12">
                                 <div class="styling-input-list">
-                                    <input type="text" class="form-control custom-form-control" ng-model="exp.tonnage" readonly/>
+                                    <input type="text" class="form-control custom-form-control" ng-model="exp.tonnage"
+                                           readonly/>
                                     <label class="focus-effect-for-input" aria-hidden="true">Tonnage</label>
                                 </div>
                             </div>
                             <div class=" col-sm-2 form-group col-xs-12">
                                 <div class="styling-input-list">
-                                    <input type="text" class="form-control custom-form-control" ng-model="exp.ratePerTonne" readonly/>
+                                    <input type="text" class="form-control custom-form-control"
+                                           ng-model="exp.ratePerTonne" readonly/>
                                     <label class="focus-effect-for-input" aria-hidden="true">Rate/Tonne</label>
                                 </div>
                             </div>
@@ -87,7 +92,8 @@
                                         <ui-select-match class="form-control custom-form-control">
                                             {{$select.selected.registrationNo || truckRegNo[$index]}}
                                         </ui-select-match>
-                                        <ui-select-choices repeat="truck in trucks| propsFilter: {registrationNo: $select.search}">
+                                        <ui-select-choices
+                                                        repeat="truck in trucks| propsFilter: {registrationNo: $select.search}">
                                             <div ng-bind-html="truck.registrationNo| highlight: $select.search"></div>
                                         </ui-select-choices>
                                     </ui-select>
@@ -96,7 +102,8 @@
                             </div>
                     <div class=" col-sm-2 form-group col-xs-12">
                         <div class="styling-input-list">
-                            <input type="text" id="source{{$index}}" class="form-control custom-form-control"  ng-change="searchSource($index)"ng-model="exp.from"/>
+                            <input type="text" id="source{{$index}}" class="form-control custom-form-control"
+                                   ng-change="searchSource($index)" ng-model="exp.from"/>
                             <label class="focus-effect-for-input" aria-hidden="true">From</label>
                         </div>
                     </div>
@@ -106,7 +113,8 @@
                     </div>
                     <div class=" col-sm-2 form-group col-xs-12">
                         <div class="styling-input-list">
-                            <input type="text" id="destination{{$index}}" class="form-control custom-form-control" ng-change="searchDestination($index)" ng-model="exp.to"/>
+                            <input type="text" id="destination{{$index}}" class="form-control custom-form-control"
+                                   ng-change="searchDestination($index)" ng-model="exp.to"/>
                             <label class="focus-effect-for-input" aria-hidden="true">To</label>
                         </div>
                     </div>
@@ -114,7 +122,8 @@
                         <date-picker id="toDate1" ng-model="exp.unloadedOn"
                                      class="'custom-form-control'" placeholder="'UnLoaded On'"></date-picker>
                     </div>
-                    <div class="col-sm-1"> <a href="#" class="addingMaster" ng-click="addFromAndTo()" ng-show="$index==0">
+                    <div class="col-sm-1"> <a href="#" class="addingMaster" ng-click="addFromAndTo()"
+                                              ng-show="$index==0">
                         <i class="fa fa-plus-square"></i>
                     </a></div>
                         <!-- <div class=" col-sm-1 col-xs-12">
@@ -137,7 +146,7 @@
             <div class="col-sm-12 col-xs-12 mt-10">
                 <div class="form-group col-sm-12 col-xs-12">
                     <div class="styling-input-list">
-                        <ui-select ng-model="invoice.partyId"  theme="select2"
+                        <ui-select ng-model="invoice.partyId" theme="select2"
                                    title="Choose a party" append-to-body="true">
                             <ui-select-match class="form-control custom-form-control">
                                 {{$select.selected.name || partyName}}
@@ -155,6 +164,32 @@
                 <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.lrNo"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">LR No</label>
+                        </div>
+                    </div>
+                </div>
+                 <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="invoice.consignorInvoiceNo"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Consignor Innvoice No</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.gatePassNo"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Gate Pass No</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
                             <input type="text" class="form-control custom-form-control" ng-model="invoice.rate"/>
                             <label class="focus-effect-for-input" aria-hidden="true">Rate/Trip</label>
                         </div>
@@ -163,13 +198,44 @@
                 <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
-                            <input type="text" class="form-control custom-form-control" ng-model="invoice.ratePerTonne"/>
+                            <input type="text" class="form-control custom-form-control"
+                                   ng-model="invoice.ratePerTonne"/>
                             <label class="focus-effect-for-input" aria-hidden="true">Rate Per Tonne</label>
                         </div>
                     </div>
                 </div>
+                 <div class="form-group col-xs-12">
+                    <!-- <div class="styling-input-list"> -->
+                        <div class="styling-input-list">
+                            <label  >Temparature Cargo</label>
+                            <input type="radio"  ng-model="invoice.temparatureCargo" ng-value="true">Yes
+                             <input type="radio"  ng-model="invoice.temparatureCargo" value="false">No
+
+
+                        </div>
+                    <!-- </div> -->
+                </div>
+
             </div>
             <div class="col-sm-6 col-xs-12 mt-10">
+                <div class="form-group col-xs-12">
+                    <div class=" col-sm-12 form-group col-xs-12">
+                        <date-picker id="lrDate" ng-model="invoice.lrDate"
+                                     class="'custom-form-control'" placeholder="'LR Date'"></date-picker>
+                    </div>
+                </div>
+                 <div class="form-group col-xs-12">
+                    <div class=" col-sm-12 form-group col-xs-12">
+                        <date-picker id="consignorDate" ng-model="invoice.consignorInvoiceDate"
+                                     class="'custom-form-control'" placeholder="'Consignor Innvoice Date'"></date-picker>
+                    </div>
+                </div>
+                 <div class="form-group col-xs-12">
+                    <div class=" col-sm-12 form-group col-xs-12">                                                                                                                                                                                                                                                                                                       
+                        <date-picker id="gatePassDate" ng-model="invoice.gatePassDate"
+                                     class="'custom-form-control'" placeholder="'Gate Pass Date'"></date-picker>
+                    </div>
+                </div>
                 <div class="form-group col-xs-12">
                     <div class="styling-input-list">
                         <div class="styling-input-list">
@@ -187,6 +253,26 @@
                     </div>
                 </div>
             </div>
+                <label style="margin-left: 30px"><b>Detention Charges</b></label>
+                <div class="col-sm-12 col-xs-12 mt-10">
+
+                 <div class="form-group  col-sm-6 col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.noOfDays"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">No Of Days</label>
+                        </div>
+                    </div>
+                </div>
+                 <div class="form-group col-sm-6 col-xs-12">
+                    <div class="styling-input-list">
+                        <div class="styling-input-list">
+                            <input type="text" class="form-control custom-form-control" ng-model="invoice.amount"/>
+                            <label class="focus-effect-for-input" aria-hidden="true">Amount</label>
+                        </div>
+                    </div>
+                </div>
+                </div>
             </span>
         </form>
         <div class="col-xs-12">
