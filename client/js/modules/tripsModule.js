@@ -1234,8 +1234,18 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.tripsSheetReport(params, function (success) {
             if (success.data.status) {
                $scope.tripSheetReports = success.data.data;
+                for(var i=0;i<$scope.tripSheetReports.length;i++){
+                    if($scope.tripSheetReports[i].partyId){
+                        var party = _.find($scope.parties,function(party){
+                            return party._id.toString() === $scope.tripSheetReports[i].partyId;
+                        });
+                        if(party){
+                            $scope.tripSheetReports[i].partyName = party.name;
+                        }
+                    }
+                }
                 $scope.validateTable = true;
-            } else {
+            }else {
                 console.log("erorrr");
             }
         })
