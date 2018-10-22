@@ -536,7 +536,7 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
     $scope.getAllDrivers();
 
     $scope.downloadDriverReport = function (driverId, fromDate, toDate) {
-        window.open('/v1/drivers/downloadDriversData/' + driverId + '/' + fromDate + '/' + toDate);
+        window.open('/v1/drivers/downloadDriversData?driverId='+driverId+'&fromDate='+fromDate+'&toDate='+toDate);
     };
 
     $scope.showDriverReport = function (driverId, fromDate, toDate) {
