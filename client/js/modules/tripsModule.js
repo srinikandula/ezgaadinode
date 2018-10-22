@@ -151,7 +151,6 @@ app.factory('TripServices', ['$http', function ($http) {
             }).then(success, error)
         },
         tripsSheetReport: function (params, success, error) {
-            console.log("paramssss", params)
             $http({
                 url: '/v1/trips/tripSheetReport',
                 method: 'GET',
@@ -1104,6 +1103,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         $scope.getAllTripssheets($scope.dt);
     };
 
+
     // $scope.createTripSheet = function () {
     //     TripServices.createTripSheets(function (success) {
     //         if (success.data.status) {
@@ -1128,6 +1128,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.getAllUnloadingPoints(function (success) {
             if (success.data.status) {
                 $scope.unloadingPoints = success.data.unloadingPoints;
+                // $scope.unloadingPoints.unshift({"unloadingPoint": "No Trips"});
             }
         })
     };
@@ -1187,7 +1188,6 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
 
     $scope.saveAll = function () {
         var params = $scope.tripSheets;
-        console.log("paramsss", params);
         TripServices.updateTripSheet(params, function (success) {
             if (success.data.status) {
                 console.log("success");
@@ -1226,7 +1226,6 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
     };
 
     $scope.validateFilters = function (truckId, fromDate, toDate) {
-
         var params = {};
         params.truckId = truckId;
         params.fromDate = fromDate;
@@ -1234,6 +1233,16 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
         TripServices.tripsSheetReport(params, function (success) {
             if (success.data.status) {
                $scope.tripSheetReports = success.data.data;
+                for(var i=0;i<$scope.tripSheetReports.length;i++){
+                    if($scope.tripSheetReports[i].partyId){
+                        var party = _.find($scope.parties,function(party){
+                            return party._id.toString() === $scope.tripSheetReports[i].partyId;
+                        });
+                        if(party){
+                            $scope.tripSheetReports[i].partyName = party.name;
+                        }
+                    }
+                }
                 $scope.validateTable = true;
             } else {
                 console.log("erorrr");
