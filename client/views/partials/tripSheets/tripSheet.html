@@ -81,7 +81,7 @@
         </tr>
         <tr ng-repeat="sheet in tripSheets | filter:{registrationNo: tripSheets.registrationNo.registrationNo}"
             style="text-align: center;">
-            <td class="col-sm-1">{{$index+1}}</td>
+            <td class="col-sm-1">{{$index+1}}{{sheet.loadingPoint}}</td>
             <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
             <td class="col-sm-2">
                 <div class=" pos-relative">
@@ -89,12 +89,14 @@
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
                     <select class="form-control" ng-model="sheet.loadingPoint">
-                        <option value="" selected>No Trips</option>
-                        <option value="In Transit">In Transit</option>
+                        <option value="" selected>--Select--</option>
                         <option ng-repeat="loadingPoint in loadingPoints" value="{{loadingPoint.loadingPoint}}">
                             {{loadingPoint.loadingPoint}}
                         </option>
                     </select>
+                    <!--<select class="form-control" ng-model="sheet.loadingPoint"-->
+                    <!--ng-options="loading._id as loading.loadingPoint for loading in loadingPoints">-->
+                    <!--</select>-->
 
 
                 </div>
@@ -104,19 +106,21 @@
                         <span class="bot-arrow">
                             <i class="fa fa-angle-down" aria-hidden="true"></i>
                         </span>
-                    <select class="form-control" ng-model="sheet.unloadingPoint">
-                        <option value="" selected>No Trips</option>
-                        <option value="In Transit">In Transit</option>
+                    <select class="form-control" ng-model="sheet.unloadingPoint" ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
+                        <option value="" selected>--Select--</option>
                         <option ng-repeat="unloadingPoint in unloadingPoints" value="{{unloadingPoint.unloadingPoint}}">
                             {{unloadingPoint.unloadingPoint}}
                         </option>
                     </select>
+                   <!-- <select class="form-control" ng-model="sheet.unloadingPoint"
+                            ng-options="unloading._id as unloading.unloadingPoint for unloading in unloadingPoints" >
+                    </select>-->
 
                 </div>
             </td>
             <td class="col-sm-2">
                 <ui-select ng-model="sheet.partyId" theme="select2" title="Choose a Party"
-                           append-to-body="true" style="width: 250px;">
+                           append-to-body="true" style="width: 250px;" ng-disabled="sheet.loadingPoint === 'In Transit' || sheet.loadingPoint === 'No Trips'">
                     <ui-select-match placeholder=" Select a Party" class="form-control"
                                      style="height: 42px;text-align: left;">
                         {{$select.selected.name || sheet.partyName}}
@@ -163,7 +167,7 @@
                 {{report.unloadingPoint || '---'}}
             </td>
             <td class="col-sm-2">
-                {{report.partyId || '---'}}
+                {{report.partyName || '---'}}
             </td>
         </tr>
     </table>

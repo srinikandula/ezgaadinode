@@ -170,7 +170,7 @@ Drivers.prototype.getDriversDataByDateRange = function(req,callback){
             retObj.data = data;
             callback(retObj);
         }else{
-            retObj.status = false;
+            retObj.status = true;
             retObj.messages.push("No data found");
             callback(retObj);
         }

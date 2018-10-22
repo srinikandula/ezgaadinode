@@ -536,35 +536,23 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
     $scope.getAllDrivers();
 
     $scope.downloadDriverReport = function (driverId, fromDate, toDate) {
-        $scope.errors = [];
-        if (!driverId) {
-            $scope.errors.push('Please select driver');
-        }
-        if (!fromDate) {
-            $scope.errors.push('Please select From Date')
-        }
-        if (!toDate) {
-            $scope.errors.push('Please select To Date')
-        }
-        if ( $scope.errors.length > 0) {
-        }else {
+
             window.open('/v1/drivers/downloadDriversData/' + driverId + '/' + fromDate + '/' + toDate);
-        }
     };
 
     $scope.showDriverReport = function (driverId, fromDate, toDate) {
-        $scope.errors = [];
-        if (!driverId) {
-            $scope.errors.push('Please select driver');
-        }
-        if (!fromDate) {
-            $scope.errors.push('Please select From Date')
-        }
-        if (!toDate) {
-            $scope.errors.push('Please select To Date')
-        }
-        if ( $scope.errors.length > 0) {
-        } else {
+        // $scope.errors = [];
+        // if (!driverId) {
+        //     $scope.errors.push('Please select driver');
+        // }
+        // if (!fromDate) {
+        //     $scope.errors.push('Please select From Date')
+        // }
+        // if (!toDate) {
+        //     $scope.errors.push('Please select To Date')
+        // }
+        // if ( $scope.errors.length > 0) {
+        // } else {
             DriverService.showDriversReport(driverId, fromDate, toDate, function (success) {
                 if (success.data.status) {
                     $scope.showDriverReport = success.data.data;
@@ -575,7 +563,6 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
                     });
                 }
             })
-        }
 
     }
 }]);
