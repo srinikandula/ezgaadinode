@@ -1,4 +1,4 @@
-app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
+app.factory('TrucksService', ['$http', '$cookies', function ($http, $cookies) {
     return {
         addTruck: function (truckDetails, success, error) {
             $http({
@@ -72,11 +72,11 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
                 method: "GET"
             }).then(success, error)
         },
-        findExpiryTrucks: function (params,success, error) {
+        findExpiryTrucks: function (params, success, error) {
             $http({
                 url: '/v1/trucks/findExpiryTrucks',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
         fitnessExpiryTrucks: function (success, error) {
@@ -113,35 +113,35 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
             $http({
                 url: '/v1/trucks/total/count',
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
-        searchByTruckName:function(truckName,success,error){
+        searchByTruckName: function (truckName, success, error) {
             $http({
-                url:'/v1/trucks/searchByTruckName',
-                method:"GET",
-                params:{
-                    truckName:truckName
+                url: '/v1/trucks/searchByTruckName',
+                method: "GET",
+                params: {
+                    truckName: truckName
                 }
-            }).then(success,error);
+            }).then(success, error);
         },
-        shareExpiredDetailsViaEmail:function(params,success,error){
+        shareExpiredDetailsViaEmail: function (params, success, error) {
             $http({
-                url:'/v1/trucks/shareExpiredDetailsViaEmail',
-                method:"GET",
-                params:params
-            }).then(success,error);
+                url: '/v1/trucks/shareExpiredDetailsViaEmail',
+                method: "GET",
+                params: params
+            }).then(success, error);
         },
-        getAllTrucksForFilter:function (success,error) {
+        getAllTrucksForFilter: function (success, error) {
             $http({
-                url:'/v1/trucks/getAllTrucksForFilter',
-                method:"GET"
-            }).then(success,error);
+                url: '/v1/trucks/getAllTrucksForFilter',
+                method: "GET"
+            }).then(success, error);
         },
-        getTruckTypes:function (success,error) {
+        getTruckTypes: function (success, error) {
             $http({
-                url:'/v1/trucks/getTruckTypes',
-                method:"GET"
-            }).then(success,error);
+                url: '/v1/trucks/getTruckTypes',
+                method: "GET"
+            }).then(success, error);
         },
         getAllTrucksForAccount: function (params, success, error) {
             $http({
@@ -150,14 +150,14 @@ app.factory('TrucksService',['$http', '$cookies', function ($http, $cookies) {
                 params: params
             }).then(success, error);
         },
-        shareDetailsViaEmail:function(params,success,error){
+        shareDetailsViaEmail: function (params, success, error) {
             $http({
                 url: '/v1/trucks/shareDetailsViaEmail',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
-        getAddedTruckTypes:function (success,error) {
+        getAddedTruckTypes: function (success, error) {
             $http({
                 url: '/v1/trucks/getAddedTruckTypes',
                 method: "GET"
@@ -170,7 +170,9 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
 
 
     $scope.goToEditTruckPage = function (truckId) {
-        $state.go('trucksEdit', {truckId: truckId});
+        $state.go('trucksEdit', {
+            truckId: truckId
+        });
     };
 
     $scope.getBackGroundColor = function (date) {
@@ -191,16 +193,23 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 $scope.count = success.data.count;
                 $scope.init();
             } else {
-                Notification.error({message: success.data.message});
+                Notification.error({
+                    message: success.data.message
+                });
             }
         });
     };
     $scope.getCount();
 
     var loadTableData = function (tableParams) {
-
-        var pageable = { page: tableParams.page(), size: tableParams.count(), sort: tableParams.sorting(),
-            truckName:tableParams.truckName,truckType:tableParams.truckType};
+        console.log("tableParams", tableParams.page());
+        var pageable = {
+            page: tableParams.page(),
+            size: tableParams.count(),
+            sort: tableParams.sorting(),
+            truckName: tableParams.truckName,
+            truckType: tableParams.truckType
+        };
         $scope.loading = true;
         // var pageable = {page:tableParams.page(), size:tableParams.count(), sort:sortProps};
 
@@ -210,8 +219,8 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             if (angular.isArray(response.data.trucks)) {
                 $scope.loading = false;
                 $scope.trucks = response.data.trucks;
-                $scope.userId=response.data.userId;
-                $scope.userType=response.data.userType;
+                $scope.userId = response.data.userId;
+                $scope.userType = response.data.userType;
                 tableParams.total(response.totalElements);
                 tableParams.data = $scope.trucks;
                 $scope.currentPageOfTrucks = $scope.trucks;
@@ -219,20 +228,22 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             }
         });
     };
-    $scope.getAddedTruckTypes=function () {
-            TrucksService.getAddedTruckTypes(function (success) {
-                if(success.data.status){
-                    $scope.addedTruckTypes = success.data.data;
+    $scope.getAddedTruckTypes = function () {
+        TrucksService.getAddedTruckTypes(function (success) {
+            if (success.data.status) {
+                $scope.addedTruckTypes = success.data.data;
 
-                }else{
-                    success.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({
+                        message: message
                     });
-                }
+                });
+            }
 
-            },function (error) {
+        }, function (error) {
 
-            })
+        })
     };
     $scope.getAllTrucks = function () {
         TrucksService.getAllTrucksForFilter(function (success) {
@@ -240,13 +251,15 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 $scope.trucksList = success.data.trucks;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({
+                        message: message
+                    });
                 });
             }
         }, function (error) {
 
-        })
-    }
+        });
+    };
 
     $scope.init = function () {
         $scope.truckParams = new NgTableParams({
@@ -256,14 +269,14 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
                 createdAt: -1
             }
         }, {
-                counts: [],
-                total: $scope.count,
-                getData: function (params) {
-                    loadTableData(params);
-                    $scope.getAllTrucks();
-                    $scope.getAddedTruckTypes();
-                }
-            });
+            counts: [],
+            total: $scope.count,
+            getData: function (params) {
+                loadTableData(params);
+                $scope.getAllTrucks();
+                $scope.getAddedTruckTypes();
+            }
+        });
 
     };
 
@@ -302,7 +315,7 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             }
         })
     };
-    $scope.params={};
+    $scope.params = {};
     $scope.searchByTruckName = function (truckName) {
         $scope.truckParams = new NgTableParams({
             page: 1, // show first page
@@ -315,14 +328,14 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             total: $scope.count,
             getData: function (params) {
                 params.truckName = truckName;
-                if($scope.params.truckType){
-                    params.truckType=$scope.params.truckType.title;
+                if ($scope.params.truckType) {
+                    params.truckType = $scope.params.truckType.title;
                 }
                 loadTableData(params);
             }
         });
     };
-    $scope.shareDetailsViaEmail=function(){
+    $scope.shareDetailsViaEmail = function () {
         swal({
             title: 'Share trucks data using mail',
             input: 'email',
@@ -330,31 +343,31 @@ app.controller('TrucksController', ['$scope', '$uibModal', 'TrucksService', 'Not
             confirmButtonText: 'Submit',
             showLoaderOnConfirm: true,
             preConfirm: (email) => {
-            return new Promise((resolve) => {
-                TrucksService.shareDetailsViaEmail({
-                email:email
-            },function(success){
-                if (success.data.status) {
-                    resolve()
-                } else {
+                return new Promise((resolve) => {
+                    TrucksService.shareDetailsViaEmail({
+                        email: email
+                    }, function (success) {
+                        if (success.data.status) {
+                            resolve()
+                        } else {
 
-                }
-            },function(error){
+                        }
+                    }, function (error) {
 
-            })
-        })
+                    })
+                })
 
-    },
-        allowOutsideClick: false
+            },
+            allowOutsideClick: false
 
-    }).then((result) => {
+        }).then((result) => {
             if (result.value) {
-            swal({
-                type: 'success',
-                html: ' sent successfully'
-            })
-        }
-    })
+                swal({
+                    type: 'success',
+                    html: ' sent successfully'
+                })
+            }
+        })
     }
     $scope.downloadDetails = function () {
         window.open('/v1/trucks/downloadDetails');
@@ -387,43 +400,44 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
 
     function getTruckTypes() {
         TrucksService.getTruckTypes(function (success) {
-            if(success.status){
-                $scope.truckTypesList=success.data.data;
-            }else{
+            if (success.status) {
+                $scope.truckTypesList = success.data.data;
+            } else {
                 success.data.messages.forEach(function (message) {
                     Notification.error(message);
                 });
             }
-        },function (error) {
+        }, function (error) {
 
         })
     }
     getTruckTypes();
+
     function initializeTruck() {
         if ($stateParams.truckId) {
 
             TrucksService.getTruck($stateParams.truckId, function (success) {
                 if (success.data.status) {
                     $scope.truck = success.data.truck;
-                    if($scope.truck.fitnessExpiry !== undefined){
+                    if ($scope.truck.fitnessExpiry !== undefined) {
                         $scope.truck.fitnessExpiry = new Date($scope.truck.fitnessExpiry);
                     }
-                    if($scope.truck.insuranceExpiry !== undefined){
+                    if ($scope.truck.insuranceExpiry !== undefined) {
                         $scope.truck.insuranceExpiry = new Date($scope.truck.insuranceExpiry);
                     }
-                    if($scope.truck.permitExpiry !== undefined){
+                    if ($scope.truck.permitExpiry !== undefined) {
                         $scope.truck.permitExpiry = new Date($scope.truck.permitExpiry);
                     }
-                    if($scope.truck.pollutionExpiry !== undefined){
+                    if ($scope.truck.pollutionExpiry !== undefined) {
                         $scope.truck.pollutionExpiry = new Date($scope.truck.pollutionExpiry);
                     }
-                    if($scope.truck.taxDueDate !== undefined){
+                    if ($scope.truck.taxDueDate !== undefined) {
                         $scope.truck.taxDueDate = new Date($scope.truck.taxDueDate);
                     }
-                    $scope.userId=success.data.userId;
-                    $scope.userType=success.data.userType;
-                    $scope.title=$scope.truck.truckType;
-                    $scope.tonnes=$scope.truck.tonnage;
+                    $scope.userId = success.data.userId;
+                    $scope.userType = success.data.userType;
+                    $scope.title = $scope.truck.truckType;
+                    $scope.tonnes = $scope.truck.tonnage;
 
                     var selectedDriver = _.find($scope.drivers, function (driver) {
                         return driver._id.toString() === $scope.truck.driverId;
@@ -437,8 +451,7 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                         Notification.error(message);
                     });
                 }
-            }, function (err) {
-            })
+            }, function (err) {})
         }
     }
 
@@ -449,7 +462,9 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
                 initializeTruck();
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+                    Notification.error({
+                        message: message
+                    });
                 });
             }
         }, function (err) {
@@ -467,49 +482,53 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         }
         if (!params.truckType) {
             params.errors.push('Invalid Truck Type');
-        }/*
-        if (!params.modelAndYear) {
-            params.errors.push('Invalid Modal and Year');
-        }*/
+        }
+        /*
+                if (!params.modelAndYear) {
+                    params.errors.push('Invalid Modal and Year');
+                }*/
 
-      /*  if (!params.fitnessExpiry) {
-            params.errors.push('Invalid Fitness Expiry');
-        }
-        if (!params.permitExpiry) {
-            params.errors.push('Invalid Permit Expiry');
-        }
-        if (!params.insuranceExpiry) {
-            params.errors.push('Invalid Insurance Expiry');
-        }
-        if (!params.pollutionExpiry) {
-            params.errors.push('Invalid Pollution Expiry');
-        }
-        if (!params.taxDueDate) {
-            params.errors.push('Invalid Tax due date');
-        }*/
+        /*  if (!params.fitnessExpiry) {
+              params.errors.push('Invalid Fitness Expiry');
+          }
+          if (!params.permitExpiry) {
+              params.errors.push('Invalid Permit Expiry');
+          }
+          if (!params.insuranceExpiry) {
+              params.errors.push('Invalid Insurance Expiry');
+          }
+          if (!params.pollutionExpiry) {
+              params.errors.push('Invalid Pollution Expiry');
+          }
+          if (!params.taxDueDate) {
+              params.errors.push('Invalid Tax due date');
+          }*/
 
         if (!params.errors.length) {
-            if(typeof params.truckType==="object"){
-                params.tonnage=params.truckType.tonnes;
-                params.truckTypeId=params.truckType._id;
-                params.truckType=params.truckType.title ;
+            if (typeof params.truckType === "object") {
+                params.tonnage = params.truckType.tonnes;
+                params.truckTypeId = params.truckType._id;
+                params.truckType = params.truckType.title;
             }
             if (!params._id) {
 
                 TrucksService.addTruck(params, function (success) {
                     if (success.data.status) {
                         $state.go('trucks');
-                        Notification.success({message: "Truck Added Successfully"});
+                        Notification.success({
+                            message: "Truck Added Successfully"
+                        });
                     } else {
                         params.errors = success.data.messages;
                     }
-                }, function (err) {
-                });
+                }, function (err) {});
             } else {
                 TrucksService.updateTruck(params, function (success) {
                     if (success.data.status) {
                         $state.go('trucks');
-                        Notification.success({message: "Truck Updated Successfully"});
+                        Notification.success({
+                            message: "Truck Updated Successfully"
+                        });
                     } else {
                         params.errors = success.data.messages;
                     }
@@ -520,4 +539,3 @@ app.controller('AddEditTruckCtrl', ['$scope', 'Utils', 'TrucksService', 'DriverS
         }
     }
 }]);
-

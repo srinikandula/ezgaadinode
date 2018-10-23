@@ -5,108 +5,116 @@ app.factory('PartyService', ['$http', '$cookies', function ($http, $cookies) {
                 url: '/v1/party/addParty',
                 method: "POST",
                 data: partyDetails
-            }).then(success, error)
+            }).then(success, error);
         },
         getParties: function (pageable, success, error) {
             $http({
                 url: '/v1/party/get/accountParties',
                 method: "GET",
                 params: pageable
-            }).then(success, error)
+            }).then(success, error);
         },
         getAccountParties: function (success, error) {
             $http({
                 url: '/v1/party/get/accountParties',
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
         getAllPartiesByTransporter: function (success, error) {
             $http({
                 url: '/v1/party/getAllPartiesByTransporter',
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
         getAllPartiesBySupplier: function (success, error) {
             $http({
                 url: '/v1/party/getAllPartiesBySupplier',
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
         getParty: function (partyId, success, error) {
             $http({
                 url: '/v1/party/' + partyId,
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
         updateParty: function (partyDetails, success, error) {
             $http({
                 url: '/v1/party/updateParty',
                 method: "PUT",
                 data: partyDetails
-            }).then(success, error)
+            }).then(success, error);
         },
         deleteParty: function (partyId, success, error) {
             $http({
                 url: '/v1/party/' + partyId,
                 method: "DELETE"
-            }).then(success, error)
+            }).then(success, error);
         },
         getRevenueByPartyId: function (vehicleId, success, error) {
             $http({
                 url: '/v1/party/vehiclePayments/' + vehicleId,
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
         amountByPartyid: function (partyId, success, error) {
             $http({
                 url: '/v1/party/tripsPayments/' + partyId,
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
-        count: function (params,success, error) {
+        count: function (params, success, error) {
             $http({
                 url: '/v1/party/total/count',
                 method: "GET",
-                params:params
-            }).then(success, error)
-        }, getAllPartiesForFilter: function (success, error) {
+                params: params
+            }).then(success, error);
+        },
+        getAllPartiesForFilter: function (success, error) {
             $http({
                 url: '/v1/party/getAllPartiesForFilter',
                 method: "GET",
-            }).then(success, error)
+            }).then(success, error);
         },
-        shareDetailsViaEmail:function(params,success,error){
+        shareDetailsViaEmail: function (params, success, error) {
             $http({
                 url: '/v1/party/shareDetailsViaEmail',
                 method: "GET",
-                params:params
-            }).then(success, error)
+                params: params
+            }).then(success, error);
         }
     }
 }]);
 
 app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'Notification', '$state', 'paginationService', 'NgTableParams', function ($scope, $uibModal, PartyService, Notification, $state, paginationService, NgTableParams) {
 
-   $scope.partyName = {party:'',name:''};
+    $scope.partyName = {
+        party: '',
+        name: ''
+    };
     $scope.goToEditPartyPage = function (partyId) {
-        $state.go('editParty', {partyId: partyId});
+        $state.go('editParty', {
+            partyId: partyId
+        });
     };
 
     $scope.count = 0;
     $scope.getCount = function () {
         var params = {};
-        if($scope.partyName.party){
+        if ($scope.partyName.party) {
             params.partyName = $scope.partyName.party.name;
         }
-        if($scope.partyName.name){
+        if ($scope.partyName.name) {
             params.partyName = $scope.partyName.name;
         }
-        PartyService.count(params,function (success) {
+        PartyService.count(params, function (success) {
             if (success.data.status) {
                 $scope.count = success.data.count;
                 $scope.init();
             } else {
-                Notification.error({message: success.data.message});
+                Notification.error({
+                    message: success.data.message
+                });
             }
         });
     };
@@ -137,12 +145,14 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                 $scope.partiesList = success.data.parties;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+                    Notification.error({
+                        message: message
+                    });
                 });
             }
         }, function (error) {
 
-        })
+        });
     };
     $scope.init = function () {
         $scope.partyParams = new NgTableParams({
@@ -155,10 +165,10 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                if($scope.partyName.party){
+                if ($scope.partyName.party) {
                     params.partyName = $scope.partyName.party.name;
                 }
-                if($scope.partyName.name){
+                if ($scope.partyName.name) {
                     params.partyName = $scope.partyName.name;
                 }
                 loadTableData(params);
@@ -189,7 +199,9 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
                         $scope.getCount();
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
+                            Notification.error({
+                                message: message
+                            });
                         });
                     }
                 }, function (err) {
@@ -199,7 +211,7 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
         });
 
     };
-    $scope.shareDetailsViaEmail=function(){
+    $scope.shareDetailsViaEmail = function () {
         swal({
             title: 'Share parties data using mail',
             input: 'email',
@@ -207,32 +219,32 @@ app.controller('PartyListController', ['$scope', '$uibModal', 'PartyService', 'N
             confirmButtonText: 'Submit',
             showLoaderOnConfirm: true,
             preConfirm: (email) => {
-            return new Promise((resolve) => {
-                PartyService.shareDetailsViaEmail({
-                email:email,
-                partyName:$scope.partyName.party.name
-            },function(success){
-                if (success.data.status) {
-                    resolve()
-                } else {
+                return new Promise((resolve) => {
+                    PartyService.shareDetailsViaEmail({
+                        email: email,
+                        partyName: $scope.partyName.party.name
+                    }, function (success) {
+                        if (success.data.status) {
+                            resolve();
+                        } else {
 
-                }
-            },function(error){
+                        }
+                    }, function (error) {
 
-            })
-        })
+                    })
+                })
 
-    },
-        allowOutsideClick: false
+            },
+            allowOutsideClick: false
 
-    }).then((result) => {
+        }).then((result) => {
             if (result.value) {
-            swal({
-                type: 'success',
-                html: ' sent successfully'
-            })
-        }
-    })
+                swal({
+                    type: 'success',
+                    html: ' sent successfully'
+                })
+            }
+        })
     };
     $scope.downloadDetails = function () {
         window.open('/v1/party/downloadDetails');
@@ -259,7 +271,7 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
         contact: '',
         email: '',
         city: '',
-        gstNo:'',
+        gstNo: '',
         tripLanes: [{
             index: 0
         }],
@@ -279,17 +291,15 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             } else {
                 Notification.error(success.data.message)
             }
-        }, function (err) {
-        });
-    };
+        }, function (err) {});
+    }
 
     $scope.addTripLane = function () {
         $scope.party.error = [];
         var length = $scope.party.tripLanes.length;
         if (!$scope.party.tripLanes[length - 1].name || !$scope.party.tripLanes[length - 1].from || !$scope.party.tripLanes[length - 1].to) {
             $scope.party.error.push("Please Fill all TripLane Fields");
-        }
-        else {
+        } else {
             $scope.party.tripLanes.push({
                 index: length
             });
@@ -346,10 +356,14 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                 PartyService.updateParty($scope.party, function (success) {
                     if (success.data.status) {
                         $state.go('parties');
-                        Notification.success({message: "Party Updated Successfully"});
+                        Notification.success({
+                            message: "Party Updated Successfully"
+                        });
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
+                            Notification.error({
+                                message: message
+                            });
                         });
 
                     }
@@ -361,14 +375,17 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
                     if (success.data.status) {
                         params.success = success.data.message;
                         $state.go('parties');
-                        Notification.success({message: "Party Added Successfully"});
+                        Notification.success({
+                            message: "Party Added Successfully"
+                        });
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
+                            Notification.error({
+                                message: message
+                            });
                         });
                     }
-                }, function (err) {
-                });
+                }, function (err) {});
             }
         }
     };
@@ -409,4 +426,3 @@ app.controller('AddEditPartyCtrl', ['$scope', 'Utils', 'PartyService', '$rootSco
             });
     };
 }]);
-

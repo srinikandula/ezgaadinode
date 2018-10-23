@@ -1,6 +1,8 @@
 <div class="main-right col-xs-12" ng-controller="TrucksController">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-3 pall-zero"><h3>Trucks</h3></div>
+        <div class="col-sm-3 pall-zero">
+            <h3>Trucks</h3>
+        </div>
         <ul class="col-sm-9 pall-zero list-inline">
             <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
@@ -8,8 +10,7 @@
                         <ui-select-match placeholder=" Select Truck type" class="form-control ui-select-control">
                             {{$select.selected.title || title}}
                         </ui-select-match>
-                        <ui-select-choices
-                                repeat="truckType in addedTruckTypes  | propsFilter: {title: $select.search}">
+                        <ui-select-choices repeat="truckType in addedTruckTypes  | propsFilter: {title: $select.search}">
                             <div ng-bind-html="truckType.title | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
@@ -18,27 +19,24 @@
             <li class="col-sm-4">
                 <form>
                     <div class="input-group stylish-input-group">
-                        <input type="text" ng-model="truckName1" class="form-control"
-                               placeholder="Search By Truck Number">
+                        <input type="text" ng-model="truckName1" class="form-control" placeholder="Search By Truck Number">
                         <span class="input-group-addon">
-                        <button type="submit" ng-click="searchByTruckName(truckName1);">
-                           <i class="fa fa-search sear" aria-hidden="true"></i>
-                        </button>
-                    </span>
+                            <button type="submit" ng-click="searchByTruckName(truckName1);">
+                                <i class="fa fa-search sear" aria-hidden="true"></i>
+                            </button>
+                        </span>
                     </div>
                 </form>
             </li>
 
             <li class="col-sm-3 pos-relative">
                 <div class="select-box erp-box">
-                    <ui-select ng-model="truckName" theme="select2"
-                               title="Choose a person" append-to-body="true"
-                               ng-change="searchByTruckName(truckName.registrationNo);">
+                    <ui-select ng-model="truckName" theme="select2" title="Choose a person" append-to-body="true"
+                        ng-change="searchByTruckName(truckName.registrationNo);">
                         <ui-select-match placeholder=" Select a Truck" class="form-control ui-select-control">
                             {{$select.selected.registrationNo || registrationNo}}
                         </ui-select-match>
-                        <ui-select-choices
-                                repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
+                        <ui-select-choices repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
                             <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
                         </ui-select-choices>
                     </ui-select>
@@ -46,8 +44,7 @@
             </li>
             </li>
             <li class="col-sm-1">
-                <button type="button" ng-click="shareDetailsViaEmail()"
-                        class="btn mailImage"><img src="images/Reports_Mail.png">
+                <button type="button" ng-click="shareDetailsViaEmail()" class="btn mailImage"><img src="images/Reports_Mail.png">
                 </button>
             </li>
             <li class="col-sm-1">
@@ -69,8 +66,8 @@
                     {{trucks.permitExpiry | date:'dd-MM-yyyy'}}</span>
             </td>
             <td data-title="'Pollution'" sortable="'pollutionExpiry'" class="clickable-item">
-                        <span ng-class="getBackGroundColor(trucks.pollutionExpiry)">
-                            {{ trucks.pollutionExpiry | date:'dd-MM-yyyy' }}</span>
+                <span ng-class="getBackGroundColor(trucks.pollutionExpiry)">
+                    {{ trucks.pollutionExpiry | date:'dd-MM-yyyy' }}</span>
             </td>
             <td data-title="'Insurance'" sortable="'insuranceExpiry'" class="clickable-item">
                 <span ng-class="getBackGroundColor(trucks.insuranceExpiry)">
@@ -90,8 +87,8 @@
             <td data-title="'Driver Num'" sortable="'mobile'" class="clickable-item">{{
                 trucks.attrs.mobile || '--'}}
             </td>
-            <td data-title="'Created By'" sortable="'createdByName'"
-                class="clickable-item col-sm-1">{{ trucks.attrs.createdByName|| '--' }}
+            <td data-title="'Created By'" sortable="'createdByName'" class="clickable-item col-sm-1">{{
+                trucks.attrs.createdByName|| '--' }}
             </td>
 
             <td data-title="'Action'">
@@ -112,11 +109,8 @@
     <div class="add-image pull-right" ng-show="type=='account'">
         <figure>
             <a href="#" ng-click="goToEditTruckPage()">
-                <img src="images/Add_Truck.png" alt="Add Truck"
-                     title="Add Truck"></a>
+                <img src="images/Add_Truck.png" alt="Add Truck" title="Add Truck"></a>
         </figure>
     </div>
 
 </div>
-
-

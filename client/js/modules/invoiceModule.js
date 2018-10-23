@@ -1,80 +1,94 @@
-app.factory('InvoiceService',['$http', '$cookies', function ($http, $cookies) {
+app.factory('InvoiceService', ['$http', '$cookies', function ($http, $cookies) {
     return {
         addInvoice: function (invoiceDetails, success, error) {
             $http({
                 url: '/v1/invoices/addInvoice',
                 method: "POST",
                 data: invoiceDetails
+            }).then(success, error);
+        },
+        downloadInvoice: function (params, success, error) {
+            $http({
+                url: 'v1/invoices/downloadDetails',
+                method: 'GET',
+                params: params
             }).then(success, error)
         },
-        getCount: function (params,success, error) {
+        getInnvoiceByParty: function (params, success, error) {
+            $http({
+                url: '/v1/invoices/getinvoiceByParty',
+                method: 'GET',
+                params: params
+            }).then(success, error);
+        },
+        getCount: function (params, success, error) {
             $http({
                 url: '/v1/invoices/count',
                 method: "GET",
-                params:params
-            }).then(success, error)
+                params: params
+            }).then(success, error);
         },
-        getAllInvoices:function (params,success, error) {
+        getAllInvoices: function (params, success, error) {
             $http({
                 url: '/v1/invoices/getAllInvoices',
                 method: "GET",
-                params:params
-            }).then(success, error)
+                params: params
+            }).then(success, error);
         },
-        deleteInvoice:function (id,success, error) {
+        deleteInvoice: function (id, success, error) {
             $http({
-                url: '/v1/invoices/deleteInvoice/'+id,
+                url: '/v1/invoices/deleteInvoice/' + id,
                 method: "DELETE"
-            }).then(success, error)
+            }).then(success, error);
         },
-        getInvoice:function (id,success, error) {
+        getInvoice: function (id, success, error) {
             $http({
-                url: '/v1/invoices/getInvoice/'+id,
+                url: '/v1/invoices/getInvoice/' + id,
                 method: "GET"
-            }).then(success, error)
+            }).then(success, error);
         },
         updateInvoice: function (invoiceDetails, success, error) {
             $http({
                 url: '/v1/invoices/updateInvoice',
                 method: "POST",
                 data: invoiceDetails
-            }).then(success, error)
+            }).then(success, error);
         },
-        getTrip: function (params,success, error) {
+        getTrip: function (params, success, error) {
             $http({
                 url: '/v1/invoices/getTrip',
                 method: "GET",
-                params:params
-            }).then(success, error)
+                params: params
+            }).then(success, error);
         }
     }
 }]);
-app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','InvoiceService','$state','$stateParams','TrucksService','TripServices',function($scope,PartyService,Notification,InvoiceService,$state,$stateParams,TrucksService,TripServices){
+app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 'InvoiceService', '$state', '$stateParams', 'TrucksService', 'TripServices', function ($scope, PartyService, Notification, InvoiceService, $state, $stateParams, TrucksService, TripServices) {
     $scope.pageTitle = "Add Invoice";
     $scope.partyName = '';
-    $scope.getTrip={};
-    $scope.temp=false;
+    $scope.getTrip = {};
+    $scope.temp = false;
     $scope.truckRegNo = [];
     $scope.invoice = {
-        addTrip:false,
-        trip:[{
-            vehicleNo:undefined,
+        addTrip: false,
+        trip: [{
+            vehicleNo: undefined,
             from: undefined,
             to: undefined,
-            loadedOn:undefined,
-            unloadedOn:undefined
+            loadedOn: undefined,
+            unloadedOn: undefined
         }]
 
     };
 
-    PartyService.getAllPartiesForFilter(function(successCallback){
+    PartyService.getAllPartiesForFilter(function (successCallback) {
         $scope.parties = successCallback.data.parties;
-    },function(errorCallback){});
+    }, function (errorCallback) {});
 
-    $scope.getTrips = function(){
-        TripServices.getAllAccountTrips([],function(successCallback){
+    $scope.getTrips = function () {
+        TripServices.getAllAccountTrips([], function (successCallback) {
             $scope.trips = successCallback.data.trips;
-        },function(errorCallback){});
+        }, function (errorCallback) {});
     };
 
     TrucksService.getAllTrucksForFilter(function (successCallback) {
@@ -86,26 +100,26 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
             });
         }
     }, function (error) {});
-    if($stateParams.id){
+    if ($stateParams.id) {
         $scope.pageTitle = "Edit Invoice";
-        InvoiceService.getInvoice($stateParams.id,function (successCallback) {
-            if(successCallback.data.status){
-                $scope.invoice =  successCallback.data.data;
+        InvoiceService.getInvoice($stateParams.id, function (successCallback) {
+            if (successCallback.data.status) {
+                $scope.invoice = successCallback.data.data;
                 var party = _.find($scope.parties, function (party) {
                     return party._id.toString() === $scope.invoice.partyId;
                 });
                 if (party) {
                     $scope.partyName = party.name;
                 }
-                if($scope.invoice.addTrip){
-                    var trip = _.find($scope.trips,function(trip){
+                if ($scope.invoice.addTrip) {
+                    var trip = _.find($scope.trips, function (trip) {
                         return trip._id.toString() === $scope.invoice.tripId;
                     });
                     if (trip) {
                         $scope.tripId = trip.tripId;
                     }
                     for (var i = 0; i < $scope.invoice.trip.length; i++) {
-                        $scope.temp=true;
+                        $scope.temp = true;
                         $scope.invoice.trip[i].date = new Date($scope.invoice.trip[i].date);
                     }
                 };
@@ -129,7 +143,7 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
                 //     $scope.invoice.gatePassDate=new Date($scope.invoice.gatePassDate) 
                 // }
             }
-        },function (errorCallback) {});
+        }, function (errorCallback) {});
     }
     $scope.addFromAndTo = function () {
         if (!$scope.invoice.trip[$scope.invoice.trip.length - 1].from ||
@@ -139,46 +153,50 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
             Notification.error("Please enter details");
         } else {
             $scope.invoice.trip.push({
-                vehicleNo:undefined,
+                vehicleNo: undefined,
                 from: undefined,
                 to: undefined,
-                loadedOn:undefined,
-                unloadedOn:undefined
+                loadedOn: undefined,
+                unloadedOn: undefined
             });
         }
     };
     $scope.addFromAndToTrip = function () {
         if (!$scope.invoice.tripId) {
             Notification.error("Please enter details");
-        }else{
-            $scope.temp=true;
-            $scope.status='diable';
-            var query = {tripId:$scope.invoice.tripId.tripId};
-            InvoiceService.getTrip(query,function(success){
-                if(success.data.status){
-                    $scope.getTrip=success.data.data;
+        } else {
+            $scope.temp = true;
+            $scope.status = 'diable';
+            var query = {
+                tripId: $scope.invoice.tripId.tripId
+            };
+            InvoiceService.getTrip(query, function (success) {
+                if (success.data.status) {
+                    $scope.getTrip = success.data.data;
                     $scope.getTrip.vehicleNo = success.data.truckName;
-                    if(!$scope.invoice.trip[0].from){
+                    if (!$scope.invoice.trip[0].from) {
                         $scope.invoice.trip[0].vehicleNo = $scope.getTrip.vehicleNo;
-                        $scope.invoice.trip[0].from=$scope.getTrip.source;
-                        $scope.invoice.trip[0].to=$scope.getTrip.destination;
-                        $scope.invoice.trip[0].date=new Date($scope.getTrip.date);
-                        $scope.invoice.trip[0].tonnage=$scope.getTrip.tonnage;
-                        $scope.invoice.trip[0].ratePerTonne=$scope.getTrip.rate;
-                    }else{
+                        $scope.invoice.trip[0].from = $scope.getTrip.source;
+                        $scope.invoice.trip[0].to = $scope.getTrip.destination;
+                        $scope.invoice.trip[0].date = new Date($scope.getTrip.date);
+                        $scope.invoice.trip[0].tonnage = $scope.getTrip.tonnage;
+                        $scope.invoice.trip[0].ratePerTonne = $scope.getTrip.rate;
+                    } else {
                         $scope.invoice.trip.push({
-                            vehicleNo:$scope.getTrip.vehicleNo,
-                            from:$scope.getTrip.source,
-                            to:$scope.getTrip.destination,
-                            date:new Date($scope.getTrip.date),
-                            tonnage:$scope.getTrip.tonnage,
-                            ratePerTonne:$scope.getTrip.rate
+                            vehicleNo: $scope.getTrip.vehicleNo,
+                            from: $scope.getTrip.source,
+                            to: $scope.getTrip.destination,
+                            date: new Date($scope.getTrip.date),
+                            tonnage: $scope.getTrip.tonnage,
+                            ratePerTonne: $scope.getTrip.rate
                         });
                     }
                 }
-            },function(error){
+            }, function (error) {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({ message: message });
+                    Notification.error({
+                        message: message
+                    });
                 })
             });
         }
@@ -191,60 +209,69 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
         }
 
     };
-    $scope.add_editInvoice = function(){
-        if($stateParams.id){
-            if($scope.invoice.tripId) {
+    $scope.add_editInvoice = function () {
+        if ($stateParams.id) {
+            if ($scope.invoice.tripId) {
                 $scope.invoice.partyId = $scope.invoice.tripId.partyId;
-                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
-                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne*$scope.invoice.trip[i].tonnage);
+                for (var i = 0; i < $scope.invoice.trip.length; i++) {
+                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne * $scope.invoice.trip[i].tonnage);
                 }
-            }else{
+            } else {
                 $scope.invoice.partyId = $scope.invoice.partyId._id;
-                $scope.invoice.totalAmount = $scope.invoice.rate*$scope.invoice.quantity;
-                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
-                    if($scope.invoice.trip[i].vehicleNo.registrationNo){
+                $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
+                for (var i = 0; i < $scope.invoice.trip.length; i++) {
+                    if ($scope.invoice.trip[i].vehicleNo.registrationNo) {
                         $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
                     }
                 }
             }
-            InvoiceService.updateInvoice($scope.invoice,function(successCallback){
-                if(successCallback.data.status){
-                    Notification.success({message:"Updated Successfully"});
+            InvoiceService.updateInvoice($scope.invoice, function (successCallback) {
+                if (successCallback.data.status) {
+                    Notification.success({
+                        message: "Updated Successfully"
+                    });
                     $state.go('invoice');
-                }else{
+                } else {
                     successCallback.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({
+                            message: message
+                        });
                     });
                 }
-            },function(errorCallback){});
-        }else{
-            if($scope.invoice.tripId) {
+            }, function (errorCallback) {});
+        } else {
+            if ($scope.invoice.tripId) {
                 $scope.invoice.partyId = $scope.invoice.tripId.partyId;
-                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
-                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne*$scope.invoice.trip[i].tonnage);
+                for (var i = 0; i < $scope.invoice.trip.length; i++) {
+                    $scope.invoice.trip[i].amountPerTonne = parseFloat($scope.invoice.trip[i].ratePerTonne * $scope.invoice.trip[i].tonnage);
                 }
-            }else{
+            } else {
                 $scope.invoice.partyId = $scope.invoice.partyId._id;
-                $scope.invoice.totalAmount = $scope.invoice.rate*$scope.invoice.quantity;
-                for(var i = 0 ;i<$scope.invoice.trip.length;i++){
+                $scope.invoice.totalAmount = $scope.invoice.rate * $scope.invoice.quantity;
+                for (var i = 0; i < $scope.invoice.trip.length; i++) {
                     $scope.invoice.trip[i].vehicleNo = $scope.invoice.trip[i].vehicleNo.registrationNo;
                 }
             }
-            InvoiceService.addInvoice($scope.invoice,function(successCallback){
-                if(successCallback.data.status){
-                    Notification.success({message:"Added Successfully"});
+            InvoiceService.addInvoice($scope.invoice, function (successCallback) {
+                if (successCallback.data.status) {
+                    Notification.success({
+                        message: "Added Successfully"
+                    });
                     $state.go('invoice');
-                }else{
+                } else {
                     successCallback.data.messages.forEach(function (message) {
-                        Notification.error({ message: message });
+                        Notification.error({
+                            message: message
+                        });
                     });
                 }
-            },function(errorCallback){});
+            }, function (errorCallback) {});
         }
 
     };
-    $scope.cancel = function(){
+    $scope.cancel = function () {
         $state.go('invoice');
+        getAllPartiesForFilter
     };
     $scope.searchSource = function (index) {
         var input = document.getElementById('source' + index);
@@ -268,9 +295,10 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
     };
     $scope.getTrips();
 }]);
-app.controller('invoicesListController',['$scope','InvoiceService','$state','NgTableParams',function($scope,InvoiceService,$state,NgTableParams){
+app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceService', '$state', 'NgTableParams', 'PartyService', function ($scope, $rootScope, InvoiceService, $state, NgTableParams, PartyService) {
 
-    $scope.delete = function(id){
+
+    $scope.delete = function (id) {
         swal({
             title: 'Are you sure?',
             text: "You won't be able to revert this!",
@@ -305,19 +333,20 @@ app.controller('invoicesListController',['$scope','InvoiceService','$state','NgT
         });
     };
     var loadTableData = function (tableParams) {
-        var pageable = {page:tableParams.page(),
+        var pageable = {
+            page: tableParams.page(),
             size: tableParams.count(),
             sort: tableParams.sorting(),
-            fromDate:tableParams.fromDate,
-            toDate:tableParams.toDate
+            fromDate: tableParams.fromDate,
+            toDate: tableParams.toDate
         };
-        InvoiceService.getAllInvoices(pageable,function(successCallback){
-            if(successCallback.data.status){
+        InvoiceService.getAllInvoices(pageable, function (successCallback) {
+            if (successCallback.data.status) {
                 $scope.invoices = successCallback.data.data;
                 tableParams.total(successCallback.totalElements);
                 tableParams.data = $scope.invoices;
             }
-        },function(errorCallback){});
+        }, function (errorCallback) {});
     };
     $scope.init = function () {
         $scope.invoiceParams = new NgTableParams({
@@ -330,7 +359,7 @@ app.controller('invoicesListController',['$scope','InvoiceService','$state','NgT
             counts: [],
             total: $scope.count,
             getData: function (params) {
-                if($scope.fromDate && $scope.toDate){
+                if ($scope.fromDate && $scope.toDate) {
                     params.fromDate = $scope.fromDate;
                     params.toDate = $scope.toDate;
                 }
@@ -343,19 +372,107 @@ app.controller('invoicesListController',['$scope','InvoiceService','$state','NgT
         var params = {};
         params.fromDate = $scope.fromDate;
         params.toDate = $scope.toDate;
-        InvoiceService.getCount(params,function(successCallback){
-            if(successCallback.data.status){
+        InvoiceService.getCount(params, function (successCallback) {
+            if (successCallback.data.status) {
                 $scope.count = successCallback.data.data;
                 $scope.init();
             }
-        },function(errorCallback){});
+        }, function (errorCallback) {});
     };
-    $scope.goToEditPage = function(id){
-        $state.go('invoiceEdit',{id:id});
+    $scope.goToEditPage = function (id) {
+        $state.go('invoiceEdit', {
+            id: id
+        });
     };
     $scope.getCount();
     // $scope.getAllInvoices();
-    $scope.generatePdf=function (invoiceId) {
-        window.open('/v1/invoices/generatePDF/' + invoiceId );
+    $scope.generatePdf = function (invoiceId) {
+        window.open('/v1/invoices/generatePDF/' + invoiceId);
     }
+
+    PartyService.getAllPartiesForFilter(function (success) {
+        if (success.data.status) {
+            $scope.partiesList = success.data.parties;
+        } else {
+            success.data.messages.forEach(function (message) {
+                Notification.error({
+                    message: message
+                });
+            });
+        }
+    }, function (error) {
+
+    })
+
+    $scope.downloadPartyDetails = function () {
+        window.open('/v1/expense/downloadDetails');
+    };
+    $scope.partyId = null;
+    $scope.getInvoice = function (party) {
+        $scope.partyId = party._id;
+        // alert("hiii");
+        console.log('partyyyyyyyyyyyyyyyyyy', party);
+        var params = {};
+        params.fromDate = $scope.fromDate;
+        params.toDate = $scope.toDate;
+        params._id = party._id;
+        console.log(params, "paramasssssssss");
+        InvoiceService.getInnvoiceByParty(params, function (success) {
+                console.log("Success", success);
+                if (success.data.status) {
+                    console.log("success..........");
+                    $scope.invoices = success.data.data;
+                    console.log("invoices", success.data.data);
+
+                } else {
+                    console.log("error..........");
+
+                }
+            },
+
+            function (error) {
+                if (error) {
+                    Notification.error({
+                        message: message
+                    });
+                } else {}
+
+            });
+
+    };
+
+    $scope.downloadDetails = function () {
+        var params = {};
+        params.fromDate = $scope.fromDate;
+        params.toDate = $scope.toDate;
+        params._id = $scope.partyId;
+        // window.open(
+        //     $http.get('/v1/invoices/downloadDetails', params).then(function(success,error){
+
+        //     },function(error){
+
+        //     }));
+        console.log("Params", params);
+        window.open('/v1/invoices/downloadDetails?start=' + params.fromDate + '&end=' + params.toDate + '&partyId=' + params._id);
+
+        // window.open(InvoiceService.downloadInvoiceByParty);
+        /*   InvoiceService.downloadInvoice(params, function (success) {
+              if (success.data.status) {
+                  console.log("successfully Downloaded");
+              }
+          }, function (error) {
+              if (error) {
+                  console.log("error while downloading the data");
+              }
+          }) */
+
+    };
+
+    $scope.printArea = function () {
+        var w = window.open();
+        w.document.write(document.getElementsByClassName('report_left_inner')[0].innerHTML);
+        w.print();
+        w.close();
+    }
+
 }]);

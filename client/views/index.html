@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Welcome to Easygaadi - ERP</title>
     <base href="/">
@@ -14,262 +15,239 @@
 </head>
 
 <body ng-app="EasyGaadi" ng-cloak>
-<div class="loader" ng-show="reqloading">
-    <img src="images/Spinner.svg">
-</div>
+    <div class="loader" ng-show="reqloading">
+        <img src="images/Spinner.svg">
+    </div>
 
-<span ng-controller="NavCtrl">
+    <span ng-controller="NavCtrl">
 
-<nav class="navbar navbar-default menu-header" ng-if="isLoggedIn()">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-12 top-nav">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header col-sm-2">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                    data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand logo" href="#" ui-sref="reports"><img src="images/logo.png"></a>
-        </div>
-                <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse col-sm-10" id="bs-example-navbar-collapse-1">
-            <ul class="nav navbar-nav col-sm-9">
-                <li ng-hide="erpEnabled=='false'" ng-class="{selected: subTab === 'ERP'}"> <a href="#"
-                                                                                              ui-sref="reports">
-                    <img src="images/erp.png"><span>ERP</span></a></li>
-                <li ng-class="{selected: activeTab === 'gpsReports'}"><a href="#" ui-sref="listView">
-                    <img src="images/gps.png"><span>GPS</span></a></li>
-                <li ng-class="{selected: activeTab === 'gps'}"><a href="#" ui-sref="fuelcard">
-                    <img src="images/fuelcard.png"><span>Fuel Card</span></a></li>
-                <li><a href="#">  <img src="images/tollcard.png"><span>Toll Card</span></a></li>
-                <li><a href="#">  <img src="images/load.png"><span>Loads</span></a></li>
-                <li ng-class="{selected: activeTab === 'settings'}"><a href="#" ui-sref="gpsSettings"><img
-                        src="images/settings.png"><span>Settings</span></a></li>
-                <li><a href="#">  <img src="images/notifications.png"><span>Notifications</span></a></li>
-                <li class="pos-relative">
-                    <a href="#" ui-sref="reminders"> <i class="fa fa-bell-o"></i>
-                        <span>Remainders</span> </a>
-                    <div class="erp-badges" ng-if="remainder > 0"><span>{{remainder}}</span></div>
-                </li>
-                <!--<li ng-class="{selected: activeTab === 'Analytics'}"><a href="#" ui-sref="analyticsReports"><img-->
-                <!--src="images/settings.png"><span>Analytics</span></a></li>-->
+        <nav class="navbar navbar-default menu-header" ng-if="isLoggedIn()">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-12 top-nav">
+                        <!-- Brand and toggle get grouped for better mobile display -->
+                        <div class="navbar-header col-sm-2">
+                            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                                aria-expanded="false">
+                                <span class="sr-only">Toggle navigation</span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                                <span class="icon-bar"></span>
+                            </button>
+                            <a class="navbar-brand logo" href="#" ui-sref="reports"><img src="images/logo.png"></a>
+                        </div>
+                        <!-- Collect the nav links, forms, and other content for toggling -->
+                        <div class="collapse navbar-collapse col-sm-10" id="bs-example-navbar-collapse-1">
+                            <ul class="nav navbar-nav col-sm-9">
+                                <li ng-hide="erpEnabled=='false'" ng-class="{selected: subTab === 'ERP'}"> <a href="#"
+                                        ui-sref="reports">
+                                        <img src="images/erp.png"><span>ERP</span></a></li>
+                                <li ng-class="{selected: activeTab === 'gpsReports'}"><a href="#" ui-sref="listView">
+                                        <img src="images/gps.png"><span>GPS</span></a></li>
+                                <li ng-class="{selected: activeTab === 'gps'}"><a href="#" ui-sref="fuelcard">
+                                        <img src="images/fuelcard.png"><span>Fuel Card</span></a></li>
+                                <li><a href="#"> <img src="images/tollcard.png"><span>Toll Card</span></a></li>
+                                <li><a href="#"> <img src="images/load.png"><span>Loads</span></a></li>
+                                <li ng-class="{selected: activeTab === 'settings'}"><a href="#" ui-sref="gpsSettings"><img
+                                            src="images/settings.png"><span>Settings</span></a></li>
+                                <li><a href="#"> <img src="images/notifications.png"><span>Notifications</span></a></li>
+                                <li class="pos-relative">
+                                    <a href="#" ui-sref="reminders"> <i class="fa fa-bell-o"></i>
+                                        <span>Remainders</span> </a>
+                                    <div class="erp-badges" ng-if="remainder > 0"><span>{{remainder}}</span></div>
+                                </li>
+                                <!--<li ng-class="{selected: activeTab === 'Analytics'}"><a href="#" ui-sref="analyticsReports"><img-->
+                                <!--src="images/settings.png"><span>Analytics</span></a></li>-->
 
-            </ul>
-            <ul class="nav navbar-nav pull-right margin-top-10 user-nav" ng-show="isLoggedInn" ng-init="loggedTrue()">
+                            </ul>
+                            <ul class="nav navbar-nav pull-right margin-top-10 user-nav" ng-show="isLoggedInn" ng-init="loggedTrue()">
 
-                <li class="">
-                     <img src="images/dummy.png" width="60" height="55"
-                          class="profile-pic" ng-show="!profilePic">
-                    <img src="images/profile-pics/{{profilePic}}" width="60" height="55"
-                         class="profile-pic" ng-show="profilePic">
-                </li>
-                <li class="profile-nav">
-                    <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown" style="text-transform: capitalize">{{displayName | limitTo:10}}
-                        <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#" ui-sref="myProfile">My Profile</a></li>
-                        <li><a href="#" ng-show="type=='account'" ui-sref="myGroup">My Groups</a></li>
-                        <li><a href="#" ng-show="type=='account'" ui-sref="addGroup">Add Group</a></li>
-                        <li><a href="#" ng-click="logout()">Logout</a></li>
+                                <li class="">
+                                    <img src="images/dummy.png" width="60" height="55" class="profile-pic" ng-show="!profilePic">
+                                    <img src="images/profile-pics/{{profilePic}}" width="60" height="55" class="profile-pic"
+                                        ng-show="profilePic">
+                                </li>
+                                <li class="profile-nav">
+                                    <a href="#" class="dropdown-toggle pt-18" data-toggle="dropdown" style="text-transform: capitalize">{{displayName
+                                        | limitTo:10}}
+                                        <span class="caret"></span></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="#" ui-sref="myProfile">My Profile</a></li>
+                                        <li><a href="#" ng-show="type=='account'" ui-sref="myGroup">My Groups</a></li>
+                                        <li><a href="#" ng-show="type=='account'" ui-sref="addGroup">Add Group</a></li>
+                                        <li><a href="#" ng-click="logout()">Logout</a></li>
 
-                    </ul>
-                </li>
-            </ul>
-        </div><!-- /.navbar-collapse -->
-             </div><!-- /.container-fluid -->
-        </div>
-        </div>
-</nav>
-    <div class="clearfix"></div>
-    <!--<top-navigation ng-if="isLoggedIn()"></top-navigation>-->
-    <div class="body-section" ng-controller="LeftNavCtrl" ng-if="subTab === 'ERP'">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-xs-12">
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div><!-- /.navbar-collapse -->
+                    </div><!-- /.container-fluid -->
+                </div>
+            </div>
+        </nav>
+        <div class="clearfix"></div>
+        <!--<top-navigation ng-if="isLoggedIn()"></top-navigation>-->
+        <div class="body-section" ng-controller="LeftNavCtrl" ng-if="subTab === 'ERP'">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-xs-12">
                         <div class="col-sm-2 col-xs-12 left-nav">
-                             <!--<div class="panel-group" id="accordion">-->
-                            <!--<div class="panel panel-default custom-panel-default custom-panel" ng-repeat="module in modules" ng-init="i = $index">-->
-                            <!--<div class="panel-heading">-->
-                            <!--<h4 class="panel-title">-->
-                            <!--<a data-toggle="collapse" data-parent="#accordion"-->
-                            <!--href="#{{module.id}}" class="left-menu-anchor">-->
-                            <!--{{module.name}}</a>-->
-                            <!--</h4>-->
-                            <!--</div>-->
-                            <!--<div id="{{module.id}}" class="panel-collapse collapse">-->
-                            <!--<div class="panel-body custom-panel-body" ng-repeat="subModule in module.subModules">-->
-                            <!--<left-menu label="{{subModule.name}}" ui-sref="{{subModule.link}}"></left-menu>-->
-                            <!--</div>-->
-                            <!--</div>-->
-                            <!--</div>-->
-
-                            <!--</div>-->
-                             <div class="panel-group" id="accordion">
-                                 <div class="panel panel-default custom-panel-default custom-panel">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion"
-                                                   href="#reports" class="left-menu-anchor">
+                            <div class="panel-group" id="accordion">
+                                <div class="panel panel-default custom-panel-default custom-panel">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#reports" class="left-menu-anchor">
                                                 Reports</a>
-                                            </h4>
-                                        </div>
-                                        <div id="reports" class="panel-collapse collapse">
-                                            <div class="panel-body custom-panel-body">
-                                                 <left-menu label="Reports" ui-sref="reports"></left-menu>
-                                            </div>
+                                        </h4>
+                                    </div>
+                                    <div id="reports" class="panel-collapse collapse">
+                                        <div class="panel-body custom-panel-body">
+                                            <left-menu label="Reports" ui-sref="reports"></left-menu>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default custom-panel-default custom-panel">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#master"
-                                                   class="left-menu-anchor">
-                                                   Master</a>
-                                            </h4>
-                                        </div>
-                                        <div id="master" class="panel-collapse collapse">
-                                            <div class="panel-body custom-panel-body">
-                                                 <left-menu label="Trucks" ui-sref="trucks"></left-menu>
-                                                <left-menu label="Drivers" ui-sref="drivers"></left-menu>
-                                                <left-menu label="Parties" ui-sref="parties"></left-menu>
-                                                <left-menu label="Inventories" ui-sref="inventories"></left-menu>
-                                                <left-menu label="Users" ui-sref="users"></left-menu>
-                                            </div>
+                                </div>
+                                <div class="panel panel-default custom-panel-default custom-panel">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#master" class="left-menu-anchor">
+                                                Master</a>
+                                        </h4>
+                                    </div>
+                                    <div id="master" class="panel-collapse collapse">
+                                        <div class="panel-body custom-panel-body">
+                                            <left-menu label="Trucks" ui-sref="trucks"></left-menu>
+                                            <left-menu label="Drivers" ui-sref="drivers"></left-menu>
+                                            <left-menu label="Parties" ui-sref="parties"></left-menu>
+                                            <left-menu label="Inventories" ui-sref="inventories"></left-menu>
+                                            <left-menu label="Users" ui-sref="users"></left-menu>
                                         </div>
                                     </div>
-                                    <div class="panel panel-default custom-panel-default custom-panel">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#Maintanance"
-                                                   class="left-menu-anchor">
-                                                   Maintanance</a>
-                                            </h4>
-                                        </div>
-                                        <div id="Maintanance" class="panel-collapse collapse">
-                                            <div class="panel-body custom-panel-body">
-                                                <left-menu label="Expenses" ui-sref="expenses"></left-menu>
-                                                <left-menu label="Jobs" ui-sref="jobs"></left-menu>
-                                                <left-menu label="Reminders" ui-sref="reminders"></left-menu>
-                                            </div>
+                                </div>
+                                <div class="panel panel-default custom-panel-default custom-panel">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#Maintanance"
+                                                class="left-menu-anchor">
+                                                Maintanance</a>
+                                        </h4>
+                                    </div>
+                                    <div id="Maintanance" class="panel-collapse collapse">
+                                        <div class="panel-body custom-panel-body">
+                                            <left-menu label="Expenses" ui-sref="expenses"></left-menu>
+                                            <left-menu label="Jobs" ui-sref="jobs"></left-menu>
+                                            <left-menu label="Reminders" ui-sref="reminders"></left-menu>
                                         </div>
                                     </div>
-                                 <div class="panel panel-default custom-panel-default custom-panel">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#Transactions"
-                                                   class="left-menu-anchor">
-                                                   Transactions</a>
-                                            </h4>
-                                        </div>
-                                        <div id="Transactions" class="panel-collapse collapse">
-                                            <div class="panel-body custom-panel-body">
-                                                <left-menu label="Trips" ui-sref="trips"></left-menu>
-                                                 <left-menu label="TripSheet" ui-sref="tripSheet"></left-menu>
-                                                  <left-menu label="DriverSheet" ui-sref="driverSheet"></left-menu>
-                                                 <left-menu label="Receipts" ui-sref="receipts"></left-menu>
-                                                <left-menu label="Payments" ui-sref="payments"></left-menu>
+                                </div>
+                                <div class="panel panel-default custom-panel-default custom-panel">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#Transactions"
+                                                class="left-menu-anchor">
+                                                Transactions</a>
+                                        </h4>
+                                    </div>
+                                    <div id="Transactions" class="panel-collapse collapse">
+                                        <div class="panel-body custom-panel-body">
+                                            <left-menu label="Trips" ui-sref="trips"></left-menu>
+                                            <left-menu label="Receipts" ui-sref="receipts"></left-menu>
+                                            <left-menu label="Payments" ui-sref="payments"></left-menu>
                                             <left-menu label="LR" ui-sref="lrs"></left-menu>
-                                               <left-menu label="TripSettlement" ui-sref="tripSettlement"></left-menu>
-                                              <left-menu label="Invoice" ui-sref="invoice"></left-menu>
-                                           </div>
+                                            <left-menu label="TripSettlement" ui-sref="tripSettlement"></left-menu>
+                                            <left-menu label="Invoice" ui-sref="invoice"></left-menu>
                                         </div>
                                     </div>
+                                </div>
 
-                                 <div class="panel panel-default custom-panel-default custom-panel">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#Request"
-                                                   class="left-menu-anchor">
-                                                     Load Request</a>
-                                            </h4>
-                                        </div>
-                                        <div id="Request" class="panel-collapse collapse">
-                                            <div class="panel-body custom-panel-body">
-                                                <left-menu label="LoadRequest" ui-sref="loadRequests"></left-menu>
-                                                <left-menu label="Send SMS" ui-sref="sendSMS"></left-menu>
-                                            </div>
+                                <div class="panel panel-default custom-panel-default custom-panel">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#Request" class="left-menu-anchor">
+                                                Load Request</a>
+                                        </h4>
+                                    </div>
+                                    <div id="Request" class="panel-collapse collapse">
+                                        <div class="panel-body custom-panel-body">
+                                            <left-menu label="LoadRequest" ui-sref="loadRequests"></left-menu>
+                                            <left-menu label="Send SMS" ui-sref="sendSMS"></left-menu>
                                         </div>
                                     </div>
-                                  <div class="panel panel-default custom-panel-default custom-panel">
-                                        <div class="panel-heading">
-                                            <h4 class="panel-title">
-                                                <a data-toggle="collapse" data-parent="#accordion" href="#routeConfig"
-                                                   class="left-menu-anchor">
-                                                     Route Config</a>
-                                            </h4>
-                                        </div>
-                                        <div id="routeConfig" class="panel-collapse collapse">
-                                            <div class="panel-body custom-panel-body">
-                                                <left-menu label="routeConfig" ui-sref="routeConfig"></left-menu>
-                                                <left-menu label="GeoFences" ui-sref="geoFence"></left-menu>
-                                                <left-menu label="GeoFencesReports"
-                                                           ui-sref="GeoFencesReports"></left-menu>
-                                            </div>
+                                </div>
+                                <div class="panel panel-default custom-panel-default custom-panel">
+                                    <div class="panel-heading">
+                                        <h4 class="panel-title">
+                                            <a data-toggle="collapse" data-parent="#accordion" href="#routeConfig"
+                                                class="left-menu-anchor">
+                                                Route Config</a>
+                                        </h4>
+                                    </div>
+                                    <div id="routeConfig" class="panel-collapse collapse">
+                                        <div class="panel-body custom-panel-body">
+                                            <left-menu label="routeConfig" ui-sref="routeConfig"></left-menu>
+                                            <left-menu label="GeoFences" ui-sref="geoFence"></left-menu>
+                                            <left-menu label="GeoFencesReports" ui-sref="GeoFencesReports"></left-menu>
                                         </div>
                                     </div>
+                                </div>
 
-                             </div>
+                            </div>
                         </div>
                         <div class="col-xs-12 col-sm-10">
                             <ui-view></ui-view>
                         </div>
                     </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-    <div ng-if="subTab!= 'ERP'" style="height: 100%;">
-        <ui-view></ui-view>
-    </div>
+        <div ng-if="subTab!= 'ERP'" style="height: 100%;">
+            <ui-view></ui-view>
+        </div>
 
 
 
-                            </span>
+    </span>
 
-<!--bower scripts-->
-<script src="dist/components/components.min.js"></script>
-<script src="http://maps.google.com/maps/api/js?v=3&key=AIzaSyC3JuGIZkNVnzrOthyMWEWf3zA0J-aui0M&libraries=places"></script>
-<!--Date Time Picker --->
-<script src="components/bootstrap-ui-datetime-picker/dist/datetime-picker.min.js"></script>
-<script type="text/javascript" src="js/multiselect.js"></script>
-<!--app-->
-<!--<script src="js/app.js"></script>-->
+    <!--bower scripts-->
+    <script src="dist/components/components.min.js"></script>
+    <script src="http://maps.google.com/maps/api/js?v=3&key=AIzaSyC3JuGIZkNVnzrOthyMWEWf3zA0J-aui0M&libraries=places"></script>
+    <!--Date Time Picker --->
+    <script src="components/bootstrap-ui-datetime-picker/dist/datetime-picker.min.js"></script>
+    <script type="text/javascript" src="js/multiselect.js"></script>
+    <!--app-->
+    <!--<script src="js/app.js"></script>-->
 
-<!--services-->
-<script src="dist/js/app.min.js"></script>
-<script src="js/lib/bundles/ng-table.js"></script>
-<script src="js/slick.js"></script>
-<!--<script src="js/directives/fileUpload.js"></script>-->
+    <!--services-->
+    <script src="dist/js/app.min.js"></script>
+    <script src="js/lib/bundles/ng-table.js"></script>
+    <script src="js/slick.js"></script>
+    <!--<script src="js/directives/fileUpload.js"></script>-->
 
-<!--controllers-->
-<script src="dist/js/main.min.js"></script>
-<script>
+    <!--controllers-->
+    <script src="dist/js/main.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#top").hide();
+            $(function toTop() {
+                $(window).scroll(function () {
+                    if ($(this).scrollTop() > 100) {
+                        $('#top').fadeIn();
+                    } else {
+                        $('#top').fadeOut();
+                    }
+                });
 
-    $(document).ready(function () {
-        $("#top").hide();
-        $(function toTop() {
-            $(window).scroll(function () {
-                if ($(this).scrollTop() > 100) {
-                    $('#top').fadeIn();
-                } else {
-                    $('#top').fadeOut();
-                }
-            });
-
-            $('#top').click(function () {
-                $('body,html').animate({
-                    scrollTop: 0
-                }, 800);
-                return false;
+                $('#top').click(function () {
+                    $('body,html').animate({
+                        scrollTop: 0
+                    }, 800);
+                    return false;
+                });
             });
         });
-    });
-</script>
-<div id="top" onclick="toTop()">
-    <span class="top"> <i class="fa fa-angle-double-up" alt="Scroll to Top"></i></span>
-</div>
+    </script>
+    <div id="top" onclick="toTop()">
+        <span class="top"> <i class="fa fa-angle-double-up" alt="Scroll to Top"></i></span>
+    </div>
 </body>
+
 </html>

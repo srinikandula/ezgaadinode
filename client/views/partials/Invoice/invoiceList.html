@@ -1,30 +1,65 @@
 <div class="main-right col-xs-12" ng-controller="invoicesListController">
     <div class="col-xs-12 pall-zero mb-10">
-        <div class="col-sm-3 pall-zero"><h3>Invoice List:</h3></div>
+        <div class="col-sm-3 pall-zero">
+
+            <h3>Invoice List: {{partyName.party}}</h3>
+        </div>
         <ul class="col-sm-9 pall-zero list-inline">
             <li class="col-sm-3 pall-zero">
-                <date-picker ng-model="fromDate" class="'paymentscontrol'"
-                             past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
+                <date-picker ng-model="fromDate" class="'paymentscontrol'" past-present="'pastPresentDate'" placeholder="'from date'"></date-picker>
             </li>
             <li class="col-sm-3 pall-zero">
-                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="toDate"
-                             placeholder="'to date'" ></date-picker>
+                <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="toDate" placeholder="'to date'"></date-picker>
             </li>
-            <li class="col-sm-2 pall-zero">
+            <li class="col-sm-1 pall-zero">
                 <button type="submit" ng-click="getCount();" class="btn go">
                     <i class="fa fa-search sear" aria-hidden="true"></i>
                 </button>
             </li>
+            <li class="col-sm-3 pall-zero">
+                <!-- <input class="main-right form-control" type="text" ng-model="searchAny" placeholder="Search Filter"> -->
+                <div class="select-box erp-box">
+                    <ui-select ng-model="partyName.party" theme="select2" title="Choose a person" append-to-body="true"
+                        ng-change="getInvoice(partyName.party);">
+                        <ui-select-match placeholder="Select a Party" class="form-control ui-select-control">
+                            {{$select.selected.name || name}}
+                        </ui-select-match>
+                        <ui-select-choices repeat="parties in partiesList | propsFilter: {name: $select.search}">
+                            <div ng-bind-html="parties.name | highlight: $select.search"></div>
+                        </ui-select-choices>
+                    </ui-select>
+                </div>
+            </li>
+            <li class="col-sm-1 pall-zero">
+                <button type="button" ng-click="downloadDetails( );" class="btn mailImage">
+                    <img src="images/Reports_Download.png"></button>
+            </li>
+            <li class="col-sm-1 pall-zero">
+                <button type="button" ng-click="printArea( );" class="btn mailImage">
+                    <i class="fa fa-print fa-2x" aria-hidden="true"></i>
+                </button>
+            </li>
         </ul>
     </div>
-    <table class="table table-bordered table-striped table-condensed table-hover"
-           ng-table="invoiceParams">
-        <tr ng-repeat="invoice in invoices track by $index " style="text-align: center;">
+    <table class="table table-bordered table-striped table-condensed table-hover" ng-table="invoiceParams">
+        <tr class="print-style" ng-repeat="invoice in invoices track by $index" style="text-align: center;">
+            <td data-title="'S.No'" sortable="''" class="clickable-item">{{$index + 1}}
+            </td>
             <td data-title="'Party Name'" sortable="'partyId'" class="clickable-item">{{
                 invoice.partyId}}
             </td>
+            <td data-title="'Date'" sortable="'createdAt'" class="clickable-item">{{
+                invoice.createdAt | date: "dd/MM/y"}}
+            </td>
+            <td data-title="'From'" sortable="'trip'">
+                {{invoice.trip[0].from}}
+            </td>
+            <td data-title="'To'" sortable="'trip'">
+                {{invoice.trip[0].to}}
+            </td>
             <td data-title="'Truck No'" sortable="'vehicleNo'" class="clickable-item">{{
-                invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo || invoice.trip[invoice.trip.length-1].vehicleNo}}
+                invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo ||
+                invoice.trip[invoice.trip.length-1].vehicleNo}}
             </td>
             <td data-title="'Rate/Trip'" sortable="'rate'" class="clickable-item">{{
                 invoice.rate}}
@@ -38,21 +73,80 @@
                 <a href="#" class="btn" ng-click="delete(invoice._id)">
                     <span class="glyphicon glyphicon-remove"></span>
                 </a>
-                <a href="#"  class="btn"
-                   ng-click="generatePdf(invoice._id)">
+                <a href="#" class="btn" ng-click="generatePdf(invoice._id)">
                     <i class="fa fa-file-pdf-o" aria-hidden="true"></i>
                 </a>
             </td>
-        </tr>
-        <tr ng-if="!invoices || invoices.length === 0">
+        </tr class="print-style">
+        <tr class="print-style" ng-if="!invoices || invoices.length === 0">
             <td colspan="8"> No Invoices Exist.</td>
-        </tr>
+        </tr class="print-style">
     </table>
     <div class="add-image pull-right">
         <figure>
-            <a href="#" ui-sref="invoiceEdit"><img src="images/Add_Payments.png" alt="Add Invoice"
-                                              title="Add Invoice"></a>
+            <a href="#" ui-sref="invoiceEdit"><img src="images/Add_Payments.png" alt="Add Invoice" title="Add Invoice"></a>
         </figure>
+    </div>
+
+
+    <div class="report_left_inner" style="margin: 10px 0px; display: none;">
+        <table class="table" style="border: 1px solid #000000; border-collapse: collapse;">
+            <thead>
+                <tr class="print-style">
+                    <th colspan="7" style="text-align: center; border: 1px solid #000000">
+                        <h4 style="margin-bottom: 0rem !important;"><b>SRI SAI PACKAGING WORKS, BACHUPALLY</b></h4>
+                    </th>
+                </tr class="print-style">
+                <tr class="print-style">
+                    <th style="border: none"></th>
+                    <th style="border: none"></th>
+                    <th style="border: none"></th>
+                    <th style="border: none"></th>
+                    <th style="border: none"></th>
+                    <th style="text-align:right; border: none">Date:</th>
+                    <th style="text-align: center; border: 1px solid #000000" ng-repeat="invoice in invoices track by $index" ng-show="$index<=0">{{invoice.trip[0].date
+                        | date: "dd.MM.y"}}</th>
+                </tr class="print-style">
+                <tr class="print-style" style="text-align: center;border: 1px solid #ccc;">
+                    <th style="border: 1px solid #000000">S.No</th>
+                    <th style="border: 1px solid #000000">Date</th>
+                    <th style="border: 1px solid #000000">Bill No</th>
+                    <th style="border: 1px solid #000000">Vehicle No</th>
+                    <th style="border: 1px solid #000000">From</th>
+                    <th style="border: 1px solid #000000">To</th>
+                    <th style="border: 1px solid #000000">Amount in Rs.</th>
+                </tr class="print-style">
+            </thead>
+            <tbody>
+                <tr class="print-style" ng-repeat="invoice in invoices track by $index" style="text-align: center;border: 1px solid #ccc;">
+                    <td style="border: 1px solid #000000" scope="row">{{$index + 1}}</td>
+                    <td style="border: 1px solid #000000">{{invoice.createdAt | date: "dd.MM.y"}}</td>
+                    <td style="border: 1px solid #000000">TS{{$index + -741}}</td>
+                    <td style="border: 1px solid #000000">{{invoice.trip[invoice.trip.length-1].vehicleNo.registrationNo
+                        ||
+                        invoice.trip[invoice.trip.length-1].vehicleNo}}</td>
+                    <td style="border: 1px solid #000000">{{invoice.trip[0].from}}</t>
+                    <td style="border: 1px solid #000000">{{invoice.trip[0].to}}</td>
+                    <td style="border: 1px solid #000000">10,000.00</td>
+                </tr class="print-style">
+                <tr class="print-style">
+                    <th colspan="6" style="text-align:right; border: 1px solid #000000">Total:</th>
+                    <th style="text-align: center; border: 1px solid #000000;">13,000.00</th>
+                </tr class="print-style">
+                <tr class="print-style">
+                    <th colspan="7" style="text-align: left; border: 1px solid #000000">
+                        <b>Ruppees Only:</b>
+                    </th>
+                </tr class="print-style">
+                <tr class="print-style">
+                    <td colspan="7" style="text-align: right; border: 1px solid #000000">
+                        <p>For Sri Anjana Logistics</p>
+                        <br>
+                        <p>Authorised Signature</p>
+                    </td>
+                </tr class="print-style">
+            </tbody>
+        </table>
     </div>
 
 </div>
