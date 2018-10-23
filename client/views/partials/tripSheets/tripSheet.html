@@ -11,7 +11,7 @@
                         {{$select.selected.registrationNo || registrationNo}}
                     </ui-select-match>
                     <ui-select-choices
-                            repeat="trucks in trucksList  | propsFilter: {registrationNo: $select.search}">
+                            repeat="trucks in trucksList">
                         <div ng-bind-html="trucks.registrationNo | highlight: $select.search"></div>
                     </ui-select-choices>
                 </ui-select>
@@ -81,7 +81,7 @@
         </tr>
         <tr ng-repeat="sheet in tripSheets | filter:{registrationNo: tripSheets.registrationNo.registrationNo}"
             style="text-align: center;">
-            <td class="col-sm-1">{{$index+1}}{{sheet.loadingPoint}}</td>
+            <td class="col-sm-1">{{$index+1}}</td>
             <td class="col-sm-1">{{sheet.registrationNo | uppercase}}</td>
             <td class="col-sm-2">
                 <div class=" pos-relative">

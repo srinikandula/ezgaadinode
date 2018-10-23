@@ -12,12 +12,12 @@ AuthRouter.get('/getAllDriversAttendance/:date',function(req,res){
         res.send(result);
     });
 });
-AuthRouter.get('/getDriversDataByDateRange/:driverId/:fromDate/:toDate',function(req,res){
+AuthRouter.get('/getDriversDataByDateRange',function(req,res){
     Api.getDriversDataByDateRange(req,function(result){
         res.send(result);
     });
 });
-AuthRouter.get('/downloadDriversData/:driverId/:fromDate/:toDate',function(req,res){
+AuthRouter.get('/downloadDriversData',function(req,res){
     Api.downloadDriversData(req,function(result){
         if(result.status){
             res.xls('Driver details'+new Date().toLocaleDateString()+'.xlsx', result.data);
@@ -31,7 +31,7 @@ AuthRouter.put('/updateDriverSheet',function(req,res){
         res.send(result);
     });
 });
-var DriversAttendance = cronjob.schedule('* * * * *', function() {
+var DriversAttendance = cronjob.schedule('0 1 * * *', function() {
     Api.createDriversAttendance(function (result) {
     });
 });

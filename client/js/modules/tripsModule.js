@@ -1244,7 +1244,7 @@ app.controller('TripSheetCtrl', ['$scope', '$uibModal', 'TripServices', '$state'
                     }
                 }
                 $scope.validateTable = true;
-            } else {
+            }else {
                 console.log("erorrr");
             }
         })

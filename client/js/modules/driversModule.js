@@ -79,8 +79,8 @@ app.factory('DriverService', ['$http', function ($http) {
         },
         showDriversReport: function (driverId, fromDate, toDate, success, error) {
             $http({
-                url: '/v1/drivers/getDriversDataByDateRange/' + driverId + '/' + fromDate + '/' + toDate,
-                method: 'GET',
+                url: '/v1/drivers/getDriversDataByDateRange?driverId='+ driverId + '&fromDate=' + fromDate + '&toDate=' + toDate,
+                method: 'GET'
             }).then(success, error)
         }
 
@@ -536,33 +536,20 @@ app.controller('DriverSheetCntrl', ['$scope', 'DriverService', '$state', 'Notifi
     $scope.getAllDrivers();
 
     $scope.downloadDriverReport = function (driverId, fromDate, toDate) {
-
-            window.open('/v1/drivers/downloadDriversData/' + driverId + '/' + fromDate + '/' + toDate);
+        window.open('/v1/drivers/downloadDriversData?driverId='+driverId+'&fromDate='+fromDate+'&toDate='+toDate);
     };
 
     $scope.showDriverReport = function (driverId, fromDate, toDate) {
-        // $scope.errors = [];
-        // if (!driverId) {
-        //     $scope.errors.push('Please select driver');
-        // }
-        // if (!fromDate) {
-        //     $scope.errors.push('Please select From Date')
-        // }
-        // if (!toDate) {
-        //     $scope.errors.push('Please select To Date')
-        // }
-        // if ( $scope.errors.length > 0) {
-        // } else {
-            DriverService.showDriversReport(driverId, fromDate, toDate, function (success) {
-                if (success.data.status) {
-                    $scope.showDriverReport = success.data.data;
-                    $scope.validateTable = true;
-                } else {
-                    success.data.messages.forEach(function (messages) {
-                        Notification.error({message: messages});
-                    });
-                }
-            })
-
+        $scope.errors = [];
+        DriverService.showDriversReport(driverId, fromDate, toDate, function (success) {
+            if (success.data.status) {
+                $scope.showDriverReport = success.data.data;
+                $scope.validateTable = true;
+            } else {
+                success.data.messages.forEach(function (messages) {
+                    Notification.error({message: messages});
+                });
+            }
+        },function(error){});
     }
 }]);
