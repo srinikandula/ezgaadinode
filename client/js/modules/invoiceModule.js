@@ -117,6 +117,17 @@ app.controller('AddEditInvoiceCtrl',['$scope','PartyService','Notification','Inv
                         $scope.invoice.trip[i].unloadedOn = new Date($scope.invoice.trip[i].unloadedOn);
                     }
                 }
+                if($scope.invoice.lrDate)
+                {
+                    $scope.invoice.lrDate=new Date($scope.invoice.lrDate);
+                    $scope.invoice.consignorInvoiceDate=new Date($scope.invoice.consignorInvoiceDate);
+                    $scope.invoice.gatePassDate=new Date($scope.invoice.gatePassDate) 
+                }
+                // else if($scope.invoice.consignorInvoiceDate){
+                //     $scope.invoice.consignorInvoiceDate=new Date($scope.invoice.consignorInvoiceDate)
+                // }else if($scope.invoice.gatePassDate){
+                //     $scope.invoice.gatePassDate=new Date($scope.invoice.gatePassDate) 
+                // }
             }
         },function (errorCallback) {});
     }

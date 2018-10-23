@@ -9,8 +9,7 @@ var pdfGenerator=require('./../apis/pdfGenerator');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var TripCollection = require('./../models/schemas').TripCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
-
-
+var dateFormat=require('dateformat');
 
 var Invoices = function(){
 
@@ -134,6 +133,13 @@ Invoices.prototype.getAllInvoices = function(jwt,params,callback){
                         }else{
                             retObj.status = true;
                             retObj.messages.push("Success");
+                            for(var i=0;i<invoices.length;i++)
+                            {
+                              invoices[i].lrDate=  dateFormat(invoices[i].lrDate,"dd/mm/yyyy");
+                                invoices[i].consignorInvoiceDate=  dateFormat(invoices[i].consignorInvoiceDate,"dd/mm/yyyy");
+                                invoices[i].gatePassDate=  dateFormat(invoices[i].gatePassDate,"dd/mm/yyyy");
+                            }
+                             console.log('Invoicesssss',invoices);
                             retObj.data = invoices;
                             callback(retObj);
                         }
@@ -229,7 +235,12 @@ Invoices.prototype.generatePDF = function(req,callback){
                         retObj.messages.push("error in fetching record"+JSON.stringify(err));
                         invoiceCallback(retObj,null);
                     } else if(doc){
+
+                        doc.lrDate=  dateFormat(doc.lrDate,"dd/mm/yyyy");
+                        doc.consignorInvoiceDate=  dateFormat(doc.consignorInvoiceDate,"dd/mm/yyyy");
+                        doc.gatePassDate=  dateFormat(doc.gatePassDate,"dd/mm/yyyy");
                         invoiceCallback(false,doc);
+                         console.log("Doccccccc",doc);
                     }else{
                         retObj.messages.push("Please try again");
                         invoiceCallback(retObj,'');
@@ -292,6 +303,9 @@ Invoices.prototype.generatePDF = function(req,callback){
                     if(err){
                         retObj.messages.push("error in finding party details"+JSON.stringify(err));
                     }else{
+                        console.log("partyyyyyy",party);
+                        console.log('hii');
+
                         result.invoicesCount = 500+result.invoicesCount;
                         result.invoiceDate = dateToStringFormat(new Date());
                         result.partyName = party.name;

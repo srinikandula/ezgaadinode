@@ -138,10 +138,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <p style="text-align: center;">3796<p>
+                            <p style="text-align: center;">{{invoiceDetails.lrNo}}<p>
                         </td>
                         <td>
-                            <p style="text-align: center;">30.09.2018</p>
+                            <p style="text-align: center;">{{invoiceDetails.lrDate}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -154,10 +154,10 @@
                     </tr>
                     <tr>
                         <td>
-                            <p style="text-align: center;">U03/18-19/2612</p>
+                            <p style="text-align: center;">{{invoiceDetails.consignorInvoiceNo}}</p>
                         </td>
                         <td>
-                            <p style="text-align: center;">28.09.2018</p>
+                            <p style="text-align: center;">{{invoiceDetails.consignorInvoiceDate}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -180,10 +180,10 @@
                             <p> <b>GSTIN: {{gstNo}}</b></p>
                         </td>
                         <td>
-                            <p style="text-align: center;">2439</p>
+                            <p style="text-align: center;">{{invoiceDetails.gatePassNo}}</p>
                         </td>
                         <td>
-                            <p style="text-align: center;">28.09.2018</p>
+                            <p style="text-align: center;">{{invoiceDetails.gatePassDate}}</p>
                         </td>
                     </tr>
                     <tr>
@@ -280,8 +280,8 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td>&nbsp;</td>
-                                    <td>&nbsp;</td>
+                                    <td>{{invoiceDetails.noOfDays}}</td>
+                                    <td>&nbsp;{{invoiceDetails.amount}}</td>
                                 </tr>
                             </table>
                         </td>

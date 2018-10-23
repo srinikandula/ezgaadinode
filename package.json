@@ -21,6 +21,7 @@
     "child_process": "^1.0.2",
     "connect-multiparty": "^2.1.0",
     "cookie-parser": "^1.4.3",
+    "dateformat": "^3.0.3",
     "download-file": "^0.1.5",
     "dynamic-html-pdf": "0.0.4",
     "express": "^4.16.3",
