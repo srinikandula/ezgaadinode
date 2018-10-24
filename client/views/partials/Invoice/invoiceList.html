@@ -2,7 +2,7 @@
     <div class="col-xs-12 pall-zero mb-10">
         <div class="col-sm-3 pall-zero">
 
-            <h3>Invoice List: {{partyName.party}}</h3>
+            <h3>Invoice List: </h3>
         </div>
         <ul class="col-sm-9 pall-zero list-inline">
             <li class="col-sm-3 pall-zero">
@@ -11,16 +11,9 @@
             <li class="col-sm-3 pall-zero">
                 <date-picker class="'paymentscontrol'" past-present="'pastPresentDate'" ng-model="toDate" placeholder="'to date'"></date-picker>
             </li>
-            <li class="col-sm-1 pall-zero">
-                <button type="submit" ng-click="getCount();" class="btn go">
-                    <i class="fa fa-search sear" aria-hidden="true"></i>
-                </button>
-            </li>
             <li class="col-sm-3 pall-zero">
-                <!-- <input class="main-right form-control" type="text" ng-model="searchAny" placeholder="Search Filter"> -->
                 <div class="select-box erp-box">
-                    <ui-select ng-model="partyName.party" theme="select2" title="Choose a person" append-to-body="true"
-                        ng-change="getInvoice(partyName.party);">
+                    <ui-select ng-model="partyName.party" theme="select2" title="Choose a person" append-to-body="true">
                         <ui-select-match placeholder="Select a Party" class="form-control ui-select-control">
                             {{$select.selected.name || name}}
                         </ui-select-match>
@@ -29,6 +22,11 @@
                         </ui-select-choices>
                     </ui-select>
                 </div>
+            </li>
+            <li class="col-sm-1 pall-zero">
+                <button type="submit" ng-click="getInvoice(partyName.party);" class="btn go">
+                    <i class="fa fa-search sear" aria-hidden="true"></i>
+                </button>
             </li>
             <li class="col-sm-1 pall-zero">
                 <button type="button" ng-click="downloadDetails( );" class="btn mailImage">
@@ -64,8 +62,11 @@
             <td data-title="'Rate/Trip'" sortable="'rate'" class="clickable-item">{{
                 invoice.rate}}
             </td>
-            <td data-title="'No of Trips'" sortable="'quantity'" class="clickable-item">{{
+            <td data-title="'No of Trips'" sortable="'No of Trips'" class="clickable-item">{{
                 invoice.quantity}}
+            </td>
+            <td data-title="'Status'" sortable="'status'" class="clickable-item">{{
+                invoice.status}}
             </td>
             <td data-title="'Action'" class="col-sm-2">
                 <a href="#" class="btn" ng-click="goToEditPage(invoice._id)">
@@ -104,7 +105,8 @@
                     <th style="border: none"></th>
                     <th style="border: none"></th>
                     <th style="text-align:right; border: none">Date:</th>
-                    <th style="text-align: center; border: 1px solid #000000" ng-repeat="invoice in invoices track by $index" ng-show="$index<=0">{{invoice.trip[0].date
+                    <th style="text-align: center; border: 1px solid #000000" ng-repeat="invoice in invoices track by $index"
+                        ng-show="$index<=0">{{invoice.trip[0].date
                         | date: "dd.MM.y"}}</th>
                 </tr class="print-style">
                 <tr class="print-style" style="text-align: center;border: 1px solid #ccc;">
