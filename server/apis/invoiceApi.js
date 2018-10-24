@@ -9,6 +9,7 @@ var pdfGenerator = require('./../apis/pdfGenerator');
 var AccountsColl = require('./../models/schemas').AccountsColl;
 var TripCollection = require('./../models/schemas').TripCollection;
 var TrucksColl = require('./../models/schemas').TrucksColl;
+var dateFormat=require('dateformat');
 
 var Invoices = function () {};
 
