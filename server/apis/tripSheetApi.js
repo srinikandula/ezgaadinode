@@ -11,13 +11,11 @@ var TripSheets = function () {
 
 };
 
-function createTripSheet(account,callback){
+function createTripSheet(account,today,callback){
     var retObj = {
         status:false,
         messages:[]
     };
-    var today = new Date();
-    today = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
     TrucksColl.find({accountId:account._id},function(err,trucks){
         if(err){
             retObj.status = false;
@@ -64,12 +62,12 @@ function createTripSheet(account,callback){
     });
 };
 
-TripSheets.prototype.createTripSheet = function (callback) {
+TripSheets.prototype.createTripSheet = function (today,callback) {
     var retObj = {
         status:false,
         messages:[]
     };
-    AccountsColl.find({},function(err,accounts){
+    AccountsColl.find({tripSheetEnabled:true},function(err,accounts){
         if(err){
             retObj.status = false;
             retObj.messages.push("Error in finding data"+JSON.stringify(err));
@@ -77,7 +75,7 @@ TripSheets.prototype.createTripSheet = function (callback) {
         } else{
             async.each(accounts,function (account,asyncAccCallback) {
                 if(account.tripSheetEnabled === true){
-                    createTripSheet(account,function(tripSheetCallback){
+                    createTripSheet(account,today,function(tripSheetCallback){
                         if(tripSheetCallback.status){
                             asyncAccCallback(false);
                         }else{

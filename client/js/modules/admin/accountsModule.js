@@ -211,6 +211,9 @@ app.controller('accountsAddEditCrtl', ['$scope', '$stateParams', 'AccountService
         isOpenOne: true,
         isOpenTwo: true,
         isOpenThre: true,
+        isOpenFour: true,
+        isOpenFive: true,
+        isOpenSix: true
     };
     function initAccountDetails() {
         $scope.accountDetails = {

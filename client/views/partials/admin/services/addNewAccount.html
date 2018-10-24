@@ -107,11 +107,12 @@
         <uib-accordion>
             <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenTwo">
                 <uib-accordion-heading>
-                    Service Info <i class="pull-right glyphicon"
+                    Modules <i class="pull-right glyphicon"
                                     ng-class="{'glyphicon-chevron-down': status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
                 </uib-accordion-heading>
                     <div class="col-sm-6">
                         <div class="form-group">
+                            <p class="smsenabled">Features to enable:</p>
                             <ul class="list-inline">
                                 <li>
                                     <div class="checkbox">
@@ -159,21 +160,6 @@
                                     </div>
                                 </li>
                             </ul>
-                        </div>
-                        <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="accountDetails.addressPreference">
-                                <option value="" selected>Address Preference</option>
-                                <option value="osm">osm</option>
-                                <option value="google">google</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <select class="form-control custom-form-control" ng-model="accountDetails.truckType">
-                                <option value="" selected>Vehicle Type*</option>
-                                <option>Trucks</option>
-                                <option>Non Trucks</option>
-                                <option>Both</option>
-                            </select>
                         </div>
                         <div class="form-group">
                             <p class="smsenabled">SMS Enabled*:</p>
@@ -225,32 +211,76 @@
                                 </li>
                             </ul>
                         </div>
-
                     </div>
-                    <div class="col-xs-12 col-sm-6 account-rotues">
-                        <div class="row">
-                            <p>Operating Routes</p>
-                            <a href="#" ng-click="addRoute()"><i class="fa fa-plus-square" aria-hidden="true"></i></a>
+                </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenFour">
+                <uib-accordion-heading>
+                    Address Resolution<i class="pull-right glyphicon"
+                                    ng-class="{'glyphicon-chevron-down': status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
+                </uib-accordion-heading>
+                <div class="col-sm-6">
+                    <div class="form-group">
+                         <select class="form-control custom-form-control" ng-model="accountDetails.addressPreference">
+                             <option value="" selected>Address Preference</option>
+                             <option value="osm">osm</option>
+                             <option value="google">google</option>
+                         </select>
+                     </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenFive">
+                <uib-accordion-heading>
+                    Vehicle Type<i class="pull-right glyphicon"
+                                         ng-class="{'glyphicon-chevron-down': status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
+                </uib-accordion-heading>
+                <div class="col-sm-6">
+                     <div class="form-group">
+                         <select class="form-control custom-form-control" ng-model="accountDetails.truckType">
+                             <option value="" selected>Vehicle Type*</option>
+                             <option>Trucks</option>
+                             <option>Non Trucks</option>
+                             <option>Both</option>
+                         </select>
+                     </div>
+                </div>
+            </div>
+        </uib-accordion>
+        <uib-accordion>
+            <div uib-accordion-group class="panel-default mob-pad" is-open="status.isOpenSix">
+                <uib-accordion-heading>
+                    Operating Routes<i class="pull-right glyphicon"
+                                        ng-class="{'glyphicon-chevron-down': status.isOpenTwo, 'glyphicon-chevron-right': !status.isOpenTwo}"></i>
+                </uib-accordion-heading>
+                <div class="col-sm-6">
+                    <div class="col-xs-12  account-rotues">
+                    <div class="row">
+                        <p>Operating Routes</p>
+                        <a href="#" ng-click="addRoute()"><i class="fa fa-plus-square" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="clearfix"></div>
+                    <div ng-repeat="route in operatingRoutes">
+                        <div class="form-group col-xs-12">
+                            <input id="{{$index}}s" type="text" class="form-control order-form-control"
+                                   placeholder="Source" ng-model="route.sourceAddress"
+                                   ng-change="getLonLat($index, 'source')"/>
                         </div>
-                        <div class="clearfix"></div>
-                        <div ng-repeat="route in operatingRoutes">
-                            <div class="form-group col-xs-12">
-                                <input id="{{$index}}s" type="text" class="form-control order-form-control"
-                                       placeholder="Source" ng-model="route.sourceAddress"
-                                       ng-change="getLonLat($index, 'source')"/>
-                            </div>
-                            <div class="form-group col-xs-12">
-                                <input id="{{$index}}d" type="text" class="form-control order-form-control"
-                                       placeholder="Destination" ng-model="route.destinationAddress"
-                                       ng-change="getLonLat($index, 'destination')"/>
-                            </div>
-                            <div class="form-group col-xs-1">
-                                <a href="#" ng-click="deleteRoute($index)">
-                                    <i class="fa fa-minus-square" aria-hidden="true"></i></a>
-                            </div>
+                        <div class="form-group col-xs-12">
+                            <input id="{{$index}}d" type="text" class="form-control order-form-control"
+                                   placeholder="Destination" ng-model="route.destinationAddress"
+                                   ng-change="getLonLat($index, 'destination')"/>
+                        </div>
+                        <div class="form-group col-xs-1">
+                            <a href="#" ng-click="deleteRoute($index)">
+                                <i class="fa fa-minus-square" aria-hidden="true"></i></a>
                         </div>
                     </div>
                 </div>
+                </div>
+            </div>
         </uib-accordion>
         <uib-accordion>
             <div uib-accordion-group class="panel-default" is-open="status.isOpenThre"

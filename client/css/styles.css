@@ -1260,7 +1260,9 @@ body {
 .main-right h3 {
     padding: 8px;
 }
-
+.hide{
+    display: none !important;
+}
 .btn-blue {
     background-color: rgba(25, 149, 199, .6);
     border-radius: 0;

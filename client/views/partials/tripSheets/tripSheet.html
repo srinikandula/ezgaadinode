@@ -43,7 +43,7 @@
                     class="glyphicon glyphicon-chevron-left"></i></button>
         </div>
 
-        <div class="col-sm-3 mb-10 pall-zero">
+        <div class="col-sm-2 mb-10 pall-zero">
             <p class="input-group">
                 <input type="text" class="form-control" uib-datepicker-popup ng-model="dt" is-open="popup2.opened"
                        datepicker-options="dateOptions" ng-required="true" close-text="Close"
@@ -54,11 +54,12 @@
           </span>
             </p>
         </div>
-
-
         <div class="col-sm-1">
             <button type="button" class="btn btn-default" ng-click="nextDay()"><i
                     class="glyphicon glyphicon-chevron-right"></i></button>
+        </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-default" ng-click="createTripSheet(dt)"><span class="glyphicon glyphicon-refresh"></span></button>
         </div>
         <div class="col-sm-6">
             <ul class="list-inline add-load">
