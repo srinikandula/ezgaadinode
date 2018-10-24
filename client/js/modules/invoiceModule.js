@@ -125,17 +125,17 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
                 };
                 for (var i = 0; i < $scope.invoice.trip.length; i++) {
                     $scope.truckRegNo[i] = $scope.invoice.trip[i].vehicleNo;
-                    if($scope.invoice.trip[i].loadedOn !== undefined){
+                    if ($scope.invoice.trip[i].loadedOn !== undefined) {
                         $scope.invoice.trip[i].loadedOn = new Date($scope.invoice.trip[i].loadedOn);
-                    }if($scope.invoice.trip[i].unloadedOn !== undefined) {
+                    }
+                    if ($scope.invoice.trip[i].unloadedOn !== undefined) {
                         $scope.invoice.trip[i].unloadedOn = new Date($scope.invoice.trip[i].unloadedOn);
                     }
                 }
-                if($scope.invoice.lrDate)
-                {
-                    $scope.invoice.lrDate=new Date($scope.invoice.lrDate);
-                    $scope.invoice.consignorInvoiceDate=new Date($scope.invoice.consignorInvoiceDate);
-                    $scope.invoice.gatePassDate=new Date($scope.invoice.gatePassDate) 
+                if ($scope.invoice.lrDate) {
+                    $scope.invoice.lrDate = new Date($scope.invoice.lrDate);
+                    $scope.invoice.consignorInvoiceDate = new Date($scope.invoice.consignorInvoiceDate);
+                    $scope.invoice.gatePassDate = new Date($scope.invoice.gatePassDate)
                 }
                 // else if($scope.invoice.consignorInvoiceDate){
                 //     $scope.invoice.consignorInvoiceDate=new Date($scope.invoice.consignorInvoiceDate)
@@ -297,6 +297,9 @@ app.controller('AddEditInvoiceCtrl', ['$scope', 'PartyService', 'Notification', 
 }]);
 app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceService', '$state', 'NgTableParams', 'PartyService', function ($scope, $rootScope, InvoiceService, $state, NgTableParams, PartyService) {
 
+    $scope.partyName = {
+        party: ''
+    };
 
     $scope.delete = function (id) {
         swal({
@@ -390,19 +393,36 @@ app.controller('invoicesListController', ['$scope', '$rootScope', 'InvoiceServic
         window.open('/v1/invoices/generatePDF/' + invoiceId);
     }
 
-    PartyService.getAllPartiesForFilter(function (success) {
-        if (success.data.status) {
-            $scope.partiesList = success.data.parties;
-        } else {
-            success.data.messages.forEach(function (message) {
-                Notification.error({
-                    message: message
-                });
-            });
-        }
-    }, function (error) {
+    // PartyService.getAllPartiesForFilter(function (success) {
+    //     if (success.data.status) {
+    //         $scope.partiesList = success.data.parties;
+    //     } else {
+    //         success.data.messages.forEach(function (message) {
+    //             Notification.error({
+    //                 message: message
+    //             });
+    //         });
+    //     }
+    // }, function (error) {
 
-    })
+    // })
+
+    $scope.getParties = function () {
+        PartyService.getAllPartiesForFilter(function (success) {
+            if (success.data.status) {
+                $scope.partiesList = success.data.parties;
+            } else {
+                success.data.messages.forEach(function (message) {
+                    Notification.error({
+                        message: message
+                    });
+                });
+            }
+        }, function (error) {
+
+        });
+    };
+    $scope.getParties();
 
     $scope.downloadPartyDetails = function () {
         window.open('/v1/expense/downloadDetails');

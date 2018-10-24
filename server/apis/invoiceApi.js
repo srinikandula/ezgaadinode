@@ -494,7 +494,7 @@ Invoices.prototype.downloadDetails = function (jwt, req, callback) {
             for (var i = 0; i < response.data.length; i++) {
                 output.push({
                     PartyName: response.data[i].partyId,
-                    Date: response.data[i].createdAt,
+                    Date: dateToStringFormat(response.data[i].createdAt),
                     TruckNo: response.data[i].vehicleNo,
                     From: response.data[i].trip[0].from,
                     To: response.data[i].trip[0].to,
