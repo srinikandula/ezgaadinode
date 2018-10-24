@@ -18,7 +18,9 @@ app.factory('PaymentService', ['$http', function ($http) {
             $http({
                 url: '/v1/payments/getPaymentDetails',
                 method: "GET",
-                params: {_id: id}
+                params: {
+                    _id: id
+                }
             }).then(success, error)
         },
         updatePayment: function (params, success, error) {
@@ -32,7 +34,9 @@ app.factory('PaymentService', ['$http', function ($http) {
             $http({
                 url: '/v1/payments/deletePayment',
                 method: "DELETE",
-                params: {_id: paymentId}
+                params: {
+                    _id: paymentId
+                }
             }).then(success, error)
         },
         totalPayments: function (success, error) {
@@ -41,21 +45,23 @@ app.factory('PaymentService', ['$http', function ($http) {
                 method: "GET"
             }).then(success, error)
         },
-        getReceiptsByParties: function (params,success, error) {
+        getReceiptsByParties: function (params, success, error) {
             $http({
                 url: '/v1/payments/getReceiptsByParties',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         },
         getReceiptByPartyName: function (receiptId, success, error) {
             $http({
                 url: '/v1/payments/getReceiptByPartyName',
                 method: "GET",
-                params: {_id: receiptId}
+                params: {
+                    _id: receiptId
+                }
             }).then(success, error)
         },
-        shareReceiptsDetailsByPartyViaEmail:function (params,success,error) {
+        shareReceiptsDetailsByPartyViaEmail: function (params, success, error) {
             $http({
                 url: '/v1/payments/shareReceiptsDetailsByPartyViaEmail',
                 method: "GET",
@@ -63,21 +69,23 @@ app.factory('PaymentService', ['$http', function ($http) {
             }).then(success, error)
 
         },
-        shareDetailsViaEmail:function(params,success,error){
+        shareDetailsViaEmail: function (params, success, error) {
             $http({
                 url: '/v1/payments/shareDetailsViaEmail',
                 method: "GET",
-                params:params
+                params: params
             }).then(success, error)
         }
 
     }
 }]);
 
-app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService','ExpenseService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService,ExpenseService) {
+app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'ExpenseService', function ($scope, $state, PaymentService, Notification, NgTableParams, paginationService, PartyService, ExpenseService) {
 
     $scope.goToEditPaymentsPage = function (id) {
-        $state.go('paymentsEdit', {paymentId: id});
+        $state.go('paymentsEdit', {
+            paymentId: id
+        });
     };
 
     $scope.filters = {
@@ -91,7 +99,9 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
                 $scope.partiesList = success.data.parties;
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+                    Notification.error({
+                        message: message
+                    });
                 });
             }
         }, function (err) {
@@ -107,7 +117,9 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
                 $scope.init();
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+                    Notification.error({
+                        message: message
+                    });
                 });
             }
         });
@@ -129,7 +141,9 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
                 $scope.currentPageOfPayments = response.data.payments;
             } else {
                 $scope.currentPageOfReceipts = response.data.receipts;
-                Notification.error({message: response.data.messages[0]});
+                Notification.error({
+                    message: response.data.messages[0]
+                });
             }
         });
     };
@@ -185,8 +199,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
                     ;
                 });
 
-            }
-            ;
+            };
         });
     };
 
@@ -210,7 +223,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
             }
         });
     };
-    $scope.shareDetailsViaEmail=function(){
+    $scope.shareDetailsViaEmail = function () {
         swal({
             title: 'Share Payments data using mail',
             input: 'email',
@@ -218,32 +231,32 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
             confirmButtonText: 'Submit',
             showLoaderOnConfirm: true,
             preConfirm: (email) => {
-            return new Promise((resolve) => {
-                PaymentService.shareDetailsViaEmail({
-                email:email
-            },function(success){
-                console.log("success...",success);
-                if (success.data.status) {
-                    resolve()
-                } else {
+                return new Promise((resolve) => {
+                    PaymentService.shareDetailsViaEmail({
+                        email: email
+                    }, function (success) {
+                        console.log("success...", success);
+                        if (success.data.status) {
+                            resolve()
+                        } else {
 
-                }
-            },function(error){
+                        }
+                    }, function (error) {
 
-            })
-        })
+                    })
+                })
 
-    },
-        allowOutsideClick: false
+            },
+            allowOutsideClick: false
 
-    }).then((result) => {
+        }).then((result) => {
             if (result.value) {
-            swal({
-                type: 'success',
-                html: ' sent successfully'
-            })
-        }
-    })
+                swal({
+                    type: 'success',
+                    html: ' sent successfully'
+                })
+            }
+        })
     };
 
     $scope.downloadDetails = function () {
@@ -251,7 +264,7 @@ app.controller('paymentsCtrl', ['$scope', '$state', 'PaymentService', 'Notificat
     };
 
 }]);
-app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices','ExpenseService', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices,ExpenseService) {
+app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'PaymentService', 'Notification', 'NgTableParams', 'paginationService', 'PartyService', 'TripServices', 'ExpenseService', function ($scope, $state, $stateParams, PaymentService, Notification, NgTableParams, paginationService, PartyService, TripServices, ExpenseService) {
 
     $scope.pageTitle = "Add Payment";
 
@@ -273,11 +286,12 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
                 getPartyIds();
             } else {
                 success.data.messages.forEach(function (message) {
-                    Notification.error({message: message});
+                    Notification.error({
+                        message: message
+                    });
                 });
             }
-        }, function (err) {
-        })
+        }, function (err) {})
     }
 
     function getPartyIds() {
@@ -324,33 +338,42 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
         }
         if (params.error.length > 0) {
             params.error.forEach(function (message) {
-                Notification.error({ message: message });
+                Notification.error({
+                    message: message
+                });
             });
         } else {
             $scope.paymentDetails.partyId = $scope.paymentDetails.partyId._id;
             if ($stateParams.paymentId) {
                 PaymentService.updatePayment(params, function (success) {
                     if (success.data.status) {
-                        Notification.success({message: success.data.messages[0]});
+                        Notification.success({
+                            message: success.data.messages[0]
+                        });
                         $state.go('receipts');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
+                            Notification.error({
+                                message: message
+                            });
                         });
                     }
                     $state.go('payments');
 
-                }, function (err) {
-                });
+                }, function (err) {});
             } else {
                 PaymentService.addPayment(params, function (success) {
                     if (success.data.status) {
                         params.success = success.data.message;
-                        Notification.success({message: success.data.messages[0]});
+                        Notification.success({
+                            message: success.data.messages[0]
+                        });
                         $state.go('payments');
                     } else {
                         success.data.messages.forEach(function (message) {
-                            Notification.error({message: message});
+                            Notification.error({
+                                message: message
+                            });
                         });
                     }
                 });
@@ -359,12 +382,12 @@ app.controller('paymentsEditCtrl', ['$scope', '$state', '$stateParams', 'Payment
     }
 
 }]);
-app.controller('UploadPaymentsCtrl', ['$scope','Upload','Notification','$state', function ($scope, Upload,Notification,$state) {
-    $scope.file=undefined;
-    $scope.uploadPayments=function () {
-        if(!$scope.file){
+app.controller('UploadPaymentsCtrl', ['$scope', 'Upload', 'Notification', '$state', function ($scope, Upload, Notification, $state) {
+    $scope.file = undefined;
+    $scope.uploadPayments = function () {
+        if (!$scope.file) {
             Notification.error("Please select file");
-        }else{
+        } else {
             Upload.upload({
                 url: '/v1/payments/uploadPayments',
                 data: {
@@ -376,7 +399,9 @@ app.controller('UploadPaymentsCtrl', ['$scope','Upload','Notification','$state',
                     $state.go("payments");
                 } else {
                     success.data.messages.forEach(function (message) {
-                        Notification.error({message: message});
+                        Notification.error({
+                            message: message
+                        });
                     });
                 }
             });
@@ -385,4 +410,3 @@ app.controller('UploadPaymentsCtrl', ['$scope','Upload','Notification','$state',
     }
 
 }]);
-
