@@ -47,6 +47,7 @@ AuthRouter.get('/tripSheetReport', function (req, res) {
 
 AuthRouter.get('/downloadTripSheetDate',function(req,res){
     Api.downloadTripSheetData(req,function(result){
+        console.log("result...",result.data);
         if(result.status){
             res.xls('Tripsheet details'+new Date().toLocaleDateString()+'.xlsx', result.data);
         }else{
